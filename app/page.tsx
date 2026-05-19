@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, FileText, LayoutDashboard } from "lucide-react";
+import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, FileText, LayoutDashboard, Bell, AlertTriangle, Clock } from "lucide-react";
 import Link from "next/link";
 import {
   JiraIssue, JiraSearchResult,
@@ -10,7 +10,7 @@ import IssueCard from "@/components/IssueCard";
 import IssueDrawer from "@/components/IssueDrawer";
 import StatsBar from "@/components/StatsBar";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
-import { getKanbanState, KanbanCard, PRIORITY_META, isOverdue as isKanbanOverdue, accentBorderClass } from "@/lib/kanban";
+import { getKanbanState, KanbanCard, PRIORITY_META, isOverdue as isKanbanOverdue, isDueToday, accentBorderClass } from "@/lib/kanban";
 import { getTodos, isTodoOverdue } from "@/lib/todo";
 import { getNotes } from "@/lib/notes-store";
 import clsx from "clsx";
@@ -93,12 +93,15 @@ export default function Dashboard() {
   const [urgentCount, setUrgentCount]   = useState(0);
   const [todoStats, setTodoStats]       = useState({ active: 0, overdue: 0 });
   const [notesCount, setNotesCount]     = useState(0);
+  const [dueSoonCards, setDueSoonCards] = useState<KanbanCard[]>([]);
 
   // Load local data once on mount
   useEffect(() => {
     const kanban = getKanbanState();
     setOngoingCards(kanban.ongoing);
     setUrgentCount(kanban.urgent.length);
+    const allCards = ["urgent", "todo", "ongoing", "finished"].flatMap(col => kanban[col as keyof typeof kanban] as KanbanCard[]);
+    setDueSoonCards(allCards.filter(c => isKanbanOverdue(c) || isDueToday(c)));
     const todos = getTodos();
     setTodoStats({ active: todos.filter(t => !t.done).length, overdue: todos.filter(isTodoOverdue).length });
     setNotesCount(getNotes().length);
@@ -170,6 +173,32 @@ export default function Dashboard() {
 
         {/* Token expiry */}
         {creds?.tokenExpiry && <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />}
+
+        {/* Kanban due date reminders */}
+        {dueSoonCards.length > 0 && (
+          <div className="bg-amber-950/40 border border-amber-800/50 rounded-xl p-3 flex items-start gap-3">
+            <Bell size={15} className="text-amber-400 mt-0.5 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-amber-300 mb-1.5">
+                {dueSoonCards.filter(isKanbanOverdue).length > 0 ? `${dueSoonCards.filter(isKanbanOverdue).length} overdue` : ""}
+                {dueSoonCards.filter(isKanbanOverdue).length > 0 && dueSoonCards.filter(isDueToday).length > 0 ? " · " : ""}
+                {dueSoonCards.filter(isDueToday).length > 0 ? `${dueSoonCards.filter(isDueToday).length} due today` : ""}
+                {" "}on Kanban
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {dueSoonCards.map(card => (
+                  <Link key={card.id} href="/kanban" className={clsx(
+                    "flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-lg border transition-colors",
+                    isKanbanOverdue(card) ? "bg-red-950/40 border-red-800/40 text-red-300" : "bg-amber-950/30 border-amber-800/30 text-amber-300"
+                  )}>
+                    {isKanbanOverdue(card) ? <AlertTriangle size={10} /> : <Clock size={10} />}
+                    <span className="max-w-[160px] truncate">{card.title}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Not connected */}
         {!creds && (

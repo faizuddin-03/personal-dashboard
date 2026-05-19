@@ -26,6 +26,9 @@ export interface KanbanCard {
   jiraType?: string;
   jiraProject?: string;
   createdAt: string;
+  columnEnteredAt?: string;
+  archived?: boolean;
+  archivedAt?: string;
 }
 
 export interface KanbanState {
@@ -82,6 +85,35 @@ function emptyState(): KanbanState {
 
 export function isOverdue(card: KanbanCard): boolean {
   return !!card.dueDate && new Date(card.dueDate) < new Date() && card.columnId !== "finished";
+}
+
+export function isDueToday(card: KanbanCard): boolean {
+  if (!card.dueDate || card.columnId === "finished") return false;
+  const d = new Date(card.dueDate);
+  const now = new Date();
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+}
+
+export function timeInColumn(card: KanbanCard): string {
+  const since = card.columnEnteredAt ? new Date(card.columnEnteredAt) : new Date(card.createdAt);
+  const ms = Date.now() - since.getTime();
+  const hours = Math.floor(ms / 3600000);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  if (weeks > 0) return `${weeks}w`;
+  if (days > 0) return `${days}d`;
+  if (hours > 0) return `${hours}h`;
+  return "< 1h";
+}
+
+export function getArchivedCards(): KanbanCard[] {
+  if (typeof window === "undefined") return [];
+  try { return JSON.parse(localStorage.getItem("kanban_archive") ?? "[]"); }
+  catch { return []; }
+}
+
+export function saveArchivedCards(cards: KanbanCard[]) {
+  localStorage.setItem("kanban_archive", JSON.stringify(cards));
 }
 
 export function checklistProgress(card: KanbanCard): { done: number; total: number } {
