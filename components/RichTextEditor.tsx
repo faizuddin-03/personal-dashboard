@@ -1,5 +1,6 @@
 "use client";
 import { useEditor, EditorContent } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { Color, TextStyle } from "@tiptap/extension-text-style";
 import FontFamily from "@tiptap/extension-font-family";
@@ -12,6 +13,42 @@ import {
   Palette, Highlighter, RemoveFormatting, ChevronDown,
 } from "lucide-react";
 import clsx from "clsx";
+
+declare module "@tiptap/core" {
+  interface Commands<ReturnType> {
+    fontSize: {
+      setFontSize: (size: string) => ReturnType;
+      unsetFontSize: () => ReturnType;
+    };
+  }
+}
+
+const FontSize = Extension.create({
+  name: "fontSize",
+  addOptions() { return { types: ["textStyle"] }; },
+  addGlobalAttributes() {
+    return [{
+      types: this.options.types,
+      attributes: {
+        fontSize: {
+          default: null,
+          parseHTML: el => (el as HTMLElement).style.fontSize || null,
+          renderHTML: attrs => attrs.fontSize ? { style: `font-size: ${attrs.fontSize}` } : {},
+        },
+      },
+    }];
+  },
+  addCommands() {
+    return {
+      setFontSize: (fontSize: string) => ({ chain }) =>
+        chain().setMark("textStyle", { fontSize }).run(),
+      unsetFontSize: () => ({ chain }) =>
+        chain().setMark("textStyle", { fontSize: null }).run(),
+    };
+  },
+});
+
+const FONT_SIZES = ["12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px"];
 
 const FONTS = [
   { label: "Default",    value: "" },
@@ -57,6 +94,7 @@ export default function RichTextEditor({
   const [showColors, setShowColors] = useState(false);
   const [showHighlights, setShowHighlights] = useState(false);
   const [showFonts, setShowFonts] = useState(false);
+  const [showSizes, setShowSizes] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -64,6 +102,7 @@ export default function RichTextEditor({
       TextStyle,
       Color,
       FontFamily,
+      FontSize,
       Highlight.configure({ multicolor: true }),
       Underline,
     ],
@@ -78,14 +117,15 @@ export default function RichTextEditor({
     setShowColors(false);
     setShowHighlights(false);
     setShowFonts(false);
+    setShowSizes(false);
   }, []);
 
   if (!editor) return null;
 
-  // Detect active font from current textStyle attributes
   const activeFontAttrs = editor.getAttributes("textStyle");
   const activeFontFamily = (activeFontAttrs.fontFamily as string | null) ?? "";
   const activeFontLabel = FONTS.find(f => f.value && activeFontFamily.includes(f.value.split(",")[0].replace(/'/g, "")))?.label ?? "Font";
+  const activeFontSize = (activeFontAttrs.fontSize as string | null) ?? "";
 
   return (
     <div className={clsx("border border-slate-700 rounded-xl overflow-hidden bg-slate-800", className)} onClick={closeDropdowns}>
@@ -126,6 +166,45 @@ export default function RichTextEditor({
                   style={{ fontFamily: f.value || "inherit" }}
                 >
                   {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Font size */}
+        <div className="relative">
+          <button
+            type="button"
+            onMouseDown={e => e.preventDefault()}
+            onClick={e => { e.stopPropagation(); setShowSizes(v => !v); setShowFonts(false); setShowColors(false); setShowHighlights(false); }}
+            title="Font size"
+            className={clsx(
+              "flex items-center gap-1 px-2 py-1.5 rounded text-xs transition-colors",
+              showSizes ? "bg-blue-600/40 text-blue-300" : "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
+            )}
+          >
+            <span className="text-[11px] font-medium w-8 truncate text-left">{activeFontSize ? activeFontSize.replace("px", "") : "Size"}</span>
+            <ChevronDown size={11} />
+          </button>
+          {showSizes && (
+            <div className="absolute top-full left-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 py-1 min-w-[80px]" onClick={e => e.stopPropagation()}>
+              <button
+                type="button"
+                onMouseDown={e => e.preventDefault()}
+                onClick={() => { editor.chain().focus().unsetFontSize().run(); setShowSizes(false); }}
+                className={clsx("w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-slate-700", !activeFontSize ? "text-blue-300" : "text-slate-400")}
+              >Default</button>
+              {FONT_SIZES.map(size => (
+                <button
+                  key={size}
+                  type="button"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => { editor.chain().focus().setFontSize(size).run(); setShowSizes(false); }}
+                  className={clsx("w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-slate-700", activeFontSize === size ? "text-blue-300" : "text-slate-300")}
+                  style={{ fontSize: size }}
+                >
+                  {size.replace("px", "")}
                 </button>
               ))}
             </div>
