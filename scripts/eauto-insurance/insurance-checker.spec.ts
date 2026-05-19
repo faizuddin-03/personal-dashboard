@@ -143,27 +143,6 @@ async function writeOutputExcel(results: VehicleResult[], filePath: string): Pro
   await wb.xlsx.writeFile(filePath);
 }
 
-// ─── NAVIGATE TO ENQUIRY PAGE ────────────────────────────────────────────────
-// Direct URL navigation causes "access denied". Must go via dashboard → click
-// the INSURANCE button so the app sets up the correct session/permissions.
-async function navigateToEnquiry(page: Page): Promise<void> {
-  await page.goto(CONFIG.baseUrl, { waitUntil: 'load', timeout: CONFIG.navigationTimeout });
-  await page.waitForTimeout(CONFIG.waitAfterPageLoad);
-
-  const insuranceBtn = page.locator('button#insurance, a#insurance').first();
-  if ((await insuranceBtn.count()) > 0) {
-    console.log('   Clicking INSURANCE button on dashboard...');
-    await insuranceBtn.click();
-    await page.waitForTimeout(CONFIG.waitAfterClick);
-  } else {
-    // Fallback to direct navigation
-    console.log('   INSURANCE button not found — trying direct navigation...');
-    await page.goto(`${CONFIG.baseUrl}${CONFIG.enquiryPath}`, { waitUntil: 'load', timeout: CONFIG.navigationTimeout });
-    await page.waitForTimeout(CONFIG.waitAfterPageLoad);
-  }
-  console.log(`   Enquiry page: ${page.url()}`);
-}
-
 // ─── LOGIN ───────────────────────────────────────────────────────────────────
 async function login(page: Page): Promise<void> {
   console.log('🔐 Logging in jappp...');
@@ -191,6 +170,10 @@ async function login(page: Page): Promise<void> {
   await page.waitForTimeout(CONFIG.waitAfterPageLoad);
   console.log(`   Post-login: ${page.url()}`);
 
+  // Navigate to enquiry page
+  await page.goto(`${CONFIG.baseUrl}${CONFIG.enquiryPath}`, { waitUntil: 'load', timeout: CONFIG.navigationTimeout });
+  await page.waitForTimeout(CONFIG.waitAfterPageLoad);
+
   // If redirected to login again, try logging in on whatever page we're on
   if (page.url().includes('/login')) {
     console.log('   Still on login — trying again on current page...');
@@ -201,11 +184,12 @@ async function login(page: Page): Promise<void> {
       await page.locator('button:has-text("Login"), input[type="submit"], button[type="submit"]').first().click();
       await page.waitForLoadState('load', { timeout: CONFIG.navigationTimeout });
       await page.waitForTimeout(CONFIG.waitAfterPageLoad);
+
+      await page.goto(`${CONFIG.baseUrl}${CONFIG.enquiryPath}`, { waitUntil: 'load', timeout: CONFIG.navigationTimeout });
+      await page.waitForTimeout(CONFIG.waitAfterPageLoad);
     }
   }
 
-  // Navigate via dashboard → INSURANCE button (direct URL causes access denied)
-  await navigateToEnquiry(page);
   console.log(`✅ Login done. URL: ${page.url()}`);
 }
 
@@ -247,8 +231,9 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
 
   console.log(`\n🚗 Processing: ${vn}`);
 
-  // Navigate fresh via dashboard → INSURANCE button
-  await navigateToEnquiry(page);
+  // Navigate fresh
+  await page.goto(`${CONFIG.baseUrl}${CONFIG.enquiryPath}`, { waitUntil: 'load', timeout: CONFIG.navigationTimeout });
+  await page.waitForTimeout(CONFIG.waitAfterPageLoad);
 
   // Check we're on the right page
   if (page.url().includes('/login')) {
