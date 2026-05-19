@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, FileText, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays } from "lucide-react";
+import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, FileText, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays, X } from "lucide-react";
 import Link from "next/link";
 import {
   JiraIssue, JiraSearchResult,
@@ -27,7 +27,7 @@ function MiniKanbanCard({ card }: { card: KanbanCard }) {
   const over = isKanbanOverdue(card);
   return (
     <Link href="/kanban" className={clsx(
-      "shrink-0 w-56 bg-slate-800 border border-l-4 rounded-xl p-3 hover:border-slate-500 transition-all",
+      "shrink-0 w-52 bg-slate-800 border border-l-4 rounded-xl p-3 hover:border-slate-500 transition-all",
       accentBorderClass(card.accentColor)
     )}>
       {card.jiraKey && <p className="text-[10px] font-mono text-blue-400 font-bold mb-1">{card.jiraKey}</p>}
@@ -75,6 +75,82 @@ function AppWidget({ label, value, sub, subAlert, href, icon: Icon, color }: {
   );
 }
 
+// ── Upcoming item row ────────────────────────────────────────
+function UpcomingRow({ item, i }: { item: UpcomingItemType; i: number }) {
+  const dateLabel = (() => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+    if (item.date === todayStr) return "Today";
+    if (item.date === tomorrowStr) return "Tomorrow";
+    return new Date(item.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  })();
+
+  if (item.kind === "deployment") {
+    const tm = DEPLOYMENT_TYPE_META[item.data.type];
+    return (
+      <Link key={i} href="/calendar" className={clsx("flex items-center gap-2 rounded-lg border px-2.5 py-2 hover:opacity-80 transition-opacity", tm.bg, tm.border)}>
+        <Rocket size={12} className={clsx(tm.text, "shrink-0")} />
+        <div className="flex-1 min-w-0">
+          <span className="text-[10px] font-mono font-bold text-blue-400 mr-1.5">{item.data.ticketKey}</span>
+          <span className={clsx("text-xs font-medium truncate", tm.text)}>{item.data.ticketSummary || item.data.ticketKey}</span>
+        </div>
+        <div className="text-right shrink-0">
+          <p className={clsx("text-[10px] font-medium", tm.text)}>{dateLabel}</p>
+          <p className="text-[10px] text-slate-500">{item.data.time}</p>
+        </div>
+      </Link>
+    );
+  }
+
+  if (item.kind === "event") {
+    const cm = EVENT_COLOR_META[item.data.color];
+    const isMultiDay = item.data.startDate !== item.data.endDate;
+    return (
+      <Link key={i} href="/calendar" className={clsx("flex items-center gap-2 rounded-lg border px-2.5 py-2 hover:opacity-80 transition-opacity", cm.chipBg)}>
+        <CalendarDays size={12} className="shrink-0 opacity-70" />
+        <div className="flex-1 min-w-0">
+          <span className="text-xs font-medium truncate">{item.data.title}</span>
+          {isMultiDay && <span className="text-[10px] opacity-60 ml-1.5">multi-day</span>}
+        </div>
+        <div className="text-right shrink-0">
+          <p className="text-[10px] font-medium">{dateLabel}</p>
+          {!item.data.allDay && item.data.startTime && <p className="text-[10px] opacity-60">{item.data.startTime}</p>}
+        </div>
+      </Link>
+    );
+  }
+
+  if (item.kind === "kanban") {
+    return (
+      <Link key={i} href="/kanban" className="flex items-center gap-2 rounded-lg border border-blue-800/40 bg-blue-950/30 px-2.5 py-2 hover:opacity-80 transition-opacity">
+        <CheckSquare size={12} className="text-blue-400 shrink-0" />
+        <div className="flex-1 min-w-0">
+          {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-1.5">{item.data.jiraKey}</span>}
+          <span className="text-xs text-slate-200 truncate">{item.data.title}</span>
+        </div>
+        <p className="text-[10px] text-blue-300 shrink-0">{dateLabel}</p>
+      </Link>
+    );
+  }
+
+  return (
+    <Link key={i} href="/todo" className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/50 px-2.5 py-2 hover:opacity-80 transition-opacity">
+      <CheckSquare size={12} className="text-slate-400 shrink-0" />
+      <div className="flex-1 min-w-0">
+        {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-1.5">{item.data.jiraKey}</span>}
+        <span className="text-xs text-slate-300 truncate">{item.data.title}</span>
+      </div>
+      <p className="text-[10px] text-slate-500 shrink-0">{dateLabel}</p>
+    </Link>
+  );
+}
+
+type UpcomingItemType =
+  | { kind: "deployment"; data: Deployment; date: string }
+  | { kind: "event";      data: CalendarEvent; date: string }
+  | { kind: "kanban";     data: KanbanCard; date: string }
+  | { kind: "todo";       data: import("@/lib/todo").TodoItem; date: string };
+
 // ── Main dashboard page ─────────────────────────────────────
 export default function Dashboard() {
   const { creds, openSettings } = useApp();
@@ -90,20 +166,17 @@ export default function Dashboard() {
   const [sort, setSort]           = useState<SortKey>("updated");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  // Global Jira search state
+  const [jiraSearchResults, setJiraSearchResults] = useState<JiraIssue[]>([]);
+  const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
+
   // Local app data
   const [ongoingCards, setOngoingCards] = useState<KanbanCard[]>([]);
   const [urgentCount, setUrgentCount]   = useState(0);
   const [todoStats, setTodoStats]       = useState({ active: 0, overdue: 0 });
   const [notesCount, setNotesCount]     = useState(0);
   const [dueSoonCards, setDueSoonCards] = useState<KanbanCard[]>([]);
-
-  type UpcomingItem =
-    | { kind: "deployment"; data: Deployment; date: string }
-    | { kind: "event";      data: CalendarEvent; date: string }
-    | { kind: "kanban";     data: KanbanCard; date: string }
-    | { kind: "todo";       data: import("@/lib/todo").TodoItem; date: string };
-
-  const [upcomingItems, setUpcomingItems] = useState<UpcomingItem[]>([]);
+  const [upcomingItems, setUpcomingItems] = useState<UpcomingItemType[]>([]);
 
   // Load local data once on mount
   useEffect(() => {
@@ -122,8 +195,7 @@ export default function Dashboard() {
     const in7 = new Date(); in7.setDate(in7.getDate() + 7);
     const in7Str = in7.toISOString().slice(0, 10);
 
-    const upcoming: UpcomingItem[] = [];
-
+    const upcoming: UpcomingItemType[] = [];
     for (const d of getDeployments()) {
       if (d.date >= todayStr && d.date <= in7Str && d.status !== "cancelled")
         upcoming.push({ kind: "deployment", data: d, date: d.date });
@@ -138,7 +210,6 @@ export default function Dashboard() {
     for (const t of todos.filter(t => !t.done && t.dueDate && t.dueDate >= todayStr && t.dueDate <= in7Str)) {
       upcoming.push({ kind: "todo", data: t, date: t.dueDate! });
     }
-
     upcoming.sort((a, b) => a.date.localeCompare(b.date));
     setUpcomingItems(upcoming);
   }, []);
@@ -168,14 +239,38 @@ export default function Dashboard() {
     else { setAssigned([]); setReported([]); }
   }, [creds, fetchIssues]);
 
+  // Debounced global Jira search — searches ALL tickets when query is present
+  useEffect(() => {
+    if (!search.trim() || !creds) {
+      setJiraSearchResults([]);
+      return;
+    }
+    setJiraSearchLoading(true);
+    const escaped = search.replace(/"/g, '\\"');
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/jira/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...creds,
+            jql: `text ~ "${escaped}" ORDER BY updated DESC`,
+            maxResults: 50,
+          }),
+        });
+        const data: JiraSearchResult = await res.json();
+        setJiraSearchResults(data.issues ?? []);
+      } catch {
+        setJiraSearchResults([]);
+      } finally { setJiraSearchLoading(false); }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [search, creds]);
+
   const activeIssues = activeTab === "assigned" ? assigned : reported;
   const allStatuses  = Array.from(new Set(activeIssues.map(i => i.fields.status.name))).sort();
   const filtered = activeIssues
-    .filter(i => {
-      const q = search.toLowerCase();
-      return (!q || i.fields.summary.toLowerCase().includes(q) || i.key.toLowerCase().includes(q)) &&
-        (statusFilter === "all" || i.fields.status.name === statusFilter);
-    })
+    .filter(i => statusFilter === "all" || i.fields.status.name === statusFilter)
     .sort((a, b) => {
       if (sort === "priority") {
         return (PRIORITY_ORDER[a.fields.priority?.name ?? ""] ?? 99) - (PRIORITY_ORDER[b.fields.priority?.name ?? ""] ?? 99);
@@ -185,7 +280,8 @@ export default function Dashboard() {
       return new Date(dB).getTime() - new Date(dA).getTime();
     });
 
-  const hasLocalData = ongoingCards.length > 0 || todoStats.active > 0 || notesCount > 0;
+  const isSearching = search.trim().length > 0;
+  const hasLocalData = ongoingCards.length > 0 || todoStats.active > 0 || notesCount > 0 || upcomingItems.length > 0;
 
   return (
     <div className="flex flex-col min-h-full">
@@ -205,7 +301,7 @@ export default function Dashboard() {
         )}
       </header>
 
-      <div className="flex-1 px-6 py-5 space-y-6">
+      <div className="flex-1 px-6 py-5 space-y-5">
 
         {/* Token expiry */}
         {creds?.tokenExpiry && <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />}
@@ -236,89 +332,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Upcoming events (next 7 days) */}
-        {upcomingItems.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Upcoming — next 7 days</p>
-              <Link href="/calendar" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
-                View calendar <ArrowRight size={11} />
-              </Link>
-            </div>
-            <div className="space-y-1.5">
-              {upcomingItems.map((item, i) => {
-                const dateLabel = (() => {
-                  const todayStr = new Date().toISOString().slice(0, 10);
-                  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
-                  if (item.date === todayStr) return "Today";
-                  if (item.date === tomorrowStr) return "Tomorrow";
-                  return new Date(item.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-                })();
-
-                if (item.kind === "deployment") {
-                  const tm = DEPLOYMENT_TYPE_META[item.data.type];
-                  return (
-                    <Link key={i} href="/calendar" className={clsx("flex items-center gap-3 rounded-xl border px-3 py-2 hover:opacity-80 transition-opacity", tm.bg, tm.border)}>
-                      <Rocket size={13} className={tm.text} />
-                      <div className="flex-1 min-w-0">
-                        <span className="text-[10px] font-mono font-bold text-blue-400 mr-2">{item.data.ticketKey}</span>
-                        <span className={clsx("text-sm font-medium truncate", tm.text)}>{item.data.ticketSummary || item.data.ticketKey}</span>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className={clsx("text-xs font-medium", tm.text)}>{dateLabel}</p>
-                        <p className="text-[10px] text-slate-500">{item.data.time}</p>
-                      </div>
-                    </Link>
-                  );
-                }
-
-                if (item.kind === "event") {
-                  const cm = EVENT_COLOR_META[item.data.color];
-                  const isMultiDay = item.data.startDate !== item.data.endDate;
-                  return (
-                    <Link key={i} href="/calendar" className={clsx("flex items-center gap-3 rounded-xl border px-3 py-2 hover:opacity-80 transition-opacity", cm.chipBg)}>
-                      <CalendarDays size={13} className="shrink-0 opacity-70" />
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium truncate">{item.data.title}</span>
-                        {isMultiDay && <span className="text-[10px] opacity-60 ml-2">multi-day</span>}
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-xs font-medium">{dateLabel}</p>
-                        {!item.data.allDay && item.data.startTime && <p className="text-[10px] opacity-60">{item.data.startTime}</p>}
-                      </div>
-                    </Link>
-                  );
-                }
-
-                if (item.kind === "kanban") {
-                  return (
-                    <Link key={i} href="/kanban" className="flex items-center gap-3 rounded-xl border border-blue-800/40 bg-blue-950/30 px-3 py-2 hover:opacity-80 transition-opacity">
-                      <CheckSquare size={13} className="text-blue-400 shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-2">{item.data.jiraKey}</span>}
-                        <span className="text-sm text-slate-200 truncate">{item.data.title}</span>
-                      </div>
-                      <p className="text-xs text-blue-300 shrink-0">{dateLabel}</p>
-                    </Link>
-                  );
-                }
-
-                // todo
-                return (
-                  <Link key={i} href="/todo" className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 hover:opacity-80 transition-opacity">
-                    <CheckSquare size={13} className="text-slate-400 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-2">{item.data.jiraKey}</span>}
-                      <span className="text-sm text-slate-300 truncate">{item.data.title}</span>
-                    </div>
-                    <p className="text-xs text-slate-500 shrink-0">{dateLabel}</p>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* Not connected */}
         {!creds && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -342,39 +355,61 @@ export default function Dashboard() {
           <div className="bg-red-950/50 border border-red-800 rounded-xl p-4 text-red-400 text-sm">{error}</div>
         )}
 
-        {/* ── Cross-app overview ── */}
+        {/* ── Two-column overview: workspace stats + upcoming ── */}
         {hasLocalData && (
-          <div>
-            <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold mb-2">Your workspace</p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {todoStats.active > 0 && (
-                <AppWidget label="Active Tasks" value={todoStats.active}
-                  sub={todoStats.overdue > 0 ? `${todoStats.overdue} overdue` : undefined}
-                  subAlert={todoStats.overdue > 0}
-                  href="/todo" icon={CheckSquare} color="green" />
-              )}
-              {urgentCount > 0 && (
-                <AppWidget label="Urgent (Kanban)" value={urgentCount} href="/kanban" icon={CheckSquare} color="red" />
-              )}
-              {notesCount > 0 && (
-                <AppWidget label="Notes" value={notesCount} href="/notes" icon={FileText} color="purple" />
-              )}
-            </div>
-          </div>
-        )}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-        {/* ── Kanban: On-Going ── */}
-        {ongoingCards.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Kanban — On-Going</p>
-              <Link href="/kanban" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
-                View board <ArrowRight size={11} />
-              </Link>
+            {/* Left: workspace stats + kanban on-going */}
+            <div className="space-y-4">
+              {(todoStats.active > 0 || urgentCount > 0 || notesCount > 0) && (
+                <div>
+                  <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold mb-2">Workspace</p>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {todoStats.active > 0 && (
+                      <AppWidget label="Active Tasks" value={todoStats.active}
+                        sub={todoStats.overdue > 0 ? `${todoStats.overdue} overdue` : undefined}
+                        subAlert={todoStats.overdue > 0}
+                        href="/todo" icon={CheckSquare} color="green" />
+                    )}
+                    {urgentCount > 0 && (
+                      <AppWidget label="Urgent (Kanban)" value={urgentCount} href="/kanban" icon={CheckSquare} color="red" />
+                    )}
+                    {notesCount > 0 && (
+                      <AppWidget label="Notes" value={notesCount} href="/notes" icon={FileText} color="purple" />
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {ongoingCards.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">On-Going</p>
+                    <Link href="/kanban" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
+                      View board <ArrowRight size={11} />
+                    </Link>
+                  </div>
+                  <div className="flex gap-2.5 overflow-x-auto pb-1">
+                    {ongoingCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {ongoingCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
-            </div>
+
+            {/* Right: upcoming events */}
+            {upcomingItems.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Next 7 Days</p>
+                  <Link href="/calendar" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
+                    Calendar <ArrowRight size={11} />
+                  </Link>
+                </div>
+                <div className="space-y-1.5 max-h-72 overflow-y-auto pr-0.5">
+                  {upcomingItems.map((item, i) => <UpcomingRow key={i} item={item} i={i} />)}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -386,46 +421,89 @@ export default function Dashboard() {
               <StatsBar assigned={assigned} reported={reported} />
             </div>
 
-            {/* Tabs */}
-            <div className="flex items-center gap-1 bg-slate-900 rounded-xl p-1 w-fit border border-slate-800">
-              {(["assigned", "reported"] as Tab[]).map(tab => (
-                <button key={tab} onClick={() => { setActiveTab(tab); setStatusFilter("all"); }}
-                  className={clsx("px-4 py-1.5 rounded-lg text-sm font-medium transition-all",
-                    activeTab === tab ? "bg-slate-700 text-slate-100 shadow-sm" : "text-slate-500 hover:text-slate-300")}>
-                  {tab === "assigned" ? "Assigned to me" : "Reported by me"}
-                  <span className="ml-2 text-xs opacity-50">{tab === "assigned" ? assigned.length : reported.length}</span>
+            {/* Search — global across all Jira tickets */}
+            <div className="relative">
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search all Jira tickets…"
+                className="w-full px-3 py-2 pr-8 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+              {search && (
+                <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                  <X size={14} />
                 </button>
-              ))}
+              )}
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap gap-2">
-              <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search issues…"
-                className="flex-1 min-w-[200px] px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-              <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600">
-                <option value="all">All statuses</option>
-                {allStatuses.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-              <select value={sort} onChange={e => setSort(e.target.value as SortKey)}
-                className="px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600">
-                <option value="updated">Sort: Last updated</option>
-                <option value="created">Sort: Created</option>
-                <option value="priority">Sort: Priority</option>
-              </select>
-            </div>
-
-            {filtered.length === 0 ? (
-              <div className="flex flex-col items-center py-16 text-slate-600">
-                <SearchX size={32} className="mb-2" />
-                <p className="text-sm">No issues match your filters</p>
+            {/* Global search results */}
+            {isSearching ? (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+                    Search Results
+                    {!jiraSearchLoading && <span className="ml-1.5 text-slate-600">({jiraSearchResults.length})</span>}
+                  </p>
+                  {jiraSearchLoading && <Loader2 size={12} className="animate-spin text-blue-400" />}
+                </div>
+                {jiraSearchLoading && jiraSearchResults.length === 0 ? (
+                  <div className="flex items-center justify-center py-10 text-slate-600">
+                    <Loader2 size={20} className="animate-spin mr-2" /> Searching…
+                  </div>
+                ) : jiraSearchResults.length === 0 ? (
+                  <div className="flex flex-col items-center py-12 text-slate-600">
+                    <SearchX size={28} className="mb-2" />
+                    <p className="text-sm">No tickets found</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-2 pb-6">
+                    {jiraSearchResults.map(issue => (
+                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} />
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="grid gap-2 pb-6">
-                {filtered.map(issue => (
-                  <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} />
-                ))}
-              </div>
+              <>
+                {/* Tabs + filters */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center gap-1 bg-slate-900 rounded-xl p-1 border border-slate-800">
+                    {(["assigned", "reported"] as Tab[]).map(tab => (
+                      <button key={tab} onClick={() => { setActiveTab(tab); setStatusFilter("all"); }}
+                        className={clsx("px-4 py-1.5 rounded-lg text-sm font-medium transition-all",
+                          activeTab === tab ? "bg-slate-700 text-slate-100 shadow-sm" : "text-slate-500 hover:text-slate-300")}>
+                        {tab === "assigned" ? "Assigned" : "Reported"}
+                        <span className="ml-2 text-xs opacity-50">{tab === "assigned" ? assigned.length : reported.length}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                    className="px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <option value="all">All statuses</option>
+                    {allStatuses.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <select value={sort} onChange={e => setSort(e.target.value as SortKey)}
+                    className="px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <option value="updated">Sort: Last updated</option>
+                    <option value="created">Sort: Created</option>
+                    <option value="priority">Sort: Priority</option>
+                  </select>
+                </div>
+
+                {filtered.length === 0 ? (
+                  <div className="flex flex-col items-center py-16 text-slate-600">
+                    <SearchX size={32} className="mb-2" />
+                    <p className="text-sm">No issues match your filters</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-2 pb-6">
+                    {filtered.map(issue => (
+                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
