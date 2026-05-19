@@ -7,7 +7,7 @@ import {
 } from "@dnd-kit/core";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
-  Loader2, X, GripVertical, Zap, Search,
+  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -15,6 +15,7 @@ import {
   KanbanCard, KanbanState, ColumnId, Priority,
   COLUMN_IDS, COLUMN_META, PRIORITY_META, ACCENT_COLORS, accentBorderClass,
   ChecklistItem, getKanbanState, saveKanbanState, isOverdue, checklistProgress,
+  timeInColumn, getArchivedCards, saveArchivedCards,
 } from "@/lib/kanban";
 
 function newId() { return crypto.randomUUID(); }
@@ -364,9 +365,12 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
             {over ? "Overdue" : new Date(card.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
         )}
-        {card.estimatedHours && <span className="text-[10px] text-slate-600 ml-auto">{card.estimatedHours}h</span>}
+        <span className="flex items-center gap-0.5 text-[10px] text-slate-700 ml-auto" title="Time in column">
+          <Timer size={9} />{timeInColumn(card)}
+        </span>
+        {card.estimatedHours && <span className="text-[10px] text-slate-600">{card.estimatedHours}h</span>}
         {card.assignee && (
-          <span className="w-5 h-5 rounded-full bg-slate-700 border border-slate-600 text-[9px] text-slate-300 flex items-center justify-center font-bold ml-auto" title={card.assignee}>
+          <span className="w-5 h-5 rounded-full bg-slate-700 border border-slate-600 text-[9px] text-slate-300 flex items-center justify-center font-bold" title={card.assignee}>
             {card.assignee.slice(0, 2).toUpperCase()}
           </span>
         )}
@@ -427,9 +431,10 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick }: {
 }
 
 // ── Card detail drawer ────────────────────────────────────
-function CardDetailDrawer({ card, onClose, onUpdate, onDelete, baseUrl }: {
+function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl }: {
   card: KanbanCard; onClose: () => void;
-  onUpdate: (c: KanbanCard) => void; onDelete: (id: string) => void; baseUrl?: string;
+  onUpdate: (c: KanbanCard) => void; onDelete: (id: string) => void;
+  onArchive?: (c: KanbanCard) => void; baseUrl?: string;
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle]     = useState(card.title);
@@ -472,6 +477,9 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, baseUrl }: {
           </div>
           <div className="flex gap-1">
             <button onClick={() => setEditing(v => !v)} className={clsx("px-2.5 py-1 text-xs rounded-lg transition-colors", editing ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-800")}>{editing ? "Done" : "Edit"}</button>
+            {onArchive && card.columnId === "finished" && (
+              <button onClick={() => onArchive(card)} className="px-2.5 py-1 text-xs text-amber-400 hover:bg-slate-800 rounded-lg flex items-center gap-1"><Archive size={11} />Archive</button>
+            )}
             <button onClick={() => { onDelete(card.id); onClose(); }} className="px-2.5 py-1 text-xs text-red-400 hover:bg-slate-800 rounded-lg">Delete</button>
             <button onClick={onClose} className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
           </div>
@@ -549,7 +557,10 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, baseUrl }: {
             <input value={checklistInput} onChange={e => setClInput(e.target.value)} onKeyDown={addItem} placeholder="Add subtask (Enter)…" className="mt-2 w-full bg-transparent border-b border-slate-800 text-sm text-slate-400 placeholder-slate-700 py-1 focus:outline-none focus:border-slate-600" />
           </div>
 
-          <p className="text-xs text-slate-700">Created {new Date(card.createdAt).toLocaleDateString()}</p>
+          <div className="flex gap-4 text-xs text-slate-700">
+            <span>Created {new Date(card.createdAt).toLocaleDateString()}</span>
+            <span className="flex items-center gap-1"><Timer size={10} />In column: {timeInColumn(card)}</span>
+          </div>
         </div>
 
         {editing && (
@@ -557,6 +568,54 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, baseUrl }: {
             <button onClick={save} className="w-full py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">Save Changes</button>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ── Archive drawer ────────────────────────────────────────
+function ArchiveDrawer({ cards, onClose, onUnarchive }: {
+  cards: KanbanCard[]; onClose: () => void; onUnarchive: (c: KanbanCard) => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex">
+      <div className="flex-1 bg-black/50" onClick={onClose} />
+      <div className="w-full max-w-md bg-slate-900 border-l border-slate-800 flex flex-col h-full overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-slate-800 shrink-0">
+          <div className="flex items-center gap-2">
+            <Archive size={16} className="text-amber-400" />
+            <h2 className="text-sm font-semibold text-slate-200">Archived Cards</h2>
+            <span className="text-xs bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded-full">{cards.length}</span>
+          </div>
+          <button onClick={onClose} className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {cards.length === 0 && (
+            <p className="text-xs text-slate-600 text-center py-12">No archived cards yet.<br />Finish cards then archive them to keep the board clean.</p>
+          )}
+          {cards.map(card => {
+            const pm = PRIORITY_META[card.priority];
+            return (
+              <div key={card.id} className="bg-slate-800 border border-slate-700 rounded-xl p-3">
+                {card.jiraKey && <p className="text-[10px] font-mono text-blue-400 font-bold mb-1">{card.jiraKey}</p>}
+                <p className="text-sm text-slate-300 font-medium leading-snug mb-2">{card.title}</p>
+                <div className="flex items-center gap-2">
+                  <span className={clsx("text-[10px] font-medium flex items-center gap-1", pm.color)}>
+                    <span className={clsx("w-1.5 h-1.5 rounded-full", pm.dot)} />{pm.label}
+                  </span>
+                  {card.archivedAt && (
+                    <span className="text-[10px] text-slate-600 ml-auto">
+                      Archived {new Date(card.archivedAt).toLocaleDateString()}
+                    </span>
+                  )}
+                  <button onClick={() => onUnarchive(card)} className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 px-1.5 py-0.5 rounded hover:bg-slate-700 transition-colors">
+                    <RotateCcw size={9} />Restore
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -605,10 +664,34 @@ export default function KanbanPage() {
   const [addTarget, setAddTarget]   = useState<ColumnId | null>(null);
   const [selectedCard, setSelectedCard] = useState<KanbanCard | null>(null);
   const [activeId, setActiveId]     = useState<string | null>(null);
+  const [showArchive, setShowArchive] = useState(false);
+  const [archivedCards, setArchivedCards] = useState<KanbanCard[]>([]);
 
-  useEffect(() => { setBoardState(getKanbanState()); }, []);
+  useEffect(() => {
+    setBoardState(getKanbanState());
+    setArchivedCards(getArchivedCards());
+  }, []);
 
   function persist(state: KanbanState) { setBoardState(state); saveKanbanState(state); }
+
+  function handleArchiveCard(card: KanbanCard) {
+    const next = { ...boardState };
+    for (const col of COLUMN_IDS) next[col] = next[col].filter(c => c.id !== card.id);
+    persist(next);
+    const updated = [...archivedCards, { ...card, archived: true, archivedAt: new Date().toISOString() }];
+    setArchivedCards(updated);
+    saveArchivedCards(updated);
+    setSelectedCard(null);
+  }
+
+  function handleUnarchiveCard(card: KanbanCard) {
+    const restored = { ...card, archived: false, archivedAt: undefined, columnId: "finished" as ColumnId };
+    const next = { ...boardState, finished: [...boardState.finished, restored] };
+    persist(next);
+    const updated = archivedCards.filter(c => c.id !== card.id);
+    setArchivedCards(updated);
+    saveArchivedCards(updated);
+  }
 
   function handleAddCard(card: KanbanCard) {
     persist({ ...boardState, [card.columnId]: [...boardState[card.columnId], card] });
@@ -644,7 +727,11 @@ export default function KanbanPage() {
     const activeIndex = sourceCards.findIndex(c => c.id === cardId);
     if (activeIndex === -1) return;
     const [movedCard] = sourceCards.splice(activeIndex, 1);
-    const updatedCard = { ...movedCard, columnId: destCol };
+    const updatedCard = {
+      ...movedCard,
+      columnId: destCol,
+      ...(sourceCol !== destCol ? { columnEnteredAt: new Date().toISOString() } : {}),
+    };
 
     if (sourceCol === destCol) {
       const overIndex = COLUMN_IDS.includes(overId as ColumnId) ? sourceCards.length : sourceCards.findIndex(c => c.id === overId);
@@ -668,9 +755,14 @@ export default function KanbanPage() {
           <h1 className="text-sm font-semibold text-slate-200">Kanban Board</h1>
           <span className="text-xs bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">{totalCards} card{totalCards !== 1 ? "s" : ""}</span>
         </div>
-        <button onClick={() => setAddTarget("todo")} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus size={13} />Add Card
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowArchive(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors">
+            <Archive size={13} />Archive{archivedCards.length > 0 && <span className="bg-slate-700 text-slate-400 text-[10px] px-1 rounded-full">{archivedCards.length}</span>}
+          </button>
+          <button onClick={() => setAddTarget("todo")} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus size={13} />Add Card
+          </button>
+        </div>
       </header>
 
       {/* Single DndContext wrapping BOTH urgent and main columns */}
@@ -699,7 +791,10 @@ export default function KanbanPage() {
         <AddCardModal targetColumn={addTarget} onClose={() => setAddTarget(null)} onAdd={handleAddCard} creds={creds} />
       )}
       {selectedCard && (
-        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} baseUrl={creds?.baseUrl} />
+        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} />
+      )}
+      {showArchive && (
+        <ArchiveDrawer cards={archivedCards} onClose={() => setShowArchive(false)} onUnarchive={handleUnarchiveCard} />
       )}
     </div>
   );

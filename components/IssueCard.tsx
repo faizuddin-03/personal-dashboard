@@ -9,16 +9,28 @@ interface Props {
   onClick: () => void;
 }
 
+const STALE_DAYS = 7;
+
 export default function IssueCard({ issue, baseUrl, onClick }: Props) {
   const { fields } = issue;
   const statusKey = fields.status.statusCategory.key;
   const isOverdue =
     fields.duedate && new Date(fields.duedate) < new Date() && statusKey !== "done";
+  const isStale = statusKey !== "done" && fields.updated &&
+    (Date.now() - new Date(fields.updated).getTime()) > STALE_DAYS * 86400000;
+  const daysSinceUpdate = fields.updated
+    ? Math.floor((Date.now() - new Date(fields.updated).getTime()) / 86400000)
+    : 0;
 
   return (
     <div
       onClick={onClick}
-      className="bg-slate-900 border border-slate-800 rounded-xl p-4 hover:border-slate-600 hover:bg-slate-800/60 transition-all cursor-pointer group"
+      className={clsx(
+        "border rounded-xl p-4 transition-all cursor-pointer group",
+        isStale
+          ? "bg-amber-950/20 border-amber-900/40 hover:border-amber-700/60 hover:bg-amber-950/30"
+          : "bg-slate-900 border-slate-800 hover:border-slate-600 hover:bg-slate-800/60"
+      )}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
@@ -67,6 +79,15 @@ export default function IssueCard({ issue, baseUrl, onClick }: Props) {
                 <span className="flex items-center gap-1">
                   <Clock size={11} />
                   Due {new Date(fields.duedate).toLocaleDateString()}
+                </span>
+              </>
+            )}
+            {isStale && (
+              <>
+                <span className="text-slate-700">·</span>
+                <span className="flex items-center gap-1 text-amber-500" title={`Last updated ${daysSinceUpdate} days ago`}>
+                  <AlertTriangle size={11} />
+                  Stale ({daysSinceUpdate}d)
                 </span>
               </>
             )}

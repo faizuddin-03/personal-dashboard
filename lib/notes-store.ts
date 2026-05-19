@@ -4,6 +4,7 @@ export interface Note {
   content: string; // rich-text HTML
   color?: string;
   pinned: boolean;
+  tags: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -24,7 +25,8 @@ export function noteColorMeta(color?: string) {
 export function getNotes(): Note[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem("notes") ?? "[]");
+    const raw: Note[] = JSON.parse(localStorage.getItem("notes") ?? "[]");
+    return raw.map(n => ({ ...n, tags: n.tags ?? [] }));
   } catch { return []; }
 }
 

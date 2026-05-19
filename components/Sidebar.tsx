@@ -5,7 +5,7 @@ import { useState, useRef } from "react";
 import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Download, Upload, Kanban,
-  CheckSquare, FileText,
+  CheckSquare, FileText, Search, X,
 } from "lucide-react";
 import { exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import clsx from "clsx";
@@ -24,7 +24,7 @@ const nav = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
   const [expanded, setExpanded]   = useState<string[]>(["eAuto"]);
   const [importMsg, setImportMsg] = useState("");
@@ -55,7 +55,24 @@ export default function Sidebar() {
         <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
           <span className="text-white text-xs font-bold">QA</span>
         </div>
-        <span className="text-slate-100 font-semibold text-sm">QA Dashboard</span>
+        <span className="text-slate-100 font-semibold text-sm flex-1">QA Dashboard</span>
+        {onClose && (
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-300 lg:hidden p-1">
+            <X size={16} />
+          </button>
+        )}
+      </div>
+
+      {/* Search */}
+      <div className="px-2 pt-2">
+        <button
+          onClick={onSearch}
+          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-500 bg-slate-800 border border-slate-700 rounded-lg hover:border-slate-600 hover:text-slate-300 transition-colors"
+        >
+          <Search size={12} />
+          <span className="flex-1 text-left">Search…</span>
+          <span className="text-[10px] font-mono text-slate-700">⌘K</span>
+        </button>
       </div>
 
       {/* Nav */}
@@ -67,6 +84,7 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onClose}
                 className={clsx(
                   "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
                   isActive ? "bg-blue-600/20 text-blue-400 font-medium" : "text-slate-400 hover:text-slate-100 hover:bg-slate-800"
@@ -102,6 +120,7 @@ export default function Sidebar() {
                       <Link
                         key={child.href}
                         href={child.href}
+                        onClick={onClose}
                         className={clsx(
                           "flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-colors",
                           isActive ? "bg-blue-600/20 text-blue-400 font-medium" : "text-slate-500 hover:text-slate-100 hover:bg-slate-800"
@@ -133,6 +152,7 @@ export default function Sidebar() {
         </div>
         <Link
           href="/settings"
+          onClick={onClose}
           className={clsx(
             "w-full flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors",
             pathname === "/settings" ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:text-slate-100 hover:bg-slate-800"

@@ -42,3 +42,55 @@ body {
 .ProseMirror pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 0.4em 0; }
 .ProseMirror pre code { background: none; border: none; padding: 0; }
 .ProseMirror p.is-editor-empty:first-child::before { color: #475569; content: attr(data-placeholder); float: left; height: 0; pointer-events: none; }
+
+/* ── Theme overrides ──────────────────────────────────────────
+   :root prefix raises specificity above Tailwind's single-class
+   selectors so CSS variables win without !important.            */
+
+/* Backgrounds */
+:root .bg-slate-950 { background-color: var(--bg-page,     #020617); }
+:root .bg-slate-900 { background-color: var(--bg-panel,    #0f172a); }
+:root .bg-slate-800 { background-color: var(--bg-elevated, #1e293b); }
+:root .bg-slate-700 { background-color: var(--bg-hover,    #334155); }
+
+:root .hover\:bg-slate-900:hover { background-color: var(--bg-panel,    #0f172a); }
+:root .hover\:bg-slate-800:hover { background-color: var(--bg-elevated, #1e293b); }
+:root .hover\:bg-slate-700:hover { background-color: var(--bg-hover,    #334155); }
+
+/* Opacity variants (backdrop headers, toolbars) */
+:root .bg-slate-950\/80 { background-color: color-mix(in srgb, var(--bg-page,    #020617) 80%, transparent); }
+:root .bg-slate-900\/60 { background-color: color-mix(in srgb, var(--bg-panel,   #0f172a) 60%, transparent); }
+:root .bg-slate-900\/40 { background-color: color-mix(in srgb, var(--bg-panel,   #0f172a) 40%, transparent); }
+:root .bg-slate-800\/60 { background-color: color-mix(in srgb, var(--bg-elevated,#1e293b) 60%, transparent); }
+
+/* Borders */
+:root .border-slate-800 { border-color: var(--border-subtle, #1e293b); }
+:root .border-slate-700 { border-color: var(--border-main,   #334155); }
+:root .border-slate-600 { border-color: var(--border-main,   #475569); }
+
+/* Text */
+:root .text-slate-100 { color: var(--text-brightest, #f8fafc); }
+:root .text-slate-200 { color: var(--text-primary,   #f1f5f9); }
+:root .text-slate-300 { color: var(--text-secondary, #cbd5e1); }
+:root .text-slate-400 { color: var(--text-label,     #94a3b8); }
+:root .text-slate-500 { color: var(--text-muted,     #64748b); }
+:root .text-slate-600 { color: var(--text-faint,     #475569); }
+
+:root .hover\:text-slate-100:hover { color: var(--text-brightest, #f8fafc); }
+:root .hover\:text-slate-200:hover { color: var(--text-primary,   #f1f5f9); }
+:root .hover\:text-slate-300:hover { color: var(--text-secondary, #cbd5e1); }
+
+/* Placeholder text */
+:root .placeholder-slate-500::placeholder { color: var(--text-muted, #64748b); }
+:root .placeholder-slate-600::placeholder { color: var(--text-faint, #475569); }
+
+/* Tiptap editor */
+:root .ProseMirror p,
+:root .ProseMirror ul,
+:root .ProseMirror ol { color: var(--text-secondary, #cbd5e1); }
+:root .ProseMirror h1,
+:root .ProseMirror h2,
+:root .ProseMirror strong { color: var(--text-primary, #f1f5f9); }
+:root .ProseMirror h3 { color: var(--text-secondary, #e2e8f0); }
+:root .ProseMirror blockquote { color: var(--text-label, #94a3b8); }
+:root .ProseMirror p.is-editor-empty:first-child::before { color: var(--text-faint, #475569); }

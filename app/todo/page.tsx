@@ -1,13 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  Plus, X, ChevronDown, ChevronRight, Clock, AlertTriangle, CheckCircle2,
+  Plus, X, ChevronDown, ChevronRight, Clock, AlertTriangle, CheckCircle2, RefreshCw,
 } from "lucide-react";
 import clsx from "clsx";
 import RichTextEditor from "@/components/RichTextEditor";
 import {
   TodoItem, TodoPriority, TODO_PRIORITY_META,
-  getTodos, saveTodos, isTodoOverdue, isDueToday,
+  getTodos, saveTodos, isTodoOverdue, isDueToday, advanceRecurring,
 } from "@/lib/todo";
 
 function newId() { return crypto.randomUUID(); }
@@ -38,6 +38,8 @@ function TodoModal({ item, onClose, onSave }: {
   const [dueDate, setDueDate]   = useState(item?.dueDate ?? "");
   const [labelInput, setLabelInput] = useState("");
   const [labels, setLabels]     = useState<string[]>(item?.labels ?? []);
+  const [recurring, setRecurring] = useState<"" | "daily" | "weekly" | "monthly">(item?.recurring ?? "");
+  const [jiraKey, setJiraKey]   = useState(item?.jiraKey ?? "");
 
   function addLabel(e: React.KeyboardEvent) {
     if (e.key === "Enter" && labelInput.trim()) {
@@ -58,6 +60,8 @@ function TodoModal({ item, onClose, onSave }: {
       labels,
       createdAt: item?.createdAt ?? new Date().toISOString(),
       doneAt: item?.doneAt,
+      recurring: recurring || undefined,
+      jiraKey: jiraKey.trim().toUpperCase() || undefined,
     });
     onClose();
   }
@@ -93,6 +97,21 @@ function TodoModal({ item, onClose, onSave }: {
             <div>
               <label className={lbl}>Due Date</label>
               <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className={inp + " [color-scheme:dark]"} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={lbl}>Recurring</label>
+              <select value={recurring} onChange={e => setRecurring(e.target.value as "" | "daily" | "weekly" | "monthly")} className={sel}>
+                <option value="">None</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            <div>
+              <label className={lbl}>Jira Ticket</label>
+              <input value={jiraKey} onChange={e => setJiraKey(e.target.value)} placeholder="e.g. QA-123" className={inp} />
             </div>
           </div>
           <div>
@@ -157,11 +176,17 @@ function TaskRow({ item, onToggle, onEdit, onDelete }: {
         <span
           onClick={onEdit}
           className={clsx(
-            "flex-1 text-sm cursor-pointer",
+            "flex-1 flex items-center gap-1.5 text-sm cursor-pointer min-w-0",
             item.done ? "text-slate-500 line-through" : "text-slate-200 hover:text-slate-100"
           )}
         >
-          {item.title}
+          <span className="truncate">{item.title}</span>
+          {item.recurring && <RefreshCw size={11} className="shrink-0 text-blue-400 opacity-75" />}
+          {item.jiraKey && (
+            <span className="shrink-0 bg-slate-800 border border-slate-700 text-blue-400 text-[10px] font-mono px-1.5 rounded">
+              {item.jiraKey}
+            </span>
+          )}
         </span>
 
         {/* Meta */}
@@ -253,9 +278,19 @@ export default function TodoPage() {
   }
 
   function handleToggle(id: string) {
-    persist(todos.map(t => t.id === id
-      ? { ...t, done: !t.done, doneAt: !t.done ? new Date().toISOString() : undefined }
-      : t));
+    const target = todos.find(t => t.id === id);
+    if (!target) return;
+    const nowMarkedDone = !target.done;
+    const updated = todos.map(t => t.id === id
+      ? { ...t, done: nowMarkedDone, doneAt: nowMarkedDone ? new Date().toISOString() : undefined }
+      : t);
+    if (nowMarkedDone && target.recurring) {
+      const next = advanceRecurring({ ...target, done: true, doneAt: new Date().toISOString() });
+      // Replace the done item with the fresh recurring copy
+      persist(updated.map(t => t.id === id ? next : t));
+    } else {
+      persist(updated);
+    }
   }
 
   function handleDelete(id: string) { persist(todos.filter(t => t.id !== id)); }

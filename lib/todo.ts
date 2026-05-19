@@ -10,6 +10,30 @@ export interface TodoItem {
   labels: string[];
   createdAt: string;
   doneAt?: string;
+  recurring?: "daily" | "weekly" | "monthly";
+  jiraKey?: string;
+}
+
+export function advanceRecurring(item: TodoItem): TodoItem {
+  let nextDue: string | undefined;
+  const base = item.dueDate ? new Date(item.dueDate) : new Date();
+  const next = new Date(base);
+  if (item.recurring === "daily") {
+    next.setDate(next.getDate() + 1);
+  } else if (item.recurring === "weekly") {
+    next.setDate(next.getDate() + 7);
+  } else if (item.recurring === "monthly") {
+    next.setDate(next.getDate() + 30);
+  }
+  nextDue = next.toISOString().slice(0, 10);
+  return {
+    ...item,
+    id: crypto.randomUUID(),
+    done: false,
+    doneAt: undefined,
+    dueDate: nextDue,
+    createdAt: new Date().toISOString(),
+  };
 }
 
 export const TODO_PRIORITY_META: Record<TodoPriority, { label: string; color: string; dot: string }> = {
