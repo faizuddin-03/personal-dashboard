@@ -1,16 +1,14 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import { RefreshCw, Loader2, SearchX } from "lucide-react";
 import {
-  Settings, RefreshCw, Loader2, SearchX, LogOut,
-} from "lucide-react";
-import {
-  JiraCredentials, JiraIssue, JiraSearchResult,
-  getStoredCredentials, clearCredentials,
+  JiraIssue, JiraSearchResult,
 } from "@/lib/jira";
-import SettingsModal from "@/components/SettingsModal";
+import { useApp } from "@/components/AppShell";
 import IssueCard from "@/components/IssueCard";
 import IssueDrawer from "@/components/IssueDrawer";
 import StatsBar from "@/components/StatsBar";
+import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 
 type Tab = "assigned" | "reported";
 type SortKey = "updated" | "created" | "priority";
@@ -20,8 +18,7 @@ const PRIORITY_ORDER: Record<string, number> = {
 };
 
 export default function Dashboard() {
-  const [creds, setCreds] = useState<JiraCredentials | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
+  const { creds, openSettings } = useApp();
   const [assigned, setAssigned] = useState<JiraIssue[]>([]);
   const [reported, setReported] = useState<JiraIssue[]>([]);
   const [loading, setLoading] = useState(false);
@@ -31,15 +28,9 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("updated");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    const stored = getStoredCredentials();
-    setCreds(stored);
-    setHydrated(true);
-  }, []);
-
-  const fetchIssues = useCallback(async (c: JiraCredentials) => {
+  const fetchIssues = useCallback(async () => {
+    if (!creds) return;
     setLoading(true);
     setError("");
     try {
@@ -48,7 +39,7 @@ export default function Dashboard() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            ...c,
+            ...creds,
             jql: "assignee = currentUser() ORDER BY updated DESC",
             maxResults: 100,
           }),
@@ -57,7 +48,7 @@ export default function Dashboard() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            ...c,
+            ...creds,
             jql: "reporter = currentUser() AND assignee != currentUser() ORDER BY updated DESC",
             maxResults: 100,
           }),
@@ -79,18 +70,15 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [creds]);
 
   useEffect(() => {
-    if (creds) fetchIssues(creds);
+    if (creds) fetchIssues();
+    else {
+      setAssigned([]);
+      setReported([]);
+    }
   }, [creds, fetchIssues]);
-
-  function handleLogout() {
-    clearCredentials();
-    setCreds(null);
-    setAssigned([]);
-    setReported([]);
-  }
 
   const activeIssues = activeTab === "assigned" ? assigned : reported;
 
@@ -117,65 +105,47 @@ export default function Dashboard() {
       return new Date(dateB).getTime() - new Date(dateA).getTime();
     });
 
-  if (!hydrated) return null;
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Top nav */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-xs font-bold">QA</span>
-            </div>
-            <h1 className="text-base font-semibold text-gray-900">QA Dashboard</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            {creds && (
-              <>
-                <span className="text-xs text-gray-500 hidden sm:block">{creds.email}</span>
-                <button
-                  onClick={() => creds && fetchIssues(creds)}
-                  disabled={loading}
-                  className="p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-                  title="Refresh"
-                >
-                  <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-100 transition-colors"
-                  title="Disconnect"
-                >
-                  <LogOut size={16} />
-                </button>
-              </>
-            )}
+    <div className="flex flex-col min-h-full">
+      {/* Page header */}
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
+        <h1 className="text-sm font-semibold text-slate-200">Jira Dashboard</h1>
+        <div className="flex items-center gap-2">
+          {creds && (
+            <span className="text-xs text-slate-500 hidden sm:block">{creds.email}</span>
+          )}
+          {creds && (
             <button
-              onClick={() => setShowSettings(true)}
-              className="p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-              title="Settings"
+              onClick={fetchIssues}
+              disabled={loading}
+              className="p-2 text-slate-500 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition-colors"
+              title="Refresh"
             >
-              <Settings size={16} />
+              <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
             </button>
-          </div>
+          )}
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+      <div className="flex-1 px-6 py-5 space-y-5">
+        {/* Token expiry banner */}
+        {creds?.tokenExpiry && (
+          <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />
+        )}
+
         {/* Not connected */}
         {!creds && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4">
-              <span className="text-blue-600 text-2xl font-bold">J</span>
+            <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-4 border border-blue-600/30">
+              <span className="text-blue-400 text-2xl font-bold">J</span>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Connect to Jira</h2>
-            <p className="text-gray-500 text-sm mb-6 max-w-sm">
+            <h2 className="text-xl font-semibold text-slate-100 mb-2">Connect to Jira</h2>
+            <p className="text-slate-500 text-sm mb-6 max-w-sm">
               Enter your Jira URL, email, and API token to start tracking your QA work.
             </p>
             <button
-              onClick={() => setShowSettings(true)}
-              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              onClick={openSettings}
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
             >
               Connect Jira
             </button>
@@ -183,7 +153,7 @@ export default function Dashboard() {
         )}
 
         {/* Loading */}
-        {creds && loading && (assigned.length === 0 && reported.length === 0) && (
+        {creds && loading && assigned.length === 0 && reported.length === 0 && (
           <div className="flex items-center justify-center py-24">
             <Loader2 size={28} className="animate-spin text-blue-500" />
           </div>
@@ -191,30 +161,30 @@ export default function Dashboard() {
 
         {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
+          <div className="bg-red-950/50 border border-red-800 rounded-xl p-4 text-red-400 text-sm">
             {error}
           </div>
         )}
 
-        {/* Dashboard */}
+        {/* Dashboard content */}
         {creds && (assigned.length > 0 || reported.length > 0) && (
           <>
             <StatsBar assigned={assigned} reported={reported} />
 
             {/* Tabs */}
-            <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+            <div className="flex items-center gap-1 bg-slate-900 rounded-xl p-1 w-fit border border-slate-800">
               {(["assigned", "reported"] as Tab[]).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => { setActiveTab(tab); setStatusFilter("all"); }}
                   className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     activeTab === tab
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "bg-slate-700 text-slate-100 shadow-sm"
+                      : "text-slate-500 hover:text-slate-300"
                   }`}
                 >
                   {tab === "assigned" ? "Assigned to me" : "Reported by me"}
-                  <span className="ml-2 text-xs opacity-60">
+                  <span className="ml-2 text-xs opacity-50">
                     {tab === "assigned" ? assigned.length : reported.length}
                   </span>
                 </button>
@@ -228,12 +198,12 @@ export default function Dashboard() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search issues…"
-                className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="flex-1 min-w-[200px] px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600"
               >
                 <option value="all">All statuses</option>
                 {allStatuses.map((s) => (
@@ -243,7 +213,7 @@ export default function Dashboard() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as SortKey)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600"
               >
                 <option value="updated">Sort: Last updated</option>
                 <option value="created">Sort: Created</option>
@@ -253,12 +223,12 @@ export default function Dashboard() {
 
             {/* Issue list */}
             {filtered.length === 0 ? (
-              <div className="flex flex-col items-center py-16 text-gray-400">
+              <div className="flex flex-col items-center py-16 text-slate-600">
                 <SearchX size={32} className="mb-2" />
                 <p className="text-sm">No issues match your filters</p>
               </div>
             ) : (
-              <div className="grid gap-2">
+              <div className="grid gap-2 pb-6">
                 {filtered.map((issue) => (
                   <IssueCard
                     key={issue.id}
@@ -271,26 +241,14 @@ export default function Dashboard() {
             )}
           </>
         )}
-      </main>
-
-      {/* Modals */}
-      {showSettings && (
-        <SettingsModal
-          initial={creds}
-          onClose={() => setShowSettings(false)}
-          onSaved={(c) => {
-            setCreds(c);
-            setShowSettings(false);
-          }}
-        />
-      )}
+      </div>
 
       {selectedKey && creds && (
         <IssueDrawer
           issueKey={selectedKey}
           creds={creds}
           onClose={() => setSelectedKey(null)}
-          onUpdated={() => fetchIssues(creds)}
+          onUpdated={fetchIssues}
         />
       )}
     </div>

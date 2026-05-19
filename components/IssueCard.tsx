@@ -18,12 +18,12 @@ export default function IssueCard({ issue, baseUrl, onClick }: Props) {
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group"
+      className="bg-slate-900 border border-slate-800 rounded-xl p-4 hover:border-slate-600 hover:bg-slate-800/60 transition-all cursor-pointer group"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-mono text-blue-600 font-semibold shrink-0">
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span className="text-xs font-mono text-blue-400 font-semibold shrink-0">
               {issue.key}
             </span>
             <span
@@ -35,29 +35,27 @@ export default function IssueCard({ issue, baseUrl, onClick }: Props) {
               {fields.status.name}
             </span>
             {fields.priority && (
-              <span
-                className={clsx("text-xs font-medium", priorityColor(fields.priority.name))}
-              >
+              <span className={clsx("text-xs font-medium", priorityColor(fields.priority.name))}>
                 {fields.priority.name}
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-900 font-medium line-clamp-2 leading-snug">
+          <p className="text-sm text-slate-200 font-medium line-clamp-2 leading-snug">
             {fields.summary}
           </p>
-          <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+          <div className="flex items-center gap-3 mt-2 text-xs text-slate-500 flex-wrap">
             <span className="flex items-center gap-1">
-              <span className="inline-block w-4 h-4 rounded bg-gray-100 text-center leading-4 text-gray-600 text-[10px] font-bold">
+              <span className="inline-block w-4 h-4 rounded bg-slate-700 text-center leading-4 text-slate-400 text-[10px] font-bold">
                 {fields.issuetype.name[0]}
               </span>
               {fields.issuetype.name}
             </span>
-            <span className="text-gray-300">·</span>
+            <span className="text-slate-700">·</span>
             <span>{fields.project.name}</span>
             {isOverdue && (
               <>
-                <span className="text-gray-300">·</span>
-                <span className="flex items-center gap-1 text-red-500">
+                <span className="text-slate-700">·</span>
+                <span className="flex items-center gap-1 text-red-400">
                   <AlertTriangle size={11} />
                   Overdue
                 </span>
@@ -65,7 +63,7 @@ export default function IssueCard({ issue, baseUrl, onClick }: Props) {
             )}
             {fields.duedate && !isOverdue && statusKey !== "done" && (
               <>
-                <span className="text-gray-300">·</span>
+                <span className="text-slate-700">·</span>
                 <span className="flex items-center gap-1">
                   <Clock size={11} />
                   Due {new Date(fields.duedate).toLocaleDateString()}
@@ -76,7 +74,7 @@ export default function IssueCard({ issue, baseUrl, onClick }: Props) {
           {fields.labels.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {fields.labels.slice(0, 3).map((l) => (
-                <span key={l} className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                <span key={l} className="text-[10px] bg-slate-800 text-slate-500 border border-slate-700 px-1.5 py-0.5 rounded">
                   {l}
                 </span>
               ))}
@@ -88,9 +86,9 @@ export default function IssueCard({ issue, baseUrl, onClick }: Props) {
           target="_blank"
           rel="noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="text-gray-300 hover:text-blue-500 transition-colors shrink-0 opacity-0 group-hover:opacity-100"
+          className="text-slate-700 hover:text-blue-400 transition-colors shrink-0 opacity-0 group-hover:opacity-100"
         >
-          <ExternalLink size={15} />
+          <ExternalLink size={14} />
         </a>
       </div>
     </div>
