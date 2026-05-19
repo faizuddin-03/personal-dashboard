@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   }
 
   const token = Buffer.from(`${email}:${apiToken}`).toString("base64");
-  const url = `${baseUrl.replace(/\/$/, "")}/rest/api/3/search`;
+  const url = `${baseUrl.replace(/\/$/, "")}/rest/api/3/search/jql`;
 
   const body = {
     jql,
