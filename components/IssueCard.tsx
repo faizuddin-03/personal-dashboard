@@ -7,11 +7,12 @@ interface Props {
   issue: JiraIssue;
   baseUrl: string;
   onClick: () => void;
+  onParentClick?: (key: string) => void;
 }
 
 const STALE_DAYS = 7;
 
-export default function IssueCard({ issue, baseUrl, onClick }: Props) {
+export default function IssueCard({ issue, baseUrl, onClick, onParentClick }: Props) {
   const { fields } = issue;
   const statusKey = fields.status.statusCategory.key;
   const isOverdue =
@@ -36,16 +37,13 @@ export default function IssueCard({ issue, baseUrl, onClick }: Props) {
         <div className="flex-1 min-w-0">
           {fields.parent && (
             <div className="flex items-center gap-1 mb-1">
-              <a
-                href={`${baseUrl}/browse/${fields.parent.key}`}
-                target="_blank"
-                rel="noreferrer"
-                onClick={e => e.stopPropagation()}
+              <button
+                onClick={e => { e.stopPropagation(); onParentClick ? onParentClick(fields.parent!.key) : window.open(`${baseUrl}/browse/${fields.parent!.key}`, "_blank"); }}
                 className="text-[10px] font-mono text-slate-500 hover:text-blue-400 transition-colors"
                 title={fields.parent.fields.summary}
               >
                 {fields.parent.key}
-              </a>
+              </button>
               <span className="text-[10px] text-slate-700">›</span>
               <span className="text-[10px] font-mono text-blue-400 font-semibold">{issue.key}</span>
             </div>

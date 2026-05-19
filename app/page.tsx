@@ -461,7 +461,7 @@ export default function Dashboard() {
                 ) : (
                   <div className="grid gap-2 pb-6">
                     {jiraSearchResults.map(issue => (
-                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} />
+                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
                     ))}
                   </div>
                 )}
@@ -501,7 +501,7 @@ export default function Dashboard() {
                 ) : (
                   <div className="grid gap-2 pb-6">
                     {filtered.map(issue => (
-                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} />
+                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
                     ))}
                   </div>
                 )}
