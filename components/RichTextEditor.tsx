@@ -2,15 +2,25 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Color, TextStyle } from "@tiptap/extension-text-style";
+import FontFamily from "@tiptap/extension-font-family";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 import { useState, useCallback } from "react";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, Quote, Heading1, Heading2, Heading3,
-  Palette, Highlighter, RemoveFormatting,
+  Palette, Highlighter, RemoveFormatting, ChevronDown,
 } from "lucide-react";
 import clsx from "clsx";
+
+const FONTS = [
+  { label: "Default",      value: "" },
+  { label: "Sans-serif",   value: "Arial, sans-serif" },
+  { label: "Serif",        value: "Georgia, serif" },
+  { label: "Mono",         value: "'Courier New', monospace" },
+  { label: "Inter",        value: "Inter, sans-serif" },
+  { label: "Playfair",     value: "'Playfair Display', serif" },
+];
 
 const TEXT_COLORS = [
   { name: "Default", color: null },
@@ -46,12 +56,14 @@ export default function RichTextEditor({
 }: Props) {
   const [showColors, setShowColors] = useState(false);
   const [showHighlights, setShowHighlights] = useState(false);
+  const [showFonts, setShowFonts] = useState(false);
 
   const editor = useEditor({
     extensions: [
       StarterKit,
       TextStyle,
       Color,
+      FontFamily,
       Highlight.configure({ multicolor: true }),
       Underline,
     ],
@@ -65,6 +77,7 @@ export default function RichTextEditor({
   const closeDropdowns = useCallback(() => {
     setShowColors(false);
     setShowHighlights(false);
+    setShowFonts(false);
   }, []);
 
   if (!editor) return null;
@@ -73,6 +86,50 @@ export default function RichTextEditor({
     <div className={clsx("border border-slate-700 rounded-xl overflow-hidden bg-slate-800", className)} onClick={closeDropdowns}>
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-slate-700 bg-slate-900/60">
+        {/* Font family */}
+        <div className="relative">
+          <button
+            type="button"
+            onMouseDown={e => e.preventDefault()}
+            onClick={e => { e.stopPropagation(); setShowFonts(v => !v); setShowColors(false); setShowHighlights(false); }}
+            title="Font family"
+            className={clsx(
+              "flex items-center gap-1 px-2 py-1.5 rounded text-xs transition-colors",
+              showFonts ? "bg-blue-600/40 text-blue-300" : "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
+            )}
+          >
+            <span className="text-[11px] font-medium w-14 truncate text-left">
+              {FONTS.find(f => f.value && editor.isActive("textStyle", { fontFamily: f.value }))?.label ?? "Font"}
+            </span>
+            <ChevronDown size={11} />
+          </button>
+          {showFonts && (
+            <div className="absolute top-full left-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 py-1 min-w-[140px]" onClick={e => e.stopPropagation()}>
+              {FONTS.map(f => (
+                <button
+                  key={f.label}
+                  type="button"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => {
+                    if (f.value) editor.chain().focus().setFontFamily(f.value).run();
+                    else editor.chain().focus().unsetFontFamily().run();
+                    setShowFonts(false);
+                  }}
+                  className={clsx(
+                    "w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-slate-700",
+                    editor.isActive("textStyle", { fontFamily: f.value }) && f.value
+                      ? "text-blue-300"
+                      : "text-slate-300"
+                  )}
+                  style={{ fontFamily: f.value || "inherit" }}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <Sep />
         {/* Headings */}
         <TBtn active={editor.isActive("heading", { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} title="Heading 1"><Heading1 size={14} /></TBtn>
         <TBtn active={editor.isActive("heading", { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} title="Heading 2"><Heading2 size={14} /></TBtn>
