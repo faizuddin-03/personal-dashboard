@@ -11,6 +11,7 @@ import {
   BackupSettings, getBackupSettings, saveBackupSettings,
   nextBackupDate, DEFAULT_BACKUP_SETTINGS,
 } from "@/lib/kanban";
+import { THEMES, DEFAULT_THEME, getTheme, applyTheme } from "@/lib/themes";
 
 export default function SettingsPage() {
   const { creds, setCreds } = useApp();
@@ -26,6 +27,9 @@ export default function SettingsPage() {
   const [jiraSaved, setJiraSaved] = useState(false);
   const [disconnectStep, setDisconnectStep] = useState<0 | 1 | 2>(0);
 
+  // Theme
+  const [themeId, setThemeId] = useState(DEFAULT_THEME);
+
   // Backup fields
   const [backup, setBackup] = useState<BackupSettings>(DEFAULT_BACKUP_SETTINGS);
   const [importMsg, setImportMsg] = useState("");
@@ -33,7 +37,15 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setBackup(getBackupSettings());
+    setThemeId(localStorage.getItem("qa-theme") ?? DEFAULT_THEME);
   }, []);
+
+  function handleThemeChange(id: string) {
+    const theme = getTheme(id);
+    applyTheme(theme);
+    localStorage.setItem("qa-theme", id);
+    setThemeId(id);
+  }
 
   // Update jira fields when creds change (e.g. on first load)
   useEffect(() => {
@@ -254,6 +266,53 @@ export default function SettingsPage() {
             <p className="text-xs text-slate-600 mt-2">
               Exports all localStorage data (Jira credentials, Kanban board, backup settings) as a single JSON file.
             </p>
+          </div>
+        </Section>
+
+        {/* ── Appearance ── */}
+        <Section title="Appearance" description="Choose a colour theme for the dashboard.">
+          <div className="space-y-4">
+            {(["dark", "light"] as const).map(type => (
+              <div key={type}>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  {type === "dark" ? "Dark themes" : "Light themes — soft pastel"}
+                </p>
+                <div className="grid grid-cols-5 gap-2">
+                  {THEMES.filter(t => t.type === type).map(theme => {
+                    const active = themeId === theme.id;
+                    return (
+                      <button
+                        key={theme.id}
+                        onClick={() => handleThemeChange(theme.id)}
+                        title={theme.name}
+                        className={`group relative rounded-xl overflow-hidden border-2 transition-all ${
+                          active ? "border-blue-500 scale-105" : "border-transparent hover:border-slate-600"
+                        }`}
+                      >
+                        {/* Colour swatch */}
+                        <div className="h-12" style={{ background: theme.preview.page }}>
+                          <div className="h-6" style={{ background: theme.preview.panel }} />
+                        </div>
+                        {/* Label */}
+                        <div className="px-1.5 py-1 text-center" style={{ background: theme.preview.panel }}>
+                          <p className="text-[10px] font-semibold truncate" style={{ color: theme.preview.text }}>
+                            {theme.name}
+                          </p>
+                        </div>
+                        {/* Active tick */}
+                        {active && (
+                          <div className="absolute top-1 right-1 w-3.5 h-3.5 bg-blue-500 rounded-full flex items-center justify-center">
+                            <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                              <path d="M1.5 4L3 5.5L6.5 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </Section>
 

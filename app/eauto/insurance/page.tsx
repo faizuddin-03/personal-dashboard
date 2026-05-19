@@ -26,6 +26,9 @@ interface InsuranceRow {
 }
 
 type ViewMode = "table" | "matrix";
+type AllowFilter = "all" | "yes" | "no" | "refer";
+type SortDir = "asc" | "desc";
+interface SortState { key: keyof InsuranceRow | null; dir: SortDir }
 
 const COLUMNS: { key: keyof InsuranceRow; label: string }[] = [
   { key: "vehicleNumber",  label: "Vehicle No."    },
@@ -118,6 +121,11 @@ export default function InsurancePage() {
   // Display filter — applied to results after run (does not affect what script checks)
   const [shownInsurers, setShownInsurers] = useState<Set<string>>(new Set(ALL_INSURERS));
 
+  // Search / Allow Purchase filter / Sort
+  const [search, setSearch]               = useState("");
+  const [allowFilter, setAllowFilter]     = useState<AllowFilter>("all");
+  const [sort, setSort]                   = useState<SortState>({ key: null, dir: "asc" });
+
   const vehicles = parseVehicles(vehicleInput);
 
   function toggleInsurer(ins: string) {
@@ -167,6 +175,46 @@ export default function InsurancePage() {
   // Filtered results for display
   const filteredRows = rows.filter(r => !r.insurer || shownInsurers.has(r.insurer));
 
+  // Search + allowPurchase filter
+  const searchLower = search.trim().toLowerCase();
+  const afterSearch = filteredRows.filter(r => {
+    if (searchLower) {
+      const hit = [r.vehicleNumber, r.make, r.model, r.insurer]
+        .some(f => f.toLowerCase().includes(searchLower));
+      if (!hit) return false;
+    }
+    if (allowFilter !== "all") {
+      const v = r.allowPurchase.trim().toLowerCase();
+      if (allowFilter === "yes"   && !["yes","y","true","1"].includes(v))          return false;
+      if (allowFilter === "no"    && !["no","n","false","0"].includes(v))           return false;
+      if (allowFilter === "refer" && !v.startsWith("refer"))                        return false;
+    }
+    return true;
+  });
+
+  // Sort
+  const displayRows = sort.key
+    ? [...afterSearch].sort((a, b) => {
+        const av = a[sort.key!] ?? "";
+        const bv = b[sort.key!] ?? "";
+        const cmp = av.localeCompare(bv, undefined, { numeric: true, sensitivity: "base" });
+        return sort.dir === "asc" ? cmp : -cmp;
+      })
+    : afterSearch;
+
+  function toggleSort(key: keyof InsuranceRow) {
+    setSort(prev =>
+      prev.key === key
+        ? { key, dir: prev.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: "asc" }
+    );
+  }
+
+  // Summary stats over displayRows
+  const statsYes   = displayRows.filter(r => ["yes","y","true","1"].includes(r.allowPurchase.trim().toLowerCase())).length;
+  const statsNo    = displayRows.filter(r => ["no","n","false","0"].includes(r.allowPurchase.trim().toLowerCase())).length;
+  const statsRefer = displayRows.filter(r => r.allowPurchase.trim().toLowerCase().startsWith("refer")).length;
+
   const matrix         = buildMatrix(filteredRows);
   const matrixVehicles = Array.from(matrix.keys());
   const matrixInsurers = Array.from(new Set(filteredRows.map(r => r.insurer).filter(Boolean)));
@@ -197,7 +245,7 @@ export default function InsurancePage() {
                 <LayoutGrid size={12} /> Matrix
               </button>
             </div>
-            <button onClick={() => exportToExcel(filteredRows)}
+            <button onClick={() => exportToExcel(displayRows)}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg transition-colors">
               <Download size={12} /> Export Excel
             </button>
@@ -388,21 +436,81 @@ export default function InsurancePage() {
           </div>
         )}
 
+        {/* ── Search + Allow Purchase filter ── */}
+        {filteredRows.length > 0 && (
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Search */}
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search vehicle, make, model, insurer…"
+              className="flex-1 min-w-[200px] bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            {/* Allow Purchase pills */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-slate-600 mr-1 whitespace-nowrap">Allow:</span>
+              {(["all", "yes", "no", "refer"] as AllowFilter[]).map(f => (
+                <button key={f} onClick={() => setAllowFilter(f)}
+                  className={clsx(
+                    "px-3 py-1.5 rounded-full text-xs font-medium border transition-all capitalize",
+                    allowFilter === f
+                      ? f === "yes"   ? "bg-green-900/60 border-green-700 text-green-300"
+                        : f === "no"  ? "bg-red-900/60 border-red-700 text-red-300"
+                        : f === "refer" ? "bg-yellow-900/60 border-yellow-700 text-yellow-300"
+                        : "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                  )}>
+                  {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Summary stats ── */}
+        {displayRows.length > 0 && view === "table" && (
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-slate-500">{displayRows.length} row{displayRows.length !== 1 ? "s" : ""}</span>
+            <span className="text-slate-700">·</span>
+            <span className="px-2 py-0.5 rounded-full bg-green-900/60 text-green-300 border border-green-800 font-semibold">
+              Yes {statsYes}
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-red-900/60 text-red-300 border border-red-800 font-semibold">
+              No {statsNo}
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-yellow-900/60 text-yellow-300 border border-yellow-800 font-semibold">
+              Refer {statsRefer}
+            </span>
+          </div>
+        )}
+
         {/* ── Table view ── */}
-        {filteredRows.length > 0 && view === "table" && (
+        {displayRows.length > 0 && view === "table" && (
           <div className="overflow-x-auto rounded-2xl border border-slate-800">
             <table className="w-full text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-800 bg-slate-900">
-                  {COLUMNS.map(col => (
-                    <th key={col.key} className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                      {col.label}
-                    </th>
-                  ))}
+                  {COLUMNS.map(col => {
+                    const active = sort.key === col.key;
+                    return (
+                      <th key={col.key}
+                        onClick={() => toggleSort(col.key)}
+                        className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-slate-300 transition-colors">
+                        <span className="inline-flex items-center gap-1">
+                          {col.label}
+                          {active
+                            ? <span className="text-blue-400">{sort.dir === "asc" ? "▲" : "▼"}</span>
+                            : <span className="text-slate-700 opacity-0 group-hover:opacity-100">▲</span>
+                          }
+                        </span>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.map((row, idx) => (
+                {displayRows.map((row, idx) => (
                   <tr key={idx} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
                     <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{row.vehicleNumber || "—"}</td>
                     <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.make || "—"}</td>
@@ -420,9 +528,6 @@ export default function InsurancePage() {
                 ))}
               </tbody>
             </table>
-            <div className="px-4 py-2 bg-slate-900/60 border-t border-slate-800">
-              <p className="text-xs text-slate-600">{filteredRows.length} row{filteredRows.length !== 1 ? "s" : ""}</p>
-            </div>
           </div>
         )}
 

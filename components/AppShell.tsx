@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import { JiraCredentials, getStoredCredentials } from "@/lib/jira";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
+import { loadAndApplyTheme } from "@/lib/themes";
 
 interface AppCtx {
   creds: JiraCredentials | null;
@@ -30,6 +31,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setCreds(getStoredCredentials());
+    loadAndApplyTheme();
     setHydrated(true);
   }, []);
 
