@@ -1,8 +1,8 @@
 "use client";
 import { useEditor, EditorContent } from "@tiptap/react";
-import { Extension } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { Color, TextStyle } from "@tiptap/extension-text-style";
+import FontFamily from "@tiptap/extension-font-family";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 import { useState, useCallback } from "react";
@@ -12,41 +12,6 @@ import {
   Palette, Highlighter, RemoveFormatting, ChevronDown,
 } from "lucide-react";
 import clsx from "clsx";
-
-// Inline font-family extension — avoids external package resolution issues
-declare module "@tiptap/core" {
-  interface Commands<ReturnType> {
-    fontFamily: {
-      setFontFamily: (family: string) => ReturnType;
-      unsetFontFamily: () => ReturnType;
-    };
-  }
-}
-
-const FontFamily = Extension.create({
-  name: "fontFamily",
-  addOptions() { return { types: ["textStyle"] }; },
-  addGlobalAttributes() {
-    return [{
-      types: this.options.types,
-      attributes: {
-        fontFamily: {
-          default: null,
-          parseHTML: el => (el as HTMLElement).style.fontFamily?.replace(/['"]/g, "") || null,
-          renderHTML: attrs => attrs.fontFamily ? { style: `font-family: ${attrs.fontFamily}` } : {},
-        },
-      },
-    }];
-  },
-  addCommands() {
-    return {
-      setFontFamily: (fontFamily: string) => ({ chain }) =>
-        chain().setMark("textStyle", { fontFamily }).run(),
-      unsetFontFamily: () => ({ chain }) =>
-        chain().setMark("textStyle", { fontFamily: null }).run(),
-    };
-  },
-});
 
 const FONTS = [
   { label: "Default",    value: "" },

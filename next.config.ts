@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ["@tiptap/extension-font-family"],
 };
 
 export default nextConfig;
