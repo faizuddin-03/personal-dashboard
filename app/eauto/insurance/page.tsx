@@ -288,34 +288,10 @@ export default function InsurancePage() {
           <Shield size={14} className="text-slate-500" />
           <h1 className="text-sm font-semibold text-slate-200">Insurance Checker</h1>
         </div>
-        {rows.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap">
-            {savedAt && (
-              <span className="text-[11px] text-slate-600 hidden sm:block">
-                Saved {new Date(savedAt).toLocaleString()}
-              </span>
-            )}
-            <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
-              <button onClick={() => setView("table")}
-                className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
-                  view === "table" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
-                <TableProperties size={12} /> Table
-              </button>
-              <button onClick={() => setView("matrix")}
-                className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
-                  view === "matrix" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
-                <LayoutGrid size={12} /> Matrix
-              </button>
-            </div>
-            <button onClick={() => exportToExcel(displayRows)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg transition-colors">
-              <Download size={12} /> Export Excel
-            </button>
-            <button onClick={handleClearResults} title="Clear saved results"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-lg transition-colors border border-slate-800">
-              <Trash2 size={12} /> Clear
-            </button>
-          </div>
+        {rows.length > 0 && savedAt && (
+          <span className="text-[11px] text-slate-600 hidden sm:block">
+            Saved {new Date(savedAt).toLocaleString()}
+          </span>
         )}
       </header>
 
@@ -506,6 +482,32 @@ export default function InsurancePage() {
             <Shield size={28} className="mx-auto mb-2 opacity-40" />
             <p className="text-sm">No results returned.</p>
             <p className="text-xs mt-1">Check that the script ran correctly and output-results.xlsx was created.</p>
+          </div>
+        )}
+
+        {/* ── Results toolbar: view toggle + export + clear ── */}
+        {rows.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+              <button onClick={() => setView("table")}
+                className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
+                  view === "table" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+                <TableProperties size={12} /> Table
+              </button>
+              <button onClick={() => setView("matrix")}
+                className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
+                  view === "matrix" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+                <LayoutGrid size={12} /> Matrix
+              </button>
+            </div>
+            <button onClick={() => exportToExcel(displayRows)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg transition-colors">
+              <Download size={12} /> Export Excel
+            </button>
+            <button onClick={handleClearResults} title="Clear saved results"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-lg transition-colors border border-slate-800">
+              <Trash2 size={12} /> Clear
+            </button>
           </div>
         )}
 
