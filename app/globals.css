@@ -103,3 +103,104 @@ body {
 :root .ProseMirror h3 { color: var(--text-secondary, #e2e8f0); }
 :root .ProseMirror blockquote { color: var(--text-label, #94a3b8); }
 :root .ProseMirror p.is-editor-empty:first-child::before { color: var(--text-faint, #475569); }
+
+/* ── Light theme accent overrides ─────────────────────────
+   Selector specificity (0,2,0) matches the :root .class rules
+   above; placing these later in the file ensures they win when
+   the light theme is active.
+   Mapping: dark-xxx/opacity  →  light pastel equivalent        */
+
+/* ─ Backgrounds ─ */
+[data-theme-type="light"] .bg-red-950\/20,
+[data-theme-type="light"] .bg-red-950\/30,
+[data-theme-type="light"] .bg-red-900\/20  { background-color: #fff1f2; }
+[data-theme-type="light"] .bg-red-950\/40,
+[data-theme-type="light"] .bg-red-900\/30,
+[data-theme-type="light"] .bg-red-950\/50  { background-color: #fee2e2; }
+[data-theme-type="light"] .bg-red-950\/60,
+[data-theme-type="light"] .bg-red-950\/80,
+[data-theme-type="light"] .bg-red-900\/40  { background-color: #fecaca; }
+
+[data-theme-type="light"] .bg-blue-950\/30,
+[data-theme-type="light"] .bg-blue-900\/40 { background-color: #eff6ff; }
+[data-theme-type="light"] .bg-blue-950\/40 { background-color: #dbeafe; }
+[data-theme-type="light"] .bg-blue-950\/60 { background-color: #bfdbfe; }
+
+[data-theme-type="light"] .bg-green-950\/40 { background-color: #dcfce7; }
+[data-theme-type="light"] .bg-green-950\/60 { background-color: #bbf7d0; }
+
+[data-theme-type="light"] .bg-purple-950\/40,
+[data-theme-type="light"] .bg-purple-950\/60 { background-color: #f3e8ff; }
+
+[data-theme-type="light"] .bg-amber-950\/20,
+[data-theme-type="light"] .bg-amber-950\/30 { background-color: #fffbeb; }
+[data-theme-type="light"] .bg-amber-950\/40 { background-color: #fef3c7; }
+[data-theme-type="light"] .bg-amber-950\/60 { background-color: #fde68a; }
+
+[data-theme-type="light"] .bg-yellow-950\/40,
+[data-theme-type="light"] .bg-yellow-900\/60 { background-color: #fef9c3; }
+[data-theme-type="light"] .bg-yellow-950\/60 { background-color: #fef08a; }
+
+[data-theme-type="light"] .bg-sky-950\/50 { background-color: #e0f2fe; }
+
+[data-theme-type="light"] .bg-green-900\/60 { background-color: #bbf7d0; }
+[data-theme-type="light"] .bg-red-900\/60   { background-color: #fecaca; }
+
+/* ─ Borders ─ */
+[data-theme-type="light"] .border-red-800,
+[data-theme-type="light"] .border-red-800\/60 { border-color: #fca5a5; }
+[data-theme-type="light"] .border-red-800\/50,
+[data-theme-type="light"] .border-red-800\/40 { border-color: #fca5a5; }
+[data-theme-type="light"] .border-red-900\/40,
+[data-theme-type="light"] .border-red-900\/50 { border-color: #fca5a5; }
+
+[data-theme-type="light"] .border-blue-800\/50,
+[data-theme-type="light"] .border-blue-800\/60 { border-color: #93c5fd; }
+[data-theme-type="light"] .border-blue-900\/40 { border-color: #93c5fd; }
+
+[data-theme-type="light"] .border-green-800,
+[data-theme-type="light"] .border-green-800\/50,
+[data-theme-type="light"] .border-green-800\/60 { border-color: #86efac; }
+
+[data-theme-type="light"] .border-purple-800\/50,
+[data-theme-type="light"] .border-purple-800\/60 { border-color: #d8b4fe; }
+
+[data-theme-type="light"] .border-amber-800\/30,
+[data-theme-type="light"] .border-amber-800\/50 { border-color: #fcd34d; }
+[data-theme-type="light"] .border-amber-900\/40 { border-color: #fcd34d; }
+
+[data-theme-type="light"] .border-sky-700\/50,
+[data-theme-type="light"] .border-sky-700\/60  { border-color: #7dd3fc; }
+
+[data-theme-type="light"] .border-yellow-800\/50 { border-color: #fde047; }
+
+/* ─ Text — lighten on dark → darken on light ─ */
+[data-theme-type="light"] .text-red-400    { color: #dc2626; }
+[data-theme-type="light"] .text-red-300    { color: #b91c1c; }
+[data-theme-type="light"] .text-red-500    { color: #dc2626; }
+[data-theme-type="light"] .text-blue-400   { color: #2563eb; }
+[data-theme-type="light"] .text-blue-300   { color: #1d4ed8; }
+[data-theme-type="light"] .text-green-400  { color: #16a34a; }
+[data-theme-type="light"] .text-green-300  { color: #15803d; }
+[data-theme-type="light"] .text-purple-400 { color: #7e22ce; }
+[data-theme-type="light"] .text-purple-300 { color: #6b21a8; }
+[data-theme-type="light"] .text-amber-400  { color: #b45309; }
+[data-theme-type="light"] .text-amber-300  { color: #92400e; }
+[data-theme-type="light"] .text-yellow-400 { color: #a16207; }
+[data-theme-type="light"] .text-yellow-300 { color: #854d0e; }
+[data-theme-type="light"] .text-sky-300    { color: #0369a1; }
+[data-theme-type="light"] .text-sky-400    { color: #0284c7; }
+[data-theme-type="light"] .text-orange-400 { color: #c2410c; }
+[data-theme-type="light"] .text-pink-400   { color: #be185d; }
+[data-theme-type="light"] .text-teal-400   { color: #0f766e; }
+
+/* ─ Hover text on light ─ */
+[data-theme-type="light"] .hover\:text-red-300:hover    { color: #b91c1c; }
+[data-theme-type="light"] .hover\:text-amber-300:hover  { color: #92400e; }
+
+/* ─ Kanban accent left-borders on light (keep vivid) ─ */
+[data-theme-type="light"] .border-l-blue-500   { border-left-color: #2563eb; }
+[data-theme-type="light"] .border-l-purple-500 { border-left-color: #7e22ce; }
+[data-theme-type="light"] .border-l-green-500  { border-left-color: #16a34a; }
+[data-theme-type="light"] .border-l-yellow-500 { border-left-color: #ca8a04; }
+[data-theme-type="light"] .border-l-pink-500   { border-left-color: #be185d; }
