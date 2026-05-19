@@ -22,7 +22,8 @@ function writeInputExcel(vehicles: string[], icNumber: string, postcode: string,
   const ws = XLSX.utils.aoa_to_sheet(rows);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Vehicles");
-  XLSX.writeFile(wb, INPUT_XLSX);
+  const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
+  fs.writeFileSync(INPUT_XLSX, buffer);
 }
 
 // ── Parse output-results.xlsx written by the Playwright script ──
@@ -35,7 +36,7 @@ interface InsuranceRow {
 
 function readOutputExcel(): InsuranceRow[] {
   if (!fs.existsSync(OUTPUT_XLSX)) return [];
-  const wb = XLSX.readFile(OUTPUT_XLSX);
+  const wb = XLSX.read(fs.readFileSync(OUTPUT_XLSX));
   const ws = wb.Sheets["Summary"];
   if (!ws) return [];
   const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
