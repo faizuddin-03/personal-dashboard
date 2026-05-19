@@ -275,6 +275,8 @@ export default function InsurancePage() {
   const matrixInsurers = Array.from(new Set(filteredRows.map(r => r.insurer).filter(Boolean)));
   const foundInsurers  = Array.from(new Set(rows.map(r => r.insurer).filter(Boolean)));
 
+  const [activeTab, setActiveTab] = useState<"check" | "tab2">("check");
+
   return (
     <div className="flex flex-col min-h-full">
 
@@ -317,7 +319,39 @@ export default function InsurancePage() {
         )}
       </header>
 
-      <div className="px-6 py-5 space-y-5">
+      {/* Tabs */}
+      <div className="flex items-center gap-1 px-6 pt-4 border-b border-slate-800">
+        <button
+          onClick={() => setActiveTab("check")}
+          className={clsx(
+            "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+            activeTab === "check"
+              ? "border-blue-500 text-blue-400"
+              : "border-transparent text-slate-500 hover:text-slate-300"
+          )}
+        >
+          Check VN Insurance Stats
+        </button>
+        <button
+          onClick={() => setActiveTab("tab2")}
+          className={clsx(
+            "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+            activeTab === "tab2"
+              ? "border-blue-500 text-blue-400"
+              : "border-transparent text-slate-500 hover:text-slate-300"
+          )}
+        >
+          Tab 2
+        </button>
+      </div>
+
+      {activeTab === "tab2" && (
+        <div className="flex-1 flex items-center justify-center text-slate-600 text-sm py-24">
+          Coming soon
+        </div>
+      )}
+
+      {activeTab === "check" && <div className="px-6 py-5 space-y-5">
 
         {/* ── Input panel ── */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
@@ -677,7 +711,7 @@ export default function InsurancePage() {
             </div>
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 }
