@@ -14,6 +14,7 @@ function createNote(): Note {
     content: "",
     color: "",
     pinned: false,
+    tags: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -39,6 +40,13 @@ function NoteListItem({ note, active, onClick }: { note: Note; active: boolean; 
         </p>
       </div>
       <p className="text-xs text-slate-600 line-clamp-2 leading-snug">{snippet || "No content"}</p>
+      {note.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1">
+          {note.tags.map(tag => (
+            <span key={tag} className="bg-slate-700 text-slate-300 text-[10px] rounded-full px-2 py-0.5">{tag}</span>
+          ))}
+        </div>
+      )}
       <p className="text-[10px] text-slate-700 mt-1">{new Date(note.updatedAt).toLocaleDateString()}</p>
     </button>
   );
@@ -51,7 +59,29 @@ function NoteEditor({ note, onChange, onDelete }: {
   onDelete: () => void;
 }) {
   const [showPalette, setShowPalette] = useState(false);
+  const [tagInput, setTagInput] = useState("");
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function addTag(raw: string) {
+    const tag = raw.trim().toLowerCase();
+    if (!tag) return;
+    const tags = note.tags ?? [];
+    if (!tags.includes(tag)) {
+      onChange({ ...note, tags: [...tags, tag], updatedAt: new Date().toISOString() });
+    }
+    setTagInput("");
+  }
+
+  function removeTag(tag: string) {
+    onChange({ ...note, tags: (note.tags ?? []).filter(t => t !== tag), updatedAt: new Date().toISOString() });
+  }
+
+  function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addTag(tagInput);
+    }
+  }
 
   function update(partial: Partial<Note>) {
     const updated = { ...note, ...partial, updatedAt: new Date().toISOString() };
@@ -127,6 +157,30 @@ function NoteEditor({ note, onChange, onDelete }: {
         />
       </div>
 
+      {/* Tags */}
+      <div className="px-6 pb-3 shrink-0">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {(note.tags ?? []).map(tag => (
+            <span key={tag} className="flex items-center gap-1 bg-slate-700 text-slate-300 text-[10px] rounded-full px-2 py-0.5">
+              {tag}
+              <button
+                onClick={() => removeTag(tag)}
+                className="text-slate-500 hover:text-slate-200 leading-none"
+                aria-label={`Remove tag ${tag}`}
+              >×</button>
+            </span>
+          ))}
+          <input
+            value={tagInput}
+            onChange={e => setTagInput(e.target.value)}
+            onKeyDown={handleTagKeyDown}
+            onBlur={() => addTag(tagInput)}
+            placeholder="Add tag…"
+            className="bg-transparent text-xs text-slate-400 placeholder-slate-700 focus:outline-none min-w-[80px] flex-1"
+          />
+        </div>
+      </div>
+
       {/* Rich text content */}
       <div className="flex-1 overflow-y-auto px-6 pb-6">
         <RichTextEditor
@@ -146,6 +200,7 @@ export default function NotesPage() {
   const [notes, setNotes]       = useState<Note[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch]     = useState("");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   useEffect(() => {
     const loaded = getNotes();
@@ -172,8 +227,11 @@ export default function NotesPage() {
     setSelectedId(remaining[0]?.id ?? null);
   }
 
+  const allTags = Array.from(new Set(notes.flatMap(n => n.tags ?? []))).sort();
+
   const filteredNotes = notes
     .filter(n => !search || n.title.toLowerCase().includes(search.toLowerCase()) || stripHtml(n.content).toLowerCase().includes(search.toLowerCase()))
+    .filter(n => !activeTag || (n.tags ?? []).includes(activeTag))
     .sort((a, b) => {
       if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
@@ -193,6 +251,31 @@ export default function NotesPage() {
               <Plus size={16} />
             </button>
           </div>
+          {allTags.length > 0 && (
+            <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-none">
+              <button
+                onClick={() => setActiveTag(null)}
+                className={clsx(
+                  "shrink-0 text-[10px] rounded-full px-2 py-0.5 border transition-colors",
+                  activeTag === null
+                    ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                    : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
+                )}
+              >All</button>
+              {allTags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                  className={clsx(
+                    "shrink-0 text-[10px] rounded-full px-2 py-0.5 border transition-colors",
+                    activeTag === tag
+                      ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                      : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
+                  )}
+                >{tag}</button>
+              ))}
+            </div>
+          )}
           <div className="relative">
             <Search size={13} className="absolute left-2.5 top-2 text-slate-600" />
             <input
