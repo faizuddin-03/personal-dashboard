@@ -2,14 +2,13 @@
 import { useState } from "react";
 import {
   Shield, Play, Download, Loader2,
-  TableProperties, LayoutGrid, AlertCircle,
+  TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import clsx from "clsx";
 
 // ── Types ─────────────────────────────────────────────────────
-const INSURERS = ["Zurich", "Takaful", "Lonpac", "Chubb", "Tokio Marine"] as const;
-type Insurer = (typeof INSURERS)[number];
+const ALL_INSURERS = ["Zurich", "Takaful", "Lonpac", "Chubb", "Tokio Marine"] as const;
 
 interface InsuranceRow {
   vehicleNumber:  string;
@@ -96,18 +95,30 @@ function AllowBadge({ value }: { value: string }) {
 
 // ── Main page ─────────────────────────────────────────────────
 export default function InsurancePage() {
-  const [vehicleInput, setVehicleInput]   = useState("");
-  const [selectedInsurers, setSelectedInsurers] = useState<Set<Insurer>>(new Set(INSURERS));
-  const [rows, setRows]                   = useState<InsuranceRow[]>([]);
-  const [loading, setLoading]             = useState(false);
-  const [error, setError]                 = useState("");
-  const [view, setView]                   = useState<ViewMode>("table");
-  const [hasRun, setHasRun]               = useState(false);
+  // Input
+  const [vehicleInput, setVehicleInput]     = useState("");
+  const [icNumber, setIcNumber]             = useState("");
+  const [postcode, setPostcode]             = useState("");
+  const [vehicleCategory, setVehicleCategory] = useState<"individual" | "company">("individual");
+  const [showAdvanced, setShowAdvanced]     = useState(false);
+
+  // Run state
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState("");
+  const [hasRun, setHasRun]     = useState(false);
+  const [runLog, setRunLog]     = useState("");
+
+  // Results
+  const [rows, setRows]         = useState<InsuranceRow[]>([]);
+  const [view, setView]         = useState<ViewMode>("table");
+
+  // Display filter — applied to results after run (does not affect what script checks)
+  const [shownInsurers, setShownInsurers] = useState<Set<string>>(new Set(ALL_INSURERS));
 
   const vehicles = parseVehicles(vehicleInput);
 
-  function toggleInsurer(ins: Insurer) {
-    setSelectedInsurers(prev => {
+  function toggleInsurer(ins: string) {
+    setShownInsurers(prev => {
       const next = new Set(prev);
       if (next.has(ins)) { if (next.size > 1) next.delete(ins); }
       else next.add(ins);
@@ -119,17 +130,28 @@ export default function InsurancePage() {
     if (!vehicles.length) return;
     setLoading(true);
     setError("");
+    setRunLog("");
     setRows([]);
     setHasRun(true);
     try {
       const res = await fetch("/api/insurance/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ vehicles, insurers: Array.from(selectedInsurers) }),
+        body: JSON.stringify({
+          vehicles,
+          icNumber:        icNumber.trim()  || undefined,
+          postcode:        postcode.trim()  || undefined,
+          vehicleCategory: vehicleCategory,
+        }),
       });
-      const data = await res.json() as { rows?: InsuranceRow[]; error?: string };
+      const data = await res.json() as { rows?: InsuranceRow[]; error?: string; log?: string };
       if (!res.ok) throw new Error(data.error ?? "Request failed");
       setRows(data.rows ?? []);
+      if (data.log) setRunLog(data.log);
+
+      // Auto-expand insurer filter to all found insurers
+      const found = new Set(data.rows?.map(r => r.insurer).filter(Boolean) ?? []);
+      setShownInsurers(found.size ? found : new Set(ALL_INSURERS));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -137,9 +159,13 @@ export default function InsurancePage() {
     }
   }
 
-  const matrix         = buildMatrix(rows);
+  // Filtered results for display
+  const filteredRows = rows.filter(r => !r.insurer || shownInsurers.has(r.insurer));
+
+  const matrix         = buildMatrix(filteredRows);
   const matrixVehicles = Array.from(matrix.keys());
-  const matrixInsurers = Array.from(new Set(rows.map(r => r.insurer).filter(Boolean)));
+  const matrixInsurers = Array.from(new Set(filteredRows.map(r => r.insurer).filter(Boolean)));
+  const foundInsurers  = Array.from(new Set(rows.map(r => r.insurer).filter(Boolean)));
 
   return (
     <div className="flex flex-col min-h-full">
@@ -150,7 +176,7 @@ export default function InsurancePage() {
           <span className="text-xs text-slate-600">eAuto</span>
           <span className="text-slate-700">/</span>
           <Shield size={14} className="text-slate-500" />
-          <h1 className="text-sm font-semibold text-slate-200">Insurance</h1>
+          <h1 className="text-sm font-semibold text-slate-200">Insurance Checker</h1>
         </div>
         {rows.length > 0 && (
           <div className="flex items-center gap-2">
@@ -166,7 +192,7 @@ export default function InsurancePage() {
                 <LayoutGrid size={12} /> Matrix
               </button>
             </div>
-            <button onClick={() => exportToExcel(rows)}
+            <button onClick={() => exportToExcel(filteredRows)}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg transition-colors">
               <Download size={12} /> Export Excel
             </button>
@@ -183,7 +209,7 @@ export default function InsurancePage() {
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1.5">
               Vehicle Numbers
-              <span className="text-slate-600 font-normal ml-1">— one per line, or comma-separated</span>
+              <span className="text-slate-600 font-normal ml-1">— one per line or comma-separated</span>
             </label>
             <textarea
               value={vehicleInput}
@@ -197,15 +223,115 @@ export default function InsurancePage() {
             )}
           </div>
 
-          {/* Insurer filter */}
+          {/* Advanced options toggle */}
+          <button
+            onClick={() => setShowAdvanced(v => !v)}
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            {showAdvanced ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+            Advanced options (IC Number, Postcode, Category)
+          </button>
+
+          {showAdvanced && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">
+                  IC Number
+                  <span className="text-slate-700 ml-1">default: 020406081081</span>
+                </label>
+                <input
+                  value={icNumber}
+                  onChange={e => setIcNumber(e.target.value)}
+                  placeholder="020406081081"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">
+                  Postcode
+                  <span className="text-slate-700 ml-1">default: 31150</span>
+                </label>
+                <input
+                  value={postcode}
+                  onChange={e => setPostcode(e.target.value)}
+                  placeholder="31150"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">Vehicle Category</label>
+                <div className="flex gap-2">
+                  {(["individual", "company"] as const).map(cat => (
+                    <button key={cat} onClick={() => setVehicleCategory(cat)}
+                      className={clsx("flex-1 py-2 rounded-lg text-xs font-medium border transition-all capitalize",
+                        vehicleCategory === cat
+                          ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                          : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300")}>
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Run */}
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              onClick={handleRun}
+              disabled={loading || vehicles.length === 0}
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
+            >
+              {loading ? <Loader2 size={15} className="animate-spin" /> : <Play size={15} />}
+              {loading ? "Running…" : "Run Check"}
+            </button>
+            {loading && (
+              <p className="text-xs text-slate-500 animate-pulse">
+                Checking {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""} — please wait, this may take several minutes…
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="flex items-start gap-3 bg-red-950/50 border border-red-800 rounded-xl p-4 text-red-400 text-sm">
+            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="font-medium mb-1">Error</p>
+              <pre className="text-xs text-red-500 whitespace-pre-wrap break-words font-mono">{error}</pre>
+            </div>
+          </div>
+        )}
+
+        {/* Playwright log (collapsed by default) */}
+        {runLog && rows.length > 0 && (
+          <details className="bg-slate-900 border border-slate-800 rounded-xl">
+            <summary className="px-4 py-2.5 text-xs text-slate-500 cursor-pointer select-none hover:text-slate-300">
+              Show run log
+            </summary>
+            <pre className="px-4 pb-3 text-[11px] text-slate-500 font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">{runLog}</pre>
+          </details>
+        )}
+
+        {/* No results */}
+        {hasRun && !loading && !error && rows.length === 0 && (
+          <div className="text-center py-12 text-slate-600">
+            <Shield size={28} className="mx-auto mb-2 opacity-40" />
+            <p className="text-sm">No results returned.</p>
+            <p className="text-xs mt-1">Check that the script ran correctly and output-results.xlsx was created.</p>
+          </div>
+        )}
+
+        {/* ── Insurer display filter (shown after results) ── */}
+        {rows.length > 0 && (
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-2">
-              Insurers to check
-              <span className="text-slate-600 font-normal ml-1">— deselect to skip</span>
-            </label>
+            <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold mb-2">
+              Filter display by insurer
+            </p>
             <div className="flex flex-wrap gap-2">
-              {INSURERS.map(ins => {
-                const active = selectedInsurers.has(ins);
+              {foundInsurers.map(ins => {
+                const active = shownInsurers.has(ins);
                 return (
                   <button key={ins} onClick={() => toggleInsurer(ins)}
                     className={clsx(
@@ -220,53 +346,10 @@ export default function InsurancePage() {
               })}
             </div>
           </div>
-
-          {/* Run button */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRun}
-              disabled={loading || vehicles.length === 0}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
-            >
-              {loading ? <Loader2 size={15} className="animate-spin" /> : <Play size={15} />}
-              {loading ? "Running…" : "Run Check"}
-            </button>
-            {loading && (
-              <p className="text-xs text-slate-500 animate-pulse">
-                Checking {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""} — this may take a few minutes…
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div className="flex items-start gap-3 bg-red-950/50 border border-red-800 rounded-xl p-4 text-red-400 text-sm">
-            <AlertCircle size={16} className="shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium mb-1">Error running script</p>
-              <p className="text-xs text-red-500 font-mono whitespace-pre-wrap">{error}</p>
-              {error.includes("INSURANCE_SCRIPT_PATH") && (
-                <p className="text-xs text-red-400 mt-2">
-                  Create a <code className="bg-red-900/40 px-1 rounded">.env.local</code> file in your project root and add:<br />
-                  <code className="bg-red-900/40 px-1 rounded">INSURANCE_SCRIPT_PATH=C:/path/to/your/check_insurance.js</code>
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* No results after run */}
-        {hasRun && !loading && !error && rows.length === 0 && (
-          <div className="text-center py-12 text-slate-600">
-            <Shield size={28} className="mx-auto mb-2 opacity-40" />
-            <p className="text-sm">Script ran but returned no rows.</p>
-            <p className="text-xs mt-1">Check that your script prints CSV/TSV with a header row to stdout.</p>
-          </div>
         )}
 
         {/* ── Table view ── */}
-        {rows.length > 0 && view === "table" && (
+        {filteredRows.length > 0 && view === "table" && (
           <div className="overflow-x-auto rounded-2xl border border-slate-800">
             <table className="w-full text-xs border-collapse">
               <thead>
@@ -279,7 +362,7 @@ export default function InsurancePage() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row, idx) => (
+                {filteredRows.map((row, idx) => (
                   <tr key={idx} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
                     <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{row.vehicleNumber || "—"}</td>
                     <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.make || "—"}</td>
@@ -298,13 +381,13 @@ export default function InsurancePage() {
               </tbody>
             </table>
             <div className="px-4 py-2 bg-slate-900/60 border-t border-slate-800">
-              <p className="text-xs text-slate-600">{rows.length} row{rows.length !== 1 ? "s" : ""}</p>
+              <p className="text-xs text-slate-600">{filteredRows.length} row{filteredRows.length !== 1 ? "s" : ""}</p>
             </div>
           </div>
         )}
 
         {/* ── Matrix view ── */}
-        {rows.length > 0 && view === "matrix" && (
+        {filteredRows.length > 0 && view === "matrix" && (
           <div className="space-y-6">
             {/* Eligibility grid */}
             <div className="overflow-x-auto rounded-2xl border border-slate-800">
@@ -335,11 +418,11 @@ export default function InsurancePage() {
               </table>
             </div>
 
-            {/* Per-vehicle breakdown */}
+            {/* Per-vehicle detail cards */}
             <div className="space-y-3">
               <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Vehicle Details</p>
               {matrixVehicles.map(vn => {
-                const vRows = rows.filter(r => r.vehicleNumber.toUpperCase() === vn);
+                const vRows = filteredRows.filter(r => r.vehicleNumber.toUpperCase() === vn);
                 const first = vRows[0];
                 if (!first) return null;
                 return (

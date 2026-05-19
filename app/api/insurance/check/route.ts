@@ -1,93 +1,119 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as XLSX from "xlsx";
+import * as path from "node:path";
+import * as fs from "node:fs";
 
 // ── Configuration ─────────────────────────────────────────────
-// Set INSURANCE_SCRIPT_PATH in your .env.local file, e.g.:
-//   INSURANCE_SCRIPT_PATH=C:/Users/you/scripts/check_insurance.js
-// The script is called as:
-//   node <script_path> "VHC1,VHC2" ["Zurich,Takaful"]
-// It must print TSV or CSV rows to stdout (first row = headers).
-const SCRIPT_PATH = process.env.INSURANCE_SCRIPT_PATH ?? "";
-const TIMEOUT_MS  = 10 * 60 * 1000; // 10 minutes
+// By default the script lives at scripts/eauto-insurance/ inside the project.
+// Override with INSURANCE_SCRIPT_DIR in .env.local if it's somewhere else:
+//   INSURANCE_SCRIPT_DIR=C:/Users/you/scripts/eauto-insurance
+const SCRIPT_DIR  = process.env.INSURANCE_SCRIPT_DIR
+  ?? path.join(/*turbopackIgnore: true*/ process.cwd(), "scripts", "eauto-insurance");
+const INPUT_XLSX  = path.join(SCRIPT_DIR, "input-vehicles.xlsx");
+const OUTPUT_XLSX = path.join(SCRIPT_DIR, "output-results.xlsx");
+const TIMEOUT_MS  = 30 * 60 * 1000; // 30 minutes
 
-// ── Header aliases ────────────────────────────────────────────
-const ALIASES: Record<string, string> = {
-  vehicleNumber:  "vehicle number,vehicle no,vehicle no.,plate,reg no,registration",
-  make:           "make",
-  model:          "model",
-  mfgYear:        "mfg year,year,manufacture year,manufacturing year",
-  engineCC:       "engine cc,cc,engine",
-  transmission:   "transmission,trans,gearbox",
-  variant:        "variant",
-  insurer:        "insurer,insurance,insurance company",
-  coverType:      "cover type,coverage,cover",
-  allowPurchase:  "allow purchase,allow,eligible,purchasable",
-  referRiskCode:  "refer risk code,refer risk,risk code,risk",
-  totalPrice:     "total price,price,premium,total",
-};
-
-function matchHeader(raw: string): string | null {
-  const norm = raw.trim().toLowerCase();
-  for (const [field, list] of Object.entries(ALIASES)) {
-    if (list.split(",").includes(norm)) return field;
-  }
-  return null;
+// ── Write input-vehicles.xlsx for the Playwright script to read ──
+function writeInputExcel(vehicles: string[], icNumber: string, postcode: string, vehicleCategory: string) {
+  const rows = [
+    ["Vehicle Number", "IC Number", "Postcode", "Vehicle Category"],
+    ...vehicles.map(vn => [vn, icNumber, postcode, vehicleCategory]),
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Vehicles");
+  XLSX.writeFile(wb, INPUT_XLSX);
 }
 
-function parseOutput(text: string): Record<string, string>[] {
-  const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
-  if (lines.length < 2) return [];
-  const sep = lines[0].includes("\t") ? "\t" : ",";
-  const headers = lines[0].split(sep).map(h => h.trim().replace(/^"|"$/g, ""));
-  const fieldMap = headers.map(matchHeader);
-  return lines.slice(1).map(line => {
-    const cells = line.split(sep).map(c => c.trim().replace(/^"|"$/g, ""));
-    const row: Record<string, string> = {};
-    fieldMap.forEach((field, i) => { if (field) row[field] = cells[i] ?? ""; });
-    return row;
-  });
+// ── Parse output-results.xlsx written by the Playwright script ──
+interface InsuranceRow {
+  vehicleNumber: string; make: string; model: string; mfgYear: string;
+  engineCC: string; transmission: string; variant: string;
+  insurer: string; coverType: string; allowPurchase: string;
+  referRiskCode: string; totalPrice: string;
+}
+
+function readOutputExcel(): InsuranceRow[] {
+  if (!fs.existsSync(OUTPUT_XLSX)) return [];
+  const wb = XLSX.readFile(OUTPUT_XLSX);
+  const ws = wb.Sheets["Summary"];
+  if (!ws) return [];
+  const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
+  return raw.map(r => ({
+    vehicleNumber:  String(r["Vehicle Number"]  ?? ""),
+    make:           String(r["Make"]            ?? ""),
+    model:          String(r["Model"]           ?? ""),
+    mfgYear:        String(r["Mfg Year"]        ?? ""),
+    engineCC:       String(r["Engine CC"]       ?? ""),
+    transmission:   String(r["Transmission"]    ?? ""),
+    variant:        String(r["Variant"]         ?? ""),
+    insurer:        String(r["Insurer"]         ?? ""),
+    coverType:      String(r["Cover Type"]      ?? ""),
+    allowPurchase:  String(r["Allow Purchase"]  ?? ""),
+    referRiskCode:  String(r["Refer Risk Code"] ?? ""),
+    totalPrice:     String(r["Total Price"]     ?? ""),
+  }));
 }
 
 // ── Route handler ─────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  if (!SCRIPT_PATH) {
-    return NextResponse.json({
-      error: "Script path not configured. Add INSURANCE_SCRIPT_PATH=/path/to/your/script.js to your .env.local file.",
-    }, { status: 500 });
-  }
+  const body = await req.json() as {
+    vehicles: string[];
+    icNumber?: string;
+    postcode?: string;
+    vehicleCategory?: string;
+  };
 
-  const body = await req.json() as { vehicles: string[]; insurers: string[] };
-  const { vehicles = [], insurers = [] } = body;
+  const { vehicles = [], icNumber = "", postcode = "", vehicleCategory = "individual" } = body;
 
   if (!vehicles.length) {
     return NextResponse.json({ error: "No vehicle numbers provided." }, { status: 400 });
   }
 
-  const scriptArgs = [vehicles.join(",")];
-  if (insurers.length) scriptArgs.push(insurers.join(","));
-
-  // Dynamic import defers child_process resolution to runtime, avoiding
-  // Turbopack's static analysis treating script arguments as module paths.
-  const { spawn } = await import("node:child_process");
-
-  const result = await new Promise<{ stdout: string; stderr: string; code: number }>((resolve) => {
-    const child = spawn("node", [SCRIPT_PATH, ...scriptArgs]);
-    let stdout = "";
-    let stderr = "";
-    const timer = setTimeout(() => {
-      child.kill();
-      resolve({ stdout, stderr: "Script timed out after 10 minutes.", code: 1 });
-    }, TIMEOUT_MS);
-
-    child.stdout.on("data", (d: Buffer) => { stdout += d.toString(); });
-    child.stderr.on("data", (d: Buffer) => { stderr += d.toString(); });
-    child.on("close",  (code) => { clearTimeout(timer); resolve({ stdout, stderr, code: code ?? 1 }); });
-    child.on("error",  (err)  => { clearTimeout(timer); resolve({ stdout: "", stderr: err.message, code: 1 }); });
-  });
-
-  if (result.code !== 0) {
-    return NextResponse.json({ error: result.stderr || "Script exited with an error." }, { status: 500 });
+  if (!fs.existsSync(SCRIPT_DIR)) {
+    return NextResponse.json({
+      error: `Script directory not found: ${SCRIPT_DIR}\n\nEither run "npm install" inside scripts/eauto-insurance/, or set INSURANCE_SCRIPT_DIR in .env.local to point to your script folder.`,
+    }, { status: 500 });
   }
 
-  const rows = parseOutput(result.stdout);
-  return NextResponse.json({ rows });
+  const nodeModulesExist = fs.existsSync(path.join(SCRIPT_DIR, "node_modules"));
+  if (!nodeModulesExist) {
+    return NextResponse.json({
+      error: `Playwright not installed. Run this command first:\n\n  cd scripts/eauto-insurance && npm install`,
+    }, { status: 500 });
+  }
+
+  // Write input Excel
+  writeInputExcel(vehicles, icNumber, postcode, vehicleCategory);
+
+  // Remove stale output
+  if (fs.existsSync(OUTPUT_XLSX)) fs.unlinkSync(OUTPUT_XLSX);
+
+  // Run Playwright test (dynamic import avoids Turbopack static analysis)
+  const { spawn } = await import("node:child_process");
+
+  const result = await new Promise<{ code: number; output: string }>((resolve) => {
+    const child = spawn("npx", ["playwright", "test", "--project=insurance-checker"], {
+      cwd: SCRIPT_DIR,
+      shell: true,
+    });
+    let output = "";
+    const timer = setTimeout(() => {
+      child.kill();
+      resolve({ code: 1, output: "Timed out after 30 minutes." });
+    }, TIMEOUT_MS);
+
+    child.stdout.on("data", (d: Buffer) => { output += d.toString(); });
+    child.stderr.on("data", (d: Buffer) => { output += d.toString(); });
+    child.on("close",  (code) => { clearTimeout(timer); resolve({ code: code ?? 1, output }); });
+    child.on("error",  (err)  => { clearTimeout(timer); resolve({ code: 1, output: err.message }); });
+  });
+
+  // If test failed AND no output file was produced, surface the error
+  if (result.code !== 0 && !fs.existsSync(OUTPUT_XLSX)) {
+    return NextResponse.json({ error: result.output || "Playwright test failed with no output." }, { status: 500 });
+  }
+
+  const rows = readOutputExcel();
+  return NextResponse.json({ rows, log: result.output });
 }
