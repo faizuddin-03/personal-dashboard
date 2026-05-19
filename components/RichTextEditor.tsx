@@ -1,8 +1,8 @@
 "use client";
 import { useEditor, EditorContent } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { Color, TextStyle } from "@tiptap/extension-text-style";
-import FontFamily from "@tiptap/extension-font-family";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 import { useState, useCallback } from "react";
@@ -13,13 +13,48 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 
+// Inline font-family extension — avoids external package resolution issues
+declare module "@tiptap/core" {
+  interface Commands<ReturnType> {
+    fontFamily: {
+      setFontFamily: (family: string) => ReturnType;
+      unsetFontFamily: () => ReturnType;
+    };
+  }
+}
+
+const FontFamily = Extension.create({
+  name: "fontFamily",
+  addOptions() { return { types: ["textStyle"] }; },
+  addGlobalAttributes() {
+    return [{
+      types: this.options.types,
+      attributes: {
+        fontFamily: {
+          default: null,
+          parseHTML: el => (el as HTMLElement).style.fontFamily?.replace(/['"]/g, "") || null,
+          renderHTML: attrs => attrs.fontFamily ? { style: `font-family: ${attrs.fontFamily}` } : {},
+        },
+      },
+    }];
+  },
+  addCommands() {
+    return {
+      setFontFamily: (fontFamily: string) => ({ chain }) =>
+        chain().setMark("textStyle", { fontFamily }).run(),
+      unsetFontFamily: () => ({ chain }) =>
+        chain().setMark("textStyle", { fontFamily: null }).run(),
+    };
+  },
+});
+
 const FONTS = [
-  { label: "Default",      value: "" },
-  { label: "Sans-serif",   value: "Arial, sans-serif" },
-  { label: "Serif",        value: "Georgia, serif" },
-  { label: "Mono",         value: "'Courier New', monospace" },
-  { label: "Inter",        value: "Inter, sans-serif" },
-  { label: "Playfair",     value: "'Playfair Display', serif" },
+  { label: "Default",    value: "" },
+  { label: "Sans-serif", value: "Arial, sans-serif" },
+  { label: "Serif",      value: "Georgia, serif" },
+  { label: "Mono",       value: "Courier New, monospace" },
+  { label: "Inter",      value: "Inter, sans-serif" },
+  { label: "Playfair",   value: "Playfair Display, serif" },
 ];
 
 const TEXT_COLORS = [
@@ -82,10 +117,16 @@ export default function RichTextEditor({
 
   if (!editor) return null;
 
+  // Detect active font from current textStyle attributes
+  const activeFontAttrs = editor.getAttributes("textStyle");
+  const activeFontFamily = (activeFontAttrs.fontFamily as string | null) ?? "";
+  const activeFontLabel = FONTS.find(f => f.value && activeFontFamily.includes(f.value.split(",")[0].replace(/'/g, "")))?.label ?? "Font";
+
   return (
     <div className={clsx("border border-slate-700 rounded-xl overflow-hidden bg-slate-800", className)} onClick={closeDropdowns}>
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-slate-700 bg-slate-900/60">
+
         {/* Font family */}
         <div className="relative">
           <button
@@ -98,13 +139,11 @@ export default function RichTextEditor({
               showFonts ? "bg-blue-600/40 text-blue-300" : "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
             )}
           >
-            <span className="text-[11px] font-medium w-14 truncate text-left">
-              {FONTS.find(f => f.value && editor.isActive("textStyle", { fontFamily: f.value }))?.label ?? "Font"}
-            </span>
+            <span className="text-[11px] font-medium w-14 truncate text-left">{activeFontLabel}</span>
             <ChevronDown size={11} />
           </button>
           {showFonts && (
-            <div className="absolute top-full left-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 py-1 min-w-[140px]" onClick={e => e.stopPropagation()}>
+            <div className="absolute top-full left-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 py-1 min-w-[150px]" onClick={e => e.stopPropagation()}>
               {FONTS.map(f => (
                 <button
                   key={f.label}
@@ -117,9 +156,7 @@ export default function RichTextEditor({
                   }}
                   className={clsx(
                     "w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-slate-700",
-                    editor.isActive("textStyle", { fontFamily: f.value }) && f.value
-                      ? "text-blue-300"
-                      : "text-slate-300"
+                    activeFontLabel === f.label ? "text-blue-300" : "text-slate-300"
                   )}
                   style={{ fontFamily: f.value || "inherit" }}
                 >
@@ -130,42 +167,36 @@ export default function RichTextEditor({
           )}
         </div>
         <Sep />
+
         {/* Headings */}
         <TBtn active={editor.isActive("heading", { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} title="Heading 1"><Heading1 size={14} /></TBtn>
         <TBtn active={editor.isActive("heading", { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} title="Heading 2"><Heading2 size={14} /></TBtn>
         <TBtn active={editor.isActive("heading", { level: 3 })} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} title="Heading 3"><Heading3 size={14} /></TBtn>
         <Sep />
+
         {/* Marks */}
-        <TBtn active={editor.isActive("bold")}          onClick={() => editor.chain().focus().toggleBold().run()}          title="Bold"><Bold size={14} /></TBtn>
-        <TBtn active={editor.isActive("italic")}        onClick={() => editor.chain().focus().toggleItalic().run()}        title="Italic"><Italic size={14} /></TBtn>
-        <TBtn active={editor.isActive("underline")}     onClick={() => editor.chain().focus().toggleUnderline().run()}     title="Underline"><UnderlineIcon size={14} /></TBtn>
-        <TBtn active={editor.isActive("strike")}        onClick={() => editor.chain().focus().toggleStrike().run()}        title="Strikethrough"><Strikethrough size={14} /></TBtn>
+        <TBtn active={editor.isActive("bold")}      onClick={() => editor.chain().focus().toggleBold().run()}      title="Bold"><Bold size={14} /></TBtn>
+        <TBtn active={editor.isActive("italic")}    onClick={() => editor.chain().focus().toggleItalic().run()}    title="Italic"><Italic size={14} /></TBtn>
+        <TBtn active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} title="Underline"><UnderlineIcon size={14} /></TBtn>
+        <TBtn active={editor.isActive("strike")}    onClick={() => editor.chain().focus().toggleStrike().run()}    title="Strikethrough"><Strikethrough size={14} /></TBtn>
         <Sep />
+
         {/* Lists */}
-        <TBtn active={editor.isActive("bulletList")}    onClick={() => editor.chain().focus().toggleBulletList().run()}    title="Bullet list"><List size={14} /></TBtn>
-        <TBtn active={editor.isActive("orderedList")}   onClick={() => editor.chain().focus().toggleOrderedList().run()}   title="Numbered list"><ListOrdered size={14} /></TBtn>
-        <TBtn active={editor.isActive("blockquote")}    onClick={() => editor.chain().focus().toggleBlockquote().run()}    title="Quote"><Quote size={14} /></TBtn>
+        <TBtn active={editor.isActive("bulletList")}  onClick={() => editor.chain().focus().toggleBulletList().run()}  title="Bullet list"><List size={14} /></TBtn>
+        <TBtn active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()} title="Numbered list"><ListOrdered size={14} /></TBtn>
+        <TBtn active={editor.isActive("blockquote")}  onClick={() => editor.chain().focus().toggleBlockquote().run()}  title="Quote"><Quote size={14} /></TBtn>
         <Sep />
+
         {/* Text color */}
         <div className="relative">
-          <TBtn
-            active={showColors}
-            onClick={(e) => { e.stopPropagation(); setShowColors(v => !v); setShowHighlights(false); }}
-            title="Text color"
-          >
+          <TBtn active={showColors} onClick={e => { e.stopPropagation(); setShowColors(v => !v); setShowHighlights(false); setShowFonts(false); }} title="Text color">
             <Palette size={14} />
           </TBtn>
           {showColors && (
             <div className="absolute top-full left-0 mt-1 p-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 flex flex-wrap gap-1 w-36" onClick={e => e.stopPropagation()}>
               {TEXT_COLORS.map(c => (
-                <button
-                  key={c.name}
-                  title={c.name}
-                  onClick={() => {
-                    if (c.color) editor.chain().focus().setColor(c.color).run();
-                    else editor.chain().focus().unsetColor().run();
-                    setShowColors(false);
-                  }}
+                <button key={c.name} title={c.name}
+                  onClick={() => { c.color ? editor.chain().focus().setColor(c.color).run() : editor.chain().focus().unsetColor().run(); setShowColors(false); }}
                   className="w-6 h-6 rounded-full border border-slate-600 hover:scale-110 transition-transform"
                   style={{ background: c.color ?? "#475569" }}
                 />
@@ -173,26 +204,17 @@ export default function RichTextEditor({
             </div>
           )}
         </div>
+
         {/* Highlight */}
         <div className="relative">
-          <TBtn
-            active={showHighlights}
-            onClick={(e) => { e.stopPropagation(); setShowHighlights(v => !v); setShowColors(false); }}
-            title="Highlight"
-          >
+          <TBtn active={showHighlights} onClick={e => { e.stopPropagation(); setShowHighlights(v => !v); setShowColors(false); setShowFonts(false); }} title="Highlight">
             <Highlighter size={14} />
           </TBtn>
           {showHighlights && (
             <div className="absolute top-full left-0 mt-1 p-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 flex flex-wrap gap-1 w-36" onClick={e => e.stopPropagation()}>
               {HIGHLIGHT_COLORS.map(c => (
-                <button
-                  key={c.name}
-                  title={c.name}
-                  onClick={() => {
-                    if (c.color) editor.chain().focus().setHighlight({ color: c.color }).run();
-                    else editor.chain().focus().unsetHighlight().run();
-                    setShowHighlights(false);
-                  }}
+                <button key={c.name} title={c.name}
+                  onClick={() => { c.color ? editor.chain().focus().setHighlight({ color: c.color }).run() : editor.chain().focus().unsetHighlight().run(); setShowHighlights(false); }}
                   className="w-6 h-6 rounded-full border border-slate-600 hover:scale-110 transition-transform"
                   style={{ background: c.color ?? "#1e293b" }}
                 />
@@ -201,6 +223,7 @@ export default function RichTextEditor({
           )}
         </div>
         <Sep />
+
         {/* Clear formatting */}
         <TBtn onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()} title="Clear formatting">
           <RemoveFormatting size={14} />
