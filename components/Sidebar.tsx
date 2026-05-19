@@ -4,19 +4,17 @@ import { usePathname } from "next/navigation";
 import { useState, useRef } from "react";
 import {
   LayoutDashboard, ChevronDown, Shield, Car,
-  Settings, Download, Upload, LogOut, Kanban,
+  Settings, Download, Upload, Kanban,
+  CheckSquare, FileText,
 } from "lucide-react";
 import { exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import clsx from "clsx";
 
-interface Props {
-  onLogout: () => void;
-  isConnected: boolean;
-}
-
 const nav = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
+  { label: "Dashboard", href: "/",      icon: LayoutDashboard },
   { label: "Kanban",    href: "/kanban", icon: Kanban },
+  { label: "To-Do",     href: "/todo",   icon: CheckSquare },
+  { label: "Notes",     href: "/notes",  icon: FileText },
   {
     label: "eAuto",
     icon: Car,
@@ -26,9 +24,9 @@ const nav = [
   },
 ];
 
-export default function Sidebar({ onLogout, isConnected }: Props) {
+export default function Sidebar() {
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState<string[]>(["eAuto"]);
+  const [expanded, setExpanded]   = useState<string[]>(["eAuto"]);
   const [importMsg, setImportMsg] = useState("");
   const importRef = useRef<HTMLInputElement>(null);
 
@@ -121,11 +119,9 @@ export default function Sidebar({ onLogout, isConnected }: Props) {
         })}
       </nav>
 
-      {/* Bottom actions */}
+      {/* Bottom */}
       <div className="border-t border-slate-800 p-3 space-y-1">
         {importMsg && <p className="text-xs text-center text-blue-400 pb-1">{importMsg}</p>}
-
-        {/* Export / Import */}
         <div className="flex gap-1">
           <button onClick={exportLocalStorage} title="Export all data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
             <Download size={13} />Export
@@ -135,8 +131,6 @@ export default function Sidebar({ onLogout, isConnected }: Props) {
           </button>
           <input ref={importRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
         </div>
-
-        {/* Settings link */}
         <Link
           href="/settings"
           className={clsx(
@@ -144,16 +138,8 @@ export default function Sidebar({ onLogout, isConnected }: Props) {
             pathname === "/settings" ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:text-slate-100 hover:bg-slate-800"
           )}
         >
-          <Settings size={15} />
-          Settings
+          <Settings size={15} />Settings
         </Link>
-
-        {isConnected && (
-          <button onClick={onLogout} className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors">
-            <LogOut size={15} />
-            Disconnect Jira
-          </button>
-        )}
       </div>
     </aside>
   );

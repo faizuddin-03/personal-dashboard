@@ -248,7 +248,6 @@ export default function Dashboard() {
           issueKey={selectedKey}
           creds={creds}
           onClose={() => setSelectedKey(null)}
-          onUpdated={fetchIssues}
         />
       )}
     </div>

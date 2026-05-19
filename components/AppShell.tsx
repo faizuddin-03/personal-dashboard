@@ -2,7 +2,7 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { JiraCredentials, getStoredCredentials, clearCredentials } from "@/lib/jira";
+import { JiraCredentials, getStoredCredentials } from "@/lib/jira";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 
 interface AppCtx {
@@ -33,21 +33,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setHydrated(true);
   }, []);
 
-  function handleLogout() {
-    clearCredentials();
-    setCreds(null);
-  }
-
-  function openSettings() {
-    router.push("/settings");
-  }
-
   if (!hydrated) return null;
 
   return (
-    <AppContext.Provider value={{ creds, setCreds, openSettings }}>
+    <AppContext.Provider value={{ creds, setCreds, openSettings: () => router.push("/settings") }}>
       <div className="flex h-screen overflow-hidden">
-        <Sidebar onLogout={handleLogout} isConnected={!!creds} />
+        <Sidebar />
         <main className="flex-1 overflow-y-auto bg-slate-950">
           {children}
         </main>

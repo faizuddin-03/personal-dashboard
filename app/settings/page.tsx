@@ -2,9 +2,10 @@
 import { useState, useRef, useEffect } from "react";
 import {
   Eye, EyeOff, CheckCircle, AlertCircle, Loader2,
-  Download, Upload, Save, RefreshCw,
+  Download, Upload, Save, RefreshCw, LogOut, AlertTriangle,
 } from "lucide-react";
 import { useApp } from "@/components/AppShell";
+import { clearCredentials } from "@/lib/jira";
 import { storeCredentials, exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import {
   BackupSettings, getBackupSettings, saveBackupSettings,
@@ -23,6 +24,7 @@ export default function SettingsPage() {
   const [testStatus, setTestStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [testMsg, setTestMsg] = useState("");
   const [jiraSaved, setJiraSaved] = useState(false);
+  const [disconnectStep, setDisconnectStep] = useState<0 | 1 | 2>(0);
 
   // Backup fields
   const [backup, setBackup] = useState<BackupSettings>(DEFAULT_BACKUP_SETTINGS);
@@ -254,6 +256,86 @@ export default function SettingsPage() {
             </p>
           </div>
         </Section>
+
+        {/* ── Danger Zone ── */}
+        {creds && (
+          <Section title="Danger Zone" description="Irreversible actions. Please read carefully before proceeding.">
+            <div className="border border-red-900/60 rounded-xl p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-slate-200 flex items-center gap-2">
+                    <LogOut size={14} className="text-red-400" />
+                    Disconnect Jira
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Removes your Jira URL, email, and API token from this browser.
+                    Your Kanban cards and notes will be kept.
+                  </p>
+                </div>
+                {disconnectStep === 0 && (
+                  <button onClick={() => setDisconnectStep(1)} className="shrink-0 px-3 py-1.5 text-xs text-red-400 border border-red-800 rounded-lg hover:bg-red-950/40 transition-colors">
+                    Disconnect
+                  </button>
+                )}
+              </div>
+
+              {disconnectStep === 1 && (
+                <div className="mt-4 bg-red-950/30 border border-red-800/60 rounded-xl p-4 space-y-3">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                    <div className="text-sm text-red-300 space-y-1">
+                      <p className="font-semibold">Are you sure you want to disconnect?</p>
+                      <p className="text-xs text-red-400/80">
+                        Your API token will be deleted from this browser. If you did not save it somewhere else, you will need to generate a new one from
+                        {" "}<a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" rel="noreferrer" className="underline hover:no-underline">id.atlassian.com</a>{" "}
+                        to reconnect.
+                      </p>
+                      <p className="text-xs text-red-400/80">
+                        Your Kanban board, notes, and to-do list will <strong>not</strong> be affected.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 justify-end">
+                    <button onClick={() => setDisconnectStep(0)} className="px-3 py-1.5 text-xs text-slate-400 border border-slate-700 rounded-lg hover:bg-slate-800 transition-colors">
+                      Cancel
+                    </button>
+                    <button onClick={() => setDisconnectStep(2)} className="px-3 py-1.5 text-xs bg-red-700 text-white rounded-lg hover:bg-red-600 transition-colors">
+                      Yes, I understand — continue
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {disconnectStep === 2 && (
+                <div className="mt-4 bg-red-950/40 border border-red-700 rounded-xl p-4 space-y-3">
+                  <p className="text-sm font-semibold text-red-200 flex items-center gap-2">
+                    <AlertTriangle size={15} />
+                    Final confirmation
+                  </p>
+                  <p className="text-xs text-red-400">
+                    This is your last chance. Click &quot;Disconnect now&quot; to permanently remove your Jira credentials from this browser.
+                  </p>
+                  <div className="flex gap-2 justify-end">
+                    <button onClick={() => setDisconnectStep(0)} className="px-3 py-1.5 text-xs text-slate-400 border border-slate-700 rounded-lg hover:bg-slate-800 transition-colors">
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        clearCredentials();
+                        setCreds(null);
+                        setBaseUrl(""); setEmail(""); setApiToken(""); setTokenExpiry("");
+                        setDisconnectStep(0);
+                      }}
+                      className="px-3 py-1.5 text-xs bg-red-600 text-white rounded-lg hover:bg-red-500 font-semibold transition-colors"
+                    >
+                      Disconnect now
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Section>
+        )}
 
       </div>
     </div>
