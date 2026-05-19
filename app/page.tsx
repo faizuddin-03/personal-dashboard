@@ -88,11 +88,11 @@ function UpcomingRow({ item, i }: { item: UpcomingItemType; i: number }) {
   if (item.kind === "deployment") {
     const tm = DEPLOYMENT_TYPE_META[item.data.type];
     return (
-      <Link key={i} href="/calendar" className={clsx("flex items-center gap-2 rounded-lg border px-2.5 py-2 hover:opacity-80 transition-opacity", tm.bg, tm.border)}>
-        <Rocket size={12} className={clsx(tm.text, "shrink-0")} />
+      <Link key={i} href="/calendar" className={clsx("flex items-start gap-2 rounded-lg border px-2.5 py-2 hover:opacity-80 transition-opacity", tm.bg, tm.border)}>
+        <Rocket size={12} className={clsx(tm.text, "shrink-0 mt-0.5")} />
         <div className="flex-1 min-w-0">
           <span className="text-[10px] font-mono font-bold text-blue-400 mr-1.5">{item.data.ticketKey}</span>
-          <span className={clsx("text-xs font-medium truncate", tm.text)}>{item.data.ticketSummary || item.data.ticketKey}</span>
+          <span className={clsx("text-xs font-medium break-words", tm.text)}>{item.data.ticketSummary || item.data.ticketKey}</span>
         </div>
         <div className="text-right shrink-0">
           <p className={clsx("text-[10px] font-medium", tm.text)}>{dateLabel}</p>
@@ -106,10 +106,10 @@ function UpcomingRow({ item, i }: { item: UpcomingItemType; i: number }) {
     const cm = EVENT_COLOR_META[item.data.color];
     const isMultiDay = item.data.startDate !== item.data.endDate;
     return (
-      <Link key={i} href="/calendar" className={clsx("flex items-center gap-2 rounded-lg border px-2.5 py-2 hover:opacity-80 transition-opacity", cm.chipBg)}>
-        <CalendarDays size={12} className="shrink-0 opacity-70" />
+      <Link key={i} href="/calendar" className={clsx("flex items-start gap-2 rounded-lg border px-2.5 py-2 hover:opacity-80 transition-opacity", cm.chipBg)}>
+        <CalendarDays size={12} className="shrink-0 opacity-70 mt-0.5" />
         <div className="flex-1 min-w-0">
-          <span className="text-xs font-medium truncate">{item.data.title}</span>
+          <span className="text-xs font-medium break-words">{item.data.title}</span>
           {isMultiDay && <span className="text-[10px] opacity-60 ml-1.5">multi-day</span>}
         </div>
         <div className="text-right shrink-0">
@@ -122,11 +122,11 @@ function UpcomingRow({ item, i }: { item: UpcomingItemType; i: number }) {
 
   if (item.kind === "kanban") {
     return (
-      <Link key={i} href="/kanban" className="flex items-center gap-2 rounded-lg border border-blue-800/40 bg-blue-950/30 px-2.5 py-2 hover:opacity-80 transition-opacity">
-        <CheckSquare size={12} className="text-blue-400 shrink-0" />
+      <Link key={i} href="/kanban" className="flex items-start gap-2 rounded-lg border border-blue-800/40 bg-blue-950/30 px-2.5 py-2 hover:opacity-80 transition-opacity">
+        <CheckSquare size={12} className="text-blue-400 shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-1.5">{item.data.jiraKey}</span>}
-          <span className="text-xs text-slate-200 truncate">{item.data.title}</span>
+          <span className="text-xs text-slate-200 break-words">{item.data.title}</span>
         </div>
         <p className="text-[10px] text-blue-300 shrink-0">{dateLabel}</p>
       </Link>
@@ -134,11 +134,11 @@ function UpcomingRow({ item, i }: { item: UpcomingItemType; i: number }) {
   }
 
   return (
-    <Link key={i} href="/todo" className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/50 px-2.5 py-2 hover:opacity-80 transition-opacity">
-      <CheckSquare size={12} className="text-slate-400 shrink-0" />
+    <Link key={i} href="/todo" className="flex items-start gap-2 rounded-lg border border-slate-700 bg-slate-800/50 px-2.5 py-2 hover:opacity-80 transition-opacity">
+      <CheckSquare size={12} className="text-slate-400 shrink-0 mt-0.5" />
       <div className="flex-1 min-w-0">
         {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-1.5">{item.data.jiraKey}</span>}
-        <span className="text-xs text-slate-300 truncate">{item.data.title}</span>
+        <span className="text-xs text-slate-300 break-words">{item.data.title}</span>
       </div>
       <p className="text-[10px] text-slate-500 shrink-0">{dateLabel}</p>
     </Link>
