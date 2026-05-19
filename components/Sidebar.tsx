@@ -5,16 +5,17 @@ import { useState, useRef } from "react";
 import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Download, Upload, Kanban,
-  CheckSquare, FileText, Search, X,
+  CheckSquare, FileText, Search, X, CalendarDays,
 } from "lucide-react";
 import { exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import clsx from "clsx";
 
 const nav = [
-  { label: "Dashboard", href: "/",      icon: LayoutDashboard },
-  { label: "Kanban",    href: "/kanban", icon: Kanban },
-  { label: "To-Do",     href: "/todo",   icon: CheckSquare },
-  { label: "Notes",     href: "/notes",  icon: FileText },
+  { label: "Dashboard", href: "/",          icon: LayoutDashboard },
+  { label: "Kanban",    href: "/kanban",    icon: Kanban },
+  { label: "Calendar",  href: "/calendar",  icon: CalendarDays },
+  { label: "To-Do",     href: "/todo",      icon: CheckSquare },
+  { label: "Notes",     href: "/notes",     icon: FileText },
   {
     label: "eAuto",
     icon: Car,
