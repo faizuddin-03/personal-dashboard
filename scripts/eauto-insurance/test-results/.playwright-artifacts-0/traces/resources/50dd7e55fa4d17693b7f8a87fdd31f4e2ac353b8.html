@@ -1,0 +1,212 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+	#vehicle-detail #container {margin: 0px 0px 0px 20px; border: 1px solid #CCC; height: 100%;}
+	#vehicle-detail table td.quote-label {text-align: right; vertical-align: middle; width: 40%; padding-right: 50px;}
+	#vehicle-detail table td.variant-input {color: #1599E5; width: 500px;}
+	#vehicle-detail .form-control {padding: .375rem .75rem; font-size: 1rem; font-weight: 400; color: #1599E5; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; 
+					border-radius: .25rem; transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out; margin-left: 5px; margin-right: 5px;}
+	#vehicle-detail td.padding-top {padding-top: 10px;}
+	#vehicle-detail #title {margin-left: 20px;}
+	#to-continue {width: 40%;}
+</style>
+<script>
+$(document).ready(function() {
+	$("#tx-form").bind("keypress", function(e) {
+           if (e.keyCode == 13) {
+               return false;
+           }
+       });
+    
+	
+	populateTransmissionOption(true);
+	populateVariantOption(true);
+	
+	
+		$("#quote-transactionId").val("ed640a25-dfff-44f8-bac8-76642a9c843f");
+		$("#postcode").val("31150");
+		$("#postcode-row").show();
+	
+	
+	$("#to-continue").click(function() {
+		$("#quote-results").hide().html("");
+		$("#to-continue").attr("disabled", "disabled");
+		var transactionId = $("#transactionId").val();
+		var ncdVehicleRegNo = $("#ncdVehicleRegNo").val();
+		
+			$.ajax({
+				type: "POST",
+				url: "/sit3/ajax/insurance/insurance-quote-enquiry/saveNCDVehicleNo.do",
+				data: {transactionId : transactionId, ncdVehicleRegNo : ncdVehicleRegNo},
+				success: function(response) {
+					$("#to-continue").removeAttr("disabled");
+					if($(".code", response).text() == "OK") {
+						$.ajax({
+							type: "POST",
+							url: "/sit3/ajax/insurance/insurance-quote-enquiry/processPlanDetails.do",
+							data: {transactionId : transactionId},
+							success: function(response) {
+								$("#quote-results").show().html(response);
+							}
+						});
+					}else if($(".code", response).text() == "ERROR") {
+						alert($(".item", response).text());
+						return false;
+					}
+				}
+			});
+		
+	});
+
+	$("#transmission").change(function() {
+		populateVariantOption(false);
+	});
+
+	$("#capacity").change(function() {
+		populateTransmissionOption(false);
+	});
+});
+
+function populateCapacity(isPopulate) {
+	$("#capacity option:gt(0)").remove();
+	
+	populateTransmissionOption(isPopulate);
+}
+
+function populateTransmissionOption(isPopulate) {
+	$("#transmission option:gt(0)").remove();
+	$("#varientSeriesType option:gt(0)").remove();
+	var capacity = $("#capacity :selected").val();
+	if(capacity == undefined) {
+		capacity = 1495.0;
+	}
+	
+	
+	populateVariantOption(isPopulate);
+}
+
+function populateVariantOption(isPopulate) {
+	$("#varientSeriesType option:gt(0)").remove();
+	var transmission = $("#transmission :selected").val();
+	var capacity = $("#capacity :selected").val();
+	if(capacity == undefined) {
+		capacity = 1495.0;
+	}
+	
+	if(transmission != '') {
+		
+	}
+}
+</script>
+<div id="container" style="width:96% !important;">
+	
+	<div id="title"><b>Vehicle Details</b></div>
+	<form id="tx-form" enctype="multipart/form-data" method="POST" action="">
+		<input type="hidden" name="transactionId" id="transactionId" value="ed640a25-dfff-44f8-bac8-76642a9c843f">
+		<div id="mainContent" class="d-flex flex-row">
+			<div class="container variantseries main-content" style="margin-left: auto; margin-right: auto;">
+				<table>
+					<tr>
+						<td style="width: 50%;">
+							<table style="padding: 0px 10px 10px 10px;">
+								<tr>
+									<td class="padding-top quote-label">
+										<b>Make</b>&nbsp;
+									</td>
+									<td class="padding-top variant-input">
+										<b>PERODUA</b>
+									</td>
+								</tr>
+								<tr>
+									<td class="padding-top quote-label">
+										<b>Model</b>&nbsp;
+									</td>
+									<td class="padding-top variant-input">
+										<b>Perodua Myvi 1.5 SE(A)</b>
+									</td>
+								</tr>
+								<tr>
+									<td class="padding-top quote-label">
+										<b>Manufacturing Year</b>&nbsp;
+									</td>
+									<td class="padding-top variant-input">
+										<b>2015</b>
+									</td>
+								</tr>
+								
+									<tr>
+											<td class="padding-top quote-label">
+												<b>Engine Capacity (CC)</b>&nbsp;
+											</td>
+											<td class="padding-top variant-input">
+												<b>1495</b>
+											</td>
+										</tr>
+										
+										<tr>
+											<td class="padding-top quote-label">
+												<b>Transmission</b>&nbsp;
+											</td>
+											<td class="padding-top variant-input ">
+												<b>4 SP AUTOMATIC</b>
+											</td>
+										</tr>
+										
+										
+										<tr>
+											<td class="padding-top quote-label">
+												<b>Variant (Series)</b>&nbsp;
+											</td>
+											<td class="padding-top variant-input">
+												
+												<b>SE&nbsp;FACELIFT</b>
+											</td>
+										</tr>
+										
+								
+								<tr>
+									<td class="padding-top quote-label">
+										<b>Engine No</b>&nbsp;
+									</td>
+									<td class="padding-top variant-input">
+										<b>R77A73R</b>
+									</td>
+								</tr>
+								<tr>
+									<td class="padding-top quote-label">
+										<b>Chassis No</b>&nbsp;
+									</td>
+									<td class="padding-top variant-input">
+										<b>PM2M603S002135817</b>
+									</td>
+								</tr>
+								<tr><td><br></td></tr>
+								<tr>
+									<td></td>
+									<td>
+										<input type="submit" id="to-continue" value="GET QUOTE"/>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</form>
+	
+</div>

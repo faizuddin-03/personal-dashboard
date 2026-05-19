@@ -1,0 +1,515 @@
+
+
+
+
+<html>
+<head><script>
+
+<!-- Mock Google Tag Manager -->
+var currentdate = new Date(); 
+var datetime = "staging.eauto.my - " + "GTM at: " + currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+                console.log(datetime);
+<!-- End Mock Google Tag Manager -->
+
+</script>
+
+	
+
+<title>
+	Insurance Quote Enquiry - 
+	eAuto
+</title>
+<link rel="shortcut icon" href="/sit3/images/favicon.ico">
+
+
+<link rel="stylesheet" type="text/css" href="/web/jquery/themes/smoothness/jquery-ui.css"/>
+<link rel="stylesheet" type="text/css" href="/web/jquery/misc/jquery.jgrowl.css"/>
+<link rel="stylesheet" type="text/css" href="/web/jquery/misc/jquery.tooltip.css"/>
+<link rel="stylesheet" type="text/css" href="/web/jquery/menu/jquery.menu.css"/>
+<link rel="stylesheet" type="text/css" href="/web/jquery/pagination/jquery.pagination.css"/>
+<link rel="stylesheet" type="text/css" href="/web/jquery/autocomplete/jquery.autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="/web/jquery/colorpicker/css/colorpicker.css" />
+
+<link rel="stylesheet" type="text/css" href="/web/common/reset.css">
+	
+	<link rel="stylesheet" type="text/css" href="/sit3/common/reset.css">	
+	 
+
+<link rel="stylesheet" type="text/css" href="/sit3/common/ie8-fix.css">
+
+<script type="text/javascript" src="/web/jquery/jquery.js"></script>
+<script type="text/javascript" src="/web/jquery/flot/excanvas.js"></script>
+<script type="text/javascript" src="/web/jquery/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="/web/jquery/form/ajaxfileupload.js"></script>
+<script type="text/javascript" src="/web/jquery/form/jquery.form.js"></script>
+<script type="text/javascript" src="/web/jquery/form/jquery.MultiFile.js"></script>
+<script type="text/javascript" src="/web/jquery/menu/jquery.menu.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/date.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.dates.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.chain.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.cookie.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.dimensions.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.jgrowl.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.template.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.timer.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.tooltip.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.heartbeat.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.blockUI.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.filter.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.multiSelect.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/calendar.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.countdown.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.timeago.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.scrollTo.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.watermark.js"></script>
+<script type="text/javascript" src="/web/jquery/pagination/jquery.pagination.js"></script>
+<script type="text/javascript" src="/web/jquery/plugin/jquery.selectboxes.js"></script>
+<script type="text/javascript" src="/web/jquery/ui/jquery.ui.all.js"></script>
+<script type="text/javascript" src="/web/jquery/validate/jquery.metadata.js"></script>
+<script type="text/javascript" src="/web/jquery/autocomplete/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery.livequery.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/jquery-fieldselection.js"></script>
+
+<script type="text/javascript" src="/web/jquery/colorpicker/js/colorpicker.js"></script>
+<script type="text/javascript" src="/web/jquery/colorpicker/js/eye.js"></script>
+<script type="text/javascript" src="/web/jquery/colorpicker/js/utils.js"></script>
+
+
+<script type="text/javascript" src="/sit3/common/script.js"></script>
+<script type="text/javascript" src="/sit3/common/session-timer.js"></script>
+
+<script type="text/javascript" src="/web/jquery/ui/ui.core.js"></script>
+<script type="text/javascript" src="/web/jquery/ui/ui.tabs.js"></script>
+
+<script>
+var _contextPath = "/sit3";
+
+//document.oncontextmenu=new Function("return false");
+function hideStatus() {
+    top.window.status = "";
+    parent.window.status = "";
+    window.status = "";
+    return true;
+}
+$(document).ready(function() {
+    $("a").click(hideStatus);
+    $("a").mouseover(hideStatus);
+    $("a").mouseout(hideStatus);
+    $("a").mousemove(hideStatus);
+	
+	
+});
+
+function doPrintHtml(paperSize){
+	var isJsPrintExists = true;
+		try {
+			jsPrintSetup.refreshOptions();
+		} catch(err) {
+			isJsPrintExists = false;
+		}
+		
+		if(!isJsPrintExists) {
+			alert("You must install Firefox Plugin: JS Print Setup \n in order for correct paper type being preset.");
+			window.print();
+		} else {
+			jsPrintSetup.setPaperSizeData(paperSize);//9-A4, 13-B5
+			jsPrintSetup.setSilentPrint(false);
+			jsPrintSetup.setShowPrintProgress(true);
+			jsPrintSetup.print();
+			jsPrintSetup.refreshOptions();
+		}
+}
+</script>
+<meta http-equiv="pragma" content="no-cache"/>
+<meta http-equiv="cache-control" content="no-cache,must-revalidate"/>
+<meta http-equiv="expires" content="0"/>
+
+<link rel="stylesheet" type="text/css" href="/sit3/common/screen.css">
+	<script type="text/javascript" src="/sit3/view/legacy/script.js.jsp"></script>
+	<link rel="stylesheet" type="text/css" href="/sit3/view/legacy/style.css">
+	<style>
+		.not-to-print {padding-bottom: 10px;}
+		#quote-table {height: 65%; margin: 10px 0px 0px 20px;}
+		#to-show-result {width: 76%;}
+		.mandatory {border: 1px solid red;}
+		#postcode-row td {padding: 20px 0px;}
+		#result {width: 100% !important}
+		.yes {color: #22A22F;}
+		.no {color: red;}
+	</style>
+	<script>
+	$(document).ready(function() {
+		$("#vehicleRegNo").keyup(function() {
+			onlyAlphaNumeric(this);
+			toUpperCase(this);
+		});
+
+		$("#ncdVehicleRegNo").keyup(function() {
+			onlyAlphaNumeric(this);
+			toUpperCase(this);
+		});
+
+		$("#postcode").keyup(function() {
+			onlyNumericInput(this);
+		});
+		
+		$("#buyerRefIdCompanyROC").keyup(function() {
+			if($("input[name = 'vehicleCategory']:checked").val() == "individual") {
+				onlyNumericInput(this);
+			}else{
+				toUpperCase(this);
+			}
+		});
+
+		$("#buyerRefIdCompanyROC").blur(function() {
+			if($("input[name = 'vehicleCategory']:checked").val() == "individual") {
+				onlyNumericInput(this);
+			}else{
+				toUpperCase(this);
+			}
+		});
+		
+		$("#companyUser").hide();
+		$("input[name = 'vehicleCategory']").click(function() {
+			$("#buyerRefIdCompanyROC").removeClass("validCompany");
+			$("#buyerRefIdCompanyROC").removeClass("validIndividual");
+			$("#buyerRefIdCompanyROC").val("");
+			if($("input[name = 'vehicleCategory']:checked").val() == "individual"){
+				$("#individualUser").show();
+				$("#companyUser").hide();
+				$("#buyerRefIdCompanyROC").addClass("validIndividual");
+			}else{
+				$("#individualUser").hide();
+				$("#companyUser").show();
+				$("#buyerRefIdCompanyROC").addClass("validCompany");
+			}
+		}); 
+		
+		$("#to-show-result").click(function() {
+			$("#vehicle-detail").hide().html("");
+			$("#quote-results").hide().html("");
+			$("#to-show-result").attr("disabled", "disabled");
+			var allPassed = true;
+
+			var alertMsg = "";
+			$(".is-required").each(function(idx, elem) {
+				if($(elem).val() == "") {
+					$(elem).addClass("mandatory");
+					alertMsg = "Please input all fields.";
+					allPassed = false;
+				}else {
+					$(elem).removeClass("mandatory");
+				}
+			});
+			
+			if($("input[name = 'vehicleCategory']:checked").val() == "individual") {
+				var icNum = $("#buyerRefIdCompanyROC").val();
+				if(icNum != '') {
+					if(icNum.length > 12){
+						alertMsg = "IC number is more than 12 digit";
+						allPassed = false;
+					}else if(icNum.length < 6) {
+						alertMsg = "Invalid IC number format";
+						allPassed = false;
+					}else {
+					    var age = getAge(icNum);
+					    if(age > 80) {
+					    	alertMsg = "Age is above 80 years old";
+					    	allPassed = false;
+						}else if(age < 18) {
+							alertMsg = "Age is 17 years old and below";
+							allPassed = false;
+						}
+					}
+				}
+			}
+
+			if(allPassed) {
+				$.ajax({
+					url: "/sit3/ajax/insurance/insurance-quote-enquiry/preCheckInsuranceEnquiry.do",
+					data: $("#quote-form").serialize(),
+					success: function(response) {
+						$("#to-show-result").removeAttr("disabled");
+						if($(".code", response).text() == "OK") {
+							$.ajax({
+								type: "POST",
+								url: "/sit3/ajax/insurance/insurance-quote-enquiry/processInsuranceEnquiry.do",
+								data: $("#quote-form").serialize(),
+								success: function(response) {
+									$("#vehicle-detail").show().html(response);
+								}
+							});
+						}else if($(".code", response).text() == "ERROR") {
+							alert($(".item", response).text());
+							$("#postcode-row").show();
+							return false;
+						}
+					}
+				});
+			}else {
+				$("#to-show-result").removeAttr("disabled");
+				alert(alertMsg);
+				return false;
+			}
+		});
+	});
+
+	function onlyNumericInput(input) {
+		$(input).val($(input).val().replace(/[^\d]/g, ""));
+	}
+	
+	function onlyAlphaNumeric(input) {
+		$(input).val($(input).val().replace(/([^A-Za-z0-9])*/g,""));
+	}
+	
+	function toUpperCase(input) {
+		$(input).val($(input).val().toUpperCase());
+	}
+
+	function getAge(icNum) {
+		var year = icNum.substr(0, 2);
+		var month = icNum.substr(2, 2);
+		var day = icNum.substr(4, 2);
+		if(year < 20) {
+			year = parseFloat(year) + 2000;
+		}else {
+			year = parseFloat(year) + 1900;
+		}
+		var dob = new Date(year + "/" + month + "/" + day);
+	    var month_diff = Date.now() - dob.getTime();
+	    var age_dt = new Date(month_diff); 
+	    var ageYear = age_dt.getUTCFullYear();
+	    var age = Math.abs(ageYear - 1970);
+	    return age;
+	}
+	</script>
+</head>
+<body>
+<div id="container">
+	<table id="quote-table">
+		<col width="40%">
+		<col width="60%">
+		<tr>
+			<td colspan="2" class="not-to-print">
+				<span class="app-title" style="position:relative;">Insurance Quote Enquiry</span>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<form id="quote-form">
+					<input type="hidden" name="transactionId" id="quote-transactionId" value="">
+					<fieldset>
+						<table>
+							<tr>
+								<td class="quote-label">
+									<b>Vehicle Category</b>&nbsp;
+								</td>
+								<td class="quote-input">
+									<input type="radio" id="vehicleCategory" name="vehicleCategory" value="individual" checked="checked"><label for="individual">Individual</label>
+		  							<input type="radio" id="vehicleCategory" name="vehicleCategory" value="company"><label for="company">Company</label><br>
+								</td>
+							</tr>
+							<tr><td><br></td></tr>
+							<tr>
+								<td class="quote-label">
+									<b>Vehicle Number</b>&nbsp;
+								</td>
+								<td class="quote-input">
+									<input type="text" id="vehicleRegNo" name="vehicleRegNo" class="is-required form-control" title="Vehicle Number" value="">
+								</td>
+							</tr>
+							<tr><td><br></td></tr>
+							<tr>
+								<td class="padding-top quote-label" id="individualUser">
+									<b>IC Number</b>&nbsp;
+								</td>
+								<td class="padding-top quote-label" id ="companyUser">
+									<b>Company Reg. Number</b>&nbsp;
+								</td>
+								<td class="padding-top quote-input">
+									<input type="text" id="buyerRefIdCompanyROC" name="buyerRefIdCompanyROC" class="is-required form-control validIndividual" title="IC Number/Company Reg. Number" value="" maxlength="12">
+								</td>
+							</tr>
+							<tr><td><br></td></tr>
+							<tr>
+								<td class="quote-label">
+									<b>NCD Vehicle Number</b><br><i>NCD from previous vehicle (if any)</i>
+								</td>
+								<td class="quote-input">
+									<input type="text" id="ncdVehicleRegNo" name="ncdVehicleRegNo" class="form-control" title="NCD Vehicle Number" value="">
+								</td>
+							</tr>
+							<tr id="postcode-row" style="display:none;">
+								<td class="quote-label">
+									<b>Postcode</b>&nbsp;
+								</td>
+								<td class="quote-input">
+									<input type="text" id="postcode" name="postcode" class="form-control" title="Postcode" value="">
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<input type="submit" id="to-show-result" value="SHOW RESULT"/>
+								</td>
+							</tr>
+						</table>
+					</fieldset>
+				</form>
+			</td>
+			<td id="vehicle-detail">&nbsp;</td>
+		</tr>
+		<tr>
+			<td id="quote-results" colspan="2">&nbsp;</td>
+		</tr>
+	</table>	
+</div>
+
+
+
+
+
+
+
+<script>
+function doPendingTransactionCountQuery() {
+	// Do incomplete transaction notification check
+	$.ajax({
+		global: false,
+		type: "POST",
+		data: "",
+		url: "/sit3/ajax/support/incomplete-txn/notification.do",
+		success: function(response) {
+			if(/Pending Transaction/.test(response)) {
+				$("#incomplete-txn-notification-wrapper").html(response);
+			}
+		}
+	});
+}
+
+$(document).ready(function() {
+	
+	$("#header a.logout").click(function() {
+		if(confirm("Sure to logout?")) {
+			window.location.href = "/sit3/user/logout.do";
+		}
+		return false;
+	});
+	
+	$("#header #menu-link").click(function() {
+		var offset = $(this).offset();
+		
+		
+		$("#menu-bar").load(_contextPath + "/home/menu.jsp?source=menuLink", function() { 
+		 
+
+			$("#menu-bar").css({left: offset.left - 80, top: offset.top + 20}).slideToggle('fast');
+			$("#menu-bar div").hide();
+			var _userRole = "HubAdmin";
+
+			if(_userRole.indexOf(",") != "-1") {
+				var roles = _userRole.split(",");
+
+				$(roles).each(function(i,role) {
+					if(role != ""){			
+						$("div."+role).show();
+					}
+				});		
+			}
+			else {
+				$("div."+_userRole).show();
+			}
+		});		
+		
+		return false;
+	});
+
+	$("body").click(function() {			
+		$("#menu-bar").slideUp();				
+	});
+	
+    LoginSessionTimer.startCountdown();
+
+    doPendingTransactionCountQuery();
+
+});
+</script>
+<div id="header">
+	<table class="header-box">
+	<tr>
+		<td>
+			<div id="home-bar" style="width: 350px !important;">
+				<ol class="inline">
+					<li>
+						<a href="/sit3/home/" id="home-link">Home |</a>
+					</li>
+					<li><a href="#" id="menu-link">Menu <img src="/sit3/images/arrow_down.gif"></a></li>
+				</ol>
+
+				
+				<div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onClick="window.location='/sit3/view/support/incomplete-txn/';"></div>
+				
+
+			</div>
+		</td>
+		<td style="text-align:right !important;">
+			<div id="common-bar">
+			<ol class="inline">
+				<li><span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI</span>,</li>
+				<li><a href="/sit3/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+				<li><a href="#" class="logout">Logout</a></li>
+			</ol>
+			</div>
+		</td>
+	</tr>
+	</table>
+	<div id="menu-bar" class="hidden" style="position:absolute; width:800px;"></div>	
+	<div id="countdown-screen-timeout" class="hidden"></div>
+	<div id="session-timeout-dialog" class="hidden">
+		<img src="/sit3/images/info-big.png"><br>
+		You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+		Do you want to continue login?<br><br>
+	</div>		
+</div>	
+<div id="logo" style="background-color: white;">
+	<img src="/sit3/images/eAuto_TM_logo.svg">
+</div>
+
+
+
+
+
+<style>
+#footer {color: grey!important; height:60px !important; margin-top:15px !important;font-size:15px}
+#footer table tr td{color: grey!important;font-size:11px!important;}
+</style>
+
+
+<div id="footer">	
+	<table border="0" width="100%">
+		<colspan width="10%"/>
+		<colspan width="50%"/>
+		<colspan width="auto"/>
+		<tr>
+			<td>&nbsp;</td>
+			<td>
+				Best Compatible With Mozilla Firefox V36.0.4 <br/>
+				Copyright &copy; 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br/>
+				<a href="#" onClick="window.open('/sit3/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a> | 
+				<a href="#" onClick="window.open('/sit3/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');" >Terms & Conditions</a> | 
+				<a href="#" onClick="window.open('/sit3/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');" >Privacy</a> 
+			</td>
+			<td class="right">
+				<img src="/sit3/images/eAuto_TM_logo.svg" width="98">
+			</td>
+		</tr>
+	</table>	
+</div>
+
+</body>
+</html>

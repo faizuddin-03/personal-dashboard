@@ -1,0 +1,710 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+	#quote-results #container {margin: 30px 0px 0px 00px; height: auto;}
+	#quote-results #title {font-size: 16px; border-bottom: 1px solid; padding-bottom: 10px; text-align: center;}
+	#container #plan-table {margin: 20px auto;}
+	.error {border: 1px solid #CCC; height: 70px; width: 100%; padding: 20px 20px 0px 20px;}
+	.right {float: right;}
+	#plan-table td {padding: 0px;}
+	#plan-table .plan-detail-table td {padding: 10px 5px; border: 1px solid;}
+	#plan-table td:not(:first-child) .plan-detail-table td {border-left: none;}
+	.plan-detail-table .plan-name {text-align: center;}
+	td.quote-price div {margin-bottom: 5px;}
+</style>
+<script>
+$(document).ready(function() {
+	$("#adjustSumInsuredForm").bind("keypress", function(e) {
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
+
+	$("select[name='sumInsuredValue']").change(function(ev) {
+		var transactionId = $("#quote-transactionId").val();
+		var adjustedSumInsured = $(this).val();
+		var planCode = $(this).attr("planCode");
+		var coverageCode = $(this).attr("coverageCode");
+		$.ajax({
+			type: "POST",
+			url: "/sit3/ajax/insurance/insurance-quote-enquiry/saveAdjustedSumInsured.do",
+			data: {transactionId : transactionId, adjustedSumInsured : adjustedSumInsured, planCode : planCode, coverageCode : coverageCode},
+			success: function(response) {
+				if($(".code", response).text() == "OK") {
+					$.ajax({
+						type: "POST",
+						url: "/sit3/ajax/insurance/insurance-quote-enquiry/processPlanDetails.do",
+						data: {transactionId : transactionId},
+						success: function(response) {
+							$("#quote-results").show().html(response);
+						}
+					});
+				}else if($(".code", response).text() == "ERROR") {
+					alert($(".item", response).text());
+					return false;
+				}
+			}
+		});
+	});
+});
+</script>
+<div id="container" style="width:96% !important;">
+	
+	<div id="title"><b>Insurance Quote</b></div>
+	<form id="adjustSumInsuredForm" method="post" action="">
+    	<input type="hidden" id="quote-transactionId" value="67917b21-4b64-4f65-b5e3-3c2685c3d080"/>
+    	<input type="hidden" id="adjustedSumInsured" name="adjustedSumInsured"/>
+    	<input type="hidden" id="planCode" name="planCode"/>
+    	<input type="hidden" id="coverageCode" name="coverageCode"/>
+    </form>
+	<div id="mainContent" class="d-flex flex-row">
+		<div class="container main-content">
+			<table id="plan-table" style="width:125%">
+				<tr>
+					
+						
+							<td style="width:20%">
+								<table class="plan-detail-table">
+									<tr>
+										<td class="plan-name">
+											
+										        <span><b>Takaful</b></span>
+										    
+										</td>
+									</tr>
+									<tr>
+										<td>
+											
+												<span>Cover Type Comprehensive (1st party)</span>
+											
+											<br>
+											<span>Period of insurance:&nbsp;</span><span class="right">From:&nbsp;19/05/2026<br>To:&nbsp;18/05/2027</span>
+										</td>
+									</tr>
+									
+										<tr>
+											<td class="quote-price">
+												<div>
+													<span>Sum Coverage</span>
+													<select name="sumInsuredValue" id="sumInsuredValue" class="elem-center right" planCode="Takaful" coverageCode="CO">
+												    
+												    	<option value="41000.0" selected=selected>RM&nbsp;41,000.00
+</option>
+												    
+												    	<option value="42000.0" >RM&nbsp;42,000.00
+</option>
+												    
+												    	<option value="43000.0" >RM&nbsp;43,000.00
+</option>
+												    
+												    	<option value="44000.0" >RM&nbsp;44,000.00
+</option>
+												    
+												    	<option value="45000.0" >RM&nbsp;45,000.00
+</option>
+												    
+												    </select>
+											    </div>
+											    <div>
+											    	<span>Basic Premium</span><span class="right">RM&nbsp;1,780.82
+</span>
+											    </div>
+											    <div>
+											    	<span>NCD&nbsp;(0.0%)</span><span class="right">-&nbsp;RM&nbsp;0.00
+</span>
+											    </div>
+											     
+											    	
+												    <div>
+												    	<span>All Drivers</span><span class="right">-</span>
+												    </div>
+												    
+											    
+											    
+											    <div>
+											    	<span>Service Tax</span><span class="right">RM&nbsp;142.47
+</span>
+											    </div>
+											    <div>
+											    	<span>Stamp Duty</span><span class="right">RM&nbsp;10.00
+</span>
+											    </div>
+											    
+											    <div><span>&nbsp;</span><span class="right">&nbsp;</span></div>
+											    
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Total Price</span><span class="right">RM&nbsp;1,933.29
+</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Refer Risk Code:</span>
+												<br>
+												<span>-</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Allow to purchase insurance:</span>
+												<br>
+												 
+													<span class="yes">Yes</span>
+												
+												
+											</td>
+										</tr>
+									
+								</table>
+							</td>
+					
+							<td style="width:20%">
+								<table class="plan-detail-table">
+									<tr>
+										<td class="plan-name">
+											
+										        <span><b>Chubb</b></span>
+										    
+										</td>
+									</tr>
+									<tr>
+										<td>
+											
+												<span>Cover Type Private Car (Enhanced)</span>
+											
+											<br>
+											<span>Period of insurance:&nbsp;</span><span class="right">From:&nbsp;19/05/2026<br>To:&nbsp;18/05/2027</span>
+										</td>
+									</tr>
+									
+										<tr>
+											<td class="quote-price">
+												<div>
+													<span>Sum Coverage</span>
+													<select name="sumInsuredValue" id="sumInsuredValue" class="elem-center right" planCode="Chubb" coverageCode="CO">
+												    
+												    	<option value="39000.0" selected=selected>RM&nbsp;39,000.00
+</option>
+												    
+												    	<option value="40000.0" >RM&nbsp;40,000.00
+</option>
+												    
+												    	<option value="41000.0" >RM&nbsp;41,000.00
+</option>
+												    
+												    	<option value="42000.0" >RM&nbsp;42,000.00
+</option>
+												    
+												    	<option value="43000.0" >RM&nbsp;43,000.00
+</option>
+												    
+												    	<option value="44000.0" >RM&nbsp;44,000.00
+</option>
+												    
+												    	<option value="45000.0" >RM&nbsp;45,000.00
+</option>
+												    
+												    	<option value="46000.0" >RM&nbsp;46,000.00
+</option>
+												    
+												    	<option value="47000.0" >RM&nbsp;47,000.00
+</option>
+												    
+												    	<option value="48000.0" >RM&nbsp;48,000.00
+</option>
+												    
+												    	<option value="49000.0" >RM&nbsp;49,000.00
+</option>
+												    
+												    	<option value="50000.0" >RM&nbsp;50,000.00
+</option>
+												    
+												    	<option value="51000.0" >RM&nbsp;51,000.00
+</option>
+												    
+												    	<option value="52000.0" >RM&nbsp;52,000.00
+</option>
+												    
+												    	<option value="53000.0" >RM&nbsp;53,000.00
+</option>
+												    
+												    	<option value="54000.0" >RM&nbsp;54,000.00
+</option>
+												    
+												    	<option value="55000.0" >RM&nbsp;55,000.00
+</option>
+												    
+												    	<option value="56000.0" >RM&nbsp;56,000.00
+</option>
+												    
+												    	<option value="57000.0" >RM&nbsp;57,000.00
+</option>
+												    
+												    	<option value="58000.0" >RM&nbsp;58,000.00
+</option>
+												    
+												    	<option value="59000.0" >RM&nbsp;59,000.00
+</option>
+												    
+												    	<option value="60000.0" >RM&nbsp;60,000.00
+</option>
+												    
+												    </select>
+											    </div>
+											    <div>
+											    	<span>Basic Premium</span><span class="right">RM&nbsp;1,859.41
+</span>
+											    </div>
+											    <div>
+											    	<span>NCD&nbsp;(0.0%)</span><span class="right">-&nbsp;RM&nbsp;0.00
+</span>
+											    </div>
+											     
+											    	
+												    <div>
+												    	<span>All Drivers</span><span class="right">RM&nbsp;20.00
+</span>
+												    </div>
+												    
+											    
+											    
+										    		<div>
+										    			<span>MY Car Plus (Pro)</span><span class="right">RM&nbsp;100.00
+</span>
+										    		</div>
+											    
+											    <div>
+											    	<span>Service Tax</span><span class="right">RM&nbsp;158.35
+</span>
+											    </div>
+											    <div>
+											    	<span>Stamp Duty</span><span class="right">RM&nbsp;10.00
+</span>
+											    </div>
+											    
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Total Price</span><span class="right">RM&nbsp;2,147.76
+</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Refer Risk Code:</span>
+												<br>
+												<span>-</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Allow to purchase insurance:</span>
+												<br>
+												 
+													<span class="yes">Yes</span>
+												
+												
+											</td>
+										</tr>
+									
+								</table>
+							</td>
+					
+							<td style="width:20%">
+								<table class="plan-detail-table">
+									<tr>
+										<td class="plan-name">
+											
+										        <span><b>Lonpac</b></span>
+										    
+										</td>
+									</tr>
+									<tr>
+										<td>
+											
+												<span>Cover Type Comprehensive (1st party)</span>
+											
+											<br>
+											<span>Period of insurance:&nbsp;</span><span class="right">From:&nbsp;19/05/2026<br>To:&nbsp;18/05/2027</span>
+										</td>
+									</tr>
+									
+										<tr>
+											<td class="quote-price">
+												<div>
+													<span>Sum Coverage</span>
+													<select name="sumInsuredValue" id="sumInsuredValue" class="elem-center right" planCode="Lonpac" coverageCode="CO">
+												    
+												    	<option value="21000.0" >RM&nbsp;21,000.00
+</option>
+												    
+												    	<option value="22000.0" >RM&nbsp;22,000.00
+</option>
+												    
+												    	<option value="23000.0" >RM&nbsp;23,000.00
+</option>
+												    
+												    	<option value="24000.0" >RM&nbsp;24,000.00
+</option>
+												    
+												    	<option value="25000.0" >RM&nbsp;25,000.00
+</option>
+												    
+												    	<option value="26000.0" >RM&nbsp;26,000.00
+</option>
+												    
+												    	<option value="27000.0" >RM&nbsp;27,000.00
+</option>
+												    
+												    	<option value="28000.0" >RM&nbsp;28,000.00
+</option>
+												    
+												    	<option value="29000.0" >RM&nbsp;29,000.00
+</option>
+												    
+												    	<option value="30000.0" >RM&nbsp;30,000.00
+</option>
+												    
+												    	<option value="31000.0" >RM&nbsp;31,000.00
+</option>
+												    
+												    	<option value="32000.0" >RM&nbsp;32,000.00
+</option>
+												    
+												    	<option value="33000.0" >RM&nbsp;33,000.00
+</option>
+												    
+												    	<option value="34000.0" >RM&nbsp;34,000.00
+</option>
+												    
+												    	<option value="35000.0" >RM&nbsp;35,000.00
+</option>
+												    
+												    	<option value="36000.0" >RM&nbsp;36,000.00
+</option>
+												    
+												    	<option value="37000.0" >RM&nbsp;37,000.00
+</option>
+												    
+												    	<option value="38000.0" >RM&nbsp;38,000.00
+</option>
+												    
+												    	<option value="39000.0" >RM&nbsp;39,000.00
+</option>
+												    
+												    	<option value="40000.0" >RM&nbsp;40,000.00
+</option>
+												    
+												    	<option value="41000.0" selected=selected>RM&nbsp;41,000.00
+</option>
+												    
+												    	<option value="42000.0" >RM&nbsp;42,000.00
+</option>
+												    
+												    	<option value="43000.0" >RM&nbsp;43,000.00
+</option>
+												    
+												    	<option value="44000.0" >RM&nbsp;44,000.00
+</option>
+												    
+												    	<option value="45000.0" >RM&nbsp;45,000.00
+</option>
+												    
+												    	<option value="46000.0" >RM&nbsp;46,000.00
+</option>
+												    
+												    	<option value="47000.0" >RM&nbsp;47,000.00
+</option>
+												    
+												    	<option value="48000.0" >RM&nbsp;48,000.00
+</option>
+												    
+												    	<option value="49000.0" >RM&nbsp;49,000.00
+</option>
+												    
+												    	<option value="50000.0" >RM&nbsp;50,000.00
+</option>
+												    
+												    	<option value="51000.0" >RM&nbsp;51,000.00
+</option>
+												    
+												    	<option value="52000.0" >RM&nbsp;52,000.00
+</option>
+												    
+												    	<option value="53000.0" >RM&nbsp;53,000.00
+</option>
+												    
+												    	<option value="54000.0" >RM&nbsp;54,000.00
+</option>
+												    
+												    	<option value="55000.0" >RM&nbsp;55,000.00
+</option>
+												    
+												    	<option value="56000.0" >RM&nbsp;56,000.00
+</option>
+												    
+												    	<option value="57000.0" >RM&nbsp;57,000.00
+</option>
+												    
+												    	<option value="58000.0" >RM&nbsp;58,000.00
+</option>
+												    
+												    	<option value="59000.0" >RM&nbsp;59,000.00
+</option>
+												    
+												    	<option value="60000.0" >RM&nbsp;60,000.00
+</option>
+												    
+												    	<option value="61000.0" >RM&nbsp;61,000.00
+</option>
+												    
+												    	<option value="62000.0" >RM&nbsp;62,000.00
+</option>
+												    
+												    	<option value="63000.0" >RM&nbsp;63,000.00
+</option>
+												    
+												    	<option value="64000.0" >RM&nbsp;64,000.00
+</option>
+												    
+												    	<option value="65000.0" >RM&nbsp;65,000.00
+</option>
+												    
+												    </select>
+											    </div>
+											    <div>
+											    	<span>Basic Premium</span><span class="right">RM&nbsp;1,763.96
+</span>
+											    </div>
+											    <div>
+											    	<span>NCD&nbsp;(0.0%)</span><span class="right">-&nbsp;RM&nbsp;0.00
+</span>
+											    </div>
+											     
+											    	
+												    <div>
+												    	<span>All Drivers</span><span class="right">-</span>
+												    </div>
+												    
+											    
+											    
+											    <div>
+											    	<span>Service Tax</span><span class="right">RM&nbsp;141.12
+</span>
+											    </div>
+											    <div>
+											    	<span>Stamp Duty</span><span class="right">RM&nbsp;10.00
+</span>
+											    </div>
+											    
+											    <div><span>&nbsp;</span><span class="right">&nbsp;</span></div>
+											    
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Total Price</span><span class="right">RM&nbsp;1,915.08
+</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Refer Risk Code:</span>
+												<br>
+												<span>-</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Allow to purchase insurance:</span>
+												<br>
+												 
+													<span class="yes">Yes</span>
+												
+												
+											</td>
+										</tr>
+									
+								</table>
+							</td>
+					
+							<td style="width:20%">
+								<table class="plan-detail-table">
+									<tr>
+										<td class="plan-name">
+											
+										        <span><b>Tokio Marine</b></span>
+										    
+										</td>
+									</tr>
+									<tr>
+										<td>
+											
+												<span>Cover Type Comprehensive (1st party)</span>
+											
+											<br>
+											<span>Period of insurance:&nbsp;</span><span class="right">From:&nbsp;19/05/2026<br>To:&nbsp;18/05/2027</span>
+										</td>
+									</tr>
+									
+										<tr>
+											<td class="quote-price">
+												<div><span>Sum Coverage</span><span class="right">-</span></div>
+											    <div><span>Basic Premium</span><span class="right">-</span></div>
+											    <div><span>NCD&nbsp;(-%)</span><span class="right">-</span></div>
+											     
+											    	<div><span>All Drivers</span><span class="right">-</span></div>
+											    
+											    
+											    <div><span>Service Tax</span><span class="right">-</span></div>
+											    <div><span>Stamp Duty</span><span class="right">-</span></div>
+											    
+											    <div><span>&nbsp;</span><span class="right">&nbsp;</span></div>
+											    
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Total Price</span><span class="right">-</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Refer Risk:</span>
+												<br>
+												
+													<span>Your account has been blocked due to the existing policies issued but payment not acknowledged for more than 10 days!</span>
+												
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Allow to purchase insurance:</span>
+												<br>
+												<span class="no">No</span>
+											</td>
+										</tr>
+									
+								</table>
+							</td>
+					
+							<td style="width:20%">
+								<table class="plan-detail-table">
+									<tr>
+										<td class="plan-name">
+											
+										        <span><b>Zurich</b></span>
+										    
+										</td>
+									</tr>
+									<tr>
+										<td>
+											
+												<span>Cover Type Comprehensive (1st party)</span>
+											
+											<br>
+											<span>Period of insurance:&nbsp;</span><span class="right">From:&nbsp;19/05/2026<br>To:&nbsp;18/05/2027</span>
+										</td>
+									</tr>
+									
+										<tr>
+											<td class="quote-price">
+												<div>
+													<span>Sum Coverage</span>
+													<select name="sumInsuredValue" id="sumInsuredValue" class="elem-center right" planCode="Zurich" coverageCode="CO">
+												    
+												    	<option value="41400.0" selected=selected>RM&nbsp;41,400.00
+</option>
+												    
+												    	<option value="42400.0" >RM&nbsp;42,400.00
+</option>
+												    
+												    	<option value="43400.0" >RM&nbsp;43,400.00
+</option>
+												    
+												    	<option value="44400.0" >RM&nbsp;44,400.00
+</option>
+												    
+												    </select>
+											    </div>
+											    <div>
+											    	<span>Basic Premium</span><span class="right">RM&nbsp;2,031.74
+</span>
+											    </div>
+											    <div>
+											    	<span>NCD&nbsp;(0.0%)</span><span class="right">-&nbsp;RM&nbsp;0.00
+</span>
+											    </div>
+											     
+											    	
+												    <div>
+												    	<span>All Drivers</span><span class="right">-</span>
+												    </div>
+												    
+											    
+											    
+											    <div>
+											    	<span>Service Tax</span><span class="right">RM&nbsp;162.54
+</span>
+											    </div>
+											    <div>
+											    	<span>Stamp Duty</span><span class="right">RM&nbsp;10.00
+</span>
+											    </div>
+											    
+											    <div><span>&nbsp;</span><span class="right">&nbsp;</span></div>
+											    
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Total Price</span><span class="right">RM&nbsp;2,204.28
+</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Refer Risk Code:</span>
+												<br>
+												<span>-</span>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<span>Allow to purchase insurance:</span>
+												<br>
+												 
+													<span class="yes">Yes</span>
+												
+												
+											</td>
+										</tr>
+									
+								</table>
+							</td>
+					
+				</tr>
+			</table>
+		</div>
+	</div>
+	
+</div>

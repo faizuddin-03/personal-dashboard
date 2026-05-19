@@ -1,0 +1,633 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head><script>
+
+<!-- Mock Google Tag Manager -->
+var currentdate = new Date(); 
+var datetime = "staging.eauto.my - " + "GTM at: " + currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+                console.log(datetime);
+<!-- End Mock Google Tag Manager -->
+
+</script>
+
+  	<script src="https://cdn.jsdelivr.net/npm/bowser@2.3.0/es5.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var browser = bowser.getParser(window.navigator.userAgent);
+  if (browser.getBrowserName().toLowerCase()=="firefox" && parseInt(browser.getBrowserVersion()) < parseInt("36.0.4")) {
+    	window.location = "/sit3/public/login/unsupported-browser.do?version=" + browser.getBrowserVersion();
+  }
+</script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="eAuto Official Website">
+    <meta name="author" content="">
+    <link rel="icon" href="/sit3/images/favicon.ico">
+
+    <link rel="shortcut icon" href="/sit3/images/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/sit3/images/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/sit3/images/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/sit3/images/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" href="/sit3/images/favicon.ico">
+
+    <title>Login @ eAuto</title>
+
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/sit3/common/themes/mf-white/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/sit3/common/themes/mf-white/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/sit3/common/themes/mf-white/css/form-element.css">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="/sit3/common/themes/mf-white/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/sit3/common/themes/mf-white/css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/sit3/common/themes/mf-white/js/html5shiv.min.js?v=20180913"></script>
+    <![endif]-->
+	<link rel="stylesheet" type="text/css" href="/sit3/common/legacy/css/themes/base/jquery.ui.all.css" />
+	<link rel="stylesheet" type="text/css" href="/sit3/common/reset-new.css">
+
+    <style>
+    
+      .holiday-messages-container {
+        border: 1px solid #CCCCCC;
+        border-radius: 4px;
+        margin: 15px 0 15px 0;
+      }
+      
+      .holiday-messages-title {
+        text-align: left;
+        background-color: #F7F9FA;
+        padding: 0px 20px 0px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #0B4C5F;
+      }
+      
+      .holiday-messages {
+        text-align: left;
+        padding: 0px 20px 20px 20px;
+        margin: 10px 0 10px 0;
+      }
+      .holiday-messages p {
+        font-family: Arial;
+        font-size: 12px;
+        line-height: normal;
+        letter-spacing: normal;
+        font-weight*:bold;
+        text-align*: left !important;
+      }
+
+      .holiday-messages strong {
+        font-weight:bold !important;
+      }
+      
+	  .top-content {
+		min-height: calc(100vh - 161px); 
+	  } 
+	  
+	  .txt {
+	  	color: rgba(11, 76, 95, 1) !important;
+	  }
+	  .spacing {
+	    min-height: 85px;
+	  }
+	  .login-box {
+	  	position:fixed; 
+	  	margin-right:30px;
+	  }
+	  #login-form-container {
+	  	max-width:437px;
+	  	min-width:437px;
+	  	margin-left: 10%;
+	  }
+	  #login-message-box-container {
+		margin-bottom: 5px; 
+		margin-left: 10%; 
+		max-width:437px;
+	  	min-width:437px;
+	  }
+	  
+	  .apply-eauto {
+	  	cursor: pointer;
+	    font-size: 16px;    
+	    border: none;
+	    border-radius: 4px;
+	    outline: none;
+	    color: #E72C19;
+	    padding: 5px 16px;
+	    background-color: #FFFFFF;
+	    font-family: 'Inter', sans-serif;
+	    margin: 10px 100px 10px -80px;
+	    font-weight: bold;
+	  }
+	  
+	  @media screen and (max-width: 1200px) {
+		  #login-form-container {
+		  	min-width:300px;
+	  	    margin-left: 0%;
+		  }
+		  
+		  #login-message-box-container {
+			margin-bottom: 5px; 
+			margin-left: 0%; 
+			min-width: 300px;
+	  	  }
+	  }
+	  @media screen and (max-width: 991px) {
+		  .spacing {
+		    min-height: 150px;
+		  }
+		  #login-form-container {
+		  	min-width:300px;
+	  	    margin-left: 0%;
+		  }
+		  #login-message-box-container {
+			margin-bottom: 5px; 
+			margin-left: 0%; 
+			min-width: 300px;
+	  	  }
+	  }
+	  @media screen and (max-width: 768px) {
+		  .spacing {
+		    min-height: 10px;
+		  }
+		  .login-box {
+		  	position: relative; 
+		  	margin-right: 0px;
+		  }
+		  #login-form-container {
+	  		min-width:auto;
+	  	    margin-left: 0%;
+	  	   }
+	  	  #login-message-box-container {
+			margin-bottom: 5px; 
+			margin-left: 0%; 
+			min-width: auto;
+	  	  }
+	  }
+	  
+	  
+	.footer {
+		font-size:14px;
+		background-color:#F7F9FA;
+		padding:20px 24px;
+		display:flex;
+		justify-content:space-between;
+		align-items:flex-end;
+		line-height: 20px;
+		height: 100;
+		border-top: 1px solid #CCCCCC;
+	}
+	
+	
+	.footer .footer-container .footer-row {
+
+	}
+	
+	@media screen and (max-width: 693px) {
+	  .footer {
+		font-size:13px;
+		background-color:#F7F9FA;
+		padding:20px 24px;
+		display:flex;
+		justify-content:space-between;
+		align-items:flex-end;
+
+		border-top: 1px solid #CCCCCC;
+	  }
+	  
+	  .ucd-container, .aatf-container {
+		min-height: calc(100vh - 251px); 
+	  }
+	  
+	  .footer .footer-container {
+
+	  }
+	  
+	  .footer .footer-container .footer-row {
+
+	  }
+	}
+	
+	
+	@media screen and (max-width: 500px) {
+	  .footer {
+		font-size:13px;
+		background-color:#F7F9FA;
+		padding:20px 24px;
+		display:flex;
+		justify-content:space-between;
+		align-items:flex-end;
+
+		border-top: 1px solid #CCCCCC;
+	  }
+	  
+	  .ucd-container, .aatf-container {
+		min-height: calc(100vh - 292px); 
+	  }
+	  
+	  .footer .footer-container {
+
+	  }
+	  
+	  .footer .footer-container .footer-row {
+
+	  }
+	}
+
+	.footer a {
+		color:#0B4C5F!important;
+		font-weight:500;
+		text-decoration: underline;
+	}
+	.footer .separator {
+		color:#CCC;
+	}
+	#footer table tr td{font-size:11px!important;}
+	.checkbox label {font-weight: 500;}
+	
+	.blockUI h1 {
+	    font-size: 1.5em;
+	    line-height: 1.17;
+	    color: #344867;
+	    font-weight: 700;
+    }
+    
+   	.blockUI { 
+		background-color: #000000!important;
+		opacity: .40!important;
+		filter:Alpha(Opacity=40)!important; 
+	}
+	
+	.blockMsg { 
+		background-color: #FFFFFF!important;
+		opacity: 1.0!important;
+	}
+	
+	body {
+		line-height: 30px;
+		font-weight: 300;
+	}
+	
+	.ui-dialog .ui-dialog-titlebar {
+	    padding: 25px 16px;
+	    border-radius: 0px;
+	}
+	
+	.ui-dialog-content {
+		font-weight: 400;
+	}
+	
+	h1.txt {
+		margin: 10px 0px;
+		line-height: 50px;
+	}
+	
+	h3 {
+		line-height: 30px;
+	}
+	
+	.form-box h3 {
+		letter-spacing: 0px;
+	}
+	
+	.announcement-msg {
+		text-align: left;
+		padding: 20px 0px 0px 100px;
+		color: red;
+		font-weight: 400;
+		line-height: 20px;
+	}
+    </style>
+
+  </head>
+
+  <body>
+    <div class="overlay hide">
+      <div class="background-image"></div>
+    </div>
+
+    <div class="top-nav row">
+        <div class="col-xs-12">
+          <!--
+          <a class="btn btn-link pull-right" href="#">Download</a>
+          -->
+            <div class="dropdown pull-right">
+            <button class="dropbtn" onclick="showDropdown()">Download</button>
+            <div class="dropdown-content" id="downloadDropdown">
+         
+              
+              <a href="https://cdn2.eauto.my/ws/Dermalog%20Biometric%20Software%20Upgrade.msi" target="_BLANK" onmouseover="setWhiteFont()" onmouseout="setBlackFont();">Dermalog Biometric Software Upgrade Version</a>
+              <a href="https://cdn.eauto.my/TeamViewerQS.exe" target="_BLANK" onmouseover="setWhiteFont()" onmouseout="setBlackFont();">Teamviewer QS</a>
+            </div>
+            <button class="apply-eauto" onclick="doPreOnboard()">Apply eAuto</button>
+          </div>
+        </div>
+    </div>
+
+    <!-- Top content -->
+    <div class="top-content">
+
+      <div class="inner-bg" style="padding-top: 40px;">
+        <div class="container" id="mainPage">
+          <div class="row">
+            <div class="col-sm-7 login-add-div">
+          	  <div class="row spacing"></div>
+              <div id="logo" style="padding-top: 0px !important; padding-bottom:5px;">
+                <img title="eAuto"
+                  style="width: 160px"
+                  src="/sit3/images/eAuto_TM_logo.svg">
+              </div>
+              <div class="row" style="margin-bottom: 10px;">
+                <!--<div class="col-sm-8 col-sm-offset-2 text">-->
+                <div class="text">
+                  <div>
+                    <div class="row">
+                      <div class="col-xs-12 text-center" id="login-messages" style="display: none;">
+                        <h1 class="txt" style="font-size: 40px;"><b>Welcome to eAuto</b></h1>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xs-12 hidden-xs hidden-sm">
+                        <div class="row">
+                          <div style="display: flex; align-items:center; justify-content:center; padding-right: 10px;">
+                            <img src="/sit3/images/telephone.png" width="29px" height="29px">
+							<span class="txt" style="white-space: nowrap; padding-left:15px; font-size: 24px;">Hotline: <b>03-27798899</b></span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xs-12 text-center hidden-md hidden-lg" style="margin-bottom:10px;">
+                        <div class="row">
+                          <div style="display: flex; align-items:center; justify-content:center; padding-right: 10px;">
+                            <img src="/sit3/images/telephone.png" width="29px" height="29px">
+							<span class="txt" style="white-space: nowrap; padding-left:15px; font-size: 24px;">Hotline: <b>03-27798899</b></span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+			</div>
+
+            <div class="col-sm-5">
+
+                
+
+                
+
+                <div class="login-box" >
+                    <div class="form-box">
+                    
+                    
+                
+                
+                        <div class="form-bottom" id="login-form-container">
+                            <center>
+                                <h3 style="font-weight:500; font-size:24px; margin:0px 0px 20px;">Login to eAuto</h3>
+                            </center>
+                            <form role="form" class="login-form form-horizontal" id="login-form">
+                                <div class="form-group">
+                                    <label for="form-username" class="control-label col-md-3">
+                                      Username
+                                    </label>
+                                    <div class="control-label col-md-9">
+                                      <input type="text"
+                                             name="name"
+                                             placeholder="Username"
+                                             class="form-username form-control login-name"
+                                             id="form-username">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="form-password" class="control-label col-md-3">
+                                      Password
+                                    </label>
+                                    <div class="control-label col-md-9">
+                                      <input type="password"
+                                           name="pass"
+                                           placeholder="Password"
+                                           class="form-password form-control login-pass"
+                                           id="form-password">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                  <div class="checkbox col-md-12">
+                                    <label class="control-label">
+                                      <input type="checkbox" class="checkbox-label" value="">Remember Password
+                                    </label>
+                                  </div>
+                                </div>
+
+                                <button type="submit" class="to-login btn btn-login">Login </button>
+                            </form>
+
+                            <div class="row center hide" style="padding: 30px;letter-spacing: 1.8px;">
+                                <div class="social-login-buttons">
+                                    <a class="btn btn-link-2 hide" href="javascript:void(0);" class="to-reset">
+                                        RESET
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!--
+    <div style="min-height: 20px; width: 100%; background-color: #959595; position: fixed; bottom: 0px;">
+      &nbsp;
+    </div>
+    -->
+	<div class="footer">
+		<div class="footer-container" style="display:flex;align-items:flex-end;width:63%;justify-content:space-between;">
+			<div style="display:flex;flex-direction:column;">
+				<div class="footer-row" style="display:flex;">
+					<a href="#" style="padding-right:10px;" onClick="window.open('/sit3/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+					<span class="separator">|</span>
+					<a href="#" style="padding:0 10px"; onClick="window.open('/sit3/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');" >Terms & Conditions</a> 
+					<span class="separator">|</span>
+					<a href="#" style="padding-left:10px"; onClick="window.open('/sit3/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');" >Privacy</a> 
+				</div>
+				<div class="footer-row" style="color:#808080;">Best Compatible With Mozilla Firefox V36.0.4</div>
+				<div class="footer-row" style="color:#808080;">Copyright &copy; 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+			</div>
+		</div>
+		
+		<div style="text-align:right;">
+			<img src="/sit3/images/eAuto_TM_logo.svg" width="126" height="52">
+		</div>
+	</div>
+    <div style="display: none">
+      <form method="POST" name="loginForm" id="loginForm" action="/sit3/../cms/login.jsp">
+        <input type="hidden" name="loginUsername" id="loginUsername" value="" />
+        <input type="hidden" name="loginPassword" id="loginPassword" value="" />
+        <input type="hidden" name="forward" value="" />
+        <input type="hidden" name="action" value="Login" />
+      </form>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script>
+      var _contextPath = "/sit3";
+    </script>
+    <script src="/sit3/common/themes/mf-white/js/jquery.min.js?v=20180913"></script>
+    <script src="/sit3/common/themes/mf-white/js/bootstrap.min.js?v=20180913"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/sit3/common/themes/mf-white/js/ie10-viewport-bug-workaround.js?v=20180913"></script>
+
+    <script src="/sit3/common/themes/mf-white/js/jquery.placeholder.min.js?v=20180913"></script>
+    <script type="text/javascript" src="/sit3/common/themes/mf-white/js/jquery.blockUI.js?v=20180913"></script>
+    <script type="text/javascript" src="/sit3/common/script.js?v=20180913"></script>
+    <script type="text/javascript" src="/sit3/public/login/script.js?v=20180926"></script>
+    <script type="text/javascript" src="/sit3/common/jquery-migrate-1.0.0.js"></script>
+    <script type="text/javascript" src="/sit3/common/legacy/scripts/ui/jquery.ui.core.js"></script>
+	<script type="text/javascript" src="/sit3/common/legacy/scripts/ui/jquery.ui.widget.js"></script>
+	<script type="text/javascript" src="/sit3/common/legacy/scripts/ui/jquery.ui.position.js"></script>
+	<script type="text/javascript" src="/sit3/common/legacy/scripts/ui/jquery.ui.dialog.js"></script>
+	<script type="text/javascript" src="/sit3/common/script.js"></script>
+
+    <script>
+      $(function(){
+        $("#form-username").focus();
+        $('input').placeholder();
+
+        $.ajax({
+          type: "POST",
+          url: _contextPath + "/ajax/system/display-messages/check.do",
+          async: true,
+          global: false,
+          data: {},
+          success: function(response) {
+            //console.log("Hiding holiday messages...");
+            if($(".code", response).text() == "OK") {
+              if($(".item", response).text() != "") {
+                //console.log("Showing holiday messages...");
+                $("#login-messages").html(
+                  "<div class='holiday-messages-container'><div class='holiday-messages-title'><span>Announcement</span></div><div class='holiday-messages'>" 
+                  + $(".item", response).html() + "</div></div>"
+                );
+              }
+            }
+            $("#login-messages").fadeIn(100);
+          }
+        });
+
+      });
+    </script>
+
+    <script>
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    function showDropdown() {
+        $("#downloadDropdown").toggle("show");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    /*
+    window.onclick = function(e) {
+      if (!e.target.matches('.dropbtn')) {
+          if($("#downloadDropdown").hasClass('show')) {
+            $("#downloadDropdown").removeClass('show');
+          }
+
+          if($("#downloadDropdown").css('display') != 'none') {
+            $("#downloadDropdown").toggle("show");
+          }
+      }
+    }
+    */
+    
+    function doPreOnboard(){
+   		window.location = "/sit3/public/getPreApplicationUrl.do"
+    }
+
+    $(function(){
+      $(".top-content").click(function(e){
+        //$("#downloadDropdown").removeClass('show');
+
+        if($("#downloadDropdown").css('display') != 'none') {
+          $("#downloadDropdown").toggle("show");
+        }
+      });
+    });
+
+    function setWhiteFont() {
+      $(this).css('color', 'white');
+    }
+
+    function setBlackFont() {
+      $(this).css('color', 'black');
+    }
+
+    var context = "/sit3";
+    var host = window.location.hostname;
+    $(function(){
+      //console.log(host);
+      if(/^eauto\.my$/.test(host)) {
+        window.location = "https://www.eauto.my"
+      }
+    });
+
+    </script>
+
+    <script type="text/javascript" src="/sit3/public/login/md5.js"></script>
+<script type="text/javascript" src="/web/jquery/misc/sha1.js"></script>
+<script>
+/**
+ * Dependencies:
+ *
+ * MD5 Javascript at /jquery/misc/md5.js 
+ * or SHA Javascript at /jquery/misc/sha1.js
+ */
+(function($){
+  $.fn.encrypt = function(type) {
+    $(this).each(function(index, input) {
+      var val = $(input).val();
+      
+      if(type && type == "sha") {
+        $(input).val(hex_sha1(val));
+      } else { //default is md5
+        $(input).val(hex_md5(val));
+      }
+    });
+  };
+})(jQuery);
+</script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/sit3/common/themes/mf-white/js/respond.min.js?v=20180913"></script>
+    <![endif]-->
+  </body>
+</html>
