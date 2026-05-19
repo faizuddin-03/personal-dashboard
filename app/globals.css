@@ -68,6 +68,15 @@ body {
 :root .border-slate-700 { border-color: var(--border-main,   #334155); }
 :root .border-slate-600 { border-color: var(--border-main,   #475569); }
 
+/* Kanban accent left-borders — must come AFTER border-slate-* so same
+   specificity (0,1,1) but later in the sheet wins the cascade. */
+:root .border-l-blue-500   { border-left-color: #3b82f6; }
+:root .border-l-purple-500 { border-left-color: #a855f7; }
+:root .border-l-green-500  { border-left-color: #22c55e; }
+:root .border-l-yellow-500 { border-left-color: #eab308; }
+:root .border-l-pink-500   { border-left-color: #ec4899; }
+:root .border-l-slate-700  { border-left-color: var(--border-main, #334155); }
+
 /* Text */
 :root .text-slate-100 { color: var(--text-brightest, #f8fafc); }
 :root .text-slate-200 { color: var(--text-primary,   #f1f5f9); }
