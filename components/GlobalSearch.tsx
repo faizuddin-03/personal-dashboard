@@ -1,15 +1,17 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, Kanban, CheckSquare, FileText, ExternalLink } from "lucide-react";
+import { Search, X, Kanban, CheckSquare, FileText, ExternalLink, Rocket, CalendarDays } from "lucide-react";
 import clsx from "clsx";
 import { getKanbanState, PRIORITY_META } from "@/lib/kanban";
 import { getTodos } from "@/lib/todo";
 import { getNotes, stripHtml } from "@/lib/notes-store";
+import { getDeployments } from "@/lib/deployments";
+import { getCalendarEvents } from "@/lib/calendar-events";
 
 interface SearchResult {
   id: string;
-  type: "kanban" | "todo" | "note";
+  type: "kanban" | "todo" | "note" | "deployment" | "event";
   title: string;
   subtitle?: string;
   href: string;
@@ -43,7 +45,7 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
     const out: SearchResult[] = [];
 
     const kanban = getKanbanState();
-    for (const col of ["urgent", "todo", "ongoing", "finished"] as const) {
+    for (const col of ["urgent", "todo", "ongoing", "on-hold", "finished"] as const) {
       for (const card of kanban[col]) {
         if (
           card.title.toLowerCase().includes(q) ||
@@ -82,7 +84,33 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
       }
     }
 
-    setResults(out.slice(0, 12));
+    for (const d of getDeployments()) {
+      if (
+        d.ticketKey.toLowerCase().includes(q) ||
+        d.ticketSummary.toLowerCase().includes(q) ||
+        d.environment.toLowerCase().includes(q) ||
+        d.deployedBy.toLowerCase().includes(q)
+      ) {
+        out.push({
+          id: d.id, type: "deployment",
+          title: `${d.ticketKey} ${d.ticketSummary}`.trim(),
+          subtitle: `${d.date} · ${d.environment}`,
+          href: "/calendar",
+        });
+      }
+    }
+
+    for (const e of getCalendarEvents()) {
+      if (e.title.toLowerCase().includes(q) || e.notes.toLowerCase().includes(q)) {
+        out.push({
+          id: e.id, type: "event", title: e.title,
+          subtitle: e.startDate === e.endDate ? e.startDate : `${e.startDate} → ${e.endDate}`,
+          href: "/calendar",
+        });
+      }
+    }
+
+    setResults(out.slice(0, 15));
     setSelected(0);
   }, [query]);
 
@@ -93,9 +121,9 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
     if (e.key === "Escape") onClose();
   }
 
-  const typeIcon = { kanban: Kanban, todo: CheckSquare, note: FileText };
-  const typeLabel = { kanban: "Kanban", todo: "To-Do", note: "Note" };
-  const typeColor = { kanban: "text-blue-400", todo: "text-green-400", note: "text-purple-400" };
+  const typeIcon = { kanban: Kanban, todo: CheckSquare, note: FileText, deployment: Rocket, event: CalendarDays };
+  const typeLabel = { kanban: "Kanban", todo: "To-Do", note: "Note", deployment: "Deployment", event: "Event" };
+  const typeColor = { kanban: "text-blue-400", todo: "text-green-400", note: "text-purple-400", deployment: "text-sky-400", event: "text-pink-400" };
 
   return (
     <div
@@ -110,11 +138,12 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
           value={query}
           onChange={e => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Search cards, notes, tasks…"
+          placeholder="Search cards, notes, tasks, events…"
+          aria-label="Global search"
           className="flex-1 bg-transparent text-slate-200 placeholder-slate-600 text-sm focus:outline-none"
         />
         {query && (
-          <button onClick={() => setQuery("")} className="text-slate-600 hover:text-slate-400">
+          <button onClick={() => setQuery("")} aria-label="Clear search" className="text-slate-600 hover:text-slate-400">
             <X size={14} />
           </button>
         )}

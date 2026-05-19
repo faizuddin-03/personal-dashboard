@@ -29,6 +29,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
   const pathname = usePathname();
   const [expanded, setExpanded]   = useState<string[]>(["eAuto"]);
   const [importMsg, setImportMsg] = useState("");
+  const [confirmImport, setConfirmImport] = useState(false);
   const importRef = useRef<HTMLInputElement>(null);
 
   function toggleGroup(label: string) {
@@ -143,12 +144,22 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
       <div className="border-t border-slate-800 p-3 space-y-1">
         {importMsg && <p className="text-xs text-center text-blue-400 pb-1">{importMsg}</p>}
         <div className="flex gap-1">
-          <button onClick={exportLocalStorage} title="Export all data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
+          <button onClick={exportLocalStorage} title="Export all data" aria-label="Export all data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
             <Download size={13} />Export
           </button>
-          <button onClick={() => importRef.current?.click()} title="Import data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
-            <Upload size={13} />Import
-          </button>
+          {confirmImport ? (
+            <div className="w-full mt-1 p-2 bg-red-950/40 border border-red-800/50 rounded-lg space-y-2">
+              <p className="text-[10px] text-red-300">This will overwrite all current data. Are you sure?</p>
+              <div className="flex gap-1">
+                <button onClick={() => setConfirmImport(false)} className="flex-1 text-[10px] text-slate-400 border border-slate-700 rounded px-2 py-1 hover:bg-slate-800">Cancel</button>
+                <button onClick={() => { setConfirmImport(false); importRef.current?.click(); }} className="flex-1 text-[10px] text-white bg-red-700 rounded px-2 py-1 hover:bg-red-600">Yes, import</button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => setConfirmImport(true)} title="Import data" aria-label="Import data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
+              <Upload size={13} />Import
+            </button>
+          )}
           <input ref={importRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
         </div>
         <Link

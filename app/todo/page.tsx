@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  Plus, X, ChevronDown, ChevronRight, Clock, AlertTriangle, CheckCircle2, RefreshCw,
+  Plus, X, ChevronDown, ChevronRight, Clock, AlertTriangle, CheckCircle2, RefreshCw, SkipForward,
 } from "lucide-react";
 import clsx from "clsx";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -68,7 +68,7 @@ function TodoModal({ item, onClose, onSave }: {
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl">
+      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl">
         <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0">
           <h2 className="text-sm font-semibold text-slate-100">{item ? "Edit Task" : "New Task"}</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={18} /></button>
@@ -143,11 +143,12 @@ function TodoModal({ item, onClose, onSave }: {
 }
 
 // ── Task row ────────────────────────────────────────────────
-function TaskRow({ item, onToggle, onEdit, onDelete }: {
+function TaskRow({ item, onToggle, onEdit, onDelete, onSkip }: {
   item: TodoItem;
   onToggle: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onSkip?: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const pm = TODO_PRIORITY_META[item.priority];
@@ -164,6 +165,7 @@ function TaskRow({ item, onToggle, onEdit, onDelete }: {
         {/* Checkbox */}
         <button
           onClick={onToggle}
+          aria-label={item.done ? "Mark as active" : "Mark as done"}
           className={clsx(
             "w-5 h-5 rounded border-2 shrink-0 flex items-center justify-center transition-colors",
             item.done ? "bg-blue-600 border-blue-600" : "border-slate-600 hover:border-slate-400"
@@ -208,11 +210,14 @@ function TaskRow({ item, onToggle, onEdit, onDelete }: {
             <span key={l} className="text-[10px] bg-slate-800 border border-slate-700 text-slate-400 px-1.5 py-0.5 rounded-full hidden sm:inline">{l}</span>
           ))}
           {hasNote && (
-            <button onClick={() => setExpanded(v => !v)} className="text-slate-600 hover:text-slate-400 p-0.5">
+            <button onClick={() => setExpanded(v => !v)} aria-label={expanded ? "Collapse note" : "Expand note"} className="text-slate-600 hover:text-slate-400 p-0.5">
               {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
           )}
-          <button onClick={onDelete} className="text-slate-700 hover:text-red-400 p-0.5"><X size={13} /></button>
+          {onSkip && item.recurring && !item.done && (
+            <button onClick={onSkip} aria-label="Skip occurrence" title="Skip this occurrence" className="text-slate-700 hover:text-amber-400 p-0.5"><SkipForward size={13} /></button>
+          )}
+          <button onClick={onDelete} aria-label="Delete task" className="text-slate-700 hover:text-red-400 p-0.5"><X size={13} /></button>
         </div>
       </div>
 
@@ -228,13 +233,14 @@ function TaskRow({ item, onToggle, onEdit, onDelete }: {
 }
 
 // ── Section ─────────────────────────────────────────────────
-function Section({ title, accent, items, onToggle, onEdit, onDelete, defaultCollapsed }: {
+function Section({ title, accent, items, onToggle, onEdit, onDelete, onSkip, defaultCollapsed }: {
   title: string;
   accent?: string;
   items: TodoItem[];
   onToggle: (id: string) => void;
   onEdit: (item: TodoItem) => void;
   onDelete: (id: string) => void;
+  onSkip: (id: string) => void;
   defaultCollapsed?: boolean;
 }) {
   const [open, setOpen] = useState(!defaultCollapsed);
@@ -252,7 +258,7 @@ function Section({ title, accent, items, onToggle, onEdit, onDelete, defaultColl
       {open && (
         <div className="space-y-2 mb-5">
           {items.map(item => (
-            <TaskRow key={item.id} item={item} onToggle={() => onToggle(item.id)} onEdit={() => onEdit(item)} onDelete={() => onDelete(item.id)} />
+            <TaskRow key={item.id} item={item} onToggle={() => onToggle(item.id)} onEdit={() => onEdit(item)} onDelete={() => onDelete(item.id)} onSkip={item.recurring && !item.done ? () => onSkip(item.id) : undefined} />
           ))}
         </div>
       )}
@@ -294,6 +300,13 @@ export default function TodoPage() {
   }
 
   function handleDelete(id: string) { persist(todos.filter(t => t.id !== id)); }
+
+  function handleSkip(id: string) {
+    // Mark done WITHOUT advancing the recurring schedule
+    persist(todos.map(t => t.id === id
+      ? { ...t, done: true, doneAt: new Date().toISOString() }
+      : t));
+  }
 
   const filtered = filter === "active" ? todos.filter(t => !t.done)
     : filter === "done" ? todos.filter(t => t.done)
@@ -342,12 +355,12 @@ export default function TodoPage() {
           </div>
         ) : (
           <>
-            <Section title="Overdue"  accent="text-red-400"    items={groups.overdue}  onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} />
-            <Section title="Today"    accent="text-yellow-400" items={groups.today}    onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} />
-            <Section title="Upcoming" accent="text-blue-400"   items={groups.upcoming} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} />
-            <Section title="No Date"  accent="text-slate-500"  items={groups.noDate}   onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} />
+            <Section title="Overdue"  accent="text-red-400"    items={groups.overdue}  onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
+            <Section title="Today"    accent="text-yellow-400" items={groups.today}    onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
+            <Section title="Upcoming" accent="text-blue-400"   items={groups.upcoming} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
+            <Section title="No Date"  accent="text-slate-500"  items={groups.noDate}   onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
             {filter !== "active" && (
-              <Section title="Completed" accent="text-green-600" items={groups.done} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} defaultCollapsed />
+              <Section title="Completed" accent="text-green-600" items={groups.done} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
             )}
           </>
         )}

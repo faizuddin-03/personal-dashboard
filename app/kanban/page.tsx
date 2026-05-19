@@ -445,9 +445,13 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [checklist, setChecklist] = useState<ChecklistItem[]>(card.checklist);
   const [checklistInput, setClInput] = useState("");
   const [priority, setPriority] = useState<Priority>(card.priority);
+  const [labels, setLabels] = useState<string[]>(card.labels);
+  const [labelInput, setLabelInput] = useState("");
+  const [accentColor, setAccentColor] = useState(card.accentColor ?? "");
+  const [confirmArchive, setConfirmArchive] = useState(false);
 
   function save() {
-    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority });
+    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined });
     setEditing(false);
   }
 
@@ -477,11 +481,20 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
           </div>
           <div className="flex gap-1">
             <button onClick={() => setEditing(v => !v)} className={clsx("px-2.5 py-1 text-xs rounded-lg transition-colors", editing ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-800")}>{editing ? "Done" : "Edit"}</button>
-            {onArchive && card.columnId === "finished" && (
-              <button onClick={() => onArchive(card)} className="px-2.5 py-1 text-xs text-amber-400 hover:bg-slate-800 rounded-lg flex items-center gap-1"><Archive size={11} />Archive</button>
+            {onArchive && card.columnId === "finished" && !confirmArchive && (
+              <button onClick={() => setConfirmArchive(true)} className="px-2.5 py-1 text-xs text-amber-400 hover:bg-slate-800 rounded-lg flex items-center gap-1" aria-label="Archive card">
+                <Archive size={11} />Archive
+              </button>
             )}
-            <button onClick={() => { onDelete(card.id); onClose(); }} className="px-2.5 py-1 text-xs text-red-400 hover:bg-slate-800 rounded-lg">Delete</button>
-            <button onClick={onClose} className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
+            {confirmArchive && (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-amber-400">Archive?</span>
+                <button onClick={() => { onArchive(card); }} className="px-2 py-0.5 text-xs bg-amber-700 text-white rounded hover:bg-amber-600">Yes</button>
+                <button onClick={() => setConfirmArchive(false)} className="px-2 py-0.5 text-xs border border-slate-700 text-slate-400 rounded hover:bg-slate-800">No</button>
+              </div>
+            )}
+            <button onClick={() => { onDelete(card.id); onClose(); }} className="px-2.5 py-1 text-xs text-red-400 hover:bg-slate-800 rounded-lg" aria-label="Delete card">Delete</button>
+            <button onClick={onClose} aria-label="Close" className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
           </div>
         </div>
 
@@ -520,10 +533,51 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
             </div>
           </div>
 
-          {card.labels.length > 0 && (
+          <div>
+            <p className="text-xs text-slate-600 mb-2">Labels</p>
+            {editing ? (
+              <div>
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {labels.map(l => (
+                    <span key={l} className="flex items-center gap-1 bg-slate-800 border border-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-full">
+                      {l}
+                      <button onClick={() => setLabels(p => p.filter(x => x !== l))} aria-label={`Remove label ${l}`}><X size={10} /></button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  value={labelInput}
+                  onChange={e => setLabelInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter" && labelInput.trim()) { setLabels(p => [...p, labelInput.trim()]); setLabelInput(""); } }}
+                  placeholder="Add label (Enter)…"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+            ) : (
+              labels.length > 0
+                ? <div className="flex flex-wrap gap-1">{labels.map(l => <span key={l} className="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-full">{l}</span>)}</div>
+                : <p className="text-sm text-slate-600">No labels</p>
+            )}
+          </div>
+
+          {editing && (
             <div>
-              <p className="text-xs text-slate-600 mb-2">Labels</p>
-              <div className="flex flex-wrap gap-1">{card.labels.map(l => <span key={l} className="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-full">{l}</span>)}</div>
+              <p className="text-xs text-slate-600 mb-2">Accent Color</p>
+              <div className="flex gap-2 flex-wrap">
+                {ACCENT_COLORS.map(c => (
+                  <button
+                    key={c.value}
+                    title={c.label}
+                    aria-label={`Accent color: ${c.label}`}
+                    onClick={() => setAccentColor(c.value)}
+                    className={clsx(
+                      "w-6 h-6 rounded-full border-2 transition-all",
+                      c.value === "" ? "bg-slate-700 border-slate-600" : "bg-slate-800",
+                      accentColor === c.value ? "ring-2 ring-blue-500 ring-offset-1 ring-offset-slate-900" : "border-slate-600"
+                    )}
+                  />
+                ))}
+              </div>
             </div>
           )}
 

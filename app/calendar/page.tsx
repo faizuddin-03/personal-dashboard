@@ -35,9 +35,10 @@ function calendarDays(year: number, month: number): Date[] {
   return days;
 }
 
-function fmtTime(t?: string) {
+function fmtTime(t?: string, h24 = false) {
   if (!t) return "";
   const [h, m] = t.split(":").map(Number);
+  if (h24) return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
   const ampm = h >= 12 ? "PM" : "AM";
   return `${((h % 12) || 12)}:${m.toString().padStart(2, "0")} ${ampm}`;
 }
@@ -385,13 +386,13 @@ function EventModal({ initial, defaultDate, onClose, onSave }: {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-2">
             <CalendarDays size={16} className="text-blue-400" />
             <h2 className="text-sm font-semibold text-slate-200">{initial ? "Edit Event" : "New Event"}</h2>
           </div>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={16} /></button>
+          <button onClick={onClose} aria-label="Close" className="text-slate-500 hover:text-slate-300"><X size={16} /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
@@ -471,7 +472,7 @@ function EventModal({ initial, defaultDate, onClose, onSave }: {
 }
 
 // ── Day Detail Popover ────────────────────────────────────
-function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment, onEditEvent, onDeleteEvent }: {
+function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment, onEditEvent, onDeleteEvent, fmt }: {
   date: string;
   items: DayItem[];
   onClose: () => void;
@@ -479,6 +480,7 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
   onDeleteDeployment: (id: string) => void;
   onEditEvent: (e: CalendarEvent) => void;
   onDeleteEvent: (id: string) => void;
+  fmt: (t?: string) => string;
 }) {
   const [d, m, y] = [new Date(date + "T12:00:00").getDate(), new Date(date + "T12:00:00").getMonth(), new Date(date + "T12:00:00").getFullYear()];
   return (
@@ -490,7 +492,7 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
             <p className="text-sm font-semibold text-slate-200">{MONTHS[m]} {d}, {y}</p>
             <p className="text-xs text-slate-500">{items.length} event{items.length !== 1 ? "s" : ""}</p>
           </div>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={15} /></button>
+          <button onClick={onClose} aria-label="Close" className="text-slate-500 hover:text-slate-300"><X size={15} /></button>
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-2">
           {items.length === 0 && <p className="text-xs text-slate-600 text-center py-6">No events on this day</p>}
@@ -511,12 +513,12 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                       <p className={clsx("text-sm font-medium leading-snug", tm.text)}>{d.ticketSummary || d.ticketKey}</p>
                     </div>
                     <div className="flex gap-1 shrink-0">
-                      <button onClick={() => onEditDeployment(d)} className="p-1 text-slate-600 hover:text-slate-300"><Pencil size={12} /></button>
-                      <button onClick={() => onDeleteDeployment(d.id)} className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
+                      <button onClick={() => onEditDeployment(d)} aria-label="Edit deployment" className="p-1 text-slate-600 hover:text-slate-300"><Pencil size={12} /></button>
+                      <button onClick={() => onDeleteDeployment(d.id)} aria-label="Delete deployment" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-slate-500">
-                    <span className="flex items-center gap-1"><Clock size={10} />{fmtTime(d.time)}</span>
+                    <span className="flex items-center gap-1"><Clock size={10} />{fmt(d.time)}</span>
                     {d.environment && <span>{d.environment}</span>}
                     {d.deployedBy  && <span>by {d.deployedBy}</span>}
                   </div>
@@ -538,15 +540,15 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium leading-snug">{e.title}</p>
                       <div className="flex flex-wrap gap-x-3 text-[11px] opacity-70 mt-0.5">
-                        {!e.allDay && e.startTime && <span className="flex items-center gap-1"><Clock size={10} />{fmtTime(e.startTime)}{e.endTime && ` – ${fmtTime(e.endTime)}`}</span>}
+                        {!e.allDay && e.startTime && <span className="flex items-center gap-1"><Clock size={10} />{fmt(e.startTime)}{e.endTime && ` – ${fmt(e.endTime)}`}</span>}
                         {e.allDay && <span>All day</span>}
                         {isMultiDay && <span>{e.startDate} → {e.endDate}</span>}
                       </div>
                       {e.notes && <p className="text-xs opacity-60 mt-1 line-clamp-2">{e.notes}</p>}
                     </div>
                     <div className="flex gap-1 shrink-0">
-                      <button onClick={() => onEditEvent(e)} className="p-1 text-slate-600 hover:text-slate-300"><Pencil size={12} /></button>
-                      <button onClick={() => onDeleteEvent(e.id)} className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
+                      <button onClick={() => onEditEvent(e)} aria-label="Edit event" className="p-1 text-slate-600 hover:text-slate-300"><Pencil size={12} /></button>
+                      <button onClick={() => onDeleteEvent(e.id)} aria-label="Delete event" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
                     </div>
                   </div>
                 </div>
@@ -592,6 +594,9 @@ export default function CalendarPage() {
   const [kanbanCards, setKanbanCards]       = useState<KanbanCard[]>([]);
   const [todos, setTodos]                   = useState<TodoItem[]>([]);
 
+  const [use24h, setUse24h] = useState(false);
+  const fmt = (t?: string) => fmtTime(t, use24h);
+
   const [showDeployModal, setShowDeployModal]   = useState(false);
   const [showEventModal, setShowEventModal]     = useState(false);
   const [editDeployment, setEditDeployment]     = useState<Deployment | undefined>();
@@ -603,8 +608,9 @@ export default function CalendarPage() {
     setDeployments(getDeployments());
     setCalEvents(getCalendarEvents());
     const ks = getKanbanState();
-    setKanbanCards(["urgent","todo","ongoing","finished"].flatMap(c => ks[c as keyof typeof ks] as KanbanCard[]));
+    setKanbanCards(["urgent","todo","ongoing","on-hold","finished"].flatMap(c => ks[c as keyof typeof ks] as KanbanCard[]));
     setTodos(getTodos());
+    setUse24h(localStorage.getItem("calendar_24h") === "true");
   }, []);
 
   function saveAndSetDeployments(items: Deployment[]) { setDeployments(items); saveDeployments(items); }
@@ -633,25 +639,47 @@ export default function CalendarPage() {
   // Build day → items map
   const days = useMemo(() => calendarDays(year, month), [year, month]);
 
-  function itemsForDate(dateStr: string): DayItem[] {
-    const out: DayItem[] = [];
-    for (const d of deployments) if (d.date === dateStr) out.push({ kind: "deployment", data: d });
-    for (const e of calEvents) if (dateInRange(dateStr, e.startDate, e.endDate)) out.push({ kind: "event", data: e });
-    for (const c of kanbanCards) if (c.dueDate === dateStr) out.push({ kind: "kanban", data: c });
-    for (const t of todos) if (!t.done && t.dueDate === dateStr) out.push({ kind: "todo", data: t });
-    // Sort: deployments first by time, then events, then kanban, then todo
-    out.sort((a, b) => {
-      const order = { deployment: 0, event: 1, kanban: 2, todo: 3 };
-      if (order[a.kind] !== order[b.kind]) return order[a.kind] - order[b.kind];
-      const ta = a.kind === "deployment" ? a.data.time : (a.kind === "event" ? (a.data.startTime ?? "") : "");
-      const tb = b.kind === "deployment" ? b.data.time : (b.kind === "event" ? (b.data.startTime ?? "") : "");
-      return ta.localeCompare(tb);
-    });
-    return out;
-  }
+  const dayItemsMap = useMemo(() => {
+    const map = new Map<string, DayItem[]>();
+
+    function getOrCreate(key: string): DayItem[] {
+      if (!map.has(key)) map.set(key, []);
+      return map.get(key)!;
+    }
+
+    for (const d of deployments) {
+      getOrCreate(d.date).push({ kind: "deployment", data: d });
+    }
+    for (const e of calEvents) {
+      // span multi-day events across all days in range
+      const start = new Date(e.startDate + "T12:00:00");
+      const end   = new Date(e.endDate   + "T12:00:00");
+      for (let cur = new Date(start); cur <= end; cur.setDate(cur.getDate() + 1)) {
+        getOrCreate(toDateStr(cur)).push({ kind: "event", data: e });
+      }
+    }
+    for (const c of kanbanCards) {
+      if (c.dueDate) getOrCreate(c.dueDate).push({ kind: "kanban", data: c });
+    }
+    for (const t of todos) {
+      if (!t.done && t.dueDate) getOrCreate(t.dueDate).push({ kind: "todo", data: t });
+    }
+
+    // Sort each day's items: deployments first by time, then events, kanban, todo
+    const order = { deployment: 0, event: 1, kanban: 2, todo: 3 };
+    for (const items of map.values()) {
+      items.sort((a, b) => {
+        if (order[a.kind] !== order[b.kind]) return order[a.kind] - order[b.kind];
+        const ta = a.kind === "deployment" ? a.data.time : (a.kind === "event" ? (a.data.startTime ?? "") : "");
+        const tb = b.kind === "deployment" ? b.data.time : (b.kind === "event" ? (b.data.startTime ?? "") : "");
+        return ta.localeCompare(tb);
+      });
+    }
+    return map;
+  }, [deployments, calEvents, kanbanCards, todos]);
 
   const todayStr = today();
-  const selectedItems = selectedDate ? itemsForDate(selectedDate) : [];
+  const selectedItems = selectedDate ? (dayItemsMap.get(selectedDate) ?? []) : [];
 
   function prevMonth() { if (month === 0) { setYear(y => y-1); setMonth(11); } else setMonth(m => m-1); }
   function nextMonth() { if (month === 11) { setYear(y => y+1); setMonth(0); } else setMonth(m => m+1); }
@@ -664,19 +692,30 @@ export default function CalendarPage() {
           <CalendarDays size={15} className="text-slate-500" />
           <h1 className="text-sm font-semibold text-slate-200">Calendar</h1>
           <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg">
-            <button onClick={prevMonth} className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-l-lg transition-colors">
+            <button onClick={prevMonth} aria-label="Previous month" className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-l-lg transition-colors">
               <ChevronLeft size={14} />
             </button>
             <span className="px-3 text-sm font-semibold text-slate-200 min-w-[140px] text-center">
               {MONTHS[month]} {year}
             </span>
-            <button onClick={nextMonth} className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-r-lg transition-colors">
+            <button onClick={nextMonth} aria-label="Next month" className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-r-lg transition-colors">
               <ChevronRight size={14} />
             </button>
           </div>
           <button onClick={() => { setYear(now.getFullYear()); setMonth(now.getMonth()); }}
             className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded hover:bg-slate-800 transition-colors">
             Today
+          </button>
+          <button
+            onClick={() => {
+              const next = !use24h;
+              setUse24h(next);
+              localStorage.setItem("calendar_24h", String(next));
+            }}
+            className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded hover:bg-slate-800 transition-colors border border-slate-800"
+            title="Toggle time format"
+          >
+            {use24h ? "24h" : "12h"}
           </button>
         </div>
         <div className="flex items-center gap-2">
@@ -719,7 +758,7 @@ export default function CalendarPage() {
             const dateStr = toDateStr(day);
             const isCurrentMonth = day.getMonth() === month;
             const isToday = dateStr === todayStr;
-            const items = itemsForDate(dateStr);
+            const items = (dayItemsMap.get(dateStr) ?? []);
             const visible = items.slice(0, 3);
             const overflow = items.length - 3;
 
@@ -793,7 +832,7 @@ export default function CalendarPage() {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-xs text-slate-400">{new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
-                        <p className={clsx("text-xs", tm.text)}>{fmtTime(d.time)}</p>
+                        <p className={clsx("text-xs", tm.text)}>{fmt(d.time)}</p>
                       </div>
                       <div className="flex gap-1 shrink-0">
                         <button onClick={() => { setEditDeployment(d); setShowDeployModal(true); }} className="p-1.5 text-slate-600 hover:text-slate-300 rounded hover:bg-slate-800"><Pencil size={12} /></button>
@@ -835,6 +874,7 @@ export default function CalendarPage() {
           onDeleteDeployment={id => saveAndSetDeployments(deployments.filter(x => x.id !== id))}
           onEditEvent={e => { setEditEvent(e); setShowEventModal(true); setSelectedDate(null); }}
           onDeleteEvent={id => saveAndSetEvents(calEvents.filter(x => x.id !== id))}
+          fmt={fmt}
         />
       )}
     </div>
