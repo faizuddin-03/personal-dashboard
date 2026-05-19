@@ -1,5 +1,5 @@
 export type Priority = "urgent" | "high" | "medium" | "low";
-export type ColumnId = "urgent" | "todo" | "ongoing" | "finished";
+export type ColumnId = "urgent" | "todo" | "ongoing" | "on-hold" | "finished";
 
 export interface ChecklistItem {
   id: string;
@@ -35,16 +35,18 @@ export interface KanbanState {
   urgent: KanbanCard[];
   todo: KanbanCard[];
   ongoing: KanbanCard[];
+  "on-hold": KanbanCard[];
   finished: KanbanCard[];
 }
 
-export const COLUMN_IDS: ColumnId[] = ["urgent", "todo", "ongoing", "finished"];
+export const COLUMN_IDS: ColumnId[] = ["urgent", "todo", "ongoing", "on-hold", "finished"];
 
 export const COLUMN_META: Record<ColumnId, { label: string; color: string; headerBg: string }> = {
-  urgent:  { label: "Urgent",   color: "red",    headerBg: "bg-red-950/60 border-red-800" },
-  todo:    { label: "To-Do",    color: "slate",  headerBg: "bg-slate-800 border-slate-700" },
-  ongoing: { label: "On-Going", color: "blue",   headerBg: "bg-blue-950/60 border-blue-800" },
-  finished:{ label: "Finished", color: "green",  headerBg: "bg-green-950/60 border-green-800" },
+  urgent:   { label: "Urgent",   color: "red",    headerBg: "bg-red-950/60 border-red-800" },
+  todo:     { label: "To-Do",    color: "slate",  headerBg: "bg-slate-800 border-slate-700" },
+  ongoing:  { label: "On-Going", color: "blue",   headerBg: "bg-blue-950/60 border-blue-800" },
+  "on-hold":{ label: "On-Hold",  color: "amber",  headerBg: "bg-amber-950/60 border-amber-800" },
+  finished: { label: "Finished", color: "green",  headerBg: "bg-green-950/60 border-green-800" },
 };
 
 export const PRIORITY_META: Record<Priority, { label: string; color: string; dot: string }> = {
@@ -71,7 +73,9 @@ export function getKanbanState(): KanbanState {
   if (typeof window === "undefined") return emptyState();
   try {
     const raw = localStorage.getItem("kanban_state");
-    return raw ? JSON.parse(raw) : emptyState();
+    const parsed = raw ? JSON.parse(raw) : emptyState();
+    // Backfill new columns for existing saved data
+    return { ...emptyState(), ...parsed };
   } catch { return emptyState(); }
 }
 
@@ -80,7 +84,7 @@ export function saveKanbanState(state: KanbanState) {
 }
 
 function emptyState(): KanbanState {
-  return { urgent: [], todo: [], ongoing: [], finished: [] };
+  return { urgent: [], todo: [], ongoing: [], "on-hold": [], finished: [] };
 }
 
 export function isOverdue(card: KanbanCard): boolean {

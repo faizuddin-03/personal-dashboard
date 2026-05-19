@@ -660,7 +660,7 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick }: {
 // ── Main page ─────────────────────────────────────────────
 export default function KanbanPage() {
   const { creds } = useApp();
-  const [boardState, setBoardState] = useState<KanbanState>({ urgent: [], todo: [], ongoing: [], finished: [] });
+  const [boardState, setBoardState] = useState<KanbanState>({ urgent: [], todo: [], ongoing: [], "on-hold": [], finished: [] });
   const [addTarget, setAddTarget]   = useState<ColumnId | null>(null);
   const [selectedCard, setSelectedCard] = useState<KanbanCard | null>(null);
   const [activeId, setActiveId]     = useState<string | null>(null);
@@ -776,7 +776,7 @@ export default function KanbanPage() {
 
         <div className="flex-1 px-6 py-5 overflow-x-auto">
           <div className="flex gap-4 pb-4 min-w-max">
-            {(["todo", "ongoing", "finished"] as ColumnId[]).map(col => (
+            {(["todo", "ongoing", "on-hold", "finished"] as ColumnId[]).map(col => (
               <Column key={col} id={col} cards={boardState[col]} baseUrl={creds?.baseUrl} onAddCard={setAddTarget} onCardClick={setSelectedCard} />
             ))}
           </div>
