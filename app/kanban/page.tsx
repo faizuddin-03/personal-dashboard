@@ -391,7 +391,7 @@ function DraggableCard({ card, baseUrl, onCardClick }: {
         baseUrl={baseUrl}
         onClick={() => onCardClick(card)}
         dragHandle={
-          <button {...attributes} {...listeners} className="mt-0.5 text-slate-700 hover:text-slate-400 cursor-grab active:cursor-grabbing shrink-0" onClick={e => e.stopPropagation()}>
+          <button {...attributes} {...listeners} aria-label="Drag to reorder" className="mt-0.5 text-slate-700 hover:text-slate-400 cursor-grab active:cursor-grabbing shrink-0" onClick={e => e.stopPropagation()}>
             <GripVertical size={14} />
           </button>
         }
@@ -415,7 +415,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick }: {
           <span className="text-sm font-semibold text-slate-200">{meta.label}</span>
           <span className="text-xs bg-black/20 text-slate-400 px-1.5 py-0.5 rounded-full">{cards.length}</span>
         </div>
-        <button onClick={() => onAddCard(id)} className="text-slate-500 hover:text-slate-200 p-0.5 rounded hover:bg-black/20 transition-colors"><Plus size={15} /></button>
+        <button onClick={() => onAddCard(id)} aria-label={`Add card to ${meta.label}`} className="text-slate-500 hover:text-slate-200 p-0.5 rounded hover:bg-black/20 transition-colors"><Plus size={15} /></button>
       </div>
       <div
         ref={setNodeRef}
@@ -489,7 +489,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
             {confirmArchive && (
               <div className="flex items-center gap-1">
                 <span className="text-xs text-amber-400">Archive?</span>
-                <button onClick={() => { onArchive(card); }} className="px-2 py-0.5 text-xs bg-amber-700 text-white rounded hover:bg-amber-600">Yes</button>
+                <button onClick={() => { onArchive?.(card); }} className="px-2 py-0.5 text-xs bg-amber-700 text-white rounded hover:bg-amber-600">Yes</button>
                 <button onClick={() => setConfirmArchive(false)} className="px-2 py-0.5 text-xs border border-slate-700 text-slate-400 rounded hover:bg-slate-800">No</button>
               </div>
             )}
@@ -641,7 +641,7 @@ function ArchiveDrawer({ cards, onClose, onUnarchive }: {
             <h2 className="text-sm font-semibold text-slate-200">Archived Cards</h2>
             <span className="text-xs bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded-full">{cards.length}</span>
           </div>
-          <button onClick={onClose} className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
+          <button onClick={onClose} aria-label="Close archive drawer" className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {cards.length === 0 && (

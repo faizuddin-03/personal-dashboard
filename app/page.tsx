@@ -241,7 +241,7 @@ export default function Dashboard() {
 
   // Debounced global Jira search — searches ALL tickets when query is present
   useEffect(() => {
-    if (!search.trim() || !creds) {
+    if (!search.trim() || search.trim().length < 3 || !creds) {
       setJiraSearchResults([]);
       return;
     }
@@ -263,7 +263,7 @@ export default function Dashboard() {
       } catch {
         setJiraSearchResults([]);
       } finally { setJiraSearchLoading(false); }
-    }, 400);
+    }, 600);
     return () => clearTimeout(timer);
   }, [search, creds]);
 
@@ -294,7 +294,7 @@ export default function Dashboard() {
         {creds && (
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-500 hidden sm:block">{creds.email}</span>
-            <button onClick={fetchIssues} disabled={loading} className="p-2 text-slate-500 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition-colors" title="Refresh">
+            <button onClick={fetchIssues} disabled={loading} aria-label="Refresh Jira issues" className="p-2 text-slate-500 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition-colors" title="Refresh">
               <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
             </button>
           </div>
@@ -312,9 +312,11 @@ export default function Dashboard() {
             <Bell size={15} className="text-amber-400 mt-0.5 shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-amber-300 mb-1.5">
-                {dueSoonCards.filter(isKanbanOverdue).length > 0 ? `${dueSoonCards.filter(isKanbanOverdue).length} overdue` : ""}
-                {dueSoonCards.filter(isKanbanOverdue).length > 0 && dueSoonCards.filter(isDueToday).length > 0 ? " · " : ""}
-                {dueSoonCards.filter(isDueToday).length > 0 ? `${dueSoonCards.filter(isDueToday).length} due today` : ""}
+                {(() => {
+                  const oc = dueSoonCards.filter(isKanbanOverdue).length;
+                  const dc = dueSoonCards.filter(isDueToday).length;
+                  return [oc > 0 ? `${oc} overdue` : "", oc > 0 && dc > 0 ? " · " : "", dc > 0 ? `${dc} due today` : ""].join("");
+                })()}
                 {" "}on Kanban
               </p>
               <div className="flex flex-wrap gap-2">
@@ -431,7 +433,7 @@ export default function Dashboard() {
                 className="w-full px-3 py-2 pr-8 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
               {search && (
-                <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                <button onClick={() => setSearch("")} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
                   <X size={14} />
                 </button>
               )}
