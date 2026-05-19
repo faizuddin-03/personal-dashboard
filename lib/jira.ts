@@ -29,6 +29,7 @@ export interface JiraIssue {
     fixVersions: { name: string }[];
     project: { name: string; key: string };
     duedate: string | null;
+    parent?: { key: string; fields: { summary: string; issuetype: { name: string } } } | null;
   };
 }
 

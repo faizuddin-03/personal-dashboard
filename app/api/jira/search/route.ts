@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     fields: fields ?? [
       "summary", "status", "priority", "issuetype", "assignee",
       "reporter", "created", "updated", "labels", "fixVersions",
-      "project", "duedate",
+      "project", "duedate", "parent",
     ],
   };
 

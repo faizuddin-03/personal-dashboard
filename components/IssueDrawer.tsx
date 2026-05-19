@@ -87,6 +87,25 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
               </div>
             </div>
 
+            {/* Parent breadcrumb */}
+            {issue.fields.parent && (
+              <div className="flex items-center gap-1.5 text-xs -mt-2">
+                <span className="text-slate-600 text-[10px] uppercase tracking-wide font-semibold">Parent</span>
+                <span className="text-slate-700">·</span>
+                <a
+                  href={`${creds.baseUrl}/browse/${issue.fields.parent.key}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 px-2 py-1 bg-slate-800 border border-slate-700 rounded-lg hover:border-blue-600/60 hover:bg-blue-950/20 transition-colors group"
+                >
+                  <span className="text-[10px] text-slate-500 font-medium">{issue.fields.parent.fields.issuetype.name}</span>
+                  <span className="text-xs font-mono text-blue-400 font-semibold group-hover:underline">{issue.fields.parent.key}</span>
+                  <span className="text-xs text-slate-400 truncate max-w-[200px]">{issue.fields.parent.fields.summary}</span>
+                  <ExternalLink size={10} className="text-slate-600 group-hover:text-blue-400 shrink-0" />
+                </a>
+              </div>
+            )}
+
             {/* Meta grid */}
             <div className="grid grid-cols-2 gap-3">
               <MetaItem label="Project"  value={issue.fields.project.name} />

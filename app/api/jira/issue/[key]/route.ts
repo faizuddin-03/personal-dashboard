@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ key:
   }
 
   const token = Buffer.from(`${email}:${apiToken}`).toString("base64");
-  const url = `${baseUrl.replace(/\/$/, "")}/rest/api/3/issue/${key}?fields=summary,status,priority,issuetype,assignee,reporter,created,updated,description,comment,labels,fixVersions,project,duedate`;
+  const url = `${baseUrl.replace(/\/$/, "")}/rest/api/3/issue/${key}?fields=summary,status,priority,issuetype,assignee,reporter,created,updated,description,comment,labels,fixVersions,project,duedate,parent`;
 
   const res = await fetch(url, {
     headers: {

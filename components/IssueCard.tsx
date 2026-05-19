@@ -34,10 +34,28 @@ export default function IssueCard({ issue, baseUrl, onClick }: Props) {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
+          {fields.parent && (
+            <div className="flex items-center gap-1 mb-1">
+              <a
+                href={`${baseUrl}/browse/${fields.parent.key}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={e => e.stopPropagation()}
+                className="text-[10px] font-mono text-slate-500 hover:text-blue-400 transition-colors"
+                title={fields.parent.fields.summary}
+              >
+                {fields.parent.key}
+              </a>
+              <span className="text-[10px] text-slate-700">›</span>
+              <span className="text-[10px] font-mono text-blue-400 font-semibold">{issue.key}</span>
+            </div>
+          )}
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className="text-xs font-mono text-blue-400 font-semibold shrink-0">
-              {issue.key}
-            </span>
+            {!fields.parent && (
+              <span className="text-xs font-mono text-blue-400 font-semibold shrink-0">
+                {issue.key}
+              </span>
+            )}
             <span
               className={clsx(
                 "text-xs px-2 py-0.5 rounded-full font-medium",
