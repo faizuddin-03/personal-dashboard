@@ -9,8 +9,8 @@ const CONFIG = {
   stagingLoginUrl: 'https://staging.eauto.my/sit3/public/login',
   enquiryPath: '/view/insurance/insurance-quote-enquiry/',
 
-  username: process.env.EAUTO_USERNAME || 'Jasons',
-  password: process.env.EAUTO_PASSWORD || 'eauTo!!2026!',
+  username: process.env.EAUTO_USERNAME || 'faizuddinBO',
+  password: process.env.EAUTO_PASSWORD || 'password',
 
   // Defaults used when input Excel doesn't specify these
   icNumber: '020406081081',
