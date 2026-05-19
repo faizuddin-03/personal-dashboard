@@ -9,7 +9,7 @@ const CONFIG = {
   stagingLoginUrl: 'https://staging.eauto.my/sit3/public/login',
   enquiryPath: '/view/insurance/insurance-quote-enquiry/',
 
-  username: process.env.EAUTO_USERNAME || 'faizuddinBO',
+  username: process.env.EAUTO_USERNAME || 'faizuddinBO1',
   password: process.env.EAUTO_PASSWORD || 'password',
 
   // Defaults used when input Excel doesn't specify these
