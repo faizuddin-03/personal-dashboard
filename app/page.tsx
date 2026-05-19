@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, FileText, LayoutDashboard, Bell, AlertTriangle, Clock } from "lucide-react";
+import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, FileText, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import {
   JiraIssue, JiraSearchResult,
@@ -13,6 +13,8 @@ import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import { getKanbanState, KanbanCard, PRIORITY_META, isOverdue as isKanbanOverdue, isDueToday, accentBorderClass } from "@/lib/kanban";
 import { getTodos, isTodoOverdue } from "@/lib/todo";
 import { getNotes } from "@/lib/notes-store";
+import { getDeployments, Deployment, DEPLOYMENT_TYPE_META } from "@/lib/deployments";
+import { getCalendarEvents, CalendarEvent, EVENT_COLOR_META } from "@/lib/calendar-events";
 import clsx from "clsx";
 
 type Tab = "assigned" | "reported";
@@ -95,16 +97,50 @@ export default function Dashboard() {
   const [notesCount, setNotesCount]     = useState(0);
   const [dueSoonCards, setDueSoonCards] = useState<KanbanCard[]>([]);
 
+  type UpcomingItem =
+    | { kind: "deployment"; data: Deployment; date: string }
+    | { kind: "event";      data: CalendarEvent; date: string }
+    | { kind: "kanban";     data: KanbanCard; date: string }
+    | { kind: "todo";       data: import("@/lib/todo").TodoItem; date: string };
+
+  const [upcomingItems, setUpcomingItems] = useState<UpcomingItem[]>([]);
+
   // Load local data once on mount
   useEffect(() => {
     const kanban = getKanbanState();
     setOngoingCards(kanban.ongoing);
     setUrgentCount(kanban.urgent.length);
-    const allCards = ["urgent", "todo", "ongoing", "finished"].flatMap(col => kanban[col as keyof typeof kanban] as KanbanCard[]);
+    const allCards = (["urgent", "todo", "ongoing", "on-hold", "finished"] as const)
+      .flatMap(col => kanban[col] as KanbanCard[]);
     setDueSoonCards(allCards.filter(c => isKanbanOverdue(c) || isDueToday(c)));
     const todos = getTodos();
     setTodoStats({ active: todos.filter(t => !t.done).length, overdue: todos.filter(isTodoOverdue).length });
     setNotesCount(getNotes().length);
+
+    // Upcoming events within 7 days
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const in7 = new Date(); in7.setDate(in7.getDate() + 7);
+    const in7Str = in7.toISOString().slice(0, 10);
+
+    const upcoming: UpcomingItem[] = [];
+
+    for (const d of getDeployments()) {
+      if (d.date >= todayStr && d.date <= in7Str && d.status !== "cancelled")
+        upcoming.push({ kind: "deployment", data: d, date: d.date });
+    }
+    for (const e of getCalendarEvents()) {
+      if (e.startDate <= in7Str && e.endDate >= todayStr)
+        upcoming.push({ kind: "event", data: e, date: e.startDate < todayStr ? todayStr : e.startDate });
+    }
+    for (const c of allCards.filter(c => c.columnId !== "finished" && c.dueDate && c.dueDate >= todayStr && c.dueDate <= in7Str)) {
+      upcoming.push({ kind: "kanban", data: c, date: c.dueDate! });
+    }
+    for (const t of todos.filter(t => !t.done && t.dueDate && t.dueDate >= todayStr && t.dueDate <= in7Str)) {
+      upcoming.push({ kind: "todo", data: t, date: t.dueDate! });
+    }
+
+    upcoming.sort((a, b) => a.date.localeCompare(b.date));
+    setUpcomingItems(upcoming);
   }, []);
 
   const fetchIssues = useCallback(async () => {
@@ -196,6 +232,89 @@ export default function Dashboard() {
                   </Link>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Upcoming events (next 7 days) */}
+        {upcomingItems.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Upcoming — next 7 days</p>
+              <Link href="/calendar" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
+                View calendar <ArrowRight size={11} />
+              </Link>
+            </div>
+            <div className="space-y-1.5">
+              {upcomingItems.map((item, i) => {
+                const dateLabel = (() => {
+                  const todayStr = new Date().toISOString().slice(0, 10);
+                  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+                  if (item.date === todayStr) return "Today";
+                  if (item.date === tomorrowStr) return "Tomorrow";
+                  return new Date(item.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+                })();
+
+                if (item.kind === "deployment") {
+                  const tm = DEPLOYMENT_TYPE_META[item.data.type];
+                  return (
+                    <Link key={i} href="/calendar" className={clsx("flex items-center gap-3 rounded-xl border px-3 py-2 hover:opacity-80 transition-opacity", tm.bg, tm.border)}>
+                      <Rocket size={13} className={tm.text} />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[10px] font-mono font-bold text-blue-400 mr-2">{item.data.ticketKey}</span>
+                        <span className={clsx("text-sm font-medium truncate", tm.text)}>{item.data.ticketSummary || item.data.ticketKey}</span>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className={clsx("text-xs font-medium", tm.text)}>{dateLabel}</p>
+                        <p className="text-[10px] text-slate-500">{item.data.time}</p>
+                      </div>
+                    </Link>
+                  );
+                }
+
+                if (item.kind === "event") {
+                  const cm = EVENT_COLOR_META[item.data.color];
+                  const isMultiDay = item.data.startDate !== item.data.endDate;
+                  return (
+                    <Link key={i} href="/calendar" className={clsx("flex items-center gap-3 rounded-xl border px-3 py-2 hover:opacity-80 transition-opacity", cm.chipBg)}>
+                      <CalendarDays size={13} className="shrink-0 opacity-70" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium truncate">{item.data.title}</span>
+                        {isMultiDay && <span className="text-[10px] opacity-60 ml-2">multi-day</span>}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-medium">{dateLabel}</p>
+                        {!item.data.allDay && item.data.startTime && <p className="text-[10px] opacity-60">{item.data.startTime}</p>}
+                      </div>
+                    </Link>
+                  );
+                }
+
+                if (item.kind === "kanban") {
+                  return (
+                    <Link key={i} href="/kanban" className="flex items-center gap-3 rounded-xl border border-blue-800/40 bg-blue-950/30 px-3 py-2 hover:opacity-80 transition-opacity">
+                      <CheckSquare size={13} className="text-blue-400 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-2">{item.data.jiraKey}</span>}
+                        <span className="text-sm text-slate-200 truncate">{item.data.title}</span>
+                      </div>
+                      <p className="text-xs text-blue-300 shrink-0">{dateLabel}</p>
+                    </Link>
+                  );
+                }
+
+                // todo
+                return (
+                  <Link key={i} href="/todo" className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 hover:opacity-80 transition-opacity">
+                    <CheckSquare size={13} className="text-slate-400 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-2">{item.data.jiraKey}</span>}
+                      <span className="text-sm text-slate-300 truncate">{item.data.title}</span>
+                    </div>
+                    <p className="text-xs text-slate-500 shrink-0">{dateLabel}</p>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
