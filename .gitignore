@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Playwright automation output
+scripts/eauto-insurance/playwright-report/
+scripts/eauto-insurance/test-results/
+scripts/eauto-insurance/input-vehicles.xlsx
+scripts/eauto-insurance/output-results.xlsx
+scripts/eauto-insurance/node_modules/
