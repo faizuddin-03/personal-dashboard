@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect, createContext, useContext } from "react";
+import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import SettingsModal from "@/components/SettingsModal";
 import { JiraCredentials, getStoredCredentials, clearCredentials } from "@/lib/jira";
+import { useAutoBackup } from "@/hooks/useAutoBackup";
 
 interface AppCtx {
   creds: JiraCredentials | null;
@@ -22,8 +23,10 @@ export function useApp() {
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [creds, setCreds] = useState<JiraCredentials | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const router = useRouter();
+
+  useAutoBackup();
 
   useEffect(() => {
     setCreds(getStoredCredentials());
@@ -35,31 +38,20 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setCreds(null);
   }
 
+  function openSettings() {
+    router.push("/settings");
+  }
+
   if (!hydrated) return null;
 
   return (
-    <AppContext.Provider value={{ creds, setCreds, openSettings: () => setShowSettings(true) }}>
+    <AppContext.Provider value={{ creds, setCreds, openSettings }}>
       <div className="flex h-screen overflow-hidden">
-        <Sidebar
-          onSettingsClick={() => setShowSettings(true)}
-          onLogout={handleLogout}
-          isConnected={!!creds}
-        />
+        <Sidebar onLogout={handleLogout} isConnected={!!creds} />
         <main className="flex-1 overflow-y-auto bg-slate-950">
           {children}
         </main>
       </div>
-
-      {showSettings && (
-        <SettingsModal
-          initial={creds}
-          onClose={() => setShowSettings(false)}
-          onSaved={(c) => {
-            setCreds(c);
-            setShowSettings(false);
-          }}
-        />
-      )}
     </AppContext.Provider>
   );
 }
