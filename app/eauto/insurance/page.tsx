@@ -2,7 +2,7 @@
 import { useState } from "react";
 import {
   Shield, Play, Download, Loader2,
-  TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp,
+  TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import clsx from "clsx";
@@ -97,6 +97,9 @@ function AllowBadge({ value }: { value: string }) {
 export default function InsurancePage() {
   // Input
   const [vehicleInput, setVehicleInput]     = useState("");
+  const [username, setUsername]             = useState("");
+  const [password, setPassword]             = useState("");
+  const [showPassword, setShowPassword]     = useState(false);
   const [icNumber, setIcNumber]             = useState("");
   const [postcode, setPostcode]             = useState("");
   const [vehicleCategory, setVehicleCategory] = useState<"individual" | "company">("individual");
@@ -139,6 +142,8 @@ export default function InsurancePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           vehicles,
+          username:        username.trim()  || undefined,
+          password:        password         || undefined,
           icNumber:        icNumber.trim()  || undefined,
           postcode:        postcode.trim()  || undefined,
           vehicleCategory: vehicleCategory,
@@ -204,6 +209,41 @@ export default function InsurancePage() {
 
         {/* ── Input panel ── */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+
+          {/* Credentials */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">Username</label>
+              <input
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                placeholder="eAuto username"
+                autoComplete="username"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">Password</label>
+              <div className="relative">
+                <input
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="eAuto password"
+                  autoComplete="current-password"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* Vehicle numbers */}
           <div>

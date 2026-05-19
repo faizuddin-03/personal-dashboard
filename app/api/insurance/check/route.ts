@@ -62,9 +62,11 @@ export async function POST(req: NextRequest) {
     icNumber?: string;
     postcode?: string;
     vehicleCategory?: string;
+    username?: string;
+    password?: string;
   };
 
-  const { vehicles = [], icNumber = "", postcode = "", vehicleCategory = "individual" } = body;
+  const { vehicles = [], icNumber = "", postcode = "", vehicleCategory = "individual", username = "", password = "" } = body;
 
   if (!vehicles.length) {
     return NextResponse.json({ error: "No vehicle numbers provided." }, { status: 400 });
@@ -96,6 +98,11 @@ export async function POST(req: NextRequest) {
     const child = spawn("npx", ["playwright", "test", "--project=insurance-checker"], {
       cwd: SCRIPT_DIR,
       shell: true,
+      env: {
+        ...process.env,
+        ...(username && { EAUTO_USERNAME: username }),
+        ...(password && { EAUTO_PASSWORD: password }),
+      },
     });
     let output = "";
     const timer = setTimeout(() => {
