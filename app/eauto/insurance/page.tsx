@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Shield, Play, Download, Loader2,
-  TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff,
+  TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import clsx from "clsx";
@@ -25,10 +25,35 @@ interface InsuranceRow {
   totalPrice:     string;
 }
 
+interface SavedResults {
+  rows: InsuranceRow[];
+  vehicleInput: string;
+  username: string;
+  runLog: string;
+  savedAt: string;
+}
+
 type ViewMode = "table" | "matrix";
 type AllowFilter = "all" | "yes" | "no" | "refer";
 type SortDir = "asc" | "desc";
 interface SortState { key: keyof InsuranceRow | null; dir: SortDir }
+
+const STORAGE_KEY = "insurance_results";
+
+function loadSaved(): SavedResults | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveResults(data: SavedResults) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function clearSaved() {
+  localStorage.removeItem(STORAGE_KEY);
+}
 
 const COLUMNS: { key: keyof InsuranceRow; label: string }[] = [
   { key: "vehicleNumber",  label: "Vehicle No."    },
@@ -113,6 +138,7 @@ export default function InsurancePage() {
   const [error, setError]       = useState("");
   const [hasRun, setHasRun]     = useState(false);
   const [runLog, setRunLog]     = useState("");
+  const [savedAt, setSavedAt]   = useState<string | null>(null);
 
   // Results
   const [rows, setRows]         = useState<InsuranceRow[]>([]);
@@ -125,6 +151,29 @@ export default function InsurancePage() {
   const [search, setSearch]               = useState("");
   const [allowFilter, setAllowFilter]     = useState<AllowFilter>("all");
   const [sort, setSort]                   = useState<SortState>({ key: null, dir: "asc" });
+
+  // Restore saved results on mount
+  useEffect(() => {
+    const saved = loadSaved();
+    if (!saved || saved.rows.length === 0) return;
+    setRows(saved.rows);
+    setVehicleInput(saved.vehicleInput);
+    if (saved.username) setUsername(saved.username);
+    setRunLog(saved.runLog ?? "");
+    setSavedAt(saved.savedAt);
+    setHasRun(true);
+    const found = new Set(saved.rows.map((r: InsuranceRow) => r.insurer).filter(Boolean));
+    setShownInsurers(found.size ? found : new Set(ALL_INSURERS));
+  }, []);
+
+  function handleClearResults() {
+    clearSaved();
+    setRows([]);
+    setRunLog("");
+    setSavedAt(null);
+    setHasRun(false);
+    setVehicleInput("");
+  }
 
   const vehicles = parseVehicles(vehicleInput);
 
@@ -159,11 +208,17 @@ export default function InsurancePage() {
       });
       const data = await res.json() as { rows?: InsuranceRow[]; error?: string; log?: string };
       if (!res.ok) throw new Error(data.error ?? "Request failed");
-      setRows(data.rows ?? []);
+      const newRows = data.rows ?? [];
+      const now = new Date().toISOString();
+      setRows(newRows);
+      setSavedAt(now);
       if (data.log) setRunLog(data.log);
 
+      // Persist to localStorage
+      saveResults({ rows: newRows, vehicleInput, username, runLog: data.log ?? "", savedAt: now });
+
       // Auto-expand insurer filter to all found insurers
-      const found = new Set(data.rows?.map(r => r.insurer).filter(Boolean) ?? []);
+      const found = new Set(newRows.map(r => r.insurer).filter(Boolean));
       setShownInsurers(found.size ? found : new Set(ALL_INSURERS));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
@@ -232,7 +287,12 @@ export default function InsurancePage() {
           <h1 className="text-sm font-semibold text-slate-200">Insurance Checker</h1>
         </div>
         {rows.length > 0 && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {savedAt && (
+              <span className="text-[11px] text-slate-600 hidden sm:block">
+                Saved {new Date(savedAt).toLocaleString()}
+              </span>
+            )}
             <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
               <button onClick={() => setView("table")}
                 className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
@@ -248,6 +308,10 @@ export default function InsurancePage() {
             <button onClick={() => exportToExcel(displayRows)}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg transition-colors">
               <Download size={12} /> Export Excel
+            </button>
+            <button onClick={handleClearResults} title="Clear saved results"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-lg transition-colors border border-slate-800">
+              <Trash2 size={12} /> Clear
             </button>
           </div>
         )}
