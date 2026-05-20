@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import {
   Shield, Play, Download, Loader2,
   TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
+  Search, X,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import clsx from "clsx";
@@ -270,9 +271,9 @@ export default function InsurancePage() {
   const statsNo    = displayRows.filter(r => ["no","n","false","0"].includes(r.allowPurchase.trim().toLowerCase())).length;
   const statsRefer = displayRows.filter(r => r.allowPurchase.trim().toLowerCase().startsWith("refer")).length;
 
-  const matrix         = buildMatrix(filteredRows);
+  const matrix         = buildMatrix(afterSearch);
   const matrixVehicles = Array.from(matrix.keys());
-  const matrixInsurers = Array.from(new Set(filteredRows.map(r => r.insurer).filter(Boolean)));
+  const matrixInsurers = Array.from(new Set(afterSearch.map(r => r.insurer).filter(Boolean)));
   const foundInsurers  = Array.from(new Set(rows.map(r => r.insurer).filter(Boolean)));
 
   const [activeTab, setActiveTab] = useState<"check" | "tab2">("check");
@@ -511,77 +512,103 @@ export default function InsurancePage() {
           </div>
         )}
 
-        {/* ── Insurer display filter (shown after results) ── */}
+        {/* ── Unified filter card ── */}
         {rows.length > 0 && (
-          <div>
-            <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold mb-2">
-              Filter display by insurer
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {foundInsurers.map(ins => {
-                const active = shownInsurers.has(ins);
-                return (
-                  <button key={ins} onClick={() => toggleInsurer(ins)}
-                    className={clsx(
-                      "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
-                      active
-                        ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
-                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
-                    )}>
-                    {ins}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ── Search + Allow Purchase filter ── */}
-        {filteredRows.length > 0 && (
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Search */}
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search vehicle, make, model, insurer…"
-              className="flex-1 min-w-[200px] bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-            {/* Allow Purchase pills */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-600 mr-1 whitespace-nowrap">Allow:</span>
-              {(["all", "yes", "no", "refer"] as AllowFilter[]).map(f => (
-                <button key={f} onClick={() => setAllowFilter(f)}
-                  className={clsx(
-                    "px-3 py-1.5 rounded-full text-xs font-medium border transition-all capitalize",
-                    allowFilter === f
-                      ? f === "yes"   ? "bg-green-900/60 border-green-700 text-green-300"
-                        : f === "no"  ? "bg-red-900/60 border-red-700 text-red-300"
-                        : f === "refer" ? "bg-yellow-900/60 border-yellow-700 text-yellow-300"
-                        : "bg-blue-600/20 border-blue-600/50 text-blue-300"
-                      : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
-                  )}>
-                  {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+            {/* Search row */}
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search vehicle number, make, model, insurer…"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 pl-9 pr-9 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+              {search && (
+                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                  <X size={14} />
                 </button>
-              ))}
+              )}
             </div>
+
+            {/* Filter pills row */}
+            <div className="flex flex-wrap gap-x-5 gap-y-2 items-center">
+              {/* Insurer group */}
+              {foundInsurers.length > 0 && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold shrink-0">Insurer</span>
+                  <button
+                    onClick={() => setShownInsurers(new Set(foundInsurers))}
+                    className={clsx("px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all",
+                      shownInsurers.size === foundInsurers.length
+                        ? "bg-slate-700 border-slate-600 text-slate-200"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                    )}>All</button>
+                  {foundInsurers.map(ins => {
+                    const active = shownInsurers.has(ins);
+                    return (
+                      <button key={ins} onClick={() => toggleInsurer(ins)}
+                        className={clsx("px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all",
+                          active
+                            ? "bg-blue-600/20 border-blue-500/50 text-blue-300"
+                            : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                        )}>{ins}</button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Divider */}
+              {foundInsurers.length > 0 && <span className="text-slate-700 hidden sm:block">|</span>}
+
+              {/* Allow Purchase group */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold shrink-0">Allow</span>
+                {(["all", "yes", "no", "refer"] as AllowFilter[]).map(f => (
+                  <button key={f} onClick={() => setAllowFilter(f)}
+                    className={clsx("px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all capitalize",
+                      allowFilter === f
+                        ? f === "yes"   ? "bg-green-900/60 border-green-700 text-green-300"
+                          : f === "no"  ? "bg-red-900/60 border-red-700 text-red-300"
+                          : f === "refer" ? "bg-yellow-900/60 border-yellow-700 text-yellow-300"
+                          : "bg-slate-700 border-slate-600 text-slate-200"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                    )}>{f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* Active filter summary + clear */}
+            {(search || allowFilter !== "all" || shownInsurers.size < foundInsurers.length) && (
+              <div className="flex items-center justify-between text-xs pt-0.5 border-t border-slate-800">
+                <span className="text-slate-500">
+                  Showing <span className="text-slate-200 font-medium">{displayRows.length}</span> of <span className="text-slate-200 font-medium">{rows.length}</span> rows
+                </span>
+                <button
+                  onClick={() => { setSearch(""); setAllowFilter("all"); setShownInsurers(new Set(foundInsurers)); }}
+                  className="text-blue-400 hover:text-blue-300 font-medium"
+                >Clear filters</button>
+              </div>
+            )}
           </div>
         )}
 
-        {/* ── Summary stats ── */}
+        {/* ── Summary stats (inline one-liner) ── */}
         {displayRows.length > 0 && view === "table" && (
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="text-slate-500">{displayRows.length} row{displayRows.length !== 1 ? "s" : ""}</span>
             <span className="text-slate-700">·</span>
-            <span className="px-2 py-0.5 rounded-full bg-green-900/60 text-green-300 border border-green-800 font-semibold">
-              Yes {statsYes}
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-red-900/60 text-red-300 border border-red-800 font-semibold">
-              No {statsNo}
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-yellow-900/60 text-yellow-300 border border-yellow-800 font-semibold">
-              Refer {statsRefer}
-            </span>
+            <span className="px-2 py-0.5 rounded-full bg-green-900/60 text-green-300 border border-green-800 font-semibold">Yes {statsYes}</span>
+            <span className="px-2 py-0.5 rounded-full bg-red-900/60 text-red-300 border border-red-800 font-semibold">No {statsNo}</span>
+            <span className="px-2 py-0.5 rounded-full bg-yellow-900/60 text-yellow-300 border border-yellow-800 font-semibold">Refer {statsRefer}</span>
+          </div>
+        )}
+
+        {/* ── Empty state: filters produced no results ── */}
+        {afterSearch.length === 0 && rows.length > 0 && (
+          <div className="text-center py-10 text-slate-600 text-sm">
+            No rows match your filters — try adjusting the search or filters above.
           </div>
         )}
 
@@ -632,7 +659,7 @@ export default function InsurancePage() {
         )}
 
         {/* ── Matrix view ── */}
-        {filteredRows.length > 0 && view === "matrix" && (
+        {afterSearch.length > 0 && view === "matrix" && (
           <div className="space-y-6">
             {/* Eligibility grid */}
             <div className="overflow-x-auto rounded-2xl border border-slate-800">
@@ -667,7 +694,7 @@ export default function InsurancePage() {
             <div className="space-y-3">
               <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Vehicle Details</p>
               {matrixVehicles.map(vn => {
-                const vRows = filteredRows.filter(r => r.vehicleNumber.toUpperCase() === vn);
+                const vRows = afterSearch.filter(r => r.vehicleNumber.toUpperCase() === vn);
                 const first = vRows[0];
                 if (!first) return null;
                 return (
