@@ -17,12 +17,13 @@ import {
 } from "@/lib/calendar-events";
 import { getKanbanState, KanbanCard } from "@/lib/kanban";
 import { getTodos, TodoItem } from "@/lib/todo";
+import { todayLocal, daysFromToday } from "@/lib/date";
 
 // ── Helpers ───────────────────────────────────────────────
 function toDateStr(d: Date) {
   return d.toISOString().slice(0, 10);
 }
-function today() { return toDateStr(new Date()); }
+function today() { return todayLocal(); }
 
 function calendarDays(year: number, month: number): Date[] {
   const first = new Date(year, month, 1);

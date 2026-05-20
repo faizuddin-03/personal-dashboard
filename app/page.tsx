@@ -14,6 +14,7 @@ import { getKanbanState, KanbanCard, PRIORITY_META, isOverdue as isKanbanOverdue
 import { getTodos } from "@/lib/todo";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META } from "@/lib/deployments";
 import { getCalendarEvents, CalendarEvent, EVENT_COLOR_META } from "@/lib/calendar-events";
+import { todayLocal, daysFromToday } from "@/lib/date";
 import clsx from "clsx";
 
 type Tab = "assigned" | "reported";
@@ -53,8 +54,8 @@ function MiniKanbanCard({ card }: { card: KanbanCard }) {
 // ── Upcoming item row ────────────────────────────────────────
 function UpcomingRow({ item, i }: { item: UpcomingItemType; i: number }) {
   const dateLabel = (() => {
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+    const todayStr = todayLocal();
+    const tomorrowStr = daysFromToday(1);
     if (item.date === todayStr) return "Today";
     if (item.date === tomorrowStr) return "Tomorrow";
     return new Date(item.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
@@ -160,9 +161,8 @@ export default function Dashboard() {
     const todos = getTodos();
 
     // Upcoming events within 7 days
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const in7 = new Date(); in7.setDate(in7.getDate() + 7);
-    const in7Str = in7.toISOString().slice(0, 10);
+    const todayStr = todayLocal();
+    const in7Str = daysFromToday(7);
 
     const upcoming: UpcomingItemType[] = [];
     for (const d of getDeployments()) {

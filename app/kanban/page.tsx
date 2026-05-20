@@ -58,9 +58,35 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
   const [jiraQuery, setJiraQuery]       = useState("");
   const [allJira, setAllJira]           = useState<JiraResult[]>([]);
   const [jiraLoading, setJiraLoading]   = useState(false);
+  const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
   const [jiraError, setJiraError]       = useState("");
 
-  // Fetch Jira tickets when tab switches to jira
+  function buildJql(q: string): string {
+    const escaped = q.trim().replace(/"/g, "");
+    const isId  = /^\d+$/.test(escaped);
+    const isKey = /^[A-Za-z]+-\d+$/.test(escaped);
+    const resolvedKey = isId && creds?.defaultProjectKey ? `${creds.defaultProjectKey}-${escaped}` : null;
+    if (resolvedKey) return `key = "${resolvedKey}" ORDER BY updated DESC`;
+    if (isId)        return `id = ${escaped} ORDER BY updated DESC`;
+    if (isKey)       return `key = "${escaped}" ORDER BY updated DESC`;
+    return `text ~ "${escaped}" ORDER BY updated DESC`;
+  }
+
+  function parseJiraResults(data: { issues?: unknown[] }): JiraResult[] {
+    return (data.issues ?? []).map((i) => {
+      const issue = i as { key: string; fields: { summary: string; status: { name: string }; issuetype: { name: string }; project: { name: string }; updated: string } };
+      return {
+        key: issue.key,
+        summary: issue.fields.summary,
+        status: issue.fields.status.name,
+        type: issue.fields.issuetype.name,
+        project: issue.fields.project.name,
+        updated: issue.fields.updated,
+      };
+    });
+  }
+
+  // Initial load: assigned/reported tickets
   useEffect(() => {
     if (tab !== "jira" || !creds || allJira.length > 0) return;
     setJiraLoading(true);
@@ -76,23 +102,35 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
       }),
     })
       .then(r => r.json())
-      .then(data => {
-        setAllJira(
-          (data.issues ?? []).map((i: { key: string; fields: { summary: string; status: { name: string }; issuetype: { name: string }; project: { name: string }; updated: string } }) => ({
-            key: i.key,
-            summary: i.fields.summary,
-            status: i.fields.status.name,
-            type: i.fields.issuetype.name,
-            project: i.fields.project.name,
-            updated: i.fields.updated,
-          }))
-        );
-      })
+      .then(data => setAllJira(parseJiraResults(data)))
       .catch(() => setJiraError("Failed to load tickets"))
       .finally(() => setJiraLoading(false));
-  }, [tab, creds, allJira.length]);
+  }, [tab, creds, allJira.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const filteredJira = allJira.filter(r => {
+  // Debounced smart search (number, key, or text)
+  useEffect(() => {
+    if (tab !== "jira" || !creds || jiraQuery.length < 2) return;
+    const timer = setTimeout(() => {
+      setJiraSearchLoading(true);
+      fetch("/api/jira/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...creds,
+          jql: buildJql(jiraQuery),
+          maxResults: 50,
+          fields: ["summary", "status", "issuetype", "project", "updated"],
+        }),
+      })
+        .then(r => r.json())
+        .then(data => setAllJira(parseJiraResults(data)))
+        .catch(() => {})
+        .finally(() => setJiraSearchLoading(false));
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [jiraQuery, tab, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const filteredJira = jiraQuery.length >= 2 ? allJira : allJira.filter(r => {
     const q = jiraQuery.toLowerCase();
     return !q || r.key.toLowerCase().includes(q) || r.summary.toLowerCase().includes(q) || r.project.toLowerCase().includes(q);
   });
@@ -247,9 +285,10 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
                     <input
                       value={jiraQuery}
                       onChange={e => setJiraQuery(e.target.value)}
-                      placeholder="Filter by key, summary, or project…"
-                      className={inp + " pl-8"}
+                      placeholder="Search by number, key, or summary…"
+                      className={inp + " pl-8 pr-8"}
                     />
+                    {jiraSearchLoading && <Loader2 size={13} className="absolute right-3 top-2.5 text-blue-400 animate-spin" />}
                   </div>
 
                   {jiraLoading && (
