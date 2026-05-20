@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, FileText, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays, X } from "lucide-react";
+import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays, X } from "lucide-react";
 import Link from "next/link";
 import {
   JiraIssue, JiraSearchResult,
@@ -11,8 +11,7 @@ import IssueDrawer from "@/components/IssueDrawer";
 import StatsBar from "@/components/StatsBar";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import { getKanbanState, KanbanCard, PRIORITY_META, isOverdue as isKanbanOverdue, isDueToday, accentBorderClass } from "@/lib/kanban";
-import { getTodos, isTodoOverdue } from "@/lib/todo";
-import { getNotes } from "@/lib/notes-store";
+import { getTodos } from "@/lib/todo";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META } from "@/lib/deployments";
 import { getCalendarEvents, CalendarEvent, EVENT_COLOR_META } from "@/lib/calendar-events";
 import clsx from "clsx";
@@ -46,30 +45,6 @@ function MiniKanbanCard({ card }: { card: KanbanCard }) {
             {card.assignee.slice(0, 2).toUpperCase()}
           </span>
         )}
-      </div>
-    </Link>
-  );
-}
-
-// ── Cross-app mini stat widget ──────────────────────────────
-function AppWidget({ label, value, sub, subAlert, href, icon: Icon, color }: {
-  label: string; value: number; sub?: string; subAlert?: boolean;
-  href: string; icon: React.ElementType;
-  color: "green" | "blue" | "purple" | "red";
-}) {
-  const colors = {
-    green:  "bg-green-950/40  border-green-800/50  text-green-400",
-    blue:   "bg-blue-950/40   border-blue-800/50   text-blue-400",
-    purple: "bg-purple-950/40 border-purple-800/50 text-purple-400",
-    red:    "bg-red-950/40    border-red-800/50    text-red-400",
-  };
-  return (
-    <Link href={href} className={clsx("rounded-xl border px-4 py-3 flex items-center gap-3 hover:opacity-80 transition-opacity", colors[color])}>
-      <Icon size={18} className="shrink-0" />
-      <div>
-        <p className="text-xl font-bold">{value}</p>
-        <p className="text-[11px] opacity-70 font-medium">{label}</p>
-        {sub && <p className={clsx("text-[10px] mt-0.5", subAlert ? "text-red-400 font-semibold" : "opacity-50")}>{sub}</p>}
       </div>
     </Link>
   );
@@ -172,9 +147,6 @@ export default function Dashboard() {
 
   // Local app data
   const [ongoingCards, setOngoingCards] = useState<KanbanCard[]>([]);
-  const [urgentCount, setUrgentCount]   = useState(0);
-  const [todoStats, setTodoStats]       = useState({ active: 0, overdue: 0 });
-  const [notesCount, setNotesCount]     = useState(0);
   const [dueSoonCards, setDueSoonCards] = useState<KanbanCard[]>([]);
   const [upcomingItems, setUpcomingItems] = useState<UpcomingItemType[]>([]);
 
@@ -182,13 +154,10 @@ export default function Dashboard() {
   useEffect(() => {
     const kanban = getKanbanState();
     setOngoingCards(kanban.ongoing);
-    setUrgentCount(kanban.urgent.length);
     const allCards = (["urgent", "todo", "ongoing", "on-hold", "finished"] as const)
       .flatMap(col => kanban[col] as KanbanCard[]);
     setDueSoonCards(allCards.filter(c => isKanbanOverdue(c) || isDueToday(c)));
     const todos = getTodos();
-    setTodoStats({ active: todos.filter(t => !t.done).length, overdue: todos.filter(isTodoOverdue).length });
-    setNotesCount(getNotes().length);
 
     // Upcoming events within 7 days
     const todayStr = new Date().toISOString().slice(0, 10);
@@ -288,7 +257,7 @@ export default function Dashboard() {
     });
 
   const isSearching = search.trim().length > 0;
-  const hasLocalData = ongoingCards.length > 0 || todoStats.active > 0 || notesCount > 0 || upcomingItems.length > 0;
+  const hasLocalData = ongoingCards.length > 0 || upcomingItems.length > 0;
 
   return (
     <div className="flex flex-col min-h-full">
@@ -368,28 +337,8 @@ export default function Dashboard() {
         {hasLocalData && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            {/* Left: workspace stats + kanban on-going */}
+            {/* Left: kanban on-going */}
             <div className="space-y-4">
-              {(todoStats.active > 0 || urgentCount > 0 || notesCount > 0) && (
-                <div>
-                  <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold mb-2">Workspace</p>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {todoStats.active > 0 && (
-                      <AppWidget label="Active Tasks" value={todoStats.active}
-                        sub={todoStats.overdue > 0 ? `${todoStats.overdue} overdue` : undefined}
-                        subAlert={todoStats.overdue > 0}
-                        href="/todo" icon={CheckSquare} color="green" />
-                    )}
-                    {urgentCount > 0 && (
-                      <AppWidget label="Urgent (Kanban)" value={urgentCount} href="/kanban" icon={CheckSquare} color="red" />
-                    )}
-                    {notesCount > 0 && (
-                      <AppWidget label="Notes" value={notesCount} href="/notes" icon={FileText} color="purple" />
-                    )}
-                  </div>
-                </div>
-              )}
-
               {ongoingCards.length > 0 && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
