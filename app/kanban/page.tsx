@@ -256,19 +256,24 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
               </div>
               <div>
                 <label className={lbl}>Accent Color</label>
-                <div className="flex gap-2 mt-1">
+                <div className="flex flex-wrap gap-2 mt-1">
                   {ACCENT_COLORS.map(c => (
                     <button
                       key={c.value}
                       title={c.label}
                       onClick={() => setAccentColor(c.value)}
                       className={clsx(
-                        "w-6 h-6 rounded-full border-2 transition-all",
-                        c.value === "" ? "bg-slate-700 border-slate-600" : "bg-slate-800",
-                        accentColor === c.value ? "ring-2 ring-blue-500 ring-offset-1 ring-offset-slate-900" : "border-slate-600"
+                        "w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all hover:scale-110",
+                        accentColor === c.value ? "border-white shadow-lg scale-110" : "border-transparent"
                       )}
-                      style={{ borderLeftColor: c.value ? undefined : undefined }}
-                    />
+                      style={{ backgroundColor: c.swatch }}
+                    >
+                      {accentColor === c.value && (
+                        <svg viewBox="0 0 12 12" width="12" height="12" fill="none">
+                          <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -610,11 +615,17 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
                     aria-label={`Accent color: ${c.label}`}
                     onClick={() => setAccentColor(c.value)}
                     className={clsx(
-                      "w-6 h-6 rounded-full border-2 transition-all",
-                      c.value === "" ? "bg-slate-700 border-slate-600" : "bg-slate-800",
-                      accentColor === c.value ? "ring-2 ring-blue-500 ring-offset-1 ring-offset-slate-900" : "border-slate-600"
+                      "w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all hover:scale-110",
+                      accentColor === c.value ? "border-white shadow-lg scale-110" : "border-transparent"
                     )}
-                  />
+                    style={{ backgroundColor: c.swatch }}
+                  >
+                    {accentColor === c.value && (
+                      <svg viewBox="0 0 12 12" width="12" height="12" fill="none">
+                        <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </button>
                 ))}
               </div>
             </div>
