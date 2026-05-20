@@ -642,9 +642,9 @@ export default function Dashboard() {
                       }, {});
                       return (
                         <div key={cr.key} className="border border-slate-800 rounded-lg overflow-hidden">
-                          <button
-                            onClick={() => setCrExpanded(prev => ({ ...prev, [cr.key]: !isOpen }))}
-                            className="w-full flex items-center gap-2 px-3 py-2.5 bg-slate-800/60 hover:bg-slate-800 transition-colors text-left">
+                          <div
+                            className="w-full flex items-center gap-2 px-3 py-2.5 bg-slate-800/60 hover:bg-slate-800 transition-colors cursor-pointer select-none"
+                            onClick={() => setCrExpanded(prev => ({ ...prev, [cr.key]: !isOpen }))}>
                             {isOpen ? <ChevronDown size={13} className="text-slate-500 shrink-0" /> : <ChevronRight size={13} className="text-slate-500 shrink-0" />}
                             <span className="text-[10px] font-mono text-indigo-400 font-bold shrink-0">{cr.key}</span>
                             <span className="text-xs text-slate-200 font-medium flex-1 line-clamp-1">{cr.fields.summary}</span>
@@ -657,7 +657,7 @@ export default function Dashboard() {
                               className="ml-1 text-[10px] text-indigo-400 hover:text-indigo-200 shrink-0 px-1.5 py-0.5 rounded hover:bg-indigo-950/40">
                               View CR
                             </button>
-                          </button>
+                          </div>
                           {isOpen && (
                             <div className="divide-y divide-slate-800/60">
                               {children.map(child => {
