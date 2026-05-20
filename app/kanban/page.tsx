@@ -7,7 +7,7 @@ import {
 } from "@dnd-kit/core";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
-  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer,
+  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -445,12 +445,28 @@ function DraggableCard({ card, baseUrl, onCardClick }: {
 }
 
 // ── Column ────────────────────────────────────────────────
-function Column({ id, cards, baseUrl, onAddCard, onCardClick }: {
+function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse }: {
   id: ColumnId; cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
+  collapsed?: boolean; onToggleCollapse?: () => void;
 }) {
   const meta = COLUMN_META[id];
   const { setNodeRef, isOver } = useDroppable({ id });
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col w-12 shrink-0">
+        <div
+          className={clsx("flex flex-col items-center gap-2 px-2 py-3 rounded-xl border cursor-pointer hover:opacity-80 transition-opacity select-none", meta.headerBg)}
+          onClick={onToggleCollapse}
+          title={`Expand ${meta.label}`}
+        >
+          <span className="text-[11px] bg-black/20 text-slate-400 px-1 rounded-full font-medium leading-5">{cards.length}</span>
+          <span className="text-xs font-semibold text-slate-300" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>{meta.label}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-72 shrink-0">
@@ -459,7 +475,14 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick }: {
           <span className="text-sm font-semibold text-slate-200">{meta.label}</span>
           <span className="text-xs bg-black/20 text-slate-400 px-1.5 py-0.5 rounded-full">{cards.length}</span>
         </div>
-        <button onClick={() => onAddCard(id)} aria-label={`Add card to ${meta.label}`} className="text-slate-500 hover:text-slate-200 p-0.5 rounded hover:bg-black/20 transition-colors"><Plus size={15} /></button>
+        <div className="flex items-center gap-0.5">
+          {onToggleCollapse && (
+            <button onClick={onToggleCollapse} aria-label={`Collapse ${meta.label}`} className="text-slate-500 hover:text-slate-200 p-0.5 rounded hover:bg-black/20 transition-colors" title="Collapse">
+              <ChevronRight size={15} />
+            </button>
+          )}
+          <button onClick={() => onAddCard(id)} aria-label={`Add card to ${meta.label}`} className="text-slate-500 hover:text-slate-200 p-0.5 rounded hover:bg-black/20 transition-colors"><Plus size={15} /></button>
+        </div>
       </div>
       <div
         ref={setNodeRef}
@@ -770,6 +793,11 @@ export default function KanbanPage() {
   const [activeId, setActiveId]     = useState<string | null>(null);
   const [showArchive, setShowArchive] = useState(false);
   const [archivedCards, setArchivedCards] = useState<KanbanCard[]>([]);
+  const [collapsedCols, setCollapsedCols] = useState<Partial<Record<ColumnId, boolean>>>({ finished: false });
+
+  function toggleCollapse(col: ColumnId) {
+    setCollapsedCols(prev => ({ ...prev, [col]: !prev[col] }));
+  }
 
   useEffect(() => {
     setBoardState(getKanbanState());
@@ -881,7 +909,12 @@ export default function KanbanPage() {
         <div className="flex-1 px-6 py-5 overflow-x-auto">
           <div className="flex gap-4 pb-4 min-w-max">
             {(["todo", "ongoing", "on-hold", "finished"] as ColumnId[]).map(col => (
-              <Column key={col} id={col} cards={boardState[col]} baseUrl={creds?.baseUrl} onAddCard={setAddTarget} onCardClick={setSelectedCard} />
+              <Column
+                key={col} id={col} cards={boardState[col]} baseUrl={creds?.baseUrl}
+                onAddCard={setAddTarget} onCardClick={setSelectedCard}
+                collapsed={collapsedCols[col] ?? false}
+                onToggleCollapse={() => toggleCollapse(col)}
+              />
             ))}
           </div>
         </div>
