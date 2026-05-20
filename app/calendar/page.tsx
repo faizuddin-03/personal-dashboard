@@ -17,11 +17,12 @@ import {
 } from "@/lib/calendar-events";
 import { getKanbanState, KanbanCard } from "@/lib/kanban";
 import { getTodos, TodoItem } from "@/lib/todo";
-import { todayLocal, daysFromToday } from "@/lib/date";
+import { todayLocal, daysFromToday, APP_TIMEZONE } from "@/lib/date";
 
 // ── Helpers ───────────────────────────────────────────────
+const _dateFmt = new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE });
 function toDateStr(d: Date) {
-  return d.toISOString().slice(0, 10);
+  return _dateFmt.format(d);
 }
 function today() { return todayLocal(); }
 
