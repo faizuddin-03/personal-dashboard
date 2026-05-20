@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
+import Linkified from "@/components/Linkified";
 import {
   KanbanCard, KanbanState, ColumnId, Priority,
   COLUMN_IDS, COLUMN_META, PRIORITY_META, ACCENT_COLORS, accentBorderClass,
@@ -719,7 +720,10 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
           <div>
             <p className="text-xs text-slate-600 mb-1">Description</p>
             {editing ? <textarea value={description} onChange={e => setDesc(e.target.value)} rows={3} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 resize-none focus:outline-none focus:ring-1 focus:ring-blue-600" />
-              : <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap">{card.description || <span className="text-slate-600">No description</span>}</p>}
+              : card.description
+                  ? <Linkified text={card.description} className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap" />
+                  : <p className="text-sm text-slate-600">No description</p>
+              }
           </div>
 
           <div>

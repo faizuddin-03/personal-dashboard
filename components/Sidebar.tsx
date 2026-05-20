@@ -56,9 +56,9 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-4 h-14 border-b border-slate-800">
         <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
-          <span className="text-white text-xs font-bold">QA</span>
+          <span className="text-white text-xs font-bold">UB</span>
         </div>
-        <span className="text-slate-100 font-semibold text-sm flex-1">QA Dashboard</span>
+        <span className="text-slate-100 font-semibold text-sm flex-1">Udin's Board</span>
         {onClose && (
           <button onClick={onClose} className="text-slate-500 hover:text-slate-300 lg:hidden p-1">
             <X size={16} />

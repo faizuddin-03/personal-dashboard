@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
+import Linkified from "@/components/Linkified";
 import {
   Deployment, DeploymentType, DeploymentStatus,
   DEPLOYMENT_TYPE_META, DEPLOYMENT_STATUS_META, DEPLOYMENT_ENVIRONMENTS,
@@ -823,7 +824,7 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                     {d.environment && <span>{d.environment}</span>}
                     {d.deployedBy  && <span>by {d.deployedBy}</span>}
                   </div>
-                  {d.notes && <p className="text-xs text-slate-500 mt-1.5 line-clamp-2">{d.notes}</p>}
+                  {d.notes && <Linkified text={d.notes} className="text-xs text-slate-500 mt-1.5 line-clamp-2" />}
                   {d.rollbackPlan && (
                     <p className="text-[11px] text-slate-600 mt-1"><span className="text-slate-500 font-medium">Rollback:</span> {d.rollbackPlan}</p>
                   )}
@@ -845,7 +846,7 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                         {e.allDay && <span>All day</span>}
                         {isMultiDay && <span>{e.startDate} → {e.endDate}</span>}
                       </div>
-                      {e.notes && <p className="text-xs opacity-60 mt-1 line-clamp-2">{e.notes}</p>}
+                      {e.notes && <Linkified text={e.notes} className="text-xs opacity-60 mt-1 line-clamp-2" />}
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <button onClick={() => onEditEvent(e)} aria-label="Edit event" className="p-1 text-slate-600 hover:text-slate-300"><Pencil size={12} /></button>

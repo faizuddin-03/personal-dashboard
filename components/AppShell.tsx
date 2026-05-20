@@ -86,7 +86,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Menu size={20} />
             </button>
-            <span className="text-sm font-semibold text-slate-200">QA Dashboard</span>
+            <span className="text-sm font-semibold text-slate-200">Udin's Board</span>
             <button
               onClick={() => setSearchOpen(true)}
               className="text-slate-400 hover:text-slate-200 p-1"

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "QA Dashboard",
+  title: "Udin's Board",
   description: "Personal QA productivity dashboard with Jira integration",
 };
 
