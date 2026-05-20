@@ -4,9 +4,10 @@ import * as path from 'path';
 import ExcelJS from 'exceljs';
 
 // ─── CONFIGURATION ───────────────────────────────────────────────────────────
+const _baseUrl = process.env.EAUTO_BASE_URL || 'https://staging.eauto.my/sit3';
 const CONFIG = {
-  baseUrl: 'https://staging.eauto.my/sit3',
-  stagingLoginUrl: 'https://staging.eauto.my/sit3/public/login',
+  baseUrl: _baseUrl,
+  stagingLoginUrl: `${_baseUrl}/public/login`,
   enquiryPath: '/view/insurance/insurance-quote-enquiry/',
 
   username: process.env.EAUTO_USERNAME || 'faizuddinBO1',

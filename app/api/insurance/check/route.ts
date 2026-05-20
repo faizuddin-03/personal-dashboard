@@ -65,9 +65,11 @@ export async function POST(req: NextRequest) {
     vehicleCategory?: string;
     username?: string;
     password?: string;
+    baseUrl?: string;
+    concurrency?: number;
   };
 
-  const { vehicles = [], icNumber = "", postcode = "", vehicleCategory = "individual", username = "", password = "" } = body;
+  const { vehicles = [], icNumber = "", postcode = "", vehicleCategory = "individual", username = "", password = "", baseUrl = "", concurrency } = body;
 
   if (!vehicles.length) {
     return NextResponse.json({ error: "No vehicle numbers provided." }, { status: 400 });
@@ -101,8 +103,10 @@ export async function POST(req: NextRequest) {
       shell: true,
       env: {
         ...process.env,
-        ...(username && { EAUTO_USERNAME: username }),
-        ...(password && { EAUTO_PASSWORD: password }),
+        ...(username    && { EAUTO_USERNAME:    username }),
+        ...(password    && { EAUTO_PASSWORD:    password }),
+        ...(baseUrl     && { EAUTO_BASE_URL:    baseUrl }),
+        ...(concurrency && { INSURANCE_CONCURRENCY: String(concurrency) }),
       },
     });
     let output = "";

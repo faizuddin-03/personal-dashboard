@@ -8,6 +8,16 @@ import {
 import * as XLSX from "xlsx";
 import clsx from "clsx";
 
+// ── Environment presets ───────────────────────────────────────
+const ENV_PRESETS = [
+  { label: "SIT3", value: "https://staging.eauto.my/sit3" },
+  { label: "SIT1", value: "https://staging.eauto.my/sit1" },
+  { label: "UAT1", value: "https://staging.eauto.my/uat1" },
+  { label: "UAT3", value: "https://staging.eauto.my/uat3" },
+] as const;
+
+const DEFAULT_ENV = ENV_PRESETS[0].value;
+
 // ── Types ─────────────────────────────────────────────────────
 const ALL_INSURERS = ["Zurich", "Takaful", "Lonpac", "Chubb", "Tokio Marine"] as const;
 
@@ -30,8 +40,22 @@ interface SavedResults {
   rows: InsuranceRow[];
   vehicleInput: string;
   username: string;
+  baseUrl: string;
   runLog: string;
   savedAt: string;
+}
+
+// ── Estimate helpers ──────────────────────────────────────────
+const SECS_PER_VEHICLE = 25;
+
+function estimateTime(vehicleCount: number, concurrency: number): string {
+  if (vehicleCount === 0) return "";
+  const batches = Math.ceil(vehicleCount / concurrency);
+  const totalSecs = batches * SECS_PER_VEHICLE;
+  if (totalSecs < 60) return `~${totalSecs}s`;
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
+  return secs > 0 ? `~${mins}m ${secs}s` : `~${mins}m`;
 }
 
 type ViewMode = "table" | "matrix";
@@ -129,9 +153,12 @@ export default function InsurancePage() {
   const [username, setUsername]             = useState("");
   const [password, setPassword]             = useState("");
   const [showPassword, setShowPassword]     = useState(false);
+  const [baseUrl, setBaseUrl]               = useState<string>(DEFAULT_ENV);
+  const [customEnv, setCustomEnv]           = useState(false);
   const [icNumber, setIcNumber]             = useState("");
   const [postcode, setPostcode]             = useState("");
   const [vehicleCategory, setVehicleCategory] = useState<"individual" | "company">("individual");
+  const [concurrency, setConcurrency]       = useState(4);
   const [showAdvanced, setShowAdvanced]     = useState(false);
 
   // Run state
@@ -160,6 +187,11 @@ export default function InsurancePage() {
     setRows(saved.rows);
     setVehicleInput(saved.vehicleInput);
     if (saved.username) setUsername(saved.username);
+    if (saved.baseUrl) {
+      setBaseUrl(saved.baseUrl);
+      const isPreset = ENV_PRESETS.some(p => p.value === saved.baseUrl);
+      if (!isPreset) setCustomEnv(true);
+    }
     setRunLog(saved.runLog ?? "");
     setSavedAt(saved.savedAt);
     setHasRun(true);
@@ -205,6 +237,8 @@ export default function InsurancePage() {
           icNumber:        icNumber.trim()  || undefined,
           postcode:        postcode.trim()  || undefined,
           vehicleCategory: vehicleCategory,
+          baseUrl:         baseUrl          || undefined,
+          concurrency:     concurrency,
         }),
       });
       const data = await res.json() as { rows?: InsuranceRow[]; error?: string; log?: string };
@@ -216,7 +250,7 @@ export default function InsurancePage() {
       if (data.log) setRunLog(data.log);
 
       // Persist to localStorage
-      saveResults({ rows: newRows, vehicleInput, username, runLog: data.log ?? "", savedAt: now });
+      saveResults({ rows: newRows, vehicleInput, username, baseUrl, runLog: data.log ?? "", savedAt: now });
 
       // Auto-expand insurer filter to all found insurers
       const found = new Set(newRows.map(r => r.insurer).filter(Boolean));
@@ -333,7 +367,52 @@ export default function InsurancePage() {
         {/* ── Input panel ── */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
 
-          {/* Credentials */}
+          {/* ── Environment ── */}
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-2">Environment</label>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {ENV_PRESETS.map(p => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => { setBaseUrl(p.value); setCustomEnv(false); }}
+                  className={clsx(
+                    "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                    !customEnv && baseUrl === p.value
+                      ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                  )}
+                >
+                  {p.label}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setCustomEnv(true)}
+                className={clsx(
+                  "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                  customEnv
+                    ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                    : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                )}
+              >
+                Custom
+              </button>
+            </div>
+            {customEnv && (
+              <input
+                value={baseUrl}
+                onChange={e => setBaseUrl(e.target.value)}
+                placeholder="https://staging.eauto.my/uat1"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
+              />
+            )}
+            {!customEnv && (
+              <p className="text-[11px] text-slate-600 font-mono">{baseUrl}</p>
+            )}
+          </div>
+
+          {/* ── Credentials ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1.5">Username</label>
@@ -368,7 +447,7 @@ export default function InsurancePage() {
             </div>
           </div>
 
-          {/* Vehicle numbers */}
+          {/* ── Vehicle numbers ── */}
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1.5">
               Vehicle Numbers
@@ -382,25 +461,32 @@ export default function InsurancePage() {
               className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
             />
             {vehicles.length > 0 && (
-              <p className="text-xs text-slate-600 mt-1">{vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""} detected</p>
+              <p className="text-xs text-slate-600 mt-1">
+                {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}
+                {" · "}
+                <span className="text-slate-500 font-medium">
+                  est. {estimateTime(vehicles.length, concurrency)}
+                </span>
+                {" "}
+                <span className="text-slate-700">({concurrency} workers)</span>
+              </p>
             )}
           </div>
 
-          {/* Advanced options toggle */}
+          {/* ── Advanced options toggle ── */}
           <button
             onClick={() => setShowAdvanced(v => !v)}
             className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
           >
             {showAdvanced ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-            Advanced options (IC Number, Postcode, Category)
+            Advanced options
           </button>
 
           {showAdvanced && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
               <div>
-                <label className="block text-xs text-slate-500 mb-1">
-                  IC Number
-                  <span className="text-slate-700 ml-1">default: 020406081081</span>
+                <label className="block text-xs text-slate-500 mb-1.5">
+                  IC Number <span className="text-slate-700">default: 020406081081</span>
                 </label>
                 <input
                   value={icNumber}
@@ -410,9 +496,8 @@ export default function InsurancePage() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">
-                  Postcode
-                  <span className="text-slate-700 ml-1">default: 31150</span>
+                <label className="block text-xs text-slate-500 mb-1.5">
+                  Postcode <span className="text-slate-700">default: 31150</span>
                 </label>
                 <input
                   value={postcode}
@@ -422,11 +507,11 @@ export default function InsurancePage() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Vehicle Category</label>
-                <div className="flex gap-2">
+                <label className="block text-xs text-slate-500 mb-1.5">Vehicle Category</label>
+                <div className="flex gap-1.5 h-[38px]">
                   {(["individual", "company"] as const).map(cat => (
                     <button key={cat} onClick={() => setVehicleCategory(cat)}
-                      className={clsx("flex-1 py-2 rounded-lg text-xs font-medium border transition-all capitalize",
+                      className={clsx("flex-1 rounded-lg text-xs font-medium border transition-all capitalize",
                         vehicleCategory === cat
                           ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
                           : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300")}>
@@ -435,10 +520,26 @@ export default function InsurancePage() {
                   ))}
                 </div>
               </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1.5">Workers (concurrency)</label>
+                <div className="flex items-center gap-1.5 h-[38px]">
+                  <button
+                    type="button"
+                    onClick={() => setConcurrency(v => Math.max(1, v - 1))}
+                    className="w-8 h-8 flex items-center justify-center bg-slate-800 border border-slate-700 rounded-lg text-slate-400 hover:text-slate-200 hover:border-slate-600 transition-colors text-base font-bold"
+                  >−</button>
+                  <span className="w-6 text-center text-sm font-semibold text-slate-200">{concurrency}</span>
+                  <button
+                    type="button"
+                    onClick={() => setConcurrency(v => Math.min(8, v + 1))}
+                    className="w-8 h-8 flex items-center justify-center bg-slate-800 border border-slate-700 rounded-lg text-slate-400 hover:text-slate-200 hover:border-slate-600 transition-colors text-base font-bold"
+                  >+</button>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Run */}
+          {/* ── Run button ── */}
           <div className="flex items-center gap-3 pt-1">
             <button
               onClick={handleRun}
@@ -450,7 +551,12 @@ export default function InsurancePage() {
             </button>
             {loading && (
               <p className="text-xs text-slate-500 animate-pulse">
-                Checking {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""} — please wait, this may take several minutes…
+                Checking {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""} — please wait (est. {estimateTime(vehicles.length, concurrency)})…
+              </p>
+            )}
+            {!loading && vehicles.length > 0 && (
+              <p className="text-xs text-slate-600">
+                Est. {estimateTime(vehicles.length, concurrency)}
               </p>
             )}
           </div>
