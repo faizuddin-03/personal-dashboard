@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   ChevronLeft, ChevronRight, Plus, X, Rocket, CalendarDays,
-  Clock, Loader2, Search, ExternalLink, Pencil, Trash2, Info,
+  Clock, Loader2, Search, ExternalLink, Pencil, Trash2, Info, LayoutGrid, Table2,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -35,6 +35,27 @@ function calendarDays(year: number, month: number): Date[] {
     days.push(d);
   }
   return days;
+}
+
+/** Returns the Monday of the week containing dateStr (YYYY-MM-DD). */
+function weekStart(dateStr: string): string {
+  const d = new Date(dateStr + "T12:00:00");
+  const day = d.getDay(); // 0=Sun
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return toDateStr(d);
+}
+
+/** Returns 7 date strings (Mon–Sun) starting from a Monday dateStr. */
+function weekDays(mondayStr: string): string[] {
+  const result: string[] = [];
+  const base = new Date(mondayStr + "T12:00:00");
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(base);
+    d.setDate(base.getDate() + i);
+    result.push(toDateStr(d));
+  }
+  return result;
 }
 
 function fmtTime(t?: string, h24 = false) {
@@ -692,6 +713,10 @@ export default function CalendarPage() {
   const [use24h, setUse24h] = useState(false);
   const fmt = (t?: string) => fmtTime(t, use24h);
 
+  // View mode: month or week
+  const [calView, setCalView] = useState<"month" | "week">("month");
+  const [weekMon, setWeekMon] = useState(() => weekStart(todayLocal()));
+
   const [showDeployModal, setShowDeployModal]   = useState(false);
   const [showEventModal, setShowEventModal]     = useState(false);
   const [editDeployment, setEditDeployment]     = useState<Deployment | undefined>();
@@ -779,34 +804,76 @@ export default function CalendarPage() {
   function prevMonth() { if (month === 0) { setYear(y => y-1); setMonth(11); } else setMonth(m => m-1); }
   function nextMonth() { if (month === 11) { setYear(y => y+1); setMonth(0); } else setMonth(m => m+1); }
 
+  function prevWeek() {
+    const d = new Date(weekMon + "T12:00:00");
+    d.setDate(d.getDate() - 7);
+    setWeekMon(toDateStr(d));
+  }
+  function nextWeek() {
+    const d = new Date(weekMon + "T12:00:00");
+    d.setDate(d.getDate() + 7);
+    setWeekMon(toDateStr(d));
+  }
+
+  const currentWeekDays = weekDays(weekMon);
+  const weekSun = currentWeekDays[6];
+  // Label for week header e.g. "20 – 26 May 2026" or "28 Apr – 4 May 2026"
+  const weekLabel = (() => {
+    const s = new Date(weekMon + "T12:00:00");
+    const e = new Date(weekSun + "T12:00:00");
+    const sameMonth = s.getMonth() === e.getMonth();
+    if (sameMonth) {
+      return `${s.getDate()} – ${e.getDate()} ${MONTHS[s.getMonth()]} ${s.getFullYear()}`;
+    }
+    const sameYear = s.getFullYear() === e.getFullYear();
+    return `${s.getDate()} ${MONTHS[s.getMonth()]}${sameYear ? "" : " " + s.getFullYear()} – ${e.getDate()} ${MONTHS[e.getMonth()]} ${e.getFullYear()}`;
+  })();
+
   return (
     <div className="flex flex-col min-h-full">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <CalendarDays size={15} className="text-slate-500" />
           <h1 className="text-sm font-semibold text-slate-200">Calendar</h1>
+
+          {/* Month / Week toggle */}
+          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+            <button onClick={() => setCalView("month")}
+              className={clsx("flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors",
+                calView === "month" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+              <Table2 size={11} /> Month
+            </button>
+            <button onClick={() => setCalView("week")}
+              className={clsx("flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors",
+                calView === "week" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+              <LayoutGrid size={11} /> Week
+            </button>
+          </div>
+
+          {/* Navigation */}
           <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg">
-            <button onClick={prevMonth} aria-label="Previous month" className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-l-lg transition-colors">
+            <button onClick={calView === "month" ? prevMonth : prevWeek} aria-label="Previous" className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-l-lg transition-colors">
               <ChevronLeft size={14} />
             </button>
-            <span className="px-3 text-sm font-semibold text-slate-200 min-w-[140px] text-center">
-              {MONTHS[month]} {year}
+            <span className="px-3 text-sm font-semibold text-slate-200 min-w-[170px] text-center">
+              {calView === "month" ? `${MONTHS[month]} ${year}` : weekLabel}
             </span>
-            <button onClick={nextMonth} aria-label="Next month" className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-r-lg transition-colors">
+            <button onClick={calView === "month" ? nextMonth : nextWeek} aria-label="Next" className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-r-lg transition-colors">
               <ChevronRight size={14} />
             </button>
           </div>
-          <button onClick={() => { setYear(now.getFullYear()); setMonth(now.getMonth()); }}
+
+          <button
+            onClick={() => {
+              setYear(now.getFullYear()); setMonth(now.getMonth());
+              setWeekMon(weekStart(todayLocal()));
+            }}
             className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded hover:bg-slate-800 transition-colors">
             Today
           </button>
           <button
-            onClick={() => {
-              const next = !use24h;
-              setUse24h(next);
-              localStorage.setItem("calendar_24h", String(next));
-            }}
+            onClick={() => { const next = !use24h; setUse24h(next); localStorage.setItem("calendar_24h", String(next)); }}
             className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded hover:bg-slate-800 transition-colors border border-slate-800"
             title="Toggle time format"
           >
@@ -840,6 +907,71 @@ export default function CalendarPage() {
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-500" />Task Due</span>
         </div>
 
+        {/* ── Week view ── */}
+        {calView === "week" && (
+          <div className="overflow-x-auto">
+            <div className="min-w-[700px]">
+              {/* Day column headers */}
+              <div className="grid grid-cols-7 gap-px mb-px">
+                {currentWeekDays.map(dateStr => {
+                  const d = new Date(dateStr + "T12:00:00");
+                  const isToday = dateStr === todayStr;
+                  const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
+                  const dayNum  = d.getDate();
+                  const monthAbbr = d.toLocaleDateString("en-US", { month: "short" });
+                  return (
+                    <div key={dateStr} className="text-center py-2">
+                      <p className="text-[10px] text-slate-600 uppercase tracking-wider font-semibold">{dayName}</p>
+                      <span className={clsx(
+                        "inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold mt-0.5",
+                        isToday ? "bg-blue-600 text-white" : "text-slate-300"
+                      )}>{dayNum}</span>
+                      <p className="text-[10px] text-slate-600 mt-0.5">{monthAbbr}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Day columns */}
+              <div className="grid grid-cols-7 gap-px bg-slate-800 rounded-2xl overflow-hidden border border-slate-800">
+                {currentWeekDays.map(dateStr => {
+                  const items = dayItemsMap.get(dateStr) ?? [];
+                  const isToday = dateStr === todayStr;
+                  return (
+                    <div
+                      key={dateStr}
+                      onClick={() => { setSelectedDate(dateStr); setDefaultModalDate(dateStr); }}
+                      className={clsx(
+                        "min-h-[220px] p-2 cursor-pointer transition-colors",
+                        isToday ? "bg-blue-950/20" : "bg-slate-950 hover:bg-slate-900/60"
+                      )}
+                    >
+                      {items.length === 0 && (
+                        <p className="text-[10px] text-slate-800 text-center mt-6">—</p>
+                      )}
+                      <div className="space-y-1">
+                        {items.map((item, i) => {
+                          const chipClass = getChipClass(item);
+                          const label = getItemLabel(item);
+                          const time = getItemTime(item);
+                          return (
+                            <div key={i} className={clsx("text-[10px] rounded-lg px-1.5 py-1 border leading-snug", chipClass)}>
+                              {time && <p className="font-semibold opacity-80 mb-0.5">{time}</p>}
+                              <p className="break-words">{label}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Month view ── */}
+        {calView === "month" && <>
         {/* Day headers */}
         <div className="grid grid-cols-7 mb-1">
           {DAYS_SHORT.map(d => (
@@ -901,6 +1033,7 @@ export default function CalendarPage() {
             );
           })}
         </div>
+        </>}
 
         {/* Upcoming deployments list below calendar */}
         {deployments.length > 0 && (

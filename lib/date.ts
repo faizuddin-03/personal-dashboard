@@ -11,3 +11,12 @@ export function daysFromToday(n: number): string {
   d.setDate(d.getDate() + n);
   return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE }).format(d);
 }
+
+/** Returns the start and end of today in UTC, formatted for Jira JQL (YYYY-MM-DD HH:MM). */
+export function todayRangeUTC(): { from: string; to: string } {
+  const todayMY = todayLocal();
+  const start = new Date(`${todayMY}T00:00:00+08:00`);
+  const end   = new Date(`${todayMY}T23:59:59+08:00`);
+  const fmt = (d: Date) => d.toISOString().slice(0, 16).replace("T", " ");
+  return { from: fmt(start), to: fmt(end) };
+}

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays, X } from "lucide-react";
+import { RefreshCw, Loader2, SearchX, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays, X, FileText } from "lucide-react";
 import Link from "next/link";
 import {
   JiraIssue, JiraSearchResult,
@@ -14,7 +14,7 @@ import { getKanbanState, KanbanCard, PRIORITY_META, isOverdue as isKanbanOverdue
 import { getTodos } from "@/lib/todo";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META } from "@/lib/deployments";
 import { getCalendarEvents, CalendarEvent, EVENT_COLOR_META } from "@/lib/calendar-events";
-import { todayLocal, daysFromToday } from "@/lib/date";
+import { todayLocal, daysFromToday, todayRangeUTC } from "@/lib/date";
 import clsx from "clsx";
 
 type Tab = "assigned" | "reported";
@@ -142,6 +142,10 @@ export default function Dashboard() {
   const [sort, setSort]           = useState<SortKey>("updated");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  // Today's raised tickets
+  const [todayRaised, setTodayRaised]               = useState<JiraIssue[]>([]);
+  const [todayRaisedLoading, setTodayRaisedLoading] = useState(false);
+
   // Global Jira search state
   const [jiraSearchResults, setJiraSearchResults] = useState<JiraIssue[]>([]);
   const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
@@ -207,6 +211,27 @@ export default function Dashboard() {
     if (creds) fetchIssues();
     else { setAssigned([]); setReported([]); }
   }, [creds, fetchIssues]);
+
+  useEffect(() => {
+    if (!creds) { setTodayRaised([]); return; }
+    const { from, to } = todayRangeUTC();
+    const jql = `reporter = currentUser() AND created >= "${from}" AND created <= "${to}" ORDER BY created ASC`;
+    setTodayRaisedLoading(true);
+    fetch("/api/jira/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...creds,
+        jql,
+        maxResults: 50,
+        fields: ["summary", "status", "priority", "issuetype", "assignee", "reporter", "created", "updated", "labels", "fixVersions", "project", "duedate", "parent"],
+      }),
+    })
+      .then(res => res.json())
+      .then(data => setTodayRaised(data.issues ?? []))
+      .catch(() => setTodayRaised([]))
+      .finally(() => setTodayRaisedLoading(false));
+  }, [creds]);
 
   // Debounced global Jira search — searches ALL tickets when query is present
   useEffect(() => {
@@ -366,6 +391,38 @@ export default function Dashboard() {
                 <div className="space-y-1.5 max-h-72 overflow-y-auto pr-0.5">
                   {upcomingItems.map((item, i) => <UpcomingRow key={i} item={item} i={i} />)}
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Today's Raised Tickets ── */}
+        {creds && (
+          <div className="border-b border-slate-800 pb-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Today's Raised Tickets</p>
+                {todayRaised.length > 0 && (
+                  <span className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-1.5 py-0.5 rounded-full font-semibold">{todayRaised.length}</span>
+                )}
+              </div>
+              {todayRaisedLoading && <Loader2 size={13} className="animate-spin text-blue-400" />}
+            </div>
+            {todayRaisedLoading && todayRaised.length === 0 ? (
+              <div className="flex items-center justify-center py-8 text-slate-600">
+                <Loader2 size={18} className="animate-spin mr-2" /> Loading…
+              </div>
+            ) : todayRaised.length === 0 ? (
+              <div className="flex flex-col items-center py-8 text-slate-600">
+                <FileText size={24} className="mb-2" />
+                <p className="text-sm">No tickets raised today</p>
+                <p className="text-xs mt-1 text-slate-700">Tickets you create in Jira today will appear here</p>
+              </div>
+            ) : (
+              <div className="grid gap-2">
+                {todayRaised.map(issue => (
+                  <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
+                ))}
               </div>
             )}
           </div>
