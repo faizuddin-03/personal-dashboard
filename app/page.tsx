@@ -249,7 +249,7 @@ export default function Dashboard() {
     const escaped = search.replace(/"/g, '\\"');
     const isKey = /^[A-Za-z]+-\d+$/.test(search.trim());
     const jql = isKey
-      ? `(key = "${escaped}" OR text ~ "${escaped}") ORDER BY updated DESC`
+      ? `key = "${escaped}" ORDER BY updated DESC`
       : `text ~ "${escaped}" ORDER BY updated DESC`;
     const timer = setTimeout(async () => {
       try {

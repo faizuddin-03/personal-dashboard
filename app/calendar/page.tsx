@@ -152,7 +152,7 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
     const escaped = jiraQuery.replace(/"/g, "");
     const isKey = /^[A-Za-z]+-\d+$/.test(jiraQuery.trim());
     const jql = isKey
-      ? `(key = "${escaped}" OR text ~ "${escaped}") ORDER BY updated DESC`
+      ? `key = "${escaped}" ORDER BY updated DESC`
       : `text ~ "${escaped}" ORDER BY updated DESC`;
     const timer = setTimeout(() => {
       setJiraSearchLoading(true);
