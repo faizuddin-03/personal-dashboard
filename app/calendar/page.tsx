@@ -149,6 +149,11 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
   // Debounced full-text search across all accessible tickets
   useEffect(() => {
     if (step !== "ticket" || !creds || jiraQuery.length < 2) return;
+    const escaped = jiraQuery.replace(/"/g, "");
+    const isKey = /^[A-Za-z]+-\d+$/.test(jiraQuery.trim());
+    const jql = isKey
+      ? `(key = "${escaped}" OR text ~ "${escaped}") ORDER BY updated DESC`
+      : `text ~ "${escaped}" ORDER BY updated DESC`;
     const timer = setTimeout(() => {
       setJiraSearchLoading(true);
       fetch("/api/jira/search", {
@@ -156,7 +161,7 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...creds,
-          jql: `text ~ "${jiraQuery.replace(/"/g, "")}" ORDER BY updated DESC`,
+          jql,
           maxResults: 50,
           fields: ["summary", "status", "project", "updated"],
         }),

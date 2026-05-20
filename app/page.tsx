@@ -247,6 +247,10 @@ export default function Dashboard() {
     }
     setJiraSearchLoading(true);
     const escaped = search.replace(/"/g, '\\"');
+    const isKey = /^[A-Za-z]+-\d+$/.test(search.trim());
+    const jql = isKey
+      ? `(key = "${escaped}" OR text ~ "${escaped}") ORDER BY updated DESC`
+      : `text ~ "${escaped}" ORDER BY updated DESC`;
     const timer = setTimeout(async () => {
       try {
         const res = await fetch("/api/jira/search", {
@@ -254,7 +258,7 @@ export default function Dashboard() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...creds,
-            jql: `text ~ "${escaped}" ORDER BY updated DESC`,
+            jql,
             maxResults: 50,
           }),
         });
