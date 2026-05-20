@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const [email, setEmail] = useState(creds?.email ?? "");
   const [apiToken, setApiToken] = useState(creds?.apiToken ?? "");
   const [tokenExpiry, setTokenExpiry] = useState(creds?.tokenExpiry ?? "");
+  const [defaultProjectKey, setDefaultProjectKey] = useState(creds?.defaultProjectKey ?? "");
   const [showToken, setShowToken] = useState(false);
   const [testStatus, setTestStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [testMsg, setTestMsg] = useState("");
@@ -54,6 +55,7 @@ export default function SettingsPage() {
       setEmail(creds.email);
       setApiToken(creds.apiToken);
       setTokenExpiry(creds.tokenExpiry ?? "");
+      setDefaultProjectKey(creds.defaultProjectKey ?? "");
     }
   }, [creds]);
 
@@ -76,7 +78,7 @@ export default function SettingsPage() {
   }
 
   function handleSaveJira() {
-    const c = { baseUrl, email, apiToken, tokenExpiry: tokenExpiry || undefined };
+    const c = { baseUrl, email, apiToken, tokenExpiry: tokenExpiry || undefined, defaultProjectKey: defaultProjectKey.trim().toUpperCase() || undefined };
     storeCredentials(c);
     setCreds(c);
     setJiraSaved(true);
@@ -153,6 +155,15 @@ export default function SettingsPage() {
                 value={tokenExpiry}
                 onChange={e => setTokenExpiry(e.target.value)}
                 className={input + " [color-scheme:dark]"}
+              />
+            </Field>
+            <Field label="Default Project Key" hint="Type just a number (e.g. 10052) to search — this prefix is added automatically.">
+              <input
+                type="text"
+                value={defaultProjectKey}
+                onChange={e => setDefaultProjectKey(e.target.value.toUpperCase())}
+                placeholder="e.g. EAINT"
+                className={input}
               />
             </Field>
           </div>

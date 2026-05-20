@@ -152,8 +152,10 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
     const escaped = jiraQuery.trim().replace(/"/g, "");
     const isId  = /^\d+$/.test(escaped);
     const isKey = /^[A-Za-z]+-\d+$/.test(escaped);
-    const jql = isId  ? `id = ${escaped} ORDER BY updated DESC`
-              : isKey ? `key = "${escaped}" ORDER BY updated DESC`
+    const resolvedKey = isId && creds?.defaultProjectKey ? `${creds.defaultProjectKey}-${escaped}` : null;
+    const jql = resolvedKey ? `key = "${resolvedKey}" ORDER BY updated DESC`
+              : isId        ? `id = ${escaped} ORDER BY updated DESC`
+              : isKey       ? `key = "${escaped}" ORDER BY updated DESC`
               : `text ~ "${escaped}" ORDER BY updated DESC`;
     const timer = setTimeout(() => {
       setJiraSearchLoading(true);

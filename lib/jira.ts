@@ -3,6 +3,7 @@ export interface JiraCredentials {
   email: string;
   apiToken: string;
   tokenExpiry?: string; // ISO date string e.g. "2026-10-01"
+  defaultProjectKey?: string; // e.g. "EAINT" — prepended when searching by number only
 }
 
 export interface JiraIssue {
