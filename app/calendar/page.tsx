@@ -100,6 +100,25 @@ function getItemTime(item: DayItem): string {
 // ── Add / Edit Deployment Modal ───────────────────────────
 interface JiraTicket { key: string; summary: string; status: string; project: string; updated: string }
 
+// Extracts plain text from Teams HTML clipboard, removing struck-through content.
+function htmlToCleanText(html: string): string {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  doc.querySelectorAll("s, del, strike").forEach(el => el.remove());
+
+  function walk(node: Node): string {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? "";
+    if (node.nodeType !== Node.ELEMENT_NODE) return "";
+    const el = node as Element;
+    const tag = el.tagName.toLowerCase();
+    const inner = Array.from(node.childNodes).map(walk).join("");
+    if (["p", "div", "li", "h1", "h2", "h3", "h4", "h5", "h6"].includes(tag)) return inner + "\n";
+    if (tag === "br") return "\n";
+    return inner;
+  }
+
+  return walk(doc.body).replace(/\n{3,}/g, "\n\n").trim();
+}
+
 // ── Paste Deployment Modal ────────────────────────────────────
 function PasteDeploymentModal({ existing, onClose, onApply }: {
   existing: Deployment[];
@@ -109,6 +128,20 @@ function PasteDeploymentModal({ existing, onClose, onApply }: {
   const [text, setText] = useState("");
   const [parsed, setParsed] = useState<ParsedDeploymentItem[] | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [struckRemoved, setStruckRemoved] = useState(0);
+
+  function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const html = e.clipboardData.getData("text/html");
+    if (!html) return; // no HTML in clipboard — let default plain-text paste proceed
+    e.preventDefault();
+
+    // Count how many struck-through segments were removed so we can show a notice
+    const tmp = new DOMParser().parseFromString(html, "text/html");
+    const count = tmp.querySelectorAll("s, del, strike").length;
+
+    setText(htmlToCleanText(html));
+    setStruckRemoved(count);
+  }
 
   function handleParse() {
     const items = parseDeploymentText(text, existing);
@@ -148,13 +181,20 @@ function PasteDeploymentModal({ existing, onClose, onApply }: {
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
           {!parsed ? (
             <>
-              <p className="text-xs text-slate-500">Paste a message from your senior (Teams, email, etc.) — the parser will detect deployment dates, sessions, and status updates automatically.</p>
+              <p className="text-xs text-slate-500">Paste a message from your senior (Teams, email, etc.) — strikethrough text is automatically removed, deployment dates and session types are detected.</p>
               <textarea
                 value={text}
-                onChange={e => setText(e.target.value)}
+                onChange={e => { setText(e.target.value); setStruckRemoved(0); }}
+                onPaste={handlePaste}
                 placeholder={"Paste the message here…\n\ne.g.:\n18th May Deployment\nXStar Chubb Fix\nstaging/uat1\nhttps://...\n\nor:\nPostponed!!! 18.05.2026 (Mon) - Night Session\nhttps://..."}
                 className="w-full h-52 px-3 py-2.5 border border-slate-700 rounded-lg text-sm bg-slate-800 text-slate-100 placeholder-slate-600 resize-none focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono leading-relaxed"
               />
+              {struckRemoved > 0 && (
+                <p className="text-[11px] text-amber-400 flex items-center gap-1.5">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                  {struckRemoved} struck-through segment{struckRemoved !== 1 ? "s" : ""} removed from pasted text
+                </p>
+              )}
             </>
           ) : (
             <>
