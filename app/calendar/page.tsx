@@ -94,13 +94,31 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
   const [notes, setNotes]               = useState(initial?.notes ?? "");
   const [status, setStatus]             = useState<DeploymentStatus>(initial?.status ?? "planned");
 
+  // Kanban board Jira-linked cards (loaded once)
+  const [kanbanJiraCards] = useState<JiraTicket[]>(() => {
+    const state = getKanbanState();
+    const seen = new Set<string>();
+    const cards: JiraTicket[] = [];
+    for (const col of ["urgent","todo","ongoing","on-hold","finished"] as const) {
+      for (const c of state[col]) {
+        if (c.jiraKey && !seen.has(c.jiraKey)) {
+          seen.add(c.jiraKey);
+          cards.push({ key: c.jiraKey, summary: c.title, status: c.jiraStatus ?? "", project: c.jiraProject ?? "", updated: c.createdAt });
+        }
+      }
+    }
+    return cards;
+  });
+
   // Jira search
   const [jiraTickets, setJiraTickets]   = useState<JiraTicket[]>([]);
   const [jiraLoading, setJiraLoading]   = useState(false);
+  const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
   const [jiraError, setJiraError]       = useState("");
   const [jiraQuery, setJiraQuery]       = useState("");
   const [manualKey, setManualKey]       = useState("");
 
+  // Initial load: recent assigned/reported tickets
   useEffect(() => {
     if (step !== "ticket" || !creds) return;
     setJiraLoading(true);
@@ -128,9 +146,46 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
       .finally(() => setJiraLoading(false));
   }, [step, creds]);
 
-  const filteredTickets = jiraTickets.filter(t => {
+  // Debounced full-text search across all accessible tickets
+  useEffect(() => {
+    if (step !== "ticket" || !creds || jiraQuery.length < 2) return;
+    const timer = setTimeout(() => {
+      setJiraSearchLoading(true);
+      fetch("/api/jira/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...creds,
+          jql: `text ~ "${jiraQuery.replace(/"/g, "")}" ORDER BY updated DESC`,
+          maxResults: 50,
+          fields: ["summary", "status", "project", "updated"],
+        }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          setJiraTickets((data.issues ?? []).map((i: { key: string; fields: { summary: string; status: { name: string }; project: { name: string }; updated: string } }) => ({
+            key: i.key,
+            summary: i.fields.summary,
+            status: i.fields.status.name,
+            project: i.fields.project.name,
+            updated: i.fields.updated,
+          })));
+        })
+        .catch(() => {})
+        .finally(() => setJiraSearchLoading(false));
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [jiraQuery, step, creds]);
+
+  const filteredKanban = kanbanJiraCards.filter(t => {
     const q = jiraQuery.toLowerCase();
     return !q || t.key.toLowerCase().includes(q) || t.summary.toLowerCase().includes(q) || t.project.toLowerCase().includes(q);
+  });
+
+  const filteredTickets = jiraTickets.filter(t => {
+    const q = jiraQuery.toLowerCase();
+    const notInKanban = !kanbanJiraCards.some(k => k.key === t.key);
+    return notInKanban && (!q || t.key.toLowerCase().includes(q) || t.summary.toLowerCase().includes(q) || t.project.toLowerCase().includes(q));
   });
 
   function selectTicket(t: JiraTicket) {
@@ -185,29 +240,59 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
                     <input
                       value={jiraQuery}
                       onChange={e => setJiraQuery(e.target.value)}
-                      placeholder="Search by key, summary, or project…"
-                      className={inp + " pl-8"}
+                      placeholder="Search all tickets by key, summary, or project…"
+                      className={inp + " pl-8 pr-8"}
+                      autoFocus
                     />
+                    {jiraSearchLoading && <Loader2 size={13} className="absolute right-3 top-2.5 text-blue-400 animate-spin" />}
                   </div>
                   {jiraLoading && <div className="flex justify-center py-6"><Loader2 size={20} className="animate-spin text-blue-400" /></div>}
                   {jiraError && <p className="text-sm text-red-400">{jiraError}</p>}
-                  {!jiraLoading && filteredTickets.length === 0 && !jiraError && (
-                    <p className="text-xs text-slate-600 text-center py-4">{jiraQuery ? "No tickets match" : "No tickets found"}</p>
+
+                  {/* Kanban board section */}
+                  {filteredKanban.length > 0 && (
+                    <div>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-1.5">From Kanban Board</p>
+                      <div className="space-y-1.5">
+                        {filteredKanban.map(t => (
+                          <button key={t.key} onClick={() => selectTicket(t)}
+                            className="w-full text-left bg-blue-950/30 border border-blue-800/50 rounded-xl p-3 hover:border-blue-500 transition-colors">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="text-xs font-mono text-blue-400 font-bold">{t.key}</span>
+                              {t.status && <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 rounded">{t.status}</span>}
+                              {t.project && <span className="text-[10px] text-slate-600 ml-auto">{t.project}</span>}
+                            </div>
+                            <p className="text-sm text-slate-200 line-clamp-1">{t.summary}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   )}
-                  <div className="space-y-2">
-                    {filteredTickets.map(t => (
-                      <button key={t.key} onClick={() => selectTicket(t)}
-                        className="w-full text-left bg-slate-800 border border-slate-700 rounded-xl p-3 hover:border-blue-500 transition-colors">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-xs font-mono text-blue-400 font-bold">{t.key}</span>
-                          <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 rounded">{t.status}</span>
-                          <span className="text-[10px] text-slate-600 ml-auto">{new Date(t.updated).toLocaleDateString()}</span>
-                        </div>
-                        <p className="text-sm text-slate-200 line-clamp-1">{t.summary}</p>
-                        <p className="text-xs text-slate-600">{t.project}</p>
-                      </button>
-                    ))}
-                  </div>
+
+                  {/* Jira search results */}
+                  {!jiraLoading && filteredTickets.length > 0 && (
+                    <div>
+                      {filteredKanban.length > 0 && <p className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-1.5">From Jira</p>}
+                      <div className="space-y-1.5">
+                        {filteredTickets.map(t => (
+                          <button key={t.key} onClick={() => selectTicket(t)}
+                            className="w-full text-left bg-slate-800 border border-slate-700 rounded-xl p-3 hover:border-blue-500 transition-colors">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="text-xs font-mono text-blue-400 font-bold">{t.key}</span>
+                              <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 rounded">{t.status}</span>
+                              <span className="text-[10px] text-slate-600 ml-auto">{new Date(t.updated).toLocaleDateString()}</span>
+                            </div>
+                            <p className="text-sm text-slate-200 line-clamp-1">{t.summary}</p>
+                            <p className="text-xs text-slate-600">{t.project}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {!jiraLoading && filteredKanban.length === 0 && filteredTickets.length === 0 && !jiraError && (
+                    <p className="text-xs text-slate-600 text-center py-4">{jiraQuery ? "No tickets match — try a different search" : "No tickets found"}</p>
+                  )}
                   <div className="pt-2 border-t border-slate-800">
                     <p className="text-xs text-slate-600 mb-2">Or enter ticket key manually:</p>
                     <div className="flex gap-2">
