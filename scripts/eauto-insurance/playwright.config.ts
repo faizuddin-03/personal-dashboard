@@ -14,7 +14,7 @@ export default defineConfig({
   ],
 
   use: {
-    headless: false,
+    headless: true,
     viewport: { width: 1920, height: 1080 },
     navigationTimeout: 60000,
     actionTimeout: 30000,
@@ -27,7 +27,7 @@ export default defineConfig({
       name: 'insurance-checker',
       use: {
         ...devices['Desktop Chrome'],
-        headless: false,
+        headless: true,
       },
     },
   ],

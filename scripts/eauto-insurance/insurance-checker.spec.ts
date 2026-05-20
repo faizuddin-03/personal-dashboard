@@ -1,4 +1,4 @@
-import { test, Page, Dialog } from '@playwright/test';
+import { test, Page, Dialog, Browser } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import ExcelJS from 'exceljs';
@@ -430,14 +430,53 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
   return { vehicleNumber: vn, ...vehicleInfo, insurers, status: 'SUCCESS' };
 }
 
+// ─── CONCURRENCY ─────────────────────────────────────────────────────────────
+// Number of parallel browser contexts. Each context logs in independently and
+// processes its own slice of vehicles. Raise for more speed, lower if the site
+// starts rate-limiting. Override with env var: INSURANCE_CONCURRENCY=6
+const DEFAULT_CONCURRENCY = 4;
+
+function chunkArray<T>(arr: T[], n: number): T[][] {
+  const size = Math.ceil(arr.length / n);
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
+  return chunks;
+}
+
+async function runWorker(browser: Browser, workerIdx: number, vehicles: VehicleInput[]): Promise<VehicleResult[]> {
+  const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+  const page = await ctx.newPage();
+  page.setDefaultNavigationTimeout(CONFIG.navigationTimeout);
+  page.setDefaultTimeout(30000);
+
+  const results: VehicleResult[] = [];
+  try {
+    await login(page);
+    for (let i = 0; i < vehicles.length; i++) {
+      const vn = vehicles[i].vehicleNumber;
+      console.log(`[Worker ${workerIdx + 1}] ━━━ ${i + 1}/${vehicles.length}: ${vn}`);
+      try {
+        results.push(await processVehicle(page, vehicles[i]));
+      } catch (err) {
+        console.error(`[Worker ${workerIdx + 1}] ❌ ${vn}:`, err);
+        results.push({
+          vehicleNumber: vn, make: '', model: '', manufacturingYear: '',
+          engineCapacity: '', transmission: '', variant: '',
+          insurers: [], status: 'ERROR', errorMessage: String(err),
+        });
+      }
+    }
+  } finally {
+    await ctx.close();
+  }
+  return results;
+}
+
 // ─── MAIN TEST ───────────────────────────────────────────────────────────────
 test.describe('eAuto Insurance Quote Checker', () => {
   test.setTimeout(0);
 
-  test('Check insurance quotes for all vehicles', async ({ page }) => {
-    page.setDefaultNavigationTimeout(CONFIG.navigationTimeout);
-    page.setDefaultTimeout(30000);
-
+  test('Check insurance quotes for all vehicles', async ({ browser }) => {
     // Read input
     const inputPath = path.resolve(CONFIG.inputFile);
     if (!fs.existsSync(inputPath)) {
@@ -462,33 +501,29 @@ test.describe('eAuto Insurance Quote Checker', () => {
     console.log(`📄 Loaded ${vehicles.length} vehicle(s)`);
     if (!vehicles.length) { console.log('⚠️ No vehicles.'); return; }
 
-    // Login
-    await login(page);
+    const concurrency = Math.min(
+      parseInt(process.env.INSURANCE_CONCURRENCY || String(DEFAULT_CONCURRENCY)),
+      vehicles.length,
+    );
+    console.log(`🚀 Running ${concurrency} parallel worker(s) for ${vehicles.length} vehicle(s)`);
 
-    // Process
-    const results: VehicleResult[] = [];
-    for (let i = 0; i < vehicles.length; i++) {
-      console.log(`\n━━━ [${i + 1}/${vehicles.length}] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-      try {
-        results.push(await processVehicle(page, vehicles[i]));
-      } catch (err) {
-        console.error(`  ❌ Error: ${vehicles[i].vehicleNumber}:`, err);
-        results.push({
-          vehicleNumber: vehicles[i].vehicleNumber,
-          make: '', model: '', manufacturingYear: '',
-          engineCapacity: '', transmission: '', variant: '',
-          insurers: [], status: 'ERROR', errorMessage: String(err),
-        });
-      }
-    }
+    const chunks = chunkArray(vehicles, concurrency);
 
-    // Output
+    // Launch all workers concurrently — each gets its own browser context + login session
+    const chunkResults = await Promise.all(
+      chunks.map((chunk, idx) => runWorker(browser, idx, chunk))
+    );
+
+    // Flatten in original vehicle order (chunks preserve ordering within each slice)
+    const results: VehicleResult[] = chunkResults.flat();
+
+    // Write output
     const outputPath = path.resolve(CONFIG.outputFile);
     await writeOutputExcel(results, outputPath);
 
-    const ok = results.filter(r => r.status === 'SUCCESS').length;
+    const ok   = results.filter(r => r.status === 'SUCCESS').length;
     const skip = results.filter(r => r.status === 'NO_VEHICLE_INFO').length;
-    const err = results.filter(r => r.status === 'ERROR').length;
+    const err  = results.filter(r => r.status === 'ERROR').length;
 
     console.log('\n══════════════════════════════════════════════════════════');
     console.log(`📊 Total: ${results.length} | ✅ ${ok} success | ⏭️ ${skip} skipped | ❌ ${err} errors`);
