@@ -70,10 +70,13 @@ body {
 
 /* Kanban accent left-borders — must come AFTER border-slate-* so same
    specificity (0,1,1) but later in the sheet wins the cascade. */
+:root .border-l-red-500    { border-left-color: #ef4444; }
+:root .border-l-sky-400    { border-left-color: #38bdf8; }
 :root .border-l-blue-500   { border-left-color: #3b82f6; }
 :root .border-l-purple-500 { border-left-color: #a855f7; }
 :root .border-l-green-500  { border-left-color: #22c55e; }
 :root .border-l-yellow-500 { border-left-color: #eab308; }
+:root .border-l-orange-500 { border-left-color: #f97316; }
 :root .border-l-pink-500   { border-left-color: #ec4899; }
 :root .border-l-slate-700  { border-left-color: var(--border-main, #334155); }
 
@@ -199,8 +202,11 @@ body {
 [data-theme-type="light"] .hover\:text-amber-300:hover  { color: #92400e; }
 
 /* ─ Kanban accent left-borders on light (keep vivid) ─ */
+[data-theme-type="light"] .border-l-red-500    { border-left-color: #dc2626; }
+[data-theme-type="light"] .border-l-sky-400    { border-left-color: #0284c7; }
 [data-theme-type="light"] .border-l-blue-500   { border-left-color: #2563eb; }
 [data-theme-type="light"] .border-l-purple-500 { border-left-color: #7e22ce; }
 [data-theme-type="light"] .border-l-green-500  { border-left-color: #16a34a; }
 [data-theme-type="light"] .border-l-yellow-500 { border-left-color: #ca8a04; }
+[data-theme-type="light"] .border-l-orange-500 { border-left-color: #ea580c; }
 [data-theme-type="light"] .border-l-pink-500   { border-left-color: #be185d; }
