@@ -48,9 +48,11 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
   const [labelInput, setLabelInput]     = useState("");
   const [labels, setLabels]             = useState<string[]>([]);
   const [dueDate, setDueDate]           = useState("");
+  const [dueTime, setDueTime]           = useState("");
   const [estimatedHours, setEstimated]  = useState("");
   const [assignee, setAssignee]         = useState("");
   const [accentColor, setAccentColor]   = useState("");
+  const [boardType, setBoardType]       = useState<"task" | "cr">("task");
   const [checklistInput, setClInput]    = useState("");
   const [checklist, setChecklist]       = useState<ChecklistItem[]>([]);
 
@@ -145,9 +147,9 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
   function handleAddCustom() {
     if (!title.trim()) return;
     onAdd({
-      id: newId(), columnId: targetColumn, type: "custom",
+      id: newId(), columnId: targetColumn, type: "custom", boardType,
       title: title.trim(), description: description || undefined,
-      priority, labels, dueDate: dueDate || undefined, checklist,
+      priority, labels, dueDate: dueDate || undefined, dueTime: dueTime || undefined, checklist,
       estimatedHours: estimatedHours ? Number(estimatedHours) : undefined,
       assignee: assignee || undefined,
       accentColor: accentColor || undefined,
@@ -158,7 +160,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
 
   function addJiraCard(r: JiraResult) {
     onAdd({
-      id: newId(), columnId: targetColumn, type: "jira",
+      id: newId(), columnId: targetColumn, type: "jira", boardType,
       title: r.summary, priority: "medium", labels: [], checklist: [],
       jiraKey: r.key, jiraStatus: r.status, jiraType: r.type, jiraProject: r.project,
       createdAt: new Date().toISOString(),
@@ -200,6 +202,24 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
           {tab === "custom" ? (
             <div className="space-y-4">
               <div>
+                <label className={lbl}>Board Type</label>
+                <div className="flex gap-1.5 mt-1">
+                  {([["task", "Task"], ["cr", "CR Ticket"]] as const).map(([bt, label]) => (
+                    <button
+                      key={bt}
+                      type="button"
+                      onClick={() => setBoardType(bt)}
+                      className={clsx(
+                        "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                        boardType === bt ? "bg-blue-600/20 border-blue-500 text-blue-400" : "border-slate-700 text-slate-500 hover:text-slate-300"
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
                 <label className={lbl}>Title *</label>
                 <input autoFocus value={title} onChange={e => setTitle(e.target.value)} placeholder="What needs to be done?" className={inp} />
               </div>
@@ -213,6 +233,10 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
                 <div>
                   <label className={lbl}>Due Date</label>
                   <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className={inp + " [color-scheme:dark]"} />
+                </div>
+                <div>
+                  <label className={lbl}>Due Time</label>
+                  <input type="time" value={dueTime} onChange={e => setDueTime(e.target.value)} className={inp + " [color-scheme:dark]"} />
                 </div>
                 <div>
                   <label className={lbl}>Est. hours</label>
@@ -280,6 +304,24 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
             </div>
           ) : (
             <div className="space-y-3">
+              <div>
+                <label className={lbl}>Board Type</label>
+                <div className="flex gap-1.5 mt-1">
+                  {([["task", "Task"], ["cr", "CR Ticket"]] as const).map(([bt, label]) => (
+                    <button
+                      key={bt}
+                      type="button"
+                      onClick={() => setBoardType(bt)}
+                      className={clsx(
+                        "px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                        boardType === bt ? "bg-blue-600/20 border-blue-500 text-blue-400" : "border-slate-700 text-slate-500 hover:text-slate-300"
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               {!creds ? (
                 <p className="text-sm text-slate-500 text-center py-8">Connect Jira in Settings first.</p>
               ) : (
@@ -406,7 +448,7 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
         {card.dueDate && (
           <span className={clsx("flex items-center gap-1 text-[10px]", over ? "text-red-400" : "text-slate-500")}>
             {over ? <AlertTriangle size={10} /> : <Clock size={10} />}
-            {over ? "Overdue" : new Date(card.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+            {over ? "Overdue" : `${new Date(card.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}${card.dueTime ? ` ${card.dueTime}` : ""}`}
           </span>
         )}
         <span className="flex items-center gap-0.5 text-[10px] text-slate-700 ml-auto" title="Time in column">
@@ -507,6 +549,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [title, setTitle]     = useState(card.title);
   const [description, setDesc] = useState(card.description ?? "");
   const [dueDate, setDueDate] = useState(card.dueDate ?? "");
+  const [dueTime, setDueTime] = useState(card.dueTime ?? "");
   const [assignee, setAssignee] = useState(card.assignee ?? "");
   const [estimatedHours, setEstHours] = useState(card.estimatedHours?.toString() ?? "");
   const [checklist, setChecklist] = useState<ChecklistItem[]>(card.checklist);
@@ -515,10 +558,11 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [labels, setLabels] = useState<string[]>(card.labels);
   const [labelInput, setLabelInput] = useState("");
   const [accentColor, setAccentColor] = useState(card.accentColor ?? "");
+  const [cardBoardType, setCardBoardType] = useState<"task" | "cr">(card.boardType ?? "task");
   const [confirmArchive, setConfirmArchive] = useState(false);
 
   function save() {
-    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined });
+    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType });
     setEditing(false);
   }
 
@@ -584,9 +628,27 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
               ) : <span className={clsx("text-sm font-medium flex items-center gap-1.5", pm.color)}><span className={clsx("w-2 h-2 rounded-full", pm.dot)} />{pm.label}</span>}
             </div>
             <div>
+              <p className="text-xs text-slate-600 mb-1">Board Type</p>
+              {editing ? (
+                <div className="flex gap-1">
+                  {([["task", "Task"], ["cr", "CR"]] as const).map(([bt, label]) => (
+                    <button key={bt} type="button" onClick={() => setCardBoardType(bt)}
+                      className={clsx("px-2 py-1 text-xs rounded border transition-colors", cardBoardType === bt ? "bg-blue-600/20 border-blue-500 text-blue-400" : "border-slate-700 text-slate-500 hover:text-slate-300")}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : <p className="text-sm text-slate-300">{card.boardType === "cr" ? "CR Ticket" : "Task"}</p>}
+            </div>
+            <div>
               <p className="text-xs text-slate-600 mb-1">Due Date</p>
               {editing ? <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 [color-scheme:dark] focus:outline-none" />
                 : <p className={clsx("text-sm font-medium", isOverdue(card) ? "text-red-400" : "text-slate-300")}>{card.dueDate ? new Date(card.dueDate).toLocaleDateString() : "—"}</p>}
+            </div>
+            <div>
+              <p className="text-xs text-slate-600 mb-1">Due Time</p>
+              {editing ? <input type="time" value={dueTime} onChange={e => setDueTime(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 [color-scheme:dark] focus:outline-none" />
+                : <p className="text-sm text-slate-300">{card.dueTime || "—"}</p>}
             </div>
             <div>
               <p className="text-xs text-slate-600 mb-1">Assignee</p>
@@ -794,6 +856,7 @@ export default function KanbanPage() {
   const [showArchive, setShowArchive] = useState(false);
   const [archivedCards, setArchivedCards] = useState<KanbanCard[]>([]);
   const [collapsedCols, setCollapsedCols] = useState<Partial<Record<ColumnId, boolean>>>({ finished: false });
+  const [activeBoardType, setActiveBoardType] = useState<"task" | "cr">("task");
 
   function toggleCollapse(col: ColumnId) {
     setCollapsedCols(prev => ({ ...prev, [col]: !prev[col] }));
@@ -879,13 +942,32 @@ export default function KanbanPage() {
 
   const activeCard = activeId ? COLUMN_IDS.flatMap(c => boardState[c]).find(c => c.id === activeId) : null;
   const totalCards = COLUMN_IDS.reduce((s, c) => s + boardState[c].length, 0);
+  function visibleCards(col: ColumnId) {
+    return boardState[col].filter(c => (c.boardType ?? "task") === activeBoardType);
+  }
 
   return (
     <div className="flex flex-col min-h-full">
       <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-sm font-semibold text-slate-200">Kanban Board</h1>
-          <span className="text-xs bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">{totalCards} card{totalCards !== 1 ? "s" : ""}</span>
+          <h1 className="text-sm font-semibold text-slate-200">Kanban</h1>
+          <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
+            {([["task", "Tasks"], ["cr", "CR Tickets"]] as const).map(([bt, label]) => (
+              <button
+                key={bt}
+                onClick={() => setActiveBoardType(bt)}
+                className={clsx(
+                  "px-3 py-1 text-xs rounded-md transition-colors",
+                  activeBoardType === bt ? "bg-slate-700 text-slate-100 font-medium" : "text-slate-500 hover:text-slate-300"
+                )}
+              >
+                {label}
+                <span className={clsx("ml-1.5 text-[10px] px-1 rounded-full", activeBoardType === bt ? "bg-slate-600 text-slate-300" : "bg-slate-700/50 text-slate-600")}>
+                  {COLUMN_IDS.reduce((s, c) => s + boardState[c].filter(card => (card.boardType ?? "task") === bt).length, 0)}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowArchive(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors">
@@ -900,7 +982,7 @@ export default function KanbanPage() {
       {/* Single DndContext wrapping BOTH urgent and main columns */}
       <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <UrgentSection
-          cards={boardState.urgent}
+          cards={visibleCards("urgent")}
           baseUrl={creds?.baseUrl}
           onAddCard={setAddTarget}
           onCardClick={setSelectedCard}
@@ -910,7 +992,7 @@ export default function KanbanPage() {
           <div className="flex gap-4 pb-4 min-w-max">
             {(["todo", "ongoing", "on-hold", "finished"] as ColumnId[]).map(col => (
               <Column
-                key={col} id={col} cards={boardState[col]} baseUrl={creds?.baseUrl}
+                key={col} id={col} cards={visibleCards(col)} baseUrl={creds?.baseUrl}
                 onAddCard={setAddTarget} onCardClick={setSelectedCard}
                 collapsed={collapsedCols[col] ?? false}
                 onToggleCollapse={() => toggleCollapse(col)}

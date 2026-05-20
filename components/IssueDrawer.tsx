@@ -92,6 +92,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
         id: `jira-${currentKey}-${Date.now()}`,
         columnId: kanbanCol,
         type: "jira",
+        boardType: "task",
         title: issue.fields.summary,
         priority: kanbanPriority,
         labels: issue.fields.labels,

@@ -11,11 +11,13 @@ export interface KanbanCard {
   id: string;
   columnId: ColumnId;
   type: "custom" | "jira";
+  boardType: "task" | "cr";
   title: string;
   description?: string;
   priority: Priority;
   labels: string[];
   dueDate?: string;
+  dueTime?: string;
   checklist: ChecklistItem[];
   estimatedHours?: number;
   assignee?: string;
@@ -77,8 +79,12 @@ export function getKanbanState(): KanbanState {
   try {
     const raw = localStorage.getItem("kanban_state");
     const parsed = raw ? JSON.parse(raw) : emptyState();
-    // Backfill new columns for existing saved data
-    return { ...emptyState(), ...parsed };
+    const state: KanbanState = { ...emptyState(), ...parsed };
+    // Backfill boardType for cards created before this field existed
+    for (const col of ["urgent", "todo", "ongoing", "on-hold", "finished"] as ColumnId[]) {
+      state[col] = state[col].map((c: KanbanCard) => ({ ...c, boardType: c.boardType ?? "task" }));
+    }
+    return state;
   } catch { return emptyState(); }
 }
 
@@ -91,7 +97,9 @@ function emptyState(): KanbanState {
 }
 
 export function isOverdue(card: KanbanCard): boolean {
-  return !!card.dueDate && new Date(card.dueDate) < new Date() && card.columnId !== "finished";
+  if (!card.dueDate || card.columnId === "finished") return false;
+  const dateStr = card.dueTime ? `${card.dueDate}T${card.dueTime}` : card.dueDate;
+  return new Date(dateStr) < new Date();
 }
 
 export function isDueToday(card: KanbanCard): boolean {
