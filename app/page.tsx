@@ -200,10 +200,10 @@ export default function Dashboard() {
         .slice(0, 6)
     );
 
-    // TS Tracker — top 3 CRs
+    // TS Tracker — all CRs (filtered later against ongoing kanban cards)
     try {
       const raw = localStorage.getItem("test_tracker_crs");
-      setTsCRs(raw ? (JSON.parse(raw) as TSCR[]).slice(0, 3) : []);
+      setTsCRs(raw ? (JSON.parse(raw) as TSCR[]) : []);
     } catch { setTsCRs([]); }
 
   }, []);
@@ -619,11 +619,17 @@ export default function Dashboard() {
 
           // ── TS Tracker ────────────────────────────────────
           if (w.id === "ts-tracker") {
-            if (tsCRs.length === 0) return null;
+            // Match ongoing kanban cards (by jiraKey) against TS Tracker CRs, preserving kanban order
+            const ongoingKeys = ongoingCards.map(c => c.jiraKey).filter(Boolean) as string[];
+            const matchedCRs = ongoingKeys
+              .map(key => tsCRs.find(cr => cr.crKey === key))
+              .filter((cr): cr is TSCR => !!cr)
+              .slice(0, 3);
+            if (matchedCRs.length === 0) return null;
             return (
               <WidgetCard key="ts-tracker" icon={<ClipboardList size={15} className="text-amber-400" />} title="TS Tracker" href="/tests">
                 <div className="space-y-3">
-                  {tsCRs.map(cr => {
+                  {matchedCRs.map(cr => {
                     const all = cr.suites.flatMap(s => s.cases).filter(c => !c.disabled);
                     const pass = all.filter(c => c.status === "pass").length;
                     const fail = all.filter(c => c.status === "fail").length;
