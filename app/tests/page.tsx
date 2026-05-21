@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, ChevronDown, ChevronRight, X, Search, Loader2, CheckCircle2, XCircle, Clock, CalendarDays, Trash2 } from "lucide-react";
+import { Plus, ChevronDown, ChevronRight, X, Search, Loader2, CheckCircle2, XCircle, Clock, CalendarDays, Trash2, Timer } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 import { reporterIs } from "@/lib/jira";
@@ -10,7 +10,7 @@ import { todayLocal } from "@/lib/date";
 export interface TestCase {
   id: string;
   tsNumber: string;
-  status: "pass" | "fail" | null;
+  status: "pass" | "fail" | "in-progress" | null;
   dateTested: string | null; // YYYY-MM-DD
 }
 
@@ -40,7 +40,7 @@ function uid() { return crypto.randomUUID(); }
 interface JiraHit { key: string; summary: string; }
 
 // ── Status chip ───────────────────────────────────────────
-function StatusChip({ status, onToggle }: { status: "pass" | "fail" | null; onToggle: (s: "pass" | "fail" | null) => void }) {
+function StatusChip({ status, onToggle }: { status: "pass" | "fail" | "in-progress" | null; onToggle: (s: "pass" | "fail" | "in-progress" | null) => void }) {
   return (
     <div className="flex gap-1">
       <button
@@ -50,6 +50,14 @@ function StatusChip({ status, onToggle }: { status: "pass" | "fail" | null; onTo
         )}
       >
         <CheckCircle2 size={11} />Pass
+      </button>
+      <button
+        onClick={() => onToggle(status === "in-progress" ? null : "in-progress")}
+        className={clsx("flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border transition-colors",
+          status === "in-progress" ? "bg-amber-900/60 border-amber-700 text-amber-300" : "border-slate-700 text-slate-600 hover:border-amber-700 hover:text-amber-400"
+        )}
+      >
+        <Timer size={11} />WIP
       </button>
       <button
         onClick={() => onToggle(status === "fail" ? null : "fail")}
@@ -214,7 +222,7 @@ export default function TestTrackerPage() {
     })));
   }
 
-  function toggleStatus(tc: TestCase, newStatus: "pass" | "fail" | null) {
+  function toggleStatus(tc: TestCase, newStatus: "pass" | "fail" | "in-progress" | null) {
     updateCase(tc.id, {
       status: newStatus,
       dateTested: newStatus ? (tc.dateTested ?? todayLocal()) : null,
@@ -238,10 +246,20 @@ export default function TestTrackerPage() {
   // ── Stats helpers ────────────────────────────────────────
   function crStats(cr: CREntry) {
     const all = cr.suites.flatMap(s => s.cases);
-    const done = all.filter(c => c.status !== null).length;
     const pass = all.filter(c => c.status === "pass").length;
     const fail = all.filter(c => c.status === "fail").length;
-    return { total: all.length, done, pass, fail };
+    const wip = all.filter(c => c.status === "in-progress").length;
+    const done = pass + fail + wip;
+    const passPct = all.length ? Math.round((pass / all.length) * 100) : 0;
+    return { total: all.length, done, pass, fail, wip, passPct };
+  }
+
+  function suiteStats(suite: TestSuite) {
+    const pass = suite.cases.filter(c => c.status === "pass").length;
+    const fail = suite.cases.filter(c => c.status === "fail").length;
+    const wip = suite.cases.filter(c => c.status === "in-progress").length;
+    const passPct = suite.cases.length ? Math.round((pass / suite.cases.length) * 100) : 0;
+    return { total: suite.cases.length, pass, fail, wip, passPct };
   }
 
   if (!hydrated) return null;
@@ -257,7 +275,7 @@ export default function TestTrackerPage() {
     <div className="flex flex-col min-h-full">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
-        <h1 className="text-sm font-semibold text-slate-200">Test Tracker</h1>
+        <h1 className="text-sm font-semibold text-slate-200">Test Scenario Tracker</h1>
         <div className="flex items-center gap-2">
           {/* View toggle */}
           <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
@@ -297,9 +315,8 @@ export default function TestTrackerPage() {
 
             <div className="space-y-3 mt-3">
               {data.map(cr => {
-                const isOpen = expandedCRs[cr.crKey] ?? true;
+                const isOpen = expandedCRs[cr.crKey] ?? false;
                 const stats = crStats(cr);
-                const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
                 return (
                   <div key={cr.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
                     {/* CR header */}
@@ -310,11 +327,14 @@ export default function TestTrackerPage() {
                       <span className="text-sm text-slate-200 font-medium flex-1 line-clamp-1">{cr.crSummary}</span>
                       {stats.total > 0 && (
                         <div className="flex items-center gap-2 shrink-0">
+                          {stats.wip > 0 && <span className="text-[10px] text-amber-400 font-medium">{stats.wip} wip</span>}
                           {stats.fail > 0 && <span className="text-[10px] text-red-400 font-medium">{stats.fail} fail</span>}
                           {stats.pass > 0 && <span className="text-[10px] text-green-400 font-medium">{stats.pass} pass</span>}
                           <span className="text-[10px] text-slate-500">{stats.done}/{stats.total}</span>
-                          <div className="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} />
+                          <span className="text-[10px] font-semibold text-green-400">{stats.passPct}%</span>
+                          <div className="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden flex">
+                            <div className="h-full bg-green-500" style={{ width: `${stats.passPct}%` }} />
+                            <div className="h-full bg-red-500" style={{ width: `${stats.total ? Math.round((stats.fail / stats.total) * 100) : 0}%` }} />
                           </div>
                         </div>
                       )}
@@ -327,9 +347,8 @@ export default function TestTrackerPage() {
                     {isOpen && (
                       <div className="border-t border-slate-800 px-4 py-3 space-y-3">
                         {cr.suites.map(suite => {
-                          const suiteOpen = expandedSuites[suite.id] ?? true;
-                          const suitePassed = suite.cases.filter(c => c.status === "pass").length;
-                          const suiteFailed = suite.cases.filter(c => c.status === "fail").length;
+                          const suiteOpen = expandedSuites[suite.id] ?? false;
+                          const ss = suiteStats(suite);
                           return (
                             <div key={suite.id} className="bg-slate-950/60 border border-slate-800 rounded-lg overflow-hidden">
                               {/* Suite header */}
@@ -337,9 +356,11 @@ export default function TestTrackerPage() {
                                 onClick={() => setExpandedSuites(p => ({ ...p, [suite.id]: !suiteOpen }))}>
                                 {suiteOpen ? <ChevronDown size={13} className="text-slate-600 shrink-0" /> : <ChevronRight size={13} className="text-slate-600 shrink-0" />}
                                 <span className="text-xs font-medium text-slate-300 flex-1">{suite.title}</span>
-                                <span className="text-[10px] text-slate-600">{suite.cases.length} TS</span>
-                                {suiteFailed > 0 && <span className="text-[10px] text-red-400">{suiteFailed}✗</span>}
-                                {suitePassed > 0 && <span className="text-[10px] text-green-400">{suitePassed}✓</span>}
+                                <span className="text-[10px] text-slate-600">{ss.total} TS</span>
+                                {ss.wip > 0 && <span className="text-[10px] text-amber-400">{ss.wip} wip</span>}
+                                {ss.fail > 0 && <span className="text-[10px] text-red-400">{ss.fail}✗</span>}
+                                {ss.pass > 0 && <span className="text-[10px] text-green-400">{ss.pass}✓</span>}
+                                {ss.total > 0 && <span className="text-[10px] font-semibold text-green-400">{ss.passPct}%</span>}
                                 <button onClick={e => { e.stopPropagation(); removeSuite(cr.id, suite.id); }}
                                   className="text-slate-700 hover:text-red-400 p-0.5 ml-1" title="Remove suite">
                                   <X size={12} />
@@ -350,7 +371,7 @@ export default function TestTrackerPage() {
                                 <div className="border-t border-slate-800">
                                   {/* Column headers */}
                                   {suite.cases.length > 0 && (
-                                    <div className="grid grid-cols-[1fr_160px_110px] gap-2 px-3 py-1.5 border-b border-slate-800/60">
+                                    <div className="grid grid-cols-[1fr_220px_110px] gap-2 px-3 py-1.5 border-b border-slate-800/60">
                                       <span className="text-[10px] text-slate-600 uppercase tracking-wider">TS Number</span>
                                       <span className="text-[10px] text-slate-600 uppercase tracking-wider">Status</span>
                                       <span className="text-[10px] text-slate-600 uppercase tracking-wider">Date Tested</span>
@@ -359,7 +380,7 @@ export default function TestTrackerPage() {
 
                                   {/* Test cases */}
                                   {suite.cases.map(tc => (
-                                    <div key={tc.id} className="grid grid-cols-[1fr_160px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group">
+                                    <div key={tc.id} className="grid grid-cols-[1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group">
                                       <span className="text-xs font-mono text-slate-300">{tc.tsNumber}</span>
                                       <StatusChip status={tc.status} onToggle={s => toggleStatus(tc, s)} />
                                       <div className="flex items-center gap-1.5">
@@ -458,6 +479,7 @@ export default function TestTrackerPage() {
               {dateRows.length > 0 && (
                 <div className="flex items-center gap-2 ml-auto text-xs text-slate-500">
                   <span className="text-green-400">{dateRows.filter(r => r.tc.status === "pass").length} pass</span>
+                  <span className="text-amber-400">{dateRows.filter(r => r.tc.status === "in-progress").length} wip</span>
                   <span className="text-red-400">{dateRows.filter(r => r.tc.status === "fail").length} fail</span>
                   <span>{dateRows.length} total</span>
                 </div>
@@ -497,6 +519,7 @@ export default function TestTrackerPage() {
                             <span className="text-xs font-mono text-slate-300">{tc.tsNumber}</span>
                             <div className="flex items-center gap-1.5">
                               {tc.status === "pass" && <span className="flex items-center gap-1 text-[11px] text-green-400 font-medium"><CheckCircle2 size={11} />Pass</span>}
+                              {tc.status === "in-progress" && <span className="flex items-center gap-1 text-[11px] text-amber-400 font-medium"><Timer size={11} />In Progress</span>}
                               {tc.status === "fail" && <span className="flex items-center gap-1 text-[11px] text-red-400 font-medium"><XCircle size={11} />Fail</span>}
                               {!tc.status && <span className="text-[11px] text-slate-600">—</span>}
                             </div>
