@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import {
   Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
   Clock, Rocket, CalendarDays, FileText, Ticket, Settings2, GripVertical,
-  Eye, EyeOff, Kanban, ListTodo, AlertCircle, CheckCircle2,
+  Eye, EyeOff, Kanban, ListTodo, AlertCircle, CheckCircle2, ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
@@ -47,6 +47,11 @@ function MiniKanbanCard({ card }: { card: KanbanCard }) {
   );
 }
 
+
+// ── TS Tracker types (minimal, for stats only) ───────────────
+interface TSCase  { status: "pass" | "fail" | "in-progress" | null; disabled?: boolean; }
+interface TSSuite { cases: TSCase[]; }
+interface TSCR    { id: string; crKey: string; crSummary: string; suites: TSSuite[]; }
 
 // ── Stat box ─────────────────────────────────────────────────
 function StatBox({ value, label, color = "text-slate-200", alert }: { value: number | string; label: string; color?: string; alert?: boolean }) {
@@ -116,6 +121,7 @@ export default function Dashboard() {
   const [kanbanSummary, setKanbanSummary]     = useState<KanbanSummaryData | null>(null);
   const [todoSnapshot, setTodoSnapshot]       = useState<TodoSnapshotData | null>(null);
   const [upcomingDeps, setUpcomingDeps]       = useState<Deployment[]>([]);
+  const [tsCRs, setTsCRs]                     = useState<TSCR[]>([]);
 
   // Jira snapshot (API)
   const [jiraSnapshot, setJiraSnapshot]       = useState<JiraSnapshotData | null>(null);
@@ -193,6 +199,12 @@ export default function Dashboard() {
         .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
         .slice(0, 6)
     );
+
+    // TS Tracker — top 3 CRs
+    try {
+      const raw = localStorage.getItem("test_tracker_crs");
+      setTsCRs(raw ? (JSON.parse(raw) as TSCR[]).slice(0, 3) : []);
+    } catch { setTsCRs([]); }
 
   }, []);
 
@@ -602,6 +614,50 @@ export default function Dashboard() {
                   {ongoingCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
                 </div>
               </div>
+            );
+          }
+
+          // ── TS Tracker ────────────────────────────────────
+          if (w.id === "ts-tracker") {
+            if (tsCRs.length === 0) return null;
+            return (
+              <WidgetCard key="ts-tracker" icon={<ClipboardList size={15} className="text-amber-400" />} title="TS Tracker" href="/tests">
+                <div className="space-y-3">
+                  {tsCRs.map(cr => {
+                    const all = cr.suites.flatMap(s => s.cases).filter(c => !c.disabled);
+                    const pass = all.filter(c => c.status === "pass").length;
+                    const fail = all.filter(c => c.status === "fail").length;
+                    const wip  = all.filter(c => c.status === "in-progress").length;
+                    const done = pass + fail + wip;
+                    const passPct = all.length ? Math.round((pass / all.length) * 100) : 0;
+                    const failPct = all.length ? Math.round((fail / all.length) * 100) : 0;
+                    const wipPct  = all.length ? Math.round((wip  / all.length) * 100) : 0;
+                    return (
+                      <Link key={cr.id} href="/tests" className="block px-3 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/60 hover:bg-slate-800 transition-colors">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="text-[10px] font-mono text-blue-400 font-bold shrink-0">{cr.crKey}</span>
+                          <span className="text-xs text-slate-300 flex-1 truncate">{cr.crSummary}</span>
+                        </div>
+                        <div className="flex items-center gap-3 mb-2 text-[11px]">
+                          <span className="text-slate-400">{done}/{all.length} done</span>
+                          <span className="font-semibold text-green-400">{passPct}%</span>
+                          {wip > 0  && <span className="text-amber-400">{wip} wip</span>}
+                          {fail > 0 && <span className="text-red-400">{fail} fail</span>}
+                          {pass > 0 && <span className="text-green-400 ml-auto">{pass} pass</span>}
+                        </div>
+                        {all.length > 0 && (
+                          <div className="flex h-1.5 rounded-full overflow-hidden bg-slate-700">
+                            <div className="h-full bg-green-500 transition-all" style={{ width: `${passPct}%` }} />
+                            <div className="h-full bg-amber-500 transition-all" style={{ width: `${wipPct}%` }} />
+                            <div className="h-full bg-red-500 transition-all"   style={{ width: `${failPct}%` }} />
+                          </div>
+                        )}
+                        {all.length === 0 && <p className="text-[11px] text-slate-600">No test cases yet</p>}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </WidgetCard>
             );
           }
 
