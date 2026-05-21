@@ -446,12 +446,14 @@ export default function Dashboard() {
         {widgets.map(w => {
           if (!w.visible) return null;
 
-          // ── 1. Kanban Summary ──────────────────────────────
-          if (w.id === "kanban-summary" && kanbanSummary) {
+          // ── 1 + 2. Kanban Summary & To-Do side by side ─────
+          if (w.id === "kanban-summary") {
+            if (!kanbanSummary) return null;
             const total = kanbanSummary.totalCount;
-            return (
-              <WidgetCard key="kanban-summary" icon={<Kanban size={15} className="text-blue-400" />} title="Kanban Board" href="/kanban">
-                {/* Column counts */}
+            const todoVisible = widgets.find(x => x.id === "todo-snapshot")?.visible && !!todoSnapshot;
+
+            const kanbanEl = (
+              <WidgetCard key="ks" icon={<Kanban size={15} className="text-blue-400" />} title="Kanban Board" href="/kanban">
                 <div className="grid grid-cols-5 gap-2 mb-4">
                   {COLUMN_IDS.map(col => (
                     <div key={col} className="flex flex-col items-center py-3 rounded-xl bg-slate-800/60 border border-slate-700/60">
@@ -460,7 +462,6 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
-                {/* Distribution bar */}
                 {total > 0 && (
                   <div className="flex h-2 rounded-full overflow-hidden mb-3 gap-px">
                     {COLUMN_IDS.map(col => {
@@ -469,7 +470,6 @@ export default function Dashboard() {
                     })}
                   </div>
                 )}
-                {/* Footer stats */}
                 <div className="flex items-center gap-4 text-xs text-slate-500 flex-wrap">
                   <span>{kanbanSummary.activeCount} active</span>
                   {kanbanSummary.overdueCount > 0 && <span className="text-red-400 font-medium">{kanbanSummary.overdueCount} overdue</span>}
@@ -478,15 +478,12 @@ export default function Dashboard() {
                 </div>
               </WidgetCard>
             );
-          }
 
-          // ── 2. To-Do Snapshot ──────────────────────────────
-          if (w.id === "todo-snapshot" && todoSnapshot) {
-            return (
-              <WidgetCard key="todo-snapshot" icon={<ListTodo size={15} className="text-green-400" />} title="To-Do" href="/todo">
+            const todoEl = todoVisible && todoSnapshot ? (
+              <WidgetCard key="ts" icon={<ListTodo size={15} className="text-green-400" />} title="To-Do" href="/todo">
                 <div className="grid grid-cols-3 gap-3 mb-4">
-                  <StatBox value={todoSnapshot.overdue}      label="Overdue"      color="text-red-400"    alert />
-                  <StatBox value={todoSnapshot.dueToday}     label="Due Today"    color="text-amber-400" />
+                  <StatBox value={todoSnapshot.overdue}      label="Overdue"       color="text-red-400"    alert />
+                  <StatBox value={todoSnapshot.dueToday}     label="Due Today"     color="text-amber-400" />
                   <StatBox value={todoSnapshot.highPriority} label="High Priority" color="text-orange-400" />
                 </div>
                 {todoSnapshot.urgentItems.length > 0 ? (
@@ -496,7 +493,7 @@ export default function Dashboard() {
                       const isToday = isTodoDueToday(t);
                       const pm = TODO_PRIORITY_META[t.priority];
                       return (
-                        <Link key={t.id} href="/todo" className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors group">
+                        <Link key={t.id} href="/todo" className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors">
                           <span className={clsx("w-1.5 h-1.5 rounded-full shrink-0", pm.dot)} />
                           <span className="text-xs text-slate-200 flex-1 truncate">{t.title}</span>
                           <span className={clsx("text-[10px] font-medium shrink-0", isOver ? "text-red-400" : isToday ? "text-amber-400" : "text-slate-500")}>
@@ -508,7 +505,55 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 text-xs text-green-400 border-t border-slate-800 pt-3">
-                    <CheckCircle2 size={13} /><span>All caught up — nothing overdue or due today</span>
+                    <CheckCircle2 size={13} /><span>All caught up</span>
+                  </div>
+                )}
+                <p className="text-[11px] text-slate-600 mt-3">{todoSnapshot.total} active item{todoSnapshot.total !== 1 ? "s" : ""} total</p>
+              </WidgetCard>
+            ) : null;
+
+            if (todoVisible) {
+              return (
+                <div key="kanban-todo-pair" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {kanbanEl}
+                  {todoEl}
+                </div>
+              );
+            }
+            return <div key="kanban-summary">{kanbanEl}</div>;
+          }
+
+          // skip todo when already paired with kanban
+          if (w.id === "todo-snapshot") {
+            if (widgets.find(x => x.id === "kanban-summary")?.visible) return null;
+            if (!todoSnapshot) return null;
+            return (
+              <WidgetCard key="todo-snapshot" icon={<ListTodo size={15} className="text-green-400" />} title="To-Do" href="/todo">
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <StatBox value={todoSnapshot.overdue}      label="Overdue"       color="text-red-400"    alert />
+                  <StatBox value={todoSnapshot.dueToday}     label="Due Today"     color="text-amber-400" />
+                  <StatBox value={todoSnapshot.highPriority} label="High Priority" color="text-orange-400" />
+                </div>
+                {todoSnapshot.urgentItems.length > 0 ? (
+                  <div className="space-y-1.5 border-t border-slate-800 pt-3">
+                    {todoSnapshot.urgentItems.map(t => {
+                      const isOver = isTodoOverdue(t);
+                      const isToday = isTodoDueToday(t);
+                      const pm = TODO_PRIORITY_META[t.priority];
+                      return (
+                        <Link key={t.id} href="/todo" className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors">
+                          <span className={clsx("w-1.5 h-1.5 rounded-full shrink-0", pm.dot)} />
+                          <span className="text-xs text-slate-200 flex-1 truncate">{t.title}</span>
+                          <span className={clsx("text-[10px] font-medium shrink-0", isOver ? "text-red-400" : isToday ? "text-amber-400" : "text-slate-500")}>
+                            {isOver ? "Overdue" : isToday ? "Today" : t.priority === "high" ? "High" : ""}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-xs text-green-400 border-t border-slate-800 pt-3">
+                    <CheckCircle2 size={13} /><span>All caught up</span>
                   </div>
                 )}
                 <p className="text-[11px] text-slate-600 mt-3">{todoSnapshot.total} active item{todoSnapshot.total !== 1 ? "s" : ""} total</p>
@@ -516,10 +561,12 @@ export default function Dashboard() {
             );
           }
 
-          // ── 4. Upcoming Deployments ────────────────────────
+          // ── 4 + 5. Deployments (2/3) + Jira Snapshot (1/3) ─
           if (w.id === "deployments") {
-            return (
-              <WidgetCard key="deployments" icon={<Rocket size={15} className="text-sky-400" />} title="Upcoming Deployments" href="/calendar">
+            const jiraVisible = widgets.find(x => x.id === "jira-snapshot")?.visible && !!creds;
+
+            const deploymentsEl = (
+              <WidgetCard key="dep" icon={<Rocket size={15} className="text-sky-400" />} title="Upcoming Deployments" href="/calendar">
                 {upcomingDeps.length === 0 ? (
                   <p className="text-sm text-slate-600 py-4 text-center">No upcoming deployments scheduled</p>
                 ) : (
@@ -533,13 +580,13 @@ export default function Dashboard() {
                             <div className="flex items-center gap-2 mb-0.5">
                               <span className="text-[10px] font-mono font-bold text-blue-400">{d.ticketKey}</span>
                               <span className={clsx("text-[10px] font-medium", tm.text)}>{d.environment}</span>
-                              <span className={clsx("text-[10px]", tm.text, "opacity-60")}>{tm.label}</span>
+                              <span className={clsx("text-[10px] opacity-60", tm.text)}>{tm.label}</span>
                             </div>
                             <span className={clsx("text-xs font-medium line-clamp-1", tm.text)}>{d.ticketSummary || d.ticketKey}</span>
                           </div>
                           <div className="text-right shrink-0 space-y-0.5">
                             <p className={clsx("text-[11px] font-semibold", tm.text)}>{fmtDepDate(d.date)}</p>
-                            <p className={clsx("text-[10px]", tm.text, "opacity-70")}>{d.time}</p>
+                            <p className={clsx("text-[10px] opacity-70", tm.text)}>{d.time}</p>
                             <p className={clsx("text-[10px] font-medium", sm.color)}>{sm.label}</p>
                           </div>
                         </Link>
@@ -549,10 +596,50 @@ export default function Dashboard() {
                 )}
               </WidgetCard>
             );
+
+            const jiraEl = jiraVisible ? (
+              <WidgetCard key="js" icon={<Ticket size={15} className="text-blue-400" />} title="Jira Snapshot" href="/jira">
+                {jiraSnapshotLoading && !jiraSnapshot ? (
+                  <div className="flex items-center gap-2 py-6 justify-center text-slate-600">
+                    <Loader2 size={16} className="animate-spin" />
+                  </div>
+                ) : jiraSnapshot ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <StatBox value={jiraSnapshot.assignedTotal}     label="Assigned Open"  color="text-blue-300" />
+                      <StatBox value={jiraSnapshot.pendingFromOthers} label="Pending Others" color="text-purple-400" alert />
+                      <StatBox value={jiraSnapshot.assignedInProgress} label="In Progress"  color="text-yellow-400" />
+                      <StatBox value={jiraSnapshot.assignedToDo}      label="To Do"          color="text-slate-300" />
+                    </div>
+                    {jiraSnapshot.assignedTotal > 0 && (
+                      <div className="flex h-1.5 rounded-full overflow-hidden gap-px">
+                        <div className="h-full bg-yellow-500" style={{ width: `${(jiraSnapshot.assignedInProgress / jiraSnapshot.assignedTotal) * 100}%` }} />
+                        <div className="h-full bg-slate-500" style={{ width: `${(jiraSnapshot.assignedToDo / jiraSnapshot.assignedTotal) * 100}%` }} />
+                        <div className="h-full bg-slate-700 flex-1" />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-xs text-slate-600 py-4 text-center">Could not load Jira data</p>
+                )}
+              </WidgetCard>
+            ) : null;
+
+            if (jiraVisible) {
+              return (
+                <div key="dep-jira-pair" className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <div className="lg:col-span-2">{deploymentsEl}</div>
+                  <div>{jiraEl}</div>
+                </div>
+              );
+            }
+            return <div key="deployments">{deploymentsEl}</div>;
           }
 
-          // ── 5. Jira Snapshot ───────────────────────────────
-          if (w.id === "jira-snapshot" && creds) {
+          // skip jira-snapshot when already paired with deployments
+          if (w.id === "jira-snapshot") {
+            if (widgets.find(x => x.id === "deployments")?.visible) return null;
+            if (!creds) return null;
             return (
               <WidgetCard key="jira-snapshot" icon={<Ticket size={15} className="text-blue-400" />} title="Jira Snapshot" href="/jira">
                 {jiraSnapshotLoading && !jiraSnapshot ? (
@@ -562,16 +649,15 @@ export default function Dashboard() {
                 ) : jiraSnapshot ? (
                   <>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                      <StatBox value={jiraSnapshot.assignedTotal}      label="Assigned Open"     color="text-blue-300" />
-                      <StatBox value={jiraSnapshot.assignedInProgress}  label="In Progress"       color="text-yellow-400" />
-                      <StatBox value={jiraSnapshot.assignedToDo}        label="To Do"             color="text-slate-300" />
-                      <StatBox value={jiraSnapshot.pendingFromOthers}   label="Pending From Others" color="text-purple-400" alert />
+                      <StatBox value={jiraSnapshot.assignedTotal}      label="Assigned Open"      color="text-blue-300" />
+                      <StatBox value={jiraSnapshot.assignedInProgress} label="In Progress"        color="text-yellow-400" />
+                      <StatBox value={jiraSnapshot.assignedToDo}       label="To Do"              color="text-slate-300" />
+                      <StatBox value={jiraSnapshot.pendingFromOthers}  label="Pending From Others" color="text-purple-400" alert />
                     </div>
-                    {/* Progress bar: In Progress vs To Do vs other */}
                     {jiraSnapshot.assignedTotal > 0 && (
                       <div className="flex h-1.5 rounded-full overflow-hidden gap-px mb-3">
-                        <div className="h-full bg-yellow-500 transition-all" style={{ width: `${(jiraSnapshot.assignedInProgress / jiraSnapshot.assignedTotal) * 100}%` }} />
-                        <div className="h-full bg-slate-500 transition-all" style={{ width: `${(jiraSnapshot.assignedToDo / jiraSnapshot.assignedTotal) * 100}%` }} />
+                        <div className="h-full bg-yellow-500" style={{ width: `${(jiraSnapshot.assignedInProgress / jiraSnapshot.assignedTotal) * 100}%` }} />
+                        <div className="h-full bg-slate-500" style={{ width: `${(jiraSnapshot.assignedToDo / jiraSnapshot.assignedTotal) * 100}%` }} />
                         <div className="h-full bg-slate-700 flex-1" />
                       </div>
                     )}
@@ -580,7 +666,7 @@ export default function Dashboard() {
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-slate-500 inline-block" />To Do</span>
                       {jiraSnapshot.pendingFromOthers > 0 && (
                         <span className="ml-auto flex items-center gap-1 text-purple-400">
-                          <AlertCircle size={11} />{jiraSnapshot.pendingFromOthers} ticket{jiraSnapshot.pendingFromOthers !== 1 ? "s" : ""} waiting on others
+                          <AlertCircle size={11} />{jiraSnapshot.pendingFromOthers} waiting on others
                         </span>
                       )}
                     </div>
@@ -592,7 +678,7 @@ export default function Dashboard() {
             );
           }
 
-          // ── Existing: On-Going + Next 7 Days ──────────────
+          // ── On-Going + Next 7 Days ─────────────────────────
           if (w.id === "ongoing" || w.id === "upcoming") {
             if (!hasLocalData) return null;
             const ongoingCfg  = widgets.find(x => x.id === "ongoing");
@@ -628,7 +714,7 @@ export default function Dashboard() {
             );
           }
 
-          // ── Existing: Raised Tickets ───────────────────────
+          // ── Raised Tickets ─────────────────────────────────
           if (w.id === "raised" && creds) {
             return (
               <div key="raised" className="bg-slate-900 border border-slate-800 rounded-xl p-5">
@@ -671,7 +757,7 @@ export default function Dashboard() {
             );
           }
 
-          // ── Existing: Jira Overview link ───────────────────
+          // ── Jira Overview link ─────────────────────────────
           if (w.id === "jira-overview" && creds) {
             return (
               <Link key="jira-overview" href="/jira" className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 hover:bg-slate-800/60 transition-colors group">
