@@ -2,9 +2,11 @@
 import { useState, useEffect } from "react";
 import {
   DndContext, DragOverlay, closestCenter,
-  useDraggable, useDroppable,
+  useDroppable,
   DragStartEvent, DragEndEvent,
 } from "@dnd-kit/core";
+import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
   Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight,
@@ -57,7 +59,16 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
   const [checklistInput, setClInput]    = useState("");
   const [checklist, setChecklist]       = useState<ChecklistItem[]>([]);
 
-  // Jira search
+  // Jira link (custom tab)
+  const [showJiraLink, setShowJiraLink]       = useState(false);
+  const [jiraLinkQuery, setJiraLinkQuery]     = useState("");
+  const [jiraLinkResults, setJiraLinkResults] = useState<JiraResult[]>([]);
+  const [jiraLinkLoading, setJiraLinkLoading] = useState(false);
+  const [jiraLinkSearching, setJiraLinkSearching] = useState(false);
+  const [linkedJiraKey, setLinkedJiraKey]     = useState("");
+  const [linkedJiraSummary, setLinkedJiraSummary] = useState("");
+
+  // Jira search (jira tab)
   const [jiraQuery, setJiraQuery]       = useState("");
   const [allJira, setAllJira]           = useState<JiraResult[]>([]);
   const [jiraLoading, setJiraLoading]   = useState(false);
@@ -138,6 +149,49 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
     return !q || r.key.toLowerCase().includes(q) || r.summary.toLowerCase().includes(q) || r.project.toLowerCase().includes(q);
   });
 
+  // Initial load for jira link panel (custom tab)
+  useEffect(() => {
+    if (!showJiraLink || !creds || jiraLinkResults.length > 0) return;
+    setJiraLinkLoading(true);
+    fetch("/api/jira/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...creds,
+        jql: "(assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC",
+        maxResults: 80,
+        fields: ["summary", "status", "issuetype", "project", "updated"],
+      }),
+    })
+      .then(r => r.json())
+      .then(data => setJiraLinkResults(parseJiraResults(data)))
+      .catch(() => {})
+      .finally(() => setJiraLinkLoading(false));
+  }, [showJiraLink, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Debounced search for jira link panel (custom tab)
+  useEffect(() => {
+    if (!showJiraLink || !creds || jiraLinkQuery.length < 2) return;
+    const timer = setTimeout(() => {
+      setJiraLinkSearching(true);
+      fetch("/api/jira/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...creds,
+          jql: buildJql(jiraLinkQuery),
+          maxResults: 50,
+          fields: ["summary", "status", "issuetype", "project", "updated"],
+        }),
+      })
+        .then(r => r.json())
+        .then(data => setJiraLinkResults(parseJiraResults(data)))
+        .catch(() => {})
+        .finally(() => setJiraLinkSearching(false));
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [jiraLinkQuery, showJiraLink, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function addLabel(e: React.KeyboardEvent) {
     if (e.key === "Enter" && labelInput.trim()) { setLabels(p => [...p, labelInput.trim()]); setLabelInput(""); }
   }
@@ -148,12 +202,13 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
   function handleAddCustom() {
     if (!title.trim()) return;
     onAdd({
-      id: newId(), columnId: targetColumn, type: "custom", boardType,
+      id: newId(), columnId: targetColumn, type: "custom", boardType: "task",
       title: title.trim(), description: description || undefined,
       priority, labels, dueDate: dueDate || undefined, dueTime: dueTime || undefined, checklist,
       estimatedHours: estimatedHours ? Number(estimatedHours) : undefined,
       assignee: assignee || undefined,
       accentColor: accentColor || undefined,
+      jiraKey: linkedJiraKey || undefined,
       createdAt: new Date().toISOString(),
     });
     onClose();
@@ -202,24 +257,6 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
         <div className="flex-1 overflow-y-auto p-5">
           {tab === "custom" ? (
             <div className="space-y-4">
-              <div>
-                <label className={lbl}>Board Type</label>
-                <div className="flex gap-1.5 mt-1">
-                  {([["task", "Task"], ["cr", "CR Ticket"]] as const).map(([bt, label]) => (
-                    <button
-                      key={bt}
-                      type="button"
-                      onClick={() => setBoardType(bt)}
-                      className={clsx(
-                        "px-3 py-1.5 text-xs rounded-lg border transition-colors",
-                        boardType === bt ? "bg-blue-600/20 border-blue-500 text-blue-400" : "border-slate-700 text-slate-500 hover:text-slate-300"
-                      )}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
               <div>
                 <label className={lbl}>Title *</label>
                 <input autoFocus value={title} onChange={e => setTitle(e.target.value)} placeholder="What needs to be done?" className={inp} />
@@ -279,6 +316,63 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
                   </div>
                 )}
               </div>
+              {creds && (
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className={lbl}>Link Jira Ticket <span className="text-slate-600">(optional)</span></label>
+                    {!showJiraLink && !linkedJiraKey && (
+                      <button onClick={() => setShowJiraLink(true)} className="text-xs text-blue-400 hover:text-blue-300 transition-colors">+ Link</button>
+                    )}
+                  </div>
+                  {linkedJiraKey ? (
+                    <div className="flex items-center justify-between mt-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{linkedJiraKey}</span>
+                        <span className="text-xs text-slate-400 truncate">{linkedJiraSummary}</span>
+                      </div>
+                      <button onClick={() => { setLinkedJiraKey(""); setLinkedJiraSummary(""); setShowJiraLink(false); }} className="text-slate-600 hover:text-red-400 ml-2 shrink-0"><X size={13} /></button>
+                    </div>
+                  ) : showJiraLink && (
+                    <div className="mt-1">
+                      <div className="relative">
+                        <Search size={13} className="absolute left-3 top-2.5 text-slate-500 pointer-events-none" />
+                        <input
+                          autoFocus
+                          value={jiraLinkQuery}
+                          onChange={e => setJiraLinkQuery(e.target.value)}
+                          placeholder="Search by number, key, or summary…"
+                          className={inp + " pl-8 pr-8"}
+                        />
+                        {jiraLinkSearching && <Loader2 size={13} className="absolute right-3 top-2.5 text-blue-400 animate-spin" />}
+                      </div>
+                      {jiraLinkLoading ? (
+                        <div className="flex items-center justify-center py-4"><Loader2 size={16} className="animate-spin text-blue-500" /></div>
+                      ) : jiraLinkResults.length === 0 ? (
+                        <p className="text-xs text-slate-600 text-center py-3">{jiraLinkQuery.length >= 2 ? "No results" : "Loading recent tickets…"}</p>
+                      ) : (
+                        <div className="max-h-40 overflow-y-auto mt-1.5 space-y-1.5">
+                          {(jiraLinkQuery.length >= 2 ? jiraLinkResults : jiraLinkResults.filter(r => {
+                            const q = jiraLinkQuery.toLowerCase();
+                            return !q || r.key.toLowerCase().includes(q) || r.summary.toLowerCase().includes(q);
+                          })).map(r => (
+                            <button
+                              key={r.key}
+                              onClick={() => { setLinkedJiraKey(r.key); setLinkedJiraSummary(r.summary); setShowJiraLink(false); }}
+                              className="w-full text-left bg-slate-800 border border-slate-700 rounded-xl p-2.5 hover:border-blue-500 transition-colors"
+                            >
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <span className="text-xs font-mono text-blue-400 font-bold">{r.key}</span>
+                                <span className="text-xs bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">{r.status}</span>
+                              </div>
+                              <p className="text-xs text-slate-300 line-clamp-1">{r.summary}</p>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
               <div>
                 <label className={lbl}>Accent Color</label>
                 <div className="flex flex-wrap gap-2 mt-1">
@@ -411,7 +505,7 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
       <div className="flex items-start gap-1.5 mb-2">
         {dragHandle}
         <div className="flex-1 min-w-0">
-          {card.type === "jira" && card.jiraKey && (
+          {card.jiraKey && (
             <div className="flex items-center gap-1.5 mb-1">
               <span className="text-[10px] font-mono text-blue-400 font-bold">{card.jiraKey}</span>
               <span className="text-[10px] bg-slate-700 text-slate-500 px-1 rounded">{card.jiraStatus}</span>
@@ -470,16 +564,17 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
 function DraggableCard({ card, baseUrl, onCardClick }: {
   card: KanbanCard; baseUrl?: string; onCardClick: (c: KanbanCard) => void;
 }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: card.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
   return (
-    <div ref={setNodeRef} style={{ opacity: isDragging ? 0.3 : 1 }}>
+    <div ref={setNodeRef} style={{ ...style, opacity: isDragging ? 0.3 : 1 }}>
       <CardView
         card={card}
         baseUrl={baseUrl}
         onClick={() => onCardClick(card)}
         dragHandle={
-          <button {...attributes} {...listeners} aria-label="Drag to reorder" className="mt-0.5 text-slate-700 hover:text-slate-400 cursor-grab active:cursor-grabbing shrink-0" onClick={e => e.stopPropagation()}>
-            <GripVertical size={14} />
+          <button {...attributes} {...listeners} aria-label="Drag to reorder" className="mt-0.5 p-1 -ml-1 text-slate-600 hover:text-slate-300 cursor-grab active:cursor-grabbing shrink-0" onClick={e => e.stopPropagation()}>
+            <GripVertical size={18} />
           </button>
         }
       />
@@ -522,6 +617,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
           {cards.length} card{cards.length !== 1 ? "s" : ""} hidden
         </div>
       ) : (
+        <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
         <div
           ref={setNodeRef}
           className={clsx("flex-1 space-y-2 rounded-xl p-2 min-h-[120px] transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
@@ -531,6 +627,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
             <div className="flex items-center justify-center h-20 text-xs text-slate-700 border border-dashed border-slate-800 rounded-xl">Drop here</div>
           )}
         </div>
+        </SortableContext>
       )}
     </div>
   );
@@ -828,6 +925,7 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick }: {
           </div>
           <button onClick={() => onAddCard("urgent")} className="text-red-500 hover:text-red-300 p-0.5 hover:bg-red-900/30 rounded transition-colors"><Plus size={15} /></button>
         </div>
+        <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
         <div
           ref={setNodeRef}
           className={clsx("flex gap-3 overflow-x-auto pb-1 min-h-[80px] rounded-xl p-2 transition-colors", isOver && "bg-red-900/20 ring-1 ring-red-700")}
@@ -841,6 +939,7 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick }: {
             <div className="flex items-center justify-center w-full text-xs text-red-900 border border-dashed border-red-900/40 rounded-xl">No urgent items — drop here</div>
           )}
         </div>
+        </SortableContext>
       </div>
     </div>
   );
@@ -910,7 +1009,7 @@ export default function KanbanPage() {
 
   function handleDragEnd({ active, over }: DragEndEvent) {
     setActiveId(null);
-    if (!over) return;
+    if (!over || active.id === over.id) return;
     const cardId = active.id as string;
     const overId = over.id as string;
     const sourceCol = findCardColumn(cardId, boardState);
@@ -919,24 +1018,20 @@ export default function KanbanPage() {
       : findCardColumn(overId, boardState);
     if (!sourceCol || !destCol) return;
 
-    const sourceCards = [...boardState[sourceCol]];
-    const activeIndex = sourceCards.findIndex(c => c.id === cardId);
-    if (activeIndex === -1) return;
-    const [movedCard] = sourceCards.splice(activeIndex, 1);
-    const updatedCard = {
-      ...movedCard,
-      columnId: destCol,
-      ...(sourceCol !== destCol ? { columnEnteredAt: new Date().toISOString() } : {}),
-    };
-
     if (sourceCol === destCol) {
-      const overIndex = COLUMN_IDS.includes(overId as ColumnId) ? sourceCards.length : sourceCards.findIndex(c => c.id === overId);
-      sourceCards.splice(overIndex < 0 ? sourceCards.length : overIndex, 0, updatedCard);
-      persist({ ...boardState, [sourceCol]: sourceCards });
+      const items = boardState[sourceCol];
+      const oldIdx = items.findIndex(c => c.id === cardId);
+      const newIdx = COLUMN_IDS.includes(overId as ColumnId)
+        ? items.length - 1
+        : items.findIndex(c => c.id === overId);
+      if (oldIdx === -1 || newIdx === -1) return;
+      persist({ ...boardState, [sourceCol]: arrayMove(items, oldIdx, newIdx) });
     } else {
+      const movedCard = { ...boardState[sourceCol].find(c => c.id === cardId)!, columnId: destCol, columnEnteredAt: new Date().toISOString() };
+      const sourceCards = boardState[sourceCol].filter(c => c.id !== cardId);
       const destCards = [...boardState[destCol]];
-      const overIndex = COLUMN_IDS.includes(overId as ColumnId) ? destCards.length : destCards.findIndex(c => c.id === overId);
-      destCards.splice(overIndex < 0 ? destCards.length : overIndex, 0, updatedCard);
+      const overIdx = COLUMN_IDS.includes(overId as ColumnId) ? destCards.length : destCards.findIndex(c => c.id === overId);
+      destCards.splice(overIdx < 0 ? destCards.length : overIdx, 0, movedCard);
       persist({ ...boardState, [sourceCol]: sourceCards, [destCol]: destCards });
     }
   }
