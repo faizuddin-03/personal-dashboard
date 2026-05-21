@@ -5,7 +5,7 @@ import { useState, useRef } from "react";
 import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Download, Upload, Kanban,
-  CheckSquare, FileText, Search, X, CalendarDays, Ticket,
+  CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
 } from "lucide-react";
 import { exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import clsx from "clsx";
@@ -17,6 +17,7 @@ const nav = [
   { label: "Calendar",  href: "/calendar",  icon: CalendarDays },
   { label: "To-Do",     href: "/todo",      icon: CheckSquare },
   { label: "Notes",     href: "/notes",     icon: FileText },
+  { label: "Tests",     href: "/tests",     icon: ClipboardList },
   {
     label: "eAuto",
     icon: Car,
