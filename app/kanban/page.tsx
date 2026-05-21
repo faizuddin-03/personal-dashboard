@@ -23,6 +23,31 @@ import {
 
 function newId() { return crypto.randomUUID(); }
 
+function buildJiraJql(q: string, projectKey?: string): string {
+  const escaped = q.trim().replace(/"/g, "");
+  const isId  = /^\d+$/.test(escaped);
+  const isKey = /^[A-Za-z]+-\d+$/.test(escaped);
+  const resolvedKey = isId && projectKey ? `${projectKey}-${escaped}` : null;
+  if (resolvedKey) return `key = "${resolvedKey}" ORDER BY updated DESC`;
+  if (isId)        return `id = ${escaped} ORDER BY updated DESC`;
+  if (isKey)       return `key = "${escaped}" ORDER BY updated DESC`;
+  return `text ~ "${escaped}" ORDER BY updated DESC`;
+}
+
+function parseJiraResults(data: { issues?: unknown[] }): JiraResult[] {
+  return (data.issues ?? []).map((i) => {
+    const issue = i as { key: string; fields: { summary: string; status: { name: string }; issuetype: { name: string }; project: { name: string }; updated: string } };
+    return {
+      key: issue.key,
+      summary: issue.fields.summary,
+      status: issue.fields.status.name,
+      type: issue.fields.issuetype.name,
+      project: issue.fields.project.name,
+      updated: issue.fields.updated,
+    };
+  });
+}
+
 function findCardColumn(cardId: string, state: KanbanState): ColumnId | null {
   for (const col of COLUMN_IDS) {
     if (state[col].some(c => c.id === cardId)) return col;
@@ -75,30 +100,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
   const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
   const [jiraError, setJiraError]       = useState("");
 
-  function buildJql(q: string): string {
-    const escaped = q.trim().replace(/"/g, "");
-    const isId  = /^\d+$/.test(escaped);
-    const isKey = /^[A-Za-z]+-\d+$/.test(escaped);
-    const resolvedKey = isId && creds?.defaultProjectKey ? `${creds.defaultProjectKey}-${escaped}` : null;
-    if (resolvedKey) return `key = "${resolvedKey}" ORDER BY updated DESC`;
-    if (isId)        return `id = ${escaped} ORDER BY updated DESC`;
-    if (isKey)       return `key = "${escaped}" ORDER BY updated DESC`;
-    return `text ~ "${escaped}" ORDER BY updated DESC`;
-  }
-
-  function parseJiraResults(data: { issues?: unknown[] }): JiraResult[] {
-    return (data.issues ?? []).map((i) => {
-      const issue = i as { key: string; fields: { summary: string; status: { name: string }; issuetype: { name: string }; project: { name: string }; updated: string } };
-      return {
-        key: issue.key,
-        summary: issue.fields.summary,
-        status: issue.fields.status.name,
-        type: issue.fields.issuetype.name,
-        project: issue.fields.project.name,
-        updated: issue.fields.updated,
-      };
-    });
-  }
+  const buildJql = (q: string) => buildJiraJql(q, creds?.defaultProjectKey);
 
   // Initial load: assigned/reported tickets
   useEffect(() => {
@@ -110,7 +112,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...creds,
-        jql: "(assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC",
+        jql: "reporter = currentUser() ORDER BY updated DESC",
         maxResults: 80,
         fields: ["summary", "status", "issuetype", "project", "updated"],
       }),
@@ -158,7 +160,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...creds,
-        jql: "(assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC",
+        jql: "reporter = currentUser() ORDER BY updated DESC",
         maxResults: 80,
         fields: ["summary", "status", "issuetype", "project", "updated"],
       }),
@@ -634,10 +636,11 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
 }
 
 // ── Card detail drawer ────────────────────────────────────
-function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl }: {
+function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds }: {
   card: KanbanCard; onClose: () => void;
   onUpdate: (c: KanbanCard) => void; onDelete: (id: string) => void;
   onArchive?: (c: KanbanCard) => void; baseUrl?: string;
+  creds: ReturnType<typeof useApp>["creds"];
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle]     = useState(card.title);
@@ -655,8 +658,45 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [cardBoardType, setCardBoardType] = useState<"task" | "cr">(card.boardType ?? "task");
   const [confirmArchive, setConfirmArchive] = useState(false);
 
+  // Jira link (custom cards only)
+  const [editLinkedKey, setEditLinkedKey]           = useState(card.jiraKey ?? "");
+  const [showJiraLinkEdit, setShowJiraLinkEdit]     = useState(false);
+  const [jiraEditQuery, setJiraEditQuery]           = useState("");
+  const [jiraEditResults, setJiraEditResults]       = useState<JiraResult[]>([]);
+  const [jiraEditLoading, setJiraEditLoading]       = useState(false);
+  const [jiraEditSearching, setJiraEditSearching]   = useState(false);
+
+  // Initial load when link panel opens
+  useEffect(() => {
+    if (!showJiraLinkEdit || !creds || jiraEditResults.length > 0) return;
+    setJiraEditLoading(true);
+    fetch("/api/jira/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...creds, jql: "reporter = currentUser() ORDER BY updated DESC", maxResults: 80, fields: ["summary", "status", "issuetype", "project", "updated"] }),
+    })
+      .then(r => r.json()).then(d => setJiraEditResults(parseJiraResults(d)))
+      .catch(() => {}).finally(() => setJiraEditLoading(false));
+  }, [showJiraLinkEdit, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Debounced search in link panel
+  useEffect(() => {
+    if (!showJiraLinkEdit || !creds || jiraEditQuery.length < 2) return;
+    const t = setTimeout(() => {
+      setJiraEditSearching(true);
+      fetch("/api/jira/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...creds, jql: buildJiraJql(jiraEditQuery, creds.defaultProjectKey), maxResults: 50, fields: ["summary", "status", "issuetype", "project", "updated"] }),
+      })
+        .then(r => r.json()).then(d => setJiraEditResults(parseJiraResults(d)))
+        .catch(() => {}).finally(() => setJiraEditSearching(false));
+    }, 500);
+    return () => clearTimeout(t);
+  }, [jiraEditQuery, showJiraLinkEdit, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function save() {
-    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType });
+    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined });
     setEditing(false);
   }
 
@@ -706,11 +746,71 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {editing ? <input value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-transparent text-slate-100 font-semibold text-base border-b border-slate-700 pb-1 focus:outline-none focus:border-blue-500" /> : <h2 className="text-base font-semibold text-slate-100">{card.title}</h2>}
 
-          {card.jiraKey && baseUrl && (
-            <a href={`${baseUrl}/browse/${card.jiraKey}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-blue-400 hover:underline">
-              <ExternalLink size={12} />Open {card.jiraKey} in Jira
+          {/* Jira link — view mode shows open link; edit mode shows link/change/remove */}
+          {card.type === "custom" && editing && creds ? (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-slate-600">Jira Link</p>
+                {!showJiraLinkEdit && !editLinkedKey && (
+                  <button onClick={() => setShowJiraLinkEdit(true)} className="text-xs text-blue-400 hover:text-blue-300">+ Link</button>
+                )}
+              </div>
+              {editLinkedKey ? (
+                <div className="flex items-center justify-between px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{editLinkedKey}</span>
+                    {baseUrl && <a href={`${baseUrl}/browse/${editLinkedKey}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-slate-600 hover:text-blue-400 shrink-0"><ExternalLink size={11} /></a>}
+                  </div>
+                  <div className="flex gap-2 ml-2">
+                    <button onClick={() => { setShowJiraLinkEdit(true); setJiraEditQuery(""); }} className="text-xs text-slate-500 hover:text-slate-300">Change</button>
+                    <button onClick={() => { setEditLinkedKey(""); setShowJiraLinkEdit(false); }} className="text-slate-600 hover:text-red-400"><X size={13} /></button>
+                  </div>
+                </div>
+              ) : showJiraLinkEdit && (
+                <div>
+                  <div className="relative">
+                    <Search size={13} className="absolute left-3 top-2.5 text-slate-500 pointer-events-none" />
+                    <input
+                      autoFocus
+                      value={jiraEditQuery}
+                      onChange={e => setJiraEditQuery(e.target.value)}
+                      placeholder="Search by number, key, or summary…"
+                      className="w-full pl-8 pr-8 px-3 py-2 border border-slate-700 rounded-lg text-xs bg-slate-800 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    />
+                    {jiraEditSearching && <Loader2 size={13} className="absolute right-3 top-2.5 text-blue-400 animate-spin" />}
+                  </div>
+                  {jiraEditLoading ? (
+                    <div className="flex items-center justify-center py-4"><Loader2 size={16} className="animate-spin text-blue-500" /></div>
+                  ) : jiraEditResults.length === 0 ? (
+                    <p className="text-xs text-slate-600 text-center py-3">{jiraEditQuery.length >= 2 ? "No results" : "Loading recent tickets…"}</p>
+                  ) : (
+                    <div className="max-h-40 overflow-y-auto mt-1.5 space-y-1.5">
+                      {(jiraEditQuery.length >= 2 ? jiraEditResults : jiraEditResults.filter(r => {
+                        const q = jiraEditQuery.toLowerCase();
+                        return !q || r.key.toLowerCase().includes(q) || r.summary.toLowerCase().includes(q);
+                      })).map(r => (
+                        <button
+                          key={r.key}
+                          onClick={() => { setEditLinkedKey(r.key); setShowJiraLinkEdit(false); }}
+                          className="w-full text-left bg-slate-800 border border-slate-700 rounded-xl p-2.5 hover:border-blue-500 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-xs font-mono text-blue-400 font-bold">{r.key}</span>
+                            <span className="text-xs bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">{r.status}</span>
+                          </div>
+                          <p className="text-xs text-slate-300 line-clamp-1">{r.summary}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (editLinkedKey || card.jiraKey) && baseUrl ? (
+            <a href={`${baseUrl}/browse/${editLinkedKey || card.jiraKey}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-blue-400 hover:underline">
+              <ExternalLink size={12} />Open {editLinkedKey || card.jiraKey} in Jira
             </a>
-          )}
+          ) : null}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -1106,7 +1206,7 @@ export default function KanbanPage() {
         <AddCardModal targetColumn={addTarget} onClose={() => setAddTarget(null)} onAdd={handleAddCard} creds={creds} />
       )}
       {selectedCard && (
-        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} />
+        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} />
       )}
       {showArchive && (
         <ArchiveDrawer cards={archivedCards} onClose={() => setShowArchive(false)} onUnarchive={handleUnarchiveCard} />

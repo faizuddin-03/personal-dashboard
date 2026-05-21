@@ -147,8 +147,8 @@ export default function JiraPage() {
       .finally(() => setWaitingOnMeLoading(false));
 
     const bugsJql = pk
-      ? `project = "${pk}" AND issuetype = Bug AND created >= startOfWeek() ORDER BY priority DESC`
-      : `issuetype = Bug AND created >= startOfWeek() AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY priority DESC`;
+      ? `project = "${pk}" AND issuetype = Bug AND reporter = currentUser() AND created >= startOfWeek() ORDER BY priority DESC`
+      : `issuetype = Bug AND reporter = currentUser() AND created >= startOfWeek() ORDER BY priority DESC`;
     setBugsThisWeekLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...creds, jql: bugsJql, maxResults: 50 }) })

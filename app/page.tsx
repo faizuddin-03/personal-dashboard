@@ -11,7 +11,7 @@ import { getKanbanState, KanbanCard, PRIORITY_META, isOverdue as isKanbanOverdue
 import { getTodos } from "@/lib/todo";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META } from "@/lib/deployments";
 import { getCalendarEvents, CalendarEvent, EVENT_COLOR_META } from "@/lib/calendar-events";
-import { todayLocal, daysFromToday, jqlDayRange } from "@/lib/date";
+import { todayLocal, daysFromToday } from "@/lib/date";
 import clsx from "clsx";
 
 // ── Mini kanban card for dashboard ──────────────────────────
@@ -168,8 +168,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!creds) { setTodayRaised([]); return; }
-    const { from, to } = jqlDayRange(raisedDate);
-    const jql = `reporter = currentUser() AND created >= "${from}" AND created <= "${to}" ORDER BY created ASC`;
+    const jql = `reporter = currentUser() AND created = "${raisedDate}" ORDER BY created ASC`;
     setTodayRaisedLoading(true);
     fetch("/api/jira/search", {
       method: "POST",
