@@ -77,8 +77,14 @@ export default function SettingsPage() {
     }
   }
 
-  function handleSaveJira() {
-    const c = { baseUrl, email, apiToken, tokenExpiry: tokenExpiry || undefined, defaultProjectKey: defaultProjectKey.trim().toUpperCase() || undefined };
+  async function handleSaveJira() {
+    const c: import("@/lib/jira").JiraCredentials = { baseUrl, email, apiToken, tokenExpiry: tokenExpiry || undefined, defaultProjectKey: defaultProjectKey.trim().toUpperCase() || undefined };
+    // Fetch accountId so reporter JQL queries work reliably in Jira Cloud
+    try {
+      const res = await fetch("/api/jira/myself", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ baseUrl, email, apiToken }) });
+      const data = await res.json();
+      if (data.accountId) c.accountId = data.accountId as string;
+    } catch { /* non-fatal */ }
     storeCredentials(c);
     setCreds(c);
     setJiraSaved(true);

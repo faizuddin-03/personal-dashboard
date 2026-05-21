@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Menu, X, Search } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import GlobalSearch from "@/components/GlobalSearch";
-import { JiraCredentials, getStoredCredentials } from "@/lib/jira";
+import { JiraCredentials, getStoredCredentials, storeCredentials } from "@/lib/jira";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { loadAndApplyTheme } from "@/lib/themes";
 import clsx from "clsx";
@@ -37,9 +37,27 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   useAutoBackup();
 
   useEffect(() => {
-    setCreds(getStoredCredentials());
+    const stored = getStoredCredentials();
+    setCreds(stored);
     loadAndApplyTheme();
     setHydrated(true);
+    // If accountId isn't cached yet, fetch it now so reporter queries work reliably
+    if (stored && !stored.accountId) {
+      fetch("/api/jira/myself", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(stored),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.accountId) {
+            const updated = { ...stored, accountId: data.accountId as string };
+            storeCredentials(updated);
+            setCreds(updated);
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   // Cmd+K wiring — also handled inside GlobalSearch but we expose openSearch via context

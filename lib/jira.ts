@@ -4,6 +4,12 @@ export interface JiraCredentials {
   apiToken: string;
   tokenExpiry?: string; // ISO date string e.g. "2026-10-01"
   defaultProjectKey?: string; // e.g. "EAINT" — prepended when searching by number only
+  accountId?: string; // Jira Cloud accountId — more reliable than currentUser() for reporter queries
+}
+
+/** Returns the JQL reporter clause using accountId when available, currentUser() as fallback. */
+export function reporterIs(creds: JiraCredentials): string {
+  return creds.accountId ? `reporter = "${creds.accountId}"` : `reporter = currentUser()`;
 }
 
 export interface JiraIssue {

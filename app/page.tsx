@@ -4,6 +4,7 @@ import { Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
 import { useApp } from "@/components/AppShell";
+import { reporterIs } from "@/lib/jira";
 import IssueCard from "@/components/IssueCard";
 import IssueDrawer from "@/components/IssueDrawer";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
@@ -169,7 +170,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!creds) { setTodayRaised([]); setTodayRaisedError(""); return; }
-    const jql = `reporter = currentUser() AND ${jqlCreatedRange(raisedDate)} ORDER BY created ASC`;
+    const jql = `${reporterIs(creds)} AND ${jqlCreatedRange(raisedDate)} ORDER BY created ASC`;
     setTodayRaisedLoading(true);
     setTodayRaisedError("");
     fetch("/api/jira/search", {

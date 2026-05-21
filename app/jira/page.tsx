@@ -6,7 +6,7 @@ import {
   BookOpen, Search,
 } from "lucide-react";
 import {
-  JiraIssue, JiraSearchResult,
+  JiraIssue, JiraSearchResult, reporterIs,
 } from "@/lib/jira";
 import { useApp } from "@/components/AppShell";
 import IssueCard from "@/components/IssueCard";
@@ -118,7 +118,7 @@ export default function JiraPage() {
         fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...creds, jql: "assignee = currentUser() ORDER BY updated DESC", maxResults: 100 }) }),
         fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...creds, jql: `reporter = currentUser() AND assignee != currentUser() ORDER BY updated DESC`, maxResults: 100 }) }),
+          body: JSON.stringify({ ...creds, jql: `${reporterIs(creds)} AND assignee != currentUser() ORDER BY updated DESC`, maxResults: 100 }) }),
       ]);
       const [aData, rData]: [JiraSearchResult, JiraSearchResult] = await Promise.all([ar.json(), rr.json()]);
       if (!ar.ok) throw new Error((aData as unknown as { error: string }).error ?? "Failed");
@@ -142,14 +142,14 @@ export default function JiraPage() {
 
     setWaitingOnMeLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: `reporter = currentUser() AND assignee != currentUser() AND status not in (Closed, Done, Resolved) ORDER BY updated DESC`, maxResults: 50 }) })
+      body: JSON.stringify({ ...creds, jql: `${reporterIs(creds)} AND assignee != currentUser() AND status not in (Closed, Done, Resolved) ORDER BY updated DESC`, maxResults: 50 }) })
       .then(r => r.json()).then(d => setWaitingOnMe(d.issues ?? []))
       .catch(() => setWaitingOnMe([]))
       .finally(() => setWaitingOnMeLoading(false));
 
     const bugsJql = pk
-      ? `project = "${pk}" AND issuetype = Bug AND reporter = currentUser() AND created >= startOfWeek() ORDER BY priority DESC`
-      : `issuetype = Bug AND reporter = currentUser() AND created >= startOfWeek() ORDER BY priority DESC`;
+      ? `project = "${pk}" AND issuetype = Bug AND ${reporterIs(creds)} AND created >= startOfWeek() ORDER BY priority DESC`
+      : `issuetype = Bug AND ${reporterIs(creds)} AND created >= startOfWeek() ORDER BY priority DESC`;
     setBugsThisWeekLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...creds, jql: bugsJql, maxResults: 50 }) })

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
+import { reporterIs } from "@/lib/jira";
 import Linkified from "@/components/Linkified";
 import {
   KanbanCard, KanbanState, ColumnId, Priority,
@@ -112,7 +113,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...creds,
-        jql: `reporter = "${creds!.email}" ORDER BY updated DESC`,
+        jql: `${reporterIs(creds!)} ORDER BY updated DESC`,
         maxResults: 80,
         fields: ["summary", "status", "issuetype", "project", "updated"],
       }),
@@ -160,7 +161,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...creds,
-        jql: `reporter = "${creds!.email}" ORDER BY updated DESC`,
+        jql: `${reporterIs(creds!)} ORDER BY updated DESC`,
         maxResults: 80,
         fields: ["summary", "status", "issuetype", "project", "updated"],
       }),
@@ -673,7 +674,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
     fetch("/api/jira/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: `reporter = "${creds!.email}" ORDER BY updated DESC`, maxResults: 80, fields: ["summary", "status", "issuetype", "project", "updated"] }),
+      body: JSON.stringify({ ...creds, jql: `${reporterIs(creds!)} ORDER BY updated DESC`, maxResults: 80, fields: ["summary", "status", "issuetype", "project", "updated"] }),
     })
       .then(r => r.json()).then(d => setJiraEditResults(parseJiraResults(d)))
       .catch(() => {}).finally(() => setJiraEditLoading(false));
