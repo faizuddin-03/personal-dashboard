@@ -112,7 +112,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...creds,
-        jql: "reporter = currentUser() ORDER BY updated DESC",
+        jql: `reporter = "${creds!.email}" ORDER BY updated DESC`,
         maxResults: 80,
         fields: ["summary", "status", "issuetype", "project", "updated"],
       }),
@@ -160,7 +160,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...creds,
-        jql: "reporter = currentUser() ORDER BY updated DESC",
+        jql: `reporter = "${creds!.email}" ORDER BY updated DESC`,
         maxResults: 80,
         fields: ["summary", "status", "issuetype", "project", "updated"],
       }),
@@ -673,7 +673,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
     fetch("/api/jira/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: "reporter = currentUser() ORDER BY updated DESC", maxResults: 80, fields: ["summary", "status", "issuetype", "project", "updated"] }),
+      body: JSON.stringify({ ...creds, jql: `reporter = "${creds!.email}" ORDER BY updated DESC`, maxResults: 80, fields: ["summary", "status", "issuetype", "project", "updated"] }),
     })
       .then(r => r.json()).then(d => setJiraEditResults(parseJiraResults(d)))
       .catch(() => {}).finally(() => setJiraEditLoading(false));

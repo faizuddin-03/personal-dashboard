@@ -117,7 +117,7 @@ export default function JiraPage() {
         fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...creds, jql: "assignee = currentUser() ORDER BY updated DESC", maxResults: 100 }) }),
         fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...creds, jql: "reporter = currentUser() AND assignee != currentUser() ORDER BY updated DESC", maxResults: 100 }) }),
+          body: JSON.stringify({ ...creds, jql: `reporter = "${creds.email}" AND assignee != "${creds.email}" ORDER BY updated DESC`, maxResults: 100 }) }),
       ]);
       const [aData, rData]: [JiraSearchResult, JiraSearchResult] = await Promise.all([ar.json(), rr.json()]);
       if (!ar.ok) throw new Error((aData as unknown as { error: string }).error ?? "Failed");
@@ -141,14 +141,14 @@ export default function JiraPage() {
 
     setWaitingOnMeLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: `assignee = currentUser() AND statusCategory = "In Progress" ORDER BY updated ASC`, maxResults: 50 }) })
+      body: JSON.stringify({ ...creds, jql: `reporter = "${creds.email}" AND assignee != "${creds.email}" AND resolution = Unresolved ORDER BY updated DESC`, maxResults: 50 }) })
       .then(r => r.json()).then(d => setWaitingOnMe(d.issues ?? []))
       .catch(() => setWaitingOnMe([]))
       .finally(() => setWaitingOnMeLoading(false));
 
     const bugsJql = pk
-      ? `project = "${pk}" AND issuetype = Bug AND reporter = currentUser() AND created >= startOfWeek() ORDER BY priority DESC`
-      : `issuetype = Bug AND reporter = currentUser() AND created >= startOfWeek() ORDER BY priority DESC`;
+      ? `project = "${pk}" AND issuetype = Bug AND reporter = "${creds.email}" AND created >= startOfWeek() ORDER BY priority DESC`
+      : `issuetype = Bug AND reporter = "${creds.email}" AND created >= startOfWeek() ORDER BY priority DESC`;
     setBugsThisWeekLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...creds, jql: bugsJql, maxResults: 50 }) })
@@ -533,12 +533,12 @@ export default function JiraPage() {
                 )}
               </div>
 
-              {/* ── Waiting on Me ── */}
+              {/* ── Pending From Others ── */}
               <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <UserCheck size={14} className="text-sky-400" />
-                    <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Waiting on Me</p>
+                    <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Pending From Others</p>
                     {!waitingOnMeLoading && waitingOnMe.length > 0 && (
                       <span className="text-xs bg-sky-900/40 text-sky-300 border border-sky-700/50 px-1.5 py-0.5 rounded-full font-semibold">{waitingOnMe.length}</span>
                     )}
@@ -548,7 +548,7 @@ export default function JiraPage() {
                 {waitingOnMeLoading && waitingOnMe.length === 0 ? (
                   <div className="flex items-center justify-center py-8 text-slate-600 text-sm"><Loader2 size={16} className="animate-spin mr-2" />Loading…</div>
                 ) : waitingOnMe.length === 0 ? (
-                  <div className="flex flex-col items-center py-8 text-slate-600 text-sm"><UserCheck size={20} className="mb-2 opacity-40" />Nothing in progress for you</div>
+                  <div className="flex flex-col items-center py-8 text-slate-600 text-sm"><UserCheck size={20} className="mb-2 opacity-40" />No pending tickets</div>
                 ) : (
                   <div className="space-y-1.5 max-h-64 overflow-y-auto pr-0.5">
                     {waitingOnMe.map(issue => (
@@ -556,7 +556,14 @@ export default function JiraPage() {
                         className="w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-slate-800 transition-colors group">
                         <span className="text-[10px] font-mono text-sky-400 font-bold shrink-0 mt-0.5">{issue.key}</span>
                         <span className="text-xs text-slate-300 flex-1 line-clamp-1 group-hover:text-slate-100">{issue.fields.summary}</span>
-                        <span className="text-[10px] shrink-0 px-1.5 py-0.5 rounded bg-blue-950/50 text-blue-300 font-medium">{issue.fields.status.name}</span>
+                        <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                          {issue.fields.assignee && (
+                            <span className="text-[10px] text-slate-500 max-w-[80px] truncate" title={issue.fields.assignee.displayName}>
+                              {issue.fields.assignee.displayName.split(" ")[0]}
+                            </span>
+                          )}
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-950/50 text-blue-300 font-medium">{issue.fields.status.name}</span>
+                        </div>
                       </button>
                     ))}
                   </div>

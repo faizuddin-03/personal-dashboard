@@ -168,7 +168,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!creds) { setTodayRaised([]); return; }
-    const jql = `reporter = currentUser() AND created = "${raisedDate}" ORDER BY created ASC`;
+    const jql = `reporter = "${creds.email}" AND created = "${raisedDate}" ORDER BY created ASC`;
     setTodayRaisedLoading(true);
     fetch("/api/jira/search", {
       method: "POST",
