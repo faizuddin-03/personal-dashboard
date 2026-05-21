@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, Kanban, CheckSquare, FileText, ExternalLink, Rocket, CalendarDays } from "lucide-react";
+import { Search, X, Kanban, CheckSquare, FileText, ExternalLink, Rocket, CalendarDays, ClipboardList } from "lucide-react";
 import clsx from "clsx";
 import { getKanbanState, PRIORITY_META } from "@/lib/kanban";
 import { getTodos } from "@/lib/todo";
@@ -11,7 +11,7 @@ import { getCalendarEvents } from "@/lib/calendar-events";
 
 interface SearchResult {
   id: string;
-  type: "kanban" | "todo" | "note" | "deployment" | "event";
+  type: "kanban" | "todo" | "note" | "deployment" | "event" | "test";
   title: string;
   subtitle?: string;
   href: string;
@@ -110,6 +110,26 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
       }
     }
 
+    try {
+      const testData: { id: string; crKey: string; crSummary: string; suites: { id: string; title: string; cases: { id: string; tsNumber: string }[] }[] }[] =
+        JSON.parse(localStorage.getItem("test_tracker_crs") ?? "[]");
+      for (const cr of testData) {
+        if (cr.crKey.toLowerCase().includes(q) || cr.crSummary.toLowerCase().includes(q)) {
+          out.push({ id: cr.id, type: "test", title: cr.crKey, subtitle: cr.crSummary, href: "/tests" });
+        }
+        for (const suite of cr.suites) {
+          if (suite.title.toLowerCase().includes(q)) {
+            out.push({ id: suite.id, type: "test", title: suite.title, subtitle: `${cr.crKey} · Suite`, href: "/tests" });
+          }
+          for (const tc of suite.cases) {
+            if (tc.tsNumber.toLowerCase().includes(q)) {
+              out.push({ id: tc.id, type: "test", title: tc.tsNumber, subtitle: `${cr.crKey} · ${suite.title}`, href: "/tests" });
+            }
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
     setResults(out.slice(0, 15));
     setSelected(0);
   }, [query]);
@@ -121,9 +141,9 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
     if (e.key === "Escape") onClose();
   }
 
-  const typeIcon = { kanban: Kanban, todo: CheckSquare, note: FileText, deployment: Rocket, event: CalendarDays };
-  const typeLabel = { kanban: "Kanban", todo: "To-Do", note: "Note", deployment: "Deployment", event: "Event" };
-  const typeColor = { kanban: "text-blue-400", todo: "text-green-400", note: "text-purple-400", deployment: "text-sky-400", event: "text-pink-400" };
+  const typeIcon = { kanban: Kanban, todo: CheckSquare, note: FileText, deployment: Rocket, event: CalendarDays, test: ClipboardList };
+  const typeLabel = { kanban: "Kanban", todo: "To-Do", note: "Note", deployment: "Deployment", event: "Event", test: "TS Tracker" };
+  const typeColor = { kanban: "text-blue-400", todo: "text-green-400", note: "text-purple-400", deployment: "text-sky-400", event: "text-pink-400", test: "text-amber-400" };
 
   return (
     <div

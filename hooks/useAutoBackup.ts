@@ -6,26 +6,44 @@ import { exportLocalStorage } from "@/lib/jira";
 export function useAutoBackup() {
   useEffect(() => {
     function check() {
-      const settings = getBackupSettings();
-      if (!settings.enabled) return;
+      const s = getBackupSettings();
+      if (!s.enabled) return;
 
       const now = new Date();
-      if (now.getDay() !== 5) return; // Must be Friday
-
-      const [hours, minutes] = settings.time.split(":").map(Number);
-      if (now.getHours() < hours || (now.getHours() === hours && now.getMinutes() < minutes)) return;
+      const day = now.getDay(); // 0=Sun, 6=Sat
+      const isWeekday = day >= 1 && day <= 5;
+      if (!isWeekday) return;
 
       const today = now.toISOString().slice(0, 10);
-      if (settings.lastBackupDate === today) return; // Already backed up today
+      const hour = now.getHours();
 
-      if (settings.lastBackupDate) {
-        const last = new Date(settings.lastBackupDate);
-        const daysSince = (now.getTime() - last.getTime()) / (1000 * 60 * 60 * 24);
-        if (daysSince < settings.intervalWeeks * 7 - 1) return;
+      if (s.schedule === "daily-5pm") {
+        if (hour < 17) return;
+        if (s.lastBackupDate === today) return;
+        exportLocalStorage();
+        saveBackupSettings({ ...s, lastBackupDate: today, lastBackupHour: null });
+      } else if (s.schedule === "hourly") {
+        if (hour < 8 || hour >= 18) return;
+        if (s.lastBackupDate === today && s.lastBackupHour === hour) return;
+        exportLocalStorage();
+        saveBackupSettings({ ...s, lastBackupDate: today, lastBackupHour: hour });
+      } else if (s.schedule === "weekly") {
+        if (day !== 5) return;
+        if (hour < 17) return;
+        if (s.lastBackupDate === today) return;
+        exportLocalStorage();
+        saveBackupSettings({ ...s, lastBackupDate: today, lastBackupHour: null });
+      } else if (s.schedule === "biweekly") {
+        if (day !== 5) return;
+        if (hour < 17) return;
+        if (s.lastBackupDate === today) return;
+        if (s.lastBackupDate) {
+          const daysSince = (now.getTime() - new Date(s.lastBackupDate).getTime()) / 86_400_000;
+          if (daysSince < 13) return;
+        }
+        exportLocalStorage();
+        saveBackupSettings({ ...s, lastBackupDate: today, lastBackupHour: null });
       }
-
-      exportLocalStorage();
-      saveBackupSettings({ ...settings, lastBackupDate: today });
     }
 
     check();

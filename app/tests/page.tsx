@@ -1,10 +1,19 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, ChevronDown, ChevronRight, X, Search, Loader2, CheckCircle2, XCircle, Clock, CalendarDays, Trash2, Timer } from "lucide-react";
+import { Plus, ChevronDown, ChevronRight, X, Search, Loader2, CheckCircle2, XCircle, Clock, CalendarDays, Trash2, Timer, GripVertical } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 import { reporterIs } from "@/lib/jira";
 import { todayLocal } from "@/lib/date";
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext, sortableKeyboardCoordinates, useSortable,
+  verticalListSortingStrategy, arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 // ── Data model ────────────────────────────────────────────
 export interface TestCase {
@@ -155,6 +164,18 @@ function AddCRPanel({ creds, existingKeys, onAdd, onClose }: {
   );
 }
 
+// ── Sortable row handle ───────────────────────────────────
+function SortableRow({ id, children }: { id: string; children: (handle: React.ReactNode) => React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
+  const handle = (
+    <span {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-slate-700 hover:text-slate-500 shrink-0 touch-none">
+      <GripVertical size={13} />
+    </span>
+  );
+  return <div ref={setNodeRef} style={style}>{children(handle)}</div>;
+}
+
 // ── Main page ─────────────────────────────────────────────
 export default function TestTrackerPage() {
   const { creds } = useApp();
@@ -171,9 +192,37 @@ export default function TestTrackerPage() {
   const [addingCaseToSuite, setAddingCaseToSuite] = useState<string | null>(null);
   const [newCaseTsNumber, setNewCaseTsNumber] = useState("");
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
   useEffect(() => { setData(load()); setHydrated(true); }, []);
 
   function persist(next: CREntry[]) { setData(next); save(next); }
+
+  function handleDragEndSuites(crId: string, e: DragEndEvent) {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const cr = data.find(c => c.id === crId);
+    if (!cr) return;
+    const oldIdx = cr.suites.findIndex(s => s.id === active.id);
+    const newIdx = cr.suites.findIndex(s => s.id === over.id);
+    persist(data.map(c => c.id !== crId ? c : { ...c, suites: arrayMove(c.suites, oldIdx, newIdx) }));
+  }
+
+  function handleDragEndCases(crId: string, suiteId: string, e: DragEndEvent) {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    persist(data.map(cr => cr.id !== crId ? cr : {
+      ...cr, suites: cr.suites.map(s => {
+        if (s.id !== suiteId) return s;
+        const oldIdx = s.cases.findIndex(c => c.id === active.id);
+        const newIdx = s.cases.findIndex(c => c.id === over.id);
+        return { ...s, cases: arrayMove(s.cases, oldIdx, newIdx) };
+      }),
+    }));
+  }
 
   // ── CR ops ───────────────────────────────────────────────
   function addCR(key: string, summary: string) {
@@ -348,101 +397,118 @@ export default function TestTrackerPage() {
 
                     {isOpen && (
                       <div className="border-t border-slate-800 px-4 py-3 space-y-3">
-                        {cr.suites.map(suite => {
-                          const suiteOpen = expandedSuites[suite.id] ?? false;
-                          const ss = suiteStats(suite);
-                          return (
-                            <div key={suite.id} className="bg-slate-950/60 border border-slate-800 rounded-lg overflow-hidden">
-                              {/* Suite header */}
-                              <div className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-slate-800/40 transition-colors"
-                                onClick={() => setExpandedSuites(p => ({ ...p, [suite.id]: !suiteOpen }))}>
-                                {suiteOpen ? <ChevronDown size={13} className="text-slate-600 shrink-0" /> : <ChevronRight size={13} className="text-slate-600 shrink-0" />}
-                                <span className="text-xs font-medium text-slate-300 flex-1">{suite.title}</span>
-                                <span className="text-[10px] text-slate-600">{ss.total} TS</span>
-                                {ss.wip > 0 && <span className="text-[10px] text-amber-400">{ss.wip} wip</span>}
-                                {ss.fail > 0 && <span className="text-[10px] text-red-400">{ss.fail}✗</span>}
-                                {ss.pass > 0 && <span className="text-[10px] text-green-400">{ss.pass}✓</span>}
-                                {ss.total > 0 && <span className="text-[10px] font-semibold text-green-400">{ss.passPct}%</span>}
-                                <button onClick={e => { e.stopPropagation(); removeSuite(cr.id, suite.id); }}
-                                  className="text-slate-700 hover:text-red-400 p-0.5 ml-1" title="Remove suite">
-                                  <X size={12} />
-                                </button>
-                              </div>
-
-                              {suiteOpen && (
-                                <div className="border-t border-slate-800">
-                                  {/* Column headers */}
-                                  {suite.cases.length > 0 && (
-                                    <div className="grid grid-cols-[1fr_220px_110px] gap-2 px-3 py-1.5 border-b border-slate-800/60">
-                                      <span className="text-[10px] text-slate-600 uppercase tracking-wider">TS Number</span>
-                                      <span className="text-[10px] text-slate-600 uppercase tracking-wider">Status</span>
-                                      <span className="text-[10px] text-slate-600 uppercase tracking-wider">Date Tested</span>
+                        <DndContext sensors={sensors} collisionDetection={closestCenter}
+                          onDragEnd={e => handleDragEndSuites(cr.id, e)}>
+                          <SortableContext items={cr.suites.map(s => s.id)} strategy={verticalListSortingStrategy}>
+                            {cr.suites.map(suite => {
+                              const suiteOpen = expandedSuites[suite.id] ?? false;
+                              const ss = suiteStats(suite);
+                              return (
+                                <SortableRow key={suite.id} id={suite.id}>{handle => (
+                                  <div className="bg-slate-950/60 border border-slate-800 rounded-lg overflow-hidden">
+                                    {/* Suite header */}
+                                    <div className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-slate-800/40 transition-colors"
+                                      onClick={() => setExpandedSuites(p => ({ ...p, [suite.id]: !suiteOpen }))}>
+                                      <span onClick={e => e.stopPropagation()}>{handle}</span>
+                                      {suiteOpen ? <ChevronDown size={13} className="text-slate-600 shrink-0" /> : <ChevronRight size={13} className="text-slate-600 shrink-0" />}
+                                      <span className="text-xs font-medium text-slate-300 flex-1">{suite.title}</span>
+                                      <span className="text-[10px] text-slate-600">{ss.total} TS</span>
+                                      {ss.wip > 0 && <span className="text-[10px] text-amber-400">{ss.wip} wip</span>}
+                                      {ss.fail > 0 && <span className="text-[10px] text-red-400">{ss.fail}✗</span>}
+                                      {ss.pass > 0 && <span className="text-[10px] text-green-400">{ss.pass}✓</span>}
+                                      {ss.total > 0 && <span className="text-[10px] font-semibold text-green-400">{ss.passPct}%</span>}
+                                      <button onClick={e => { e.stopPropagation(); removeSuite(cr.id, suite.id); }}
+                                        className="text-slate-700 hover:text-red-400 p-0.5 ml-1" title="Remove suite">
+                                        <X size={12} />
+                                      </button>
                                     </div>
-                                  )}
 
-                                  {/* Test cases */}
-                                  {suite.cases.map(tc => (
-                                    <div key={tc.id} className={clsx(
-                                      "grid grid-cols-[1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity",
-                                      tc.disabled && "opacity-30 grayscale"
-                                    )}>
-                                      <span
-                                        title={tc.disabled ? "Click to re-enable" : "Click to deprioritize"}
-                                        onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
-                                        className={clsx(
-                                          "text-xs font-mono cursor-pointer select-none",
-                                          tc.disabled ? "text-slate-500 line-through" : "text-slate-300 hover:text-slate-100"
+                                    {suiteOpen && (
+                                      <div className="border-t border-slate-800">
+                                        {/* Column headers */}
+                                        {suite.cases.length > 0 && (
+                                          <div className="grid grid-cols-[16px_1fr_220px_110px] gap-2 px-3 py-1.5 border-b border-slate-800/60">
+                                            <span />
+                                            <span className="text-[10px] text-slate-600 uppercase tracking-wider">TS Number</span>
+                                            <span className="text-[10px] text-slate-600 uppercase tracking-wider">Status</span>
+                                            <span className="text-[10px] text-slate-600 uppercase tracking-wider">Date Tested</span>
+                                          </div>
                                         )}
-                                      >
-                                        {tc.tsNumber}
-                                      </span>
-                                      <div onClick={e => e.stopPropagation()}>
-                                        <StatusChip status={tc.status} onToggle={s => !tc.disabled && toggleStatus(tc, s)} />
-                                      </div>
-                                      <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
-                                        {tc.dateTested ? (
-                                          <input type="date" value={tc.dateTested}
-                                            onChange={e => e.target.value && updateCase(tc.id, { dateTested: e.target.value })}
-                                            className="text-[11px] text-slate-400 bg-transparent border-b border-transparent hover:border-slate-700 focus:border-blue-600 focus:outline-none [color-scheme:dark] cursor-pointer" />
+
+                                        {/* Test cases */}
+                                        <DndContext sensors={sensors} collisionDetection={closestCenter}
+                                          onDragEnd={e => handleDragEndCases(cr.id, suite.id, e)}>
+                                          <SortableContext items={suite.cases.map(c => c.id)} strategy={verticalListSortingStrategy}>
+                                            {suite.cases.map(tc => (
+                                              <SortableRow key={tc.id} id={tc.id}>{caseHandle => (
+                                                <div className={clsx(
+                                                  "grid grid-cols-[16px_1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity",
+                                                  tc.disabled && "opacity-30 grayscale"
+                                                )}>
+                                                  <span onClick={e => e.stopPropagation()}>{caseHandle}</span>
+                                                  <span
+                                                    title={tc.disabled ? "Click to re-enable" : "Click to deprioritize"}
+                                                    onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
+                                                    className={clsx(
+                                                      "text-xs font-mono cursor-pointer select-none",
+                                                      tc.disabled ? "text-slate-500 line-through" : "text-slate-300 hover:text-slate-100"
+                                                    )}
+                                                  >
+                                                    {tc.tsNumber}
+                                                  </span>
+                                                  <div onClick={e => e.stopPropagation()}>
+                                                    <StatusChip status={tc.status} onToggle={s => !tc.disabled && toggleStatus(tc, s)} />
+                                                  </div>
+                                                  <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
+                                                    {tc.dateTested ? (
+                                                      <input type="date" value={tc.dateTested}
+                                                        onChange={e => e.target.value && updateCase(tc.id, { dateTested: e.target.value })}
+                                                        className="text-[11px] text-slate-400 bg-transparent border-b border-transparent hover:border-slate-700 focus:border-blue-600 focus:outline-none [color-scheme:dark] cursor-pointer" />
+                                                    ) : (
+                                                      <span className="text-[11px] text-slate-700">—</span>
+                                                    )}
+                                                    <button onClick={() => removeCase(tc.id)}
+                                                      className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-400 ml-auto transition-opacity">
+                                                      <X size={11} />
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              )}</SortableRow>
+                                            ))}
+                                          </SortableContext>
+                                        </DndContext>
+
+                                        {/* Add test case row */}
+                                        {addingCaseToSuite === suite.id ? (
+                                          <div className="flex items-center gap-2 px-3 py-2">
+                                            <input
+                                              autoFocus
+                                              value={newCaseTsNumber}
+                                              onChange={e => setNewCaseTsNumber(e.target.value)}
+                                              onKeyDown={e => {
+                                                if (e.key === "Enter") { addCase(suite.id); }
+                                                if (e.key === "Escape") { setAddingCaseToSuite(null); setNewCaseTsNumber(""); }
+                                              }}
+                                              placeholder="TS number (Enter to add)"
+                                              className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                            />
+                                            <button onClick={() => addCase(suite.id)} className="text-xs text-blue-400 hover:text-blue-300 px-2 py-1.5 rounded hover:bg-slate-800">Add</button>
+                                            <button onClick={() => { setAddingCaseToSuite(null); setNewCaseTsNumber(""); }} className="text-slate-600 hover:text-slate-400"><X size={13} /></button>
+                                          </div>
                                         ) : (
-                                          <span className="text-[11px] text-slate-700">—</span>
+                                          <button onClick={() => setAddingCaseToSuite(suite.id)}
+                                            className="w-full flex items-center gap-1.5 px-3 py-2 text-xs text-slate-600 hover:text-slate-400 hover:bg-slate-800/30 transition-colors">
+                                            <Plus size={11} />Add TS
+                                          </button>
                                         )}
-                                        <button onClick={() => removeCase(tc.id)}
-                                          className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-400 ml-auto transition-opacity">
-                                          <X size={11} />
-                                        </button>
                                       </div>
-                                    </div>
-                                  ))}
-
-                                  {/* Add test case row */}
-                                  {addingCaseToSuite === suite.id ? (
-                                    <div className="flex items-center gap-2 px-3 py-2">
-                                      <input
-                                        autoFocus
-                                        value={newCaseTsNumber}
-                                        onChange={e => setNewCaseTsNumber(e.target.value)}
-                                        onKeyDown={e => {
-                                          if (e.key === "Enter") { addCase(suite.id); }
-                                          if (e.key === "Escape") { setAddingCaseToSuite(null); setNewCaseTsNumber(""); }
-                                        }}
-                                        placeholder="TS number (Enter to add)"
-                                        className="flex-1 text-xs bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                      />
-                                      <button onClick={() => addCase(suite.id)} className="text-xs text-blue-400 hover:text-blue-300 px-2 py-1.5 rounded hover:bg-slate-800">Add</button>
-                                      <button onClick={() => { setAddingCaseToSuite(null); setNewCaseTsNumber(""); }} className="text-slate-600 hover:text-slate-400"><X size={13} /></button>
-                                    </div>
-                                  ) : (
-                                    <button onClick={() => setAddingCaseToSuite(suite.id)}
-                                      className="w-full flex items-center gap-1.5 px-3 py-2 text-xs text-slate-600 hover:text-slate-400 hover:bg-slate-800/30 transition-colors">
-                                      <Plus size={11} />Add TS
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
+                                    )}
+                                  </div>
+                                )}</SortableRow>
+                              );
+                            })}
+                          </SortableContext>
+                        </DndContext>
 
                         {/* Add suite row */}
                         {editingSuiteId === cr.id ? (

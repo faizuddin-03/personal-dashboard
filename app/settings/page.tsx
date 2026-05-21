@@ -9,7 +9,7 @@ import { clearCredentials } from "@/lib/jira";
 import { storeCredentials, exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import {
   BackupSettings, getBackupSettings, saveBackupSettings,
-  nextBackupDate, DEFAULT_BACKUP_SETTINGS,
+  DEFAULT_BACKUP_SETTINGS, BACKUP_SCHEDULE_LABELS, BackupSchedule,
 } from "@/lib/kanban";
 import { THEMES, DEFAULT_THEME, getTheme, applyTheme } from "@/lib/themes";
 
@@ -110,7 +110,15 @@ export default function SettingsPage() {
     e.target.value = "";
   }
 
-  const nextBackup = nextBackupDate(backup);
+  function nextBackupLabel(s: BackupSettings): string {
+    if (!s.enabled) return "—";
+    switch (s.schedule) {
+      case "daily-5pm": return "Next weekday at 5:00 PM";
+      case "hourly":    return "Next hour between 8 AM – 6 PM on a weekday";
+      case "weekly":    return "Next Friday at 5:00 PM";
+      case "biweekly":  return "Next other Friday at 5:00 PM";
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-full">
@@ -220,24 +228,17 @@ export default function SettingsPage() {
             </div>
 
             {backup.enabled && (
-              <div className="grid gap-4 sm:grid-cols-3 pt-1 border-t border-slate-800">
-                <Field label="Frequency">
+              <div className="grid gap-4 sm:grid-cols-2 pt-1 border-t border-slate-800">
+                <Field label="Schedule">
                   <select
-                    value={backup.intervalWeeks}
-                    onChange={e => handleSaveBackup({ ...backup, intervalWeeks: Number(e.target.value) as 1 | 2 })}
+                    value={backup.schedule}
+                    onChange={e => handleSaveBackup({ ...backup, schedule: e.target.value as BackupSchedule })}
                     className={select}
                   >
-                    <option value={1}>Every Friday</option>
-                    <option value={2}>Every 2 Fridays</option>
+                    {(Object.entries(BACKUP_SCHEDULE_LABELS) as [BackupSchedule, string][]).map(([val, label]) => (
+                      <option key={val} value={val}>{label}</option>
+                    ))}
                   </select>
-                </Field>
-                <Field label="Time">
-                  <input
-                    type="time"
-                    value={backup.time}
-                    onChange={e => handleSaveBackup({ ...backup, time: e.target.value })}
-                    className={input + " [color-scheme:dark]"}
-                  />
                 </Field>
                 <Field label="Status">
                   <div className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm space-y-1">
@@ -247,14 +248,8 @@ export default function SettingsPage() {
                         ? new Date(backup.lastBackupDate).toLocaleDateString()
                         : "Never"}
                     </p>
-                    {nextBackup && (
-                      <>
-                        <p className="text-slate-500 text-xs pt-1">Next scheduled</p>
-                        <p className="text-slate-300 font-medium text-xs">
-                          {nextBackup.toLocaleDateString()} at {backup.time}
-                        </p>
-                      </>
-                    )}
+                    <p className="text-slate-500 text-xs pt-1">Next scheduled</p>
+                    <p className="text-slate-300 font-medium text-xs">{nextBackupLabel(backup)}</p>
                   </div>
                 </Field>
               </div>

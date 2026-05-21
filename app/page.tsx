@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays, FileText, Ticket } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle, Clock, Rocket, CalendarDays, FileText, Ticket, Settings2, GripVertical, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
 import { useApp } from "@/components/AppShell";
@@ -13,6 +13,7 @@ import { getTodos } from "@/lib/todo";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META } from "@/lib/deployments";
 import { getCalendarEvents, CalendarEvent, EVENT_COLOR_META } from "@/lib/calendar-events";
 import { todayLocal, daysFromToday, jqlCreatedRange } from "@/lib/date";
+import { getWidgetConfig, saveWidgetConfig, WidgetConfig } from "@/lib/dashboard-widgets";
 import clsx from "clsx";
 
 // ── Mini kanban card for dashboard ──────────────────────────
@@ -137,6 +138,35 @@ export default function Dashboard() {
   const [dueSoonCards, setDueSoonCards] = useState<KanbanCard[]>([]);
   const [upcomingItems, setUpcomingItems] = useState<UpcomingItemType[]>([]);
 
+  // Widget customization
+  const [widgets, setWidgets] = useState<WidgetConfig[]>([]);
+  const [showCustomize, setShowCustomize] = useState(false);
+  const customizeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setWidgets(getWidgetConfig()); }, []);
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (customizeRef.current && !customizeRef.current.contains(e.target as Node)) setShowCustomize(false);
+    }
+    if (showCustomize) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showCustomize]);
+
+  function persistWidgets(next: WidgetConfig[]) { setWidgets(next); saveWidgetConfig(next); }
+  function toggleWidget(id: string) {
+    persistWidgets(widgets.map(w => w.id === id ? { ...w, visible: !w.visible } : w));
+  }
+  function moveWidget(id: string, dir: -1 | 1) {
+    const idx = widgets.findIndex(w => w.id === id);
+    if (idx < 0) return;
+    const next = [...widgets];
+    const target = idx + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[idx], next[target]] = [next[target], next[idx]];
+    persistWidgets(next);
+  }
+  function isVisible(id: string) { return widgets.find(w => w.id === id)?.visible ?? true; }
+
   // Load local data once on mount
   useEffect(() => {
     const kanban = getKanbanState();
@@ -206,9 +236,40 @@ export default function Dashboard() {
           <LayoutDashboard size={15} className="text-slate-500" />
           <h1 className="text-sm font-semibold text-slate-200">Dashboard</h1>
         </div>
-        {creds && (
-          <span className="text-xs text-slate-500 hidden sm:block">{creds.email}</span>
-        )}
+        <div className="flex items-center gap-3">
+          {creds && <span className="text-xs text-slate-500 hidden sm:block">{creds.email}</span>}
+          {widgets.length > 0 && (
+            <div className="relative" ref={customizeRef}>
+              <button onClick={() => setShowCustomize(v => !v)}
+                title="Customize widgets"
+                className={clsx("p-1.5 rounded-lg transition-colors", showCustomize ? "bg-slate-700 text-slate-200" : "text-slate-500 hover:text-slate-300 hover:bg-slate-800")}>
+                <Settings2 size={15} />
+              </button>
+              {showCustomize && (
+                <div className="absolute right-0 top-9 w-56 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 p-3">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-2">Widgets</p>
+                  <div className="space-y-1">
+                    {widgets.map((w, i) => (
+                      <div key={w.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-800 group">
+                        <GripVertical size={13} className="text-slate-700 shrink-0" />
+                        <span className={clsx("text-xs flex-1", w.visible ? "text-slate-300" : "text-slate-600")}>{w.label}</span>
+                        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => moveWidget(w.id, -1)} disabled={i === 0}
+                            className="text-slate-600 hover:text-slate-300 disabled:opacity-20 px-0.5">↑</button>
+                          <button onClick={() => moveWidget(w.id, 1)} disabled={i === widgets.length - 1}
+                            className="text-slate-600 hover:text-slate-300 disabled:opacity-20 px-0.5">↓</button>
+                        </div>
+                        <button onClick={() => toggleWidget(w.id)} className={clsx("shrink-0", w.visible ? "text-blue-400 hover:text-slate-500" : "text-slate-700 hover:text-blue-400")}>
+                          {w.visible ? <Eye size={13} /> : <EyeOff size={13} />}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </header>
 
       <div className="flex-1 px-6 py-5 space-y-5">
@@ -256,112 +317,118 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── Two-column overview: kanban on-going + upcoming ── */}
-        {hasLocalData && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* ── Ordered widgets ── */}
+        {widgets.map(w => {
+          if (!w.visible) return null;
 
-            {/* Left: kanban on-going */}
-            <div className="space-y-4">
-              {ongoingCards.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">On-Going</p>
-                    <Link href="/kanban" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
-                      View board <ArrowRight size={11} />
-                    </Link>
+          if (w.id === "ongoing" || w.id === "upcoming") {
+            if (!hasLocalData) return null;
+            // render the two-col grid only once, keyed to the first visible one between them
+            const ongoingCfg = widgets.find(x => x.id === "ongoing");
+            const upcomingCfg = widgets.find(x => x.id === "upcoming");
+            if (w.id === "upcoming" && ongoingCfg?.visible) return null; // already rendered with "ongoing"
+            const showOngoing = ongoingCfg?.visible ?? true;
+            const showUpcoming = upcomingCfg?.visible ?? true;
+            return (
+              <div key="local-overview" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {showOngoing && (
+                  <div className="space-y-4">
+                    {ongoingCards.length > 0 && (
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">On-Going</p>
+                          <Link href="/kanban" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
+                            View board <ArrowRight size={11} />
+                          </Link>
+                        </div>
+                        <div className="flex gap-2.5 overflow-x-auto pb-1">
+                          {ongoingCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex gap-2.5 overflow-x-auto pb-1">
-                    {ongoingCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
+                )}
+                {showUpcoming && upcomingItems.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Next 7 Days</p>
+                      <Link href="/calendar" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
+                        Calendar <ArrowRight size={11} />
+                      </Link>
+                    </div>
+                    <div className="space-y-1.5 max-h-72 overflow-y-auto pr-0.5">
+                      {upcomingItems.map((item, i) => <UpcomingRow key={i} item={item} i={i} />)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          if (w.id === "raised" && creds) {
+            return (
+              <div key="raised" className="border-b border-slate-800 pb-5">
+                <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Raised Tickets</p>
+                    {todayRaised.length > 0 && (
+                      <span className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-1.5 py-0.5 rounded-full font-semibold">{todayRaised.length}</span>
+                    )}
+                    {todayRaisedLoading && <Loader2 size={13} className="animate-spin text-blue-400" />}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {raisedDate !== todayLocal() && (
+                      <button onClick={() => setRaisedDate(todayLocal())}
+                        className="px-2 py-1 text-[11px] font-medium bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors">
+                        Today
+                      </button>
+                    )}
+                    <input type="date" value={raisedDate} max={todayLocal()}
+                      onChange={e => e.target.value && setRaisedDate(e.target.value)}
+                      className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 [color-scheme:dark] focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer" />
                   </div>
                 </div>
-              )}
-            </div>
-
-            {/* Right: upcoming events */}
-            {upcomingItems.length > 0 && (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Next 7 Days</p>
-                  <Link href="/calendar" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">
-                    Calendar <ArrowRight size={11} />
-                  </Link>
-                </div>
-                <div className="space-y-1.5 max-h-72 overflow-y-auto pr-0.5">
-                  {upcomingItems.map((item, i) => <UpcomingRow key={i} item={item} i={i} />)}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Raised Tickets ── */}
-        {creds && (
-          <div className="border-b border-slate-800 pb-5">
-            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-              <div className="flex items-center gap-2">
-                <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Raised Tickets</p>
-                {todayRaised.length > 0 && (
-                  <span className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-1.5 py-0.5 rounded-full font-semibold">{todayRaised.length}</span>
+                {todayRaisedLoading && todayRaised.length === 0 ? (
+                  <div className="flex items-center justify-center py-8 text-slate-600"><Loader2 size={18} className="animate-spin mr-2" /> Loading…</div>
+                ) : todayRaisedError ? (
+                  <div className="flex flex-col items-center py-6 text-center px-3">
+                    <p className="text-xs text-red-400 font-medium mb-1">Jira query failed</p>
+                    <p className="text-xs text-slate-600 break-all">{todayRaisedError}</p>
+                  </div>
+                ) : todayRaised.length === 0 ? (
+                  <div className="flex flex-col items-center py-8 text-slate-600">
+                    <FileText size={24} className="mb-2" />
+                    <p className="text-sm">No tickets raised on {raisedDate === todayLocal() ? "today" : new Date(raisedDate + "T12:00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" })}</p>
+                    {raisedDate === todayLocal() && <p className="text-xs mt-1 text-slate-700">Tickets you create in Jira today will appear here</p>}
+                  </div>
+                ) : (
+                  <div className="grid gap-2">
+                    {todayRaised.map(issue => (
+                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
+                    ))}
+                  </div>
                 )}
-                {todayRaisedLoading && <Loader2 size={13} className="animate-spin text-blue-400" />}
               </div>
-              {/* Date picker */}
-              <div className="flex items-center gap-1.5">
-                {raisedDate !== todayLocal() && (
-                  <button
-                    onClick={() => setRaisedDate(todayLocal())}
-                    className="px-2 py-1 text-[11px] font-medium bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors"
-                  >
-                    Today
-                  </button>
-                )}
-                <input
-                  type="date"
-                  value={raisedDate}
-                  max={todayLocal()}
-                  onChange={e => e.target.value && setRaisedDate(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 [color-scheme:dark] focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer"
-                />
-              </div>
-            </div>
-            {todayRaisedLoading && todayRaised.length === 0 ? (
-              <div className="flex items-center justify-center py-8 text-slate-600">
-                <Loader2 size={18} className="animate-spin mr-2" /> Loading…
-              </div>
-            ) : todayRaisedError ? (
-              <div className="flex flex-col items-center py-6 text-center px-3">
-                <p className="text-xs text-red-400 font-medium mb-1">Jira query failed</p>
-                <p className="text-xs text-slate-600 break-all">{todayRaisedError}</p>
-              </div>
-            ) : todayRaised.length === 0 ? (
-              <div className="flex flex-col items-center py-8 text-slate-600">
-                <FileText size={24} className="mb-2" />
-                <p className="text-sm">No tickets raised on {raisedDate === todayLocal() ? "today" : new Date(raisedDate + "T12:00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" })}</p>
-                {raisedDate === todayLocal() && <p className="text-xs mt-1 text-slate-700">Tickets you create in Jira today will appear here</p>}
-              </div>
-            ) : (
-              <div className="grid gap-2">
-                {todayRaised.map(issue => (
-                  <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+            );
+          }
 
-        {/* ── Link to Jira page ── */}
-        {creds && (
-          <Link href="/jira" className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 hover:bg-slate-800/60 transition-colors group">
-            <div className="flex items-center gap-2.5">
-              <Ticket size={15} className="text-blue-400" />
-              <div>
-                <p className="text-sm font-medium text-slate-200">Jira Overview</p>
-                <p className="text-xs text-slate-500">CR tickets, insights, all assigned &amp; reported issues</p>
-              </div>
-            </div>
-            <ArrowRight size={15} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
-          </Link>
-        )}
+          if (w.id === "jira-overview" && creds) {
+            return (
+              <Link key="jira-overview" href="/jira" className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-700 hover:bg-slate-800/60 transition-colors group">
+                <div className="flex items-center gap-2.5">
+                  <Ticket size={15} className="text-blue-400" />
+                  <div>
+                    <p className="text-sm font-medium text-slate-200">Jira Overview</p>
+                    <p className="text-xs text-slate-500">CR tickets, insights, all assigned &amp; reported issues</p>
+                  </div>
+                </div>
+                <ArrowRight size={15} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
+              </Link>
+            );
+          }
+
+          return null;
+        })}
 
       </div>
 

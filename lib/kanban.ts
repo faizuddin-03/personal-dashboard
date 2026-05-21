@@ -138,18 +138,20 @@ export function checklistProgress(card: KanbanCard): { done: number; total: numb
 }
 
 // ---- Backup settings ----
+export type BackupSchedule = "daily-5pm" | "hourly" | "weekly" | "biweekly";
+
 export interface BackupSettings {
   enabled: boolean;
-  intervalWeeks: 1 | 2;
-  time: string;
-  lastBackupDate: string | null;
+  schedule: BackupSchedule;
+  lastBackupDate: string | null; // YYYY-MM-DD
+  lastBackupHour: number | null; // for hourly — last hour that triggered
 }
 
 export const DEFAULT_BACKUP_SETTINGS: BackupSettings = {
   enabled: true,
-  intervalWeeks: 2,
-  time: "17:00",
+  schedule: "daily-5pm",
   lastBackupDate: null,
+  lastBackupHour: null,
 };
 
 export function getBackupSettings(): BackupSettings {
@@ -164,15 +166,9 @@ export function saveBackupSettings(s: BackupSettings) {
   localStorage.setItem("backup_settings", JSON.stringify(s));
 }
 
-export function nextBackupDate(settings: BackupSettings): Date | null {
-  if (!settings.enabled) return null;
-  const base = settings.lastBackupDate ? new Date(settings.lastBackupDate) : new Date();
-  const daysToAdd = settings.intervalWeeks * 7;
-  const next = new Date(base);
-  next.setDate(next.getDate() + daysToAdd);
-  // Advance to next Friday
-  while (next.getDay() !== 5) next.setDate(next.getDate() + 1);
-  const [h, m] = settings.time.split(":").map(Number);
-  next.setHours(h, m, 0, 0);
-  return next;
-}
+export const BACKUP_SCHEDULE_LABELS: Record<BackupSchedule, string> = {
+  "daily-5pm": "Every weekday at 5:00 PM",
+  "hourly":    "Every hour (weekdays, 8 AM – 6 PM)",
+  "weekly":    "Every Friday at 5:00 PM",
+  "biweekly":  "Every other Friday at 5:00 PM",
+};
