@@ -215,7 +215,6 @@ export default function JiraPage() {
   // ── Add CR search ─────────────────────────────────────────
   useEffect(() => {
     if (!creds || !showAddCr) return;
-    setAddCrSearching(true);
     const pk = creds.defaultProjectKey;
     const q = addCrQuery.trim();
     let jql: string;
@@ -233,6 +232,7 @@ export default function JiraPage() {
           : `issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`;
     }
     const t = setTimeout(() => {
+      setAddCrSearching(true);
       fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...creds, jql, maxResults: 20 }) })
         .then(r => r.json()).then(d => setAddCrResults(d.issues ?? []))
@@ -263,7 +263,6 @@ export default function JiraPage() {
   // ── Bug CR selector search ─────────────────────────────────
   useEffect(() => {
     if (!creds || !showSelectBugCr) return;
-    setSelectBugCrSearching(true);
     const pk = creds.defaultProjectKey;
     const q = selectBugCrQuery.trim();
     let jql: string;
@@ -281,6 +280,7 @@ export default function JiraPage() {
           : `issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`;
     }
     const t = setTimeout(() => {
+      setSelectBugCrSearching(true);
       fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...creds, jql, maxResults: 20 }) })
         .then(r => r.json()).then(d => setSelectBugCrResults(d.issues ?? []))
@@ -473,14 +473,12 @@ export default function JiraPage() {
                 </div>
 
                 {/* CR selector panel */}
-                {showSelectBugCr && (
-                  <SearchPanel
-                    query={selectBugCrQuery} setQuery={setSelectBugCrQuery}
-                    results={selectBugCrResults} searching={selectBugCrSearching}
-                    onPick={selectBugCr} inputRef={selectBugInputRef}
-                    placeholder="Search CR by key or text…"
-                  />
-                )}
+                {showSelectBugCr && SearchPanel({
+                  query: selectBugCrQuery, setQuery: setSelectBugCrQuery,
+                  results: selectBugCrResults, searching: selectBugCrSearching,
+                  onPick: selectBugCr, inputRef: selectBugInputRef,
+                  placeholder: "Search CR by key or text…",
+                })}
 
                 {!showSelectBugCr && !bugCrKey && (
                   <div className="flex flex-col items-center py-8 text-slate-600 text-sm">
@@ -632,15 +630,13 @@ export default function JiraPage() {
               </div>
 
               {/* Add CR search panel */}
-              {showAddCr && (
-                <SearchPanel
-                  query={addCrQuery} setQuery={setAddCrQuery}
-                  results={addCrResults.filter(r => !assignedCrKeys.includes(r.key))}
-                  searching={addCrSearching}
-                  onPick={addCr} inputRef={addCrInputRef}
-                  placeholder="Search CR by key or text…"
-                />
-              )}
+              {showAddCr && SearchPanel({
+                query: addCrQuery, setQuery: setAddCrQuery,
+                results: addCrResults.filter(r => !assignedCrKeys.includes(r.key)),
+                searching: addCrSearching,
+                onPick: addCr, inputRef: addCrInputRef,
+                placeholder: "Search CR by key or text…",
+              })}
 
               {/* Empty state */}
               {!showAddCr && assignedCrKeys.length === 0 && (
