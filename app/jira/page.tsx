@@ -65,6 +65,7 @@ export default function JiraPage() {
   // ── Bugs This Week ─────────────────────────────────────────
   const [bugsThisWeek, setBugsThisWeek]               = useState<JiraIssue[]>([]);
   const [bugsThisWeekLoading, setBugsThisWeekLoading] = useState(false);
+  const [bugsThisWeekError, setBugsThisWeekError]     = useState("");
 
   // ── Assigned CR ────────────────────────────────────────────
   const [assignedCrKeys, setAssignedCrKeys]           = useState<string[]>([]);
@@ -117,7 +118,7 @@ export default function JiraPage() {
         fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...creds, jql: "assignee = currentUser() ORDER BY updated DESC", maxResults: 100 }) }),
         fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...creds, jql: `reporter = "${creds.email}" AND assignee != "${creds.email}" ORDER BY updated DESC`, maxResults: 100 }) }),
+          body: JSON.stringify({ ...creds, jql: `reporter = currentUser() AND assignee != currentUser() ORDER BY updated DESC`, maxResults: 100 }) }),
       ]);
       const [aData, rData]: [JiraSearchResult, JiraSearchResult] = await Promise.all([ar.json(), rr.json()]);
       if (!ar.ok) throw new Error((aData as unknown as { error: string }).error ?? "Failed");
@@ -141,27 +142,26 @@ export default function JiraPage() {
 
     setWaitingOnMeLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: `reporter = "${creds.email}" AND assignee != "${creds.email}" AND status not in (Closed, Done, Resolved) ORDER BY updated DESC`, maxResults: 50 }) })
+      body: JSON.stringify({ ...creds, jql: `reporter = currentUser() AND assignee != currentUser() AND status not in (Closed, Done, Resolved) ORDER BY updated DESC`, maxResults: 50 }) })
       .then(r => r.json()).then(d => setWaitingOnMe(d.issues ?? []))
       .catch(() => setWaitingOnMe([]))
       .finally(() => setWaitingOnMeLoading(false));
 
-    // Compute Monday of current week in Jira's accepted dd/MMM/yy format
-    const JIRA_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const now = new Date();
-    const dayOfWeek = now.getDay(); // 0=Sun
-    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - daysToMonday);
-    const weekStart = `${monday.getDate()}/${JIRA_MONTHS[monday.getMonth()]}/${String(monday.getFullYear()).slice(2)}`;
     const bugsJql = pk
-      ? `project = "${pk}" AND issuetype = Bug AND reporter = "${creds.email}" AND created >= "${weekStart}" ORDER BY priority DESC`
-      : `issuetype = Bug AND reporter = "${creds.email}" AND created >= "${weekStart}" ORDER BY priority DESC`;
+      ? `project = "${pk}" AND issuetype = Bug AND reporter = currentUser() AND created >= startOfWeek() ORDER BY priority DESC`
+      : `issuetype = Bug AND reporter = currentUser() AND created >= startOfWeek() ORDER BY priority DESC`;
     setBugsThisWeekLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...creds, jql: bugsJql, maxResults: 50 }) })
-      .then(r => r.json()).then(d => setBugsThisWeek(d.issues ?? []))
-      .catch(() => setBugsThisWeek([]))
+      .then(r => r.json()).then(d => {
+        if (d.errorMessages?.length || d.error) {
+          setBugsThisWeekError(d.errorMessages?.[0] ?? d.error ?? "Jira error");
+          setBugsThisWeek([]);
+        } else {
+          setBugsThisWeek(d.issues ?? []);
+        }
+      })
+      .catch(e => setBugsThisWeekError(e?.message ?? "Network error"))
       .finally(() => setBugsThisWeekLoading(false));
   }, [creds]);
 
@@ -593,6 +593,11 @@ export default function JiraPage() {
               </div>
               {bugsThisWeekLoading && bugsThisWeek.length === 0 ? (
                 <div className="flex items-center justify-center py-8 text-slate-600 text-sm"><Loader2 size={16} className="animate-spin mr-2" />Loading…</div>
+              ) : bugsThisWeekError ? (
+                <div className="flex flex-col items-center py-6 text-center px-3">
+                  <p className="text-xs text-red-400 font-medium mb-1">Jira query failed</p>
+                  <p className="text-xs text-slate-600 break-all">{bugsThisWeekError}</p>
+                </div>
               ) : bugsThisWeek.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-slate-600 text-sm"><Bug size={20} className="mb-2 opacity-40" />No bugs raised this week</div>
               ) : (

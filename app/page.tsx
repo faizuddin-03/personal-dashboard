@@ -128,6 +128,7 @@ export default function Dashboard() {
   const [raisedDate, setRaisedDate]                 = useState(() => todayLocal());
   const [todayRaised, setTodayRaised]               = useState<JiraIssue[]>([]);
   const [todayRaisedLoading, setTodayRaisedLoading] = useState(false);
+  const [todayRaisedError, setTodayRaisedError]     = useState("");
   const [selectedKey, setSelectedKey]               = useState<string | null>(null);
 
   // Local app data
@@ -167,9 +168,10 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!creds) { setTodayRaised([]); return; }
-    const jql = `reporter = "${creds.email}" AND ${jqlCreatedRange(raisedDate)} ORDER BY created ASC`;
+    if (!creds) { setTodayRaised([]); setTodayRaisedError(""); return; }
+    const jql = `reporter = currentUser() AND ${jqlCreatedRange(raisedDate)} ORDER BY created ASC`;
     setTodayRaisedLoading(true);
+    setTodayRaisedError("");
     fetch("/api/jira/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -181,8 +183,15 @@ export default function Dashboard() {
       }),
     })
       .then(res => res.json())
-      .then(data => setTodayRaised(data.issues ?? []))
-      .catch(() => setTodayRaised([]))
+      .then(data => {
+        if (data.errorMessages?.length || data.error) {
+          setTodayRaisedError(data.errorMessages?.[0] ?? data.error ?? "Jira error");
+          setTodayRaised([]);
+        } else {
+          setTodayRaised(data.issues ?? []);
+        }
+      })
+      .catch(e => setTodayRaisedError(e?.message ?? "Network error"))
       .finally(() => setTodayRaisedLoading(false));
   }, [creds, raisedDate]);
 
@@ -317,6 +326,11 @@ export default function Dashboard() {
             {todayRaisedLoading && todayRaised.length === 0 ? (
               <div className="flex items-center justify-center py-8 text-slate-600">
                 <Loader2 size={18} className="animate-spin mr-2" /> Loading…
+              </div>
+            ) : todayRaisedError ? (
+              <div className="flex flex-col items-center py-6 text-center px-3">
+                <p className="text-xs text-red-400 font-medium mb-1">Jira query failed</p>
+                <p className="text-xs text-slate-600 break-all">{todayRaisedError}</p>
               </div>
             ) : todayRaised.length === 0 ? (
               <div className="flex flex-col items-center py-8 text-slate-600">
