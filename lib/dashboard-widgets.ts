@@ -1,4 +1,12 @@
-export type WidgetId = "ongoing" | "upcoming" | "raised" | "jira-overview";
+export type WidgetId =
+  | "kanban-summary"
+  | "todo-snapshot"
+  | "deployments"
+  | "jira-snapshot"
+  | "ongoing"
+  | "upcoming"
+  | "raised"
+  | "jira-overview";
 
 export interface WidgetConfig {
   id: WidgetId;
@@ -7,10 +15,14 @@ export interface WidgetConfig {
 }
 
 const DEFAULTS: WidgetConfig[] = [
-  { id: "ongoing",      label: "On-Going Tasks",    visible: true },
-  { id: "upcoming",     label: "Next 7 Days",       visible: true },
-  { id: "raised",       label: "Raised Tickets",    visible: true },
-  { id: "jira-overview",label: "Jira Overview",     visible: true },
+  { id: "kanban-summary",  label: "Kanban Summary",       visible: true },
+  { id: "todo-snapshot",   label: "To-Do Snapshot",       visible: true },
+  { id: "deployments",     label: "Upcoming Deployments", visible: true },
+  { id: "jira-snapshot",   label: "Jira Snapshot",        visible: true },
+  { id: "ongoing",         label: "On-Going Cards",       visible: true },
+  { id: "upcoming",        label: "Next 7 Days",          visible: true },
+  { id: "raised",          label: "Raised Tickets",       visible: true },
+  { id: "jira-overview",   label: "Jira Overview Link",   visible: false },
 ];
 
 const KEY = "dashboard_widgets";
@@ -21,8 +33,8 @@ export function getWidgetConfig(): WidgetConfig[] {
     const raw = localStorage.getItem(KEY);
     if (!raw) return DEFAULTS;
     const saved: WidgetConfig[] = JSON.parse(raw);
-    // merge in any new widgets not yet in saved
     const ids = new Set(saved.map(w => w.id));
+    // append any new widgets not yet saved, preserving existing order
     const merged = [...saved, ...DEFAULTS.filter(d => !ids.has(d.id))];
     return merged;
   } catch { return DEFAULTS; }
