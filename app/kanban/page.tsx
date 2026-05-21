@@ -890,6 +890,7 @@ export default function KanbanPage() {
 
   function handleAddCard(card: KanbanCard) {
     persist({ ...boardState, [card.columnId]: [...boardState[card.columnId], card] });
+    setActiveBoardType(card.boardType ?? "task"); // switch view so the new card is visible
   }
 
   function handleUpdateCard(updated: KanbanCard) {

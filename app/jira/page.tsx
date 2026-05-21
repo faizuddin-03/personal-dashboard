@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   RefreshCw, Loader2, SearchX, Layers, UserCheck, Bug,
-  ChevronDown, ChevronRight, X, Ticket,
+  ChevronDown, ChevronRight, X, Ticket, Plus, CheckCheck,
+  BookOpen, Search,
 } from "lucide-react";
 import {
   JiraIssue, JiraSearchResult,
@@ -25,6 +26,24 @@ function statusChipCls(colorName: string) {
   return "bg-blue-950/50 text-blue-300";
 }
 
+// ── localStorage helpers ───────────────────────────────────────
+const ASSIGNED_CR_STORE = "jira_assigned_cr_keys";
+const BUG_CR_STORE      = "jira_bug_cr_key";
+
+function loadAssignedCrKeys(): string[] {
+  try { return JSON.parse(localStorage.getItem(ASSIGNED_CR_STORE) ?? "[]"); } catch { return []; }
+}
+function saveAssignedCrKeys(keys: string[]) {
+  localStorage.setItem(ASSIGNED_CR_STORE, JSON.stringify(keys));
+}
+function loadBugCrKey(): string | null {
+  return localStorage.getItem(BUG_CR_STORE) ?? null;
+}
+function saveBugCrKey(key: string | null) {
+  if (key) localStorage.setItem(BUG_CR_STORE, key);
+  else localStorage.removeItem(BUG_CR_STORE);
+}
+
 export default function JiraPage() {
   const { creds, openSettings } = useApp();
 
@@ -39,22 +58,57 @@ export default function JiraPage() {
   const [sort, setSort]           = useState<SortKey>("updated");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // ── Insights ───────────────────────────────────────────────
-  const [crTickets, setCrTickets]               = useState<JiraIssue[]>([]);
-  const [crTicketsLoading, setCrTicketsLoading] = useState(false);
+  // ── Waiting on Me ──────────────────────────────────────────
   const [waitingOnMe, setWaitingOnMe]               = useState<JiraIssue[]>([]);
   const [waitingOnMeLoading, setWaitingOnMeLoading] = useState(false);
+
+  // ── Bugs This Week ─────────────────────────────────────────
   const [bugsThisWeek, setBugsThisWeek]               = useState<JiraIssue[]>([]);
   const [bugsThisWeekLoading, setBugsThisWeekLoading] = useState(false);
-  const [crChildren, setCrChildren]               = useState<JiraIssue[]>([]);
-  const [crChildrenLoading, setCrChildrenLoading] = useState(false);
-  const [crExpanded, setCrExpanded]               = useState<Record<string, boolean>>({});
+
+  // ── Assigned CR ────────────────────────────────────────────
+  const [assignedCrKeys, setAssignedCrKeys]           = useState<string[]>([]);
+  const [assignedCrData, setAssignedCrData]           = useState<Record<string, JiraIssue>>({});
+  const [assignedCrLoading, setAssignedCrLoading]     = useState(false);
+  const [assignedCrChildren, setAssignedCrChildren]   = useState<Record<string, JiraIssue[]>>({});
+  const [assignedCrChildLoading, setAssignedCrChildLoading] = useState<Record<string, boolean>>({});
+  const [assignedCrExpanded, setAssignedCrExpanded]   = useState<Record<string, boolean>>({});
+  const [showAddCr, setShowAddCr]                     = useState(false);
+  const [addCrQuery, setAddCrQuery]                   = useState("");
+  const [addCrResults, setAddCrResults]               = useState<JiraIssue[]>([]);
+  const [addCrSearching, setAddCrSearching]           = useState(false);
+  const addCrInputRef = useRef<HTMLInputElement>(null);
+
+  // ── Bug Tickets (CR-scoped) ────────────────────────────────
+  const [bugCrKey, setBugCrKey]             = useState<string | null>(null);
+  const [bugCrIssue, setBugCrIssue]         = useState<JiraIssue | null>(null);
+  const [bugChildren, setBugChildren]       = useState<JiraIssue[]>([]);
+  const [bugLoading, setBugLoading]         = useState(false);
+  const [showSelectBugCr, setShowSelectBugCr] = useState(false);
+  const [selectBugCrQuery, setSelectBugCrQuery] = useState("");
+  const [selectBugCrResults, setSelectBugCrResults] = useState<JiraIssue[]>([]);
+  const [selectBugCrSearching, setSelectBugCrSearching] = useState(false);
+  const selectBugInputRef = useRef<HTMLInputElement>(null);
 
   // ── Search ─────────────────────────────────────────────────
   const [jiraSearchResults, setJiraSearchResults] = useState<JiraIssue[]>([]);
   const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
 
-  // ── Fetches ────────────────────────────────────────────────
+  // ── On mount: restore localStorage ───────────────────────
+  useEffect(() => {
+    setAssignedCrKeys(loadAssignedCrKeys());
+    setBugCrKey(loadBugCrKey());
+  }, []);
+
+  // ── Auto-focus add CR input when panel opens ──────────────
+  useEffect(() => {
+    if (showAddCr) setTimeout(() => addCrInputRef.current?.focus(), 50);
+  }, [showAddCr]);
+  useEffect(() => {
+    if (showSelectBugCr) setTimeout(() => selectBugInputRef.current?.focus(), 50);
+  }, [showSelectBugCr]);
+
+  // ── Fetch core issues ──────────────────────────────────────
   const fetchIssues = useCallback(async () => {
     if (!creds) return;
     setLoading(true); setError("");
@@ -80,22 +134,10 @@ export default function JiraPage() {
     else { setAssigned([]); setReported([]); }
   }, [creds, fetchIssues]);
 
+  // ── Waiting on Me + Bugs This Week ────────────────────────
   useEffect(() => {
-    if (!creds) {
-      setCrTickets([]); setWaitingOnMe([]); setBugsThisWeek([]);
-      return;
-    }
+    if (!creds) { setWaitingOnMe([]); setBugsThisWeek([]); return; }
     const pk = creds.defaultProjectKey;
-
-    const crJql = pk
-      ? `project = "${pk}" AND issuetype = Task AND resolution = Unresolved ORDER BY updated DESC`
-      : `issuetype = Task AND resolution = Unresolved AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC`;
-    setCrTicketsLoading(true);
-    fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: crJql, maxResults: 50 }) })
-      .then(r => r.json()).then(d => setCrTickets(d.issues ?? []))
-      .catch(() => setCrTickets([]))
-      .finally(() => setCrTicketsLoading(false));
 
     setWaitingOnMeLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
@@ -115,23 +157,148 @@ export default function JiraPage() {
       .finally(() => setBugsThisWeekLoading(false));
   }, [creds]);
 
+  // ── Fetch assigned CR ticket data ──────────────────────────
   useEffect(() => {
-    if (!creds || crTickets.length === 0) { setCrChildren([]); return; }
-    const keys = crTickets.map(t => `"${t.key}"`).join(",");
-    setCrChildrenLoading(true);
+    if (!creds || assignedCrKeys.length === 0) { setAssignedCrData({}); return; }
+    const missing = assignedCrKeys.filter(k => !assignedCrData[k]);
+    if (missing.length === 0) return;
+    setAssignedCrLoading(true);
+    const jql = `key in (${missing.map(k => `"${k}"`).join(",")})`;
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: `parent in (${keys}) ORDER BY status ASC`, maxResults: 200 }) })
+      body: JSON.stringify({ ...creds, jql, maxResults: 50 }) })
       .then(r => r.json()).then(d => {
         const issues: JiraIssue[] = d.issues ?? [];
-        setCrChildren(issues);
-        const expanded: Record<string, boolean> = {};
-        crTickets.forEach(cr => { expanded[cr.key] = false; }); // collapsed by default
-        setCrExpanded(prev => ({ ...expanded, ...prev }));
+        setAssignedCrData(prev => {
+          const next = { ...prev };
+          issues.forEach(i => { next[i.key] = i; });
+          return next;
+        });
       })
-      .catch(() => setCrChildren([]))
-      .finally(() => setCrChildrenLoading(false));
-  }, [creds, crTickets]);
+      .catch(() => {})
+      .finally(() => setAssignedCrLoading(false));
+  }, [creds, assignedCrKeys]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Fetch children when a CR is expanded in Assigned CR ───
+  function toggleAssignedCrExpand(crKey: string) {
+    const nowOpen = !assignedCrExpanded[crKey];
+    setAssignedCrExpanded(prev => ({ ...prev, [crKey]: nowOpen }));
+    if (nowOpen && !assignedCrChildren[crKey] && !assignedCrChildLoading[crKey]) {
+      setAssignedCrChildLoading(prev => ({ ...prev, [crKey]: true }));
+      fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...creds, jql: `parent = "${crKey}" ORDER BY status ASC`, maxResults: 100 }) })
+        .then(r => r.json()).then(d => setAssignedCrChildren(prev => ({ ...prev, [crKey]: d.issues ?? [] })))
+        .catch(() => setAssignedCrChildren(prev => ({ ...prev, [crKey]: [] })))
+        .finally(() => setAssignedCrChildLoading(prev => ({ ...prev, [crKey]: false })));
+    }
+  }
+
+  function completeCr(crKey: string) {
+    const next = assignedCrKeys.filter(k => k !== crKey);
+    setAssignedCrKeys(next);
+    saveAssignedCrKeys(next);
+    setAssignedCrData(prev => { const n = { ...prev }; delete n[crKey]; return n; });
+    setAssignedCrChildren(prev => { const n = { ...prev }; delete n[crKey]; return n; });
+    setAssignedCrExpanded(prev => { const n = { ...prev }; delete n[crKey]; return n; });
+  }
+
+  function addCr(issue: JiraIssue) {
+    if (assignedCrKeys.includes(issue.key)) return;
+    const next = [...assignedCrKeys, issue.key];
+    setAssignedCrKeys(next);
+    saveAssignedCrKeys(next);
+    setAssignedCrData(prev => ({ ...prev, [issue.key]: issue }));
+    setShowAddCr(false);
+    setAddCrQuery("");
+    setAddCrResults([]);
+  }
+
+  // ── Add CR search ─────────────────────────────────────────
+  useEffect(() => {
+    if (!creds || !showAddCr) return;
+    setAddCrSearching(true);
+    const pk = creds.defaultProjectKey;
+    const q = addCrQuery.trim();
+    let jql: string;
+    if (!q) {
+      jql = pk
+        ? `project = "${pk}" AND issuetype = Task AND resolution = Unresolved ORDER BY updated DESC`
+        : `issuetype = Task AND resolution = Unresolved AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC`;
+    } else {
+      const isKey = /^[A-Za-z]+-\d+$/.test(q);
+      const isNum = /^\d+$/.test(q);
+      const resolved = isNum && pk ? `${pk}-${q}` : null;
+      jql = resolved ? `key = "${resolved}" ORDER BY updated DESC`
+          : isKey    ? `key = "${q}" ORDER BY updated DESC`
+          : pk       ? `project = "${pk}" AND issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`
+          : `issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`;
+    }
+    const t = setTimeout(() => {
+      fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...creds, jql, maxResults: 20 }) })
+        .then(r => r.json()).then(d => setAddCrResults(d.issues ?? []))
+        .catch(() => setAddCrResults([]))
+        .finally(() => setAddCrSearching(false));
+    }, q ? 400 : 0);
+    return () => clearTimeout(t);
+  }, [addCrQuery, showAddCr, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Bug Tickets: fetch CR + children when bugCrKey changes ─
+  useEffect(() => {
+    if (!creds || !bugCrKey) { setBugCrIssue(null); setBugChildren([]); return; }
+    setBugLoading(true);
+    Promise.all([
+      fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...creds, jql: `key = "${bugCrKey}"`, maxResults: 1 }) }).then(r => r.json()),
+      fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...creds, jql: `parent = "${bugCrKey}" ORDER BY status ASC, priority DESC`, maxResults: 100 }) }).then(r => r.json()),
+    ])
+      .then(([crData, childData]) => {
+        setBugCrIssue((crData.issues ?? [])[0] ?? null);
+        setBugChildren(childData.issues ?? []);
+      })
+      .catch(() => { setBugCrIssue(null); setBugChildren([]); })
+      .finally(() => setBugLoading(false));
+  }, [creds, bugCrKey]);
+
+  // ── Bug CR selector search ─────────────────────────────────
+  useEffect(() => {
+    if (!creds || !showSelectBugCr) return;
+    setSelectBugCrSearching(true);
+    const pk = creds.defaultProjectKey;
+    const q = selectBugCrQuery.trim();
+    let jql: string;
+    if (!q) {
+      jql = pk
+        ? `project = "${pk}" AND issuetype = Task AND resolution = Unresolved ORDER BY updated DESC`
+        : `issuetype = Task AND resolution = Unresolved AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC`;
+    } else {
+      const isKey = /^[A-Za-z]+-\d+$/.test(q);
+      const isNum = /^\d+$/.test(q);
+      const resolved = isNum && pk ? `${pk}-${q}` : null;
+      jql = resolved ? `key = "${resolved}" ORDER BY updated DESC`
+          : isKey    ? `key = "${q}" ORDER BY updated DESC`
+          : pk       ? `project = "${pk}" AND issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`
+          : `issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`;
+    }
+    const t = setTimeout(() => {
+      fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...creds, jql, maxResults: 20 }) })
+        .then(r => r.json()).then(d => setSelectBugCrResults(d.issues ?? []))
+        .catch(() => setSelectBugCrResults([]))
+        .finally(() => setSelectBugCrSearching(false));
+    }, q ? 400 : 0);
+    return () => clearTimeout(t);
+  }, [selectBugCrQuery, showSelectBugCr, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function selectBugCr(issue: JiraIssue) {
+    setBugCrKey(issue.key);
+    saveBugCrKey(issue.key);
+    setShowSelectBugCr(false);
+    setSelectBugCrQuery("");
+    setSelectBugCrResults([]);
+  }
+
+  // ── All Issues section ─────────────────────────────────────
   useEffect(() => {
     if (!search.trim() || search.trim().length < 3 || !creds) {
       setJiraSearchResults([]);
@@ -176,6 +343,50 @@ export default function JiraPage() {
     });
 
   const isSearching = search.trim().length > 0;
+
+  // ── Inline search panel (reused for both Add CR and Select Bug CR) ─
+  function SearchPanel({
+    query, setQuery, results, searching, onPick, inputRef, placeholder,
+  }: {
+    query: string;
+    setQuery: (v: string) => void;
+    results: JiraIssue[];
+    searching: boolean;
+    onPick: (issue: JiraIssue) => void;
+    inputRef: React.RefObject<HTMLInputElement | null>;
+    placeholder: string;
+  }) {
+    return (
+      <div className="mt-2 border border-slate-700 rounded-xl overflow-hidden bg-slate-950/60">
+        <div className="relative">
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder={placeholder}
+            className="w-full pl-8 pr-3 py-2 bg-transparent text-xs text-slate-200 placeholder-slate-600 focus:outline-none border-b border-slate-700"
+          />
+          {searching && <Loader2 size={11} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-blue-400" />}
+        </div>
+        <div className="max-h-48 overflow-y-auto">
+          {!searching && results.length === 0 && (
+            <p className="text-xs text-slate-600 text-center py-4">{query ? "No results" : "Loading…"}</p>
+          )}
+          {results.map(issue => (
+            <button key={issue.id} onClick={() => onPick(issue)}
+              className="w-full text-left flex items-center gap-2 px-3 py-2 hover:bg-slate-800 transition-colors border-b border-slate-800/50 last:border-0">
+              <span className="text-[10px] font-mono text-purple-400 font-bold shrink-0">{issue.key}</span>
+              <span className="text-xs text-slate-300 flex-1 line-clamp-1">{issue.fields.summary}</span>
+              <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(issue.fields.status.statusCategory.colorName))}>
+                {issue.fields.status.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-full">
@@ -229,40 +440,102 @@ export default function JiraPage() {
         {creds && (
           <div className="space-y-4">
 
-            {/* Row: CR Tickets + Waiting on Me */}
+            {/* Row 1: Bug Tickets + Waiting on Me */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-              {/* CR Tickets */}
+              {/* ── Bug Tickets ── */}
               <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Layers size={14} className="text-purple-400" />
-                    <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Open CR Tickets</p>
-                    {!crTicketsLoading && crTickets.length > 0 && (
-                      <span className="text-xs bg-purple-900/40 text-purple-300 border border-purple-800/50 px-1.5 py-0.5 rounded-full font-semibold">{crTickets.length}</span>
+                    <Bug size={14} className="text-red-400" />
+                    <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Bug Tickets</p>
+                    {!bugLoading && bugCrIssue && bugChildren.length > 0 && (
+                      <span className="text-xs bg-red-900/40 text-red-300 border border-red-800/50 px-1.5 py-0.5 rounded-full font-semibold">{bugChildren.length}</span>
                     )}
                   </div>
-                  {crTicketsLoading && <Loader2 size={13} className="animate-spin text-purple-400" />}
-                </div>
-                {crTicketsLoading && crTickets.length === 0 ? (
-                  <div className="flex items-center justify-center py-8 text-slate-600 text-sm"><Loader2 size={16} className="animate-spin mr-2" />Loading…</div>
-                ) : crTickets.length === 0 ? (
-                  <div className="flex flex-col items-center py-8 text-slate-600 text-sm"><Layers size={20} className="mb-2 opacity-40" />No open CR tickets</div>
-                ) : (
-                  <div className="space-y-1.5 max-h-64 overflow-y-auto pr-0.5">
-                    {crTickets.map(issue => (
-                      <button key={issue.id} onClick={() => setSelectedKey(issue.key)}
-                        className="w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-slate-800 transition-colors group">
-                        <span className="text-[10px] font-mono text-purple-400 font-bold shrink-0 mt-0.5">{issue.key}</span>
-                        <span className="text-xs text-slate-300 flex-1 line-clamp-1 group-hover:text-slate-100">{issue.fields.summary}</span>
-                        <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(issue.fields.status.statusCategory.colorName))}>{issue.fields.status.name}</span>
+                  <div className="flex items-center gap-1.5">
+                    {bugLoading && <Loader2 size={13} className="animate-spin text-red-400" />}
+                    <button
+                      onClick={() => setShowSelectBugCr(v => !v)}
+                      className={clsx("text-xs px-2.5 py-1 rounded-lg border transition-colors flex items-center gap-1",
+                        showSelectBugCr ? "bg-slate-700 border-slate-600 text-slate-200" : "border-slate-700 text-slate-500 hover:text-slate-300 hover:border-slate-600"
+                      )}
+                    >
+                      <Search size={11} />{bugCrKey ? "Change CR" : "Select CR"}
+                    </button>
+                    {bugCrKey && (
+                      <button onClick={() => { setBugCrKey(null); saveBugCrKey(null); setBugCrIssue(null); setBugChildren([]); }}
+                        className="text-slate-600 hover:text-slate-400 p-0.5" title="Clear selection">
+                        <X size={13} />
                       </button>
-                    ))}
+                    )}
                   </div>
+                </div>
+
+                {/* CR selector panel */}
+                {showSelectBugCr && (
+                  <SearchPanel
+                    query={selectBugCrQuery} setQuery={setSelectBugCrQuery}
+                    results={selectBugCrResults} searching={selectBugCrSearching}
+                    onPick={selectBugCr} inputRef={selectBugInputRef}
+                    placeholder="Search CR by key or text…"
+                  />
+                )}
+
+                {!showSelectBugCr && !bugCrKey && (
+                  <div className="flex flex-col items-center py-8 text-slate-600 text-sm">
+                    <BookOpen size={20} className="mb-2 opacity-40" />
+                    <p>No CR selected</p>
+                    <p className="text-xs mt-1 text-slate-700">Click "Select CR" above to view its bug tickets</p>
+                  </div>
+                )}
+
+                {!showSelectBugCr && bugCrKey && (
+                  <>
+                    {/* Selected CR chip */}
+                    {bugCrIssue && (
+                      <div className="flex items-center gap-2 mb-2 px-2 py-1.5 bg-slate-800/60 rounded-lg">
+                        <span className="text-[10px] font-mono text-purple-400 font-bold shrink-0">{bugCrIssue.key}</span>
+                        <span className="text-xs text-slate-300 flex-1 line-clamp-1">{bugCrIssue.fields.summary}</span>
+                        <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(bugCrIssue.fields.status.statusCategory.colorName))}>
+                          {bugCrIssue.fields.status.name}
+                        </span>
+                      </div>
+                    )}
+                    {bugLoading ? (
+                      <div className="flex items-center justify-center py-6 text-slate-600 text-sm"><Loader2 size={16} className="animate-spin mr-2" />Loading…</div>
+                    ) : bugChildren.length === 0 ? (
+                      <div className="flex flex-col items-center py-6 text-slate-600 text-sm"><Bug size={18} className="mb-2 opacity-40" />No child tickets found</div>
+                    ) : (
+                      <div className="space-y-1 max-h-64 overflow-y-auto pr-0.5 mt-1">
+                        {bugChildren.map(child => {
+                          const pName = child.fields.priority?.name ?? "";
+                          const pColor = pName === "Highest" || pName === "Critical" ? "text-red-400" :
+                                         pName === "High" ? "text-orange-400" :
+                                         pName === "Medium" ? "text-yellow-400" : "text-slate-500";
+                          const typeName = child.fields.issuetype?.name ?? "";
+                          return (
+                            <button key={child.id} onClick={() => setSelectedKey(child.key)}
+                              className="w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-800 transition-colors group">
+                              <span className={clsx("text-[9px] shrink-0 font-bold", pColor)}>●</span>
+                              <span className="text-[10px] font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
+                              {typeName && typeName !== "Bug" && (
+                                <span className="text-[9px] text-slate-600 shrink-0 bg-slate-800 px-1 rounded">{typeName}</span>
+                              )}
+                              <span className="text-xs text-slate-400 flex-1 line-clamp-1 group-hover:text-slate-200">{child.fields.summary}</span>
+                              <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(child.fields.status.statusCategory.colorName))}>
+                                {child.fields.status.name}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
-              {/* Waiting on Me */}
+              {/* ── Waiting on Me ── */}
               <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -293,17 +566,17 @@ export default function JiraPage() {
               </div>
             </div>
 
-            {/* Bugs This Week */}
+            {/* ── Bugs Raised This Week (full width) ── */}
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Bug size={14} className="text-red-400" />
+                  <Bug size={14} className="text-orange-400" />
                   <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Bugs Raised This Week</p>
                   {!bugsThisWeekLoading && bugsThisWeek.length > 0 && (
-                    <span className="text-xs bg-red-900/40 text-red-300 border border-red-800/50 px-1.5 py-0.5 rounded-full font-semibold">{bugsThisWeek.length}</span>
+                    <span className="text-xs bg-orange-900/40 text-orange-300 border border-orange-800/50 px-1.5 py-0.5 rounded-full font-semibold">{bugsThisWeek.length}</span>
                   )}
                 </div>
-                {bugsThisWeekLoading && <Loader2 size={13} className="animate-spin text-red-400" />}
+                {bugsThisWeekLoading && <Loader2 size={13} className="animate-spin text-orange-400" />}
               </div>
               {bugsThisWeekLoading && bugsThisWeek.length === 0 ? (
                 <div className="flex items-center justify-center py-8 text-slate-600 text-sm"><Loader2 size={16} className="animate-spin mr-2" />Loading…</div>
@@ -336,79 +609,153 @@ export default function JiraPage() {
               )}
             </div>
 
-            {/* CR Children */}
-            {(crChildrenLoading || crChildren.length > 0) && (
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Layers size={14} className="text-indigo-400" />
-                    <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">CR Children</p>
-                    {!crChildrenLoading && crChildren.length > 0 && (
-                      <span className="text-xs bg-indigo-900/40 text-indigo-300 border border-indigo-800/50 px-1.5 py-0.5 rounded-full font-semibold">{crChildren.length}</span>
-                    )}
-                  </div>
-                  {crChildrenLoading && <Loader2 size={13} className="animate-spin text-indigo-400" />}
+            {/* ── Assigned CR (full width) ── */}
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Layers size={14} className="text-indigo-400" />
+                  <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Assigned CR</p>
+                  {assignedCrKeys.length > 0 && (
+                    <span className="text-xs bg-indigo-900/40 text-indigo-300 border border-indigo-800/50 px-1.5 py-0.5 rounded-full font-semibold">{assignedCrKeys.length}</span>
+                  )}
+                  {assignedCrLoading && <Loader2 size={13} className="animate-spin text-indigo-400" />}
                 </div>
-                {crChildrenLoading && crChildren.length === 0 ? (
-                  <div className="flex items-center justify-center py-8 text-slate-600 text-sm"><Loader2 size={16} className="animate-spin mr-2" />Loading…</div>
-                ) : (
-                  <div className="space-y-2 max-h-[480px] overflow-y-auto pr-0.5">
-                    {crTickets.map(cr => {
-                      const children = crChildren.filter(c => c.fields.parent?.key === cr.key);
-                      if (children.length === 0) return null;
-                      const isOpen = crExpanded[cr.key] === true;
-                      const statusCounts = children.reduce<Record<string, number>>((acc, c) => {
-                        const s = c.fields.status.name; acc[s] = (acc[s] ?? 0) + 1; return acc;
-                      }, {});
-                      return (
-                        <div key={cr.key} className="border border-slate-800 rounded-lg overflow-hidden">
-                          <div
-                            className="w-full flex items-center gap-2 px-3 py-2.5 bg-slate-800/60 hover:bg-slate-800 transition-colors cursor-pointer select-none"
-                            onClick={() => setCrExpanded(prev => ({ ...prev, [cr.key]: !isOpen }))}>
-                            {isOpen
-                              ? <ChevronDown size={13} className="text-slate-500 shrink-0" />
-                              : <ChevronRight size={13} className="text-slate-500 shrink-0" />}
-                            <span className="text-[10px] font-mono text-indigo-400 font-bold shrink-0">{cr.key}</span>
-                            <span className="text-xs text-slate-200 font-medium flex-1 line-clamp-1">{cr.fields.summary}</span>
-                            <div className="flex items-center gap-1 shrink-0 flex-wrap">
-                              {Object.entries(statusCounts).map(([s, n]) => (
-                                <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 font-medium">{n} {s}</span>
-                              ))}
-                            </div>
+                <button
+                  onClick={() => setShowAddCr(v => !v)}
+                  className={clsx("flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-colors",
+                    showAddCr ? "bg-slate-700 border-slate-600 text-slate-200" : "border-slate-700 text-slate-500 hover:text-slate-300 hover:border-slate-600"
+                  )}
+                  title="Add a CR ticket to track"
+                >
+                  <Plus size={12} />Add CR
+                </button>
+              </div>
+
+              {/* Add CR search panel */}
+              {showAddCr && (
+                <SearchPanel
+                  query={addCrQuery} setQuery={setAddCrQuery}
+                  results={addCrResults.filter(r => !assignedCrKeys.includes(r.key))}
+                  searching={addCrSearching}
+                  onPick={addCr} inputRef={addCrInputRef}
+                  placeholder="Search CR by key or text…"
+                />
+              )}
+
+              {/* Empty state */}
+              {!showAddCr && assignedCrKeys.length === 0 && (
+                <div className="flex flex-col items-center py-8 text-slate-600 text-sm">
+                  <Layers size={20} className="mb-2 opacity-40" />
+                  <p>No CRs tracked yet</p>
+                  <p className="text-xs mt-1 text-slate-700">Click "Add CR" to start tracking a change request</p>
+                </div>
+              )}
+
+              {/* CR list */}
+              {assignedCrKeys.length > 0 && (
+                <div className={clsx("space-y-2 max-h-[480px] overflow-y-auto pr-0.5", showAddCr && "mt-2")}>
+                  {assignedCrKeys.map(crKey => {
+                    const cr = assignedCrData[crKey];
+                    const isOpen = assignedCrExpanded[crKey] === true;
+                    const children = assignedCrChildren[crKey];
+                    const childLoading = assignedCrChildLoading[crKey];
+                    const statusCounts = children?.reduce<Record<string, number>>((acc, c) => {
+                      const s = c.fields.status.name; acc[s] = (acc[s] ?? 0) + 1; return acc;
+                    }, {}) ?? {};
+
+                    return (
+                      <div key={crKey} className="border border-slate-800 rounded-lg overflow-hidden">
+                        {/* Header row */}
+                        <div className="flex items-center gap-2 px-3 py-2.5 bg-slate-800/60 hover:bg-slate-800 transition-colors">
+                          {/* Expand toggle */}
+                          <button
+                            onClick={() => toggleAssignedCrExpand(crKey)}
+                            className="shrink-0 text-slate-500 hover:text-slate-300"
+                            aria-label={isOpen ? "Collapse" : "Expand"}
+                          >
+                            {childLoading
+                              ? <Loader2 size={13} className="animate-spin text-indigo-400" />
+                              : isOpen
+                                ? <ChevronDown size={13} />
+                                : <ChevronRight size={13} />
+                            }
+                          </button>
+
+                          {/* Key + summary */}
+                          <span className="text-[10px] font-mono text-indigo-400 font-bold shrink-0">{crKey}</span>
+                          {cr ? (
+                            <>
+                              <span className="text-xs text-slate-200 font-medium flex-1 line-clamp-1">{cr.fields.summary}</span>
+                              {/* Status chips */}
+                              {Object.keys(statusCounts).length > 0 && (
+                                <div className="flex items-center gap-1 shrink-0 flex-wrap">
+                                  {Object.entries(statusCounts).map(([s, n]) => (
+                                    <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 font-medium">{n} {s}</span>
+                                  ))}
+                                </div>
+                              )}
+                              <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(cr.fields.status.statusCategory.colorName))}>
+                                {cr.fields.status.name}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-xs text-slate-600 flex-1 italic">Loading…</span>
+                          )}
+
+                          {/* Actions */}
+                          <div className="flex items-center gap-1 shrink-0 ml-1">
                             <button
-                              onClick={e => { e.stopPropagation(); setSelectedKey(cr.key); }}
-                              className="ml-1 text-[10px] text-indigo-400 hover:text-indigo-200 shrink-0 px-1.5 py-0.5 rounded hover:bg-indigo-950/40">
-                              View CR
+                              onClick={e => { e.stopPropagation(); setSelectedKey(crKey); }}
+                              className="text-[10px] text-indigo-400 hover:text-indigo-200 px-1.5 py-0.5 rounded hover:bg-indigo-950/40 transition-colors"
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => completeCr(crKey)}
+                              title="Mark as complete and remove from list"
+                              className="flex items-center gap-0.5 text-[10px] text-green-500 hover:text-green-300 px-1.5 py-0.5 rounded hover:bg-green-950/40 transition-colors"
+                            >
+                              <CheckCheck size={11} />Done
                             </button>
                           </div>
-                          {isOpen && (
-                            <div className="divide-y divide-slate-800/60">
-                              {children.map(child => {
-                                const pName = child.fields.priority?.name ?? "";
-                                const pColor = pName === "Highest" || pName === "Critical" ? "text-red-400" :
-                                               pName === "High" ? "text-orange-400" :
-                                               pName === "Medium" ? "text-yellow-400" : "text-slate-500";
-                                return (
-                                  <button key={child.id} onClick={() => setSelectedKey(child.key)}
-                                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 hover:bg-slate-800/50 transition-colors group">
-                                    <span className={clsx("text-[9px] shrink-0 font-bold", pColor)}>●</span>
-                                    <span className="text-[10px] font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
-                                    <span className="text-xs text-slate-400 flex-1 line-clamp-1 group-hover:text-slate-200">{child.fields.summary}</span>
-                                    <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium",
-                                      statusChipCls(child.fields.status.statusCategory.colorName)
-                                    )}>{child.fields.status.name}</span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          )}
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
+
+                        {/* Children */}
+                        {isOpen && (
+                          <div className="divide-y divide-slate-800/60">
+                            {childLoading && !children && (
+                              <div className="flex items-center justify-center py-4 text-slate-600 text-xs">
+                                <Loader2 size={13} className="animate-spin mr-1.5" />Loading tickets…
+                              </div>
+                            )}
+                            {children?.length === 0 && !childLoading && (
+                              <p className="text-xs text-slate-700 text-center py-3">No child tickets</p>
+                            )}
+                            {children?.map(child => {
+                              const pName = child.fields.priority?.name ?? "";
+                              const pColor = pName === "Highest" || pName === "Critical" ? "text-red-400" :
+                                             pName === "High" ? "text-orange-400" :
+                                             pName === "Medium" ? "text-yellow-400" : "text-slate-500";
+                              return (
+                                <button key={child.id} onClick={() => setSelectedKey(child.key)}
+                                  className="w-full text-left flex items-center gap-2.5 px-3 py-2 hover:bg-slate-800/50 transition-colors group">
+                                  <span className={clsx("text-[9px] shrink-0 font-bold", pColor)}>●</span>
+                                  <span className="text-[10px] font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
+                                  <span className="text-xs text-slate-400 flex-1 line-clamp-1 group-hover:text-slate-200">{child.fields.summary}</span>
+                                  <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium",
+                                    statusChipCls(child.fields.status.statusCategory.colorName)
+                                  )}>{child.fields.status.name}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
           </div>
         )}
