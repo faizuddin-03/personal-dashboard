@@ -12,7 +12,17 @@ export function daysFromToday(n: number): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE }).format(d);
 }
 
-/** Returns the start and end of today in UTC, formatted for Jira JQL (YYYY-MM-DD HH:MM). */
+/**
+ * Returns a JQL date range for a given date (YYYY-MM-DD).
+ * Sends date-only strings so Jira parses them in the user's own Jira
+ * profile timezone rather than treating them as UTC.
+ */
+export function jqlDayRange(dateStr: string): { from: string; to: string } {
+  return { from: dateStr, to: dateStr };
+}
+
+/** @deprecated Use jqlDayRange(todayLocal()) — this sends UTC datetimes which
+ *  Jira misinterprets when the user's Jira timezone is not UTC. */
 export function todayRangeUTC(): { from: string; to: string } {
   const todayMY = todayLocal();
   const start = new Date(`${todayMY}T00:00:00+08:00`);

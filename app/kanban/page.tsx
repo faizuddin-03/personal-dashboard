@@ -496,21 +496,6 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
   const meta = COLUMN_META[id];
   const { setNodeRef, isOver } = useDroppable({ id });
 
-  if (collapsed) {
-    return (
-      <div className="flex flex-col w-12 shrink-0">
-        <div
-          className={clsx("flex flex-col items-center gap-2 px-2 py-3 rounded-xl border cursor-pointer hover:opacity-80 transition-opacity select-none", meta.headerBg)}
-          onClick={onToggleCollapse}
-          title={`Expand ${meta.label}`}
-        >
-          <span className="text-[11px] bg-black/20 text-slate-400 px-1 rounded-full font-medium leading-5">{cards.length}</span>
-          <span className="text-xs font-semibold text-slate-300" style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>{meta.label}</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col w-72 shrink-0">
       <div className={clsx("flex items-center justify-between px-3 py-2 rounded-xl border mb-2", meta.headerBg)}>
@@ -520,22 +505,33 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
         </div>
         <div className="flex items-center gap-0.5">
           {onToggleCollapse && (
-            <button onClick={onToggleCollapse} aria-label={`Collapse ${meta.label}`} className="text-slate-500 hover:text-slate-200 p-0.5 rounded hover:bg-black/20 transition-colors" title="Collapse">
-              <ChevronRight size={15} />
+            <button
+              onClick={onToggleCollapse}
+              aria-label={collapsed ? `Expand ${meta.label}` : `Collapse ${meta.label}`}
+              className="text-slate-500 hover:text-slate-200 p-0.5 rounded hover:bg-black/20 transition-colors"
+              title={collapsed ? "Expand" : "Collapse"}
+            >
+              {collapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
             </button>
           )}
           <button onClick={() => onAddCard(id)} aria-label={`Add card to ${meta.label}`} className="text-slate-500 hover:text-slate-200 p-0.5 rounded hover:bg-black/20 transition-colors"><Plus size={15} /></button>
         </div>
       </div>
-      <div
-        ref={setNodeRef}
-        className={clsx("flex-1 space-y-2 rounded-xl p-2 min-h-[120px] transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
-      >
-        {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} />)}
-        {cards.length === 0 && (
-          <div className="flex items-center justify-center h-20 text-xs text-slate-700 border border-dashed border-slate-800 rounded-xl">Drop here</div>
-        )}
-      </div>
+      {collapsed ? (
+        <div className="flex items-center justify-center py-3 text-xs text-slate-700 border border-dashed border-slate-800 rounded-xl select-none">
+          {cards.length} card{cards.length !== 1 ? "s" : ""} hidden
+        </div>
+      ) : (
+        <div
+          ref={setNodeRef}
+          className={clsx("flex-1 space-y-2 rounded-xl p-2 min-h-[120px] transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
+        >
+          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} />)}
+          {cards.length === 0 && (
+            <div className="flex items-center justify-center h-20 text-xs text-slate-700 border border-dashed border-slate-800 rounded-xl">Drop here</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

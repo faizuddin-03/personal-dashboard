@@ -11,7 +11,7 @@ import { getKanbanState, KanbanCard, PRIORITY_META, isOverdue as isKanbanOverdue
 import { getTodos } from "@/lib/todo";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META } from "@/lib/deployments";
 import { getCalendarEvents, CalendarEvent, EVENT_COLOR_META } from "@/lib/calendar-events";
-import { todayLocal, daysFromToday, todayRangeUTC } from "@/lib/date";
+import { todayLocal, daysFromToday, jqlDayRange } from "@/lib/date";
 import clsx from "clsx";
 
 // ── Mini kanban card for dashboard ──────────────────────────
@@ -125,6 +125,7 @@ export default function Dashboard() {
   const { creds, openSettings } = useApp();
 
   // Today's raised tickets
+  const [raisedDate, setRaisedDate]                 = useState(() => todayLocal());
   const [todayRaised, setTodayRaised]               = useState<JiraIssue[]>([]);
   const [todayRaisedLoading, setTodayRaisedLoading] = useState(false);
   const [selectedKey, setSelectedKey]               = useState<string | null>(null);
@@ -167,7 +168,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!creds) { setTodayRaised([]); return; }
-    const { from, to } = todayRangeUTC();
+    const { from, to } = jqlDayRange(raisedDate);
     const jql = `reporter = currentUser() AND created >= "${from}" AND created <= "${to}" ORDER BY created ASC`;
     setTodayRaisedLoading(true);
     fetch("/api/jira/search", {
@@ -184,7 +185,7 @@ export default function Dashboard() {
       .then(data => setTodayRaised(data.issues ?? []))
       .catch(() => setTodayRaised([]))
       .finally(() => setTodayRaisedLoading(false));
-  }, [creds]);
+  }, [creds, raisedDate]);
 
   const hasLocalData = ongoingCards.length > 0 || upcomingItems.length > 0;
 
@@ -284,17 +285,35 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── Today's Raised Tickets ── */}
+        {/* ── Raised Tickets ── */}
         {creds && (
           <div className="border-b border-slate-800 pb-5">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div className="flex items-center gap-2">
-                <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Today's Raised Tickets</p>
+                <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Raised Tickets</p>
                 {todayRaised.length > 0 && (
                   <span className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-1.5 py-0.5 rounded-full font-semibold">{todayRaised.length}</span>
                 )}
+                {todayRaisedLoading && <Loader2 size={13} className="animate-spin text-blue-400" />}
               </div>
-              {todayRaisedLoading && <Loader2 size={13} className="animate-spin text-blue-400" />}
+              {/* Date picker */}
+              <div className="flex items-center gap-1.5">
+                {raisedDate !== todayLocal() && (
+                  <button
+                    onClick={() => setRaisedDate(todayLocal())}
+                    className="px-2 py-1 text-[11px] font-medium bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors"
+                  >
+                    Today
+                  </button>
+                )}
+                <input
+                  type="date"
+                  value={raisedDate}
+                  max={todayLocal()}
+                  onChange={e => e.target.value && setRaisedDate(e.target.value)}
+                  className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 [color-scheme:dark] focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer"
+                />
+              </div>
             </div>
             {todayRaisedLoading && todayRaised.length === 0 ? (
               <div className="flex items-center justify-center py-8 text-slate-600">
@@ -303,8 +322,8 @@ export default function Dashboard() {
             ) : todayRaised.length === 0 ? (
               <div className="flex flex-col items-center py-8 text-slate-600">
                 <FileText size={24} className="mb-2" />
-                <p className="text-sm">No tickets raised today</p>
-                <p className="text-xs mt-1 text-slate-700">Tickets you create in Jira today will appear here</p>
+                <p className="text-sm">No tickets raised on {raisedDate === todayLocal() ? "today" : new Date(raisedDate + "T12:00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" })}</p>
+                {raisedDate === todayLocal() && <p className="text-xs mt-1 text-slate-700">Tickets you create in Jira today will appear here</p>}
               </div>
             ) : (
               <div className="grid gap-2">
