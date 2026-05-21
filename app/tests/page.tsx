@@ -12,6 +12,7 @@ export interface TestCase {
   tsNumber: string;
   status: "pass" | "fail" | "in-progress" | null;
   dateTested: string | null; // YYYY-MM-DD
+  disabled?: boolean;
 }
 
 export interface TestSuite {
@@ -236,7 +237,7 @@ export default function TestTrackerPage() {
     for (const cr of data) {
       for (const s of cr.suites) {
         for (const tc of s.cases) {
-          if (tc.dateTested === date) rows.push({ crKey: cr.crKey, crSummary: cr.crSummary, suiteTitle: s.title, tc });
+          if (!tc.disabled && tc.dateTested === date) rows.push({ crKey: cr.crKey, crSummary: cr.crSummary, suiteTitle: s.title, tc });
         }
       }
     }
@@ -245,7 +246,7 @@ export default function TestTrackerPage() {
 
   // ── Stats helpers ────────────────────────────────────────
   function crStats(cr: CREntry) {
-    const all = cr.suites.flatMap(s => s.cases);
+    const all = cr.suites.flatMap(s => s.cases).filter(c => !c.disabled);
     const pass = all.filter(c => c.status === "pass").length;
     const fail = all.filter(c => c.status === "fail").length;
     const wip = all.filter(c => c.status === "in-progress").length;
@@ -255,11 +256,12 @@ export default function TestTrackerPage() {
   }
 
   function suiteStats(suite: TestSuite) {
-    const pass = suite.cases.filter(c => c.status === "pass").length;
-    const fail = suite.cases.filter(c => c.status === "fail").length;
-    const wip = suite.cases.filter(c => c.status === "in-progress").length;
-    const passPct = suite.cases.length ? Math.round((pass / suite.cases.length) * 100) : 0;
-    return { total: suite.cases.length, pass, fail, wip, passPct };
+    const active = suite.cases.filter(c => !c.disabled);
+    const pass = active.filter(c => c.status === "pass").length;
+    const fail = active.filter(c => c.status === "fail").length;
+    const wip = active.filter(c => c.status === "in-progress").length;
+    const passPct = active.length ? Math.round((pass / active.length) * 100) : 0;
+    return { total: active.length, pass, fail, wip, passPct };
   }
 
   if (!hydrated) return null;
@@ -275,7 +277,7 @@ export default function TestTrackerPage() {
     <div className="flex flex-col min-h-full">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
-        <h1 className="text-sm font-semibold text-slate-200">Test Scenario Tracker</h1>
+        <h1 className="text-sm font-semibold text-slate-200">TS Tracker</h1>
         <div className="flex items-center gap-2">
           {/* View toggle */}
           <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
@@ -380,10 +382,24 @@ export default function TestTrackerPage() {
 
                                   {/* Test cases */}
                                   {suite.cases.map(tc => (
-                                    <div key={tc.id} className="grid grid-cols-[1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group">
-                                      <span className="text-xs font-mono text-slate-300">{tc.tsNumber}</span>
-                                      <StatusChip status={tc.status} onToggle={s => toggleStatus(tc, s)} />
-                                      <div className="flex items-center gap-1.5">
+                                    <div key={tc.id} className={clsx(
+                                      "grid grid-cols-[1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity",
+                                      tc.disabled && "opacity-30 grayscale"
+                                    )}>
+                                      <span
+                                        title={tc.disabled ? "Click to re-enable" : "Click to deprioritize"}
+                                        onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
+                                        className={clsx(
+                                          "text-xs font-mono cursor-pointer select-none",
+                                          tc.disabled ? "text-slate-500 line-through" : "text-slate-300 hover:text-slate-100"
+                                        )}
+                                      >
+                                        {tc.tsNumber}
+                                      </span>
+                                      <div onClick={e => e.stopPropagation()}>
+                                        <StatusChip status={tc.status} onToggle={s => !tc.disabled && toggleStatus(tc, s)} />
+                                      </div>
+                                      <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
                                         {tc.dateTested ? (
                                           <input type="date" value={tc.dateTested}
                                             onChange={e => e.target.value && updateCase(tc.id, { dateTested: e.target.value })}

@@ -13,11 +13,17 @@ import clsx from "clsx";
 const nav = [
   { label: "Dashboard", href: "/",          icon: LayoutDashboard },
   { label: "Jira",      href: "/jira",      icon: Ticket },
-  { label: "Kanban",    href: "/kanban",    icon: Kanban },
+  {
+    label: "Kanban",
+    icon: Kanban,
+    children: [
+      { label: "Board",      href: "/kanban", icon: Kanban },
+      { label: "TS Tracker", href: "/tests",  icon: ClipboardList },
+    ],
+  },
   { label: "Calendar",  href: "/calendar",  icon: CalendarDays },
   { label: "To-Do",     href: "/todo",      icon: CheckSquare },
   { label: "Notes",     href: "/notes",     icon: FileText },
-  { label: "Tests",     href: "/tests",     icon: ClipboardList },
   {
     label: "eAuto",
     icon: Car,
@@ -29,7 +35,7 @@ const nav = [
 
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
-  const [expanded, setExpanded]   = useState<string[]>(["eAuto"]);
+  const [expanded, setExpanded]   = useState<string[]>(["eAuto", "Kanban"]);
   const [importMsg, setImportMsg] = useState("");
   const [confirmImport, setConfirmImport] = useState(false);
   const importRef = useRef<HTMLInputElement>(null);
