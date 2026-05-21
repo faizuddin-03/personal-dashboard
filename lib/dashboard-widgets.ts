@@ -4,7 +4,6 @@ export type WidgetId =
   | "deployments"
   | "jira-snapshot"
   | "ongoing"
-  | "upcoming"
   | "raised"
   | "jira-overview";
 
@@ -20,7 +19,6 @@ const DEFAULTS: WidgetConfig[] = [
   { id: "deployments",     label: "Upcoming Deployments", visible: true },
   { id: "jira-snapshot",   label: "Jira Snapshot",        visible: true },
   { id: "ongoing",         label: "On-Going Cards",       visible: true },
-  { id: "upcoming",        label: "Next 7 Days",          visible: true },
   { id: "raised",          label: "Raised Tickets",       visible: true },
   { id: "jira-overview",   label: "Jira Overview Link",   visible: false },
 ];

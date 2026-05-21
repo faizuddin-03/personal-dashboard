@@ -18,7 +18,6 @@ import {
 } from "@/lib/kanban";
 import { getTodos, isTodoOverdue, isDueToday as isTodoDueToday, TodoItem, TODO_PRIORITY_META } from "@/lib/todo";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META, DEPLOYMENT_STATUS_META } from "@/lib/deployments";
-import { getCalendarEvents, CalendarEvent, EVENT_COLOR_META } from "@/lib/calendar-events";
 import { todayLocal, daysFromToday, jqlCreatedRange } from "@/lib/date";
 import { getWidgetConfig, saveWidgetConfig, WidgetConfig } from "@/lib/dashboard-widgets";
 import clsx from "clsx";
@@ -48,76 +47,6 @@ function MiniKanbanCard({ card }: { card: KanbanCard }) {
   );
 }
 
-// ── Upcoming item row ────────────────────────────────────────
-function UpcomingRow({ item, i }: { item: UpcomingItemType; i: number }) {
-  const todayStr = todayLocal();
-  const tomorrowStr = daysFromToday(1);
-  const dateLabel = item.date === todayStr ? "Today"
-    : item.date === tomorrowStr ? "Tomorrow"
-    : new Date(item.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-
-  if (item.kind === "deployment") {
-    const tm = DEPLOYMENT_TYPE_META[item.data.type];
-    return (
-      <Link key={i} href="/calendar" className={clsx("flex items-start gap-2 rounded-lg border px-2.5 py-2 hover:opacity-80 transition-opacity", tm.bg, tm.border)}>
-        <Rocket size={12} className={clsx(tm.text, "shrink-0 mt-0.5")} />
-        <div className="flex-1 min-w-0">
-          <span className="text-[10px] font-mono font-bold text-blue-400 mr-1.5">{item.data.ticketKey}</span>
-          <span className={clsx("text-xs font-medium break-words", tm.text)}>{item.data.ticketSummary || item.data.ticketKey}</span>
-        </div>
-        <div className="text-right shrink-0">
-          <p className={clsx("text-[10px] font-medium", tm.text)}>{dateLabel}</p>
-          <p className="text-[10px] text-slate-500">{item.data.time}</p>
-        </div>
-      </Link>
-    );
-  }
-  if (item.kind === "event") {
-    const cm = EVENT_COLOR_META[item.data.color];
-    const isMultiDay = item.data.startDate !== item.data.endDate;
-    return (
-      <Link key={i} href="/calendar" className={clsx("flex items-start gap-2 rounded-lg border px-2.5 py-2 hover:opacity-80 transition-opacity", cm.chipBg)}>
-        <CalendarDays size={12} className="shrink-0 opacity-70 mt-0.5" />
-        <div className="flex-1 min-w-0">
-          <span className="text-xs font-medium break-words">{item.data.title}</span>
-          {isMultiDay && <span className="text-[10px] opacity-60 ml-1.5">multi-day</span>}
-        </div>
-        <div className="text-right shrink-0">
-          <p className="text-[10px] font-medium">{dateLabel}</p>
-          {!item.data.allDay && item.data.startTime && <p className="text-[10px] opacity-60">{item.data.startTime}</p>}
-        </div>
-      </Link>
-    );
-  }
-  if (item.kind === "kanban") {
-    return (
-      <Link key={i} href="/kanban" className="flex items-start gap-2 rounded-lg border border-blue-800/40 bg-blue-950/30 px-2.5 py-2 hover:opacity-80 transition-opacity">
-        <CheckSquare size={12} className="text-blue-400 shrink-0 mt-0.5" />
-        <div className="flex-1 min-w-0">
-          {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-1.5">{item.data.jiraKey}</span>}
-          <span className="text-xs text-slate-200 break-words">{item.data.title}</span>
-        </div>
-        <p className="text-[10px] text-blue-300 shrink-0">{dateLabel}</p>
-      </Link>
-    );
-  }
-  return (
-    <Link key={i} href="/todo" className="flex items-start gap-2 rounded-lg border border-slate-700 bg-slate-800/50 px-2.5 py-2 hover:opacity-80 transition-opacity">
-      <CheckSquare size={12} className="text-slate-400 shrink-0 mt-0.5" />
-      <div className="flex-1 min-w-0">
-        {item.data.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-1.5">{item.data.jiraKey}</span>}
-        <span className="text-xs text-slate-300 break-words">{item.data.title}</span>
-      </div>
-      <p className="text-[10px] text-slate-500 shrink-0">{dateLabel}</p>
-    </Link>
-  );
-}
-
-type UpcomingItemType =
-  | { kind: "deployment"; data: Deployment; date: string }
-  | { kind: "event";      data: CalendarEvent; date: string }
-  | { kind: "kanban";     data: KanbanCard; date: string }
-  | { kind: "todo";       data: TodoItem; date: string };
 
 // ── Stat box ─────────────────────────────────────────────────
 function StatBox({ value, label, color = "text-slate-200", alert }: { value: number | string; label: string; color?: string; alert?: boolean }) {
@@ -184,7 +113,6 @@ export default function Dashboard() {
   // Local data — shared across widgets
   const [ongoingCards, setOngoingCards]       = useState<KanbanCard[]>([]);
   const [dueSoonCards, setDueSoonCards]       = useState<KanbanCard[]>([]);
-  const [upcomingItems, setUpcomingItems]     = useState<UpcomingItemType[]>([]);
   const [kanbanSummary, setKanbanSummary]     = useState<KanbanSummaryData | null>(null);
   const [todoSnapshot, setTodoSnapshot]       = useState<TodoSnapshotData | null>(null);
   const [upcomingDeps, setUpcomingDeps]       = useState<Deployment[]>([]);
@@ -223,7 +151,6 @@ export default function Dashboard() {
   // Load all local data once on mount
   useEffect(() => {
     const todayStr = todayLocal();
-    const in7Str   = daysFromToday(7);
 
     const kanban  = getKanbanState();
     const todos   = getTodos();
@@ -267,22 +194,6 @@ export default function Dashboard() {
         .slice(0, 6)
     );
 
-    // Upcoming 7-day mix (for existing "upcoming" widget)
-    const upcoming: UpcomingItemType[] = [];
-    for (const d of getDeployments()) {
-      if (d.date >= todayStr && d.date <= in7Str && d.status !== "cancelled")
-        upcoming.push({ kind: "deployment", data: d, date: d.date });
-    }
-    for (const e of getCalendarEvents()) {
-      if (e.startDate <= in7Str && e.endDate >= todayStr)
-        upcoming.push({ kind: "event", data: e, date: e.startDate < todayStr ? todayStr : e.startDate });
-    }
-    for (const c of allCards.filter(c => c.columnId !== "finished" && c.dueDate && c.dueDate >= todayStr && c.dueDate <= in7Str))
-      upcoming.push({ kind: "kanban", data: c, date: c.dueDate! });
-    for (const t of todos.filter(t => !t.done && t.dueDate && t.dueDate >= todayStr && t.dueDate <= in7Str))
-      upcoming.push({ kind: "todo", data: t, date: t.dueDate! });
-    upcoming.sort((a, b) => a.date.localeCompare(b.date));
-    setUpcomingItems(upcoming);
   }, []);
 
   // Jira snapshot — two parallel fetches
@@ -333,7 +244,7 @@ export default function Dashboard() {
       .finally(() => setTodayRaisedLoading(false));
   }, [creds, raisedDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const hasLocalData = ongoingCards.length > 0 || upcomingItems.length > 0;
+  const hasLocalData = ongoingCards.length > 0;
 
   // ── Column bar colours ────────────────────────────────────
   const COL_BAR: Record<ColumnId, string> = {
@@ -678,38 +589,18 @@ export default function Dashboard() {
             );
           }
 
-          // ── On-Going + Next 7 Days ─────────────────────────
-          if (w.id === "ongoing" || w.id === "upcoming") {
-            if (!hasLocalData) return null;
-            const ongoingCfg  = widgets.find(x => x.id === "ongoing");
-            const upcomingCfg = widgets.find(x => x.id === "upcoming");
-            if (w.id === "upcoming" && ongoingCfg?.visible) return null;
-            const showOngoing  = ongoingCfg?.visible  ?? true;
-            const showUpcoming = upcomingCfg?.visible ?? true;
+          // ── On-Going ──────────────────────────────────────
+          if (w.id === "ongoing") {
+            if (!hasLocalData || ongoingCards.length === 0) return null;
             return (
-              <div key="local-overview" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {showOngoing && ongoingCards.length > 0 && (
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">On-Going</p>
-                      <Link href="/kanban" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">View board <ArrowRight size={11} /></Link>
-                    </div>
-                    <div className="flex gap-2.5 overflow-x-auto pb-1">
-                      {ongoingCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
-                    </div>
-                  </div>
-                )}
-                {showUpcoming && upcomingItems.length > 0 && (
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Next 7 Days</p>
-                      <Link href="/calendar" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">Calendar <ArrowRight size={11} /></Link>
-                    </div>
-                    <div className="space-y-1.5 max-h-72 overflow-y-auto pr-0.5">
-                      {upcomingItems.map((item, i) => <UpcomingRow key={i} item={item} i={i} />)}
-                    </div>
-                  </div>
-                )}
+              <div key="ongoing">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">On-Going</p>
+                  <Link href="/kanban" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">View board <ArrowRight size={11} /></Link>
+                </div>
+                <div className="flex gap-2.5 overflow-x-auto pb-1">
+                  {ongoingCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
+                </div>
               </div>
             );
           }
