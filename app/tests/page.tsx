@@ -423,7 +423,7 @@ export default function TestTrackerPage() {
                           {cr.crSummary}
                           <button
                             onClick={e => { e.stopPropagation(); setEditingCRId(cr.id); setEditingCRValue(cr.crSummary); }}
-                            className="ml-1.5 opacity-0 group-hover/cr:opacity-100 text-slate-600 hover:text-slate-300 transition-opacity align-middle"
+                            className="ml-1.5 opacity-0 group-hover/cr:opacity-100 pointer-events-none group-hover/cr:pointer-events-auto text-slate-600 hover:text-slate-300 transition-opacity align-middle"
                             title="Edit summary"
                           >
                             <Pencil size={11} />
@@ -484,7 +484,7 @@ export default function TestTrackerPage() {
                                           {suite.title}
                                           <button
                                             onClick={e => { e.stopPropagation(); setEditingSuiteTitleId(suite.id); setEditingSuiteTitleValue(suite.title); }}
-                                            className="ml-1.5 opacity-0 group-hover/suite:opacity-100 text-slate-600 hover:text-slate-300 transition-opacity align-middle"
+                                            className="ml-1.5 opacity-0 group-hover/suite:opacity-100 pointer-events-none group-hover/suite:pointer-events-auto text-slate-600 hover:text-slate-300 transition-opacity align-middle"
                                             title="Edit title"
                                           >
                                             <Pencil size={10} />
@@ -553,7 +553,7 @@ export default function TestTrackerPage() {
                                                       </span>
                                                       <button
                                                         onClick={e => { e.stopPropagation(); setEditingCaseId(tc.id); setEditingCaseValue(tc.tsNumber); }}
-                                                        className="opacity-0 group-hover/ts:opacity-100 text-slate-700 hover:text-slate-400 transition-opacity shrink-0"
+                                                        className="opacity-0 group-hover/ts:opacity-100 pointer-events-none group-hover/ts:pointer-events-auto text-slate-700 hover:text-slate-400 transition-opacity shrink-0"
                                                         title="Edit TS number"
                                                       >
                                                         <Pencil size={10} />
