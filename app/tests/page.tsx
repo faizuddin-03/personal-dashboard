@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, ChevronDown, ChevronRight, X, Search, Loader2, CheckCircle2, XCircle, Clock, CalendarDays, Trash2, Timer, GripVertical } from "lucide-react";
+import { Plus, ChevronDown, ChevronRight, X, Search, Loader2, CheckCircle2, XCircle, Clock, CalendarDays, Trash2, Timer, GripVertical, Pencil } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 import { reporterIs } from "@/lib/jira";
@@ -186,11 +186,18 @@ export default function TestTrackerPage() {
   const [showAddCR, setShowAddCR] = useState(false);
   const [expandedCRs, setExpandedCRs] = useState<Record<string, boolean>>({});
   const [expandedSuites, setExpandedSuites] = useState<Record<string, boolean>>({});
-  // editing states
+  // add states
   const [editingSuiteId, setEditingSuiteId] = useState<string | null>(null);
   const [newSuiteTitle, setNewSuiteTitle] = useState("");
   const [addingCaseToSuite, setAddingCaseToSuite] = useState<string | null>(null);
   const [newCaseTsNumber, setNewCaseTsNumber] = useState("");
+  // inline rename states
+  const [editingCRId, setEditingCRId] = useState<string | null>(null);
+  const [editingCRValue, setEditingCRValue] = useState("");
+  const [editingSuiteTitleId, setEditingSuiteTitleId] = useState<string | null>(null);
+  const [editingSuiteTitleValue, setEditingSuiteTitleValue] = useState("");
+  const [editingCaseId, setEditingCaseId] = useState<string | null>(null);
+  const [editingCaseValue, setEditingCaseValue] = useState("");
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -270,6 +277,28 @@ export default function TestTrackerPage() {
     persist(data.map(cr => ({
       ...cr, suites: cr.suites.map(s => ({ ...s, cases: s.cases.filter(c => c.id !== caseId) }))
     })));
+  }
+
+  function renameCR(crId: string, summary: string) {
+    if (!summary.trim()) return;
+    persist(data.map(cr => cr.id !== crId ? cr : { ...cr, crSummary: summary.trim() }));
+    setEditingCRId(null);
+  }
+  function renameSuite(crId: string, suiteId: string, title: string) {
+    if (!title.trim()) return;
+    persist(data.map(cr => cr.id !== crId ? cr : {
+      ...cr, suites: cr.suites.map(s => s.id !== suiteId ? s : { ...s, title: title.trim() })
+    }));
+    setEditingSuiteTitleId(null);
+  }
+  function renameCase(caseId: string, tsNumber: string) {
+    if (!tsNumber.trim()) return;
+    persist(data.map(cr => ({
+      ...cr, suites: cr.suites.map(s => ({
+        ...s, cases: s.cases.map(c => c.id !== caseId ? c : { ...c, tsNumber: tsNumber.trim() })
+      }))
+    })));
+    setEditingCaseId(null);
   }
 
   function toggleStatus(tc: TestCase, newStatus: "pass" | "fail" | "in-progress" | null) {
@@ -375,7 +404,32 @@ export default function TestTrackerPage() {
                       onClick={() => setExpandedCRs(p => ({ ...p, [cr.crKey]: !isOpen }))}>
                       {isOpen ? <ChevronDown size={15} className="text-slate-500 shrink-0" /> : <ChevronRight size={15} className="text-slate-500 shrink-0" />}
                       <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{cr.crKey}</span>
-                      <span className="text-sm text-slate-200 font-medium flex-1 line-clamp-1">{cr.crSummary}</span>
+                      {editingCRId === cr.id ? (
+                        <input
+                          autoFocus
+                          value={editingCRValue}
+                          onChange={e => setEditingCRValue(e.target.value)}
+                          onBlur={() => renameCR(cr.id, editingCRValue)}
+                          onKeyDown={e => {
+                            e.stopPropagation();
+                            if (e.key === "Enter") renameCR(cr.id, editingCRValue);
+                            if (e.key === "Escape") setEditingCRId(null);
+                          }}
+                          onClick={e => e.stopPropagation()}
+                          className="flex-1 text-sm font-medium bg-slate-800 border border-blue-600 rounded px-2 py-0.5 text-slate-200 focus:outline-none min-w-0"
+                        />
+                      ) : (
+                        <span className="text-sm text-slate-200 font-medium flex-1 line-clamp-1 group/cr">
+                          {cr.crSummary}
+                          <button
+                            onClick={e => { e.stopPropagation(); setEditingCRId(cr.id); setEditingCRValue(cr.crSummary); }}
+                            className="ml-1.5 opacity-0 group-hover/cr:opacity-100 text-slate-600 hover:text-slate-300 transition-opacity align-middle"
+                            title="Edit summary"
+                          >
+                            <Pencil size={11} />
+                          </button>
+                        </span>
+                      )}
                       {stats.total > 0 && (
                         <div className="flex items-center gap-2 shrink-0">
                           {stats.wip > 0 && <span className="text-[10px] text-amber-400 font-medium">{stats.wip} wip</span>}
@@ -411,7 +465,32 @@ export default function TestTrackerPage() {
                                       onClick={() => setExpandedSuites(p => ({ ...p, [suite.id]: !suiteOpen }))}>
                                       <span onClick={e => e.stopPropagation()}>{handle}</span>
                                       {suiteOpen ? <ChevronDown size={13} className="text-slate-600 shrink-0" /> : <ChevronRight size={13} className="text-slate-600 shrink-0" />}
-                                      <span className="text-xs font-medium text-slate-300 flex-1">{suite.title}</span>
+                                      {editingSuiteTitleId === suite.id ? (
+                                        <input
+                                          autoFocus
+                                          value={editingSuiteTitleValue}
+                                          onChange={e => setEditingSuiteTitleValue(e.target.value)}
+                                          onBlur={() => renameSuite(cr.id, suite.id, editingSuiteTitleValue)}
+                                          onKeyDown={e => {
+                                            e.stopPropagation();
+                                            if (e.key === "Enter") renameSuite(cr.id, suite.id, editingSuiteTitleValue);
+                                            if (e.key === "Escape") setEditingSuiteTitleId(null);
+                                          }}
+                                          onClick={e => e.stopPropagation()}
+                                          className="flex-1 text-xs font-medium bg-slate-800 border border-blue-600 rounded px-2 py-0.5 text-slate-200 focus:outline-none min-w-0"
+                                        />
+                                      ) : (
+                                        <span className="text-xs font-medium text-slate-300 flex-1 group/suite">
+                                          {suite.title}
+                                          <button
+                                            onClick={e => { e.stopPropagation(); setEditingSuiteTitleId(suite.id); setEditingSuiteTitleValue(suite.title); }}
+                                            className="ml-1.5 opacity-0 group-hover/suite:opacity-100 text-slate-600 hover:text-slate-300 transition-opacity align-middle"
+                                            title="Edit title"
+                                          >
+                                            <Pencil size={10} />
+                                          </button>
+                                        </span>
+                                      )}
                                       <span className="text-[10px] text-slate-600">{ss.total} TS</span>
                                       {ss.wip > 0 && <span className="text-[10px] text-amber-400">{ss.wip} wip</span>}
                                       {ss.fail > 0 && <span className="text-[10px] text-red-400">{ss.fail}✗</span>}
@@ -446,16 +525,41 @@ export default function TestTrackerPage() {
                                                   tc.disabled && "opacity-30 grayscale"
                                                 )}>
                                                   <span onClick={e => e.stopPropagation()}>{caseHandle}</span>
-                                                  <span
-                                                    title={tc.disabled ? "Click to re-enable" : "Click to deprioritize"}
-                                                    onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
-                                                    className={clsx(
-                                                      "text-xs font-mono cursor-pointer select-none",
-                                                      tc.disabled ? "text-slate-500 line-through" : "text-slate-300 hover:text-slate-100"
-                                                    )}
-                                                  >
-                                                    {tc.tsNumber}
-                                                  </span>
+                                                  {editingCaseId === tc.id ? (
+                                                    <input
+                                                      autoFocus
+                                                      value={editingCaseValue}
+                                                      onChange={e => setEditingCaseValue(e.target.value)}
+                                                      onBlur={() => renameCase(tc.id, editingCaseValue)}
+                                                      onKeyDown={e => {
+                                                        e.stopPropagation();
+                                                        if (e.key === "Enter") renameCase(tc.id, editingCaseValue);
+                                                        if (e.key === "Escape") setEditingCaseId(null);
+                                                      }}
+                                                      onClick={e => e.stopPropagation()}
+                                                      className="text-xs font-mono bg-slate-800 border border-blue-600 rounded px-1.5 py-0.5 text-slate-200 focus:outline-none w-full"
+                                                    />
+                                                  ) : (
+                                                    <span className="flex items-center gap-1 group/ts">
+                                                      <span
+                                                        title={tc.disabled ? "Click to re-enable" : "Click to deprioritize"}
+                                                        onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
+                                                        className={clsx(
+                                                          "text-xs font-mono cursor-pointer select-none",
+                                                          tc.disabled ? "text-slate-500 line-through" : "text-slate-300 hover:text-slate-100"
+                                                        )}
+                                                      >
+                                                        {tc.tsNumber}
+                                                      </span>
+                                                      <button
+                                                        onClick={e => { e.stopPropagation(); setEditingCaseId(tc.id); setEditingCaseValue(tc.tsNumber); }}
+                                                        className="opacity-0 group-hover/ts:opacity-100 text-slate-700 hover:text-slate-400 transition-opacity shrink-0"
+                                                        title="Edit TS number"
+                                                      >
+                                                        <Pencil size={10} />
+                                                      </button>
+                                                    </span>
+                                                  )}
                                                   <div onClick={e => e.stopPropagation()}>
                                                     <StatusChip status={tc.status} onToggle={s => !tc.disabled && toggleStatus(tc, s)} />
                                                   </div>
