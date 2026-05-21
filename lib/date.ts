@@ -12,17 +12,29 @@ export function daysFromToday(n: number): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE }).format(d);
 }
 
+const JIRA_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 /**
- * Returns a JQL date range for a given date (YYYY-MM-DD).
- * Sends date-only strings so Jira parses them in the user's own Jira
- * profile timezone rather than treating them as UTC.
+ * Returns JQL created-range clauses for a given YYYY-MM-DD date.
+ * For today: uses startOfDay()/endOfDay() (timezone-safe Jira functions).
+ * For past dates: uses dd/MMM/yy format which Jira Cloud always accepts.
+ * The app's internal ISO format is unaffected — this only formats the JQL string.
  */
+export function jqlCreatedRange(isoDate: string): string {
+  if (isoDate === todayLocal()) {
+    return `created >= startOfDay() AND created <= endOfDay()`;
+  }
+  const [y, m, d] = isoDate.split("-");
+  const jiraDate = `${parseInt(d)}/${JIRA_MONTHS[parseInt(m) - 1]}/${y.slice(2)}`;
+  return `created >= "${jiraDate} 00:00" AND created <= "${jiraDate} 23:59"`;
+}
+
+/** @deprecated Use jqlCreatedRange(todayLocal()) */
 export function jqlDayRange(dateStr: string): { from: string; to: string } {
   return { from: dateStr, to: dateStr };
 }
 
-/** @deprecated Use jqlDayRange(todayLocal()) — this sends UTC datetimes which
- *  Jira misinterprets when the user's Jira timezone is not UTC. */
+/** @deprecated */
 export function todayRangeUTC(): { from: string; to: string } {
   const todayMY = todayLocal();
   const start = new Date(`${todayMY}T00:00:00+08:00`);

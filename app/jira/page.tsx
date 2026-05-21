@@ -134,21 +134,29 @@ export default function JiraPage() {
     else { setAssigned([]); setReported([]); }
   }, [creds, fetchIssues]);
 
-  // ── Waiting on Me + Bugs This Week ────────────────────────
+  // ── Pending From Others + Bugs This Week ─────────────────
   useEffect(() => {
     if (!creds) { setWaitingOnMe([]); setBugsThisWeek([]); return; }
     const pk = creds.defaultProjectKey;
 
     setWaitingOnMeLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: `reporter = "${creds.email}" AND assignee != "${creds.email}" AND resolution = Unresolved ORDER BY updated DESC`, maxResults: 50 }) })
+      body: JSON.stringify({ ...creds, jql: `reporter = "${creds.email}" AND assignee != "${creds.email}" AND status not in (Closed, Done, Resolved) ORDER BY updated DESC`, maxResults: 50 }) })
       .then(r => r.json()).then(d => setWaitingOnMe(d.issues ?? []))
       .catch(() => setWaitingOnMe([]))
       .finally(() => setWaitingOnMeLoading(false));
 
+    // Compute Monday of current week in Jira's accepted dd/MMM/yy format
+    const JIRA_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0=Sun
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - daysToMonday);
+    const weekStart = `${monday.getDate()}/${JIRA_MONTHS[monday.getMonth()]}/${String(monday.getFullYear()).slice(2)}`;
     const bugsJql = pk
-      ? `project = "${pk}" AND issuetype = Bug AND reporter = "${creds.email}" AND created >= startOfWeek() ORDER BY priority DESC`
-      : `issuetype = Bug AND reporter = "${creds.email}" AND created >= startOfWeek() ORDER BY priority DESC`;
+      ? `project = "${pk}" AND issuetype = Bug AND reporter = "${creds.email}" AND created >= "${weekStart}" ORDER BY priority DESC`
+      : `issuetype = Bug AND reporter = "${creds.email}" AND created >= "${weekStart}" ORDER BY priority DESC`;
     setBugsThisWeekLoading(true);
     fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...creds, jql: bugsJql, maxResults: 50 }) })
