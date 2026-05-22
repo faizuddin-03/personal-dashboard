@@ -46,8 +46,10 @@ export function useAutoBackup() {
       }
     }
 
+    function onVisible() { if (!document.hidden) check(); }
+    document.addEventListener("visibilitychange", onVisible);
     check();
     const id = setInterval(check, 60_000);
-    return () => clearInterval(id);
+    return () => { clearInterval(id); document.removeEventListener("visibilitychange", onVisible); };
   }, []);
 }

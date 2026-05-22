@@ -41,8 +41,10 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
 
   useEffect(() => {
     if (!query.trim()) { setResults([]); setSelected(0); return; }
-    const q = query.toLowerCase();
-    const out: SearchResult[] = [];
+
+    const timer = setTimeout(() => {
+      const q = query.toLowerCase();
+      const out: SearchResult[] = [];
 
     const kanban = getKanbanState();
     for (const col of ["urgent", "todo", "ongoing", "on-hold", "finished"] as const) {
@@ -130,8 +132,11 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
       }
     } catch { /* ignore */ }
 
-    setResults(out.slice(0, 15));
-    setSelected(0);
+      setResults(out.slice(0, 15));
+      setSelected(0);
+    }, 150);
+
+    return () => clearTimeout(timer);
   }, [query]);
 
   function handleKeyDown(e: React.KeyboardEvent) {

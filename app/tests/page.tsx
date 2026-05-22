@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Plus, ChevronDown, ChevronRight, X, Search, Loader2, CheckCircle2, XCircle, Clock, CalendarDays, Trash2, Timer, GripVertical, Pencil } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -323,33 +323,45 @@ export default function TestTrackerPage() {
   }
 
   // ── Stats helpers ────────────────────────────────────────
-  function crStats(cr: CREntry) {
-    const all = cr.suites.flatMap(s => s.cases).filter(c => !c.disabled);
-    const pass = all.filter(c => c.status === "pass").length;
-    const fail = all.filter(c => c.status === "fail").length;
-    const wip = all.filter(c => c.status === "in-progress").length;
-    const done = pass + fail + wip;
-    const passPct = all.length ? Math.round((pass / all.length) * 100) : 0;
-    return { total: all.length, done, pass, fail, wip, passPct };
-  }
+  // Memoize per-CR and per-suite stats — only recomputes when data changes
+  const crStatsMap = useMemo(() => {
+    const map = new Map<string, { total: number; done: number; pass: number; fail: number; wip: number; passPct: number }>();
+    for (const cr of data) {
+      const all = cr.suites.flatMap(s => s.cases).filter(c => !c.disabled);
+      const pass = all.filter(c => c.status === "pass").length;
+      const fail = all.filter(c => c.status === "fail").length;
+      const wip  = all.filter(c => c.status === "in-progress").length;
+      map.set(cr.id, { total: all.length, done: pass + fail + wip, pass, fail, wip, passPct: all.length ? Math.round((pass / all.length) * 100) : 0 });
+    }
+    return map;
+  }, [data]);
 
-  function suiteStats(suite: TestSuite) {
-    const active = suite.cases.filter(c => !c.disabled);
-    const pass = active.filter(c => c.status === "pass").length;
-    const fail = active.filter(c => c.status === "fail").length;
-    const wip = active.filter(c => c.status === "in-progress").length;
-    const passPct = active.length ? Math.round((pass / active.length) * 100) : 0;
-    return { total: active.length, pass, fail, wip, passPct };
-  }
+  const suiteStatsMap = useMemo(() => {
+    const map = new Map<string, { total: number; pass: number; fail: number; wip: number; passPct: number }>();
+    for (const cr of data) {
+      for (const suite of cr.suites) {
+        const active = suite.cases.filter(c => !c.disabled);
+        const pass = active.filter(c => c.status === "pass").length;
+        const fail = active.filter(c => c.status === "fail").length;
+        const wip  = active.filter(c => c.status === "in-progress").length;
+        map.set(suite.id, { total: active.length, pass, fail, wip, passPct: active.length ? Math.round((pass / active.length) * 100) : 0 });
+      }
+    }
+    return map;
+  }, [data]);
+
+  // Memoize date-view rows — only recomputes when data or filterDate changes
+  const dateRows = useMemo(() => rowsForDate(filterDate), [data, filterDate]); // eslint-disable-line react-hooks/exhaustive-deps
+  const groupedByDate = useMemo(() => {
+    const grouped: Record<string, DateRow[]> = {};
+    for (const r of dateRows) {
+      const k = `${r.crKey}::${r.suiteTitle}`;
+      (grouped[k] ??= []).push(r);
+    }
+    return grouped;
+  }, [dateRows]);
 
   if (!hydrated) return null;
-
-  const dateRows = rowsForDate(filterDate);
-  const groupedByDate: Record<string, DateRow[]> = {};
-  for (const r of dateRows) {
-    const k = `${r.crKey}::${r.suiteTitle}`;
-    (groupedByDate[k] ??= []).push(r);
-  }
 
   return (
     <div className="flex flex-col min-h-full">
@@ -396,7 +408,7 @@ export default function TestTrackerPage() {
             <div className="space-y-3 mt-3">
               {data.map(cr => {
                 const isOpen = expandedCRs[cr.crKey] ?? false;
-                const stats = crStats(cr);
+                const stats = crStatsMap.get(cr.id)!;
                 return (
                   <div key={cr.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
                     {/* CR header */}
@@ -456,7 +468,7 @@ export default function TestTrackerPage() {
                           <SortableContext items={cr.suites.map(s => s.id)} strategy={verticalListSortingStrategy}>
                             {cr.suites.map(suite => {
                               const suiteOpen = expandedSuites[suite.id] ?? false;
-                              const ss = suiteStats(suite);
+                              const ss = suiteStatsMap.get(suite.id)!;
                               return (
                                 <SortableRow key={suite.id} id={suite.id}>{handle => (
                                   <div className="bg-slate-950/60 border border-slate-800 rounded-lg overflow-hidden">
