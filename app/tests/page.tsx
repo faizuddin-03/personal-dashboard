@@ -367,7 +367,10 @@ export default function TestTrackerPage() {
     <div className="flex flex-col min-h-full">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
-        <h1 className="text-sm font-semibold text-slate-200">TS Tracker</h1>
+        <div>
+          <h1 className="text-sm font-semibold text-slate-200">TS Tracker</h1>
+          <p className="text-[10px] text-slate-500 italic font-normal">Single click to deprio</p>
+        </div>
         <div className="flex items-center gap-2">
           {/* View toggle */}
           <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
@@ -535,9 +538,14 @@ export default function TestTrackerPage() {
                                                 <div
                                                   onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
                                                   className={clsx(
-                                                    "grid grid-cols-[16px_1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity cursor-pointer",
+                                                    "relative grid grid-cols-[16px_1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity cursor-pointer",
                                                     tc.disabled && "opacity-30 grayscale"
                                                   )}>
+                                                  {tc.disabled && (
+                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                                                      <span className="text-[11px] font-bold italic text-slate-400 tracking-widest">DEPRIORITIZED</span>
+                                                    </div>
+                                                  )}
                                                   <span onClick={e => e.stopPropagation()}>{caseHandle}</span>
                                                   {editingCaseId === tc.id ? (
                                                     <input
