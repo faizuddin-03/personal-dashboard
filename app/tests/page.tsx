@@ -552,24 +552,16 @@ export default function TestTrackerPage() {
                                                       className="text-xs font-mono bg-slate-800 border border-blue-600 rounded px-1.5 py-0.5 text-slate-200 focus:outline-none w-full"
                                                     />
                                                   ) : (
-                                                    <span className="flex items-center gap-1 group/ts">
-                                                      <span
-                                                        title={tc.disabled ? "Click to re-enable" : "Click to deprioritize"}
-                                                        onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
-                                                        className={clsx(
-                                                          "text-xs font-mono cursor-pointer select-none",
-                                                          tc.disabled ? "text-slate-500 line-through" : "text-slate-300 hover:text-slate-100"
-                                                        )}
-                                                      >
-                                                        {tc.tsNumber}
-                                                      </span>
-                                                      <button
-                                                        onClick={e => { e.stopPropagation(); setEditingCaseId(tc.id); setEditingCaseValue(tc.tsNumber); }}
-                                                        className="opacity-0 group-hover/ts:opacity-100 pointer-events-none group-hover/ts:pointer-events-auto text-slate-700 hover:text-slate-400 transition-opacity shrink-0"
-                                                        title="Edit TS number"
-                                                      >
-                                                        <Pencil size={10} />
-                                                      </button>
+                                                    <span
+                                                      title={tc.disabled ? "Click to re-enable · Double-click to edit" : "Click to deprioritize · Double-click to edit"}
+                                                      onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
+                                                      onDoubleClick={e => { e.stopPropagation(); setEditingCaseId(tc.id); setEditingCaseValue(tc.tsNumber); }}
+                                                      className={clsx(
+                                                        "text-xs font-mono cursor-pointer select-none w-fit",
+                                                        tc.disabled ? "text-slate-500 line-through" : "text-slate-300 hover:text-slate-100"
+                                                      )}
+                                                    >
+                                                      {tc.tsNumber}
                                                     </span>
                                                   )}
                                                   <div onClick={e => e.stopPropagation()}>
