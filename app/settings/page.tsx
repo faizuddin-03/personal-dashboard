@@ -155,6 +155,8 @@ export default function SettingsPage() {
                   type={showToken ? "text" : "password"}
                   value={apiToken}
                   onChange={e => setApiToken(e.target.value)}
+                  onCopy={e => e.preventDefault()}
+                  onCut={e => e.preventDefault()}
                   placeholder="Paste your token"
                   className={input + " pr-9"}
                 />

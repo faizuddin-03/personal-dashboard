@@ -101,6 +101,8 @@ export default function SettingsModal({ onClose, onSaved, initial }: Props) {
                 type={showToken ? "text" : "password"}
                 value={apiToken}
                 onChange={(e) => setApiToken(e.target.value)}
+                onCopy={e => e.preventDefault()}
+                onCut={e => e.preventDefault()}
                 placeholder="Your API token"
                 className="w-full px-3 py-2 pr-10 border border-slate-700 rounded-lg text-sm bg-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
