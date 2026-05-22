@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import {
   Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
   Clock, Rocket, FileText, Ticket, Settings2, GripVertical,
-  Eye, EyeOff, ClipboardList,
+  Eye, EyeOff, ClipboardList, GitBranch, ListTodo,
 } from "lucide-react";
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
@@ -25,12 +25,20 @@ import clsx from "clsx";
 function MiniKanbanCard({ card }: { card: KanbanCard }) {
   const pm = PRIORITY_META[card.priority];
   const over = isKanbanOverdue(card);
+  const isCR = card.boardType === "cr";
   return (
     <Link href="/kanban" className={clsx(
-      "shrink-0 w-52 bg-slate-800 border border-l-4 rounded-xl p-3 hover:border-slate-500 transition-all",
+      "shrink-0 w-52 border border-l-4 rounded-xl p-3 hover:border-slate-500 transition-all",
+      isCR ? "bg-indigo-950/50 border-slate-700" : "bg-slate-800 border-slate-700",
       accentBorderClass(card.accentColor)
     )}>
-      {card.jiraKey && <p className="text-[10px] font-mono text-blue-400 font-bold mb-1">{card.jiraKey}</p>}
+      <div className="flex items-center gap-1.5 mb-1">
+        {isCR
+          ? <span className="flex items-center gap-1 text-[10px] bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium"><GitBranch size={9} />CR</span>
+          : <span className="flex items-center gap-1 text-[10px] bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium"><ListTodo size={9} />Task</span>
+        }
+        {card.jiraKey && <span className="text-[10px] font-mono text-blue-400 font-bold">{card.jiraKey}</span>}
+      </div>
       <p className="text-sm text-slate-200 font-medium line-clamp-2 leading-snug mb-2">{card.title}</p>
       <div className="flex items-center gap-2">
         <span className={clsx("flex items-center gap-1 text-[10px] font-medium", pm.color)}>
@@ -392,7 +400,8 @@ export default function Dashboard() {
 
           // ── On-Going ──────────────────────────────────────
           if (w.id === "ongoing") {
-            if (ongoingCards.length === 0) return null;
+            const taskCards = ongoingCards.filter(c => c.boardType !== "cr");
+            if (taskCards.length === 0) return null;
             return (
               <div key="ongoing">
                 <div className="flex items-center justify-between mb-2">
@@ -400,7 +409,7 @@ export default function Dashboard() {
                   <Link href="/kanban" className="flex items-center gap-1 text-xs text-blue-400 hover:underline">View board <ArrowRight size={11} /></Link>
                 </div>
                 <div className="flex gap-2.5 overflow-x-auto pb-1">
-                  {ongoingCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
+                  {taskCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
                 </div>
               </div>
             );

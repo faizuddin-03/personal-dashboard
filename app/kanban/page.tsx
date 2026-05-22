@@ -10,6 +10,7 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
   Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight,
+  GitBranch, ListTodo,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -496,11 +497,14 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
   const over = isOverdue(card);
   const pm = PRIORITY_META[card.priority];
 
+  const isCR = card.boardType === "cr";
+
   return (
     <div
       onClick={onClick}
       className={clsx(
-        "bg-slate-800 border border-slate-700 border-l-4 rounded-xl p-3 group cursor-pointer hover:border-slate-500 transition-all",
+        "border border-l-4 rounded-xl p-3 group cursor-pointer hover:border-slate-500 transition-all",
+        isCR ? "bg-indigo-950/50 border-slate-700" : "bg-slate-800 border-slate-700",
         accentBorderClass(card.accentColor),
         over && "border-red-800/50"
       )}
@@ -508,17 +512,23 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
       <div className="flex items-start gap-1.5 mb-2">
         {dragHandle}
         <div className="flex-1 min-w-0">
-          {card.jiraKey && (
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className="text-[10px] font-mono text-blue-400 font-bold">{card.jiraKey}</span>
-              <span className="text-[10px] bg-slate-700 text-slate-500 px-1 rounded">{card.jiraStatus}</span>
-              {baseUrl && (
-                <a href={`${baseUrl}/browse/${card.jiraKey}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-slate-700 hover:text-blue-400 opacity-0 group-hover:opacity-100">
-                  <ExternalLink size={10} />
-                </a>
-              )}
-            </div>
-          )}
+          <div className="flex items-center gap-1.5 mb-1">
+            {isCR
+              ? <span className="flex items-center gap-1 text-[10px] bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium"><GitBranch size={9} />CR</span>
+              : <span className="flex items-center gap-1 text-[10px] bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium"><ListTodo size={9} />Task</span>
+            }
+            {card.jiraKey && (
+              <>
+                <span className="text-[10px] font-mono text-blue-400 font-bold">{card.jiraKey}</span>
+                <span className="text-[10px] bg-slate-700 text-slate-500 px-1 rounded">{card.jiraStatus}</span>
+                {baseUrl && (
+                  <a href={`${baseUrl}/browse/${card.jiraKey}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-slate-700 hover:text-blue-400 opacity-0 group-hover:opacity-100">
+                    <ExternalLink size={10} />
+                  </a>
+                )}
+              </>
+            )}
+          </div>
           <p className="text-sm text-slate-200 font-medium leading-snug line-clamp-2">{card.title}</p>
         </div>
       </div>
