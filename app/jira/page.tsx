@@ -116,7 +116,7 @@ export default function JiraPage() {
     try {
       const [ar, rr] = await Promise.all([
         fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...creds, jql: "assignee = currentUser() ORDER BY updated DESC", maxResults: 100 }) }),
+          body: JSON.stringify({ ...creds, jql: "assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC", maxResults: 100 }) }),
         fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...creds, jql: `${reporterIs(creds)} AND assignee != currentUser() ORDER BY updated DESC`, maxResults: 100 }) }),
       ]);

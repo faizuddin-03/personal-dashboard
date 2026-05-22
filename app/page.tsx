@@ -2,8 +2,8 @@
 import { useEffect, useState, useRef } from "react";
 import {
   Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
-  Clock, Rocket, CalendarDays, FileText, Ticket, Settings2, GripVertical,
-  Eye, EyeOff, Kanban, ListTodo, AlertCircle, CheckCircle2, ClipboardList,
+  Clock, Rocket, FileText, Ticket, Settings2, GripVertical,
+  Eye, EyeOff, ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
@@ -13,10 +13,9 @@ import IssueCard from "@/components/IssueCard";
 import IssueDrawer from "@/components/IssueDrawer";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import {
-  getKanbanState, KanbanCard, PRIORITY_META, COLUMN_IDS, COLUMN_META, ColumnId,
+  getKanbanState, KanbanCard, PRIORITY_META,
   isOverdue as isKanbanOverdue, isDueToday, accentBorderClass,
 } from "@/lib/kanban";
-import { getTodos, isTodoOverdue, isDueToday as isTodoDueToday, TodoItem, TODO_PRIORITY_META } from "@/lib/todo";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META, DEPLOYMENT_STATUS_META } from "@/lib/deployments";
 import { todayLocal, daysFromToday, jqlCreatedRange } from "@/lib/date";
 import { getWidgetConfig, saveWidgetConfig, WidgetConfig } from "@/lib/dashboard-widgets";
@@ -53,6 +52,14 @@ interface TSCase  { status: "pass" | "fail" | "in-progress" | null; disabled?: b
 interface TSSuite { cases: TSCase[]; }
 interface TSCR    { id: string; crKey: string; crSummary: string; suites: TSSuite[]; }
 
+// ── Jira status chip colour ───────────────────────────────────
+function statusColor(colorName: string) {
+  if (colorName === "green")  return "bg-green-900/50 text-green-300 border-green-800/50";
+  if (colorName === "yellow") return "bg-amber-900/50 text-amber-300 border-amber-800/50";
+  if (colorName === "blue-gray") return "bg-blue-900/40 text-blue-300 border-blue-800/50";
+  return "bg-slate-800 text-slate-400 border-slate-700";
+}
+
 // ── Stat box ─────────────────────────────────────────────────
 function StatBox({ value, label, color = "text-slate-200", alert }: { value: number | string; label: string; color?: string; alert?: boolean }) {
   return (
@@ -82,28 +89,6 @@ function WidgetCard({ icon, title, href, children }: { icon: React.ReactNode; ti
 }
 
 // ── Main dashboard page ──────────────────────────────────────
-interface KanbanSummaryData {
-  colCounts: Record<ColumnId, number>;
-  activeCount: number;
-  totalCount: number;
-  overdueCount: number;
-  estimatedHours: number;
-}
-
-interface TodoSnapshotData {
-  total: number;
-  overdue: number;
-  dueToday: number;
-  highPriority: number;
-  urgentItems: TodoItem[];
-}
-
-interface JiraSnapshotData {
-  assignedTotal: number;
-  assignedInProgress: number;
-  assignedToDo: number;
-  pendingFromOthers: number;
-}
 
 export default function Dashboard() {
   const { creds, openSettings } = useApp();
@@ -115,17 +100,15 @@ export default function Dashboard() {
   const [todayRaisedError, setTodayRaisedError]     = useState("");
   const [selectedKey, setSelectedKey]               = useState<string | null>(null);
 
-  // Local data — shared across widgets
-  const [ongoingCards, setOngoingCards]       = useState<KanbanCard[]>([]);
-  const [dueSoonCards, setDueSoonCards]       = useState<KanbanCard[]>([]);
-  const [kanbanSummary, setKanbanSummary]     = useState<KanbanSummaryData | null>(null);
-  const [todoSnapshot, setTodoSnapshot]       = useState<TodoSnapshotData | null>(null);
-  const [upcomingDeps, setUpcomingDeps]       = useState<Deployment[]>([]);
-  const [tsCRs, setTsCRs]                     = useState<TSCR[]>([]);
+  // Local data
+  const [ongoingCards, setOngoingCards]   = useState<KanbanCard[]>([]);
+  const [dueSoonCards, setDueSoonCards]   = useState<KanbanCard[]>([]);
+  const [upcomingDeps, setUpcomingDeps]   = useState<Deployment[]>([]);
+  const [tsCRs, setTsCRs]                 = useState<TSCR[]>([]);
 
-  // Jira snapshot (API)
-  const [jiraSnapshot, setJiraSnapshot]       = useState<JiraSnapshotData | null>(null);
-  const [jiraSnapshotLoading, setJiraSnapshotLoading] = useState(false);
+  // Assigned tickets (API)
+  const [assignedTickets, setAssignedTickets]           = useState<JiraIssue[]>([]);
+  const [assignedTicketsLoading, setAssignedTicketsLoading] = useState(false);
 
   // Widget config
   const [widgets, setWidgets]       = useState<WidgetConfig[]>([]);
@@ -154,44 +137,15 @@ export default function Dashboard() {
     persistWidgets(next);
   }
 
-  // Load all local data once on mount
+  // Load local data once on mount
   useEffect(() => {
     const todayStr = todayLocal();
+    const kanban   = getKanbanState();
 
-    const kanban  = getKanbanState();
-    const todos   = getTodos();
-
-    // Ongoing cards for the existing "ongoing" widget
+    const allCards = ["urgent","todo","ongoing","on-hold","finished"].flatMap(col => kanban[col as keyof typeof kanban] as KanbanCard[]);
     setOngoingCards(kanban.ongoing);
-
-    // Kanban summary
-    const allCards = COLUMN_IDS.flatMap(col => kanban[col] as KanbanCard[]);
-    const activeCards = allCards.filter(c => c.columnId !== "finished");
-    const colCounts = {} as Record<ColumnId, number>;
-    for (const col of COLUMN_IDS) colCounts[col] = kanban[col].length;
     setDueSoonCards(allCards.filter(c => isKanbanOverdue(c) || isDueToday(c)));
-    setKanbanSummary({
-      colCounts,
-      activeCount: activeCards.length,
-      totalCount: allCards.length,
-      overdueCount: activeCards.filter(isKanbanOverdue).length,
-      estimatedHours: activeCards.reduce((s, c) => s + (c.estimatedHours ?? 0), 0),
-    });
 
-    // To-Do snapshot
-    const active = todos.filter(t => !t.done);
-    const overdue = active.filter(isTodoOverdue);
-    const today  = active.filter(isTodoDueToday);
-    const highPri = active.filter(t => t.priority === "high" && !isTodoOverdue(t) && !isTodoDueToday(t));
-    setTodoSnapshot({
-      total: active.length,
-      overdue: overdue.length,
-      dueToday: today.length,
-      highPriority: active.filter(t => t.priority === "high").length,
-      urgentItems: [...overdue, ...today, ...highPri].slice(0, 5),
-    });
-
-    // Upcoming deployments (non-cancelled, next 30 days)
     const in30Str = daysFromToday(30);
     setUpcomingDeps(
       getDeployments()
@@ -200,36 +154,25 @@ export default function Dashboard() {
         .slice(0, 6)
     );
 
-    // TS Tracker — all CRs (filtered later against ongoing kanban cards)
     try {
       const raw = localStorage.getItem("test_tracker_crs");
       setTsCRs(raw ? (JSON.parse(raw) as TSCR[]) : []);
     } catch { setTsCRs([]); }
-
   }, []);
 
-  // Jira snapshot — two parallel fetches
+  // Assigned tickets widget
   useEffect(() => {
-    if (!creds) return;
-    setJiraSnapshotLoading(true);
-    const assignedJql = `assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC`;
-    const pendingJql  = `${reporterIs(creds)} AND assignee != currentUser() AND status not in (Closed, Done, Resolved)`;
-    const body = (jql: string, max: number) => JSON.stringify({ ...creds, jql, maxResults: max, fields: ["status"] });
-    Promise.all([
-      fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: body(assignedJql, 100) }).then(r => r.json()),
-      fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: body(pendingJql, 50) }).then(r => r.json()),
-    ])
-      .then(([assigned, pending]) => {
-        const issues: JiraIssue[] = assigned.issues ?? [];
-        setJiraSnapshot({
-          assignedTotal:      issues.length,
-          assignedInProgress: issues.filter(i => i.fields.status.statusCategory?.key === "indeterminate").length,
-          assignedToDo:       issues.filter(i => i.fields.status.statusCategory?.key === "new").length,
-          pendingFromOthers:  (pending.issues ?? []).length,
-        });
-      })
-      .catch(() => {})
-      .finally(() => setJiraSnapshotLoading(false));
+    if (!creds) { setAssignedTickets([]); return; }
+    setAssignedTicketsLoading(true);
+    fetch("/api/jira/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...creds, jql: "assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC", maxResults: 10, fields: ["summary", "status", "priority", "issuetype"] }),
+    })
+      .then(r => r.json())
+      .then(d => setAssignedTickets(d.issues ?? []))
+      .catch(() => setAssignedTickets([]))
+      .finally(() => setAssignedTicketsLoading(false));
   }, [creds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Raised tickets
@@ -255,24 +198,6 @@ export default function Dashboard() {
       .catch(e => setTodayRaisedError(e?.message ?? "Network error"))
       .finally(() => setTodayRaisedLoading(false));
   }, [creds, raisedDate]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const hasLocalData = ongoingCards.length > 0;
-
-  // ── Column bar colours ────────────────────────────────────
-  const COL_BAR: Record<ColumnId, string> = {
-    urgent:   "bg-red-500",
-    todo:     "bg-slate-500",
-    ongoing:  "bg-blue-500",
-    "on-hold":"bg-amber-500",
-    finished: "bg-green-500",
-  };
-  const COL_TEXT: Record<ColumnId, string> = {
-    urgent:   "text-red-400",
-    todo:     "text-slate-400",
-    ongoing:  "text-blue-400",
-    "on-hold":"text-amber-400",
-    finished: "text-green-400",
-  };
 
   // ── Date helpers ──────────────────────────────────────────
   function fmtDepDate(d: string) {
@@ -369,124 +294,9 @@ export default function Dashboard() {
         {widgets.map(w => {
           if (!w.visible) return null;
 
-          // ── 1 + 2. Kanban Summary & To-Do side by side ─────
-          if (w.id === "kanban-summary") {
-            if (!kanbanSummary) return null;
-            const total = kanbanSummary.totalCount;
-            const todoVisible = widgets.find(x => x.id === "todo-snapshot")?.visible && !!todoSnapshot;
-
-            const kanbanEl = (
-              <WidgetCard key="ks" icon={<Kanban size={15} className="text-blue-400" />} title="Kanban Board" href="/kanban">
-                <div className="grid grid-cols-5 gap-2 mb-4">
-                  {COLUMN_IDS.map(col => (
-                    <div key={col} className="flex flex-col items-center py-3 rounded-xl bg-slate-800/60 border border-slate-700/60">
-                      <span className={clsx("text-xl font-bold tabular-nums", COL_TEXT[col])}>{kanbanSummary.colCounts[col]}</span>
-                      <span className="text-[10px] text-slate-500 mt-0.5">{COLUMN_META[col].label}</span>
-                    </div>
-                  ))}
-                </div>
-                {total > 0 && (
-                  <div className="flex h-2 rounded-full overflow-hidden mb-3 gap-px">
-                    {COLUMN_IDS.map(col => {
-                      const pct = (kanbanSummary.colCounts[col] / total) * 100;
-                      return pct > 0 ? <div key={col} className={clsx("h-full", COL_BAR[col])} style={{ width: `${pct}%` }} /> : null;
-                    })}
-                  </div>
-                )}
-                <div className="flex items-center gap-4 text-xs text-slate-500 flex-wrap">
-                  <span>{kanbanSummary.activeCount} active</span>
-                  {kanbanSummary.overdueCount > 0 && <span className="text-red-400 font-medium">{kanbanSummary.overdueCount} overdue</span>}
-                  {kanbanSummary.estimatedHours > 0 && <span>{kanbanSummary.estimatedHours}h estimated</span>}
-                  <span className="ml-auto">{total} total cards</span>
-                </div>
-              </WidgetCard>
-            );
-
-            const todoEl = todoVisible && todoSnapshot ? (
-              <WidgetCard key="ts" icon={<ListTodo size={15} className="text-green-400" />} title="To-Do" href="/todo">
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  <StatBox value={todoSnapshot.overdue}      label="Overdue"       color="text-red-400"    alert />
-                  <StatBox value={todoSnapshot.dueToday}     label="Due Today"     color="text-amber-400" />
-                  <StatBox value={todoSnapshot.highPriority} label="High Priority" color="text-orange-400" />
-                </div>
-                {todoSnapshot.urgentItems.length > 0 ? (
-                  <div className="space-y-1.5 border-t border-slate-800 pt-3">
-                    {todoSnapshot.urgentItems.map(t => {
-                      const isOver = isTodoOverdue(t);
-                      const isToday = isTodoDueToday(t);
-                      const pm = TODO_PRIORITY_META[t.priority];
-                      return (
-                        <Link key={t.id} href="/todo" className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors">
-                          <span className={clsx("w-1.5 h-1.5 rounded-full shrink-0", pm.dot)} />
-                          <span className="text-xs text-slate-200 flex-1 truncate">{t.title}</span>
-                          <span className={clsx("text-[10px] font-medium shrink-0", isOver ? "text-red-400" : isToday ? "text-amber-400" : "text-slate-500")}>
-                            {isOver ? "Overdue" : isToday ? "Today" : t.priority === "high" ? "High" : ""}
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-xs text-green-400 border-t border-slate-800 pt-3">
-                    <CheckCircle2 size={13} /><span>All caught up</span>
-                  </div>
-                )}
-                <p className="text-[11px] text-slate-600 mt-3">{todoSnapshot.total} active item{todoSnapshot.total !== 1 ? "s" : ""} total</p>
-              </WidgetCard>
-            ) : null;
-
-            if (todoVisible) {
-              return (
-                <div key="kanban-todo-pair" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {kanbanEl}
-                  {todoEl}
-                </div>
-              );
-            }
-            return <div key="kanban-summary">{kanbanEl}</div>;
-          }
-
-          // skip todo when already paired with kanban
-          if (w.id === "todo-snapshot") {
-            if (widgets.find(x => x.id === "kanban-summary")?.visible) return null;
-            if (!todoSnapshot) return null;
-            return (
-              <WidgetCard key="todo-snapshot" icon={<ListTodo size={15} className="text-green-400" />} title="To-Do" href="/todo">
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  <StatBox value={todoSnapshot.overdue}      label="Overdue"       color="text-red-400"    alert />
-                  <StatBox value={todoSnapshot.dueToday}     label="Due Today"     color="text-amber-400" />
-                  <StatBox value={todoSnapshot.highPriority} label="High Priority" color="text-orange-400" />
-                </div>
-                {todoSnapshot.urgentItems.length > 0 ? (
-                  <div className="space-y-1.5 border-t border-slate-800 pt-3">
-                    {todoSnapshot.urgentItems.map(t => {
-                      const isOver = isTodoOverdue(t);
-                      const isToday = isTodoDueToday(t);
-                      const pm = TODO_PRIORITY_META[t.priority];
-                      return (
-                        <Link key={t.id} href="/todo" className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors">
-                          <span className={clsx("w-1.5 h-1.5 rounded-full shrink-0", pm.dot)} />
-                          <span className="text-xs text-slate-200 flex-1 truncate">{t.title}</span>
-                          <span className={clsx("text-[10px] font-medium shrink-0", isOver ? "text-red-400" : isToday ? "text-amber-400" : "text-slate-500")}>
-                            {isOver ? "Overdue" : isToday ? "Today" : t.priority === "high" ? "High" : ""}
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-xs text-green-400 border-t border-slate-800 pt-3">
-                    <CheckCircle2 size={13} /><span>All caught up</span>
-                  </div>
-                )}
-                <p className="text-[11px] text-slate-600 mt-3">{todoSnapshot.total} active item{todoSnapshot.total !== 1 ? "s" : ""} total</p>
-              </WidgetCard>
-            );
-          }
-
-          // ── 4 + 5. Deployments (2/3) + Jira Snapshot (1/3) ─
+          // ── Deployments (50%) + Assigned Tickets (50%) ────
           if (w.id === "deployments") {
-            const jiraVisible = widgets.find(x => x.id === "jira-snapshot")?.visible && !!creds;
+            const assignedVisible = widgets.find(x => x.id === "assigned-tickets")?.visible && !!creds;
 
             const deploymentsEl = (
               <WidgetCard key="dep" icon={<Rocket size={15} className="text-sky-400" />} title="Upcoming Deployments" href="/calendar">
@@ -520,82 +330,61 @@ export default function Dashboard() {
               </WidgetCard>
             );
 
-            const jiraEl = jiraVisible ? (
-              <WidgetCard key="js" icon={<Ticket size={15} className="text-blue-400" />} title="Jira Snapshot" href="/jira">
-                {jiraSnapshotLoading && !jiraSnapshot ? (
-                  <div className="flex items-center gap-2 py-6 justify-center text-slate-600">
-                    <Loader2 size={16} className="animate-spin" />
-                  </div>
-                ) : jiraSnapshot ? (
-                  <>
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                      <StatBox value={jiraSnapshot.assignedTotal}     label="Assigned Open"  color="text-blue-300" />
-                      <StatBox value={jiraSnapshot.pendingFromOthers} label="Pending Others" color="text-purple-400" alert />
-                      <StatBox value={jiraSnapshot.assignedInProgress} label="In Progress"  color="text-yellow-400" />
-                      <StatBox value={jiraSnapshot.assignedToDo}      label="To Do"          color="text-slate-300" />
-                    </div>
-                    {jiraSnapshot.assignedTotal > 0 && (
-                      <div className="flex h-1.5 rounded-full overflow-hidden gap-px">
-                        <div className="h-full bg-yellow-500" style={{ width: `${(jiraSnapshot.assignedInProgress / jiraSnapshot.assignedTotal) * 100}%` }} />
-                        <div className="h-full bg-slate-500" style={{ width: `${(jiraSnapshot.assignedToDo / jiraSnapshot.assignedTotal) * 100}%` }} />
-                        <div className="h-full bg-slate-700 flex-1" />
-                      </div>
-                    )}
-                  </>
+            const assignedEl = assignedVisible ? (
+              <WidgetCard key="at" icon={<Ticket size={15} className="text-blue-400" />} title="Assigned to Me" href="/jira">
+                {assignedTicketsLoading && assignedTickets.length === 0 ? (
+                  <div className="flex items-center justify-center py-6 text-slate-600"><Loader2 size={16} className="animate-spin" /></div>
+                ) : assignedTickets.length === 0 ? (
+                  <p className="text-sm text-slate-600 py-4 text-center">No open tickets assigned</p>
                 ) : (
-                  <p className="text-xs text-slate-600 py-4 text-center">Could not load Jira data</p>
+                  <div className="space-y-1.5">
+                    {assignedTickets.map(issue => (
+                      <div key={issue.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
+                        <span className="text-[10px] font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
+                        <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
+                        <span className={clsx("text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
+                          {issue.fields.status.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </WidgetCard>
             ) : null;
 
-            if (jiraVisible) {
+            if (assignedVisible) {
               return (
-                <div key="dep-jira-pair" className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  <div className="lg:col-span-2">{deploymentsEl}</div>
-                  <div>{jiraEl}</div>
+                <div key="dep-assigned-pair" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {deploymentsEl}
+                  {assignedEl}
                 </div>
               );
             }
             return <div key="deployments">{deploymentsEl}</div>;
           }
 
-          // skip jira-snapshot when already paired with deployments
-          if (w.id === "jira-snapshot") {
+          // skip assigned-tickets when already paired with deployments
+          if (w.id === "assigned-tickets") {
             if (widgets.find(x => x.id === "deployments")?.visible) return null;
             if (!creds) return null;
             return (
-              <WidgetCard key="jira-snapshot" icon={<Ticket size={15} className="text-blue-400" />} title="Jira Snapshot" href="/jira">
-                {jiraSnapshotLoading && !jiraSnapshot ? (
-                  <div className="flex items-center gap-2 py-6 justify-center text-slate-600">
-                    <Loader2 size={16} className="animate-spin" /><span className="text-sm">Loading…</span>
-                  </div>
-                ) : jiraSnapshot ? (
-                  <>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                      <StatBox value={jiraSnapshot.assignedTotal}      label="Assigned Open"      color="text-blue-300" />
-                      <StatBox value={jiraSnapshot.assignedInProgress} label="In Progress"        color="text-yellow-400" />
-                      <StatBox value={jiraSnapshot.assignedToDo}       label="To Do"              color="text-slate-300" />
-                      <StatBox value={jiraSnapshot.pendingFromOthers}  label="Pending From Others" color="text-purple-400" alert />
-                    </div>
-                    {jiraSnapshot.assignedTotal > 0 && (
-                      <div className="flex h-1.5 rounded-full overflow-hidden gap-px mb-3">
-                        <div className="h-full bg-yellow-500" style={{ width: `${(jiraSnapshot.assignedInProgress / jiraSnapshot.assignedTotal) * 100}%` }} />
-                        <div className="h-full bg-slate-500" style={{ width: `${(jiraSnapshot.assignedToDo / jiraSnapshot.assignedTotal) * 100}%` }} />
-                        <div className="h-full bg-slate-700 flex-1" />
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3 text-[11px] text-slate-600 flex-wrap">
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-yellow-500 inline-block" />In Progress</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-slate-500 inline-block" />To Do</span>
-                      {jiraSnapshot.pendingFromOthers > 0 && (
-                        <span className="ml-auto flex items-center gap-1 text-purple-400">
-                          <AlertCircle size={11} />{jiraSnapshot.pendingFromOthers} waiting on others
-                        </span>
-                      )}
-                    </div>
-                  </>
+              <WidgetCard key="assigned-tickets" icon={<Ticket size={15} className="text-blue-400" />} title="Assigned to Me" href="/jira">
+                {assignedTicketsLoading && assignedTickets.length === 0 ? (
+                  <div className="flex items-center justify-center py-6 text-slate-600"><Loader2 size={16} className="animate-spin" /><span className="text-sm ml-2">Loading…</span></div>
+                ) : assignedTickets.length === 0 ? (
+                  <p className="text-sm text-slate-600 py-4 text-center">No open tickets assigned</p>
                 ) : (
-                  <p className="text-xs text-slate-600 py-4 text-center">Could not load Jira data</p>
+                  <div className="space-y-1.5">
+                    {assignedTickets.map(issue => (
+                      <div key={issue.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
+                        <span className="text-[10px] font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
+                        <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
+                        <span className={clsx("text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
+                          {issue.fields.status.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </WidgetCard>
             );
@@ -603,7 +392,7 @@ export default function Dashboard() {
 
           // ── On-Going ──────────────────────────────────────
           if (w.id === "ongoing") {
-            if (!hasLocalData || ongoingCards.length === 0) return null;
+            if (ongoingCards.length === 0) return null;
             return (
               <div key="ongoing">
                 <div className="flex items-center justify-between mb-2">
@@ -619,8 +408,7 @@ export default function Dashboard() {
 
           // ── TS Tracker ────────────────────────────────────
           if (w.id === "ts-tracker") {
-            // Match ongoing kanban cards (by jiraKey) against TS Tracker CRs, preserving kanban order
-            const ongoingKeys = ongoingCards.map(c => c.jiraKey).filter(Boolean) as string[];
+            const ongoingKeys = [...new Set(ongoingCards.map(c => c.jiraKey).filter(Boolean) as string[])];
             const matchedCRs = ongoingKeys
               .map(key => tsCRs.find(cr => cr.crKey === key))
               .filter((cr): cr is TSCR => !!cr)

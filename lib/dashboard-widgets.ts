@@ -1,8 +1,6 @@
 export type WidgetId =
-  | "kanban-summary"
-  | "todo-snapshot"
   | "deployments"
-  | "jira-snapshot"
+  | "assigned-tickets"
   | "ongoing"
   | "ts-tracker"
   | "raised"
@@ -15,17 +13,16 @@ export interface WidgetConfig {
 }
 
 const DEFAULTS: WidgetConfig[] = [
-  { id: "kanban-summary",  label: "Kanban Summary",       visible: true },
-  { id: "todo-snapshot",   label: "To-Do Snapshot",       visible: true },
-  { id: "deployments",     label: "Upcoming Deployments", visible: true },
-  { id: "jira-snapshot",   label: "Jira Snapshot",        visible: true },
-  { id: "ongoing",         label: "On-Going Cards",       visible: true },
-  { id: "ts-tracker",      label: "TS Tracker",           visible: true },
-  { id: "raised",          label: "Raised Tickets",       visible: true },
-  { id: "jira-overview",   label: "Jira Overview Link",   visible: false },
+  { id: "deployments",      label: "Upcoming Deployments", visible: true  },
+  { id: "assigned-tickets", label: "Assigned to Me",       visible: true  },
+  { id: "ongoing",          label: "On-Going Cards",       visible: true  },
+  { id: "ts-tracker",       label: "TS Tracker",           visible: true  },
+  { id: "raised",           label: "Raised Tickets",       visible: true  },
+  { id: "jira-overview",    label: "Jira Overview Link",   visible: false },
 ];
 
 const KEY = "dashboard_widgets";
+const VALID_IDS = new Set(DEFAULTS.map(d => d.id));
 
 export function getWidgetConfig(): WidgetConfig[] {
   if (typeof window === "undefined") return DEFAULTS;
@@ -33,10 +30,10 @@ export function getWidgetConfig(): WidgetConfig[] {
     const raw = localStorage.getItem(KEY);
     if (!raw) return DEFAULTS;
     const saved: WidgetConfig[] = JSON.parse(raw);
-    const ids = new Set(saved.map(w => w.id));
-    // append any new widgets not yet saved, preserving existing order
-    const merged = [...saved, ...DEFAULTS.filter(d => !ids.has(d.id))];
-    return merged;
+    // filter out widget IDs that no longer exist, then append any new defaults
+    const valid = saved.filter(w => VALID_IDS.has(w.id));
+    const ids = new Set(valid.map(w => w.id));
+    return [...valid, ...DEFAULTS.filter(d => !ids.has(d.id))];
   } catch { return DEFAULTS; }
 }
 

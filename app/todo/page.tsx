@@ -269,7 +269,7 @@ function Section({ title, accent, items, onToggle, onEdit, onDelete, onSkip, def
 // ── Page ────────────────────────────────────────────────────
 export default function TodoPage() {
   const [todos, setTodos]         = useState<TodoItem[]>([]);
-  const [filter, setFilter]       = useState<FilterTab>("active");
+  const [filter, setFilter]       = useState<FilterTab>("all");
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing]     = useState<TodoItem | undefined>(undefined);
 
@@ -360,7 +360,7 @@ export default function TodoPage() {
             <Section title="Upcoming" accent="text-blue-400"   items={groups.upcoming} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
             <Section title="No Date"  accent="text-slate-500"  items={groups.noDate}   onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
             {filter !== "active" && (
-              <Section title="Completed" accent="text-green-600" items={groups.done} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
+              <Section title="Completed" accent="text-green-600" items={groups.done} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} defaultCollapsed />
             )}
           </>
         )}
