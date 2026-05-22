@@ -10,7 +10,6 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
   Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight,
-  GitBranch, ListTodo,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -514,8 +513,8 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-1">
             {isCR
-              ? <span className="flex items-center gap-1 text-[10px] bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium"><GitBranch size={9} />CR</span>
-              : <span className="flex items-center gap-1 text-[10px] bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium"><ListTodo size={9} />Task</span>
+              ? <span className="text-[10px] bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">CR</span>
+              : <span className="text-[10px] bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium">Task</span>
             }
             {card.jiraKey && (
               <>

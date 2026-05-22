@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import {
   Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
   Clock, Rocket, FileText, Ticket, Settings2, GripVertical,
-  Eye, EyeOff, ClipboardList, GitBranch, ListTodo,
+  Eye, EyeOff, ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
@@ -34,8 +34,8 @@ function MiniKanbanCard({ card }: { card: KanbanCard }) {
     )}>
       <div className="flex items-center gap-1.5 mb-1">
         {isCR
-          ? <span className="flex items-center gap-1 text-[10px] bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium"><GitBranch size={9} />CR</span>
-          : <span className="flex items-center gap-1 text-[10px] bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium"><ListTodo size={9} />Task</span>
+          ? <span className="text-[10px] bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">CR</span>
+          : <span className="text-[10px] bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium">Task</span>
         }
         {card.jiraKey && <span className="text-[10px] font-mono text-blue-400 font-bold">{card.jiraKey}</span>}
       </div>
