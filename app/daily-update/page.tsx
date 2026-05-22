@@ -66,7 +66,7 @@ function buildRows(cards: KanbanCard[], tsData: CREntry[]): CRRow[] {
     }));
 }
 
-// ── Generate formatted text ────────────────────────────────────────
+// ── Generate formatted Teams markdown ────────────────────────────
 function generateText(
   name: string,
   type: "todo" | "eod",
@@ -75,21 +75,44 @@ function generateText(
   rows: CRRow[],
 ): string {
   const typeLabel = type === "todo" ? "To Do Plan" : "EOD Update";
-  const header    = `${name} - ${typeLabel} (${date} ${time}):`;
+  const header    = `**${name} - ${typeLabel} (${date} ${time}):**`;
 
-  const sections = rows.map(r => {
+  const sections = rows.map((r, idx) => {
     const lines: string[] = [];
-    lines.push(`${r.key} - ${r.title}`);
-    lines.push(`JIRA Ticket : ${r.key}`);
-    lines.push("Status :");
+
+    // Numbered bold title
+    lines.push(`${idx + 1}. **${r.key} - ${r.title}**`);
+
+    // JIRA Ticket
+    lines.push(`   - JIRA Ticket : ${r.key}`);
+
+    // Status block
+    lines.push(`   - Status :`);
     if (r.statusLines.trim()) {
-      r.statusLines.split("\n").forEach(l => l.trim() && lines.push(l.trim()));
+      r.statusLines.split("\n").forEach(l => {
+        if (!l.trim()) return;
+        const indent = l.match(/^(\s*)/)?.[1].length ?? 0;
+        if (indent >= 2) {
+          lines.push(`         - ${l.trim()}`);  // sub-bullet
+        } else {
+          lines.push(`     - ${l.trim()}`);       // first-level bullet
+        }
+      });
     }
-    lines.push(`Overall CR Testing Progress : ${r.progress}`);
+
+    // Overall CR Testing Progress — multi-line becomes sub-bullets
+    const progressLines = r.progress.split("\n").map(l => l.trim()).filter(Boolean);
+    if (progressLines.length > 1) {
+      lines.push(`   - Overall CR Testing Progress :`);
+      progressLines.forEach(l => lines.push(`     - **${l}**`));
+    } else {
+      lines.push(`   - Overall CR Testing Progress : **${r.progress}**`);
+    }
+
     return lines.join("\n");
   });
 
-  return [header, ...sections].join("\n");
+  return [header, "", ...sections].join("\n\n");
 }
 
 // ── Page ──────────────────────────────────────────────────────────
@@ -251,11 +274,11 @@ export default function DailyUpdatePage() {
 
                 {/* Status lines */}
                 <div>
-                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1">Status notes <span className="normal-case text-slate-700">(one per line)</span></p>
+                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1">Status notes <span className="normal-case text-slate-700">(one per line · indent 2 spaces for sub-bullet)</span></p>
                   <textarea
                     value={r.statusLines}
                     onChange={e => updateRow(r.id, { statusLines: e.target.value })}
-                    placeholder={"To continue testing...\nFunctional testing completed..."}
+                    placeholder={"To continue testing...\n  CIBO testing - (57/57) 100% - Done\n  BoldPay - (9/13) 69.23% - PASS only"}
                     rows={3}
                     className="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 focus:outline-none focus:border-blue-600 placeholder-slate-600 resize-none"
                   />
@@ -263,11 +286,12 @@ export default function DailyUpdatePage() {
 
                 {/* Progress */}
                 <div>
-                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1">Overall CR Testing Progress</p>
-                  <input
+                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1">Overall CR Testing Progress <span className="normal-case text-slate-700">(new line per sub-item e.g. eAuto / Secarang)</span></p>
+                  <textarea
                     value={r.progress}
                     onChange={e => updateRow(r.id, { progress: e.target.value })}
-                    className="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 focus:outline-none focus:border-blue-600"
+                    rows={2}
+                    className="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 focus:outline-none focus:border-blue-600 resize-none"
                   />
                 </div>
               </div>
