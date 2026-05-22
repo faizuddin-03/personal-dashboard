@@ -595,7 +595,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
-    <div className="flex flex-col w-72 shrink-0">
+    <div className="flex flex-col w-72 shrink-0 h-full">
       <div className={clsx("flex items-center justify-between px-3 py-2 rounded-xl border mb-2", meta.headerBg)}>
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-slate-200">{meta.label}</span>
@@ -623,7 +623,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
         <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
         <div
           ref={setNodeRef}
-          className={clsx("flex-1 space-y-2 rounded-xl p-2 min-h-[120px] transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
+          className={clsx("flex-1 space-y-2 rounded-xl p-2 overflow-y-auto transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
         >
           {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} />)}
           {cards.length === 0 && (
@@ -1185,8 +1185,8 @@ export default function KanbanPage() {
           onCardClick={setSelectedCard}
         />
 
-        <div className="flex-1 px-6 py-5 overflow-x-auto">
-          <div className="flex gap-4 pb-4 min-w-max">
+        <div className="flex-1 flex flex-col px-6 py-5 overflow-x-auto overflow-y-hidden">
+          <div className="flex gap-4 pb-4 min-w-max flex-1 items-stretch">
             {(["todo", "ongoing", "on-hold", "finished"] as ColumnId[]).map(col => (
               <Column
                 key={col} id={col} cards={visibleCards(col)} baseUrl={creds?.baseUrl}
