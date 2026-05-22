@@ -532,10 +532,12 @@ export default function TestTrackerPage() {
                                           <SortableContext items={suite.cases.map(c => c.id)} strategy={verticalListSortingStrategy}>
                                             {suite.cases.map(tc => (
                                               <SortableRow key={tc.id} id={tc.id}>{caseHandle => (
-                                                <div className={clsx(
-                                                  "grid grid-cols-[16px_1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity",
-                                                  tc.disabled && "opacity-30 grayscale"
-                                                )}>
+                                                <div
+                                                  onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
+                                                  className={clsx(
+                                                    "grid grid-cols-[16px_1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity cursor-pointer",
+                                                    tc.disabled && "opacity-30 grayscale"
+                                                  )}>
                                                   <span onClick={e => e.stopPropagation()}>{caseHandle}</span>
                                                   {editingCaseId === tc.id ? (
                                                     <input
@@ -552,15 +554,10 @@ export default function TestTrackerPage() {
                                                       className="text-xs font-mono bg-slate-800 border border-blue-600 rounded px-1.5 py-0.5 text-slate-200 focus:outline-none w-full"
                                                     />
                                                   ) : (
-                                                    <span
-                                                      title={tc.disabled ? "Click to re-enable · Double-click to edit" : "Click to deprioritize · Double-click to edit"}
-                                                      onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
-                                                      onDoubleClick={e => { e.stopPropagation(); setEditingCaseId(tc.id); setEditingCaseValue(tc.tsNumber); }}
-                                                      className={clsx(
-                                                        "text-xs font-mono cursor-pointer select-none w-fit",
-                                                        tc.disabled ? "text-slate-500 line-through" : "text-slate-300 hover:text-slate-100"
-                                                      )}
-                                                    >
+                                                    <span className={clsx(
+                                                      "text-xs font-mono select-none",
+                                                      tc.disabled ? "text-slate-500 line-through" : "text-slate-300"
+                                                    )}>
                                                       {tc.tsNumber}
                                                     </span>
                                                   )}
@@ -575,8 +572,12 @@ export default function TestTrackerPage() {
                                                     ) : (
                                                       <span className="text-[11px] text-slate-700">—</span>
                                                     )}
+                                                    <button onClick={() => { setEditingCaseId(tc.id); setEditingCaseValue(tc.tsNumber); }}
+                                                      className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-slate-400 ml-auto transition-opacity">
+                                                      <Pencil size={10} />
+                                                    </button>
                                                     <button onClick={() => removeCase(tc.id)}
-                                                      className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-400 ml-auto transition-opacity">
+                                                      className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-red-400 transition-opacity">
                                                       <X size={11} />
                                                     </button>
                                                   </div>
