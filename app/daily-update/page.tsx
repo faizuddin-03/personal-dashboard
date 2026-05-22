@@ -1,0 +1,295 @@
+"use client";
+import { useState, useEffect, useCallback } from "react";
+import { Copy, Check, Plus, X, ChevronUp, ChevronDown } from "lucide-react";
+import { useApp } from "@/components/AppShell";
+import { getKanbanState, KanbanCard } from "@/lib/kanban";
+import clsx from "clsx";
+
+// ── TS Tracker types (duplicated to avoid a cross-page import) ────
+interface TSCase  { status: "pass" | "fail" | "in-progress" | null; disabled?: boolean; }
+interface TSSuite { cases: TSCase[]; }
+interface CREntry { id: string; crKey: string; crSummary: string; suites: TSSuite[]; }
+
+function loadTSData(): CREntry[] {
+  try { return JSON.parse(localStorage.getItem("test_tracker_crs") ?? "[]"); } catch { return []; }
+}
+
+function tsProgress(crKey: string, tsData: CREntry[]): string {
+  const entry = tsData.find(e => e.crKey === crKey);
+  if (!entry) return "TBC";
+  const cases = entry.suites.flatMap(s => s.cases).filter(c => !c.disabled);
+  if (cases.length === 0) return "TBC";
+  const passed  = cases.filter(c => c.status === "pass").length;
+  const failed  = cases.filter(c => c.status === "fail").length;
+  const pct     = ((passed / cases.length) * 100).toFixed(1).replace(/\.0$/, "");
+  const suffix  = failed === 0 && passed > 0 ? " - PASS only" : failed > 0 ? " - With failures" : "";
+  if (passed === cases.length) return `${passed}/${cases.length} (100%) - Done${suffix === " - PASS only" ? " - PASS only" : ""}`;
+  return `${passed}/${cases.length} (${pct}%)${suffix}`;
+}
+
+function firstNameFromEmail(email: string): string {
+  const local = email.split("@")[0];
+  return local.charAt(0).toUpperCase() + local.slice(1).toLowerCase();
+}
+
+function formatDate(d: Date): string {
+  const dd   = String(d.getDate()).padStart(2, "0");
+  const mm   = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+
+function formatTime(h: number, m: number): string {
+  const period = h >= 12 ? "PM" : "AM";
+  const h12    = h % 12 || 12;
+  return `${h12}.${String(m).padStart(2, "0")} ${period}`;
+}
+
+// ── CR row state ───────────────────────────────────────────────────
+interface CRRow {
+  id: string;
+  key: string;       // editable jira key(s) display e.g. "EAINT-9860"
+  title: string;     // editable short title
+  statusLines: string; // free-text status notes (one per line)
+  progress: string;  // auto-filled but editable
+}
+
+function buildRows(cards: KanbanCard[], tsData: CREntry[]): CRRow[] {
+  return cards
+    .filter(c => c.boardType === "cr" && c.jiraKey)
+    .map(c => ({
+      id:          c.id,
+      key:         c.jiraKey!,
+      title:       c.title,
+      statusLines: "",
+      progress:    tsProgress(c.jiraKey!, tsData),
+    }));
+}
+
+// ── Generate formatted text ────────────────────────────────────────
+function generateText(
+  name: string,
+  type: "todo" | "eod",
+  date: string,
+  time: string,
+  rows: CRRow[],
+): string {
+  const typeLabel = type === "todo" ? "To Do Plan" : "EOD Update";
+  const header    = `${name} - ${typeLabel} (${date} ${time}):`;
+
+  const sections = rows.map(r => {
+    const lines: string[] = [];
+    lines.push(`${r.key} - ${r.title}`);
+    lines.push(`JIRA Ticket : ${r.key}`);
+    lines.push("Status :");
+    if (r.statusLines.trim()) {
+      r.statusLines.split("\n").forEach(l => l.trim() && lines.push(l.trim()));
+    }
+    lines.push(`Overall CR Testing Progress : ${r.progress}`);
+    return lines.join("\n");
+  });
+
+  return [header, ...sections].join("\n");
+}
+
+// ── Page ──────────────────────────────────────────────────────────
+export default function DailyUpdatePage() {
+  const { creds } = useApp();
+
+  const now  = new Date();
+  const [type,  setType]  = useState<"todo" | "eod">("todo");
+  const [date,  setDate]  = useState(formatDate(now));
+  const [hour,  setHour]  = useState(now.getHours());
+  const [min,   setMin]   = useState(Math.round(now.getMinutes() / 5) * 5 % 60);
+  const [rows,  setRows]  = useState<CRRow[]>([]);
+  const [copied, setCopied] = useState(false);
+
+  const name = creds?.email ? firstNameFromEmail(creds.email) : "Faizuddin";
+
+  useEffect(() => {
+    const cards  = getKanbanState().ongoing as KanbanCard[];
+    const tsData = loadTSData();
+    setRows(buildRows(cards, tsData));
+  }, []);
+
+  const updateRow = useCallback((id: string, patch: Partial<CRRow>) => {
+    setRows(prev => prev.map(r => r.id === id ? { ...r, ...patch } : r));
+  }, []);
+
+  const addRow = useCallback(() => {
+    setRows(prev => [...prev, {
+      id: crypto.randomUUID(),
+      key: "", title: "", statusLines: "", progress: "TBC",
+    }]);
+  }, []);
+
+  const removeRow = useCallback((id: string) => {
+    setRows(prev => prev.filter(r => r.id !== id));
+  }, []);
+
+  const moveRow = useCallback((id: string, dir: -1 | 1) => {
+    setRows(prev => {
+      const idx = prev.findIndex(r => r.id === id);
+      if (idx < 0) return prev;
+      const next = [...prev];
+      const swap = idx + dir;
+      if (swap < 0 || swap >= next.length) return prev;
+      [next[idx], next[swap]] = [next[swap], next[idx]];
+      return next;
+    });
+  }, []);
+
+  const timeStr = formatTime(hour, min);
+  const preview = generateText(name, type, date, timeStr, rows);
+
+  function copy() {
+    navigator.clipboard.writeText(preview).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
+        <div>
+          <h1 className="text-sm font-semibold text-slate-200">Daily Update</h1>
+          <p className="text-[10px] text-slate-500 italic font-normal">Generate your Teams To Do Plan or EOD Update</p>
+        </div>
+        <button
+          onClick={copy}
+          className={clsx(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+            copied
+              ? "bg-green-700/30 text-green-400 border border-green-700/50"
+              : "bg-blue-600/20 text-blue-400 border border-blue-700/50 hover:bg-blue-600/30"
+          )}
+        >
+          {copied ? <Check size={13} /> : <Copy size={13} />}
+          {copied ? "Copied!" : "Copy to clipboard"}
+        </button>
+      </header>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left — editor */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+
+          {/* Controls */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Type toggle */}
+            <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
+              {(["todo", "eod"] as const).map(t => (
+                <button key={t} onClick={() => setType(t)}
+                  className={clsx(
+                    "px-3 py-1 text-xs rounded-md transition-colors",
+                    type === t ? "bg-blue-600 text-white font-medium" : "text-slate-400 hover:text-slate-200"
+                  )}>
+                  {t === "todo" ? "To Do Plan" : "EOD Update"}
+                </button>
+              ))}
+            </div>
+
+            {/* Date */}
+            <input
+              type="date"
+              value={date.split("-").reverse().join("-")}
+              onChange={e => {
+                const [y, m, d] = e.target.value.split("-");
+                setDate(`${d}-${m}-${y}`);
+              }}
+              className="text-xs bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-300 focus:outline-none focus:border-blue-600 [color-scheme:dark]"
+            />
+
+            {/* Time */}
+            <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5">
+              <input type="number" min={0} max={23} value={hour}
+                onChange={e => setHour(Number(e.target.value) % 24)}
+                className="w-8 text-xs bg-transparent text-slate-300 focus:outline-none text-center" />
+              <span className="text-slate-600 text-xs">:</span>
+              <input type="number" min={0} max={59} value={String(min).padStart(2, "0")}
+                onChange={e => setMin(Number(e.target.value) % 60)}
+                className="w-8 text-xs bg-transparent text-slate-300 focus:outline-none text-center" />
+              <span className="text-xs text-slate-500">{hour >= 12 ? "PM" : "AM"}</span>
+            </div>
+          </div>
+
+          {/* CR rows */}
+          <div className="space-y-3">
+            {rows.map((r, i) => (
+              <div key={r.id} className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="flex items-start gap-2">
+                  <div className="flex-1 grid grid-cols-[140px_1fr] gap-2">
+                    <input
+                      value={r.key}
+                      onChange={e => updateRow(r.id, { key: e.target.value })}
+                      placeholder="EAINT-XXXX"
+                      className="text-xs font-mono bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-blue-400 focus:outline-none focus:border-blue-600 placeholder-slate-600"
+                    />
+                    <input
+                      value={r.title}
+                      onChange={e => updateRow(r.id, { title: e.target.value })}
+                      placeholder="Short title / description"
+                      className="text-xs bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-blue-600 placeholder-slate-600"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button onClick={() => moveRow(r.id, -1)} disabled={i === 0}
+                      className="p-1 text-slate-600 hover:text-slate-300 disabled:opacity-30">
+                      <ChevronUp size={14} />
+                    </button>
+                    <button onClick={() => moveRow(r.id, 1)} disabled={i === rows.length - 1}
+                      className="p-1 text-slate-600 hover:text-slate-300 disabled:opacity-30">
+                      <ChevronDown size={14} />
+                    </button>
+                    <button onClick={() => removeRow(r.id)}
+                      className="p-1 text-slate-700 hover:text-red-400">
+                      <X size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Status lines */}
+                <div>
+                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1">Status notes <span className="normal-case text-slate-700">(one per line)</span></p>
+                  <textarea
+                    value={r.statusLines}
+                    onChange={e => updateRow(r.id, { statusLines: e.target.value })}
+                    placeholder={"To continue testing...\nFunctional testing completed..."}
+                    rows={3}
+                    className="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 focus:outline-none focus:border-blue-600 placeholder-slate-600 resize-none"
+                  />
+                </div>
+
+                {/* Progress */}
+                <div>
+                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1">Overall CR Testing Progress</p>
+                  <input
+                    value={r.progress}
+                    onChange={e => updateRow(r.id, { progress: e.target.value })}
+                    className="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 focus:outline-none focus:border-blue-600"
+                  />
+                </div>
+              </div>
+            ))}
+
+            <button onClick={addRow}
+              className="w-full flex items-center justify-center gap-1.5 py-2 text-xs text-slate-600 hover:text-slate-300 border border-dashed border-slate-800 hover:border-slate-700 rounded-xl transition-colors">
+              <Plus size={13} />Add CR entry
+            </button>
+          </div>
+        </div>
+
+        {/* Right — preview */}
+        <div className="w-80 shrink-0 border-l border-slate-800 flex flex-col">
+          <div className="px-4 py-3 border-b border-slate-800">
+            <p className="text-xs font-medium text-slate-400">Preview</p>
+          </div>
+          <pre className="flex-1 overflow-y-auto px-4 py-3 text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
+            {preview || <span className="text-slate-600 italic">Add CR entries to see preview</span>}
+          </pre>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -6,18 +6,26 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Download, Upload, Kanban,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
+  Briefcase, Send,
 } from "lucide-react";
 import { exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import clsx from "clsx";
 
 const nav = [
-  { label: "Dashboard", href: "/",          icon: LayoutDashboard },
-  { label: "Jira",      href: "/jira",      icon: Ticket },
-  { label: "Kanban",     href: "/kanban",    icon: Kanban },
-  { label: "TS Tracker", href: "/tests",     icon: ClipboardList },
-  { label: "Calendar",  href: "/calendar",  icon: CalendarDays },
-  { label: "To-Do",     href: "/todo",      icon: CheckSquare },
-  { label: "Notes",     href: "/notes",     icon: FileText },
+  { label: "Dashboard",  href: "/",         icon: LayoutDashboard },
+  { label: "Jira",       href: "/jira",     icon: Ticket },
+  { label: "Kanban",     href: "/kanban",   icon: Kanban },
+  { label: "TS Tracker", href: "/tests",    icon: ClipboardList },
+  { label: "Calendar",   href: "/calendar", icon: CalendarDays },
+  {
+    label: "Productivity",
+    icon: Briefcase,
+    children: [
+      { label: "To-Do List",    href: "/todo",           icon: CheckSquare },
+      { label: "Notes",         href: "/notes",          icon: FileText },
+      { label: "Daily Update",  href: "/daily-update",   icon: Send },
+    ],
+  },
   {
     label: "eAuto",
     icon: Car,
@@ -29,7 +37,7 @@ const nav = [
 
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
-  const [expanded, setExpanded]   = useState<string[]>(["eAuto"]);
+  const [expanded, setExpanded]   = useState<string[]>(["eAuto", "Productivity"]);
   const [importMsg, setImportMsg] = useState("");
   const [confirmImport, setConfirmImport] = useState(false);
   const importRef = useRef<HTMLInputElement>(null);
