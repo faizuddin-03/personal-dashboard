@@ -27,6 +27,8 @@ export interface KanbanCard {
   jiraStatus?: string;
   jiraType?: string;
   jiraProject?: string;
+  // TS Tracker link
+  linkedTSSuiteId?: string;
   createdAt: string;
   columnEnteredAt?: string;
   archived?: boolean;
