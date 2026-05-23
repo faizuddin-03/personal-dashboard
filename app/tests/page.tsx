@@ -304,7 +304,7 @@ export default function TestTrackerPage() {
   function toggleStatus(tc: TestCase, newStatus: "pass" | "fail" | "in-progress" | null) {
     updateCase(tc.id, {
       status: newStatus,
-      dateTested: newStatus ? (tc.dateTested ?? todayLocal()) : null,
+      dateTested: newStatus ? todayLocal() : null,
     });
   }
 
