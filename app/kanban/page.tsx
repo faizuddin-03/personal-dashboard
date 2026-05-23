@@ -876,6 +876,64 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
             </a>
           ) : null}
 
+          {/* TS Suite link */}
+          <div>
+            <p className="text-xs text-slate-600 mb-2">TS Suite</p>
+            {linkedTSSuiteId ? (() => {
+              const found = findSuite(linkedTSSuiteId, tsData);
+              if (!found) return (
+                <div className="flex items-center justify-between px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
+                  <span className="text-xs text-slate-500 italic">Suite not found</span>
+                  <button onClick={() => { setLinkedTSSuiteId(""); onUpdate({ ...card, linkedTSSuiteId: undefined }); }} className="text-slate-600 hover:text-red-400 ml-2"><X size={13} /></button>
+                </div>
+              );
+              const activeCases = found.suite.cases.filter(c => !c.disabled);
+              const tsTotal = activeCases.length;
+              const tsPass = activeCases.filter(c => c.status === "pass").length;
+              return (
+                <div className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-300 font-medium">{found.cr.crKey} &rsaquo; {found.suite.title}</span>
+                    <button onClick={() => { setLinkedTSSuiteId(""); onUpdate({ ...card, linkedTSSuiteId: undefined }); }} className="text-slate-600 hover:text-red-400 ml-2 shrink-0" aria-label="Unlink TS suite"><X size={13} /></button>
+                  </div>
+                  <p className="text-[10px] text-slate-500">{tsPass}/{tsTotal} pass</p>
+                </div>
+              );
+            })() : showSuitePicker ? (
+              <div className="space-y-2">
+                <select
+                  value={pickedCRId}
+                  onChange={e => setPickedCRId(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                >
+                  <option value="">— Select CR —</option>
+                  {tsData.map(cr => <option key={cr.id} value={cr.id}>{cr.crKey} — {cr.crSummary}</option>)}
+                </select>
+                {pickedCRId && (
+                  <select
+                    value=""
+                    onChange={e => {
+                      const suiteId = e.target.value;
+                      if (!suiteId) return;
+                      setLinkedTSSuiteId(suiteId);
+                      onUpdate({ ...card, linkedTSSuiteId: suiteId });
+                      setShowSuitePicker(false);
+                    }}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  >
+                    <option value="">— Select Suite —</option>
+                    {tsData.find(cr => cr.id === pickedCRId)?.suites.map(s => (
+                      <option key={s.id} value={s.id}>{s.title}</option>
+                    ))}
+                  </select>
+                )}
+                <button onClick={() => setShowSuitePicker(false)} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Cancel</button>
+              </div>
+            ) : (
+              <button onClick={() => setShowSuitePicker(true)} className="text-xs text-blue-400 hover:text-blue-300 transition-colors">+ Link TS Suite</button>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="text-xs text-slate-600 mb-1">Priority</p>
