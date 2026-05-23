@@ -582,14 +582,14 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
       {tsStats && tsStats.tsTotal > 0 && (
         <div className="mb-2">
           <p className="text-[10px] text-slate-500 mb-1">TS Progress</p>
-          <p className="text-[10px] text-slate-500 mb-1">
-            {tsStats.pass} pass · {tsStats.fail} fail · {tsStats.pass + tsStats.fail}/{tsStats.tsTotal} ({Math.round(((tsStats.pass + tsStats.fail) / tsStats.tsTotal) * 100)}%)
-          </p>
-          <div className="h-2 rounded-full overflow-hidden flex">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] text-slate-500">{tsStats.pass} pass · {tsStats.fail} fail · {tsStats.pass + tsStats.fail}/{tsStats.tsTotal}</span>
+            <span className="text-[10px] text-slate-600">{Math.round(((tsStats.pass + tsStats.fail) / tsStats.tsTotal) * 100)}%</span>
+          </div>
+          <div className="h-1 rounded-full overflow-hidden flex bg-slate-700">
             {tsStats.pass > 0 && <div className="bg-green-500" style={{ width: `${(tsStats.pass / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
             {tsStats.fail > 0 && <div className="bg-red-500" style={{ width: `${(tsStats.fail / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
             {tsStats.inProgress > 0 && <div className="bg-amber-500" style={{ width: `${(tsStats.inProgress / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
-            {tsStats.notRun > 0 && <div className="bg-slate-700" style={{ width: `${(tsStats.notRun / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
           </div>
         </div>
       )}
