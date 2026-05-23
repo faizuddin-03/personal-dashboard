@@ -24,6 +24,23 @@ import {
 
 function newId() { return crypto.randomUUID(); }
 
+// ── TS Tracker types & helpers ────────────────────────────
+interface _TSCase  { status: "pass"|"fail"|"in-progress"|null; disabled?: boolean; }
+interface _TSSuite { id: string; title: string; cases: _TSCase[]; }
+interface _TSCREntry { id: string; crKey: string; crSummary: string; suites: _TSSuite[]; }
+
+function loadTSData(): _TSCREntry[] {
+  try { return JSON.parse(localStorage.getItem("test_tracker_crs") ?? "[]"); } catch { return []; }
+}
+
+function findSuite(suiteId: string, tsData: _TSCREntry[]): { cr: _TSCREntry; suite: _TSSuite } | null {
+  for (const cr of tsData) {
+    const suite = cr.suites.find(s => s.id === suiteId);
+    if (suite) return { cr, suite };
+  }
+  return null;
+}
+
 function buildJiraJql(q: string, projectKey?: string): string {
   const escaped = q.trim().replace(/"/g, "");
   const isId  = /^\d+$/.test(escaped);
@@ -489,14 +506,27 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
 }
 
 // ── Card view ─────────────────────────────────────────────
-function CardView({ card, baseUrl, onClick, dragHandle }: {
+function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
   card: KanbanCard; baseUrl?: string; onClick?: () => void; dragHandle?: React.ReactNode;
+  tsData?: _TSCREntry[];
 }) {
   const { done, total } = checklistProgress(card);
   const over = isOverdue(card);
   const pm = PRIORITY_META[card.priority];
 
   const isCR = card.boardType === "cr";
+
+  // TS Suite progress
+  const tsLinked = card.linkedTSSuiteId && tsData ? findSuite(card.linkedTSSuiteId, tsData) : null;
+  const tsStats = tsLinked ? (() => {
+    const activeCases = tsLinked.suite.cases.filter(c => !c.disabled);
+    const tsTotal = activeCases.length;
+    const pass = activeCases.filter(c => c.status === "pass").length;
+    const fail = activeCases.filter(c => c.status === "fail").length;
+    const inProgress = activeCases.filter(c => c.status === "in-progress").length;
+    const notRun = activeCases.filter(c => c.status === null).length;
+    return { tsTotal, pass, fail, inProgress, notRun };
+  })() : null;
 
   return (
     <div
@@ -539,12 +569,27 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
       )}
       {total > 0 && (
         <div className="mb-2">
+          <p className="text-[10px] text-slate-500 mb-1">Checklist</p>
           <div className="flex items-center justify-between mb-1">
             <span className="flex items-center gap-1 text-[10px] text-slate-500"><CheckSquare size={10} />{done}/{total}</span>
             <span className="text-[10px] text-slate-600">{Math.round((done / total) * 100)}%</span>
           </div>
           <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
             <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(done / total) * 100}%` }} />
+          </div>
+        </div>
+      )}
+      {tsStats && tsStats.tsTotal > 0 && (
+        <div className="mb-2">
+          <p className="text-[10px] text-slate-500 mb-1">TS Progress</p>
+          <p className="text-[10px] text-slate-500 mb-1">
+            {tsStats.pass} pass · {tsStats.fail} fail · {tsStats.pass + tsStats.fail}/{tsStats.tsTotal} ({Math.round(((tsStats.pass + tsStats.fail) / tsStats.tsTotal) * 100)}%)
+          </p>
+          <div className="h-2 rounded-full overflow-hidden flex">
+            {tsStats.pass > 0 && <div className="bg-green-500" style={{ width: `${(tsStats.pass / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
+            {tsStats.fail > 0 && <div className="bg-red-500" style={{ width: `${(tsStats.fail / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
+            {tsStats.inProgress > 0 && <div className="bg-amber-500" style={{ width: `${(tsStats.inProgress / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
+            {tsStats.notRun > 0 && <div className="bg-slate-700" style={{ width: `${(tsStats.notRun / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
           </div>
         </div>
       )}
@@ -573,8 +618,9 @@ function CardView({ card, baseUrl, onClick, dragHandle }: {
 }
 
 // ── Draggable card ────────────────────────────────────────
-function DraggableCard({ card, baseUrl, onCardClick }: {
+function DraggableCard({ card, baseUrl, onCardClick, tsData }: {
   card: KanbanCard; baseUrl?: string; onCardClick: (c: KanbanCard) => void;
+  tsData?: _TSCREntry[];
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
@@ -583,6 +629,7 @@ function DraggableCard({ card, baseUrl, onCardClick }: {
       <CardView
         card={card}
         baseUrl={baseUrl}
+        tsData={tsData}
         onClick={() => onCardClick(card)}
         dragHandle={
           <button {...attributes} {...listeners} aria-label="Drag to reorder" className="mt-0.5 p-1 -ml-1 text-slate-600 hover:text-slate-300 cursor-grab active:cursor-grabbing shrink-0" onClick={e => e.stopPropagation()}>
@@ -595,10 +642,11 @@ function DraggableCard({ card, baseUrl, onCardClick }: {
 }
 
 // ── Column ────────────────────────────────────────────────
-function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse }: {
+function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, tsData }: {
   id: ColumnId; cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
   collapsed?: boolean; onToggleCollapse?: () => void;
+  tsData?: _TSCREntry[];
 }) {
   const meta = COLUMN_META[id];
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -634,7 +682,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
           ref={setNodeRef}
           className={clsx("flex-1 space-y-2 rounded-xl p-2 overflow-y-auto transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
         >
-          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} />)}
+          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} />)}
           {cards.length === 0 && (
             <div className="flex items-center justify-center h-20 text-xs text-slate-700 border border-dashed border-slate-800 rounded-xl">Drop here</div>
           )}
@@ -646,11 +694,12 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
 }
 
 // ── Card detail drawer ────────────────────────────────────
-function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds }: {
+function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds, tsData }: {
   card: KanbanCard; onClose: () => void;
   onUpdate: (c: KanbanCard) => void; onDelete: (id: string) => void;
   onArchive?: (c: KanbanCard) => void; baseUrl?: string;
   creds: ReturnType<typeof useApp>["creds"];
+  tsData: _TSCREntry[];
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle]     = useState(card.title);
@@ -667,6 +716,11 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [accentColor, setAccentColor] = useState(card.accentColor ?? "");
   const [cardBoardType, setCardBoardType] = useState<"task" | "cr">(card.boardType ?? "task");
   const [confirmArchive, setConfirmArchive] = useState(false);
+
+  // TS Suite link
+  const [linkedTSSuiteId, setLinkedTSSuiteId] = useState<string>(card.linkedTSSuiteId ?? "");
+  const [showSuitePicker, setShowSuitePicker] = useState(false);
+  const [pickedCRId, setPickedCRId] = useState("");
 
   // Jira link (custom cards only)
   const [editLinkedKey, setEditLinkedKey]           = useState(card.jiraKey ?? "");
@@ -706,7 +760,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   }, [jiraEditQuery, showJiraLinkEdit, creds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function save() {
-    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined });
+    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined, linkedTSSuiteId: linkedTSSuiteId || undefined });
     setEditing(false);
   }
 
@@ -821,6 +875,64 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
               <ExternalLink size={12} />Open {editLinkedKey || card.jiraKey} in Jira
             </a>
           ) : null}
+
+          {/* TS Suite link */}
+          <div>
+            <p className="text-xs text-slate-600 mb-2">TS Suite</p>
+            {linkedTSSuiteId ? (() => {
+              const found = findSuite(linkedTSSuiteId, tsData);
+              if (!found) return (
+                <div className="flex items-center justify-between px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
+                  <span className="text-xs text-slate-500 italic">Suite not found</span>
+                  <button onClick={() => { setLinkedTSSuiteId(""); onUpdate({ ...card, linkedTSSuiteId: undefined }); }} className="text-slate-600 hover:text-red-400 ml-2"><X size={13} /></button>
+                </div>
+              );
+              const activeCases = found.suite.cases.filter(c => !c.disabled);
+              const tsTotal = activeCases.length;
+              const tsPass = activeCases.filter(c => c.status === "pass").length;
+              return (
+                <div className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-300 font-medium">{found.cr.crKey} &rsaquo; {found.suite.title}</span>
+                    <button onClick={() => { setLinkedTSSuiteId(""); onUpdate({ ...card, linkedTSSuiteId: undefined }); }} className="text-slate-600 hover:text-red-400 ml-2 shrink-0" aria-label="Unlink TS suite"><X size={13} /></button>
+                  </div>
+                  <p className="text-[10px] text-slate-500">{tsPass}/{tsTotal} pass</p>
+                </div>
+              );
+            })() : showSuitePicker ? (
+              <div className="space-y-2">
+                <select
+                  value={pickedCRId}
+                  onChange={e => setPickedCRId(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                >
+                  <option value="">— Select CR —</option>
+                  {tsData.map(cr => <option key={cr.id} value={cr.id}>{cr.crKey} — {cr.crSummary}</option>)}
+                </select>
+                {pickedCRId && (
+                  <select
+                    value=""
+                    onChange={e => {
+                      const suiteId = e.target.value;
+                      if (!suiteId) return;
+                      setLinkedTSSuiteId(suiteId);
+                      onUpdate({ ...card, linkedTSSuiteId: suiteId });
+                      setShowSuitePicker(false);
+                    }}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  >
+                    <option value="">— Select Suite —</option>
+                    {tsData.find(cr => cr.id === pickedCRId)?.suites.map(s => (
+                      <option key={s.id} value={s.id}>{s.title}</option>
+                    ))}
+                  </select>
+                )}
+                <button onClick={() => setShowSuitePicker(false)} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Cancel</button>
+              </div>
+            ) : (
+              <button onClick={() => setShowSuitePicker(true)} className="text-xs text-blue-400 hover:text-blue-300 transition-colors">+ Link TS Suite</button>
+            )}
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -1018,9 +1130,10 @@ function ArchiveDrawer({ cards, onClose, onUnarchive }: {
 }
 
 // ── Urgent droppable section ──────────────────────────────
-function UrgentSection({ cards, baseUrl, onAddCard, onCardClick }: {
+function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData }: {
   cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
+  tsData?: _TSCREntry[];
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: "urgent" });
 
@@ -1042,7 +1155,7 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick }: {
         >
           {cards.map(card => (
             <div key={card.id} className="w-64 shrink-0">
-              <DraggableCard card={card} baseUrl={baseUrl} onCardClick={onCardClick} />
+              <DraggableCard card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} />
             </div>
           ))}
           {cards.length === 0 && (
@@ -1066,6 +1179,7 @@ export default function KanbanPage() {
   const [archivedCards, setArchivedCards] = useState<KanbanCard[]>([]);
   const [collapsedCols, setCollapsedCols] = useState<Partial<Record<ColumnId, boolean>>>({ finished: false });
   const [activeBoardType, setActiveBoardType] = useState<"task" | "cr">("task");
+  const [tsData, setTsData] = useState<_TSCREntry[]>([]);
 
   function toggleCollapse(col: ColumnId) {
     setCollapsedCols(prev => ({ ...prev, [col]: !prev[col] }));
@@ -1074,6 +1188,7 @@ export default function KanbanPage() {
   useEffect(() => {
     setBoardState(getKanbanState());
     setArchivedCards(getArchivedCards());
+    setTsData(loadTSData());
   }, []);
 
   function persist(state: KanbanState) { setBoardState(state); saveKanbanState(state); }
@@ -1192,6 +1307,7 @@ export default function KanbanPage() {
           baseUrl={creds?.baseUrl}
           onAddCard={setAddTarget}
           onCardClick={setSelectedCard}
+          tsData={tsData}
         />
 
         <div className="flex-1 flex flex-col px-6 py-5 overflow-x-auto overflow-y-hidden">
@@ -1202,13 +1318,14 @@ export default function KanbanPage() {
                 onAddCard={setAddTarget} onCardClick={setSelectedCard}
                 collapsed={collapsedCols[col] ?? false}
                 onToggleCollapse={() => toggleCollapse(col)}
+                tsData={tsData}
               />
             ))}
           </div>
         </div>
 
         <DragOverlay>
-          {activeCard && <div className="rotate-1 opacity-90 w-72"><CardView card={activeCard} /></div>}
+          {activeCard && <div className="rotate-1 opacity-90 w-72"><CardView card={activeCard} tsData={tsData} /></div>}
         </DragOverlay>
       </DndContext>
 
@@ -1216,7 +1333,7 @@ export default function KanbanPage() {
         <AddCardModal targetColumn={addTarget} onClose={() => setAddTarget(null)} onAdd={handleAddCard} creds={creds} />
       )}
       {selectedCard && (
-        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} />
+        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} tsData={tsData} />
       )}
       {showArchive && (
         <ArchiveDrawer cards={archivedCards} onClose={() => setShowArchive(false)} onUnarchive={handleUnarchiveCard} />
