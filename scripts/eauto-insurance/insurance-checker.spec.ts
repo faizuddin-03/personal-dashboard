@@ -374,6 +374,9 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
   // ── Step 10: Extract insurer data ──────────────────────────────────
   const insurers = await page.evaluate(() => {
     const clean = (s: string) => s.replace(/[\t\n\r]+/g, ' ').replace(/\s+/g, ' ').trim();
+    // Normalise insurer names that the page renders without spaces
+    const INSURER_NORM: Record<string, string> = { 'TokioMarine': 'Tokio Marine' };
+    const normalise = (n: string) => INSURER_NORM[n] ?? n;
 
     const results: {
       insurerName: string; coverType: string; allowToPurchase: string;
@@ -381,7 +384,7 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
     }[] = [];
 
     document.querySelectorAll('.plan-detail-table').forEach((table) => {
-      const insurerName = clean(table.querySelector('.plan-name')?.textContent || 'Unknown');
+      const insurerName = normalise(clean(table.querySelector('.plan-name')?.textContent || 'Unknown'));
       let coverType = '', allowToPurchase = '', referRiskCode = '', totalPrice = '';
 
       table.querySelectorAll('td').forEach((td) => {
