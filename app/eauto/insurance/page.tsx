@@ -310,7 +310,55 @@ export default function InsurancePage() {
   const matrixInsurers = Array.from(new Set(afterSearch.map(r => r.insurer).filter(Boolean)));
   const foundInsurers  = Array.from(new Set(rows.map(r => r.insurer).filter(Boolean)));
 
-  const [activeTab, setActiveTab] = useState<"check" | "tab2">("check");
+  const [activeTab, setActiveTab] = useState<"check" | "tokiomarine">("check");
+
+  // Tokio Marine tab state
+  const [tmSearch, setTmSearch]           = useState("");
+  const [tmAllowFilter, setTmAllowFilter] = useState<AllowFilter>("all");
+  const [tmSort, setTmSort]               = useState<SortState>({ key: null, dir: "asc" });
+  const [tmView, setTmView]               = useState<ViewMode>("table");
+
+  const tmRows = rows.filter(r => r.insurer.toLowerCase().includes("tokio marine"));
+
+  const tmSearchLower = tmSearch.trim().toLowerCase();
+  const tmAfterSearch = tmRows.filter(r => {
+    if (tmSearchLower) {
+      const hit = [r.vehicleNumber, r.make, r.model].some(f => f.toLowerCase().includes(tmSearchLower));
+      if (!hit) return false;
+    }
+    if (tmAllowFilter !== "all") {
+      const v = r.allowPurchase.trim().toLowerCase();
+      if (tmAllowFilter === "yes"   && !["yes","y","true","1"].includes(v)) return false;
+      if (tmAllowFilter === "no"    && !["no","n","false","0"].includes(v))  return false;
+      if (tmAllowFilter === "refer" && !v.startsWith("refer"))               return false;
+    }
+    return true;
+  });
+
+  const tmDisplayRows = tmSort.key
+    ? [...tmAfterSearch].sort((a, b) => {
+        const av = a[tmSort.key!] ?? "";
+        const bv = b[tmSort.key!] ?? "";
+        const cmp = av.localeCompare(bv, undefined, { numeric: true, sensitivity: "base" });
+        return tmSort.dir === "asc" ? cmp : -cmp;
+      })
+    : tmAfterSearch;
+
+  function toggleTmSort(key: keyof InsuranceRow) {
+    setTmSort(prev =>
+      prev.key === key
+        ? { key, dir: prev.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: "asc" }
+    );
+  }
+
+  const tmStatsYes   = tmDisplayRows.filter(r => ["yes","y","true","1"].includes(r.allowPurchase.trim().toLowerCase())).length;
+  const tmStatsNo    = tmDisplayRows.filter(r => ["no","n","false","0"].includes(r.allowPurchase.trim().toLowerCase())).length;
+  const tmStatsRefer = tmDisplayRows.filter(r => r.allowPurchase.trim().toLowerCase().startsWith("refer")).length;
+
+  const tmMatrix         = buildMatrix(tmAfterSearch);
+  const tmMatrixVehicles = Array.from(tmMatrix.keys());
+  const tmMatrixInsurers = Array.from(new Set(tmAfterSearch.map(r => r.insurer).filter(Boolean)));
 
   return (
     <div className="flex flex-col min-h-full">
@@ -344,21 +392,166 @@ export default function InsurancePage() {
           Check VN Insurance Stats
         </button>
         <button
-          onClick={() => setActiveTab("tab2")}
+          onClick={() => setActiveTab("tokiomarine")}
           className={clsx(
             "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
-            activeTab === "tab2"
+            activeTab === "tokiomarine"
               ? "border-blue-500 text-blue-400"
               : "border-transparent text-slate-500 hover:text-slate-300"
           )}
         >
-          Tab 2
+          Tokio Marine
+          {tmRows.length > 0 && (
+            <span className="ml-1.5 text-[10px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded-full">{tmRows.length}</span>
+          )}
         </button>
       </div>
 
-      {activeTab === "tab2" && (
-        <div className="flex-1 flex items-center justify-center text-slate-600 text-sm py-24">
-          Coming soon
+      {activeTab === "tokiomarine" && (
+        <div className="px-6 py-5 space-y-5">
+          {tmRows.length === 0 ? (
+            <div className="text-center py-16 text-slate-600">
+              <Shield size={28} className="mx-auto mb-2 opacity-40" />
+              <p className="text-sm">No Tokio Marine results yet.</p>
+              <p className="text-xs mt-1 text-slate-700">Run the insurance checker on the first tab — Tokio Marine results will appear here automatically.</p>
+            </div>
+          ) : (
+            <>
+              {/* Toolbar */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+                  <button onClick={() => setTmView("table")}
+                    className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
+                      tmView === "table" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+                    <TableProperties size={12} /> Table
+                  </button>
+                  <button onClick={() => setTmView("matrix")}
+                    className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
+                      tmView === "matrix" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+                    <LayoutGrid size={12} /> Matrix
+                  </button>
+                </div>
+                <button onClick={() => exportToExcel(tmDisplayRows)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg transition-colors">
+                  <Download size={12} /> Export Excel
+                </button>
+              </div>
+
+              {/* Filters */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={tmSearch}
+                    onChange={e => setTmSearch(e.target.value)}
+                    placeholder="Search vehicle number, make, model…"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 pl-9 pr-9 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  />
+                  {tmSearch && (
+                    <button onClick={() => setTmSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold shrink-0">Allow</span>
+                  {(["all", "yes", "no", "refer"] as AllowFilter[]).map(f => (
+                    <button key={f} onClick={() => setTmAllowFilter(f)}
+                      className={clsx("px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all capitalize",
+                        tmAllowFilter === f
+                          ? f === "yes"    ? "bg-green-900/60 border-green-700 text-green-300"
+                            : f === "no"   ? "bg-red-900/60 border-red-700 text-red-300"
+                            : f === "refer" ? "bg-yellow-900/60 border-yellow-700 text-yellow-300"
+                            : "bg-slate-700 border-slate-600 text-slate-200"
+                          : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                      )}>{f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-slate-500">{tmDisplayRows.length} row{tmDisplayRows.length !== 1 ? "s" : ""}</span>
+                <span className="text-slate-700">·</span>
+                <span className="px-2 py-0.5 rounded-full bg-green-900/60 text-green-300 border border-green-800 font-semibold">Yes {tmStatsYes}</span>
+                <span className="px-2 py-0.5 rounded-full bg-red-900/60 text-red-300 border border-red-800 font-semibold">No {tmStatsNo}</span>
+                <span className="px-2 py-0.5 rounded-full bg-yellow-900/60 text-yellow-300 border border-yellow-800 font-semibold">Refer {tmStatsRefer}</span>
+              </div>
+
+              {/* Table view */}
+              {tmDisplayRows.length > 0 && tmView === "table" && (
+                <div className="overflow-x-auto rounded-2xl border border-slate-800">
+                  <table className="w-full text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-800 bg-slate-900">
+                        {COLUMNS.filter(c => c.key !== "insurer").map(col => {
+                          const active = tmSort.key === col.key;
+                          return (
+                            <th key={col.key} onClick={() => toggleTmSort(col.key)}
+                              className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-slate-300 transition-colors">
+                              <span className="inline-flex items-center gap-1">
+                                {col.label}
+                                {active ? <span className="text-blue-400">{tmSort.dir === "asc" ? "▲" : "▼"}</span> : null}
+                              </span>
+                            </th>
+                          );
+                        })}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tmDisplayRows.map((row, idx) => (
+                        <tr key={idx} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
+                          <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{row.vehicleNumber || "—"}</td>
+                          <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.make || "—"}</td>
+                          <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.model || "—"}</td>
+                          <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.mfgYear || "—"}</td>
+                          <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.engineCC || "—"}</td>
+                          <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.transmission || "—"}</td>
+                          <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.variant || "—"}</td>
+                          <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.coverType || "—"}</td>
+                          <td className="px-3 py-2 whitespace-nowrap"><AllowBadge value={row.allowPurchase} /></td>
+                          <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.referRiskCode || "—"}</td>
+                          <td className="px-3 py-2 text-slate-200 font-medium whitespace-nowrap">{row.totalPrice || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Matrix view */}
+              {tmAfterSearch.length > 0 && tmView === "matrix" && (
+                <div className="overflow-x-auto rounded-2xl border border-slate-800">
+                  <table className="text-xs border-collapse w-full">
+                    <thead>
+                      <tr className="border-b border-slate-800 bg-slate-900">
+                        <th className="px-4 py-2.5 text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wider min-w-[130px]">Vehicle</th>
+                        {tmMatrixInsurers.map(ins => (
+                          <th key={ins} className="px-4 py-2.5 text-center text-[11px] font-semibold text-slate-500 uppercase tracking-wider min-w-[120px]">{ins}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tmMatrixVehicles.map(vn => (
+                        <tr key={vn} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
+                          <td className="px-4 py-2.5 font-mono font-bold text-slate-200">{vn}</td>
+                          {tmMatrixInsurers.map(ins => {
+                            const val = tmMatrix.get(vn)?.get(ins) ?? "";
+                            return (
+                              <td key={ins} className="px-4 py-2.5 text-center">
+                                {val ? <AllowBadge value={val} /> : <span className="text-slate-700">—</span>}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
         </div>
       )}
 
