@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   ChevronLeft, ChevronRight, Plus, X, Rocket, CalendarDays,
-  Clock, Loader2, Search, ExternalLink, Pencil, Trash2, Info, LayoutGrid, Table2, ClipboardPaste,
+  Clock, Loader2, Search, ExternalLink, Pencil, Trash2, Info, LayoutGrid, Table2, ClipboardPaste, Sparkles,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -20,6 +20,7 @@ import { getKanbanState, KanbanCard } from "@/lib/kanban";
 import { getTodos, TodoItem } from "@/lib/todo";
 import { todayLocal, daysFromToday, APP_TIMEZONE } from "@/lib/date";
 import { parseDeploymentText, ParsedDeploymentItem } from "@/lib/deployment-parser";
+import { getGeminiKey } from "@/components/SettingsModal";
 
 // ── Helpers ───────────────────────────────────────────────
 const _dateFmt = new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE });
@@ -130,16 +131,15 @@ function PasteDeploymentModal({ existing, onClose, onApply }: {
   const [parsed, setParsed] = useState<ParsedDeploymentItem[] | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [struckRemoved, setStruckRemoved] = useState(0);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
 
   function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
     const html = e.clipboardData.getData("text/html");
-    if (!html) return; // no HTML in clipboard — let default plain-text paste proceed
+    if (!html) return;
     e.preventDefault();
-
-    // Count how many struck-through segments were removed so we can show a notice
     const tmp = new DOMParser().parseFromString(html, "text/html");
     const count = tmp.querySelectorAll("s, del, strike").length;
-
     setText(htmlToCleanText(html));
     setStruckRemoved(count);
   }
@@ -148,6 +148,79 @@ function PasteDeploymentModal({ existing, onClose, onApply }: {
     const items = parseDeploymentText(text, existing);
     setParsed(items);
     setSelected(new Set(items.map((_, i) => i)));
+  }
+
+  async function handleAIParse() {
+    const key = getGeminiKey();
+    if (!key) { setAiError("Add your Gemini API key in Settings first."); return; }
+    setAiLoading(true);
+    setAiError("");
+    try {
+      const todayStr = todayLocal();
+      const existingSummary = existing.map(d => ({ id: d.id, date: d.date, type: d.type, summary: d.ticketSummary }));
+      const prompt = `You are parsing a deployment schedule message from Microsoft Teams.
+
+Today: ${todayStr}
+Existing deployments: ${JSON.stringify(existingSummary)}
+
+Extract ALL deployment entries from the text below. Return ONLY a valid JSON array, no explanation, no markdown.
+
+Each item must have:
+- "date": "YYYY-MM-DD" (use current year ${todayStr.slice(0, 4)} if year not mentioned)
+- "summary": short description of what's being deployed (e.g. ticket name, fix name, or session label)
+- "type": "night" if Night Session, otherwise "day"
+- "status": "completed" if Completed/Done, "cancelled" if Postponed/Cancelled, otherwise "planned"
+- "environment": "Production", "Staging", "UAT", or "Development" (default "Staging")
+- "notes": any URLs or extra context (empty string if none)
+
+Rules:
+- Night session default time: 21:00. Day/Morning session default: 09:00
+- If a message covers Morning AND Night on same date, create TWO items
+- Strikethrough or "~~text~~" means cancelled/old — skip it
+- If date+type matches an existing deployment, mark action "update", else "add"
+
+Text:
+${text}`;
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+        { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
+      );
+      const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+      const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
+
+      // Strip markdown code fences if Gemini wraps it
+      const jsonStr = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+      const aiItems = JSON.parse(jsonStr) as {
+        date: string; summary: string; type: string; status: string; environment: string; notes: string;
+      }[];
+
+      const items: ParsedDeploymentItem[] = aiItems.map(item => {
+        const type = item.type === "night" ? "night" : "day" as import("@/lib/deployments").DeploymentType;
+        const status = (["planned","completed","cancelled"].includes(item.status) ? item.status : "planned") as import("@/lib/deployments").DeploymentStatus;
+        const match = existing.find(e => e.date === item.date && e.type === type);
+        return {
+          action: match ? "update" : "add",
+          matchId: match?.id,
+          date: item.date,
+          summary: item.summary || "",
+          time: type === "night" ? "21:00" : "09:00",
+          type,
+          status,
+          environment: item.environment || "Staging",
+          notes: item.notes || "",
+        };
+      });
+
+      items.sort((a, b) => a.date.localeCompare(b.date) || a.type.localeCompare(b.type));
+      setParsed(items);
+      setSelected(new Set(items.map((_, i) => i)));
+    } catch (e) {
+      setAiError(`AI parse failed: ${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   function toggleItem(i: number) {
@@ -261,15 +334,26 @@ function PasteDeploymentModal({ existing, onClose, onApply }: {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-800 px-5 py-4 shrink-0">
+        <div className="border-t border-slate-800 px-5 py-4 shrink-0 space-y-2">
+          {aiError && <p className="text-xs text-red-400">{aiError}</p>}
           {!parsed ? (
-            <button
-              onClick={handleParse}
-              disabled={!text.trim()}
-              className="w-full py-2 bg-purple-700 hover:bg-purple-600 text-white text-sm font-medium rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              Parse Message
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleParse}
+                disabled={!text.trim()}
+                className="flex-1 py-2 bg-purple-700 hover:bg-purple-600 text-white text-sm font-medium rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                Parse Message
+              </button>
+              <button
+                onClick={handleAIParse}
+                disabled={!text.trim() || aiLoading}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-slate-800 hover:bg-slate-700 border border-purple-700/50 text-purple-300 text-sm font-medium rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {aiLoading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                {aiLoading ? "Parsing…" : "Parse with AI"}
+              </button>
+            </div>
           ) : (
             <button
               onClick={handleApply}
