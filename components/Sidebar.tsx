@@ -4,12 +4,11 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutDashboard, ChevronDown, Shield, Car,
-  Settings, Kanban, Sparkles,
+  Settings, Kanban,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
   Briefcase, Send,
 } from "lucide-react";
 import clsx from "clsx";
-import WhatsNewModal from "@/components/WhatsNewModal";
 
 const nav = [
   { label: "Dashboard",  href: "/",         icon: LayoutDashboard },
@@ -37,8 +36,7 @@ const nav = [
 
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
-  const [expanded, setExpanded]   = useState<string[]>(["eAuto", "Productivity"]);
-  const [showWhatsNew, setShowWhatsNew] = useState(false);
+  const [expanded, setExpanded] = useState<string[]>(["eAuto", "Productivity"]);
 
   function toggleGroup(label: string) {
     setExpanded(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label]);
@@ -135,13 +133,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
       </nav>
 
       {/* Bottom */}
-      <div className="border-t border-slate-800 p-3 space-y-1">
-        <button
-          onClick={() => setShowWhatsNew(true)}
-          className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors"
-        >
-          <Sparkles size={15} />What's New
-        </button>
+      <div className="border-t border-slate-800 p-3">
         <Link
           href="/settings"
           onClick={onClose}
@@ -153,8 +145,6 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
           <Settings size={15} />Settings
         </Link>
       </div>
-
-      {showWhatsNew && <WhatsNewModal onClose={() => setShowWhatsNew(false)} />}
     </aside>
   );
 }

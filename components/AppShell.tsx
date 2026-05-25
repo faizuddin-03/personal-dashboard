@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Menu, X, Search } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import GlobalSearch from "@/components/GlobalSearch";
+import WhatsNewModal from "@/components/WhatsNewModal";
 import { JiraCredentials, getStoredCredentials, storeCredentials } from "@/lib/jira";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { loadAndApplyTheme } from "@/lib/themes";
@@ -32,6 +33,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const router = useRouter();
 
   useAutoBackup();
@@ -41,6 +43,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setCreds(stored);
     loadAndApplyTheme();
     setHydrated(true);
+    if (!sessionStorage.getItem("whats_new_seen")) {
+      setWhatsNewOpen(true);
+    }
     // If accountId isn't cached yet, fetch it now so reporter queries work reliably
     if (stored && !stored.accountId) {
       fetch("/api/jira/myself", {
@@ -127,6 +132,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         >
           <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
         </div>
+      )}
+
+      {/* What's New modal — auto-shown once per session */}
+      {whatsNewOpen && (
+        <WhatsNewModal onClose={() => {
+          sessionStorage.setItem("whats_new_seen", "true");
+          setWhatsNewOpen(false);
+        }} />
       )}
     </AppContext.Provider>
   );

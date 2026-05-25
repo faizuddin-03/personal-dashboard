@@ -3,6 +3,7 @@ import { X, Sparkles, Package } from "lucide-react";
 import {
   RELEASED_VERSIONS,
   CURRENT_CHANGES,
+  CURRENT_VERSION,
   CURRENT_VERSION_LABEL,
   CURRENT_VERSION_DATE,
 } from "@/lib/changelog";
@@ -27,6 +28,7 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-blue-400" />
             <h2 className="text-sm font-semibold text-slate-100">What's New</h2>
+            <span className="text-xs font-thin text-slate-500">{CURRENT_VERSION}</span>
           </div>
           <button
             onClick={onClose}
@@ -51,11 +53,14 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
                   In progress
                 </span>
               </div>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {CURRENT_CHANGES.map((change, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300 leading-snug">
+                  <li key={i} className="flex items-start gap-2 leading-snug">
                     <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                    {change}
+                    <div>
+                      <p className="text-sm font-semibold text-slate-200">{change.title}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{change.description}</p>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -75,11 +80,14 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
                     </span>
                     <span className="text-xs text-slate-600 ml-auto">{fmtDate(v.date)}</span>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {v.changes.map((change, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-slate-400 leading-snug">
+                      <li key={i} className="flex items-start gap-2 leading-snug">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-slate-600 shrink-0" />
-                        {change}
+                        <div>
+                          <p className="text-sm font-semibold text-slate-400">{change.title}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">{change.description}</p>
+                        </div>
                       </li>
                     ))}
                   </ul>
