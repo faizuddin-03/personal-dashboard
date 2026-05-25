@@ -12,6 +12,7 @@ import {
   DEFAULT_BACKUP_SETTINGS, BACKUP_SCHEDULE_LABELS, BackupSchedule,
 } from "@/lib/kanban";
 import { THEMES, DEFAULT_THEME, getTheme, applyTheme } from "@/lib/themes";
+import { GEMINI_KEY_STORE } from "@/components/SettingsModal";
 
 export default function SettingsPage() {
   const { creds, setCreds } = useApp();
@@ -28,6 +29,11 @@ export default function SettingsPage() {
   const [jiraSaved, setJiraSaved] = useState(false);
   const [disconnectStep, setDisconnectStep] = useState<0 | 1 | 2>(0);
 
+  // Gemini
+  const [geminiKey, setGeminiKey] = useState("");
+  const [showGeminiKey, setShowGeminiKey] = useState(false);
+  const [geminiSaved, setGeminiSaved] = useState(false);
+
   // Theme
   const [themeId, setThemeId] = useState(DEFAULT_THEME);
 
@@ -39,6 +45,7 @@ export default function SettingsPage() {
   useEffect(() => {
     setBackup(getBackupSettings());
     setThemeId(localStorage.getItem("qa-theme") ?? DEFAULT_THEME);
+    setGeminiKey(localStorage.getItem(GEMINI_KEY_STORE) ?? "");
   }, []);
 
   function handleThemeChange(id: string) {
@@ -94,6 +101,13 @@ export default function SettingsPage() {
   function handleSaveBackup(updated: BackupSettings) {
     setBackup(updated);
     saveBackupSettings(updated);
+  }
+
+  function handleSaveGemini() {
+    if (geminiKey.trim()) localStorage.setItem(GEMINI_KEY_STORE, geminiKey.trim());
+    else localStorage.removeItem(GEMINI_KEY_STORE);
+    setGeminiSaved(true);
+    setTimeout(() => setGeminiSaved(false), 2500);
   }
 
   async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
@@ -280,6 +294,34 @@ export default function SettingsPage() {
             <p className="text-xs text-slate-600 mt-2">
               Exports all localStorage data (Jira credentials, Kanban board, backup settings) as a single JSON file.
             </p>
+          </div>
+        </Section>
+
+        {/* ── AI Settings ── */}
+        <Section title="AI Settings" description="Connect AI services to unlock smart features like drafting your daily standup.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label={<>Gemini API Key <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-blue-400 text-xs hover:underline ml-1">Get one free →</a></>} hint="Free tier — no credit card needed. Used for AI drafting on the Daily Update page." className="sm:col-span-2">
+              <div className="relative">
+                <input
+                  type={showGeminiKey ? "text" : "password"}
+                  value={geminiKey}
+                  onChange={e => setGeminiKey(e.target.value)}
+                  onCopy={e => e.preventDefault()}
+                  onCut={e => e.preventDefault()}
+                  placeholder="AIza..."
+                  className={input + " pr-9"}
+                />
+                <button type="button" onClick={() => setShowGeminiKey(v => !v)} className="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-300">
+                  {showGeminiKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+            </Field>
+          </div>
+          <div className="flex gap-3 mt-4">
+            <button onClick={handleSaveGemini} className={primaryBtn}>
+              {geminiSaved ? <CheckCircle size={13} /> : <Save size={13} />}
+              {geminiSaved ? "Saved!" : "Save"}
+            </button>
           </div>
         </Section>
 
