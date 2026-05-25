@@ -4,15 +4,11 @@ import {
   RELEASED_VERSIONS,
   CURRENT_CHANGES,
   CURRENT_VERSION,
-  CURRENT_VERSION_LABEL,
-  CURRENT_VERSION_DATE,
 } from "@/lib/changelog";
 
 export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
   const fmtDate = (d: string) =>
-    new Date(d + "T12:00:00").toLocaleDateString("en-MY", {
-      day: "numeric", month: "long", year: "numeric",
-    });
+    new Date(d + "T12:00:00").toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" });
 
   return (
     <div
@@ -41,26 +37,9 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
 
-          {/* Git build info */}
-          <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-            <span className="text-xs text-slate-500">Latest push</span>
-            <code className="ml-auto text-xs font-mono text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded">
-              {process.env.NEXT_PUBLIC_GIT_HASH ?? "unknown"}
-            </code>
-          </div>
-
           {/* Current / upcoming changes */}
           {CURRENT_CHANGES.length > 0 && (
             <section>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
-                  {CURRENT_VERSION_LABEL}
-                </span>
-                <span className="text-xs text-slate-600">{fmtDate(CURRENT_VERSION_DATE)}</span>
-                <span className="ml-auto text-xs bg-blue-600/20 text-blue-400 border border-blue-600/30 px-2 py-0.5 rounded-full">
-                  In progress
-                </span>
-              </div>
               <ul className="space-y-3">
                 {CURRENT_CHANGES.map((change, i) => (
                   <li key={i} className="flex items-start gap-2 leading-snug">
