@@ -1,3 +1,4 @@
+import { remoteSync } from "./remote-sync";
 export type Priority = "urgent" | "high" | "medium" | "low";
 export type ColumnId = "urgent" | "todo" | "ongoing" | "on-hold" | "finished";
 
@@ -91,7 +92,9 @@ export function getKanbanState(): KanbanState {
 }
 
 export function saveKanbanState(state: KanbanState) {
-  localStorage.setItem("kanban_state", JSON.stringify(state));
+  const json = JSON.stringify(state);
+  localStorage.setItem("kanban_state", json);
+  remoteSync("kanban_state", json);
 }
 
 function emptyState(): KanbanState {
@@ -130,7 +133,9 @@ export function getArchivedCards(): KanbanCard[] {
 }
 
 export function saveArchivedCards(cards: KanbanCard[]) {
-  localStorage.setItem("kanban_archive", JSON.stringify(cards));
+  const json = JSON.stringify(cards);
+  localStorage.setItem("kanban_archive", json);
+  remoteSync("kanban_archive", json);
 }
 
 export function checklistProgress(card: KanbanCard): { done: number; total: number } {
@@ -165,7 +170,9 @@ export function getBackupSettings(): BackupSettings {
 }
 
 export function saveBackupSettings(s: BackupSettings) {
-  localStorage.setItem("backup_settings", JSON.stringify(s));
+  const json = JSON.stringify(s);
+  localStorage.setItem("backup_settings", json);
+  remoteSync("backup_settings", json);
 }
 
 export const BACKUP_SCHEDULE_LABELS: Record<BackupSchedule, string> = {

@@ -1,3 +1,4 @@
+import { remoteSync } from "./remote-sync";
 export type WidgetId =
   | "deployments"
   | "assigned-tickets"
@@ -38,5 +39,7 @@ export function getWidgetConfig(): WidgetConfig[] {
 }
 
 export function saveWidgetConfig(config: WidgetConfig[]) {
-  localStorage.setItem(KEY, JSON.stringify(config));
+  const json = JSON.stringify(config);
+  localStorage.setItem(KEY, json);
+  remoteSync("dashboard_widgets", json);
 }

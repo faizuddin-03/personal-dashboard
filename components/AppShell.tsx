@@ -7,6 +7,7 @@ import GlobalSearch from "@/components/GlobalSearch";
 import { JiraCredentials, getStoredCredentials, storeCredentials } from "@/lib/jira";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { loadAndApplyTheme } from "@/lib/themes";
+import { hydrateFromRemote } from "@/lib/remote-sync";
 import clsx from "clsx";
 
 interface AppCtx {
@@ -37,27 +38,31 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   useAutoBackup();
 
   useEffect(() => {
-    const stored = getStoredCredentials();
-    setCreds(stored);
-    loadAndApplyTheme();
-    setHydrated(true);
-    // If accountId isn't cached yet, fetch it now so reporter queries work reliably
-    if (stored && !stored.accountId) {
-      fetch("/api/jira/myself", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(stored),
-      })
-        .then(r => r.json())
-        .then(data => {
-          if (data.accountId) {
-            const updated = { ...stored, accountId: data.accountId as string };
-            storeCredentials(updated);
-            setCreds(updated);
-          }
+    async function init() {
+      await hydrateFromRemote(); // no-op in local mode; fetches KV → localStorage in remote mode
+      const stored = getStoredCredentials();
+      setCreds(stored);
+      loadAndApplyTheme();
+      setHydrated(true);
+      // If accountId isn't cached yet, fetch it now so reporter queries work reliably
+      if (stored && !stored.accountId) {
+        fetch("/api/jira/myself", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(stored),
         })
-        .catch(() => {});
+          .then(r => r.json())
+          .then(data => {
+            if (data.accountId) {
+              const updated = { ...stored, accountId: data.accountId as string };
+              storeCredentials(updated);
+              setCreds(updated);
+            }
+          })
+          .catch(() => {});
+      }
     }
+    init();
   }, []);
 
   // Cmd+K wiring — also handled inside GlobalSearch but we expose openSearch via context

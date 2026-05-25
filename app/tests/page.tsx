@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { Plus, ChevronDown, ChevronRight, X, Search, Loader2, CheckCircle2, XCircle, Clock, CalendarDays, Trash2, Timer, GripVertical, Pencil } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
+import { remoteSync } from "@/lib/remote-sync";
 import { reporterIs } from "@/lib/jira";
 import { todayLocal } from "@/lib/date";
 import {
@@ -43,7 +44,11 @@ function load(): CREntry[] {
   if (typeof window === "undefined") return [];
   try { return JSON.parse(localStorage.getItem(STORE_KEY) ?? "[]"); } catch { return []; }
 }
-function save(data: CREntry[]) { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+function save(data: CREntry[]) {
+  const json = JSON.stringify(data);
+  localStorage.setItem(STORE_KEY, json);
+  remoteSync("test_tracker_crs", json);
+}
 function uid() { return crypto.randomUUID(); }
 
 // ── Jira search types ─────────────────────────────────────

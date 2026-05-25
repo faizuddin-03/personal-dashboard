@@ -1,3 +1,4 @@
+import { remoteSync } from "./remote-sync";
 export type TodoPriority = "high" | "medium" | "low";
 
 export interface TodoItem {
@@ -50,7 +51,9 @@ export function getTodos(): TodoItem[] {
 }
 
 export function saveTodos(items: TodoItem[]) {
-  localStorage.setItem("todo_items", JSON.stringify(items));
+  const json = JSON.stringify(items);
+  localStorage.setItem("todo_items", json);
+  remoteSync("todo_items", json);
 }
 
 export function isTodoOverdue(item: TodoItem): boolean {

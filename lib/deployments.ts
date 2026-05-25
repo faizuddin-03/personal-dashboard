@@ -1,3 +1,4 @@
+import { remoteSync } from "./remote-sync";
 export type DeploymentType   = "day" | "night";
 export type DeploymentStatus = "planned" | "in-progress" | "completed" | "cancelled" | "failed";
 
@@ -54,5 +55,7 @@ export function getDeployments(): Deployment[] {
 }
 
 export function saveDeployments(items: Deployment[]) {
-  localStorage.setItem("deployments", JSON.stringify(items));
+  const json = JSON.stringify(items);
+  localStorage.setItem("deployments", json);
+  remoteSync("deployments", json);
 }

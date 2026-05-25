@@ -1,3 +1,4 @@
+import { remoteSync } from "./remote-sync";
 export interface Note {
   id: string;
   title: string;
@@ -31,7 +32,9 @@ export function getNotes(): Note[] {
 }
 
 export function saveNotes(notes: Note[]) {
-  localStorage.setItem("notes", JSON.stringify(notes));
+  const json = JSON.stringify(notes);
+  localStorage.setItem("notes", json);
+  remoteSync("notes", json);
 }
 
 export function stripHtml(html: string): string {

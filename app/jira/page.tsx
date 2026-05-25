@@ -14,6 +14,7 @@ import IssueDrawer from "@/components/IssueDrawer";
 import StatsBar from "@/components/StatsBar";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import clsx from "clsx";
+import { remoteSync, remoteDelete } from "@/lib/remote-sync";
 
 type Tab = "assigned" | "reported";
 type SortKey = "updated" | "created" | "priority";
@@ -34,14 +35,16 @@ function loadAssignedCrKeys(): string[] {
   try { return JSON.parse(localStorage.getItem(ASSIGNED_CR_STORE) ?? "[]"); } catch { return []; }
 }
 function saveAssignedCrKeys(keys: string[]) {
-  localStorage.setItem(ASSIGNED_CR_STORE, JSON.stringify(keys));
+  const json = JSON.stringify(keys);
+  localStorage.setItem(ASSIGNED_CR_STORE, json);
+  remoteSync("jira_assigned_cr_keys", json);
 }
 function loadBugCrKey(): string | null {
   return localStorage.getItem(BUG_CR_STORE) ?? null;
 }
 function saveBugCrKey(key: string | null) {
-  if (key) localStorage.setItem(BUG_CR_STORE, key);
-  else localStorage.removeItem(BUG_CR_STORE);
+  if (key) { localStorage.setItem(BUG_CR_STORE, key); remoteSync("jira_bug_cr_key", key); }
+  else { localStorage.removeItem(BUG_CR_STORE); remoteDelete("jira_bug_cr_key"); }
 }
 
 export default function JiraPage() {

@@ -21,6 +21,7 @@ import { getTodos, TodoItem } from "@/lib/todo";
 import { todayLocal, daysFromToday, APP_TIMEZONE } from "@/lib/date";
 import { parseDeploymentText, ParsedDeploymentItem } from "@/lib/deployment-parser";
 import { getGeminiKey } from "@/components/SettingsModal";
+import { remoteSync } from "@/lib/remote-sync";
 
 // ── Helpers ───────────────────────────────────────────────
 const _dateFmt = new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE });
@@ -1193,7 +1194,7 @@ export default function CalendarPage() {
             Today
           </button>
           <button
-            onClick={() => { const next = !use24h; setUse24h(next); localStorage.setItem("calendar_24h", String(next)); }}
+            onClick={() => { const next = !use24h; setUse24h(next); localStorage.setItem("calendar_24h", String(next)); remoteSync("calendar_24h", String(next)); }}
             className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded hover:bg-slate-800 transition-colors border border-slate-800"
             title="Toggle time format"
           >

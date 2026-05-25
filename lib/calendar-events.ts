@@ -1,3 +1,4 @@
+import { remoteSync } from "./remote-sync";
 export type EventColor = "blue" | "green" | "red" | "yellow" | "orange" | "pink" | "teal";
 
 export interface CalendarEvent {
@@ -30,7 +31,9 @@ export function getCalendarEvents(): CalendarEvent[] {
 }
 
 export function saveCalendarEvents(items: CalendarEvent[]) {
-  localStorage.setItem("calendar_events", JSON.stringify(items));
+  const json = JSON.stringify(items);
+  localStorage.setItem("calendar_events", json);
+  remoteSync("calendar_events", json);
 }
 
 export function dateInRange(date: string, startDate: string, endDate: string): boolean {
