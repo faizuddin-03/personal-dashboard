@@ -222,7 +222,7 @@ export default function Dashboard() {
         ...creds,
         jql: "assignee = currentUser() AND status changed to (Done, Closed, Resolved) after startOfDay() ORDER BY updated DESC",
         maxResults: 50,
-        fields: ["summary", "status", "priority", "issuetype"],
+        fields: ["summary", "status", "priority", "issuetype", "project"],
       }),
     })
       .then(r => r.json())
