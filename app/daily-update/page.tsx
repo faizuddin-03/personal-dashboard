@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Copy, Check, Plus, X, ChevronUp, ChevronDown } from "lucide-react";
+import { Copy, Check, Plus, X, ChevronUp, ChevronDown, Sparkles, Loader2 } from "lucide-react";
 import { useApp } from "@/components/AppShell";
+import { getGeminiKey } from "@/components/SettingsModal";
 import { getKanbanState, KanbanCard } from "@/lib/kanban";
 import clsx from "clsx";
 
@@ -126,6 +127,7 @@ export default function DailyUpdatePage() {
   const [min,   setMin]   = useState(Math.round(now.getMinutes() / 5) * 5 % 60);
   const [rows,  setRows]  = useState<CRRow[]>([]);
   const [copied, setCopied] = useState(false);
+  const [draftingId, setDraftingId] = useState<string | null>(null);
 
   const name = creds?.email ? firstNameFromEmail(creds.email) : "Faizuddin";
 
@@ -161,6 +163,44 @@ export default function DailyUpdatePage() {
       return next;
     });
   }, []);
+
+  const draftWithAI = useCallback(async (r: CRRow) => {
+    const key = getGeminiKey();
+    if (!key) { alert("Add your Gemini API key in Settings first."); return; }
+    setDraftingId(r.id);
+    try {
+      const updateLabel = type === "todo" ? "To Do Plan (what I plan to do today)" : "EOD Update (what I accomplished today)";
+      const prompt = `You are helping a QA engineer write their daily Microsoft Teams standup update.
+
+Update type: ${updateLabel}
+CR / Ticket: ${r.key} — ${r.title}
+Overall TS Progress: ${r.progress}
+
+Write 1–3 concise status bullet points for the "Status" field. Rules:
+- Plain text only, no markdown asterisks or symbols
+- Each top-level point on its own line
+- If a point has sub-details, put them on the next line(s) indented with exactly 2 spaces
+- Be brief and professional, like a QA engineer would say at standup
+- Do not repeat the ticket number or title in every line
+- Output only the bullet lines, nothing else`;
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+        }
+      );
+      const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
+      if (text) updateRow(r.id, { statusLines: text });
+    } catch (e) {
+      alert(`Gemini error: ${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setDraftingId(null);
+    }
+  }, [type, updateRow]);
 
   const timeStr = formatTime(hour, min);
   const preview = generateText(name, type, date, timeStr, rows);
@@ -274,7 +314,22 @@ export default function DailyUpdatePage() {
 
                 {/* Status lines */}
                 <div>
-                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1">Status notes <span className="normal-case text-slate-700">(one per line · indent 2 spaces for sub-bullet)</span></p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-[10px] text-slate-600 uppercase tracking-wider">Status notes <span className="normal-case text-slate-700">(one per line · indent 2 spaces for sub-bullet)</span></p>
+                    <button
+                      onClick={() => draftWithAI(r)}
+                      disabled={draftingId === r.id || !r.key}
+                      className={clsx(
+                        "flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors disabled:opacity-40",
+                        draftingId === r.id
+                          ? "border-purple-700/50 text-purple-400 bg-purple-900/20"
+                          : "border-slate-700 text-slate-500 hover:border-purple-700/50 hover:text-purple-400 hover:bg-purple-900/10"
+                      )}
+                    >
+                      {draftingId === r.id ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />}
+                      {draftingId === r.id ? "Drafting…" : "Draft with AI"}
+                    </button>
+                  </div>
                   <textarea
                     value={r.statusLines}
                     onChange={e => updateRow(r.id, { statusLines: e.target.value })}
