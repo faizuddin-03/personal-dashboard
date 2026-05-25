@@ -65,6 +65,6 @@ export const CURRENT_CHANGES: ChangelogEntry[] = [
   },
 ];
 
-export const CURRENT_VERSION       = "v0.006";
+export const CURRENT_VERSION       = "v0.007";
 export const CURRENT_VERSION_LABEL = "Upcoming";
 export const CURRENT_VERSION_DATE  = "2026-05-25";

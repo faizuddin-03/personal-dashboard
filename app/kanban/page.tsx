@@ -549,7 +549,6 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
             {card.jiraKey && (
               <>
                 <span className="text-xs font-mono text-blue-400 font-bold">{card.jiraKey}</span>
-                <span className="text-xs bg-slate-700 text-slate-500 px-1 rounded">{card.jiraStatus}</span>
                 {baseUrl && (
                   <a href={`${baseUrl}/browse/${card.jiraKey}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-slate-700 hover:text-blue-400 opacity-0 group-hover:opacity-100">
                     <ExternalLink size={10} />
