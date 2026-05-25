@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Copy, Check, Plus, X, ChevronUp, ChevronDown, Sparkles, Loader2 } from "lucide-react";
+import { Copy, Check, Plus, X, ChevronUp, ChevronDown, Sparkles, Loader2, SidebarOpen } from "lucide-react";
 import { useApp } from "@/components/AppShell";
 import { getGeminiKey } from "@/components/SettingsModal";
 import { getKanbanState, KanbanCard } from "@/lib/kanban";
@@ -128,6 +128,7 @@ export default function DailyUpdatePage() {
   const [rows,  setRows]  = useState<CRRow[]>([]);
   const [copied, setCopied] = useState(false);
   const [draftingId, setDraftingId] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const name = creds?.email ? firstNameFromEmail(creds.email) : "Faizuddin";
 
@@ -215,28 +216,43 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
-        <div>
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
+        <div className="min-w-0">
           <h1 className="text-sm font-semibold text-slate-200">Daily Update</h1>
-          <p className="text-[10px] text-slate-500 italic font-normal">Generate your Teams To Do Plan or EOD Update</p>
+          <p className="text-xs text-slate-500 italic font-normal hidden sm:block">Generate your Teams To Do Plan or EOD Update</p>
         </div>
-        <button
-          onClick={copy}
-          className={clsx(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-            copied
-              ? "bg-green-700/30 text-green-400 border border-green-700/50"
-              : "bg-blue-600/20 text-blue-400 border border-blue-700/50 hover:bg-blue-600/30"
-          )}
-        >
-          {copied ? <Check size={13} /> : <Copy size={13} />}
-          {copied ? "Copied!" : "Copy to clipboard"}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setShowPreview(v => !v)}
+            className={clsx(
+              "sm:hidden flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors",
+              showPreview
+                ? "bg-slate-700 text-slate-200 border-slate-600"
+                : "bg-slate-800/60 text-slate-400 border-slate-700"
+            )}
+          >
+            <SidebarOpen size={13} />
+            Preview
+          </button>
+          <button
+            onClick={copy}
+            className={clsx(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+              copied
+                ? "bg-green-700/30 text-green-400 border border-green-700/50"
+                : "bg-blue-600/20 text-blue-400 border border-blue-700/50 hover:bg-blue-600/30"
+            )}
+          >
+            {copied ? <Check size={13} /> : <Copy size={13} />}
+            <span className="hidden sm:inline">{copied ? "Copied!" : "Copy to clipboard"}</span>
+            <span className="sm:hidden">{copied ? "Copied!" : "Copy"}</span>
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left — editor */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+        {/* Left — editor (hidden on mobile when preview is shown) */}
+        <div className={clsx("flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-5 sm:space-y-6", showPreview && "hidden sm:block")}>
 
           {/* Controls */}
           <div className="flex flex-wrap items-center gap-3">
@@ -315,12 +331,12 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
                 {/* Status lines */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-[10px] text-slate-600 uppercase tracking-wider">Status notes <span className="normal-case text-slate-700">(one per line · indent 2 spaces for sub-bullet)</span></p>
+                    <p className="text-xs text-slate-600 uppercase tracking-wider">Status notes <span className="normal-case text-slate-700">(one per line · indent 2 spaces for sub-bullet)</span></p>
                     <button
                       onClick={() => draftWithAI(r)}
                       disabled={draftingId === r.id || !r.key}
                       className={clsx(
-                        "flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors disabled:opacity-40",
+                        "flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border transition-colors disabled:opacity-40",
                         draftingId === r.id
                           ? "border-purple-700/50 text-purple-400 bg-purple-900/20"
                           : "border-slate-700 text-slate-500 hover:border-purple-700/50 hover:text-purple-400 hover:bg-purple-900/10"
@@ -341,7 +357,7 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
 
                 {/* Progress */}
                 <div>
-                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1">Overall CR Testing Progress <span className="normal-case text-slate-700">(new line per sub-item e.g. eAuto / Secarang)</span></p>
+                  <p className="text-xs text-slate-600 uppercase tracking-wider mb-1">Overall CR Testing Progress <span className="normal-case text-slate-700">(new line per sub-item e.g. eAuto / Secarang)</span></p>
                   <textarea
                     value={r.progress}
                     onChange={e => updateRow(r.id, { progress: e.target.value })}
@@ -359,12 +375,16 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
           </div>
         </div>
 
-        {/* Right — preview */}
-        <div className="w-80 shrink-0 border-l border-slate-800 flex flex-col">
+        {/* Right — preview (full screen on mobile when toggled, sidebar on desktop) */}
+        <div className={clsx(
+          "border-l border-slate-800 flex flex-col",
+          "sm:w-80 sm:shrink-0",
+          showPreview ? "flex-1" : "hidden sm:flex"
+        )}>
           <div className="px-4 py-3 border-b border-slate-800">
             <p className="text-xs font-medium text-slate-400">Preview</p>
           </div>
-          <pre className="flex-1 overflow-y-auto px-4 py-3 text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
+          <pre className="flex-1 overflow-y-auto px-4 py-3 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
             {preview || <span className="text-slate-600 italic">Add CR entries to see preview</span>}
           </pre>
         </div>

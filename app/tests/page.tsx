@@ -55,7 +55,7 @@ function StatusChip({ status, onToggle }: { status: "pass" | "fail" | "in-progre
     <div className="flex gap-1">
       <button
         onClick={() => onToggle(status === "pass" ? null : "pass")}
-        className={clsx("flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border transition-colors",
+        className={clsx("flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border transition-colors",
           status === "pass" ? "bg-green-900/60 border-green-700 text-green-300" : "border-slate-700 text-slate-600 hover:border-green-700 hover:text-green-400"
         )}
       >
@@ -63,7 +63,7 @@ function StatusChip({ status, onToggle }: { status: "pass" | "fail" | "in-progre
       </button>
       <button
         onClick={() => onToggle(status === "in-progress" ? null : "in-progress")}
-        className={clsx("flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border transition-colors",
+        className={clsx("flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border transition-colors",
           status === "in-progress" ? "bg-amber-900/60 border-amber-700 text-amber-300" : "border-slate-700 text-slate-600 hover:border-amber-700 hover:text-amber-400"
         )}
       >
@@ -71,7 +71,7 @@ function StatusChip({ status, onToggle }: { status: "pass" | "fail" | "in-progre
       </button>
       <button
         onClick={() => onToggle(status === "fail" ? null : "fail")}
-        className={clsx("flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border transition-colors",
+        className={clsx("flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border transition-colors",
           status === "fail" ? "bg-red-900/60 border-red-700 text-red-300" : "border-slate-700 text-slate-600 hover:border-red-700 hover:text-red-400"
         )}
       >
@@ -366,10 +366,10 @@ export default function TestTrackerPage() {
   return (
     <div className="flex flex-col min-h-full">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between">
         <div>
           <h1 className="text-sm font-semibold text-slate-200">TS Tracker</h1>
-          <p className="text-[10px] text-slate-500 italic font-normal">Single click to deprio</p>
+          <p className="text-xs text-slate-500 italic font-normal">Single click to deprio</p>
         </div>
         <div className="flex items-center gap-2">
           {/* View toggle */}
@@ -392,7 +392,7 @@ export default function TestTrackerPage() {
         </div>
       </header>
 
-      <div className="flex-1 p-6 max-w-4xl mx-auto w-full">
+      <div className="flex-1 px-3 py-4 sm:p-6 max-w-4xl mx-auto w-full">
         {/* ── BY CR VIEW ── */}
         {view === "cr" && (
           <>
@@ -447,11 +447,11 @@ export default function TestTrackerPage() {
                       )}
                       {stats.total > 0 && (
                         <div className="flex items-center gap-2 shrink-0">
-                          {stats.wip > 0 && <span className="text-[10px] text-amber-400 font-medium">{stats.wip} wip</span>}
-                          {stats.fail > 0 && <span className="text-[10px] text-red-400 font-medium">{stats.fail} fail</span>}
-                          {stats.pass > 0 && <span className="text-[10px] text-green-400 font-medium">{stats.pass} pass</span>}
-                          <span className="text-[10px] text-slate-500">{stats.done}/{stats.total}</span>
-                          <span className="text-[10px] font-semibold text-green-400">{stats.passPct}%</span>
+                          {stats.wip > 0 && <span className="text-xs text-amber-400 font-medium">{stats.wip} wip</span>}
+                          {stats.fail > 0 && <span className="text-xs text-red-400 font-medium">{stats.fail} fail</span>}
+                          {stats.pass > 0 && <span className="text-xs text-green-400 font-medium">{stats.pass} pass</span>}
+                          <span className="text-xs text-slate-500">{stats.done}/{stats.total}</span>
+                          <span className="text-xs font-semibold text-green-400">{stats.passPct}%</span>
                           <div className="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden flex">
                             <div className="h-full bg-green-500" style={{ width: `${stats.passPct}%` }} />
                             <div className="h-full bg-red-500" style={{ width: `${stats.total ? Math.round((stats.fail / stats.total) * 100) : 0}%` }} />
@@ -506,11 +506,11 @@ export default function TestTrackerPage() {
                                           </button>
                                         </span>
                                       )}
-                                      <span className="text-[10px] text-slate-600">{ss.total} TS</span>
-                                      {ss.wip > 0 && <span className="text-[10px] text-amber-400">{ss.wip} wip</span>}
-                                      {ss.fail > 0 && <span className="text-[10px] text-red-400">{ss.fail}✗</span>}
-                                      {ss.pass > 0 && <span className="text-[10px] text-green-400">{ss.pass}✓</span>}
-                                      {ss.total > 0 && <span className="text-[10px] font-semibold text-green-400">{ss.passPct}%</span>}
+                                      <span className="text-xs text-slate-600">{ss.total} TS</span>
+                                      {ss.wip > 0 && <span className="text-xs text-amber-400">{ss.wip} wip</span>}
+                                      {ss.fail > 0 && <span className="text-xs text-red-400">{ss.fail}✗</span>}
+                                      {ss.pass > 0 && <span className="text-xs text-green-400">{ss.pass}✓</span>}
+                                      {ss.total > 0 && <span className="text-xs font-semibold text-green-400">{ss.passPct}%</span>}
                                       <button onClick={e => { e.stopPropagation(); removeSuite(cr.id, suite.id); }}
                                         className="text-slate-700 hover:text-red-400 p-0.5 ml-1" title="Remove suite">
                                         <X size={12} />
@@ -518,14 +518,14 @@ export default function TestTrackerPage() {
                                     </div>
 
                                     {suiteOpen && (
-                                      <div className="border-t border-slate-800">
+                                      <div className="border-t border-slate-800 overflow-x-auto">
                                         {/* Column headers */}
                                         {suite.cases.length > 0 && (
-                                          <div className="grid grid-cols-[16px_1fr_220px_110px] gap-2 px-3 py-1.5 border-b border-slate-800/60">
+                                          <div className="grid grid-cols-[16px_1fr_180px_100px] sm:grid-cols-[16px_1fr_220px_110px] gap-2 px-3 py-1.5 border-b border-slate-800/60 min-w-[340px]">
                                             <span />
-                                            <span className="text-[10px] text-slate-600 uppercase tracking-wider">TS Number</span>
-                                            <span className="text-[10px] text-slate-600 uppercase tracking-wider">Status</span>
-                                            <span className="text-[10px] text-slate-600 uppercase tracking-wider">Date Tested</span>
+                                            <span className="text-xs text-slate-600 uppercase tracking-wider">TS Number</span>
+                                            <span className="text-xs text-slate-600 uppercase tracking-wider">Status</span>
+                                            <span className="text-xs text-slate-600 uppercase tracking-wider">Date Tested</span>
                                           </div>
                                         )}
 
@@ -538,12 +538,12 @@ export default function TestTrackerPage() {
                                                 <div
                                                   onClick={() => updateCase(tc.id, { disabled: !tc.disabled })}
                                                   className={clsx(
-                                                    "relative grid grid-cols-[16px_1fr_220px_110px] gap-2 items-center px-3 py-2 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity cursor-pointer",
+                                                    "relative grid grid-cols-[16px_1fr_180px_100px] sm:grid-cols-[16px_1fr_220px_110px] gap-2 items-center px-3 py-2.5 border-b border-slate-800/40 hover:bg-slate-800/20 group transition-opacity cursor-pointer min-w-[340px]",
                                                     tc.disabled && "opacity-30 grayscale"
                                                   )}>
                                                   {tc.disabled && (
                                                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                                                      <span className="text-[11px] font-bold italic text-slate-400 tracking-widest">DEPRIORITIZED</span>
+                                                      <span className="text-xs font-bold italic text-slate-400 tracking-widest">DEPRIORITIZED</span>
                                                     </div>
                                                   )}
                                                   <span onClick={e => e.stopPropagation()}>{caseHandle}</span>
@@ -576,9 +576,9 @@ export default function TestTrackerPage() {
                                                     {tc.dateTested ? (
                                                       <input type="date" value={tc.dateTested}
                                                         onChange={e => e.target.value && updateCase(tc.id, { dateTested: e.target.value })}
-                                                        className="text-[11px] text-slate-400 bg-transparent border-b border-transparent hover:border-slate-700 focus:border-blue-600 focus:outline-none [color-scheme:dark] cursor-pointer" />
+                                                        className="text-xs text-slate-400 bg-transparent border-b border-transparent hover:border-slate-700 focus:border-blue-600 focus:outline-none [color-scheme:dark] cursor-pointer" />
                                                     ) : (
-                                                      <span className="text-[11px] text-slate-700">—</span>
+                                                      <span className="text-xs text-slate-700">—</span>
                                                     )}
                                                     <button onClick={() => { setEditingCaseId(tc.id); setEditingCaseValue(tc.tsNumber); }}
                                                       className="opacity-0 group-hover:opacity-100 text-slate-700 hover:text-slate-400 ml-auto transition-opacity">
@@ -703,24 +703,24 @@ export default function TestTrackerPage() {
                         <span className="text-xs font-mono text-blue-400 font-bold">{crKey}</span>
                         <span className="text-slate-600">·</span>
                         <span className="text-xs text-slate-400">{suiteTitle}</span>
-                        <div className="ml-auto flex items-center gap-2 text-[11px]">
+                        <div className="ml-auto flex items-center gap-2 text-xs">
                           {failed > 0 && <span className="text-red-400">{failed} fail</span>}
                           {passed > 0 && <span className="text-green-400">{passed} pass</span>}
                         </div>
                       </div>
                       <div>
                         <div className="grid grid-cols-[1fr_120px] gap-2 px-4 py-1.5 border-b border-slate-800/60">
-                          <span className="text-[10px] text-slate-600 uppercase tracking-wider">TS Number</span>
-                          <span className="text-[10px] text-slate-600 uppercase tracking-wider">Status</span>
+                          <span className="text-xs text-slate-600 uppercase tracking-wider">TS Number</span>
+                          <span className="text-xs text-slate-600 uppercase tracking-wider">Status</span>
                         </div>
                         {rows.map(({ tc }) => (
                           <div key={tc.id} className="grid grid-cols-[1fr_120px] gap-2 items-center px-4 py-2 border-b border-slate-800/40 last:border-0">
                             <span className="text-xs font-mono text-slate-300">{tc.tsNumber}</span>
                             <div className="flex items-center gap-1.5">
-                              {tc.status === "pass" && <span className="flex items-center gap-1 text-[11px] text-green-400 font-medium"><CheckCircle2 size={11} />Pass</span>}
-                              {tc.status === "in-progress" && <span className="flex items-center gap-1 text-[11px] text-amber-400 font-medium"><Timer size={11} />In Progress</span>}
-                              {tc.status === "fail" && <span className="flex items-center gap-1 text-[11px] text-red-400 font-medium"><XCircle size={11} />Fail</span>}
-                              {!tc.status && <span className="text-[11px] text-slate-600">—</span>}
+                              {tc.status === "pass" && <span className="flex items-center gap-1 text-xs text-green-400 font-medium"><CheckCircle2 size={11} />Pass</span>}
+                              {tc.status === "in-progress" && <span className="flex items-center gap-1 text-xs text-amber-400 font-medium"><Timer size={11} />In Progress</span>}
+                              {tc.status === "fail" && <span className="flex items-center gap-1 text-xs text-red-400 font-medium"><XCircle size={11} />Fail</span>}
+                              {!tc.status && <span className="text-xs text-slate-600">—</span>}
                             </div>
                           </div>
                         ))}

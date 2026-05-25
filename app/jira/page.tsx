@@ -384,9 +384,9 @@ export default function JiraPage() {
           {results.map(issue => (
             <button key={issue.id} onClick={() => onPick(issue)}
               className="w-full text-left flex items-center gap-2 px-3 py-2 hover:bg-slate-800 transition-colors border-b border-slate-800/50 last:border-0">
-              <span className="text-[10px] font-mono text-purple-400 font-bold shrink-0">{issue.key}</span>
+              <span className="text-xs font-mono text-purple-400 font-bold shrink-0">{issue.key}</span>
               <span className="text-xs text-slate-300 flex-1 line-clamp-1">{issue.fields.summary}</span>
-              <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(issue.fields.status.statusCategory.colorName))}>
+              <span className={clsx("text-xs shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(issue.fields.status.statusCategory.colorName))}>
                 {issue.fields.status.name}
               </span>
             </button>
@@ -399,7 +399,7 @@ export default function JiraPage() {
   return (
     <div className="flex flex-col min-h-full">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Ticket size={15} className="text-slate-500" />
           <h1 className="text-sm font-semibold text-slate-200">Jira</h1>
@@ -414,7 +414,7 @@ export default function JiraPage() {
         )}
       </header>
 
-      <div className="flex-1 px-6 py-5 space-y-5">
+      <div className="flex-1 px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
 
         {creds?.tokenExpiry && <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />}
 
@@ -464,9 +464,9 @@ export default function JiraPage() {
                   <div key={issue.id}
                     onClick={() => setSelectedKey(issue.key)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors cursor-pointer">
-                    <span className="text-[10px] font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
+                    <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
                     <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
-                    <span className={clsx("text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0", statusChipCls(issue.fields.status.statusCategory?.colorName ?? ""))}>
+                    <span className={clsx("text-xs px-1.5 py-0.5 rounded border font-medium shrink-0", statusChipCls(issue.fields.status.statusCategory?.colorName ?? ""))}>
                       {issue.fields.status.name}
                     </span>
                   </div>
@@ -533,9 +533,9 @@ export default function JiraPage() {
                     {/* Selected CR chip */}
                     {bugCrIssue && (
                       <div className="flex items-center gap-2 mb-2 px-2 py-1.5 bg-slate-800/60 rounded-lg">
-                        <span className="text-[10px] font-mono text-purple-400 font-bold shrink-0">{bugCrIssue.key}</span>
+                        <span className="text-xs font-mono text-purple-400 font-bold shrink-0">{bugCrIssue.key}</span>
                         <span className="text-xs text-slate-300 flex-1 line-clamp-1">{bugCrIssue.fields.summary}</span>
-                        <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(bugCrIssue.fields.status.statusCategory.colorName))}>
+                        <span className={clsx("text-xs shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(bugCrIssue.fields.status.statusCategory.colorName))}>
                           {bugCrIssue.fields.status.name}
                         </span>
                       </div>
@@ -556,12 +556,12 @@ export default function JiraPage() {
                             <button key={child.id} onClick={() => setSelectedKey(child.key)}
                               className="w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-800 transition-colors group">
                               <span className={clsx("text-[9px] shrink-0 font-bold", pColor)}>●</span>
-                              <span className="text-[10px] font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
+                              <span className="text-xs font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
                               {typeName && typeName !== "Bug" && (
                                 <span className="text-[9px] text-slate-600 shrink-0 bg-slate-800 px-1 rounded">{typeName}</span>
                               )}
                               <span className="text-xs text-slate-400 flex-1 line-clamp-1 group-hover:text-slate-200">{child.fields.summary}</span>
-                              <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(child.fields.status.statusCategory.colorName))}>
+                              <span className={clsx("text-xs shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(child.fields.status.statusCategory.colorName))}>
                                 {child.fields.status.name}
                               </span>
                             </button>
@@ -594,15 +594,15 @@ export default function JiraPage() {
                     {waitingOnMe.map(issue => (
                       <button key={issue.id} onClick={() => setSelectedKey(issue.key)}
                         className="w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-slate-800 transition-colors group">
-                        <span className="text-[10px] font-mono text-sky-400 font-bold shrink-0 mt-0.5">{issue.key}</span>
+                        <span className="text-xs font-mono text-sky-400 font-bold shrink-0 mt-0.5">{issue.key}</span>
                         <span className="text-xs text-slate-300 flex-1 line-clamp-1 group-hover:text-slate-100">{issue.fields.summary}</span>
                         <div className="flex items-center gap-1.5 shrink-0 ml-1">
                           {issue.fields.assignee && (
-                            <span className="text-[10px] text-slate-500 max-w-[80px] truncate" title={issue.fields.assignee.displayName}>
+                            <span className="text-xs text-slate-500 max-w-[80px] truncate" title={issue.fields.assignee.displayName}>
                               {issue.fields.assignee.displayName.split(" ")[0]}
                             </span>
                           )}
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-950/50 text-blue-300 font-medium">{issue.fields.status.name}</span>
+                          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-950/50 text-blue-300 font-medium">{issue.fields.status.name}</span>
                         </div>
                       </button>
                     ))}
@@ -642,12 +642,12 @@ export default function JiraPage() {
                     return (
                       <button key={issue.id} onClick={() => setSelectedKey(issue.key)}
                         className="w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-slate-800 transition-colors group">
-                        <span className={clsx("text-[10px] shrink-0 mt-0.5 font-bold", pColor)}>●</span>
+                        <span className={clsx("text-xs shrink-0 mt-0.5 font-bold", pColor)}>●</span>
                         <div className="flex-1 min-w-0">
-                          <span className="text-[10px] font-mono text-red-400 mr-1.5">{issue.key}</span>
+                          <span className="text-xs font-mono text-red-400 mr-1.5">{issue.key}</span>
                           <span className="text-xs text-slate-300 group-hover:text-slate-100 line-clamp-1">{issue.fields.summary}</span>
                         </div>
-                        <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium",
+                        <span className={clsx("text-xs shrink-0 px-1.5 py-0.5 rounded font-medium",
                           issue.fields.status.statusCategory.colorName === "green" ? "bg-green-950/50 text-green-300" :
                           issue.fields.status.statusCategory.colorName === "yellow" ? "bg-amber-950/60 text-amber-300" :
                           "bg-slate-800 text-slate-400"
@@ -730,7 +730,7 @@ export default function JiraPage() {
                           </button>
 
                           {/* Key + summary */}
-                          <span className="text-[10px] font-mono text-indigo-400 font-bold shrink-0">{crKey}</span>
+                          <span className="text-xs font-mono text-indigo-400 font-bold shrink-0">{crKey}</span>
                           {cr ? (
                             <>
                               <span className="text-xs text-slate-200 font-medium flex-1 line-clamp-1">{cr.fields.summary}</span>
@@ -738,11 +738,11 @@ export default function JiraPage() {
                               {Object.keys(statusCounts).length > 0 && (
                                 <div className="flex items-center gap-1 shrink-0 flex-wrap">
                                   {Object.entries(statusCounts).map(([s, n]) => (
-                                    <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 font-medium">{n} {s}</span>
+                                    <span key={s} className="text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 font-medium">{n} {s}</span>
                                   ))}
                                 </div>
                               )}
-                              <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(cr.fields.status.statusCategory.colorName))}>
+                              <span className={clsx("text-xs shrink-0 px-1.5 py-0.5 rounded font-medium", statusChipCls(cr.fields.status.statusCategory.colorName))}>
                                 {cr.fields.status.name}
                               </span>
                             </>
@@ -754,14 +754,14 @@ export default function JiraPage() {
                           <div className="flex items-center gap-1 shrink-0 ml-1">
                             <button
                               onClick={e => { e.stopPropagation(); setSelectedKey(crKey); }}
-                              className="text-[10px] text-indigo-400 hover:text-indigo-200 px-1.5 py-0.5 rounded hover:bg-indigo-950/40 transition-colors"
+                              className="text-xs text-indigo-400 hover:text-indigo-200 px-1.5 py-0.5 rounded hover:bg-indigo-950/40 transition-colors"
                             >
                               View
                             </button>
                             <button
                               onClick={() => completeCr(crKey)}
                               title="Mark as complete and remove from list"
-                              className="flex items-center gap-0.5 text-[10px] text-green-500 hover:text-green-300 px-1.5 py-0.5 rounded hover:bg-green-950/40 transition-colors"
+                              className="flex items-center gap-0.5 text-xs text-green-500 hover:text-green-300 px-1.5 py-0.5 rounded hover:bg-green-950/40 transition-colors"
                             >
                               <CheckCheck size={11} />Done
                             </button>
@@ -788,9 +788,9 @@ export default function JiraPage() {
                                 <button key={child.id} onClick={() => setSelectedKey(child.key)}
                                   className="w-full text-left flex items-center gap-2.5 px-3 py-2 hover:bg-slate-800/50 transition-colors group">
                                   <span className={clsx("text-[9px] shrink-0 font-bold", pColor)}>●</span>
-                                  <span className="text-[10px] font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
+                                  <span className="text-xs font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
                                   <span className="text-xs text-slate-400 flex-1 line-clamp-1 group-hover:text-slate-200">{child.fields.summary}</span>
-                                  <span className={clsx("text-[10px] shrink-0 px-1.5 py-0.5 rounded font-medium",
+                                  <span className={clsx("text-xs shrink-0 px-1.5 py-0.5 rounded font-medium",
                                     statusChipCls(child.fields.status.statusCategory.colorName)
                                   )}>{child.fields.status.name}</span>
                                 </button>

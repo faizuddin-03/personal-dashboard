@@ -139,12 +139,12 @@ function buildMatrix(rows: InsuranceRow[]) {
 function AllowBadge({ value }: { value: string }) {
   const v = value.trim().toLowerCase();
   if (["yes", "y", "true", "1"].includes(v))
-    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-900/60 text-green-300 border border-green-800">Yes</span>;
+    return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-900/60 text-green-300 border border-green-800">Yes</span>;
   if (["no", "n", "false", "0"].includes(v))
-    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-900/60 text-red-300 border border-red-800">No</span>;
+    return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-900/60 text-red-300 border border-red-800">No</span>;
   if (v.startsWith("refer"))
-    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-yellow-900/60 text-yellow-300 border border-yellow-800">{value}</span>;
-  return <span className="text-slate-400 text-[11px]">{value || "—"}</span>;
+    return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-900/60 text-yellow-300 border border-yellow-800">{value}</span>;
+  return <span className="text-slate-400 text-xs">{value || "—"}</span>;
 }
 
 // ── Main page ─────────────────────────────────────────────────
@@ -317,7 +317,7 @@ export default function InsurancePage() {
     <div className="flex flex-col min-h-full">
 
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between gap-3">
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-600">eAuto</span>
           <span className="text-slate-700">/</span>
@@ -325,7 +325,7 @@ export default function InsurancePage() {
           <h1 className="text-sm font-semibold text-slate-200">Insurance Checker</h1>
         </div>
         {rows.length > 0 && savedAt && (
-          <span className="text-[11px] text-slate-600 hidden sm:block">
+          <span className="text-xs text-slate-600 hidden sm:block">
             Saved {new Date(savedAt).toLocaleString()}
           </span>
         )}
@@ -363,7 +363,7 @@ export default function InsurancePage() {
         </div>
       )}
 
-      {activeTab === "check" && <div className="px-6 py-5 space-y-5">
+      {activeTab === "check" && <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
 
         {/* ── Input panel ── */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
@@ -409,7 +409,7 @@ export default function InsurancePage() {
               />
             )}
             {!customEnv && (
-              <p className="text-[11px] text-slate-600 font-mono">{baseUrl}</p>
+              <p className="text-xs text-slate-600 font-mono">{baseUrl}</p>
             )}
           </div>
 
@@ -580,7 +580,7 @@ export default function InsurancePage() {
             <summary className="px-4 py-2.5 text-xs text-slate-500 cursor-pointer select-none hover:text-slate-300">
               Show run log
             </summary>
-            <pre className="px-4 pb-3 text-[11px] text-slate-500 font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">{runLog}</pre>
+            <pre className="px-4 pb-3 text-xs text-slate-500 font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">{runLog}</pre>
           </details>
         )}
 
@@ -644,10 +644,10 @@ export default function InsurancePage() {
               {/* Insurer group */}
               {foundInsurers.length > 0 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold shrink-0">Insurer</span>
+                  <span className="text-xs text-slate-500 uppercase tracking-wide font-semibold shrink-0">Insurer</span>
                   <button
                     onClick={() => setShownInsurers(new Set(foundInsurers))}
-                    className={clsx("px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all",
+                    className={clsx("px-2.5 py-1 rounded-full text-xs font-medium border transition-all",
                       shownInsurers.size === foundInsurers.length
                         ? "bg-slate-700 border-slate-600 text-slate-200"
                         : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
@@ -656,7 +656,7 @@ export default function InsurancePage() {
                     const active = shownInsurers.has(ins);
                     return (
                       <button key={ins} onClick={() => toggleInsurer(ins)}
-                        className={clsx("px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all",
+                        className={clsx("px-2.5 py-1 rounded-full text-xs font-medium border transition-all",
                           active
                             ? "bg-blue-600/20 border-blue-500/50 text-blue-300"
                             : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
@@ -671,10 +671,10 @@ export default function InsurancePage() {
 
               {/* Allow Purchase group */}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold shrink-0">Allow</span>
+                <span className="text-xs text-slate-500 uppercase tracking-wide font-semibold shrink-0">Allow</span>
                 {(["all", "yes", "no", "refer"] as AllowFilter[]).map(f => (
                   <button key={f} onClick={() => setAllowFilter(f)}
-                    className={clsx("px-2.5 py-1 rounded-full text-[11px] font-medium border transition-all capitalize",
+                    className={clsx("px-2.5 py-1 rounded-full text-xs font-medium border transition-all capitalize",
                       allowFilter === f
                         ? f === "yes"   ? "bg-green-900/60 border-green-700 text-green-300"
                           : f === "no"  ? "bg-red-900/60 border-red-700 text-red-300"
@@ -730,7 +730,7 @@ export default function InsurancePage() {
                     return (
                       <th key={col.key}
                         onClick={() => toggleSort(col.key)}
-                        className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-slate-300 transition-colors">
+                        className="px-3 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-slate-300 transition-colors">
                         <span className="inline-flex items-center gap-1">
                           {col.label}
                           {active
@@ -773,9 +773,9 @@ export default function InsurancePage() {
               <table className="text-xs border-collapse w-full">
                 <thead>
                   <tr className="border-b border-slate-800 bg-slate-900">
-                    <th className="px-4 py-2.5 text-left text-[11px] font-semibold text-slate-500 uppercase tracking-wider min-w-[130px]">Vehicle</th>
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[130px]">Vehicle</th>
                     {matrixInsurers.map(ins => (
-                      <th key={ins} className="px-4 py-2.5 text-center text-[11px] font-semibold text-slate-500 uppercase tracking-wider min-w-[120px]">{ins}</th>
+                      <th key={ins} className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[120px]">{ins}</th>
                     ))}
                   </tr>
                 </thead>
@@ -822,11 +822,11 @@ export default function InsurancePage() {
                     <table className="text-xs border-collapse w-full">
                       <thead>
                         <tr className="border-b border-slate-800">
-                          <th className="pb-1.5 text-left text-[11px] text-slate-500 font-semibold pr-4">Insurer</th>
-                          <th className="pb-1.5 text-left text-[11px] text-slate-500 font-semibold pr-4">Cover Type</th>
-                          <th className="pb-1.5 text-left text-[11px] text-slate-500 font-semibold pr-4">Allow Purchase</th>
-                          <th className="pb-1.5 text-left text-[11px] text-slate-500 font-semibold pr-4">Refer Risk Code</th>
-                          <th className="pb-1.5 text-right text-[11px] text-slate-500 font-semibold">Total Price</th>
+                          <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Insurer</th>
+                          <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Cover Type</th>
+                          <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Allow Purchase</th>
+                          <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Refer Risk Code</th>
+                          <th className="pb-1.5 text-right text-xs text-slate-500 font-semibold">Total Price</th>
                         </tr>
                       </thead>
                       <tbody>

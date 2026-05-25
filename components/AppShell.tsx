@@ -97,19 +97,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {/* Main area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Mobile top bar */}
-          <div className="lg:hidden flex items-center justify-between px-4 h-12 bg-slate-900 border-b border-slate-800 shrink-0">
+          <div className="lg:hidden flex items-center justify-between px-3 h-14 bg-slate-900 border-b border-slate-800 shrink-0">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="text-slate-400 hover:text-slate-200 p-1"
+              className="text-slate-400 hover:text-slate-200 p-2.5 rounded-xl hover:bg-slate-800 active:bg-slate-700 transition-colors"
             >
-              <Menu size={20} />
+              <Menu size={22} />
             </button>
-            <span className="text-sm font-semibold text-slate-200">Udin's Board</span>
+            <span className="text-base font-semibold text-slate-200">Udin's Board</span>
             <button
               onClick={() => setSearchOpen(true)}
-              className="text-slate-400 hover:text-slate-200 p-1"
+              className="text-slate-400 hover:text-slate-200 p-2.5 rounded-xl hover:bg-slate-800 active:bg-slate-700 transition-colors"
             >
-              <Search size={18} />
+              <Search size={20} />
             </button>
           </div>
 

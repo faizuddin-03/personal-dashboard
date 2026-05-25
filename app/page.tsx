@@ -34,18 +34,18 @@ function MiniKanbanCard({ card }: { card: KanbanCard }) {
     )}>
       <div className="flex items-center gap-1.5 mb-1">
         {isCR
-          ? <span className="text-[10px] bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">CR</span>
-          : <span className="text-[10px] bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium">Task</span>
+          ? <span className="text-xs bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">CR</span>
+          : <span className="text-xs bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium">Task</span>
         }
-        {card.jiraKey && <span className="text-[10px] font-mono text-blue-400 font-bold">{card.jiraKey}</span>}
+        {card.jiraKey && <span className="text-xs font-mono text-blue-400 font-bold">{card.jiraKey}</span>}
       </div>
       <p className="text-sm text-slate-200 font-medium line-clamp-2 leading-snug mb-2">{card.title}</p>
       <div className="flex items-center gap-2">
-        <span className={clsx("flex items-center gap-1 text-[10px] font-medium", pm.color)}>
+        <span className={clsx("flex items-center gap-1 text-xs font-medium", pm.color)}>
           <span className={clsx("w-1.5 h-1.5 rounded-full", pm.dot)} />{pm.label}
         </span>
         {card.dueDate && (
-          <span className={clsx("text-[10px] ml-auto", over ? "text-red-400" : "text-slate-500")}>
+          <span className={clsx("text-xs ml-auto", over ? "text-red-400" : "text-slate-500")}>
             {over ? "Overdue" : new Date(card.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
         )}
@@ -73,7 +73,7 @@ function StatBox({ value, label, color = "text-slate-200", alert }: { value: num
   return (
     <div className={clsx("flex flex-col items-center justify-center px-4 py-3 rounded-xl border", alert && value ? "bg-red-950/30 border-red-800/50" : "bg-slate-800/60 border-slate-700/60")}>
       <span className={clsx("text-2xl font-bold tabular-nums", alert && value ? "text-red-400" : color)}>{value}</span>
-      <span className="text-[11px] text-slate-500 mt-0.5 text-center leading-tight">{label}</span>
+      <span className="text-xs text-slate-500 mt-0.5 text-center leading-tight">{label}</span>
     </div>
   );
 }
@@ -244,7 +244,7 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col min-h-full">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <LayoutDashboard size={15} className="text-slate-500" />
           <h1 className="text-sm font-semibold text-slate-200">Dashboard</h1>
@@ -259,7 +259,7 @@ export default function Dashboard() {
               </button>
               {showCustomize && (
                 <div className="absolute right-0 top-9 w-60 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 p-3">
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-2">Widgets</p>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Widgets</p>
                   <div className="space-y-0.5">
                     {widgets.map((w, i) => (
                       <div key={w.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-800 group">
@@ -282,7 +282,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="flex-1 px-6 py-5 space-y-5">
+      <div className="flex-1 px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
 
         {creds?.tokenExpiry && <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />}
 
@@ -299,7 +299,7 @@ export default function Dashboard() {
               <div className="flex flex-wrap gap-2">
                 {dueSoonCards.map(card => (
                   <Link key={card.id} href="/kanban" className={clsx(
-                    "flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-lg border transition-colors",
+                    "flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border transition-colors",
                     isKanbanOverdue(card) ? "bg-red-950/40 border-red-800/40 text-red-300" : "bg-amber-950/30 border-amber-800/30 text-amber-300"
                   )}>
                     {isKanbanOverdue(card) ? <AlertTriangle size={10} /> : <Clock size={10} />}
@@ -343,16 +343,16 @@ export default function Dashboard() {
                         <Link key={d.id} href="/calendar" className={clsx("flex items-center gap-3 px-3 py-2.5 rounded-xl border hover:opacity-90 transition-opacity", tm.bg, tm.border)}>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <span className="text-[10px] font-mono font-bold text-blue-400">{d.ticketKey}</span>
-                              <span className={clsx("text-[10px] font-medium", tm.text)}>{d.environment}</span>
-                              <span className={clsx("text-[10px] opacity-60", tm.text)}>{tm.label}</span>
+                              <span className="text-xs font-mono font-bold text-blue-400">{d.ticketKey}</span>
+                              <span className={clsx("text-xs font-medium", tm.text)}>{d.environment}</span>
+                              <span className={clsx("text-xs opacity-60", tm.text)}>{tm.label}</span>
                             </div>
                             <span className={clsx("text-xs font-medium line-clamp-1", tm.text)}>{d.ticketSummary || d.ticketKey}</span>
                           </div>
                           <div className="text-right shrink-0 space-y-0.5">
-                            <p className={clsx("text-[11px] font-semibold", tm.text)}>{fmtDepDate(d.date)}</p>
-                            <p className={clsx("text-[10px] opacity-70", tm.text)}>{d.time}</p>
-                            <p className={clsx("text-[10px] font-medium", sm.color)}>{sm.label}</p>
+                            <p className={clsx("text-xs font-semibold", tm.text)}>{fmtDepDate(d.date)}</p>
+                            <p className={clsx("text-xs opacity-70", tm.text)}>{d.time}</p>
+                            <p className={clsx("text-xs font-medium", sm.color)}>{sm.label}</p>
                           </div>
                         </Link>
                       );
@@ -372,9 +372,9 @@ export default function Dashboard() {
                   <div className="space-y-1.5">
                     {assignedTickets.map(issue => (
                       <div key={issue.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
-                        <span className="text-[10px] font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
+                        <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
                         <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
-                        <span className={clsx("text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
+                        <span className={clsx("text-xs px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
                           {issue.fields.status.name}
                         </span>
                       </div>
@@ -409,9 +409,9 @@ export default function Dashboard() {
                   <div className="space-y-1.5">
                     {assignedTickets.map(issue => (
                       <div key={issue.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
-                        <span className="text-[10px] font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
+                        <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
                         <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
-                        <span className={clsx("text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
+                        <span className={clsx("text-xs px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
                           {issue.fields.status.name}
                         </span>
                       </div>
@@ -462,10 +462,10 @@ export default function Dashboard() {
                     return (
                       <Link key={cr.id} href="/tests" className="block px-3 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/60 hover:bg-slate-800 transition-colors">
                         <div className="flex items-center gap-2 mb-1.5">
-                          <span className="text-[10px] font-mono text-blue-400 font-bold shrink-0">{cr.crKey}</span>
+                          <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{cr.crKey}</span>
                           <span className="text-xs text-slate-300 flex-1 truncate">{cr.crSummary}</span>
                         </div>
-                        <div className="flex items-center gap-3 mb-2 text-[11px]">
+                        <div className="flex items-center gap-3 mb-2 text-xs">
                           <span className="text-slate-400">{done}/{all.length} done</span>
                           <span className="font-semibold text-green-400">{passPct}%</span>
                           {wip > 0  && <span className="text-amber-400">{wip} wip</span>}
@@ -479,7 +479,7 @@ export default function Dashboard() {
                             <div className="h-full bg-red-500 transition-all"   style={{ width: `${failPct}%` }} />
                           </div>
                         )}
-                        {all.length === 0 && <p className="text-[11px] text-slate-600">No test cases yet</p>}
+                        {all.length === 0 && <p className="text-xs text-slate-600">No test cases yet</p>}
                       </Link>
                     );
                   })}
@@ -503,7 +503,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       {raisedDate !== todayLocal() && (
-                        <button onClick={() => setRaisedDate(todayLocal())} className="px-2 py-1 text-[11px] font-medium bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors">Today</button>
+                        <button onClick={() => setRaisedDate(todayLocal())} className="px-2 py-1 text-xs font-medium bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors">Today</button>
                       )}
                       <input type="date" value={raisedDate} max={todayLocal()} onChange={e => e.target.value && setRaisedDate(e.target.value)}
                         className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 [color-scheme:dark] focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer" />

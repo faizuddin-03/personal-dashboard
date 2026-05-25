@@ -279,7 +279,7 @@ ${text}`;
                 className="w-full h-52 px-3 py-2.5 border border-slate-700 rounded-lg text-sm bg-slate-800 text-slate-100 placeholder-slate-600 resize-none focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono leading-relaxed"
               />
               {struckRemoved > 0 && (
-                <p className="text-[11px] text-amber-400 flex items-center gap-1.5">
+                <p className="text-xs text-amber-400 flex items-center gap-1.5">
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
                   {struckRemoved} struck-through segment{struckRemoved !== 1 ? "s" : ""} removed from pasted text
                 </p>
@@ -321,24 +321,24 @@ ${text}`;
                       <div className="flex-1 min-w-0 space-y-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className={clsx(
-                            "text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide",
+                            "text-xs font-bold px-1.5 py-0.5 rounded uppercase tracking-wide",
                             item.action === "add"
                               ? "bg-green-900/50 text-green-300 border border-green-800/50"
                               : "bg-blue-900/50 text-blue-300 border border-blue-800/50"
                           )}>{item.action === "add" ? "NEW" : "UPDATE"}</span>
                           <span className="text-xs font-semibold text-slate-200">{fmtDate(item.date)}</span>
-                          <span className={clsx("text-[10px] px-1.5 py-0.5 rounded font-medium",
+                          <span className={clsx("text-xs px-1.5 py-0.5 rounded font-medium",
                             item.type === "night" ? "bg-purple-950/60 text-purple-300" : "bg-sky-950/60 text-sky-300"
                           )}>{item.type === "night" ? "Night" : "Day"}</span>
-                          <span className={clsx("text-[10px] px-1.5 py-0.5 rounded font-medium",
+                          <span className={clsx("text-xs px-1.5 py-0.5 rounded font-medium",
                             item.status === "completed" ? "bg-green-950/50 text-green-300" :
                             item.status === "cancelled" ? "bg-slate-800 text-slate-500" :
                             "bg-blue-950/40 text-blue-300"
                           )}>{item.status}</span>
-                          <span className="text-[10px] text-slate-500">{item.environment}</span>
+                          <span className="text-xs text-slate-500">{item.environment}</span>
                         </div>
                         <p className="text-xs text-slate-300 truncate">{item.summary}</p>
-                        {item.notes && <p className="text-[10px] text-slate-600 truncate">{item.notes.split("\n")[0]}</p>}
+                        {item.notes && <p className="text-xs text-slate-600 truncate">{item.notes.split("\n")[0]}</p>}
                       </div>
                     </div>
                   ))}
@@ -568,15 +568,15 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
                   {/* Kanban board section */}
                   {filteredKanban.length > 0 && (
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-1.5">From Kanban Board</p>
+                      <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1.5">From Kanban Board</p>
                       <div className="space-y-1.5">
                         {filteredKanban.map(t => (
                           <button key={t.key} onClick={() => selectTicket(t)}
                             className="w-full text-left bg-blue-950/30 border border-blue-800/50 rounded-xl p-3 hover:border-blue-500 transition-colors">
                             <div className="flex items-center gap-2 mb-0.5">
                               <span className="text-xs font-mono text-blue-400 font-bold">{t.key}</span>
-                              {t.status && <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 rounded">{t.status}</span>}
-                              {t.project && <span className="text-[10px] text-slate-600 ml-auto">{t.project}</span>}
+                              {t.status && <span className="text-xs bg-slate-700 text-slate-400 px-1.5 rounded">{t.status}</span>}
+                              {t.project && <span className="text-xs text-slate-600 ml-auto">{t.project}</span>}
                             </div>
                             <p className="text-sm text-slate-200 line-clamp-1">{t.summary}</p>
                           </button>
@@ -588,15 +588,15 @@ function DeploymentModal({ initial, onClose, onSave, creds }: {
                   {/* Jira search results */}
                   {!jiraLoading && filteredTickets.length > 0 && (
                     <div>
-                      {filteredKanban.length > 0 && <p className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold mb-1.5">From Jira</p>}
+                      {filteredKanban.length > 0 && <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1.5">From Jira</p>}
                       <div className="space-y-1.5">
                         {filteredTickets.map(t => (
                           <button key={t.key} onClick={() => selectTicket(t)}
                             className="w-full text-left bg-slate-800 border border-slate-700 rounded-xl p-3 hover:border-blue-500 transition-colors">
                             <div className="flex items-center gap-2 mb-0.5">
                               <span className="text-xs font-mono text-blue-400 font-bold">{t.key}</span>
-                              <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 rounded">{t.status}</span>
-                              <span className="text-[10px] text-slate-600 ml-auto">{new Date(t.updated).toLocaleDateString()}</span>
+                              <span className="text-xs bg-slate-700 text-slate-400 px-1.5 rounded">{t.status}</span>
+                              <span className="text-xs text-slate-600 ml-auto">{new Date(t.updated).toLocaleDateString()}</span>
                             </div>
                             <p className="text-sm text-slate-200 line-clamp-1">{t.summary}</p>
                             <p className="text-xs text-slate-600">{t.project}</p>
@@ -907,9 +907,9 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[10px] font-mono font-bold text-blue-400">{d.ticketKey}</span>
-                        <span className={clsx("text-[10px] font-medium", tm.text)}>{tm.label}</span>
-                        <span className={clsx("text-[10px] font-medium ml-auto", sm.color)}>{sm.label}</span>
+                        <span className="text-xs font-mono font-bold text-blue-400">{d.ticketKey}</span>
+                        <span className={clsx("text-xs font-medium", tm.text)}>{tm.label}</span>
+                        <span className={clsx("text-xs font-medium ml-auto", sm.color)}>{sm.label}</span>
                       </div>
                       <p className={clsx("text-sm font-medium leading-snug", tm.text)}>{d.ticketSummary || d.ticketKey}</p>
                     </div>
@@ -918,14 +918,14 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                       <button onClick={() => onDeleteDeployment(d.id)} aria-label="Delete deployment" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-slate-500">
+                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
                     <span className="flex items-center gap-1"><Clock size={10} />{fmt(d.time)}</span>
                     {d.environment && <span>{d.environment}</span>}
                     {d.deployedBy  && <span>by {d.deployedBy}</span>}
                   </div>
                   {d.notes && <Linkified text={d.notes} className="text-xs text-slate-500 mt-1.5 line-clamp-2" />}
                   {d.rollbackPlan && (
-                    <p className="text-[11px] text-slate-600 mt-1"><span className="text-slate-500 font-medium">Rollback:</span> {d.rollbackPlan}</p>
+                    <p className="text-xs text-slate-600 mt-1"><span className="text-slate-500 font-medium">Rollback:</span> {d.rollbackPlan}</p>
                   )}
                 </div>
               );
@@ -940,7 +940,7 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium leading-snug">{e.title}</p>
-                      <div className="flex flex-wrap gap-x-3 text-[11px] opacity-70 mt-0.5">
+                      <div className="flex flex-wrap gap-x-3 text-xs opacity-70 mt-0.5">
                         {!e.allDay && e.startTime && <span className="flex items-center gap-1"><Clock size={10} />{fmt(e.startTime)}{e.endTime && ` – ${fmt(e.endTime)}`}</span>}
                         {e.allDay && <span>All day</span>}
                         {isMultiDay && <span>{e.startDate} → {e.endDate}</span>}
@@ -961,7 +961,7 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
               return (
                 <div key={i} className="bg-blue-950/30 border border-blue-900/40 rounded-xl p-3">
                   <p className="text-xs text-blue-400 font-semibold mb-0.5">Kanban Due</p>
-                  {c.jiraKey && <span className="text-[10px] font-mono text-blue-400 mr-2">{c.jiraKey}</span>}
+                  {c.jiraKey && <span className="text-xs font-mono text-blue-400 mr-2">{c.jiraKey}</span>}
                   <p className="text-sm text-slate-200">{c.title}</p>
                 </div>
               );
@@ -973,7 +973,7 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
               <div key={i} className="bg-slate-800 border border-slate-700 rounded-xl p-3">
                 <p className="text-xs text-slate-500 font-semibold mb-0.5">Task Due</p>
                 <p className="text-sm text-slate-200">{t.title}</p>
-                {t.jiraKey && <span className="text-[10px] font-mono text-blue-400">{t.jiraKey}</span>}
+                {t.jiraKey && <span className="text-xs font-mono text-blue-400">{t.jiraKey}</span>}
               </div>
             );
           })}
@@ -1152,7 +1152,7 @@ export default function CalendarPage() {
   return (
     <div className="flex flex-col min-h-full">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2 flex-wrap">
           <CalendarDays size={15} className="text-slate-500" />
           <h1 className="text-sm font-semibold text-slate-200">Calendar</h1>
@@ -1223,9 +1223,9 @@ export default function CalendarPage() {
         </div>
       </header>
 
-      <div className="flex-1 px-6 py-5">
+      <div className="flex-1 px-2 py-3 sm:px-6 sm:py-5">
         {/* Legend */}
-        <div className="flex flex-wrap gap-3 mb-4 text-[11px] text-slate-500">
+        <div className="flex flex-wrap gap-3 mb-4 text-xs text-slate-500">
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-sky-400" />Day Deployment</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-500" />Night Deployment</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-400" />Custom Event</span>
@@ -1247,12 +1247,12 @@ export default function CalendarPage() {
                   const monthAbbr = d.toLocaleDateString("en-US", { month: "short" });
                   return (
                     <div key={dateStr} className="text-center py-2">
-                      <p className="text-[10px] text-slate-600 uppercase tracking-wider font-semibold">{dayName}</p>
+                      <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">{dayName}</p>
                       <span className={clsx(
                         "inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold mt-0.5",
                         isToday ? "bg-blue-600 text-white" : "text-slate-300"
                       )}>{dayNum}</span>
-                      <p className="text-[10px] text-slate-600 mt-0.5">{monthAbbr}</p>
+                      <p className="text-xs text-slate-600 mt-0.5">{monthAbbr}</p>
                     </div>
                   );
                 })}
@@ -1273,7 +1273,7 @@ export default function CalendarPage() {
                       )}
                     >
                       {items.length === 0 && (
-                        <p className="text-[10px] text-slate-800 text-center mt-6">—</p>
+                        <p className="text-xs text-slate-800 text-center mt-6">—</p>
                       )}
                       <div className="space-y-1">
                         {items.map((item, i) => {
@@ -1281,7 +1281,7 @@ export default function CalendarPage() {
                           const label = getItemLabel(item);
                           const time = getItemTime(item);
                           return (
-                            <div key={i} className={clsx("text-[10px] rounded-lg px-1.5 py-1 border leading-snug", chipClass)}>
+                            <div key={i} className={clsx("text-xs rounded-lg px-1.5 py-1 border leading-snug", chipClass)}>
                               {time && <p className="font-semibold opacity-80 mb-0.5">{time}</p>}
                               <p className="break-words">{label}</p>
                             </div>
@@ -1301,7 +1301,7 @@ export default function CalendarPage() {
         {/* Day headers */}
         <div className="grid grid-cols-7 mb-1">
           {DAYS_SHORT.map(d => (
-            <div key={d} className="text-[11px] font-semibold text-slate-600 text-center py-1 uppercase tracking-wider">{d}</div>
+            <div key={d} className="text-xs font-semibold text-slate-600 text-center py-1 uppercase tracking-wider">{d}</div>
           ))}
         </div>
 
@@ -1345,14 +1345,14 @@ export default function CalendarPage() {
                     const label = getItemLabel(item);
                     const time = getItemTime(item);
                     return (
-                      <div key={i} className={clsx("text-[10px] rounded px-1 py-0.5 border truncate leading-tight flex items-center gap-1", chipClass)}>
+                      <div key={i} className={clsx("text-xs rounded px-1 py-0.5 border truncate leading-tight flex items-center gap-1", chipClass)}>
                         {time && <span className="shrink-0 opacity-70">{time}</span>}
                         <span className="truncate">{label}</span>
                       </div>
                     );
                   })}
                   {overflow > 0 && (
-                    <div className="text-[10px] text-slate-600 pl-1">+{overflow} more</div>
+                    <div className="text-xs text-slate-600 pl-1">+{overflow} more</div>
                   )}
                 </div>
               </div>

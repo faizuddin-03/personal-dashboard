@@ -136,11 +136,11 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col min-h-full">
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center">
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center">
         <h1 className="text-sm font-semibold text-slate-200">Settings</h1>
       </header>
 
-      <div className="flex-1 px-6 py-6 max-w-3xl space-y-6">
+      <div className="flex-1 px-4 py-5 sm:px-6 sm:py-6 max-w-3xl space-y-6">
 
         {/* ── Jira Connection ── */}
         <Section title="Jira Connection" description="Connect your Atlassian account to sync issues.">
@@ -333,7 +333,7 @@ export default function SettingsPage() {
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {type === "dark" ? "Dark themes" : "Light themes — soft pastel"}
                 </p>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {THEMES.filter(t => t.type === type).map(theme => {
                     const active = themeId === theme.id;
                     return (

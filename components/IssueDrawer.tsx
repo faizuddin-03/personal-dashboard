@@ -169,7 +169,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
         ) : error ? (
           <div className="flex-1 flex items-center justify-center text-red-400 text-sm">{error}</div>
         ) : issue ? (
-          <div className="flex-1 overflow-y-auto p-5 space-y-5">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 sm:space-y-5">
 
             {/* Summary */}
             <div>
@@ -188,13 +188,13 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
             {/* Parent breadcrumb — clicking opens in drawer */}
             {issue.fields.parent && (
               <div className="flex items-center gap-1.5 text-xs -mt-2">
-                <span className="text-slate-600 text-[10px] uppercase tracking-wide font-semibold">Parent</span>
+                <span className="text-slate-600 text-xs uppercase tracking-wide font-semibold">Parent</span>
                 <span className="text-slate-700">·</span>
                 <button
                   onClick={() => navigateToParent(issue.fields.parent!.key)}
                   className="flex items-center gap-1.5 px-2 py-1 bg-slate-800 border border-slate-700 rounded-lg hover:border-blue-600/60 hover:bg-blue-950/20 transition-colors group text-left"
                 >
-                  <span className="text-[10px] text-slate-500 font-medium">{issue.fields.parent.fields.issuetype.name}</span>
+                  <span className="text-xs text-slate-500 font-medium">{issue.fields.parent.fields.issuetype.name}</span>
                   <span className="text-xs font-mono text-blue-400 font-semibold group-hover:underline">{issue.fields.parent.key}</span>
                   <span className="text-xs text-slate-400 truncate max-w-[200px]">{issue.fields.parent.fields.summary}</span>
                 </button>
@@ -240,9 +240,9 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 block">Column</label>
+                        <label className="text-xs text-slate-500 uppercase tracking-wide mb-1 block">Column</label>
                         <select
                           value={kanbanCol}
                           onChange={e => setKanbanCol(e.target.value as ColumnId)}
@@ -254,7 +254,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 block">Priority</label>
+                        <label className="text-xs text-slate-500 uppercase tracking-wide mb-1 block">Priority</label>
                         <select
                           value={kanbanPriority}
                           onChange={e => setKanbanPriority(e.target.value as Priority)}
@@ -288,9 +288,9 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 block">Date</label>
+                        <label className="text-xs text-slate-500 uppercase tracking-wide mb-1 block">Date</label>
                         <input
                           type="date"
                           value={depDate}
@@ -299,7 +299,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 block">Time</label>
+                        <label className="text-xs text-slate-500 uppercase tracking-wide mb-1 block">Time</label>
                         <input
                           type="time"
                           value={depTime}
@@ -308,7 +308,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 block">Type</label>
+                        <label className="text-xs text-slate-500 uppercase tracking-wide mb-1 block">Type</label>
                         <select
                           value={depType}
                           onChange={e => setDepType(e.target.value as "day" | "night")}
@@ -319,7 +319,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 block">Environment</label>
+                        <label className="text-xs text-slate-500 uppercase tracking-wide mb-1 block">Environment</label>
                         <select
                           value={depEnv}
                           onChange={e => setDepEnv(e.target.value)}
@@ -332,7 +332,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 block">Deployed By</label>
+                      <label className="text-xs text-slate-500 uppercase tracking-wide mb-1 block">Deployed By</label>
                       <input
                         type="text"
                         value={depBy}
@@ -342,7 +342,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 block">Notes</label>
+                      <label className="text-xs text-slate-500 uppercase tracking-wide mb-1 block">Notes</label>
                       <textarea
                         value={depNotes}
                         onChange={e => setDepNotes(e.target.value)}
@@ -364,7 +364,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
             )}
 
             {/* Meta grid */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <MetaItem label="Project"  value={issue.fields.project.name} />
               <MetaItem label="Reporter" value={issue.fields.reporter?.displayName ?? "—"} />
               <MetaItem label="Assignee" value={issue.fields.assignee?.displayName ?? "Unassigned"} />
