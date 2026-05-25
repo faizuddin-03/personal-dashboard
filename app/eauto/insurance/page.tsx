@@ -13,6 +13,7 @@ const ENV_PRESETS = [
   { label: "SIT3", value: "https://staging.eauto.my/sit3" },
   { label: "SIT1", value: "https://staging.eauto.my/sit1" },
   { label: "UAT1", value: "https://staging.eauto.my/uat1" },
+  { label: "UAT2", value: "https://staging.eauto.my/uat2" },
   { label: "UAT3", value: "https://staging.eauto.my/uat3" },
 ] as const;
 

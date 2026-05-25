@@ -444,6 +444,38 @@ export default function JiraPage() {
           <StatsBar assigned={assigned} reported={reported} />
         )}
 
+        {/* ── Assigned to Me widget ── */}
+        {creds && (
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Ticket size={14} className="text-blue-400" />
+              <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Assigned to Me</p>
+              {!loading && assigned.length > 0 && (
+                <span className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-1.5 py-0.5 rounded-full font-semibold">{assigned.length}</span>
+              )}
+            </div>
+            {loading && assigned.length === 0 ? (
+              <div className="flex items-center justify-center py-6 text-slate-600 text-sm"><Loader2 size={16} className="animate-spin mr-2" />Loading…</div>
+            ) : assigned.length === 0 ? (
+              <p className="text-sm text-slate-600 py-4 text-center">No open tickets assigned</p>
+            ) : (
+              <div className="space-y-1.5 max-h-64 overflow-y-auto pr-0.5">
+                {assigned.map(issue => (
+                  <div key={issue.id}
+                    onClick={() => setSelectedKey(issue.key)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors cursor-pointer">
+                    <span className="text-[10px] font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
+                    <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
+                    <span className={clsx("text-[10px] px-1.5 py-0.5 rounded border font-medium shrink-0", statusChipCls(issue.fields.status.statusCategory?.colorName ?? ""))}>
+                      {issue.fields.status.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── Insights grid ── */}
         {creds && (
           <div className="space-y-4">
