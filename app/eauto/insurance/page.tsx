@@ -46,7 +46,7 @@ interface SavedResults {
 }
 
 // ── Estimate helpers ──────────────────────────────────────────
-const SECS_PER_VEHICLE = 25;
+const SECS_PER_VEHICLE = 50;
 
 function estimateTime(vehicleCount: number, concurrency: number): string {
   if (vehicleCount === 0) return "";
