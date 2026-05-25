@@ -20,15 +20,15 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0">
-          <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-blue-400" />
-            <h2 className="text-sm font-semibold text-slate-100">What's New</h2>
-            <span className="text-xs font-thin text-slate-500">{CURRENT_VERSION}</span>
+        <div className="relative flex items-center justify-center px-5 py-5 border-b border-slate-800 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <Sparkles size={18} className="text-blue-400" />
+            <h2 className="text-lg font-semibold text-slate-100">What's New</h2>
+            <span className="text-sm font-thin text-slate-500">{CURRENT_VERSION}</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
+            className="absolute right-4 p-1.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
           >
             <X size={16} />
           </button>
