@@ -9,7 +9,7 @@ import {
   Briefcase, Send,
 } from "lucide-react";
 import clsx from "clsx";
-import WhatsNewModal from "@/components/WhatsNewModal";
+import { useApp } from "@/components/AppShell";
 import { CURRENT_VERSION } from "@/lib/changelog";
 
 const nav = [
@@ -38,8 +38,8 @@ const nav = [
 
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
-  const [expanded, setExpanded]   = useState<string[]>(["eAuto", "Productivity"]);
-  const [showWhatsNew, setShowWhatsNew] = useState(false);
+  const [expanded, setExpanded] = useState<string[]>(["eAuto", "Productivity"]);
+  const { openWhatsNew } = useApp();
 
   function toggleGroup(label: string) {
     setExpanded(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label]);
@@ -138,7 +138,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
       {/* Bottom */}
       <div className="border-t border-slate-800 p-3 space-y-1">
         <button
-          onClick={() => setShowWhatsNew(true)}
+          onClick={openWhatsNew}
           className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors"
         >
           <Sparkles size={15} />
@@ -156,8 +156,6 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
           <Settings size={15} />Settings
         </Link>
       </div>
-
-      {showWhatsNew && <WhatsNewModal onClose={() => setShowWhatsNew(false)} />}
     </aside>
   );
 }

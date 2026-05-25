@@ -15,6 +15,7 @@ interface AppCtx {
   setCreds: (c: JiraCredentials | null) => void;
   openSettings: () => void;
   openSearch: () => void;
+  openWhatsNew: () => void;
 }
 
 export const AppContext = createContext<AppCtx>({
@@ -22,6 +23,7 @@ export const AppContext = createContext<AppCtx>({
   setCreds: () => {},
   openSettings: () => {},
   openSearch: () => {},
+  openWhatsNew: () => {},
 });
 
 export function useApp() {
@@ -81,6 +83,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       creds, setCreds,
       openSettings: () => router.push("/settings"),
       openSearch: () => setSearchOpen(true),
+      openWhatsNew: () => setWhatsNewOpen(true),
     }}>
       <div className="flex h-screen overflow-hidden">
         {/* Mobile overlay */}
