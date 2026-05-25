@@ -142,8 +142,8 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
           className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors"
         >
           <Sparkles size={15} />
-          <span>What's New</span>
-          <span className="text-[10px] font-thin text-slate-600 ml-0.5">{CURRENT_VERSION}</span>
+          <span className="flex-1 text-left">What's New</span>
+          <span className="text-[10px] font-thin text-slate-600">{CURRENT_VERSION}</span>
         </button>
         <Link
           href="/settings"
