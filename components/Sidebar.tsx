@@ -1,15 +1,15 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
   LayoutDashboard, ChevronDown, Shield, Car,
-  Settings, Download, Upload, Kanban,
+  Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
   Briefcase, Send,
 } from "lucide-react";
-import { exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import clsx from "clsx";
+import WhatsNewModal from "@/components/WhatsNewModal";
 
 const nav = [
   { label: "Dashboard",  href: "/",         icon: LayoutDashboard },
@@ -38,26 +38,10 @@ const nav = [
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
   const [expanded, setExpanded]   = useState<string[]>(["eAuto", "Productivity"]);
-  const [importMsg, setImportMsg] = useState("");
-  const [confirmImport, setConfirmImport] = useState(false);
-  const importRef = useRef<HTMLInputElement>(null);
+  const [showWhatsNew, setShowWhatsNew] = useState(false);
 
   function toggleGroup(label: string) {
     setExpanded(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label]);
-  }
-
-  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      await importLocalStorage(file);
-      setImportMsg("Imported! Reload the page.");
-      setTimeout(() => setImportMsg(""), 4000);
-    } catch {
-      setImportMsg("Invalid file.");
-      setTimeout(() => setImportMsg(""), 3000);
-    }
-    e.target.value = "";
   }
 
   return (
@@ -152,26 +136,12 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
 
       {/* Bottom */}
       <div className="border-t border-slate-800 p-3 space-y-1">
-        {importMsg && <p className="text-xs text-center text-blue-400 pb-1">{importMsg}</p>}
-        <div className="flex gap-1">
-          <button onClick={exportLocalStorage} title="Export all data" aria-label="Export all data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
-            <Download size={13} />Export
-          </button>
-          {confirmImport ? (
-            <div className="w-full mt-1 p-2 bg-red-950/40 border border-red-800/50 rounded-lg space-y-2">
-              <p className="text-[10px] text-red-300">This will overwrite all current data. Are you sure?</p>
-              <div className="flex gap-1">
-                <button onClick={() => setConfirmImport(false)} className="flex-1 text-[10px] text-slate-400 border border-slate-700 rounded px-2 py-1 hover:bg-slate-800">Cancel</button>
-                <button onClick={() => { setConfirmImport(false); importRef.current?.click(); }} className="flex-1 text-[10px] text-white bg-red-700 rounded px-2 py-1 hover:bg-red-600">Yes, import</button>
-              </div>
-            </div>
-          ) : (
-            <button onClick={() => setConfirmImport(true)} title="Import data" aria-label="Import data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
-              <Upload size={13} />Import
-            </button>
-          )}
-          <input ref={importRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
-        </div>
+        <button
+          onClick={() => setShowWhatsNew(true)}
+          className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors"
+        >
+          <Sparkles size={15} />What's New
+        </button>
         <Link
           href="/settings"
           onClick={onClose}
@@ -183,6 +153,8 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
           <Settings size={15} />Settings
         </Link>
       </div>
+
+      {showWhatsNew && <WhatsNewModal onClose={() => setShowWhatsNew(false)} />}
     </aside>
   );
 }
