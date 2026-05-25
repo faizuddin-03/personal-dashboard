@@ -190,8 +190,13 @@ ${text}`;
       const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
       const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
 
-      // Strip markdown code fences if Gemini wraps it
-      const jsonStr = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+      if (!raw) throw new Error("Gemini returned an empty response.");
+
+      // Extract the JSON array — find first [ and last ] to handle any surrounding text
+      const start = raw.indexOf("[");
+      const end   = raw.lastIndexOf("]");
+      if (start === -1 || end === -1) throw new Error(`No JSON array found in response. Got: ${raw.slice(0, 200)}`);
+      const jsonStr = raw.slice(start, end + 1);
       const aiItems = JSON.parse(jsonStr) as {
         date: string; summary: string; type: string; status: string; environment: string; notes: string;
       }[];
