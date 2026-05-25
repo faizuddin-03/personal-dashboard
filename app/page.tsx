@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import {
   Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
   Clock, Rocket, FileText, Ticket, Settings2, GripVertical,
-  Eye, EyeOff, ClipboardList,
+  Eye, EyeOff, ClipboardList, CheckCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
@@ -108,6 +108,10 @@ export default function Dashboard() {
   const [todayRaisedError, setTodayRaisedError]     = useState("");
   const [selectedKey, setSelectedKey]               = useState<string | null>(null);
 
+  // Completed today widget
+  const [completedToday, setCompletedToday]               = useState<JiraIssue[]>([]);
+  const [completedTodayLoading, setCompletedTodayLoading] = useState(false);
+
   // Local data
   const [ongoingCards, setOngoingCards]   = useState<KanbanCard[]>([]);
   const [dueSoonCards, setDueSoonCards]   = useState<KanbanCard[]>([]);
@@ -206,6 +210,26 @@ export default function Dashboard() {
       .catch(e => setTodayRaisedError(e?.message ?? "Network error"))
       .finally(() => setTodayRaisedLoading(false));
   }, [creds, raisedDate]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Completed today
+  useEffect(() => {
+    if (!creds) { setCompletedToday([]); return; }
+    setCompletedTodayLoading(true);
+    fetch("/api/jira/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...creds,
+        jql: "assignee = currentUser() AND status changed to (Done, Closed, Resolved) after startOfDay() ORDER BY updated DESC",
+        maxResults: 50,
+        fields: ["summary", "status", "priority", "issuetype"],
+      }),
+    })
+      .then(r => r.json())
+      .then(d => setCompletedToday(d.issues ?? []))
+      .catch(() => setCompletedToday([]))
+      .finally(() => setCompletedTodayLoading(false));
+  }, [creds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Date helpers ──────────────────────────────────────────
   function fmtDepDate(d: string) {
@@ -464,45 +488,73 @@ export default function Dashboard() {
             );
           }
 
-          // ── Raised Tickets ─────────────────────────────────
+          // ── Raised Tickets + Completed Today ───────────────
           if (w.id === "raised" && creds) {
             return (
-              <div key="raised" className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <FileText size={15} className="text-slate-400" />
-                    <h2 className="text-sm font-semibold text-slate-200">Raised Tickets</h2>
-                    {todayRaised.length > 0 && <span className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-1.5 py-0.5 rounded-full font-semibold">{todayRaised.length}</span>}
-                    {todayRaisedLoading && <Loader2 size={13} className="animate-spin text-blue-400" />}
+              <div key="raised" className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Raised Tickets */}
+                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                  <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <FileText size={15} className="text-slate-400" />
+                      <h2 className="text-sm font-semibold text-slate-200">Raised Tickets</h2>
+                      {todayRaised.length > 0 && <span className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-1.5 py-0.5 rounded-full font-semibold">{todayRaised.length}</span>}
+                      {todayRaisedLoading && <Loader2 size={13} className="animate-spin text-blue-400" />}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {raisedDate !== todayLocal() && (
+                        <button onClick={() => setRaisedDate(todayLocal())} className="px-2 py-1 text-[11px] font-medium bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors">Today</button>
+                      )}
+                      <input type="date" value={raisedDate} max={todayLocal()} onChange={e => e.target.value && setRaisedDate(e.target.value)}
+                        className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 [color-scheme:dark] focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer" />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    {raisedDate !== todayLocal() && (
-                      <button onClick={() => setRaisedDate(todayLocal())} className="px-2 py-1 text-[11px] font-medium bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-colors">Today</button>
-                    )}
-                    <input type="date" value={raisedDate} max={todayLocal()} onChange={e => e.target.value && setRaisedDate(e.target.value)}
-                      className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 [color-scheme:dark] focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer" />
-                  </div>
+                  {todayRaisedLoading && todayRaised.length === 0 ? (
+                    <div className="flex items-center justify-center py-8 text-slate-600"><Loader2 size={18} className="animate-spin mr-2" /> Loading…</div>
+                  ) : todayRaisedError ? (
+                    <div className="flex flex-col items-center py-6 text-center px-3">
+                      <p className="text-xs text-red-400 font-medium mb-1">Jira query failed</p>
+                      <p className="text-xs text-slate-600 break-all">{todayRaisedError}</p>
+                    </div>
+                  ) : todayRaised.length === 0 ? (
+                    <div className="flex flex-col items-center py-8 text-slate-600">
+                      <FileText size={24} className="mb-2" />
+                      <p className="text-sm">No tickets raised on {raisedDate === todayLocal() ? "today" : new Date(raisedDate + "T12:00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" })}</p>
+                      {raisedDate === todayLocal() && <p className="text-xs mt-1 text-slate-700">Tickets you create in Jira today will appear here</p>}
+                    </div>
+                  ) : (
+                    <div className="grid gap-2">
+                      {todayRaised.map(issue => (
+                        <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {todayRaisedLoading && todayRaised.length === 0 ? (
-                  <div className="flex items-center justify-center py-8 text-slate-600"><Loader2 size={18} className="animate-spin mr-2" /> Loading…</div>
-                ) : todayRaisedError ? (
-                  <div className="flex flex-col items-center py-6 text-center px-3">
-                    <p className="text-xs text-red-400 font-medium mb-1">Jira query failed</p>
-                    <p className="text-xs text-slate-600 break-all">{todayRaisedError}</p>
+
+                {/* Completed Today */}
+                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <CheckCheck size={15} className="text-green-400" />
+                    <h2 className="text-sm font-semibold text-slate-200">Completed Today</h2>
+                    {completedToday.length > 0 && <span className="text-xs bg-green-900/40 text-green-300 border border-green-800/50 px-1.5 py-0.5 rounded-full font-semibold">{completedToday.length}</span>}
+                    {completedTodayLoading && <Loader2 size={13} className="animate-spin text-green-400" />}
                   </div>
-                ) : todayRaised.length === 0 ? (
-                  <div className="flex flex-col items-center py-8 text-slate-600">
-                    <FileText size={24} className="mb-2" />
-                    <p className="text-sm">No tickets raised on {raisedDate === todayLocal() ? "today" : new Date(raisedDate + "T12:00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" })}</p>
-                    {raisedDate === todayLocal() && <p className="text-xs mt-1 text-slate-700">Tickets you create in Jira today will appear here</p>}
-                  </div>
-                ) : (
-                  <div className="grid gap-2">
-                    {todayRaised.map(issue => (
-                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
-                    ))}
-                  </div>
-                )}
+                  {completedTodayLoading && completedToday.length === 0 ? (
+                    <div className="flex items-center justify-center py-8 text-slate-600"><Loader2 size={18} className="animate-spin mr-2" /> Loading…</div>
+                  ) : completedToday.length === 0 ? (
+                    <div className="flex flex-col items-center py-8 text-slate-600">
+                      <CheckCheck size={24} className="mb-2 opacity-40" />
+                      <p className="text-sm">No tickets completed today</p>
+                      <p className="text-xs mt-1 text-slate-700">Tickets you move to Done/Closed today will appear here</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-2">
+                      {completedToday.map(issue => (
+                        <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             );
           }
