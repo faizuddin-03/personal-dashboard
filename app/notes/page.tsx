@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, Pin, X, Search, Palette } from "lucide-react";
+import { Plus, Pin, X, Search, Palette, ChevronLeft } from "lucide-react";
 import clsx from "clsx";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Note, NOTE_COLORS, noteColorMeta, getNotes, saveNotes, stripHtml } from "@/lib/notes-store";
@@ -43,20 +43,21 @@ function NoteListItem({ note, active, onClick }: { note: Note; active: boolean; 
       {note.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-1">
           {note.tags.map(tag => (
-            <span key={tag} className="bg-slate-700 text-slate-300 text-[10px] rounded-full px-2 py-0.5">{tag}</span>
+            <span key={tag} className="bg-slate-700 text-slate-300 text-xs rounded-full px-2 py-0.5">{tag}</span>
           ))}
         </div>
       )}
-      <p className="text-[10px] text-slate-700 mt-1">{new Date(note.updatedAt).toLocaleDateString()}</p>
+      <p className="text-xs text-slate-700 mt-1">{new Date(note.updatedAt).toLocaleDateString()}</p>
     </button>
   );
 }
 
 // ── Note editor panel ───────────────────────────────────────
-function NoteEditor({ note, onChange, onDelete }: {
+function NoteEditor({ note, onChange, onDelete, onBack }: {
   note: Note;
   onChange: (updated: Note) => void;
   onDelete: () => void;
+  onBack?: () => void;
 }) {
   const [showPalette, setShowPalette] = useState(false);
   const [tagInput, setTagInput] = useState("");
@@ -98,7 +99,17 @@ function NoteEditor({ note, onChange, onDelete }: {
   return (
     <div className={clsx("flex flex-col h-full", meta.bg)}>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-6 py-3 border-b border-slate-800 shrink-0">
+      <div className="flex items-center gap-2 px-4 sm:px-6 py-3 border-b border-slate-800 shrink-0">
+        {/* Back button — mobile only */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="sm:hidden p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors mr-1"
+            aria-label="Back to notes list"
+          >
+            <ChevronLeft size={18} />
+          </button>
+        )}
         {/* Pin */}
         <button
           onClick={() => update({ pinned: !note.pinned })}
@@ -148,7 +159,7 @@ function NoteEditor({ note, onChange, onDelete }: {
       </div>
 
       {/* Title */}
-      <div className="px-6 pt-5 pb-3 shrink-0">
+      <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 shrink-0">
         <input
           value={note.title}
           onChange={e => update({ title: e.target.value })}
@@ -158,10 +169,10 @@ function NoteEditor({ note, onChange, onDelete }: {
       </div>
 
       {/* Tags */}
-      <div className="px-6 pb-3 shrink-0">
+      <div className="px-4 sm:px-6 pb-3 shrink-0">
         <div className="flex flex-wrap items-center gap-1.5">
           {(note.tags ?? []).map(tag => (
-            <span key={tag} className="flex items-center gap-1 bg-slate-700 text-slate-300 text-[10px] rounded-full px-2 py-0.5">
+            <span key={tag} className="flex items-center gap-1 bg-slate-700 text-slate-300 text-xs rounded-full px-2 py-0.5">
               {tag}
               <button
                 onClick={() => removeTag(tag)}
@@ -182,7 +193,7 @@ function NoteEditor({ note, onChange, onDelete }: {
       </div>
 
       {/* Rich text content */}
-      <div className="flex-1 overflow-y-auto px-6 pb-6">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-6">
         <RichTextEditor
           content={note.content}
           onChange={handleContentChange}
@@ -201,6 +212,7 @@ export default function NotesPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch]     = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
     const loaded = getNotes();
@@ -215,6 +227,7 @@ export default function NotesPage() {
     const updated = [note, ...notes];
     persist(updated);
     setSelectedId(note.id);
+    setShowEditor(true);
   }
 
   function handleChange(updated: Note) {
@@ -225,6 +238,7 @@ export default function NotesPage() {
     const remaining = notes.filter(n => n.id !== id);
     persist(remaining);
     setSelectedId(remaining[0]?.id ?? null);
+    setShowEditor(false);
   }
 
   const allTags = Array.from(new Set(notes.flatMap(n => n.tags ?? []))).sort();
@@ -241,8 +255,12 @@ export default function NotesPage() {
 
   return (
     <div className="flex h-[calc(100vh-0px)] min-h-0">
-      {/* ── Left panel ── */}
-      <div className="w-64 shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col">
+      {/* ── Left panel — full width on mobile when not in editor, fixed sidebar on sm+ ── */}
+      <div className={clsx(
+        "bg-slate-900 border-r border-slate-800 flex flex-col",
+        "sm:w-64 sm:shrink-0",
+        showEditor ? "hidden sm:flex" : "flex-1 sm:flex-none"
+      )}>
         {/* Header */}
         <div className="px-3 pt-4 pb-3 border-b border-slate-800 space-y-2 shrink-0">
           <div className="flex items-center justify-between">
@@ -256,7 +274,7 @@ export default function NotesPage() {
               <button
                 onClick={() => setActiveTag(null)}
                 className={clsx(
-                  "shrink-0 text-[10px] rounded-full px-2 py-0.5 border transition-colors",
+                  "shrink-0 text-xs rounded-full px-2 py-0.5 border transition-colors",
                   activeTag === null
                     ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
                     : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
@@ -267,7 +285,7 @@ export default function NotesPage() {
                   key={tag}
                   onClick={() => setActiveTag(activeTag === tag ? null : tag)}
                   className={clsx(
-                    "shrink-0 text-[10px] rounded-full px-2 py-0.5 border transition-colors",
+                    "shrink-0 text-xs rounded-full px-2 py-0.5 border transition-colors",
                     activeTag === tag
                       ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
                       : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
@@ -301,27 +319,31 @@ export default function NotesPage() {
               key={note.id}
               note={note}
               active={note.id === selectedId}
-              onClick={() => setSelectedId(note.id)}
+              onClick={() => { setSelectedId(note.id); setShowEditor(true); }}
             />
           ))}
         </div>
 
         <div className="px-3 py-2 border-t border-slate-800 shrink-0">
-          <p className="text-[10px] text-slate-700 text-center">{notes.length} note{notes.length !== 1 ? "s" : ""}</p>
+          <p className="text-xs text-slate-700 text-center">{notes.length} note{notes.length !== 1 ? "s" : ""}</p>
         </div>
       </div>
 
-      {/* ── Right panel ── */}
-      <div className="flex-1 min-w-0 overflow-hidden">
+      {/* ── Right panel — hidden on mobile when list is shown ── */}
+      <div className={clsx(
+        "flex-1 min-w-0 overflow-hidden",
+        showEditor ? "flex flex-col" : "hidden sm:flex sm:flex-col"
+      )}>
         {selectedNote ? (
           <NoteEditor
             key={selectedNote.id}
             note={selectedNote}
             onChange={handleChange}
             onDelete={() => handleDelete(selectedNote.id)}
+            onBack={() => setShowEditor(false)}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-center">
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
             <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4">
               <Search size={22} className="text-slate-600" />
             </div>

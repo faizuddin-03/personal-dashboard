@@ -85,7 +85,7 @@ function TodoModal({ item, onClose, onSave }: {
               className={inp}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={lbl}>Priority</label>
               <select value={priority} onChange={e => setPriority(e.target.value as TodoPriority)} className={sel}>
@@ -99,7 +99,7 @@ function TodoModal({ item, onClose, onSave }: {
               <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className={inp + " [color-scheme:dark]"} />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className={lbl}>Recurring</label>
               <select value={recurring} onChange={e => setRecurring(e.target.value as "" | "daily" | "weekly" | "monthly")} className={sel}>
@@ -167,11 +167,11 @@ function TaskRow({ item, onToggle, onEdit, onDelete, onSkip }: {
           onClick={onToggle}
           aria-label={item.done ? "Mark as active" : "Mark as done"}
           className={clsx(
-            "w-5 h-5 rounded border-2 shrink-0 flex items-center justify-center transition-colors",
+            "w-6 h-6 rounded border-2 shrink-0 flex items-center justify-center transition-colors",
             item.done ? "bg-blue-600 border-blue-600" : "border-slate-600 hover:border-slate-400"
           )}
         >
-          {item.done && <CheckCircle2 size={12} className="text-white" />}
+          {item.done && <CheckCircle2 size={13} className="text-white" />}
         </button>
 
         {/* Title */}
@@ -185,7 +185,7 @@ function TaskRow({ item, onToggle, onEdit, onDelete, onSkip }: {
           <span className="truncate">{item.title}</span>
           {item.recurring && <RefreshCw size={11} className="shrink-0 text-blue-400 opacity-75" />}
           {item.jiraKey && (
-            <span className="shrink-0 bg-slate-800 border border-slate-700 text-blue-400 text-[10px] font-mono px-1.5 rounded">
+            <span className="shrink-0 bg-slate-800 border border-slate-700 text-blue-400 text-xs font-mono px-1.5 rounded">
               {item.jiraKey}
             </span>
           )}
@@ -207,17 +207,17 @@ function TaskRow({ item, onToggle, onEdit, onDelete, onSkip }: {
             </span>
           )}
           {item.labels.map(l => (
-            <span key={l} className="text-[10px] bg-slate-800 border border-slate-700 text-slate-400 px-1.5 py-0.5 rounded-full hidden sm:inline">{l}</span>
+            <span key={l} className="text-xs bg-slate-800 border border-slate-700 text-slate-400 px-1.5 py-0.5 rounded-full hidden sm:inline">{l}</span>
           ))}
           {hasNote && (
-            <button onClick={() => setExpanded(v => !v)} aria-label={expanded ? "Collapse note" : "Expand note"} className="text-slate-600 hover:text-slate-400 p-0.5">
+            <button onClick={() => setExpanded(v => !v)} aria-label={expanded ? "Collapse note" : "Expand note"} className="text-slate-600 hover:text-slate-400 p-1.5">
               {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
           )}
           {onSkip && item.recurring && !item.done && (
-            <button onClick={onSkip} aria-label="Skip occurrence" title="Skip this occurrence" className="text-slate-700 hover:text-amber-400 p-0.5"><SkipForward size={13} /></button>
+            <button onClick={onSkip} aria-label="Skip occurrence" title="Skip this occurrence" className="text-slate-700 hover:text-amber-400 p-1.5"><SkipForward size={13} /></button>
           )}
-          <button onClick={onDelete} aria-label="Delete task" className="text-slate-700 hover:text-red-400 p-0.5"><X size={13} /></button>
+          <button onClick={onDelete} aria-label="Delete task" className="text-slate-700 hover:text-red-400 p-1.5"><X size={13} /></button>
         </div>
       </div>
 
@@ -318,7 +318,7 @@ export default function TodoPage() {
 
   return (
     <div className="flex flex-col min-h-full">
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h1 className="text-sm font-semibold text-slate-200">To-Do List</h1>
           {activeCount > 0 && (
@@ -343,7 +343,7 @@ export default function TodoPage() {
         </div>
       </header>
 
-      <div className="flex-1 px-6 py-5 max-w-3xl">
+      <div className="flex-1 px-4 py-4 sm:px-6 sm:py-5 max-w-3xl">
         {todos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4">

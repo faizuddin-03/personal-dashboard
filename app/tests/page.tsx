@@ -709,12 +709,12 @@ export default function TestTrackerPage() {
                         </div>
                       </div>
                       <div>
-                        <div className="grid grid-cols-[1fr_120px] gap-2 px-4 py-1.5 border-b border-slate-800/60">
+                        <div className="grid grid-cols-[1fr_100px] sm:grid-cols-[1fr_120px] gap-2 px-3 sm:px-4 py-1.5 border-b border-slate-800/60">
                           <span className="text-xs text-slate-600 uppercase tracking-wider">TS Number</span>
                           <span className="text-xs text-slate-600 uppercase tracking-wider">Status</span>
                         </div>
                         {rows.map(({ tc }) => (
-                          <div key={tc.id} className="grid grid-cols-[1fr_120px] gap-2 items-center px-4 py-2 border-b border-slate-800/40 last:border-0">
+                          <div key={tc.id} className="grid grid-cols-[1fr_100px] sm:grid-cols-[1fr_120px] gap-2 items-center px-3 sm:px-4 py-2 border-b border-slate-800/40 last:border-0">
                             <span className="text-xs font-mono text-slate-300">{tc.tsNumber}</span>
                             <div className="flex items-center gap-1.5">
                               {tc.status === "pass" && <span className="flex items-center gap-1 text-xs text-green-400 font-medium"><CheckCircle2 size={11} />Pass</span>}

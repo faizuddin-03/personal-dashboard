@@ -281,7 +281,7 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
                 <label className={lbl}>Title *</label>
                 <input autoFocus value={title} onChange={e => setTitle(e.target.value)} placeholder="What needs to be done?" className={inp} />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className={lbl}>Priority</label>
                   <select value={priority} onChange={e => setPriority(e.target.value as Priority)} className={sel}>
@@ -543,13 +543,13 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-1">
             {isCR
-              ? <span className="text-[10px] bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">CR</span>
-              : <span className="text-[10px] bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium">Task</span>
+              ? <span className="text-xs bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">CR</span>
+              : <span className="text-xs bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium">Task</span>
             }
             {card.jiraKey && (
               <>
-                <span className="text-[10px] font-mono text-blue-400 font-bold">{card.jiraKey}</span>
-                <span className="text-[10px] bg-slate-700 text-slate-500 px-1 rounded">{card.jiraStatus}</span>
+                <span className="text-xs font-mono text-blue-400 font-bold">{card.jiraKey}</span>
+                <span className="text-xs bg-slate-700 text-slate-500 px-1 rounded">{card.jiraStatus}</span>
                 {baseUrl && (
                   <a href={`${baseUrl}/browse/${card.jiraKey}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-slate-700 hover:text-blue-400 opacity-0 group-hover:opacity-100">
                     <ExternalLink size={10} />
@@ -564,15 +564,15 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
       {card.description && <p className="text-xs text-slate-500 mb-2 line-clamp-1">{card.description}</p>}
       {card.labels.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-2">
-          {card.labels.map(l => <span key={l} className="text-[10px] bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded-full">{l}</span>)}
+          {card.labels.map(l => <span key={l} className="text-xs bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded-full">{l}</span>)}
         </div>
       )}
       {total > 0 && (
         <div className="mb-2">
-          <p className="text-[10px] text-slate-500 mb-1">Checklist</p>
+          <p className="text-xs text-slate-500 mb-1">Checklist</p>
           <div className="flex items-center justify-between mb-1">
-            <span className="flex items-center gap-1 text-[10px] text-slate-500"><CheckSquare size={10} />{done}/{total}</span>
-            <span className="text-[10px] text-slate-600">{Math.round((done / total) * 100)}%</span>
+            <span className="flex items-center gap-1 text-xs text-slate-500"><CheckSquare size={10} />{done}/{total}</span>
+            <span className="text-xs text-slate-600">{Math.round((done / total) * 100)}%</span>
           </div>
           <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
             <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(done / total) * 100}%` }} />
@@ -581,10 +581,10 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
       )}
       {tsStats && tsStats.tsTotal > 0 && (
         <div className="mb-2">
-          <p className="text-[10px] text-slate-500 mb-1">TS Progress</p>
+          <p className="text-xs text-slate-500 mb-1">TS Progress</p>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] text-slate-500">{tsStats.pass} pass · {tsStats.fail} fail · {tsStats.pass + tsStats.fail}/{tsStats.tsTotal}</span>
-            <span className="text-[10px] text-slate-600">{Math.round(((tsStats.pass + tsStats.fail) / tsStats.tsTotal) * 100)}%</span>
+            <span className="text-xs text-slate-500">{tsStats.pass} pass · {tsStats.fail} fail · {tsStats.pass + tsStats.fail}/{tsStats.tsTotal}</span>
+            <span className="text-xs text-slate-600">{Math.round(((tsStats.pass + tsStats.fail) / tsStats.tsTotal) * 100)}%</span>
           </div>
           <div className="h-1 rounded-full overflow-hidden flex bg-slate-700">
             {tsStats.pass > 0 && <div className="bg-green-500" style={{ width: `${(tsStats.pass / tsStats.tsTotal) * 100}%`, minWidth: 0 }} />}
@@ -594,21 +594,21 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
         </div>
       )}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className={clsx("flex items-center gap-1 text-[10px] font-medium", pm.color)}>
+        <span className={clsx("flex items-center gap-1 text-xs font-medium", pm.color)}>
           <span className={clsx("w-1.5 h-1.5 rounded-full", pm.dot)} />{pm.label}
         </span>
         {card.dueDate && (
-          <span className={clsx("flex items-center gap-1 text-[10px]", over ? "text-red-400" : "text-slate-500")}>
+          <span className={clsx("flex items-center gap-1 text-xs", over ? "text-red-400" : "text-slate-500")}>
             {over ? <AlertTriangle size={10} /> : <Clock size={10} />}
             {over ? "Overdue" : `${new Date(card.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}${card.dueTime ? ` ${card.dueTime}` : ""}`}
           </span>
         )}
-        <span className="flex items-center gap-0.5 text-[10px] text-slate-700 ml-auto" title="Time in column">
+        <span className="flex items-center gap-0.5 text-xs text-slate-700 ml-auto" title="Time in column">
           <Timer size={9} />{timeInColumn(card)}
         </span>
-        {card.estimatedHours && <span className="text-[10px] text-slate-600">{card.estimatedHours}h</span>}
+        {card.estimatedHours && <span className="text-xs text-slate-600">{card.estimatedHours}h</span>}
         {card.assignee && (
-          <span className="w-5 h-5 rounded-full bg-slate-700 border border-slate-600 text-[9px] text-slate-300 flex items-center justify-center font-bold" title={card.assignee}>
+          <span className="w-5 h-5 rounded-full bg-slate-700 border border-slate-600 text-xs text-slate-300 flex items-center justify-center font-bold" title={card.assignee}>
             {card.assignee.slice(0, 2).toUpperCase()}
           </span>
         )}
@@ -900,7 +900,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
                   <div className="min-w-0">
                     <span className="text-xs font-mono text-blue-400 font-bold">{found.cr.crKey}</span>
                     <span className="text-xs text-slate-400"> › {found.suite.title}</span>
-                    <p className="text-[10px] text-slate-500 mt-0.5">{tsPass}/{tsTotal} pass</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{tsPass}/{tsTotal} pass</p>
                   </div>
                   <div className="flex gap-2 ml-2 shrink-0">
                     <button onClick={() => { setShowSuitePicker(true); setPickedCRId(""); }} className="text-xs text-slate-500 hover:text-slate-300">Change</button>
@@ -941,7 +941,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
             ) : null}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <p className="text-xs text-slate-600 mb-1">Priority</p>
               {editing ? (
@@ -1062,7 +1062,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
               {checklist.map(item => (
                 <div key={item.id} className="flex items-center gap-2">
                   <button onClick={() => toggleItem(item.id)} className={clsx("w-4 h-4 rounded border shrink-0 flex items-center justify-center transition-colors", item.done ? "bg-blue-600 border-blue-600" : "border-slate-600 hover:border-slate-400")}>
-                    {item.done && <span className="text-white text-[10px]">✓</span>}
+                    {item.done && <span className="text-white text-xs">✓</span>}
                   </button>
                   <span className={clsx("text-sm", item.done ? "text-slate-600 line-through" : "text-slate-300")}>{item.text}</span>
                   {editing && <button onClick={() => { const u = checklist.filter(x => x.id !== item.id); setChecklist(u); onUpdate({ ...card, checklist: u }); }} className="ml-auto text-slate-700 hover:text-red-400"><X size={11} /></button>}
@@ -1112,18 +1112,18 @@ function ArchiveDrawer({ cards, onClose, onUnarchive }: {
             const pm = PRIORITY_META[card.priority];
             return (
               <div key={card.id} className="bg-slate-800 border border-slate-700 rounded-xl p-3">
-                {card.jiraKey && <p className="text-[10px] font-mono text-blue-400 font-bold mb-1">{card.jiraKey}</p>}
+                {card.jiraKey && <p className="text-xs font-mono text-blue-400 font-bold mb-1">{card.jiraKey}</p>}
                 <p className="text-sm text-slate-300 font-medium leading-snug mb-2">{card.title}</p>
                 <div className="flex items-center gap-2">
-                  <span className={clsx("text-[10px] font-medium flex items-center gap-1", pm.color)}>
+                  <span className={clsx("text-xs font-medium flex items-center gap-1", pm.color)}>
                     <span className={clsx("w-1.5 h-1.5 rounded-full", pm.dot)} />{pm.label}
                   </span>
                   {card.archivedAt && (
-                    <span className="text-[10px] text-slate-600 ml-auto">
+                    <span className="text-xs text-slate-600 ml-auto">
                       Archived {new Date(card.archivedAt).toLocaleDateString()}
                     </span>
                   )}
-                  <button onClick={() => onUnarchive(card)} className="flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 px-1.5 py-0.5 rounded hover:bg-slate-700 transition-colors">
+                  <button onClick={() => onUnarchive(card)} className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 px-1.5 py-0.5 rounded hover:bg-slate-700 transition-colors">
                     <RotateCcw size={9} />Restore
                   </button>
                 </div>
@@ -1276,7 +1276,7 @@ export default function KanbanPage() {
 
   return (
     <div className="flex flex-col min-h-full">
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-6 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h1 className="text-sm font-semibold text-slate-200">Kanban</h1>
           <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
@@ -1290,7 +1290,7 @@ export default function KanbanPage() {
                 )}
               >
                 {label}
-                <span className={clsx("ml-1.5 text-[10px] px-1 rounded-full", activeBoardType === bt ? "bg-slate-600 text-slate-300" : "bg-slate-700/50 text-slate-600")}>
+                <span className={clsx("ml-1.5 text-xs px-1 rounded-full", activeBoardType === bt ? "bg-slate-600 text-slate-300" : "bg-slate-700/50 text-slate-600")}>
                   {COLUMN_IDS.reduce((s, c) => s + boardState[c].filter(card => (card.boardType ?? "task") === bt).length, 0)}
                 </span>
               </button>
@@ -1299,7 +1299,7 @@ export default function KanbanPage() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowArchive(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors">
-            <Archive size={13} />Archive{archivedCards.length > 0 && <span className="bg-slate-700 text-slate-400 text-[10px] px-1 rounded-full">{archivedCards.length}</span>}
+            <Archive size={13} />Archive{archivedCards.length > 0 && <span className="bg-slate-700 text-slate-400 text-xs px-1 rounded-full">{archivedCards.length}</span>}
           </button>
           <button onClick={() => setAddTarget("todo")} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             <Plus size={13} />Add Card
