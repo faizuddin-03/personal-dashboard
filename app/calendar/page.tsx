@@ -187,10 +187,20 @@ ${text}`;
         { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
       );
-      const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-      const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
+      const data = await res.json() as {
+        candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[];
+        promptFeedback?: { blockReason?: string };
+        error?: { message?: string };
+      };
 
-      if (!raw) throw new Error("Gemini returned an empty response.");
+      if (data.error?.message) throw new Error(`API error: ${data.error.message}`);
+      if (data.promptFeedback?.blockReason) throw new Error(`Blocked by Gemini safety filter: ${data.promptFeedback.blockReason}`);
+
+      const candidate = data.candidates?.[0];
+      const finishReason = candidate?.finishReason;
+      const raw = candidate?.content?.parts?.[0]?.text?.trim() ?? "";
+
+      if (!raw) throw new Error(`Gemini returned no text (finishReason: ${finishReason ?? "unknown"}). Try simplifying the pasted message.`);
 
       // Extract the JSON array — find first [ and last ] to handle any surrounding text
       const start = raw.indexOf("[");
