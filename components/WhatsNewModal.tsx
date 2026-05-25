@@ -20,7 +20,7 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col max-h-[80vh]"
+        className="w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col max-h-[80vh]"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -40,6 +40,14 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
+
+          {/* Git build info */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg">
+            <span className="text-xs text-slate-500">Latest push</span>
+            <code className="ml-auto text-xs font-mono text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded">
+              {process.env.NEXT_PUBLIC_GIT_HASH ?? "unknown"}
+            </code>
+          </div>
 
           {/* Current / upcoming changes */}
           {CURRENT_CHANGES.length > 0 && (
