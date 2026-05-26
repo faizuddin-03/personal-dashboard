@@ -1,15 +1,8 @@
 "use client";
-import { X, Sparkles, Package } from "lucide-react";
-import {
-  RELEASED_VERSIONS,
-  CURRENT_CHANGES,
-  CURRENT_VERSION,
-} from "@/lib/changelog";
+import { X, Sparkles } from "lucide-react";
+import { CURRENT_CHANGES, CURRENT_VERSION } from "@/lib/changelog";
 
 export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
-  const fmtDate = (d: string) =>
-    new Date(d + "T12:00:00").toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" });
-
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4"
@@ -34,57 +27,22 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
-
-          {/* Current / upcoming changes */}
-          {CURRENT_CHANGES.length > 0 && (
-            <section>
-              <ul className="space-y-3">
-                {CURRENT_CHANGES.map((change, i) => (
-                  <li key={i} className="flex items-start gap-2 leading-snug">
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-slate-200">{change.title}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{change.description}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {/* Past released versions */}
-          {RELEASED_VERSIONS.length > 0 && (
-            <>
-              {CURRENT_CHANGES.length > 0 && <hr className="border-slate-800" />}
-              {[...RELEASED_VERSIONS].reverse().map(v => (
-                <section key={v.version}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Package size={13} className="text-slate-500" />
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                      {v.label}
-                    </span>
-                    <span className="text-xs text-slate-600 ml-auto">{fmtDate(v.date)}</span>
+        {/* Content — only current changes since last prod push */}
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+          {CURRENT_CHANGES.length > 0 ? (
+            <ul className="space-y-3">
+              {CURRENT_CHANGES.map((change, i) => (
+                <li key={i} className="flex items-start gap-2 leading-snug">
+                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-200">{change.title}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{change.description}</p>
                   </div>
-                  <ul className="space-y-3">
-                    {v.changes.map((change, i) => (
-                      <li key={i} className="flex items-start gap-2 leading-snug">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-slate-600 shrink-0" />
-                        <div>
-                          <p className="text-sm font-semibold text-slate-400">{change.title}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{change.description}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
+                </li>
               ))}
-            </>
-          )}
-
-          {CURRENT_CHANGES.length === 0 && RELEASED_VERSIONS.length === 0 && (
-            <p className="text-sm text-slate-600 text-center py-8">No changes recorded yet.</p>
+            </ul>
+          ) : (
+            <p className="text-sm text-slate-600 text-center py-8">No new changes since the last release.</p>
           )}
         </div>
       </div>

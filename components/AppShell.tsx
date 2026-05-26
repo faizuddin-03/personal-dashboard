@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import GlobalSearch from "@/components/GlobalSearch";
 import WhatsNewModal from "@/components/WhatsNewModal";
 import { JiraCredentials, getStoredCredentials, storeCredentials } from "@/lib/jira";
+import { CURRENT_CHANGES } from "@/lib/changelog";
 import { InsuranceJob, InsuranceRunParams, saveInsuranceResults } from "@/lib/insurance";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { loadAndApplyTheme } from "@/lib/themes";
@@ -105,7 +106,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setCreds(stored);
     loadAndApplyTheme();
     setHydrated(true);
-    if (!sessionStorage.getItem("whats_new_seen")) {
+    if (!sessionStorage.getItem("whats_new_seen") && CURRENT_CHANGES.length > 0) {
       setWhatsNewOpen(true);
     }
     // If accountId isn't cached yet, fetch it now so reporter queries work reliably

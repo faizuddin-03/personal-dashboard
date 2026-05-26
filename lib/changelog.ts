@@ -76,8 +76,13 @@ export const RELEASED_VERSIONS: ChangelogVersion[] = [
 
 // ── Current in-progress changes (staging-local only) ─────────
 // Reset to [] after every prod-local push.
-export const CURRENT_CHANGES: ChangelogEntry[] = [];
+export const CURRENT_CHANGES: ChangelogEntry[] = [
+  {
+    title: "What's New Shows Only New Changes",
+    description: "The popup now only displays changes since the last prod release. It no longer shows history, and won't auto-open if there's nothing new.",
+  },
+];
 
-export const CURRENT_VERSION       = "v0.012";
+export const CURRENT_VERSION       = "v0.013";
 export const CURRENT_VERSION_LABEL = "Upcoming";
 export const CURRENT_VERSION_DATE  = "2026-05-26";
