@@ -83,10 +83,22 @@ export const CURRENT_CHANGES: ChangelogEntry[] = [
   },
   {
     title: "JIRA Issue Filter Page",
-    description: "Pick any parent ticket (CR or otherwise) and see all its child issues in one view. Filter by status, priority, type, assignee, reporter, label, and fix version — no need to touch Jira's own filter.",
+    description: "Pick any parent ticket (CR or otherwise) and see all its child issues in one view, nested under JIRA in the sidebar.",
+  },
+  {
+    title: "Issue Filter: Multi-Tab Support",
+    description: "Open multiple independent filters at the same time as tabs. Each tab has its own parent ticket, filter state, and results. Double-click a tab to rename it. Tabs persist across page visits.",
+  },
+  {
+    title: "Issue Filter: Three-State Chips",
+    description: "Filter chips now cycle through three states: neutral (no effect), blue (include only), and red/strikethrough (exclude). Include and exclude can be combined on the same field.",
+  },
+  {
+    title: "Completed Today Tracks Hand-offs",
+    description: "The Completed Today widget now shows any ticket you transitioned today — including ones sent to Redev or other statuses — not just tickets still assigned to you marked Done.",
   },
 ];
 
-export const CURRENT_VERSION       = "v0.014";
+export const CURRENT_VERSION       = "v0.015";
 export const CURRENT_VERSION_LABEL = "Upcoming";
 export const CURRENT_VERSION_DATE  = "2026-05-26";
