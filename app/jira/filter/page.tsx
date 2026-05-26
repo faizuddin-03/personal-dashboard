@@ -10,14 +10,17 @@ import IssueDrawer from "@/components/IssueDrawer";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import clsx from "clsx";
 
+type FilterMode = "include" | "exclude";
+type FilterMap  = Record<string, FilterMode>;
+
 interface FilterState {
-  statuses: string[];
-  priorities: string[];
-  issueTypes: string[];
-  assignees: string[];
-  reporters: string[];
-  labels: string[];
-  fixVersions: string[];
+  statuses: FilterMap;
+  priorities: FilterMap;
+  issueTypes: FilterMap;
+  assignees: FilterMap;
+  reporters: FilterMap;
+  labels: FilterMap;
+  fixVersions: FilterMap;
 }
 
 interface FilterTab {
@@ -33,8 +36,8 @@ interface FilterTab {
 }
 
 const emptyFilters = (): FilterState => ({
-  statuses: [], priorities: [], issueTypes: [],
-  assignees: [], reporters: [], labels: [], fixVersions: [],
+  statuses: {}, priorities: {}, issueTypes: {},
+  assignees: {}, reporters: {}, labels: {}, fixVersions: {},
 });
 
 function makeTab(name: string): FilterTab {
@@ -51,7 +54,7 @@ function makeTab(name: string): FilterTab {
   };
 }
 
-const TABS_KEY   = "jira_filter_tabs_v2";
+const TABS_KEY   = "jira_filter_tabs_v3";
 const ACTIVE_KEY = "jira_filter_active_tab";
 
 type SlimTab = Pick<FilterTab, "id" | "name" | "crKey" | "crInput" | "filters" | "filtersOpen">;
@@ -81,8 +84,8 @@ function restoreTabs(): { tabs: FilterTab[]; activeId: string | null } {
   } catch { return { tabs: [], activeId: null }; }
 }
 
-function ChipRow({ label, options, selected, onToggle }: {
-  label: string; options: string[]; selected: string[]; onToggle: (v: string) => void;
+function ChipRow({ label, options, values, onToggle }: {
+  label: string; options: string[]; values: FilterMap; onToggle: (v: string) => void;
 }) {
   if (!options.length) return null;
   return (
@@ -90,16 +93,17 @@ function ChipRow({ label, options, selected, onToggle }: {
       <span className="text-xs text-slate-500 w-24 shrink-0 pt-0.5 font-medium">{label}</span>
       <div className="flex flex-wrap gap-1.5">
         {options.map(opt => {
-          const active = selected.includes(opt);
+          const mode = values[opt];
           return (
             <button
               key={opt}
               onClick={() => onToggle(opt)}
+              title={mode === "include" ? "Click to exclude" : mode === "exclude" ? "Click to reset" : "Click to include"}
               className={clsx(
                 "text-xs px-2.5 py-1 rounded-full border transition-colors",
-                active
-                  ? "bg-blue-600/20 text-blue-300 border-blue-500/50"
-                  : "bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500 hover:text-slate-200"
+                mode === "include" ? "bg-blue-600/20 text-blue-300 border-blue-500/50"
+                : mode === "exclude" ? "bg-red-600/20 text-red-300 border-red-500/50 line-through"
+                : "bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500 hover:text-slate-200"
               )}
             >
               {opt}
@@ -261,15 +265,18 @@ export default function IssueFilterPage() {
 
   function toggleFilter(field: keyof FilterState, value: string) {
     if (!activeTab) return;
-    const current = activeTab.filters[field];
-    updateTab(activeTab.id, {
-      filters: {
-        ...activeTab.filters,
-        [field]: current.includes(value)
-          ? current.filter(v => v !== value)
-          : [...current, value],
-      },
-    });
+    const map  = activeTab.filters[field];
+    const mode = map[value];
+    let next: FilterMap;
+    if (!mode) {
+      next = { ...map, [value]: "include" };
+    } else if (mode === "include") {
+      next = { ...map, [value]: "exclude" };
+    } else {
+      const { [value]: _, ...rest } = map;
+      next = rest;
+    }
+    updateTab(activeTab.id, { filters: { ...activeTab.filters, [field]: next } });
   }
 
   // ── Tab management ─────────────────────────────────────────
@@ -314,20 +321,38 @@ export default function IssueFilterPage() {
   const uniqueLabels      = useMemo(() => [...new Set(issues.flatMap(i => i.fields.labels ?? []))].sort(), [issues]);
   const uniqueFixVersions = useMemo(() => [...new Set(issues.flatMap(i => (i.fields.fixVersions ?? []).map((v: { name: string }) => v.name)))].sort(), [issues]);
 
-  const filtered = useMemo(() => issues.filter(issue => {
-    const f = filters;
-    if (f.statuses.length    && !f.statuses.includes(issue.fields.status.name)) return false;
-    if (f.priorities.length  && !f.priorities.includes(issue.fields.priority?.name ?? "")) return false;
-    if (f.issueTypes.length  && !f.issueTypes.includes(issue.fields.issuetype.name)) return false;
-    if (f.assignees.length   && !f.assignees.includes(issue.fields.assignee?.displayName ?? "Unassigned")) return false;
-    if (f.reporters.length   && !f.reporters.includes(issue.fields.reporter?.displayName ?? "Unknown")) return false;
-    if (f.labels.length      && !f.labels.some(l => (issue.fields.labels ?? []).includes(l))) return false;
-    if (f.fixVersions.length && !f.fixVersions.some(v => (issue.fields.fixVersions ?? []).map((fv: { name: string }) => fv.name).includes(v))) return false;
-    return true;
-  }), [issues, filters]);
+  const filtered = useMemo(() => {
+    function checkScalar(map: FilterMap, value: string): boolean {
+      const entries = Object.entries(map);
+      const inc = entries.filter(([, m]) => m === "include").map(([v]) => v);
+      const exc = entries.filter(([, m]) => m === "exclude").map(([v]) => v);
+      if (inc.length > 0 && !inc.includes(value)) return false;
+      if (exc.includes(value)) return false;
+      return true;
+    }
+    function checkArray(map: FilterMap, values: string[]): boolean {
+      const entries = Object.entries(map);
+      const inc = entries.filter(([, m]) => m === "include").map(([v]) => v);
+      const exc = entries.filter(([, m]) => m === "exclude").map(([v]) => v);
+      if (inc.length > 0 && !inc.some(l => values.includes(l))) return false;
+      if (exc.some(l => values.includes(l))) return false;
+      return true;
+    }
+    return issues.filter(issue => {
+      const f = filters;
+      if (!checkScalar(f.statuses,    issue.fields.status.name))                                    return false;
+      if (!checkScalar(f.priorities,  issue.fields.priority?.name ?? ""))                           return false;
+      if (!checkScalar(f.issueTypes,  issue.fields.issuetype.name))                                 return false;
+      if (!checkScalar(f.assignees,   issue.fields.assignee?.displayName ?? "Unassigned"))          return false;
+      if (!checkScalar(f.reporters,   issue.fields.reporter?.displayName ?? "Unknown"))             return false;
+      if (!checkArray(f.labels,       issue.fields.labels ?? []))                                   return false;
+      if (!checkArray(f.fixVersions,  (issue.fields.fixVersions ?? []).map((v: { name: string }) => v.name))) return false;
+      return true;
+    });
+  }, [issues, filters]);
 
-  const hasActiveFilters  = Object.values(filters).some(arr => arr.length > 0);
-  const activeFilterCount = Object.values(filters).reduce((s, a) => s + a.length, 0);
+  const hasActiveFilters  = Object.values(filters).some(map => Object.keys(map).length > 0);
+  const activeFilterCount = Object.values(filters).reduce((s, map) => s + Object.keys(map).length, 0);
 
   if (!hydrated) return null;
 
@@ -553,13 +578,13 @@ export default function IssueFilterPage() {
 
                     {activeTab.filtersOpen && (
                       <div className="px-4 pb-2 border-t border-slate-800 pt-1">
-                        <ChipRow label="Status"      options={uniqueStatuses}    selected={filters.statuses}    onToggle={v => toggleFilter("statuses", v)} />
-                        <ChipRow label="Priority"    options={uniquePriorities}  selected={filters.priorities}  onToggle={v => toggleFilter("priorities", v)} />
-                        <ChipRow label="Type"        options={uniqueTypes}       selected={filters.issueTypes}  onToggle={v => toggleFilter("issueTypes", v)} />
-                        <ChipRow label="Assignee"    options={uniqueAssignees}   selected={filters.assignees}   onToggle={v => toggleFilter("assignees", v)} />
-                        <ChipRow label="Reporter"    options={uniqueReporters}   selected={filters.reporters}   onToggle={v => toggleFilter("reporters", v)} />
-                        <ChipRow label="Label"       options={uniqueLabels}      selected={filters.labels}      onToggle={v => toggleFilter("labels", v)} />
-                        <ChipRow label="Fix Version" options={uniqueFixVersions} selected={filters.fixVersions} onToggle={v => toggleFilter("fixVersions", v)} />
+                        <ChipRow label="Status"      options={uniqueStatuses}    values={filters.statuses}    onToggle={v => toggleFilter("statuses", v)} />
+                        <ChipRow label="Priority"    options={uniquePriorities}  values={filters.priorities}  onToggle={v => toggleFilter("priorities", v)} />
+                        <ChipRow label="Type"        options={uniqueTypes}       values={filters.issueTypes}  onToggle={v => toggleFilter("issueTypes", v)} />
+                        <ChipRow label="Assignee"    options={uniqueAssignees}   values={filters.assignees}   onToggle={v => toggleFilter("assignees", v)} />
+                        <ChipRow label="Reporter"    options={uniqueReporters}   values={filters.reporters}   onToggle={v => toggleFilter("reporters", v)} />
+                        <ChipRow label="Label"       options={uniqueLabels}      values={filters.labels}      onToggle={v => toggleFilter("labels", v)} />
+                        <ChipRow label="Fix Version" options={uniqueFixVersions} values={filters.fixVersions} onToggle={v => toggleFilter("fixVersions", v)} />
                       </div>
                     )}
                   </div>
