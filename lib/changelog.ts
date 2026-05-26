@@ -78,6 +78,6 @@ export const RELEASED_VERSIONS: ChangelogVersion[] = [
 // Reset to [] after every prod-local push.
 export const CURRENT_CHANGES: ChangelogEntry[] = [];
 
-export const CURRENT_VERSION       = "v0.011";
+export const CURRENT_VERSION       = "v0.012";
 export const CURRENT_VERSION_LABEL = "Upcoming";
 export const CURRENT_VERSION_DATE  = "2026-05-26";

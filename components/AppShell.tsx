@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import GlobalSearch from "@/components/GlobalSearch";
 import WhatsNewModal from "@/components/WhatsNewModal";
 import { JiraCredentials, getStoredCredentials, storeCredentials } from "@/lib/jira";
+import { InsuranceJob, InsuranceRunParams, saveInsuranceResults } from "@/lib/insurance";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { loadAndApplyTheme } from "@/lib/themes";
 import clsx from "clsx";
@@ -16,6 +17,10 @@ interface AppCtx {
   openSettings: () => void;
   openSearch: () => void;
   openWhatsNew: () => void;
+  insuranceJob: InsuranceJob | null;
+  startInsuranceRun: (params: InsuranceRunParams) => void;
+  clearInsuranceJob: () => void;
+  restoreInsuranceJob: (job: InsuranceJob) => void;
 }
 
 export const AppContext = createContext<AppCtx>({
@@ -24,6 +29,10 @@ export const AppContext = createContext<AppCtx>({
   openSettings: () => {},
   openSearch: () => {},
   openWhatsNew: () => {},
+  insuranceJob: null,
+  startInsuranceRun: () => {},
+  clearInsuranceJob: () => {},
+  restoreInsuranceJob: () => {},
 });
 
 export function useApp() {
@@ -36,7 +45,58 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  const [insuranceJob, setInsuranceJob] = useState<InsuranceJob | null>(null);
   const router = useRouter();
+
+  function startInsuranceRun(params: InsuranceRunParams) {
+    // Called with no vehicles = just restore display state from saved results, no fetch
+    if (!params.vehicles.length) return;
+    setInsuranceJob({
+      loading: true, rows: [], error: "", log: "", savedAt: null,
+      vehicleInput: params.vehicleInput,
+      username: params.usernameDisplay,
+      baseUrl: params.baseUrlDisplay,
+    });
+    fetch("/api/insurance/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        vehicles:        params.vehicles,
+        username:        params.username,
+        password:        params.password,
+        icNumber:        params.icNumber,
+        postcode:        params.postcode,
+        vehicleCategory: params.vehicleCategory,
+        baseUrl:         params.baseUrl,
+        concurrency:     params.concurrency,
+      }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        const now = new Date().toISOString();
+        const rows = data.rows ?? [];
+        const log  = data.log ?? "";
+        if (data.error) throw new Error(data.error);
+        setInsuranceJob(j => j ? { ...j, loading: false, rows, log, savedAt: now } : null);
+        saveInsuranceResults({
+          rows, runLog: log, savedAt: now,
+          vehicleInput: params.vehicleInput,
+          username: params.usernameDisplay,
+          baseUrl: params.baseUrlDisplay,
+        });
+      })
+      .catch(e => {
+        setInsuranceJob(j => j ? { ...j, loading: false, error: e instanceof Error ? e.message : "Something went wrong" } : null);
+      });
+  }
+
+  function clearInsuranceJob() {
+    setInsuranceJob(null);
+  }
+
+  function restoreInsuranceJob(job: InsuranceJob) {
+    setInsuranceJob(job);
+  }
 
   useAutoBackup();
 
@@ -84,6 +144,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       openSettings: () => router.push("/settings"),
       openSearch: () => setSearchOpen(true),
       openWhatsNew: () => setWhatsNewOpen(true),
+      insuranceJob, startInsuranceRun, clearInsuranceJob, restoreInsuranceJob,
     }}>
       <div className="flex h-screen overflow-hidden">
         {/* Mobile overlay */}

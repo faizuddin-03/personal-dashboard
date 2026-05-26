@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import clsx from "clsx";
+import { useApp } from "@/components/AppShell";
+import { InsuranceRow, loadInsuranceSaved, clearInsuranceSaved } from "@/lib/insurance";
 
 // ── Environment presets ───────────────────────────────────────
 const ENV_PRESETS = [
@@ -21,30 +23,6 @@ const DEFAULT_ENV = ENV_PRESETS[0].value;
 
 // ── Types ─────────────────────────────────────────────────────
 const ALL_INSURERS = ["Zurich", "Takaful", "Lonpac", "Chubb", "Tokio Marine"] as const;
-
-interface InsuranceRow {
-  vehicleNumber:  string;
-  make:           string;
-  model:          string;
-  mfgYear:        string;
-  engineCC:       string;
-  transmission:   string;
-  variant:        string;
-  insurer:        string;
-  coverType:      string;
-  allowPurchase:  string;
-  referRiskCode:  string;
-  totalPrice:     string;
-}
-
-interface SavedResults {
-  rows: InsuranceRow[];
-  vehicleInput: string;
-  username: string;
-  baseUrl: string;
-  runLog: string;
-  savedAt: string;
-}
 
 // ── Estimate helpers ──────────────────────────────────────────
 const SECS_PER_VEHICLE = 50;
@@ -63,23 +41,6 @@ type ViewMode = "table" | "matrix";
 type AllowFilter = "all" | "yes" | "no" | "refer";
 type SortDir = "asc" | "desc";
 interface SortState { key: keyof InsuranceRow | null; dir: SortDir }
-
-const STORAGE_KEY = "insurance_results";
-
-function loadSaved(): SavedResults | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-
-function saveResults(data: SavedResults) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function clearSaved() {
-  localStorage.removeItem(STORAGE_KEY);
-}
 
 const COLUMNS: { key: keyof InsuranceRow; label: string }[] = [
   { key: "vehicleNumber",  label: "Vehicle No."    },
@@ -149,7 +110,9 @@ function AllowBadge({ value }: { value: string }) {
 
 // ── Main page ─────────────────────────────────────────────────
 export default function InsurancePage() {
-  // Input
+  const { insuranceJob, startInsuranceRun, clearInsuranceJob, restoreInsuranceJob } = useApp();
+
+  // Input — local only, restored from job/localStorage on mount
   const [vehicleInput, setVehicleInput]     = useState("");
   const [username, setUsername]             = useState("");
   const [password, setPassword]             = useState("");
@@ -162,51 +125,64 @@ export default function InsurancePage() {
   const [concurrency, setConcurrency]       = useState(4);
   const [showAdvanced, setShowAdvanced]     = useState(false);
 
-  // Run state
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
-  const [hasRun, setHasRun]     = useState(false);
-  const [runLog, setRunLog]     = useState("");
-  const [savedAt, setSavedAt]   = useState<string | null>(null);
-
-  // Results
-  const [rows, setRows]         = useState<InsuranceRow[]>([]);
+  // Display
   const [view, setView]         = useState<ViewMode>("table");
-
-  // Display filter — applied to results after run (does not affect what script checks)
   const [shownInsurers, setShownInsurers] = useState<Set<string>>(new Set(ALL_INSURERS));
-
-  // Search / Allow Purchase filter / Sort
   const [search, setSearch]               = useState("");
   const [allowFilter, setAllowFilter]     = useState<AllowFilter>("all");
   const [sort, setSort]                   = useState<SortState>({ key: null, dir: "asc" });
 
-  // Restore saved results on mount
+  // Derive run state from context job
+  const loading = insuranceJob?.loading ?? false;
+  const rows    = insuranceJob?.rows    ?? [];
+  const error   = insuranceJob?.error   ?? "";
+  const runLog  = insuranceJob?.log     ?? "";
+  const savedAt = insuranceJob?.savedAt ?? null;
+  const hasRun  = insuranceJob !== null;
+
+  // On mount: restore input fields from active job or localStorage
   useEffect(() => {
-    const saved = loadSaved();
+    if (insuranceJob) {
+      setVehicleInput(insuranceJob.vehicleInput);
+      if (insuranceJob.username) setUsername(insuranceJob.username);
+      if (insuranceJob.baseUrl) {
+        setBaseUrl(insuranceJob.baseUrl);
+        if (!ENV_PRESETS.some(p => p.value === insuranceJob.baseUrl)) setCustomEnv(true);
+      }
+      const found = new Set(insuranceJob.rows.map(r => r.insurer).filter(Boolean));
+      if (found.size) setShownInsurers(found);
+      return;
+    }
+    const saved = loadInsuranceSaved();
     if (!saved || saved.rows.length === 0) return;
-    setRows(saved.rows);
     setVehicleInput(saved.vehicleInput);
     if (saved.username) setUsername(saved.username);
     if (saved.baseUrl) {
       setBaseUrl(saved.baseUrl);
-      const isPreset = ENV_PRESETS.some(p => p.value === saved.baseUrl);
-      if (!isPreset) setCustomEnv(true);
+      if (!ENV_PRESETS.some(p => p.value === saved.baseUrl)) setCustomEnv(true);
     }
-    setRunLog(saved.runLog ?? "");
-    setSavedAt(saved.savedAt);
-    setHasRun(true);
     const found = new Set(saved.rows.map((r: InsuranceRow) => r.insurer).filter(Boolean));
     setShownInsurers(found.size ? found : new Set(ALL_INSURERS));
-  }, []);
+    // Restore saved results into context
+    restoreInsuranceJob({
+      loading: false, rows: saved.rows, error: "", log: saved.runLog ?? "",
+      savedAt: saved.savedAt, vehicleInput: saved.vehicleInput,
+      username: saved.username, baseUrl: saved.baseUrl,
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keep insurer filter in sync when job rows arrive
+  useEffect(() => {
+    if (!rows.length) return;
+    const found = new Set(rows.map(r => r.insurer).filter(Boolean));
+    if (found.size) setShownInsurers(found);
+  }, [rows]);
 
   function handleClearResults() {
-    clearSaved();
-    setRows([]);
-    setRunLog("");
-    setSavedAt(null);
-    setHasRun(false);
+    clearInsuranceSaved();
+    clearInsuranceJob();
     setVehicleInput("");
+    setShownInsurers(new Set(ALL_INSURERS));
   }
 
   const vehicles = parseVehicles(vehicleInput);
@@ -220,47 +196,21 @@ export default function InsurancePage() {
     });
   }
 
-  async function handleRun() {
+  function handleRun() {
     if (!vehicles.length) return;
-    setLoading(true);
-    setError("");
-    setRunLog("");
-    setRows([]);
-    setHasRun(true);
-    try {
-      const res = await fetch("/api/insurance/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          vehicles,
-          username:        username.trim()  || undefined,
-          password:        password         || undefined,
-          icNumber:        icNumber.trim()  || undefined,
-          postcode:        postcode.trim()  || undefined,
-          vehicleCategory: vehicleCategory,
-          baseUrl:         baseUrl          || undefined,
-          concurrency:     concurrency,
-        }),
-      });
-      const data = await res.json() as { rows?: InsuranceRow[]; error?: string; log?: string };
-      if (!res.ok) throw new Error(data.error ?? "Request failed");
-      const newRows = data.rows ?? [];
-      const now = new Date().toISOString();
-      setRows(newRows);
-      setSavedAt(now);
-      if (data.log) setRunLog(data.log);
-
-      // Persist to localStorage
-      saveResults({ rows: newRows, vehicleInput, username, baseUrl, runLog: data.log ?? "", savedAt: now });
-
-      // Auto-expand insurer filter to all found insurers
-      const found = new Set(newRows.map(r => r.insurer).filter(Boolean));
-      setShownInsurers(found.size ? found : new Set(ALL_INSURERS));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
+    startInsuranceRun({
+      vehicles,
+      username:        username.trim()  || undefined,
+      password:        password         || undefined,
+      icNumber:        icNumber.trim()  || undefined,
+      postcode:        postcode.trim()  || undefined,
+      vehicleCategory,
+      baseUrl:         baseUrl          || undefined,
+      concurrency,
+      vehicleInput,
+      usernameDisplay: username.trim(),
+      baseUrlDisplay:  baseUrl,
+    });
   }
 
   // Filtered results for display
