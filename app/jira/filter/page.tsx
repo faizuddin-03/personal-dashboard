@@ -189,7 +189,7 @@ export default function IssueFilterPage() {
       const data: JiraSearchResult = await res.json();
       if (!res.ok) throw new Error((data as unknown as { error: string }).error ?? "Failed");
       setTabs(prev => prev.map(t =>
-        t.id === tabId ? { ...t, loading: false, issues: data.issues ?? [], filters: emptyFilters() } : t
+        t.id === tabId ? { ...t, loading: false, issues: data.issues ?? [] } : t
       ));
     } catch (e) {
       setTabs(prev => prev.map(t =>
