@@ -506,15 +506,21 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
 }
 
 // ── Card view ─────────────────────────────────────────────
-function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
+function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards }: {
   card: KanbanCard; baseUrl?: string; onClick?: () => void; dragHandle?: React.ReactNode;
-  tsData?: _TSCREntry[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[];
 }) {
   const { done, total } = checklistProgress(card);
   const over = isOverdue(card);
   const pm = PRIORITY_META[card.priority];
 
   const isCR = card.boardType === "cr";
+
+  // Linked task progress (CR cards only)
+  const linkedTaskIds = card.linkedTaskIds ?? [];
+  const linkedTasks = allCards ? allCards.filter(c => linkedTaskIds.includes(c.id)) : [];
+  const tasksTotal = linkedTasks.length;
+  const tasksDone = linkedTasks.filter(c => c.columnId === "finished").length;
 
   // TS Suite progress
   const tsLinked = card.linkedTSSuiteId && tsData ? findSuite(card.linkedTSSuiteId, tsData) : null;
@@ -578,6 +584,17 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
           </div>
         </div>
       )}
+      {isCR && tasksTotal > 0 && (
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-slate-500">Tasks</span>
+            <span className="text-xs text-slate-500">{tasksDone}/{tasksTotal} done</span>
+          </div>
+          <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+            <div className="h-full bg-green-500 rounded-full transition-all" style={{ width: `${(tasksDone / tasksTotal) * 100}%` }} />
+          </div>
+        </div>
+      )}
       {tsStats && tsStats.tsTotal > 0 && (
         <div className="mb-2">
           <p className="text-xs text-slate-500 mb-1">TS Progress</p>
@@ -617,9 +634,9 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
 }
 
 // ── Draggable card ────────────────────────────────────────
-function DraggableCard({ card, baseUrl, onCardClick, tsData }: {
+function DraggableCard({ card, baseUrl, onCardClick, tsData, allCards }: {
   card: KanbanCard; baseUrl?: string; onCardClick: (c: KanbanCard) => void;
-  tsData?: _TSCREntry[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[];
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
@@ -629,6 +646,7 @@ function DraggableCard({ card, baseUrl, onCardClick, tsData }: {
         card={card}
         baseUrl={baseUrl}
         tsData={tsData}
+        allCards={allCards}
         onClick={() => onCardClick(card)}
         dragHandle={
           <button {...attributes} {...listeners} aria-label="Drag to reorder" className="mt-0.5 p-1 -ml-1 text-slate-600 hover:text-slate-300 cursor-grab active:cursor-grabbing shrink-0" onClick={e => e.stopPropagation()}>
@@ -641,11 +659,11 @@ function DraggableCard({ card, baseUrl, onCardClick, tsData }: {
 }
 
 // ── Column ────────────────────────────────────────────────
-function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, tsData }: {
+function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, tsData, allCards }: {
   id: ColumnId; cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
   collapsed?: boolean; onToggleCollapse?: () => void;
-  tsData?: _TSCREntry[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[];
 }) {
   const meta = COLUMN_META[id];
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -681,7 +699,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
           ref={setNodeRef}
           className={clsx("flex-1 space-y-2 rounded-xl p-2 overflow-y-auto transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
         >
-          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} />)}
+          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} allCards={allCards} />)}
           {cards.length === 0 && (
             <div className="flex items-center justify-center h-20 text-xs text-slate-700 border border-dashed border-slate-800 rounded-xl">Drop here</div>
           )}
@@ -693,12 +711,13 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
 }
 
 // ── Card detail drawer ────────────────────────────────────
-function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds, tsData }: {
+function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds, tsData, allCards }: {
   card: KanbanCard; onClose: () => void;
   onUpdate: (c: KanbanCard) => void; onDelete: (id: string) => void;
   onArchive?: (c: KanbanCard) => void; baseUrl?: string;
   creds: ReturnType<typeof useApp>["creds"];
   tsData: _TSCREntry[];
+  allCards: KanbanCard[];
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle]     = useState(card.title);
@@ -720,6 +739,12 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [linkedTSSuiteId, setLinkedTSSuiteId] = useState<string>(card.linkedTSSuiteId ?? "");
   const [showSuitePicker, setShowSuitePicker] = useState(false);
   const [pickedCRId, setPickedCRId] = useState("");
+
+  // Linked tasks (CR cards only)
+  const [linkedTaskIds, setLinkedTaskIds] = useState<string[]>(card.linkedTaskIds ?? []);
+  const [taskSearchQuery, setTaskSearchQuery] = useState("");
+  const [showTaskPicker, setShowTaskPicker] = useState(false);
+  const allTaskCards = allCards.filter(c => c.boardType === "task");
 
   // Jira link (custom cards only)
   const [editLinkedKey, setEditLinkedKey]           = useState(card.jiraKey ?? "");
@@ -759,7 +784,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   }, [jiraEditQuery, showJiraLinkEdit, creds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function save() {
-    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined, linkedTSSuiteId: linkedTSSuiteId || undefined });
+    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined, linkedTSSuiteId: linkedTSSuiteId || undefined, linkedTaskIds: linkedTaskIds.length > 0 ? linkedTaskIds : undefined });
     setEditing(false);
   }
 
@@ -939,6 +964,108 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
               </div>
             ) : null}
           </div>
+
+          {/* Linked Tasks — CR cards only */}
+          {(card.boardType === "cr" || cardBoardType === "cr") && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-slate-600">Linked Tasks</p>
+                <button
+                  onClick={() => { setShowTaskPicker(v => !v); setTaskSearchQuery(""); }}
+                  className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  {showTaskPicker ? "Done" : "+ Link Task"}
+                </button>
+              </div>
+
+              {/* Linked task list */}
+              {linkedTaskIds.length > 0 && (
+                <div className="space-y-1 mb-2">
+                  {linkedTaskIds.map(tid => {
+                    const t = allTaskCards.find(c => c.id === tid);
+                    if (!t) return null;
+                    const isDone = t.columnId === "finished";
+                    return (
+                      <div key={tid} className="flex items-center justify-between px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={clsx("w-1.5 h-1.5 rounded-full shrink-0", isDone ? "bg-green-500" : "bg-slate-500")} />
+                          {t.jiraKey && <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{t.jiraKey}</span>}
+                          <span className="text-xs text-slate-300 truncate">{t.title}</span>
+                        </div>
+                        <div className="flex items-center gap-2 ml-2 shrink-0">
+                          <span className="text-xs text-slate-600">{COLUMN_META[t.columnId].label}</span>
+                          <button
+                            onClick={() => {
+                              const next = linkedTaskIds.filter(id => id !== tid);
+                              setLinkedTaskIds(next);
+                              onUpdate({ ...card, linkedTaskIds: next.length > 0 ? next : undefined });
+                            }}
+                            className="text-slate-600 hover:text-red-400"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Task picker */}
+              {showTaskPicker && (
+                <div className="border border-slate-700 rounded-lg overflow-hidden">
+                  <div className="relative">
+                    <Search size={12} className="absolute left-3 top-2.5 text-slate-500 pointer-events-none" />
+                    <input
+                      autoFocus
+                      value={taskSearchQuery}
+                      onChange={e => setTaskSearchQuery(e.target.value)}
+                      placeholder="Search tasks…"
+                      className="w-full pl-8 pr-3 py-2 bg-slate-800 text-xs text-slate-200 placeholder-slate-600 focus:outline-none border-b border-slate-700"
+                    />
+                  </div>
+                  <div className="max-h-48 overflow-y-auto bg-slate-800/50">
+                    {allTaskCards
+                      .filter(t => {
+                        const q = taskSearchQuery.toLowerCase();
+                        return !q || t.title.toLowerCase().includes(q) || (t.jiraKey ?? "").toLowerCase().includes(q);
+                      })
+                      .map(t => {
+                        const checked = linkedTaskIds.includes(t.id);
+                        const isDone = t.columnId === "finished";
+                        return (
+                          <button
+                            key={t.id}
+                            onClick={() => {
+                              const next = checked
+                                ? linkedTaskIds.filter(id => id !== t.id)
+                                : [...linkedTaskIds, t.id];
+                              setLinkedTaskIds(next);
+                              onUpdate({ ...card, linkedTaskIds: next.length > 0 ? next : undefined });
+                            }}
+                            className={clsx(
+                              "w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-slate-700/50 transition-colors border-b border-slate-700/50 last:border-0",
+                              checked && "bg-blue-900/20"
+                            )}
+                          >
+                            <div className={clsx("w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors", checked ? "bg-blue-600 border-blue-600" : "border-slate-600")}>
+                              {checked && <span className="text-white text-[10px] leading-none">✓</span>}
+                            </div>
+                            <span className={clsx("w-1.5 h-1.5 rounded-full shrink-0", isDone ? "bg-green-500" : "bg-slate-500")} />
+                            {t.jiraKey && <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{t.jiraKey}</span>}
+                            <span className="text-xs text-slate-300 truncate flex-1">{t.title}</span>
+                            <span className="text-xs text-slate-600 shrink-0">{COLUMN_META[t.columnId].label}</span>
+                          </button>
+                        );
+                      })}
+                    {allTaskCards.length === 0 && (
+                      <p className="text-xs text-slate-600 text-center py-4">No task cards yet</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -1136,10 +1263,10 @@ function ArchiveDrawer({ cards, onClose, onUnarchive }: {
 }
 
 // ── Urgent droppable section ──────────────────────────────
-function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData }: {
+function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData, allCards }: {
   cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
-  tsData?: _TSCREntry[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[];
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: "urgent" });
 
@@ -1161,7 +1288,7 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData }: {
         >
           {cards.map(card => (
             <div key={card.id} className="w-64 shrink-0">
-              <DraggableCard card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} />
+              <DraggableCard card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} allCards={allCards} />
             </div>
           ))}
           {cards.length === 0 && (
@@ -1267,8 +1394,8 @@ export default function KanbanPage() {
     }
   }
 
-  const activeCard = activeId ? COLUMN_IDS.flatMap(c => boardState[c]).find(c => c.id === activeId) : null;
-  const totalCards = COLUMN_IDS.reduce((s, c) => s + boardState[c].length, 0);
+  const allCards = COLUMN_IDS.flatMap(col => boardState[col]);
+  const activeCard = activeId ? allCards.find(c => c.id === activeId) : null;
   function visibleCards(col: ColumnId) {
     return boardState[col].filter(c => (c.boardType ?? "task") === activeBoardType);
   }
@@ -1314,6 +1441,7 @@ export default function KanbanPage() {
           onAddCard={setAddTarget}
           onCardClick={setSelectedCard}
           tsData={tsData}
+          allCards={allCards}
         />
 
         <div className="flex-1 flex flex-col px-6 py-5 overflow-x-auto overflow-y-hidden">
@@ -1325,13 +1453,14 @@ export default function KanbanPage() {
                 collapsed={collapsedCols[col] ?? false}
                 onToggleCollapse={() => toggleCollapse(col)}
                 tsData={tsData}
+                allCards={allCards}
               />
             ))}
           </div>
         </div>
 
         <DragOverlay>
-          {activeCard && <div className="rotate-1 opacity-90 w-72"><CardView card={activeCard} tsData={tsData} /></div>}
+          {activeCard && <div className="rotate-1 opacity-90 w-72"><CardView card={activeCard} tsData={tsData} allCards={allCards} /></div>}
         </DragOverlay>
       </DndContext>
 
@@ -1339,7 +1468,7 @@ export default function KanbanPage() {
         <AddCardModal targetColumn={addTarget} onClose={() => setAddTarget(null)} onAdd={handleAddCard} creds={creds} />
       )}
       {selectedCard && (
-        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} tsData={tsData} />
+        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} tsData={tsData} allCards={allCards} />
       )}
       {showArchive && (
         <ArchiveDrawer cards={archivedCards} onClose={() => setShowArchive(false)} onUnarchive={handleUnarchiveCard} />

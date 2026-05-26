@@ -29,6 +29,8 @@ export interface KanbanCard {
   jiraProject?: string;
   // TS Tracker link
   linkedTSSuiteId?: string;
+  // Linked task card IDs (CR cards only)
+  linkedTaskIds?: string[];
   createdAt: string;
   columnEnteredAt?: string;
   archived?: boolean;
