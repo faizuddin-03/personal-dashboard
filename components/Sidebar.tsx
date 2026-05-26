@@ -119,7 +119,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
               {isOpen && (
                 <div className="ml-4 mt-0.5 space-y-0.5 border-l border-slate-800 pl-3">
                   {(item.children ?? []).map(child => {
-                    const isActive = pathname === child.href || pathname.startsWith(child.href + "/");
+                    const isActive = pathname === child.href;
                     return (
                       <Link
                         key={child.href}

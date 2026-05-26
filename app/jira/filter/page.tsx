@@ -127,26 +127,31 @@ export default function IssueFilterPage() {
     if (crKey) fetchIssues();
   }, [crKey, fetchIssues]);
 
-  // Debounced CR search
+  // Debounced CR search — same logic as the JIRA Dashboard global search
   useEffect(() => {
-    if (!creds || crQuery.length < 2) { setCrResults([]); return; }
+    if (!creds || !crQuery.trim()) { setCrResults([]); return; }
+    const q = crQuery.trim();
+    const escaped = q.replace(/"/g, '\\"');
+    const isId  = /^\d+$/.test(escaped);
+    const isKey = /^[A-Za-z]+-\d+$/.test(escaped);
+    const resolvedKey = isId && creds.defaultProjectKey ? `${creds.defaultProjectKey}-${escaped}` : null;
+    const jql = resolvedKey ? `key = "${resolvedKey}" ORDER BY updated DESC`
+              : isId        ? `id = ${escaped} ORDER BY updated DESC`
+              : isKey       ? `key = "${escaped}" ORDER BY updated DESC`
+              : `text ~ "${escaped}" ORDER BY updated DESC`;
     const t = setTimeout(async () => {
       setCrSearching(true);
       try {
-        const isKey = /^[A-Z]+-\d*$/i.test(crQuery.trim());
-        const jql = isKey
-          ? `key = "${crQuery.trim().toUpperCase()}" OR summary ~ "${crQuery}" ORDER BY updated DESC`
-          : `summary ~ "${crQuery}" ORDER BY updated DESC`;
         const res = await fetch("/api/jira/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...creds, jql, maxResults: 8 }),
+          body: JSON.stringify({ ...creds, jql, maxResults: 10 }),
         });
         const data: JiraSearchResult = await res.json();
         setCrResults(data.issues ?? []);
       } catch { setCrResults([]); }
       finally { setCrSearching(false); }
-    }, 400);
+    }, isKey || isId ? 0 : 500);
     return () => clearTimeout(t);
   }, [creds, crQuery]);
 
@@ -256,7 +261,7 @@ export default function IssueFilterPage() {
               placeholder="Enter a parent ticket key (e.g. CR-123) or search by title"
               className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500"
             />
-            {showCrSearch && (crQuery.length >= 2 || crResults.length > 0) && (
+            {showCrSearch && (crQuery.trim().length > 0 || crResults.length > 0) && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-20 overflow-hidden">
                 {crSearching && (
                   <div className="flex items-center gap-2 px-4 py-3 text-slate-500 text-sm">
@@ -276,7 +281,7 @@ export default function IssueFilterPage() {
                     </div>
                   </button>
                 ))}
-                {!crSearching && crQuery.length >= 2 && crResults.length === 0 && (
+                {!crSearching && crQuery.trim().length > 0 && crResults.length === 0 && (
                   <div className="px-4 py-3 text-sm text-slate-600">No results found</div>
                 )}
               </div>
