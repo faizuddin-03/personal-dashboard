@@ -81,8 +81,12 @@ export const CURRENT_CHANGES: ChangelogEntry[] = [
     title: "What's New Shows Only New Changes",
     description: "The popup now only displays changes since the last prod release. It no longer shows history, and won't auto-open if there's nothing new.",
   },
+  {
+    title: "JIRA Issue Filter Page",
+    description: "Pick any parent ticket (CR or otherwise) and see all its child issues in one view. Filter by status, priority, type, assignee, reporter, label, and fix version — no need to touch Jira's own filter.",
+  },
 ];
 
-export const CURRENT_VERSION       = "v0.013";
+export const CURRENT_VERSION       = "v0.014";
 export const CURRENT_VERSION_LABEL = "Upcoming";
 export const CURRENT_VERSION_DATE  = "2026-05-26";

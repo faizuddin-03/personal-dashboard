@@ -6,7 +6,7 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send,
+  Briefcase, Send, Filter,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -14,7 +14,14 @@ import { CURRENT_VERSION } from "@/lib/changelog";
 
 const nav = [
   { label: "Dashboard",  href: "/",         icon: LayoutDashboard },
-  { label: "Jira",       href: "/jira",     icon: Ticket },
+  {
+    label: "JIRA",
+    icon: Ticket,
+    children: [
+      { label: "Dashboard",    href: "/jira",        icon: LayoutDashboard },
+      { label: "Issue Filter", href: "/jira/filter", icon: Filter },
+    ],
+  },
   { label: "Kanban",     href: "/kanban",   icon: Kanban },
   { label: "TS Tracker", href: "/tests",    icon: ClipboardList },
   { label: "Calendar",   href: "/calendar", icon: CalendarDays },
@@ -38,7 +45,7 @@ const nav = [
 
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState<string[]>(["eAuto", "Productivity"]);
+  const [expanded, setExpanded] = useState<string[]>(["eAuto", "Productivity", "JIRA"]);
   const { openWhatsNew } = useApp();
 
   function toggleGroup(label: string) {
@@ -94,7 +101,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
           }
 
           const isOpen = expanded.includes(item.label);
-          const hasActive = item.children?.some(c => pathname === c.href) ?? false;
+          const hasActive = item.children?.some(c => pathname === c.href || pathname.startsWith(c.href + "/")) ?? false;
 
           return (
             <div key={item.label}>
@@ -112,7 +119,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
               {isOpen && (
                 <div className="ml-4 mt-0.5 space-y-0.5 border-l border-slate-800 pl-3">
                   {(item.children ?? []).map(child => {
-                    const isActive = pathname === child.href;
+                    const isActive = pathname === child.href || pathname.startsWith(child.href + "/");
                     return (
                       <Link
                         key={child.href}
