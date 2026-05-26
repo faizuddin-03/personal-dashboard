@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import {
-  Search, RefreshCw, Loader2, X, Filter, ChevronDown, ChevronUp,
+  Search, RefreshCw, Loader2, X, Filter, ChevronDown, ChevronUp, Plus,
 } from "lucide-react";
 import { JiraIssue, JiraSearchResult } from "@/lib/jira";
 import { useApp } from "@/components/AppShell";
@@ -9,8 +9,6 @@ import IssueCard from "@/components/IssueCard";
 import IssueDrawer from "@/components/IssueDrawer";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import clsx from "clsx";
-
-const STORAGE_KEY = "jira_filter_cr_key";
 
 interface FilterState {
   statuses: string[];
@@ -22,18 +20,69 @@ interface FilterState {
   fixVersions: string[];
 }
 
+interface FilterTab {
+  id: string;
+  name: string;
+  crKey: string | null;
+  crInput: string;
+  issues: JiraIssue[];
+  loading: boolean;
+  error: string;
+  filters: FilterState;
+  filtersOpen: boolean;
+}
+
 const emptyFilters = (): FilterState => ({
   statuses: [], priorities: [], issueTypes: [],
   assignees: [], reporters: [], labels: [], fixVersions: [],
 });
 
-function ChipRow({
-  label, options, selected, onToggle,
-}: {
-  label: string;
-  options: string[];
-  selected: string[];
-  onToggle: (v: string) => void;
+function makeTab(name: string): FilterTab {
+  return {
+    id: crypto.randomUUID(),
+    name,
+    crKey: null,
+    crInput: "",
+    issues: [],
+    loading: false,
+    error: "",
+    filters: emptyFilters(),
+    filtersOpen: true,
+  };
+}
+
+const TABS_KEY   = "jira_filter_tabs_v2";
+const ACTIVE_KEY = "jira_filter_active_tab";
+
+type SlimTab = Pick<FilterTab, "id" | "name" | "crKey" | "crInput" | "filters" | "filtersOpen">;
+
+function persistTabs(tabs: FilterTab[], activeId: string) {
+  const slim: SlimTab[] = tabs.map(({ id, name, crKey, crInput, filters, filtersOpen }) =>
+    ({ id, name, crKey, crInput, filters, filtersOpen })
+  );
+  localStorage.setItem(TABS_KEY, JSON.stringify(slim));
+  localStorage.setItem(ACTIVE_KEY, activeId);
+}
+
+function restoreTabs(): { tabs: FilterTab[]; activeId: string | null } {
+  try {
+    const raw     = localStorage.getItem(TABS_KEY);
+    const activeId = localStorage.getItem(ACTIVE_KEY);
+    if (!raw) return { tabs: [], activeId: null };
+    const slim: SlimTab[] = JSON.parse(raw);
+    const tabs: FilterTab[] = slim.map(s => ({
+      ...s,
+      filtersOpen: s.filtersOpen ?? true,
+      issues: [],
+      loading: false,
+      error: "",
+    }));
+    return { tabs, activeId };
+  } catch { return { tabs: [], activeId: null }; }
+}
+
+function ChipRow({ label, options, selected, onToggle }: {
+  label: string; options: string[]; selected: string[]; onToggle: (v: string) => void;
 }) {
   if (!options.length) return null;
   return (
@@ -65,45 +114,70 @@ function ChipRow({
 export default function IssueFilterPage() {
   const { creds, openSettings } = useApp();
 
-  const [crInput, setCrInput] = useState("");
-  const [crKey, setCrKey] = useState<string | null>(null);
-  const [crIssue, setCrIssue] = useState<JiraIssue | null>(null);
+  const [tabs, setTabs]           = useState<FilterTab[]>([]);
+  const [activeTabId, setActiveTabId] = useState<string>("");
+  const [hydrated, setHydrated]   = useState(false);
 
-  const [crQuery, setCrQuery] = useState("");
-  const [crResults, setCrResults] = useState<JiraIssue[]>([]);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameVal, setRenameVal]   = useState("");
+  const renameRef = useRef<HTMLInputElement>(null);
+
+  // Shared search-dropdown state (for the active tab's CR input)
+  const [crQuery, setCrQuery]         = useState("");
+  const [crResults, setCrResults]     = useState<JiraIssue[]>([]);
   const [crSearching, setCrSearching] = useState(false);
   const [showCrSearch, setShowCrSearch] = useState(false);
-  const crInputRef = useRef<HTMLInputElement>(null);
-
-  const [issues, setIssues] = useState<JiraIssue[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const [filters, setFilters] = useState<FilterState>(emptyFilters());
-  const [filtersOpen, setFiltersOpen] = useState(true);
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
+  // ── Hydrate ────────────────────────────────────────────────
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      setCrKey(saved);
-      setCrInput(saved);
+    const { tabs: saved, activeId } = restoreTabs();
+    if (saved.length > 0) {
+      setTabs(saved);
+      setActiveTabId(activeId && saved.find(t => t.id === activeId) ? activeId : saved[0].id);
+    } else {
+      const first = makeTab("Filter 1");
+      setTabs([first]);
+      setActiveTabId(first.id);
     }
+    setHydrated(true);
   }, []);
 
-  const fetchIssues = useCallback(async (key?: string) => {
-    const target = key ?? crKey;
-    if (!creds || !target) return;
-    setLoading(true);
-    setError("");
+  // ── Persist ────────────────────────────────────────────────
+  useEffect(() => {
+    if (!hydrated || !activeTabId) return;
+    persistTabs(tabs, activeTabId);
+  }, [tabs, activeTabId, hydrated]);
+
+  // ── Helpers ────────────────────────────────────────────────
+  const updateTab = useCallback((id: string, updates: Partial<FilterTab>) => {
+    setTabs(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+  }, []);
+
+  const activeTab = useMemo(
+    () => tabs.find(t => t.id === activeTabId) ?? tabs[0] ?? null,
+    [tabs, activeTabId]
+  );
+
+  // Clear search dropdown state when switching tabs
+  useEffect(() => {
+    setCrQuery("");
+    setCrResults([]);
+    setShowCrSearch(false);
+  }, [activeTabId]);
+
+  // ── Fetch issues for a tab ─────────────────────────────────
+  const fetchForTab = useCallback(async (tabId: string, key: string) => {
+    if (!creds) return;
+    setTabs(prev => prev.map(t => t.id === tabId ? { ...t, loading: true, error: "" } : t));
     try {
       const res = await fetch("/api/jira/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...creds,
-          jql: `parent = "${target}" ORDER BY priority DESC, status ASC`,
+          jql: `parent = "${key}" ORDER BY priority DESC, status ASC`,
           maxResults: 200,
           fields: [
             "summary", "status", "priority", "issuetype", "assignee",
@@ -113,31 +187,36 @@ export default function IssueFilterPage() {
         }),
       });
       const data: JiraSearchResult = await res.json();
-      if (!res.ok) throw new Error((data as unknown as { error: string }).error ?? "Failed to fetch issues");
-      setIssues(data.issues ?? []);
-      setFilters(emptyFilters());
+      if (!res.ok) throw new Error((data as unknown as { error: string }).error ?? "Failed");
+      setTabs(prev => prev.map(t =>
+        t.id === tabId ? { ...t, loading: false, issues: data.issues ?? [], filters: emptyFilters() } : t
+      ));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to fetch issues");
-    } finally {
-      setLoading(false);
+      setTabs(prev => prev.map(t =>
+        t.id === tabId ? { ...t, loading: false, error: e instanceof Error ? e.message : "Failed to fetch issues" } : t
+      ));
     }
-  }, [creds, crKey]);
+  }, [creds]);
 
+  // Auto-fetch when switching to a tab that has a key but no issues yet
   useEffect(() => {
-    if (crKey) fetchIssues();
-  }, [crKey, fetchIssues]);
+    if (!hydrated || !activeTab) return;
+    if (activeTab.crKey && activeTab.issues.length === 0 && !activeTab.loading && !activeTab.error) {
+      fetchForTab(activeTab.id, activeTab.crKey);
+    }
+  }, [activeTabId, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Debounced CR search — same logic as the JIRA Dashboard global search
+  // ── CR search (debounced) ──────────────────────────────────
   useEffect(() => {
     if (!creds || !crQuery.trim()) { setCrResults([]); return; }
-    const q = crQuery.trim();
+    const q       = crQuery.trim();
     const escaped = q.replace(/"/g, '\\"');
-    const isId  = /^\d+$/.test(escaped);
-    const isKey = /^[A-Za-z]+-\d+$/.test(escaped);
-    const resolvedKey = isId && creds.defaultProjectKey ? `${creds.defaultProjectKey}-${escaped}` : null;
-    const jql = resolvedKey ? `key = "${resolvedKey}" ORDER BY updated DESC`
-              : isId        ? `id = ${escaped} ORDER BY updated DESC`
-              : isKey       ? `key = "${escaped}" ORDER BY updated DESC`
+    const isId    = /^\d+$/.test(escaped);
+    const isKey   = /^[A-Za-z]+-\d+$/.test(escaped);
+    const resolved = isId && creds.defaultProjectKey ? `${creds.defaultProjectKey}-${escaped}` : null;
+    const jql = resolved ? `key = "${resolved}" ORDER BY updated DESC`
+              : isId     ? `id = ${escaped} ORDER BY updated DESC`
+              : isKey    ? `key = "${escaped}" ORDER BY updated DESC`
               : `text ~ "${escaped}" ORDER BY updated DESC`;
     const t = setTimeout(async () => {
       setCrSearching(true);
@@ -155,41 +234,77 @@ export default function IssueFilterPage() {
     return () => clearTimeout(t);
   }, [creds, crQuery]);
 
+  // ── CR actions ─────────────────────────────────────────────
   function selectCrIssue(issue: JiraIssue) {
-    setCrKey(issue.key);
-    setCrInput(issue.key);
-    setCrIssue(issue);
+    if (!activeTab) return;
+    updateTab(activeTab.id, { crKey: issue.key, crInput: issue.key, issues: [], error: "" });
     setShowCrSearch(false);
     setCrQuery("");
-    localStorage.setItem(STORAGE_KEY, issue.key);
+    setCrResults([]);
+    fetchForTab(activeTab.id, issue.key);
   }
 
   function applyCrInput() {
-    const trimmed = crInput.trim().toUpperCase();
-    if (!trimmed) return;
-    setCrIssue(null);
-    setCrKey(trimmed);
-    localStorage.setItem(STORAGE_KEY, trimmed);
+    if (!activeTab) return;
+    const key = activeTab.crInput.trim().toUpperCase();
+    if (!key) return;
+    updateTab(activeTab.id, { crKey: key, crInput: key, issues: [], error: "" });
+    setShowCrSearch(false);
+    fetchForTab(activeTab.id, key);
   }
 
   function drillToParent(key: string) {
-    setCrInput(key);
-    setCrKey(key);
-    setCrIssue(null);
-    localStorage.setItem(STORAGE_KEY, key);
+    if (!activeTab) return;
+    updateTab(activeTab.id, { crKey: key, crInput: key, issues: [], error: "" });
+    fetchForTab(activeTab.id, key);
   }
 
   function toggleFilter(field: keyof FilterState, value: string) {
-    setFilters(prev => ({
-      ...prev,
-      [field]: prev[field].includes(value)
-        ? prev[field].filter(v => v !== value)
-        : [...prev[field], value],
-    }));
+    if (!activeTab) return;
+    const current = activeTab.filters[field];
+    updateTab(activeTab.id, {
+      filters: {
+        ...activeTab.filters,
+        [field]: current.includes(value)
+          ? current.filter(v => v !== value)
+          : [...current, value],
+      },
+    });
   }
 
-  const hasActiveFilters = Object.values(filters).some(arr => arr.length > 0);
-  const activeFilterCount = Object.values(filters).reduce((s, a) => s + a.length, 0);
+  // ── Tab management ─────────────────────────────────────────
+  function addTab() {
+    const tab = makeTab(`Filter ${tabs.length + 1}`);
+    setTabs(prev => [...prev, tab]);
+    setActiveTabId(tab.id);
+  }
+
+  function closeTab(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    if (tabs.length === 1) return;
+    const idx  = tabs.findIndex(t => t.id === id);
+    const next = tabs[idx === 0 ? 1 : idx - 1];
+    setTabs(prev => prev.filter(t => t.id !== id));
+    if (activeTabId === id) setActiveTabId(next.id);
+  }
+
+  function startRename(id: string, name: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    setRenamingId(id);
+    setRenameVal(name);
+    setTimeout(() => { renameRef.current?.select(); }, 30);
+  }
+
+  function commitRename() {
+    if (!renamingId) return;
+    const trimmed = renameVal.trim();
+    if (trimmed) updateTab(renamingId, { name: trimmed });
+    setRenamingId(null);
+  }
+
+  // ── Derived for active tab ─────────────────────────────────
+  const issues  = activeTab?.issues ?? [];
+  const filters = activeTab?.filters ?? emptyFilters();
 
   const uniqueStatuses    = useMemo(() => [...new Set(issues.map(i => i.fields.status.name))].sort(), [issues]);
   const uniquePriorities  = useMemo(() => [...new Set(issues.map(i => i.fields.priority?.name).filter(Boolean) as string[])].sort(), [issues]);
@@ -199,19 +314,22 @@ export default function IssueFilterPage() {
   const uniqueLabels      = useMemo(() => [...new Set(issues.flatMap(i => i.fields.labels ?? []))].sort(), [issues]);
   const uniqueFixVersions = useMemo(() => [...new Set(issues.flatMap(i => (i.fields.fixVersions ?? []).map((v: { name: string }) => v.name)))].sort(), [issues]);
 
-  const filtered = useMemo(() => {
-    return issues.filter(issue => {
-      const f = filters;
-      if (f.statuses.length    && !f.statuses.includes(issue.fields.status.name)) return false;
-      if (f.priorities.length  && !f.priorities.includes(issue.fields.priority?.name ?? "")) return false;
-      if (f.issueTypes.length  && !f.issueTypes.includes(issue.fields.issuetype.name)) return false;
-      if (f.assignees.length   && !f.assignees.includes(issue.fields.assignee?.displayName ?? "Unassigned")) return false;
-      if (f.reporters.length   && !f.reporters.includes(issue.fields.reporter?.displayName ?? "Unknown")) return false;
-      if (f.labels.length      && !f.labels.some(l => (issue.fields.labels ?? []).includes(l))) return false;
-      if (f.fixVersions.length && !f.fixVersions.some(v => (issue.fields.fixVersions ?? []).map((fv: { name: string }) => fv.name).includes(v))) return false;
-      return true;
-    });
-  }, [issues, filters]);
+  const filtered = useMemo(() => issues.filter(issue => {
+    const f = filters;
+    if (f.statuses.length    && !f.statuses.includes(issue.fields.status.name)) return false;
+    if (f.priorities.length  && !f.priorities.includes(issue.fields.priority?.name ?? "")) return false;
+    if (f.issueTypes.length  && !f.issueTypes.includes(issue.fields.issuetype.name)) return false;
+    if (f.assignees.length   && !f.assignees.includes(issue.fields.assignee?.displayName ?? "Unassigned")) return false;
+    if (f.reporters.length   && !f.reporters.includes(issue.fields.reporter?.displayName ?? "Unknown")) return false;
+    if (f.labels.length      && !f.labels.some(l => (issue.fields.labels ?? []).includes(l))) return false;
+    if (f.fixVersions.length && !f.fixVersions.some(v => (issue.fields.fixVersions ?? []).map((fv: { name: string }) => fv.name).includes(v))) return false;
+    return true;
+  }), [issues, filters]);
+
+  const hasActiveFilters  = Object.values(filters).some(arr => arr.length > 0);
+  const activeFilterCount = Object.values(filters).reduce((s, a) => s + a.length, 0);
+
+  if (!hydrated) return null;
 
   if (!creds) {
     return (
@@ -226,188 +344,266 @@ export default function IssueFilterPage() {
     <div className="flex flex-col h-full">
       <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />
 
-      {/* Page header */}
-      <div className="px-6 py-5 border-b border-slate-800 space-y-3">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-slate-100">Issue Filter</h1>
-          {crKey && issues.length > 0 && (
-            <span className="text-sm text-slate-500">
-              {filtered.length === issues.length
-                ? `${issues.length} issue${issues.length !== 1 ? "s" : ""}`
-                : `${filtered.length} of ${issues.length} shown`}
-            </span>
-          )}
-        </div>
+      {/* Page header + tab bar */}
+      <div className="px-6 pt-5 pb-0 border-b border-slate-800">
+        <h1 className="text-xl font-semibold text-slate-100 mb-4">Issue Filter</h1>
 
-        {/* CR / parent selector */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <input
-              ref={crInputRef}
-              value={showCrSearch ? crQuery : crInput}
-              onChange={e => {
-                if (showCrSearch) {
-                  setCrQuery(e.target.value);
-                } else {
-                  setCrInput(e.target.value.toUpperCase());
-                }
-              }}
-              onFocus={() => setShowCrSearch(true)}
-              onBlur={() => setTimeout(() => setShowCrSearch(false), 200)}
-              onKeyDown={e => {
-                if (e.key === "Enter") { setShowCrSearch(false); applyCrInput(); }
-                if (e.key === "Escape") { setShowCrSearch(false); }
-              }}
-              placeholder="Enter a parent ticket key (e.g. CR-123) or search by title"
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500"
-            />
-            {showCrSearch && (crQuery.trim().length > 0 || crResults.length > 0) && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-20 overflow-hidden">
-                {crSearching && (
-                  <div className="flex items-center gap-2 px-4 py-3 text-slate-500 text-sm">
-                    <Loader2 size={14} className="animate-spin" /> Searching…
-                  </div>
+        <div className="flex items-end gap-1 overflow-x-auto pb-0">
+          {tabs.map(t => {
+            const isActive   = t.id === activeTabId;
+            const isRenaming = renamingId === t.id;
+            return (
+              <div
+                key={t.id}
+                onClick={() => { if (!isActive) setActiveTabId(t.id); }}
+                className={clsx(
+                  "group relative flex items-center gap-1.5 px-3 py-2 rounded-t-lg border border-b-0 text-sm transition-colors shrink-0 select-none",
+                  isActive
+                    ? "bg-slate-950 border-slate-700 text-slate-100 cursor-default"
+                    : "bg-slate-800/60 border-slate-800 text-slate-500 hover:text-slate-300 hover:bg-slate-800 cursor-pointer"
                 )}
-                {!crSearching && crResults.map(issue => (
-                  <button
-                    key={issue.key}
-                    onMouseDown={() => selectCrIssue(issue)}
-                    className="w-full flex items-start gap-3 px-4 py-3 hover:bg-slate-700 text-left border-b border-slate-700/40 last:border-0 transition-colors"
+              >
+                {isRenaming ? (
+                  <input
+                    ref={renameRef}
+                    value={renameVal}
+                    onChange={e => setRenameVal(e.target.value)}
+                    onBlur={commitRename}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") commitRename();
+                      if (e.key === "Escape") setRenamingId(null);
+                    }}
+                    onClick={e => e.stopPropagation()}
+                    className="bg-transparent outline-none w-28 text-sm text-slate-100 border-b border-blue-500"
+                    autoFocus
+                  />
+                ) : (
+                  <span
+                    className="max-w-[140px] truncate"
+                    onDoubleClick={e => startRename(t.id, t.name, e)}
+                    title={isActive ? "Double-click to rename" : t.name}
                   >
-                    <span className="text-xs font-mono text-blue-400 shrink-0 pt-0.5">{issue.key}</span>
-                    <div className="min-w-0">
-                      <p className="text-sm text-slate-200 truncate">{issue.fields.summary}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">{issue.fields.issuetype.name} · {issue.fields.status.name}</p>
-                    </div>
+                    {t.name}
+                  </span>
+                )}
+
+                {t.issues.length > 0 && !isRenaming && (
+                  <span className={clsx(
+                    "text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 tabular-nums",
+                    isActive ? "bg-slate-800 text-slate-400" : "bg-slate-700 text-slate-500"
+                  )}>
+                    {t.issues.length}
+                  </span>
+                )}
+
+                {t.loading && (
+                  <Loader2 size={11} className="animate-spin text-blue-400 shrink-0" />
+                )}
+
+                {tabs.length > 1 && !isRenaming && (
+                  <button
+                    onClick={e => closeTab(t.id, e)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity ml-0.5 text-slate-600 hover:text-red-400 shrink-0"
+                    title="Close tab"
+                  >
+                    <X size={12} />
                   </button>
-                ))}
-                {!crSearching && crQuery.trim().length > 0 && crResults.length === 0 && (
-                  <div className="px-4 py-3 text-sm text-slate-600">No results found</div>
                 )}
               </div>
-            )}
-          </div>
+            );
+          })}
 
           <button
-            onClick={() => { setShowCrSearch(false); applyCrInput(); }}
-            disabled={!crInput.trim() || loading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
+            onClick={addTab}
+            className="flex items-center gap-1 px-2.5 py-2 mb-0 rounded-t-lg text-slate-600 hover:text-slate-200 hover:bg-slate-800 transition-colors shrink-0"
+            title="New filter tab"
           >
-            {loading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-            Fetch
+            <Plus size={15} />
           </button>
-
-          {crKey && (
-            <button
-              onClick={() => fetchIssues()}
-              disabled={loading}
-              title="Refresh"
-              className="p-2.5 text-slate-500 hover:text-slate-200 bg-slate-800 border border-slate-700 rounded-xl hover:border-slate-600 transition-colors disabled:opacity-50 shrink-0"
-            >
-              <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-            </button>
-          )}
         </div>
-
-        {/* Selected CR info */}
-        {crIssue && (
-          <p className="text-xs text-slate-500 truncate">
-            <span className="font-mono text-blue-400">{crIssue.key}</span>
-            <span className="mx-1.5 text-slate-700">·</span>
-            {crIssue.fields.summary}
-          </p>
-        )}
       </div>
 
-      {/* Body */}
-      <div className="flex-1 overflow-y-auto">
-        {!crKey ? (
-          <div className="flex flex-col items-center justify-center h-full text-center text-slate-600 p-8 gap-3">
-            <Filter size={40} className="opacity-20" />
-            <p className="text-sm">Enter a parent ticket key above to load its child issues, then use filters to narrow them down.</p>
-          </div>
-        ) : error ? (
-          <div className="m-6 p-4 bg-red-950/30 border border-red-900/40 rounded-xl text-sm text-red-400">{error}</div>
-        ) : (
-          <div className="p-6 space-y-4">
+      {/* Active tab body */}
+      {activeTab && (
+        <div className="flex flex-col flex-1 overflow-hidden">
 
-            {/* Filter panel */}
-            {issues.length > 0 && (
-              <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setFiltersOpen(v => !v)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <Filter size={14} />
-                    <span className="font-medium">Filters</span>
-                    {hasActiveFilters && (
-                      <span className="bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium">
-                        {activeFilterCount}
-                      </span>
+          {/* CR selector */}
+          <div className="px-6 py-4 border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  value={activeTab.crInput}
+                  onChange={e => {
+                    const val = e.target.value.toUpperCase();
+                    updateTab(activeTab.id, { crInput: val });
+                    setCrQuery(val);
+                  }}
+                  onFocus={() => setShowCrSearch(true)}
+                  onBlur={() => setTimeout(() => setShowCrSearch(false), 200)}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") { setShowCrSearch(false); applyCrInput(); }
+                    if (e.key === "Escape") setShowCrSearch(false);
+                  }}
+                  placeholder="Enter a parent ticket key or search by title"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                />
+                {showCrSearch && activeTab.crInput.trim().length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-20 overflow-hidden">
+                    {crSearching && (
+                      <div className="flex items-center gap-2 px-4 py-3 text-slate-500 text-sm">
+                        <Loader2 size={14} className="animate-spin" /> Searching…
+                      </div>
                     )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {hasActiveFilters && (
-                      <span
-                        onClick={e => { e.stopPropagation(); setFilters(emptyFilters()); }}
-                        className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+                    {!crSearching && crResults.map(issue => (
+                      <button
+                        key={issue.key}
+                        onMouseDown={() => selectCrIssue(issue)}
+                        className="w-full flex items-start gap-3 px-4 py-3 hover:bg-slate-700 text-left border-b border-slate-700/40 last:border-0 transition-colors"
                       >
-                        Clear all
-                      </span>
+                        <span className="text-xs font-mono text-blue-400 shrink-0 pt-0.5">{issue.key}</span>
+                        <div className="min-w-0">
+                          <p className="text-sm text-slate-200 truncate">{issue.fields.summary}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {issue.fields.issuetype.name} · {issue.fields.status.name}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                    {!crSearching && activeTab.crInput.trim() && crResults.length === 0 && (
+                      <div className="px-4 py-3 text-sm text-slate-600">No results found</div>
                     )}
-                    {filtersOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                   </div>
-                </button>
+                )}
+              </div>
 
-                {filtersOpen && (
-                  <div className="px-4 pb-2 border-t border-slate-800 pt-1">
-                    <ChipRow label="Status"      options={uniqueStatuses}    selected={filters.statuses}    onToggle={v => toggleFilter("statuses", v)} />
-                    <ChipRow label="Priority"    options={uniquePriorities}  selected={filters.priorities}  onToggle={v => toggleFilter("priorities", v)} />
-                    <ChipRow label="Type"        options={uniqueTypes}       selected={filters.issueTypes}  onToggle={v => toggleFilter("issueTypes", v)} />
-                    <ChipRow label="Assignee"    options={uniqueAssignees}   selected={filters.assignees}   onToggle={v => toggleFilter("assignees", v)} />
-                    <ChipRow label="Reporter"    options={uniqueReporters}   selected={filters.reporters}   onToggle={v => toggleFilter("reporters", v)} />
-                    <ChipRow label="Label"       options={uniqueLabels}      selected={filters.labels}      onToggle={v => toggleFilter("labels", v)} />
-                    <ChipRow label="Fix Version" options={uniqueFixVersions} selected={filters.fixVersions} onToggle={v => toggleFilter("fixVersions", v)} />
+              <button
+                onClick={() => { setShowCrSearch(false); applyCrInput(); }}
+                disabled={!activeTab.crInput.trim() || activeTab.loading}
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
+              >
+                {activeTab.loading
+                  ? <Loader2 size={14} className="animate-spin" />
+                  : <Search size={14} />}
+                Fetch
+              </button>
+
+              {activeTab.crKey && (
+                <button
+                  onClick={() => fetchForTab(activeTab.id, activeTab.crKey!)}
+                  disabled={activeTab.loading}
+                  title="Refresh"
+                  className="p-2.5 text-slate-500 hover:text-slate-200 bg-slate-800 border border-slate-700 rounded-xl hover:border-slate-600 transition-colors disabled:opacity-50 shrink-0"
+                >
+                  <RefreshCw size={14} className={activeTab.loading ? "animate-spin" : ""} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Results area */}
+          <div className="flex-1 overflow-y-auto">
+            {!activeTab.crKey ? (
+              <div className="flex flex-col items-center justify-center h-full text-center text-slate-600 p-8 gap-3">
+                <Filter size={40} className="opacity-20" />
+                <p className="text-sm">Enter a parent ticket key above to load its child issues.</p>
+              </div>
+            ) : activeTab.error ? (
+              <div className="m-6 p-4 bg-red-950/30 border border-red-900/40 rounded-xl text-sm text-red-400">
+                {activeTab.error}
+              </div>
+            ) : (
+              <div className="p-6 space-y-4">
+
+                {issues.length > 0 && (
+                  <p className="text-xs text-slate-600">
+                    {filtered.length === issues.length
+                      ? `${issues.length} issue${issues.length !== 1 ? "s" : ""}`
+                      : `${filtered.length} of ${issues.length} shown`}
+                  </p>
+                )}
+
+                {/* Filter panel */}
+                {issues.length > 0 && (
+                  <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                    <button
+                      onClick={() => updateTab(activeTab.id, { filtersOpen: !activeTab.filtersOpen })}
+                      className="w-full flex items-center justify-between px-4 py-3 text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Filter size={14} />
+                        <span className="font-medium">Filters</span>
+                        {hasActiveFilters && (
+                          <span className="bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium">
+                            {activeFilterCount}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {hasActiveFilters && (
+                          <span
+                            onClick={e => { e.stopPropagation(); updateTab(activeTab.id, { filters: emptyFilters() }); }}
+                            className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+                          >
+                            Clear all
+                          </span>
+                        )}
+                        {activeTab.filtersOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </div>
+                    </button>
+
+                    {activeTab.filtersOpen && (
+                      <div className="px-4 pb-2 border-t border-slate-800 pt-1">
+                        <ChipRow label="Status"      options={uniqueStatuses}    selected={filters.statuses}    onToggle={v => toggleFilter("statuses", v)} />
+                        <ChipRow label="Priority"    options={uniquePriorities}  selected={filters.priorities}  onToggle={v => toggleFilter("priorities", v)} />
+                        <ChipRow label="Type"        options={uniqueTypes}       selected={filters.issueTypes}  onToggle={v => toggleFilter("issueTypes", v)} />
+                        <ChipRow label="Assignee"    options={uniqueAssignees}   selected={filters.assignees}   onToggle={v => toggleFilter("assignees", v)} />
+                        <ChipRow label="Reporter"    options={uniqueReporters}   selected={filters.reporters}   onToggle={v => toggleFilter("reporters", v)} />
+                        <ChipRow label="Label"       options={uniqueLabels}      selected={filters.labels}      onToggle={v => toggleFilter("labels", v)} />
+                        <ChipRow label="Fix Version" options={uniqueFixVersions} selected={filters.fixVersions} onToggle={v => toggleFilter("fixVersions", v)} />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Results */}
+                {activeTab.loading ? (
+                  <div className="flex items-center justify-center py-16 text-slate-600">
+                    <Loader2 size={24} className="animate-spin" />
+                  </div>
+                ) : issues.length === 0 ? (
+                  <div className="text-center py-16 text-slate-600 text-sm">
+                    No child issues found for{" "}
+                    <span className="font-mono text-slate-500">{activeTab.crKey}</span>.
+                  </div>
+                ) : filtered.length === 0 ? (
+                  <div className="text-center py-12 text-slate-600 text-sm">
+                    No issues match the selected filters.
+                    <button
+                      onClick={() => updateTab(activeTab.id, { filters: emptyFilters() })}
+                      className="block mx-auto mt-2 text-blue-400 text-xs underline"
+                    >
+                      Clear filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filtered.map(issue => (
+                      <IssueCard
+                        key={issue.key}
+                        issue={issue}
+                        baseUrl={creds.baseUrl}
+                        onClick={() => setSelectedKey(issue.key)}
+                        onParentClick={drillToParent}
+                      />
+                    ))}
                   </div>
                 )}
               </div>
             )}
-
-            {/* Results */}
-            {loading ? (
-              <div className="flex items-center justify-center py-16 text-slate-600">
-                <Loader2 size={24} className="animate-spin" />
-              </div>
-            ) : issues.length === 0 ? (
-              <div className="text-center py-16 text-slate-600 text-sm">
-                No child issues found for <span className="font-mono text-slate-500">{crKey}</span>.
-              </div>
-            ) : filtered.length === 0 ? (
-              <div className="text-center py-12 text-slate-600 text-sm">
-                No issues match the selected filters.
-                <button onClick={() => setFilters(emptyFilters())} className="block mx-auto mt-2 text-blue-400 text-xs underline">
-                  Clear filters
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filtered.map(issue => (
-                  <IssueCard
-                    key={issue.key}
-                    issue={issue}
-                    baseUrl={creds.baseUrl}
-                    onClick={() => setSelectedKey(issue.key)}
-                    onParentClick={drillToParent}
-                  />
-                ))}
-              </div>
-            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Issue detail drawer */}
       {selectedKey && (
         <IssueDrawer
           issueKey={selectedKey}
