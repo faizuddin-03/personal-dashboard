@@ -62,14 +62,14 @@ export const PRIORITY_META: Record<Priority, { label: string; color: string; dot
 
 export const ACCENT_COLORS: { label: string; value: string; cls: string; swatch: string }[] = [
   { label: "None",      value: "",          cls: "border-l-slate-700",   swatch: "#334155" },
-  { label: "Red",       value: "red",       cls: "border-l-red-500",     swatch: "#ef4444" },
-  { label: "Sky Blue",  value: "sky",       cls: "border-l-sky-400",     swatch: "#38bdf8" },
-  { label: "Blue",      value: "blue",      cls: "border-l-blue-500",    swatch: "#3b82f6" },
-  { label: "Purple",    value: "purple",    cls: "border-l-purple-500",  swatch: "#a855f7" },
-  { label: "Green",     value: "green",     cls: "border-l-green-500",   swatch: "#22c55e" },
-  { label: "Yellow",    value: "yellow",    cls: "border-l-yellow-500",  swatch: "#eab308" },
-  { label: "Orange",    value: "orange",    cls: "border-l-orange-500",  swatch: "#f97316" },
-  { label: "Pink",      value: "pink",      cls: "border-l-pink-500",    swatch: "#ec4899" },
+  { label: "Red",       value: "red",       cls: "border-l-red-500",     swatch: "#a05252" },
+  { label: "Sky Blue",  value: "sky",       cls: "border-l-sky-400",     swatch: "#4a8aaa" },
+  { label: "Blue",      value: "blue",      cls: "border-l-blue-500",    swatch: "#3a6490" },
+  { label: "Purple",    value: "purple",    cls: "border-l-purple-500",  swatch: "#7a5aa0" },
+  { label: "Green",     value: "green",     cls: "border-l-green-500",   swatch: "#4a8860" },
+  { label: "Yellow",    value: "yellow",    cls: "border-l-yellow-500",  swatch: "#9a8830" },
+  { label: "Orange",    value: "orange",    cls: "border-l-orange-500",  swatch: "#9a5e30" },
+  { label: "Pink",      value: "pink",      cls: "border-l-pink-500",    swatch: "#a04878" },
 ];
 
 export function accentBorderClass(color?: string): string {

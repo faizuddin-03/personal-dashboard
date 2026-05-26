@@ -70,15 +70,98 @@ body {
 
 /* Kanban accent left-borders — !important overrides the border-color
    shorthand set by :root .border-slate-700 { border-color: ... } */
-:root .border-l-red-500    { border-left-color: #ef4444 !important; }
-:root .border-l-sky-400    { border-left-color: #38bdf8 !important; }
-:root .border-l-blue-500   { border-left-color: #3b82f6 !important; }
-:root .border-l-purple-500 { border-left-color: #a855f7 !important; }
-:root .border-l-green-500  { border-left-color: #22c55e !important; }
-:root .border-l-yellow-500 { border-left-color: #eab308 !important; }
-:root .border-l-orange-500 { border-left-color: #f97316 !important; }
-:root .border-l-pink-500   { border-left-color: #ec4899 !important; }
+:root .border-l-red-500    { border-left-color: #a05252 !important; }
+:root .border-l-sky-400    { border-left-color: #4a8aaa !important; }
+:root .border-l-blue-500   { border-left-color: #3a6490 !important; }
+:root .border-l-purple-500 { border-left-color: #7a5aa0 !important; }
+:root .border-l-green-500  { border-left-color: #4a8860 !important; }
+:root .border-l-yellow-500 { border-left-color: #9a8830 !important; }
+:root .border-l-orange-500 { border-left-color: #9a5e30 !important; }
+:root .border-l-pink-500   { border-left-color: #a04878 !important; }
 :root .border-l-slate-700  { border-left-color: var(--border-main, #334155); }
+
+/* ── Matte accent palette — desaturates Tailwind vivid defaults ──────
+   All accent colours are toned down to a dusty/palette feel.
+   Light-theme counterparts further down in this file override these.  */
+
+/* Blue — primary accent (buttons, links, active states) */
+:root .text-blue-400              { color: #5688b0; }
+:root .text-blue-300              { color: #7aaad4; }
+:root .text-blue-500              { color: #4575a0; }
+:root .bg-blue-600                { background-color: #3a6490; }
+:root .bg-blue-500                { background-color: #4575a0; }
+:root .bg-blue-400                { background-color: #5688b0; }
+:root .hover\:bg-blue-700:hover   { background-color: #305a80; }
+:root .hover\:bg-blue-600:hover   { background-color: #3a6490; }
+:root .hover\:bg-blue-500:hover   { background-color: #4575a0; }
+:root .hover\:text-blue-400:hover { color: #5688b0; }
+:root .hover\:text-blue-300:hover { color: #7aaad4; }
+:root .bg-blue-600\/10  { background-color: color-mix(in srgb, #3a6490 10%, transparent); }
+:root .bg-blue-600\/20  { background-color: color-mix(in srgb, #3a6490 20%, transparent); }
+:root .bg-blue-600\/30  { background-color: color-mix(in srgb, #3a6490 30%, transparent); }
+:root .bg-blue-600\/40  { background-color: color-mix(in srgb, #3a6490 40%, transparent); }
+:root .bg-blue-900\/40  { background-color: color-mix(in srgb, #3a6490 15%, transparent); }
+:root .border-blue-500             { border-color: #4575a0; }
+:root .border-blue-600             { border-color: #3a6490; }
+:root .border-blue-600\/30         { border-color: color-mix(in srgb, #3a6490 30%, transparent); }
+:root .border-blue-600\/50         { border-color: color-mix(in srgb, #3a6490 50%, transparent); }
+:root .border-blue-600\/60         { border-color: color-mix(in srgb, #3a6490 60%, transparent); }
+:root .focus\:ring-blue-600:focus  { --tw-ring-color: #3a6490; }
+
+/* Green — progress bars, success states */
+:root .text-green-400             { color: #5a9470; }
+:root .text-green-300             { color: #78b494; }
+:root .bg-green-500               { background-color: #467558; }
+:root .bg-green-400               { background-color: #5a9470; }
+:root .border-green-500           { border-color: #467558; }
+
+/* Red — urgent, overdue, errors */
+:root .text-red-400               { color: #b06464; }
+:root .text-red-300               { color: #cc8080; }
+:root .text-red-500               { color: #a05555; }
+:root .text-red-200               { color: #d4a0a0; }
+:root .text-red-400\/80           { color: #b0646499; }
+:root .bg-red-500                 { background-color: #904c4c; }
+:root .bg-red-400                 { background-color: #a06060; }
+:root .hover\:text-red-400:hover  { color: #b06464; }
+:root .hover\:text-red-300:hover  { color: #cc8080; }
+:root .border-red-700             { border-color: #804040; }
+
+/* Amber — medium priority, on-hold */
+:root .text-amber-400              { color: #b09050; }
+:root .text-amber-300              { color: #ccaa70; }
+:root .bg-amber-500                { background-color: #8a7035; }
+:root .hover\:text-amber-400:hover { color: #b09050; }
+
+/* Orange — high priority */
+:root .text-orange-400            { color: #b07850; }
+:root .text-orange-300            { color: #cca480; }
+
+/* Yellow — low priority */
+:root .text-yellow-400            { color: #a89840; }
+:root .text-yellow-300            { color: #bcb058; }
+
+/* Purple */
+:root .text-purple-400            { color: #9078c0; }
+:root .text-purple-300            { color: #a890d4; }
+:root .bg-purple-500              { background-color: #6a5490; }
+:root .hover\:bg-purple-600:hover { background-color: #5a4480; }
+
+/* Pink */
+:root .text-pink-400              { color: #b87098; }
+:root .text-pink-300              { color: #cca0c0; }
+
+/* Indigo — CR card badges */
+:root .text-indigo-400            { color: #7888b8; }
+:root .text-indigo-300            { color: #9090cc; }
+
+/* Sky */
+:root .text-sky-400               { color: #5090b0; }
+:root .text-sky-300               { color: #70aac8; }
+
+/* Teal */
+:root .text-teal-400              { color: #509090; }
+:root .text-teal-300              { color: #70aaaa; }
 
 /* Text */
 :root .text-slate-100 { color: var(--text-brightest, #f8fafc); }
