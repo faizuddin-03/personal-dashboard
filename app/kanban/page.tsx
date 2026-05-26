@@ -516,9 +516,10 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards }: {
 
   const isCR = card.boardType === "cr";
 
-  // Linked task progress (CR cards only)
-  const linkedTaskIds = card.linkedTaskIds ?? [];
-  const linkedTasks = allCards ? allCards.filter(c => linkedTaskIds.includes(c.id)) : [];
+  // Task progress for CR cards — all task cards sharing the same jiraKey
+  const linkedTasks = isCR && card.jiraKey && allCards
+    ? allCards.filter(c => c.boardType === "task" && c.jiraKey === card.jiraKey)
+    : [];
   const tasksTotal = linkedTasks.length;
   const tasksDone = linkedTasks.filter(c => c.columnId === "finished").length;
 
@@ -740,11 +741,6 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [showSuitePicker, setShowSuitePicker] = useState(false);
   const [pickedCRId, setPickedCRId] = useState("");
 
-  // Linked tasks (CR cards only)
-  const [linkedTaskIds, setLinkedTaskIds] = useState<string[]>(card.linkedTaskIds ?? []);
-  const [taskSearchQuery, setTaskSearchQuery] = useState("");
-  const [showTaskPicker, setShowTaskPicker] = useState(false);
-  const allTaskCards = allCards.filter(c => c.boardType === "task");
 
   // Jira link (custom cards only)
   const [editLinkedKey, setEditLinkedKey]           = useState(card.jiraKey ?? "");
@@ -784,7 +780,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   }, [jiraEditQuery, showJiraLinkEdit, creds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function save() {
-    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined, linkedTSSuiteId: linkedTSSuiteId || undefined, linkedTaskIds: linkedTaskIds.length > 0 ? linkedTaskIds : undefined });
+    onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined, linkedTSSuiteId: linkedTSSuiteId || undefined });
     setEditing(false);
   }
 
@@ -964,108 +960,6 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
               </div>
             ) : null}
           </div>
-
-          {/* Linked Tasks — CR cards only */}
-          {(card.boardType === "cr" || cardBoardType === "cr") && (
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs text-slate-600">Linked Tasks</p>
-                <button
-                  onClick={() => { setShowTaskPicker(v => !v); setTaskSearchQuery(""); }}
-                  className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-                >
-                  {showTaskPicker ? "Done" : "+ Link Task"}
-                </button>
-              </div>
-
-              {/* Linked task list */}
-              {linkedTaskIds.length > 0 && (
-                <div className="space-y-1 mb-2">
-                  {linkedTaskIds.map(tid => {
-                    const t = allTaskCards.find(c => c.id === tid);
-                    if (!t) return null;
-                    const isDone = t.columnId === "finished";
-                    return (
-                      <div key={tid} className="flex items-center justify-between px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className={clsx("w-1.5 h-1.5 rounded-full shrink-0", isDone ? "bg-green-500" : "bg-slate-500")} />
-                          {t.jiraKey && <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{t.jiraKey}</span>}
-                          <span className="text-xs text-slate-300 truncate">{t.title}</span>
-                        </div>
-                        <div className="flex items-center gap-2 ml-2 shrink-0">
-                          <span className="text-xs text-slate-600">{COLUMN_META[t.columnId].label}</span>
-                          <button
-                            onClick={() => {
-                              const next = linkedTaskIds.filter(id => id !== tid);
-                              setLinkedTaskIds(next);
-                              onUpdate({ ...card, linkedTaskIds: next.length > 0 ? next : undefined });
-                            }}
-                            className="text-slate-600 hover:text-red-400"
-                          >
-                            <X size={12} />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Task picker */}
-              {showTaskPicker && (
-                <div className="border border-slate-700 rounded-lg overflow-hidden">
-                  <div className="relative">
-                    <Search size={12} className="absolute left-3 top-2.5 text-slate-500 pointer-events-none" />
-                    <input
-                      autoFocus
-                      value={taskSearchQuery}
-                      onChange={e => setTaskSearchQuery(e.target.value)}
-                      placeholder="Search tasks…"
-                      className="w-full pl-8 pr-3 py-2 bg-slate-800 text-xs text-slate-200 placeholder-slate-600 focus:outline-none border-b border-slate-700"
-                    />
-                  </div>
-                  <div className="max-h-48 overflow-y-auto bg-slate-800/50">
-                    {allTaskCards
-                      .filter(t => {
-                        const q = taskSearchQuery.toLowerCase();
-                        return !q || t.title.toLowerCase().includes(q) || (t.jiraKey ?? "").toLowerCase().includes(q);
-                      })
-                      .map(t => {
-                        const checked = linkedTaskIds.includes(t.id);
-                        const isDone = t.columnId === "finished";
-                        return (
-                          <button
-                            key={t.id}
-                            onClick={() => {
-                              const next = checked
-                                ? linkedTaskIds.filter(id => id !== t.id)
-                                : [...linkedTaskIds, t.id];
-                              setLinkedTaskIds(next);
-                              onUpdate({ ...card, linkedTaskIds: next.length > 0 ? next : undefined });
-                            }}
-                            className={clsx(
-                              "w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-slate-700/50 transition-colors border-b border-slate-700/50 last:border-0",
-                              checked && "bg-blue-900/20"
-                            )}
-                          >
-                            <div className={clsx("w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors", checked ? "bg-blue-600 border-blue-600" : "border-slate-600")}>
-                              {checked && <span className="text-white text-[10px] leading-none">✓</span>}
-                            </div>
-                            <span className={clsx("w-1.5 h-1.5 rounded-full shrink-0", isDone ? "bg-green-500" : "bg-slate-500")} />
-                            {t.jiraKey && <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{t.jiraKey}</span>}
-                            <span className="text-xs text-slate-300 truncate flex-1">{t.title}</span>
-                            <span className="text-xs text-slate-600 shrink-0">{COLUMN_META[t.columnId].label}</span>
-                          </button>
-                        );
-                      })}
-                    {allTaskCards.length === 0 && (
-                      <p className="text-xs text-slate-600 text-center py-4">No task cards yet</p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
