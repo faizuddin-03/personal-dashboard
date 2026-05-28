@@ -127,41 +127,29 @@ function ChipRow({ label, options, values, onToggle }: {
   );
 }
 
-function DateRow({ label, value, onChange }: {
-  label: string;
-  value: DateRange;
-  onChange: (range: DateRange) => void;
-}) {
-  const hasValue = value.from || value.to;
+function DatePair({ value, onChange }: { value: DateRange; onChange: (r: DateRange) => void }) {
   return (
-    <div className="flex items-center gap-2 py-2.5 border-b border-slate-800/60 last:border-0">
-      <span className="text-xs text-slate-500 w-24 shrink-0 font-medium">{label}</span>
-      <div className="flex items-center gap-2 flex-wrap">
-        <input
-          type="date"
-          value={value.from}
-          max={value.to || undefined}
-          onChange={e => onChange({ ...value, from: e.target.value })}
-          className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
-        />
-        <span className="text-xs text-slate-600">→</span>
-        <input
-          type="date"
-          value={value.to}
-          min={value.from || undefined}
-          onChange={e => onChange({ ...value, to: e.target.value })}
-          className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
-        />
-        {hasValue && (
-          <button
-            onClick={() => onChange(emptyDateRange())}
-            className="text-slate-600 hover:text-red-400 transition-colors"
-            title="Clear"
-          >
-            <X size={12} />
-          </button>
-        )}
-      </div>
+    <div className="flex items-center gap-1">
+      <input
+        type="date"
+        value={value.from}
+        max={value.to || undefined}
+        onChange={e => onChange({ ...value, from: e.target.value })}
+        className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+      />
+      <span className="text-xs text-slate-600">→</span>
+      <input
+        type="date"
+        value={value.to}
+        min={value.from || undefined}
+        onChange={e => onChange({ ...value, to: e.target.value })}
+        className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+      />
+      {(value.from || value.to) && (
+        <button onClick={() => onChange(emptyDateRange())} className="text-slate-600 hover:text-red-400 transition-colors ml-0.5" title="Clear">
+          <X size={12} />
+        </button>
+      )}
     </div>
   );
 }
@@ -686,9 +674,18 @@ export default function IssueFilterPage() {
                         <ChipRow label="Reporter"    options={uniqueReporters}   values={filters.reporters}   onToggle={v => toggleFilter("reporters", v)} />
                         <ChipRow label="Label"       options={uniqueLabels}      values={filters.labels}      onToggle={v => toggleFilter("labels", v)} />
                         <ChipRow label="Fix Version" options={uniqueFixVersions} values={filters.fixVersions} onToggle={v => toggleFilter("fixVersions", v)} />
-                        <DateRow label="Created"     value={filters.created}  onChange={r => setDateFilter("created", r)} />
-                        <DateRow label="Updated"     value={filters.updated}  onChange={r => setDateFilter("updated", r)} />
-                        <DateRow label="Due Date"    value={filters.dueDate}  onChange={r => setDateFilter("dueDate", r)} />
+                        {/* Date filters — all three in one row */}
+                        <div className="flex items-start gap-2 py-2.5">
+                          <span className="text-xs text-slate-500 w-24 shrink-0 pt-0.5 font-medium">Date</span>
+                          <div className="flex flex-wrap gap-x-5 gap-y-2">
+                            {([ ["Created", "created"], ["Updated", "updated"], ["Due Date", "dueDate"] ] as const).map(([label, field]) => (
+                              <div key={field} className="flex items-center gap-1.5">
+                                <span className="text-xs text-slate-600 shrink-0">{label}</span>
+                                <DatePair value={filters[field]} onChange={r => setDateFilter(field, r)} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
