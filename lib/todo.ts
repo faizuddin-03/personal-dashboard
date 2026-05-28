@@ -1,5 +1,11 @@
 export type TodoPriority = "high" | "medium" | "low";
 
+export interface SubTask {
+  id: string;
+  title: string;
+  done: boolean;
+}
+
 export interface TodoItem {
   id: string;
   title: string;
@@ -12,6 +18,7 @@ export interface TodoItem {
   doneAt?: string;
   recurring?: "daily" | "weekly" | "monthly";
   jiraKey?: string;
+  subtasks?: SubTask[];
 }
 
 export function advanceRecurring(item: TodoItem): TodoItem {
