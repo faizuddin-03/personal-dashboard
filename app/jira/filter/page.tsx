@@ -18,6 +18,7 @@ type DateField  = "created" | "updated" | "dueDate";
 interface DateRange { from: string; to: string; }
 
 interface FilterState {
+  mode: "AND" | "OR";
   statuses: FilterMap;
   priorities: FilterMap;
   issueTypes: FilterMap;
@@ -45,6 +46,7 @@ interface FilterTab {
 const emptyDateRange = (): DateRange => ({ from: "", to: "" });
 
 const emptyFilters = (): FilterState => ({
+  mode: "AND",
   statuses: {}, priorities: {}, issueTypes: {},
   assignees: {}, reporters: {}, labels: {}, fixVersions: {},
   created: emptyDateRange(), updated: emptyDateRange(), dueDate: emptyDateRange(),
@@ -64,7 +66,7 @@ function makeTab(name: string): FilterTab {
   };
 }
 
-const TABS_KEY   = "jira_filter_tabs_v4";
+const TABS_KEY   = "jira_filter_tabs_v5";
 const ACTIVE_KEY = "jira_filter_active_tab";
 
 type SlimTab = Pick<FilterTab, "id" | "name" | "crKey" | "crInput" | "filters" | "filtersOpen">;
@@ -376,43 +378,51 @@ export default function IssueFilterPage() {
   const uniqueFixVersions = useMemo(() => [...new Set(issues.flatMap(i => (i.fields.fixVersions ?? []).map((v: { name: string }) => v.name)))].sort(), [issues]);
 
   const filtered = useMemo(() => {
-    function checkScalar(map: FilterMap, value: string): boolean {
+    // Returns true=pass, false=fail, null=inactive (no values set for this dimension)
+    function checkScalar(map: FilterMap, value: string): boolean | null {
       const entries = Object.entries(map);
       const inc = entries.filter(([, m]) => m === "include").map(([v]) => v);
       const exc = entries.filter(([, m]) => m === "exclude").map(([v]) => v);
+      if (inc.length === 0 && exc.length === 0) return null;
       if (inc.length > 0 && !inc.includes(value)) return false;
       if (exc.includes(value)) return false;
       return true;
     }
-    function checkArray(map: FilterMap, values: string[]): boolean {
+    function checkArray(map: FilterMap, values: string[]): boolean | null {
       const entries = Object.entries(map);
       const inc = entries.filter(([, m]) => m === "include").map(([v]) => v);
       const exc = entries.filter(([, m]) => m === "exclude").map(([v]) => v);
+      if (inc.length === 0 && exc.length === 0) return null;
       if (inc.length > 0 && !inc.some(l => values.includes(l))) return false;
       if (exc.some(l => values.includes(l))) return false;
       return true;
     }
-    function checkDate(range: DateRange, isoStr: string | null | undefined): boolean {
-      if (!range.from && !range.to) return true;
+    function checkDate(range: DateRange, isoStr: string | null | undefined): boolean | null {
+      if (!range.from && !range.to) return null;
       if (!isoStr) return false;
-      const d = isoStr.slice(0, 10); // YYYY-MM-DD
+      const d = isoStr.slice(0, 10);
       if (range.from && d < range.from) return false;
       if (range.to   && d > range.to)   return false;
       return true;
     }
+
     return issues.filter(issue => {
       const f = filters;
-      if (!checkScalar(f.statuses,    issue.fields.status.name))                                    return false;
-      if (!checkScalar(f.priorities,  issue.fields.priority?.name ?? ""))                           return false;
-      if (!checkScalar(f.issueTypes,  issue.fields.issuetype.name))                                 return false;
-      if (!checkScalar(f.assignees,   issue.fields.assignee?.displayName ?? "Unassigned"))          return false;
-      if (!checkScalar(f.reporters,   issue.fields.reporter?.displayName ?? "Unknown"))             return false;
-      if (!checkArray(f.labels,       issue.fields.labels ?? []))                                   return false;
-      if (!checkArray(f.fixVersions,  (issue.fields.fixVersions ?? []).map((v: { name: string }) => v.name))) return false;
-      if (!checkDate(f.created,  issue.fields.created))  return false;
-      if (!checkDate(f.updated,  issue.fields.updated))  return false;
-      if (!checkDate(f.dueDate,  issue.fields.duedate))  return false;
-      return true;
+      const checks: Array<boolean | null> = [
+        checkScalar(f.statuses,   issue.fields.status.name),
+        checkScalar(f.priorities, issue.fields.priority?.name ?? ""),
+        checkScalar(f.issueTypes, issue.fields.issuetype.name),
+        checkScalar(f.assignees,  issue.fields.assignee?.displayName ?? "Unassigned"),
+        checkScalar(f.reporters,  issue.fields.reporter?.displayName ?? "Unknown"),
+        checkArray( f.labels,     issue.fields.labels ?? []),
+        checkArray( f.fixVersions,(issue.fields.fixVersions ?? []).map((v: { name: string }) => v.name)),
+        checkDate(  f.created,    issue.fields.created),
+        checkDate(  f.updated,    issue.fields.updated),
+        checkDate(  f.dueDate,    issue.fields.duedate),
+      ];
+      const active = checks.filter(c => c !== null) as boolean[];
+      if (active.length === 0) return true;
+      return f.mode === "OR" ? active.some(Boolean) : active.every(Boolean);
     });
   }, [issues, filters]);
 
@@ -635,6 +645,26 @@ export default function IssueFilterPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-3">
+                        {/* AND / OR toggle */}
+                        <div
+                          onClick={e => e.stopPropagation()}
+                          className="flex items-center rounded-lg border border-slate-700 overflow-hidden text-[11px] font-semibold shrink-0"
+                        >
+                          {(["AND", "OR"] as const).map(m => (
+                            <button
+                              key={m}
+                              onClick={() => updateTab(activeTab.id, { filters: { ...filters, mode: m } })}
+                              className={clsx(
+                                "px-2 py-0.5 transition-colors",
+                                filters.mode === m
+                                  ? "bg-blue-600 text-white"
+                                  : "text-slate-500 hover:text-slate-300 hover:bg-slate-700"
+                              )}
+                            >
+                              {m}
+                            </button>
+                          ))}
+                        </div>
                         {hasActiveFilters && (
                           <span
                             onClick={e => { e.stopPropagation(); updateTab(activeTab.id, { filters: emptyFilters() }); }}
