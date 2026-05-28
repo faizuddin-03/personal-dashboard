@@ -117,9 +117,25 @@ export const CURRENT_CHANGES: ChangelogEntry[] = [
     title: "More Note Colours",
     description: "Five additional note colours (Pink, Teal, Orange, Yellow, Cyan) added to the colour palette in the note editor.",
   },
+  {
+    title: "Notes Sort Options",
+    description: "Sort the notes gallery by Last Updated, Date Created, Title A→Z, or Title Z→A using the dropdown in the gallery header.",
+  },
+  {
+    title: "Note Templates",
+    description: "The New button now opens a template picker with Blank, Meeting Notes, Bug Report, and Daily Standup starters.",
+  },
+  {
+    title: "Word & Character Count",
+    description: "The note editor now shows a live word and character count in the footer.",
+  },
+  {
+    title: "Sidebar Narrow Mode",
+    description: "Click the collapse arrow in the sidebar header to shrink it to an icon-only strip. Click again to expand. Preference is saved across sessions.",
+  },
 ];
 
-export const CURRENT_VERSION       = "v0.017";
+export const CURRENT_VERSION       = "v0.018";
 export const CURRENT_VERSION_LABEL = "Upcoming";
 export const CURRENT_VERSION_DATE  = "2026-05-28";
 
