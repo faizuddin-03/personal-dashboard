@@ -12,6 +12,10 @@ import clsx from "clsx";
 
 type FilterMode = "include" | "exclude";
 type FilterMap  = Record<string, FilterMode>;
+type ChipField  = "statuses" | "priorities" | "issueTypes" | "assignees" | "reporters" | "labels" | "fixVersions";
+type DateField  = "created" | "updated" | "dueDate";
+
+interface DateRange { from: string; to: string; }
 
 interface FilterState {
   statuses: FilterMap;
@@ -21,6 +25,9 @@ interface FilterState {
   reporters: FilterMap;
   labels: FilterMap;
   fixVersions: FilterMap;
+  created:  DateRange;
+  updated:  DateRange;
+  dueDate:  DateRange;
 }
 
 interface FilterTab {
@@ -35,9 +42,12 @@ interface FilterTab {
   filtersOpen: boolean;
 }
 
+const emptyDateRange = (): DateRange => ({ from: "", to: "" });
+
 const emptyFilters = (): FilterState => ({
   statuses: {}, priorities: {}, issueTypes: {},
   assignees: {}, reporters: {}, labels: {}, fixVersions: {},
+  created: emptyDateRange(), updated: emptyDateRange(), dueDate: emptyDateRange(),
 });
 
 function makeTab(name: string): FilterTab {
@@ -54,7 +64,7 @@ function makeTab(name: string): FilterTab {
   };
 }
 
-const TABS_KEY   = "jira_filter_tabs_v3";
+const TABS_KEY   = "jira_filter_tabs_v4";
 const ACTIVE_KEY = "jira_filter_active_tab";
 
 type SlimTab = Pick<FilterTab, "id" | "name" | "crKey" | "crInput" | "filters" | "filtersOpen">;
@@ -110,6 +120,45 @@ function ChipRow({ label, options, values, onToggle }: {
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function DateRow({ label, value, onChange }: {
+  label: string;
+  value: DateRange;
+  onChange: (range: DateRange) => void;
+}) {
+  const hasValue = value.from || value.to;
+  return (
+    <div className="flex items-center gap-2 py-2.5 border-b border-slate-800/60 last:border-0">
+      <span className="text-xs text-slate-500 w-24 shrink-0 font-medium">{label}</span>
+      <div className="flex items-center gap-2 flex-wrap">
+        <input
+          type="date"
+          value={value.from}
+          max={value.to || undefined}
+          onChange={e => onChange({ ...value, from: e.target.value })}
+          className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+        />
+        <span className="text-xs text-slate-600">→</span>
+        <input
+          type="date"
+          value={value.to}
+          min={value.from || undefined}
+          onChange={e => onChange({ ...value, to: e.target.value })}
+          className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+        />
+        {hasValue && (
+          <button
+            onClick={() => onChange(emptyDateRange())}
+            className="text-slate-600 hover:text-red-400 transition-colors"
+            title="Clear"
+          >
+            <X size={12} />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -263,7 +312,7 @@ export default function IssueFilterPage() {
     fetchForTab(activeTab.id, key);
   }
 
-  function toggleFilter(field: keyof FilterState, value: string) {
+  function toggleFilter(field: ChipField, value: string) {
     if (!activeTab) return;
     const map  = activeTab.filters[field];
     const mode = map[value];
@@ -277,6 +326,11 @@ export default function IssueFilterPage() {
       next = rest;
     }
     updateTab(activeTab.id, { filters: { ...activeTab.filters, [field]: next } });
+  }
+
+  function setDateFilter(field: DateField, range: DateRange) {
+    if (!activeTab) return;
+    updateTab(activeTab.id, { filters: { ...activeTab.filters, [field]: range } });
   }
 
   // ── Tab management ─────────────────────────────────────────
@@ -338,6 +392,14 @@ export default function IssueFilterPage() {
       if (exc.some(l => values.includes(l))) return false;
       return true;
     }
+    function checkDate(range: DateRange, isoStr: string | null | undefined): boolean {
+      if (!range.from && !range.to) return true;
+      if (!isoStr) return false;
+      const d = isoStr.slice(0, 10); // YYYY-MM-DD
+      if (range.from && d < range.from) return false;
+      if (range.to   && d > range.to)   return false;
+      return true;
+    }
     return issues.filter(issue => {
       const f = filters;
       if (!checkScalar(f.statuses,    issue.fields.status.name))                                    return false;
@@ -347,12 +409,21 @@ export default function IssueFilterPage() {
       if (!checkScalar(f.reporters,   issue.fields.reporter?.displayName ?? "Unknown"))             return false;
       if (!checkArray(f.labels,       issue.fields.labels ?? []))                                   return false;
       if (!checkArray(f.fixVersions,  (issue.fields.fixVersions ?? []).map((v: { name: string }) => v.name))) return false;
+      if (!checkDate(f.created,  issue.fields.created))  return false;
+      if (!checkDate(f.updated,  issue.fields.updated))  return false;
+      if (!checkDate(f.dueDate,  issue.fields.duedate))  return false;
       return true;
     });
   }, [issues, filters]);
 
-  const hasActiveFilters  = Object.values(filters).some(map => Object.keys(map).length > 0);
-  const activeFilterCount = Object.values(filters).reduce((s, map) => s + Object.keys(map).length, 0);
+  const chipFields: ChipField[] = ["statuses","priorities","issueTypes","assignees","reporters","labels","fixVersions"];
+  const dateFields: DateField[] = ["created","updated","dueDate"];
+  const hasActiveFilters  =
+    chipFields.some(k => Object.keys(filters[k]).length > 0) ||
+    dateFields.some(k => filters[k].from || filters[k].to);
+  const activeFilterCount =
+    chipFields.reduce((s, k) => s + Object.keys(filters[k]).length, 0) +
+    dateFields.reduce((s, k) => s + (filters[k].from ? 1 : 0) + (filters[k].to ? 1 : 0), 0);
 
   if (!hydrated) return null;
 
@@ -585,6 +656,9 @@ export default function IssueFilterPage() {
                         <ChipRow label="Reporter"    options={uniqueReporters}   values={filters.reporters}   onToggle={v => toggleFilter("reporters", v)} />
                         <ChipRow label="Label"       options={uniqueLabels}      values={filters.labels}      onToggle={v => toggleFilter("labels", v)} />
                         <ChipRow label="Fix Version" options={uniqueFixVersions} values={filters.fixVersions} onToggle={v => toggleFilter("fixVersions", v)} />
+                        <DateRow label="Created"     value={filters.created}  onChange={r => setDateFilter("created", r)} />
+                        <DateRow label="Updated"     value={filters.updated}  onChange={r => setDateFilter("updated", r)} />
+                        <DateRow label="Due Date"    value={filters.dueDate}  onChange={r => setDateFilter("dueDate", r)} />
                       </div>
                     )}
                   </div>
