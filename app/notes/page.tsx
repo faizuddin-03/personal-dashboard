@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, Pin, X, Search, Palette, ChevronLeft } from "lucide-react";
+import { Plus, Pin, X, Search, Palette, ChevronLeft, LayoutGrid } from "lucide-react";
 import clsx from "clsx";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Note, NOTE_COLORS, noteColorMeta, getNotes, saveNotes, stripHtml } from "@/lib/notes-store";
@@ -18,6 +18,41 @@ function createNote(): Note {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+}
+
+// ── Note gallery card ───────────────────────────────────────
+function NoteGalleryCard({ note, onClick }: { note: Note; onClick: () => void }) {
+  const meta = noteColorMeta(note.color);
+  const snippet = stripHtml(note.content).slice(0, 160);
+
+  return (
+    <button
+      onClick={onClick}
+      className={clsx(
+        "w-full text-left p-4 rounded-2xl border transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-black/30 active:scale-100",
+        `${meta.border} ${meta.bg}`
+      )}
+    >
+      <div className="flex items-center gap-1.5 mb-1.5">
+        {note.pinned && <Pin size={11} className="text-yellow-400 shrink-0" />}
+        <p className={clsx("text-sm font-semibold truncate", note.title ? "text-slate-200" : "text-slate-600 italic")}>
+          {note.title || "Untitled"}
+        </p>
+      </div>
+      <p className="text-xs text-slate-500 line-clamp-4 leading-relaxed mb-2">{snippet || "No content"}</p>
+      {note.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {note.tags.slice(0, 4).map(tag => (
+            <span key={tag} className="bg-slate-700/60 text-slate-400 text-xs rounded-full px-2 py-0.5">{tag}</span>
+          ))}
+          {note.tags.length > 4 && (
+            <span className="text-slate-600 text-xs">+{note.tags.length - 4}</span>
+          )}
+        </div>
+      )}
+      <p className="text-xs text-slate-700">{new Date(note.updatedAt).toLocaleDateString()}</p>
+    </button>
+  );
 }
 
 // ── Note list item ──────────────────────────────────────────
@@ -213,6 +248,7 @@ export default function NotesPage() {
   const [search, setSearch]     = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
+  const [view, setView] = useState<"gallery" | "editor">("gallery");
 
   useEffect(() => {
     const loaded = getNotes();
@@ -228,6 +264,13 @@ export default function NotesPage() {
     persist(updated);
     setSelectedId(note.id);
     setShowEditor(true);
+    setView("editor");
+  }
+
+  function openNote(id: string) {
+    setSelectedId(id);
+    setShowEditor(true);
+    setView("editor");
   }
 
   function handleChange(updated: Note) {
@@ -238,6 +281,7 @@ export default function NotesPage() {
     const remaining = notes.filter(n => n.id !== id);
     persist(remaining);
     setSelectedId(remaining[0]?.id ?? null);
+    if (remaining.length === 0) setView("gallery");
     setShowEditor(false);
   }
 
@@ -253,6 +297,80 @@ export default function NotesPage() {
 
   const selectedNote = notes.find(n => n.id === selectedId);
 
+  // ── Gallery view ────────────────────────────────────────────
+  if (view === "gallery") {
+    return (
+      <div className="flex flex-col h-[calc(100vh-0px)] min-h-0 bg-slate-950">
+        {/* Gallery header */}
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-800 shrink-0">
+          <h1 className="text-sm font-semibold text-slate-200">Notes</h1>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search size={13} className="absolute left-2.5 top-2 text-slate-600" />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search notes…"
+                className="pl-7 pr-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-lg text-slate-300 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600 w-48"
+              />
+            </div>
+            <button onClick={handleNew} title="New note" className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors">
+              <Plus size={13} />
+              New
+            </button>
+          </div>
+        </div>
+
+        {/* Tag filter */}
+        {allTags.length > 0 && (
+          <div className="flex gap-1.5 px-4 sm:px-6 py-2 border-b border-slate-800 overflow-x-auto scrollbar-none shrink-0">
+            <button
+              onClick={() => setActiveTag(null)}
+              className={clsx(
+                "shrink-0 text-xs rounded-full px-2.5 py-1 border transition-colors",
+                activeTag === null ? "bg-blue-600/20 border-blue-600/50 text-blue-300" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
+              )}
+            >All</button>
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                className={clsx(
+                  "shrink-0 text-xs rounded-full px-2.5 py-1 border transition-colors",
+                  activeTag === tag ? "bg-blue-600/20 border-blue-600/50 text-blue-300" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
+                )}
+              >{tag}</button>
+            ))}
+          </div>
+        )}
+
+        {/* Gallery grid */}
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
+          {filteredNotes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4">
+                <LayoutGrid size={22} className="text-slate-600" />
+              </div>
+              <p className="text-slate-400 text-sm font-medium mb-1">{search ? "No notes match" : "No notes yet"}</p>
+              {!search && <button onClick={handleNew} className="text-xs text-blue-400 hover:underline mt-1">Create your first note</button>}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+              {filteredNotes.map(note => (
+                <NoteGalleryCard key={note.id} note={note} onClick={() => openNote(note.id)} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="px-4 py-2 border-t border-slate-800 shrink-0">
+          <p className="text-xs text-slate-700 text-center">{notes.length} note{notes.length !== 1 ? "s" : ""}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Editor view (existing split layout) ─────────────────────
   return (
     <div className="flex h-[calc(100vh-0px)] min-h-0">
       {/* ── Left panel — full width on mobile when not in editor, fixed sidebar on sm+ ── */}
@@ -264,7 +382,12 @@ export default function NotesPage() {
         {/* Header */}
         <div className="px-3 pt-4 pb-3 border-b border-slate-800 space-y-2 shrink-0">
           <div className="flex items-center justify-between">
-            <h1 className="text-sm font-semibold text-slate-200 px-1">Notes</h1>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setView("gallery")} title="All notes" className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-800 rounded-lg transition-colors">
+                <LayoutGrid size={14} />
+              </button>
+              <h1 className="text-sm font-semibold text-slate-200 px-1">Notes</h1>
+            </div>
             <button onClick={handleNew} title="New note" className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
               <Plus size={16} />
             </button>
@@ -319,7 +442,7 @@ export default function NotesPage() {
               key={note.id}
               note={note}
               active={note.id === selectedId}
-              onClick={() => { setSelectedId(note.id); setShowEditor(true); }}
+              onClick={() => openNote(note.id)}
             />
           ))}
         </div>
