@@ -16,6 +16,11 @@ export const NOTE_COLORS: { label: string; value: string; bg: string; border: st
   { label: "Green",  value: "green",  bg: "bg-green-950/40",   border: "border-green-800/60" },
   { label: "Blue",   value: "blue",   bg: "bg-blue-950/40",    border: "border-blue-800/60" },
   { label: "Purple", value: "purple", bg: "bg-purple-950/40",  border: "border-purple-800/60" },
+  { label: "Pink",   value: "pink",   bg: "bg-pink-950/40",    border: "border-pink-800/60" },
+  { label: "Teal",   value: "teal",   bg: "bg-teal-950/40",    border: "border-teal-800/60" },
+  { label: "Orange", value: "orange", bg: "bg-orange-950/40",  border: "border-orange-800/60" },
+  { label: "Yellow", value: "yellow", bg: "bg-yellow-950/40",  border: "border-yellow-800/60" },
+  { label: "Cyan",   value: "cyan",   bg: "bg-cyan-950/40",    border: "border-cyan-800/60" },
 ];
 
 export function noteColorMeta(color?: string) {

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, Pin, X, Search, Palette, ChevronLeft } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Plus, Pin, X, Search, Palette, ChevronLeft, LayoutGrid, Grid2x2, Grid3x3, SlidersHorizontal, ChevronDown, ArrowUpDown, FileText, Users, AlertCircle, CalendarDays, PictureInPicture2 } from "lucide-react";
 import clsx from "clsx";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Note, NOTE_COLORS, noteColorMeta, getNotes, saveNotes, stripHtml } from "@/lib/notes-store";
@@ -52,6 +53,58 @@ function NoteListItem({ note, active, onClick }: { note: Note; active: boolean; 
   );
 }
 
+// ── PiP note editor (renders inside the floating window) ────
+function PiPNoteEditor({ note, onChange, onClose }: {
+  note: Note;
+  onChange: (updated: Note) => void;
+  onClose: () => void;
+}) {
+  const meta = noteColorMeta(note.color);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function update(partial: Partial<Note>) {
+    onChange({ ...note, ...partial, updatedAt: new Date().toISOString() });
+  }
+
+  function handleContentChange(html: string) {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => update({ content: html }), 400);
+  }
+
+  return (
+    <div className={clsx("flex flex-col h-screen overflow-hidden bg-slate-950", meta.bg)}>
+      {/* PiP header */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 bg-slate-900/80 shrink-0">
+        <span className="text-xs text-slate-500 flex-1 truncate">{note.title || "Untitled"}</span>
+        <button onClick={onClose} title="Close floating note" className="p-1 text-slate-600 hover:text-slate-300 hover:bg-slate-800 rounded transition-colors">
+          <X size={13} />
+        </button>
+      </div>
+
+      {/* Title */}
+      <div className="px-3 pt-3 pb-2 shrink-0">
+        <input
+          value={note.title}
+          onChange={e => update({ title: e.target.value })}
+          placeholder="Untitled"
+          className="w-full bg-transparent text-lg font-bold text-slate-100 placeholder-slate-700 focus:outline-none"
+        />
+      </div>
+
+      {/* Editor */}
+      <div className="flex-1 overflow-y-auto px-3 pb-3">
+        <RichTextEditor
+          content={note.content}
+          onChange={handleContentChange}
+          placeholder="Start writing…"
+          minHeight="300px"
+          className="border-slate-700/50 bg-transparent"
+        />
+      </div>
+    </div>
+  );
+}
+
 // ── Note editor panel ───────────────────────────────────────
 function NoteEditor({ note, onChange, onDelete, onBack }: {
   note: Note;
@@ -62,6 +115,67 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
   const [showPalette, setShowPalette] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pipContainer, setPipContainer] = useState<Element | null>(null);
+  const pipWinRef = useRef<Window | null>(null);
+
+  async function openPiP() {
+    if (!(window as any).documentPictureInPicture) {
+      alert("Document Picture-in-Picture requires Chrome 116 or newer.");
+      return;
+    }
+    try {
+      const pipWin: Window = await (window as any).documentPictureInPicture.requestWindow({
+        width: 420,
+        height: 600,
+      });
+      pipWinRef.current = pipWin;
+
+      // Copy all compiled stylesheets into PiP window
+      [...document.styleSheets].forEach(sheet => {
+        try {
+          const rules = [...sheet.cssRules].map(r => r.cssText).join("\n");
+          const style = pipWin.document.createElement("style");
+          style.textContent = rules;
+          pipWin.document.head.appendChild(style);
+        } catch {
+          if (sheet.href) {
+            const link = pipWin.document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = sheet.href;
+            pipWin.document.head.appendChild(link);
+          }
+        }
+      });
+
+      // Mirror theme attributes so CSS variables apply
+      pipWin.document.documentElement.setAttribute(
+        "data-theme-type",
+        document.documentElement.getAttribute("data-theme-type") ?? ""
+      );
+      const themeStyle = document.documentElement.getAttribute("style") ?? "";
+      if (themeStyle) pipWin.document.documentElement.setAttribute("style", themeStyle);
+      pipWin.document.body.style.cssText = "margin:0;height:100vh;overflow:hidden;";
+
+      const container = pipWin.document.createElement("div");
+      container.style.cssText = "height:100vh;overflow:hidden;";
+      pipWin.document.body.appendChild(container);
+
+      setPipContainer(container);
+
+      pipWin.addEventListener("pagehide", () => {
+        setPipContainer(null);
+        pipWinRef.current = null;
+      });
+    } catch (e) {
+      console.error("Failed to open Picture-in-Picture:", e);
+    }
+  }
+
+  function closePiP() {
+    pipWinRef.current?.close();
+    setPipContainer(null);
+    pipWinRef.current = null;
+  }
 
   function addTag(raw: string) {
     const tag = raw.trim().toLowerCase();
@@ -152,11 +266,26 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
           {new Date(note.updatedAt).toLocaleString()}
         </p>
 
+        {/* Float / PiP */}
+        <button
+          onClick={pipContainer ? closePiP : openPiP}
+          title={pipContainer ? "Close floating note" : "Float note"}
+          className={clsx("p-1.5 rounded-lg transition-colors", pipContainer ? "text-blue-400 bg-blue-600/20 hover:bg-blue-600/30" : "text-slate-600 hover:text-slate-300 hover:bg-slate-800")}
+        >
+          <PictureInPicture2 size={15} />
+        </button>
+
         {/* Delete */}
         <button onClick={onDelete} title="Delete note" className="p-1.5 text-slate-700 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors">
           <X size={15} />
         </button>
       </div>
+
+      {/* PiP portal */}
+      {pipContainer && createPortal(
+        <PiPNoteEditor note={note} onChange={onChange} onClose={closePiP} />,
+        pipContainer
+      )}
 
       {/* Title */}
       <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 shrink-0">
