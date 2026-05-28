@@ -630,9 +630,9 @@ export default function IssueFilterPage() {
                 {/* Filter panel */}
                 {issues.length > 0 && (
                   <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-                    <button
+                    <div
                       onClick={() => updateTab(activeTab.id, { filtersOpen: !activeTab.filtersOpen })}
-                      className="w-full flex items-center justify-between px-4 py-3 text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-colors"
+                      className="w-full flex items-center justify-between px-4 py-3 text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-colors cursor-pointer select-none"
                     >
                       <div className="flex items-center gap-2">
                         <Filter size={14} />
@@ -677,7 +677,7 @@ export default function IssueFilterPage() {
                         )}
                         {activeTab.filtersOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       </div>
-                    </button>
+                    </div>
 
                     {activeTab.filtersOpen && (
                       <div className="px-4 pb-2 border-t border-slate-800 pt-1">
