@@ -16,17 +16,18 @@ const JIRA_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct"
 
 /**
  * Returns JQL created-range clauses for a given YYYY-MM-DD date.
- * For today: uses startOfDay()/endOfDay() (timezone-safe Jira functions).
- * For past dates: uses dd/MMM/yy format which Jira Cloud always accepts.
- * The app's internal ISO format is unaffected — this only formats the JQL string.
+ * Uses startOfDay()/endOfDay() with a day offset so Jira applies the
+ * user's profile timezone consistently — avoids UTC mismatch on past dates.
  */
 export function jqlCreatedRange(isoDate: string): string {
-  if (isoDate === todayLocal()) {
-    return `created >= startOfDay() AND created <= endOfDay()`;
-  }
-  const [y, m, d] = isoDate.split("-");
-  const jiraDate = `${parseInt(d)}/${JIRA_MONTHS[parseInt(m) - 1]}/${y.slice(2)}`;
-  return `created >= "${jiraDate} 00:00" AND created <= "${jiraDate} 23:59"`;
+  const today = todayLocal();
+  const diff = Math.round(
+    (new Date(isoDate + "T12:00:00").getTime() - new Date(today + "T12:00:00").getTime())
+    / 86400000
+  );
+  if (diff === 0) return `created >= startOfDay() AND created <= endOfDay()`;
+  const offset = diff > 0 ? `"+${diff}"` : `"${diff}"`;
+  return `created >= startOfDay(${offset}) AND created <= endOfDay(${offset})`;
 }
 
 /** @deprecated Use jqlCreatedRange(todayLocal()) */
