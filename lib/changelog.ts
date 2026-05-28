@@ -139,8 +139,17 @@ export const RELEASED_VERSIONS: ChangelogVersion[] = [
 
 // ── Current in-progress changes (staging-local only) ─────────
 // Reset to [] after every prod-local push.
-export const CURRENT_CHANGES: ChangelogEntry[] = [];
+export const CURRENT_CHANGES: ChangelogEntry[] = [
+  {
+    title: "Note Checklists",
+    description: "The note editor now supports task lists. Click the checklist icon (☑) in the toolbar to insert one, then tick items directly in the editor. Nested checklists are supported.",
+  },
+  {
+    title: "Floatable Notes (Picture-in-Picture)",
+    description: "Click the PiP icon in a note's toolbar to pop it into a floating window that stays above all other tabs and apps. Type and check boxes from the float. Chrome 116+ only.",
+  },
+];
 
-export const CURRENT_VERSION       = "v0.019";
-export const CURRENT_VERSION_LABEL = "v0.019";
+export const CURRENT_VERSION       = "v0.020";
+export const CURRENT_VERSION_LABEL = "v0.020";
 export const CURRENT_VERSION_DATE  = "2026-05-28";
