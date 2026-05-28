@@ -202,7 +202,7 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
             <Palette size={15} />
           </button>
           {showPalette && (
-            <div className="absolute top-full left-0 mt-1 p-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-20 flex gap-2">
+            <div className="absolute top-full left-0 mt-1 p-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-20 flex flex-wrap gap-2 w-40">
               {NOTE_COLORS.map(c => (
                 <button
                   key={c.value}

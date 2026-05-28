@@ -109,9 +109,17 @@ export const CURRENT_CHANGES: ChangelogEntry[] = [
     title: "Notes Filter by Tags and Colour",
     description: "A collapsible Filter panel in the Notes gallery lets you narrow results by one or more tags and colours at the same time. All selected filters must match (AND logic).",
   },
+  {
+    title: "More System Themes",
+    description: "Two new dark themes (Crimson, Ocean) and two new light themes (Blossom, Sand) added to the theme picker in Settings.",
+  },
+  {
+    title: "More Note Colours",
+    description: "Five additional note colours (Pink, Teal, Orange, Yellow, Cyan) added to the colour palette in the note editor.",
+  },
 ];
 
-export const CURRENT_VERSION       = "v0.016";
+export const CURRENT_VERSION       = "v0.017";
 export const CURRENT_VERSION_LABEL = "Upcoming";
 export const CURRENT_VERSION_DATE  = "2026-05-28";
 
