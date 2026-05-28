@@ -6,7 +6,7 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send, Filter, PanelLeftClose, PanelLeftOpen,
+  Briefcase, Send, Filter,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -46,84 +46,10 @@ const nav = [
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState<string[]>(["eAuto", "Productivity", "JIRA"]);
-  const { openWhatsNew, sidebarNarrow, toggleSidebarNarrow } = useApp();
+  const { openWhatsNew } = useApp();
 
   function toggleGroup(label: string) {
     setExpanded(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label]);
-  }
-
-  if (sidebarNarrow) {
-    return (
-      <aside className="w-14 shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col h-screen sticky top-0">
-        {/* Brand */}
-        <div className="flex items-center justify-center h-14 border-b border-slate-800 shrink-0">
-          <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white text-xs font-bold">UB</span>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav className="flex-1 px-1 py-3 space-y-1 overflow-y-auto">
-          {nav.map(item => {
-            if (!("children" in item)) {
-              const isActive = pathname === item.href;
-              return (
-                <Link key={item.href} href={item.href} onClick={onClose} title={item.label}
-                  className={clsx("flex items-center justify-center w-10 h-10 rounded-lg mx-auto transition-colors",
-                    isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:text-slate-100 hover:bg-slate-800")}
-                >
-                  <item.icon size={17} />
-                </Link>
-              );
-            }
-            const isOpen = expanded.includes(item.label);
-            const hasActive = item.children?.some(c => pathname === c.href) ?? false;
-            return (
-              <div key={item.label}>
-                <button onClick={() => toggleGroup(item.label)} title={item.label}
-                  className={clsx("flex items-center justify-center w-10 h-10 rounded-lg mx-auto transition-colors",
-                    hasActive ? "text-slate-200 bg-slate-800" : "text-slate-400 hover:text-slate-100 hover:bg-slate-800")}
-                >
-                  <item.icon size={17} />
-                </button>
-                {isOpen && (
-                  <div className="space-y-0.5 mt-0.5">
-                    {(item.children ?? []).map(child => {
-                      const isActive = pathname === child.href;
-                      return (
-                        <Link key={child.href} href={child.href} onClick={onClose} title={child.label}
-                          className={clsx("flex items-center justify-center w-8 h-8 rounded-lg mx-auto transition-colors",
-                            isActive ? "bg-blue-600/20 text-blue-400" : "text-slate-500 hover:text-slate-100 hover:bg-slate-800")}
-                        >
-                          <child.icon size={14} />
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </nav>
-
-        {/* Bottom */}
-        <div className="border-t border-slate-800 p-1 space-y-1 shrink-0">
-          <button onClick={openWhatsNew} title="What's New"
-            className="flex items-center justify-center w-10 h-10 rounded-lg mx-auto text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">
-            <Sparkles size={15} />
-          </button>
-          <Link href="/settings" onClick={onClose} title="Settings"
-            className={clsx("flex items-center justify-center w-10 h-10 rounded-lg mx-auto transition-colors",
-              pathname === "/settings" ? "bg-blue-600/20 text-blue-400" : "text-slate-400 hover:text-slate-100 hover:bg-slate-800")}>
-            <Settings size={15} />
-          </Link>
-          <button onClick={toggleSidebarNarrow} title="Expand sidebar"
-            className="flex items-center justify-center w-10 h-10 rounded-lg mx-auto text-slate-600 hover:text-slate-300 hover:bg-slate-800 transition-colors">
-            <PanelLeftOpen size={15} />
-          </button>
-        </div>
-      </aside>
-    );
   }
 
   return (
@@ -134,13 +60,6 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
           <span className="text-white text-xs font-bold">UB</span>
         </div>
         <span className="text-slate-100 font-semibold text-sm flex-1">Udin's Board</span>
-        <button
-          onClick={toggleSidebarNarrow}
-          title="Collapse sidebar"
-          className="hidden lg:flex p-1 text-slate-600 hover:text-slate-300 hover:bg-slate-800 rounded-lg transition-colors"
-        >
-          <PanelLeftClose size={15} />
-        </button>
         {onClose && (
           <button onClick={onClose} className="text-slate-500 hover:text-slate-300 lg:hidden p-1">
             <X size={16} />

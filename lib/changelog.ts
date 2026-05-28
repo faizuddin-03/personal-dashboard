@@ -130,10 +130,6 @@ export const CURRENT_CHANGES: ChangelogEntry[] = [
     description: "The note editor now shows a live word and character count in the footer.",
   },
   {
-    title: "Sidebar Narrow Mode",
-    description: "Click the collapse arrow in the sidebar header to shrink it to an icon-only strip. Click again to expand. Preference is saved across sessions.",
-  },
-  {
     title: "JIRA Filter: Saved Presets",
     description: "Save the current filter state as a named preset and reload it any time from the filter header. Presets persist across sessions and can be deleted individually.",
   },

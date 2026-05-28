@@ -22,8 +22,6 @@ interface AppCtx {
   startInsuranceRun: (params: InsuranceRunParams) => void;
   clearInsuranceJob: () => void;
   restoreInsuranceJob: (job: InsuranceJob) => void;
-  sidebarNarrow: boolean;
-  toggleSidebarNarrow: () => void;
 }
 
 export const AppContext = createContext<AppCtx>({
@@ -36,8 +34,6 @@ export const AppContext = createContext<AppCtx>({
   startInsuranceRun: () => {},
   clearInsuranceJob: () => {},
   restoreInsuranceJob: () => {},
-  sidebarNarrow: false,
-  toggleSidebarNarrow: () => {},
 });
 
 export function useApp() {
@@ -48,7 +44,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [creds, setCreds] = useState<JiraCredentials | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarNarrow, setSidebarNarrow] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [insuranceJob, setInsuranceJob] = useState<InsuranceJob | null>(null);
@@ -104,22 +99,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setInsuranceJob(job);
   }
 
-  function toggleSidebarNarrow() {
-    setSidebarNarrow(v => {
-      const next = !v;
-      localStorage.setItem("sidebar-narrow", String(next));
-      return next;
-    });
-  }
-
   useAutoBackup();
 
   useEffect(() => {
     const stored = getStoredCredentials();
     setCreds(stored);
     loadAndApplyTheme();
-    const narrow = localStorage.getItem("sidebar-narrow") === "true";
-    setSidebarNarrow(narrow);
     setHydrated(true);
     if (!sessionStorage.getItem("whats_new_seen") && CURRENT_CHANGES.length > 0) {
       setWhatsNewOpen(true);
@@ -161,7 +146,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       openSearch: () => setSearchOpen(true),
       openWhatsNew: () => setWhatsNewOpen(true),
       insuranceJob, startInsuranceRun, clearInsuranceJob, restoreInsuranceJob,
-      sidebarNarrow, toggleSidebarNarrow,
     }}>
       <div className="flex h-screen overflow-hidden">
         {/* Mobile overlay */}
