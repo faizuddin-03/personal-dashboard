@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, Pin, X, Search, Palette, ChevronLeft, LayoutGrid } from "lucide-react";
+import { Plus, Pin, X, Search, Palette, ChevronLeft, LayoutGrid, Grid2x2, Grid3x3 } from "lucide-react";
 import clsx from "clsx";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Note, NOTE_COLORS, noteColorMeta, getNotes, saveNotes, stripHtml } from "@/lib/notes-store";
@@ -20,11 +20,49 @@ function createNote(): Note {
   };
 }
 
-// ── Note gallery card ───────────────────────────────────────
-function NoteGalleryCard({ note, onClick }: { note: Note; onClick: () => void }) {
-  const meta = noteColorMeta(note.color);
-  const snippet = stripHtml(note.content).slice(0, 160);
+function extractHeadings(html: string): string[] {
+  if (typeof window === "undefined") return [];
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return Array.from(doc.querySelectorAll("h1, h2, h3"))
+    .slice(0, 3)
+    .map(n => n.textContent ?? "")
+    .filter(Boolean);
+}
 
+// ── Note gallery card ───────────────────────────────────────
+function NoteGalleryCard({ note, size, onClick }: { note: Note; size: "small" | "large"; onClick: () => void }) {
+  const meta = noteColorMeta(note.color);
+
+  if (size === "small") {
+    const headings = extractHeadings(note.content);
+    return (
+      <button
+        onClick={onClick}
+        className={clsx(
+          "w-full text-left p-3 rounded-xl border transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-black/30 active:scale-100",
+          `${meta.border} ${meta.bg}`
+        )}
+      >
+        <div className="flex items-center gap-1.5 mb-1">
+          {note.pinned && <Pin size={10} className="text-yellow-400 shrink-0" />}
+          <p className={clsx("text-xs font-semibold truncate", note.title ? "text-slate-200" : "text-slate-600 italic")}>
+            {note.title || "Untitled"}
+          </p>
+        </div>
+        {headings.length > 0 ? (
+          <ul className="space-y-0.5">
+            {headings.map((h, i) => (
+              <li key={i} className="text-xs text-slate-500 truncate leading-snug">{h}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-xs text-slate-700 italic">No headings</p>
+        )}
+      </button>
+    );
+  }
+
+  const snippet = stripHtml(note.content).slice(0, 160);
   return (
     <button
       onClick={onClick}
@@ -249,6 +287,7 @@ export default function NotesPage() {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [view, setView] = useState<"gallery" | "editor">("gallery");
+  const [gridSize, setGridSize] = useState<"small" | "large">("large");
 
   useEffect(() => {
     const loaded = getNotes();
@@ -355,9 +394,14 @@ export default function NotesPage() {
               {!search && <button onClick={handleNew} className="text-xs text-blue-400 hover:underline mt-1">Create your first note</button>}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            <div className={clsx(
+              "grid gap-3",
+              gridSize === "large"
+                ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+            )}>
               {filteredNotes.map(note => (
-                <NoteGalleryCard key={note.id} note={note} onClick={() => openNote(note.id)} />
+                <NoteGalleryCard key={note.id} note={note} size={gridSize} onClick={() => openNote(note.id)} />
               ))}
             </div>
           )}
@@ -365,6 +409,30 @@ export default function NotesPage() {
 
         <div className="px-4 py-2 border-t border-slate-800 shrink-0">
           <p className="text-xs text-slate-700 text-center">{notes.length} note{notes.length !== 1 ? "s" : ""}</p>
+        </div>
+
+        {/* Floating grid-size toggle */}
+        <div className="fixed bottom-6 right-6 flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-xl p-1 shadow-xl shadow-black/40">
+          <button
+            onClick={() => setGridSize("large")}
+            title="Large cards"
+            className={clsx(
+              "p-2 rounded-lg transition-colors",
+              gridSize === "large" ? "bg-slate-600 text-slate-100" : "text-slate-500 hover:text-slate-300 hover:bg-slate-700"
+            )}
+          >
+            <Grid2x2 size={16} />
+          </button>
+          <button
+            onClick={() => setGridSize("small")}
+            title="Small cards"
+            className={clsx(
+              "p-2 rounded-lg transition-colors",
+              gridSize === "small" ? "bg-slate-600 text-slate-100" : "text-slate-500 hover:text-slate-300 hover:bg-slate-700"
+            )}
+          >
+            <Grid3x3 size={16} />
+          </button>
         </div>
       </div>
     );
