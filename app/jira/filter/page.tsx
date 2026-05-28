@@ -357,8 +357,19 @@ export default function IssueFilterPage() {
   const issues  = activeTab?.issues ?? [];
   const filters = activeTab?.filters ?? emptyFilters();
 
+  const PRIORITY_RANK: Record<string, number> = {
+    Highest: 0, Critical: 1, High: 2, Medium: 3, Low: 4, Lowest: 5,
+  };
+
   const uniqueStatuses    = useMemo(() => [...new Set(issues.map(i => i.fields.status.name))].sort(), [issues]);
-  const uniquePriorities  = useMemo(() => [...new Set(issues.map(i => i.fields.priority?.name).filter(Boolean) as string[])].sort(), [issues]);
+  const uniquePriorities  = useMemo(() => {
+    const seen = [...new Set(issues.map(i => i.fields.priority?.name).filter(Boolean) as string[])];
+    return seen.sort((a, b) => {
+      const ra = PRIORITY_RANK[a] ?? 99;
+      const rb = PRIORITY_RANK[b] ?? 99;
+      return ra !== rb ? ra - rb : a.localeCompare(b);
+    });
+  }, [issues]);
   const uniqueTypes       = useMemo(() => [...new Set(issues.map(i => i.fields.issuetype.name))].sort(), [issues]);
   const uniqueAssignees   = useMemo(() => [...new Set(issues.map(i => i.fields.assignee?.displayName ?? "Unassigned"))].sort(), [issues]);
   const uniqueReporters   = useMemo(() => [...new Set(issues.map(i => i.fields.reporter?.displayName ?? "Unknown"))].sort(), [issues]);
@@ -636,16 +647,19 @@ export default function IssueFilterPage() {
                         {/* AND / OR toggle */}
                         <div
                           onClick={e => e.stopPropagation()}
-                          className="flex items-center rounded-lg border border-slate-700 overflow-hidden text-[11px] font-semibold shrink-0"
+                          className="flex items-center rounded-lg border border-slate-700 overflow-hidden text-xs font-bold shrink-0"
+                          title={filters.mode === "AND" ? "AND — all selected filters must match" : "OR — any selected filter must match"}
                         >
                           {(["AND", "OR"] as const).map(m => (
                             <button
                               key={m}
                               onClick={() => updateTab(activeTab.id, { filters: { ...filters, mode: m } })}
                               className={clsx(
-                                "px-2 py-0.5 transition-colors",
+                                "px-2.5 py-1 transition-colors",
                                 filters.mode === m
-                                  ? "bg-blue-600 text-white"
+                                  ? m === "AND"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-amber-600 text-white"
                                   : "text-slate-500 hover:text-slate-300 hover:bg-slate-700"
                               )}
                             >
