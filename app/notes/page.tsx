@@ -1,9 +1,18 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, Pin, X, Search, Palette, ChevronLeft, LayoutGrid, Grid2x2, Grid3x3, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { Plus, Pin, X, Search, Palette, ChevronLeft, LayoutGrid, Grid2x2, Grid3x3, SlidersHorizontal, ChevronDown, ArrowUpDown, FileText, Users, AlertCircle, CalendarDays } from "lucide-react";
 import clsx from "clsx";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Note, NOTE_COLORS, noteColorMeta, getNotes, saveNotes, stripHtml } from "@/lib/notes-store";
+
+type SortOrder = "updated" | "created" | "title-asc" | "title-desc";
+
+const NOTE_TEMPLATES: { label: string; icon: React.ElementType; content: string }[] = [
+  { label: "Blank",         icon: FileText,     content: "" },
+  { label: "Meeting Notes", icon: Users,        content: "<h2>Meeting Notes</h2><h3>Attendees</h3><p></p><h3>Agenda</h3><p></p><h3>Discussion</h3><p></p><h3>Action Items</h3><p></p>" },
+  { label: "Bug Report",    icon: AlertCircle,  content: "<h2>Bug Report</h2><h3>Description</h3><p></p><h3>Steps to Reproduce</h3><p></p><h3>Expected Result</h3><p></p><h3>Actual Result</h3><p></p>" },
+  { label: "Daily Standup", icon: CalendarDays, content: "<h2>Daily Standup</h2><h3>Yesterday</h3><p></p><h3>Today</h3><p></p><h3>Blockers</h3><p></p>" },
+];
 
 function newId() { return crypto.randomUUID(); }
 
@@ -169,6 +178,10 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
 
   const meta = noteColorMeta(note.color);
 
+  const plain = stripHtml(note.content);
+  const wordCount = plain.trim() ? plain.trim().split(/\s+/).length : 0;
+  const charCount = plain.length;
+
   return (
     <div className={clsx("flex flex-col h-full", meta.bg)}>
       {/* Toolbar */}
@@ -275,6 +288,13 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
           className="border-slate-700/50 bg-transparent"
         />
       </div>
+
+      {/* Word / char count */}
+      <div className="px-4 sm:px-6 py-1.5 border-t border-slate-800/60 shrink-0">
+        <p className="text-xs text-slate-700">
+          {wordCount} word{wordCount !== 1 ? "s" : ""} · {charCount} char{charCount !== 1 ? "s" : ""}
+        </p>
+      </div>
     </div>
   );
 }
@@ -290,6 +310,8 @@ export default function NotesPage() {
   const [showEditor, setShowEditor]   = useState(false);
   const [view, setView]           = useState<"gallery" | "editor">("gallery");
   const [gridSize, setGridSize]   = useState<"small" | "large">("large");
+  const [sort, setSort] = useState<SortOrder>("updated");
+  const [templatesOpen, setTemplatesOpen] = useState(false);
 
   useEffect(() => {
     const loaded = getNotes();
@@ -299,8 +321,8 @@ export default function NotesPage() {
 
   function persist(updated: Note[]) { setNotes(updated); saveNotes(updated); }
 
-  function handleNew() {
-    const note = createNote();
+  function handleNew(templateContent = "") {
+    const note = { ...createNote(), content: templateContent };
     const updated = [note, ...notes];
     persist(updated);
     setSelectedId(note.id);
@@ -334,7 +356,12 @@ export default function NotesPage() {
     .filter(n => activeColors.length === 0 || activeColors.includes(n.color ?? ""))
     .sort((a, b) => {
       if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      switch (sort) {
+        case "created":    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "title-asc":  return (a.title || "").localeCompare(b.title || "");
+        case "title-desc": return (b.title || "").localeCompare(a.title || "");
+        default:           return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      }
     });
 
   const activeFilterCount = activeTags.length + activeColors.length;
@@ -358,6 +385,16 @@ export default function NotesPage() {
                 className="pl-7 pr-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-lg text-slate-300 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600 w-48"
               />
             </div>
+            <select
+              value={sort}
+              onChange={e => setSort(e.target.value as SortOrder)}
+              className="text-xs bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-300 focus:outline-none cursor-pointer"
+            >
+              <option value="updated">Last Updated</option>
+              <option value="created">Date Created</option>
+              <option value="title-asc">Title A→Z</option>
+              <option value="title-desc">Title Z→A</option>
+            </select>
             <button
               onClick={() => setFilterOpen(v => !v)}
               className={clsx(
@@ -374,10 +411,33 @@ export default function NotesPage() {
               )}
               <ChevronDown size={12} className={clsx("transition-transform", filterOpen && "rotate-180")} />
             </button>
-            <button onClick={handleNew} title="New note" className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors">
-              <Plus size={13} />
-              New
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setTemplatesOpen(v => !v)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors"
+              >
+                <Plus size={13} />
+                New
+                <ChevronDown size={11} className={clsx("transition-transform", templatesOpen && "rotate-180")} />
+              </button>
+              {templatesOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setTemplatesOpen(false)} />
+                  <div className="absolute top-full right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-20 overflow-hidden min-w-[160px]">
+                    {NOTE_TEMPLATES.map(t => (
+                      <button
+                        key={t.label}
+                        onClick={() => { handleNew(t.content); setTemplatesOpen(false); }}
+                        className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 hover:text-slate-100 transition-colors flex items-center gap-2"
+                      >
+                        <t.icon size={12} className="text-slate-500 shrink-0" />
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -448,7 +508,7 @@ export default function NotesPage() {
                 <LayoutGrid size={22} className="text-slate-600" />
               </div>
               <p className="text-slate-400 text-sm font-medium mb-1">{search ? "No notes match" : "No notes yet"}</p>
-              {!search && <button onClick={handleNew} className="text-xs text-blue-400 hover:underline mt-1">Create your first note</button>}
+              {!search && <button onClick={() => handleNew()} className="text-xs text-blue-400 hover:underline mt-1">Create your first note</button>}
             </div>
           ) : (
             <div className={clsx(
@@ -513,7 +573,7 @@ export default function NotesPage() {
               </button>
               <h1 className="text-sm font-semibold text-slate-200 px-1">Notes</h1>
             </div>
-            <button onClick={handleNew} title="New note" className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
+            <button onClick={() => handleNew()} title="New note" className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
               <Plus size={16} />
             </button>
           </div>
@@ -551,7 +611,7 @@ export default function NotesPage() {
             <div className="text-center py-8">
               <p className="text-xs text-slate-600">{search ? "No notes match" : "No notes yet"}</p>
               {!search && (
-                <button onClick={handleNew} className="text-xs text-blue-400 hover:underline mt-1">Create one</button>
+                <button onClick={() => handleNew()} className="text-xs text-blue-400 hover:underline mt-1">Create one</button>
               )}
             </div>
           ) : filteredNotes.map(note => (
@@ -589,7 +649,7 @@ export default function NotesPage() {
             </div>
             <p className="text-slate-400 text-sm font-medium mb-1">No note selected</p>
             <p className="text-slate-600 text-xs mb-5">Pick one from the list or create a new one</p>
-            <button onClick={handleNew} className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">New Note</button>
+            <button onClick={() => handleNew()} className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">New Note</button>
           </div>
         )}
       </div>
