@@ -97,6 +97,14 @@ export const CURRENT_CHANGES: ChangelogEntry[] = [
     title: "Completed Today Tracks Hand-offs",
     description: "The Completed Today widget now shows any ticket you transitioned today — including ones sent to Redev or other statuses — not just tickets still assigned to you marked Done.",
   },
+  {
+    title: "Notes Gallery View",
+    description: "Notes now open in a full-width card grid. Click any card to open the existing split-view editor. A grid icon in the editor's sidebar navigates back to the gallery.",
+  },
+  {
+    title: "Notes Gallery Grid Size Toggle",
+    description: "A floating widget at the bottom-right of the Notes gallery lets you switch between large cards (snippet + tags) and small cards (title + headings only).",
+  },
 ];
 
 export const CURRENT_VERSION       = "v0.015";
