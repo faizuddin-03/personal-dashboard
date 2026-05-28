@@ -419,8 +419,8 @@ export default function NotesPage() {
                       onClick={() => setActiveColors(prev => active ? prev.filter(v => v !== c.value) : [...prev, c.value])}
                       className={clsx(
                         "w-6 h-6 rounded-full border-2 transition-all hover:scale-110",
-                        c.value === "" ? "bg-slate-700" : c.bg.replace("/40", ""),
-                        active ? "border-blue-400 ring-2 ring-blue-500/40" : "border-slate-600 hover:border-slate-400"
+                        c.value === "" ? "bg-slate-700 border-slate-500" : `${c.bg} ${c.border}`,
+                        active && "ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-900"
                       )}
                     />
                   );
