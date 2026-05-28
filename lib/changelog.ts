@@ -14,6 +14,69 @@ export interface ChangelogVersion {
 // Each entry here is locked — a snapshot of what shipped in that prod push.
 export const RELEASED_VERSIONS: ChangelogVersion[] = [
   {
+    version: "v0.019",
+    label: "v0.019",
+    date: "2026-05-28",
+    changes: [
+      {
+        title: "What's New Shows Only New Changes",
+        description: "The popup now only displays changes since the last prod release. It no longer shows history, and won't auto-open if there's nothing new.",
+      },
+      {
+        title: "JIRA Issue Filter Page",
+        description: "Pick any parent ticket (CR or otherwise) and see all its child issues in one view, nested under JIRA in the sidebar.",
+      },
+      {
+        title: "Issue Filter: Multi-Tab Support",
+        description: "Open multiple independent filters at the same time as tabs. Each tab has its own parent ticket, filter state, and results. Double-click a tab to rename it. Tabs persist across page visits.",
+      },
+      {
+        title: "Issue Filter: Three-State Chips",
+        description: "Filter chips now cycle through three states: neutral (no effect), green (include only), and red/strikethrough (exclude). Include and exclude can be combined on the same field.",
+      },
+      {
+        title: "Completed Today Tracks Hand-offs",
+        description: "The Completed Today widget now shows any ticket you transitioned today — including ones sent to Redev or other statuses — not just tickets still assigned to you marked Done.",
+      },
+      {
+        title: "Notes Gallery View",
+        description: "Notes now open in a full-width card grid. Click any card to open the existing split-view editor. A grid icon in the editor's sidebar navigates back to the gallery.",
+      },
+      {
+        title: "Notes Gallery Grid Size Toggle",
+        description: "A floating widget at the bottom-right of the Notes gallery lets you switch between large cards (snippet + tags) and small cards (title + headings only).",
+      },
+      {
+        title: "Notes Filter by Tags and Colour",
+        description: "A collapsible Filter panel in the Notes gallery lets you narrow results by one or more tags and colours at the same time. All selected filters must match (AND logic).",
+      },
+      {
+        title: "More System Themes",
+        description: "Two new dark themes (Crimson, Ocean) and two new light themes (Blossom, Sand) added to the theme picker in Settings.",
+      },
+      {
+        title: "More Note Colours",
+        description: "Five additional note colours (Pink, Teal, Orange, Yellow, Cyan) added to the colour palette in the note editor.",
+      },
+      {
+        title: "Notes Sort Options",
+        description: "Sort the notes gallery by Last Updated, Date Created, Title A→Z, or Title Z→A using the dropdown in the gallery header.",
+      },
+      {
+        title: "Note Templates",
+        description: "The New button now opens a template picker with Blank, Meeting Notes, Bug Report, and Daily Standup starters.",
+      },
+      {
+        title: "Word & Character Count",
+        description: "The note editor now shows a live word and character count in the footer.",
+      },
+      {
+        title: "JIRA Filter: Saved Presets",
+        description: "Save the current filter state as a named preset and reload it any time from the filter panel. Presets persist across sessions and can be deleted individually.",
+      },
+    ],
+  },
+  {
     version: "v0.010",
     label: "v0.010",
     date: "2026-05-26",
@@ -76,66 +139,8 @@ export const RELEASED_VERSIONS: ChangelogVersion[] = [
 
 // ── Current in-progress changes (staging-local only) ─────────
 // Reset to [] after every prod-local push.
-export const CURRENT_CHANGES: ChangelogEntry[] = [
-  {
-    title: "What's New Shows Only New Changes",
-    description: "The popup now only displays changes since the last prod release. It no longer shows history, and won't auto-open if there's nothing new.",
-  },
-  {
-    title: "JIRA Issue Filter Page",
-    description: "Pick any parent ticket (CR or otherwise) and see all its child issues in one view, nested under JIRA in the sidebar.",
-  },
-  {
-    title: "Issue Filter: Multi-Tab Support",
-    description: "Open multiple independent filters at the same time as tabs. Each tab has its own parent ticket, filter state, and results. Double-click a tab to rename it. Tabs persist across page visits.",
-  },
-  {
-    title: "Issue Filter: Three-State Chips",
-    description: "Filter chips now cycle through three states: neutral (no effect), blue (include only), and red/strikethrough (exclude). Include and exclude can be combined on the same field.",
-  },
-  {
-    title: "Completed Today Tracks Hand-offs",
-    description: "The Completed Today widget now shows any ticket you transitioned today — including ones sent to Redev or other statuses — not just tickets still assigned to you marked Done.",
-  },
-  {
-    title: "Notes Gallery View",
-    description: "Notes now open in a full-width card grid. Click any card to open the existing split-view editor. A grid icon in the editor's sidebar navigates back to the gallery.",
-  },
-  {
-    title: "Notes Gallery Grid Size Toggle",
-    description: "A floating widget at the bottom-right of the Notes gallery lets you switch between large cards (snippet + tags) and small cards (title + headings only).",
-  },
-  {
-    title: "Notes Filter by Tags and Colour",
-    description: "A collapsible Filter panel in the Notes gallery lets you narrow results by one or more tags and colours at the same time. All selected filters must match (AND logic).",
-  },
-  {
-    title: "More System Themes",
-    description: "Two new dark themes (Crimson, Ocean) and two new light themes (Blossom, Sand) added to the theme picker in Settings.",
-  },
-  {
-    title: "More Note Colours",
-    description: "Five additional note colours (Pink, Teal, Orange, Yellow, Cyan) added to the colour palette in the note editor.",
-  },
-  {
-    title: "Notes Sort Options",
-    description: "Sort the notes gallery by Last Updated, Date Created, Title A→Z, or Title Z→A using the dropdown in the gallery header.",
-  },
-  {
-    title: "Note Templates",
-    description: "The New button now opens a template picker with Blank, Meeting Notes, Bug Report, and Daily Standup starters.",
-  },
-  {
-    title: "Word & Character Count",
-    description: "The note editor now shows a live word and character count in the footer.",
-  },
-  {
-    title: "JIRA Filter: Saved Presets",
-    description: "Save the current filter state as a named preset and reload it any time from the filter header. Presets persist across sessions and can be deleted individually.",
-  },
-];
+export const CURRENT_CHANGES: ChangelogEntry[] = [];
 
 export const CURRENT_VERSION       = "v0.019";
-export const CURRENT_VERSION_LABEL = "Upcoming";
+export const CURRENT_VERSION_LABEL = "v0.019";
 export const CURRENT_VERSION_DATE  = "2026-05-28";
-
