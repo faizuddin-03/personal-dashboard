@@ -666,7 +666,7 @@ export default function IssueFilterPage() {
 
                 {/* Filter panel */}
                 {issues.length > 0 && (
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                  <div className="bg-slate-900 border border-slate-800 rounded-xl">
                     <div
                       onClick={() => updateTab(activeTab.id, { filtersOpen: !activeTab.filtersOpen })}
                       className="w-full flex items-center justify-between px-4 py-3 text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-colors cursor-pointer select-none"
@@ -677,39 +677,6 @@ export default function IssueFilterPage() {
                         {hasActiveFilters && (
                           <span className="bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium">
                             {activeFilterCount}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {/* AND / OR toggle */}
-                        <div
-                          onClick={e => e.stopPropagation()}
-                          className="flex items-center rounded-lg border border-slate-700 overflow-hidden text-xs font-bold shrink-0"
-                          title={filters.mode === "AND" ? "AND — all selected filters must match" : "OR — any selected filter must match"}
-                        >
-                          {(["AND", "OR"] as const).map(m => (
-                            <button
-                              key={m}
-                              onClick={() => updateTab(activeTab.id, { filters: { ...filters, mode: m } })}
-                              className={clsx(
-                                "px-2.5 py-1 transition-colors",
-                                filters.mode === m
-                                  ? m === "AND"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-amber-600 text-white"
-                                  : "text-slate-500 hover:text-slate-300 hover:bg-slate-700"
-                              )}
-                            >
-                              {m}
-                            </button>
-                          ))}
-                        </div>
-                        {hasActiveFilters && (
-                          <span
-                            onClick={e => { e.stopPropagation(); updateTab(activeTab.id, { filters: emptyFilters() }); }}
-                            className="text-xs text-slate-500 hover:text-red-400 transition-colors cursor-pointer"
-                          >
-                            Clear all
                           </span>
                         )}
 
@@ -725,7 +692,7 @@ export default function IssueFilterPage() {
                           {savePresetOpen && (
                             <>
                               <div className="fixed inset-0 z-20" onClick={() => setSavePresetOpen(false)} />
-                              <div className="absolute bottom-full right-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 p-3 w-56">
+                              <div className="absolute top-full left-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 p-3 w-56">
                                 <p className="text-xs text-slate-400 font-medium mb-2">Save filter preset</p>
                                 <input
                                   value={presetName}
@@ -768,7 +735,7 @@ export default function IssueFilterPage() {
                             {presetsOpen && (
                               <>
                                 <div className="fixed inset-0 z-20" onClick={() => setPresetsOpen(false)} />
-                                <div className="absolute bottom-full right-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 overflow-hidden min-w-[200px] max-h-64 overflow-y-auto">
+                                <div className="absolute top-full left-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 overflow-hidden min-w-[200px] max-h-64 overflow-y-auto">
                                   <p className="text-xs text-slate-500 px-3 py-2 border-b border-slate-700 font-medium">Saved presets</p>
                                   {savedPresets.map(p => (
                                     <div key={p.id} className="flex items-center gap-1 px-3 py-2 hover:bg-slate-700 group border-b border-slate-700/50 last:border-0 transition-colors">
@@ -791,6 +758,39 @@ export default function IssueFilterPage() {
                               </>
                             )}
                           </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {/* AND / OR toggle */}
+                        <div
+                          onClick={e => e.stopPropagation()}
+                          className="flex items-center rounded-lg border border-slate-700 overflow-hidden text-xs font-bold shrink-0"
+                          title={filters.mode === "AND" ? "AND — all selected filters must match" : "OR — any selected filter must match"}
+                        >
+                          {(["AND", "OR"] as const).map(m => (
+                            <button
+                              key={m}
+                              onClick={() => updateTab(activeTab.id, { filters: { ...filters, mode: m } })}
+                              className={clsx(
+                                "px-2.5 py-1 transition-colors",
+                                filters.mode === m
+                                  ? m === "AND"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-amber-600 text-white"
+                                  : "text-slate-500 hover:text-slate-300 hover:bg-slate-700"
+                              )}
+                            >
+                              {m}
+                            </button>
+                          ))}
+                        </div>
+                        {hasActiveFilters && (
+                          <span
+                            onClick={e => { e.stopPropagation(); updateTab(activeTab.id, { filters: emptyFilters() }); }}
+                            className="text-xs text-slate-500 hover:text-red-400 transition-colors cursor-pointer"
+                          >
+                            Clear all
+                          </span>
                         )}
 
                         {activeTab.filtersOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
