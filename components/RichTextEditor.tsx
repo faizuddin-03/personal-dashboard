@@ -97,6 +97,7 @@ export default function RichTextEditor({
   const [showHighlights, setShowHighlights] = useState(false);
   const [showFonts, setShowFonts] = useState(false);
   const [showSizes, setShowSizes] = useState(false);
+  const [sizeInput, setSizeInput] = useState("");
 
   const editor = useEditor({
     extensions: [
@@ -176,21 +177,47 @@ export default function RichTextEditor({
           )}
         </div>
 
-        {/* Font size */}
+        {/* Font size — typeable input + preset dropdown */}
         <div className="relative">
-          <button
-            type="button"
-            onMouseDown={e => e.preventDefault()}
-            onClick={e => { e.stopPropagation(); setShowSizes(v => !v); setShowFonts(false); setShowColors(false); setShowHighlights(false); }}
-            title="Font size"
-            className={clsx(
-              "flex items-center gap-1 px-2 py-1.5 rounded text-xs transition-colors",
-              showSizes ? "bg-blue-600/40 text-blue-300" : "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
-            )}
-          >
-            <span className="text-[11px] font-medium w-8 truncate text-left">{activeFontSize ? activeFontSize.replace("px", "") : "Size"}</span>
-            <ChevronDown size={11} />
-          </button>
+          <div className={clsx(
+            "flex items-center rounded text-xs transition-colors",
+            showSizes ? "bg-blue-600/40" : "hover:bg-slate-700"
+          )}>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={sizeInput !== "" ? sizeInput : (activeFontSize ? activeFontSize.replace("px", "") : "")}
+              placeholder="Size"
+              onFocus={() => setSizeInput(activeFontSize ? activeFontSize.replace("px", "") : "")}
+              onChange={e => setSizeInput(e.target.value.replace(/[^0-9]/g, ""))}
+              onBlur={() => {
+                const n = parseInt(sizeInput, 10);
+                if (n >= 6 && n <= 96) editor.chain().focus().setFontSize(`${n}px`).run();
+                else if (sizeInput === "") editor.chain().focus().unsetFontSize().run();
+                setSizeInput("");
+              }}
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  const n = parseInt(sizeInput, 10);
+                  if (n >= 6 && n <= 96) editor.chain().focus().setFontSize(`${n}px`).run();
+                  else if (sizeInput === "") editor.chain().focus().unsetFontSize().run();
+                  setSizeInput("");
+                  setShowSizes(false);
+                  (e.target as HTMLInputElement).blur();
+                }
+                if (e.key === "Escape") { setSizeInput(""); setShowSizes(false); (e.target as HTMLInputElement).blur(); }
+              }}
+              className="w-8 bg-transparent text-center text-[11px] font-medium text-slate-400 focus:text-slate-200 focus:outline-none py-1.5 pl-1"
+            />
+            <button
+              type="button"
+              onMouseDown={e => e.preventDefault()}
+              onClick={e => { e.stopPropagation(); setShowSizes(v => !v); setShowFonts(false); setShowColors(false); setShowHighlights(false); }}
+              className="pr-1.5 py-1.5 text-slate-400 hover:text-slate-200"
+            >
+              <ChevronDown size={11} />
+            </button>
+          </div>
           {showSizes && (
             <div className="absolute top-full left-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 py-1 min-w-[80px]" onClick={e => e.stopPropagation()}>
               <button
