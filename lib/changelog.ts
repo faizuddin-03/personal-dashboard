@@ -105,8 +105,13 @@ export const CURRENT_CHANGES: ChangelogEntry[] = [
     title: "Notes Gallery Grid Size Toggle",
     description: "A floating widget at the bottom-right of the Notes gallery lets you switch between large cards (snippet + tags) and small cards (title + headings only).",
   },
+  {
+    title: "Notes Filter by Tags and Colour",
+    description: "A collapsible Filter panel in the Notes gallery lets you narrow results by one or more tags and colours at the same time. All selected filters must match (AND logic).",
+  },
 ];
 
-export const CURRENT_VERSION       = "v0.015";
+export const CURRENT_VERSION       = "v0.016";
 export const CURRENT_VERSION_LABEL = "Upcoming";
-export const CURRENT_VERSION_DATE  = "2026-05-26";
+export const CURRENT_VERSION_DATE  = "2026-05-28";
+

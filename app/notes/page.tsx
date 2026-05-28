@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Plus, Pin, X, Search, Palette, ChevronLeft, LayoutGrid, Grid2x2, Grid3x3 } from "lucide-react";
+import { Plus, Pin, X, Search, Palette, ChevronLeft, LayoutGrid, Grid2x2, Grid3x3, SlidersHorizontal, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Note, NOTE_COLORS, noteColorMeta, getNotes, saveNotes, stripHtml } from "@/lib/notes-store";
@@ -283,11 +283,13 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
 export default function NotesPage() {
   const [notes, setNotes]       = useState<Note[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [search, setSearch]     = useState("");
-  const [activeTag, setActiveTag] = useState<string | null>(null);
-  const [showEditor, setShowEditor] = useState(false);
-  const [view, setView] = useState<"gallery" | "editor">("gallery");
-  const [gridSize, setGridSize] = useState<"small" | "large">("large");
+  const [search, setSearch]       = useState("");
+  const [activeTags, setActiveTags]   = useState<string[]>([]);
+  const [activeColors, setActiveColors] = useState<string[]>([]);
+  const [filterOpen, setFilterOpen]   = useState(false);
+  const [showEditor, setShowEditor]   = useState(false);
+  const [view, setView]           = useState<"gallery" | "editor">("gallery");
+  const [gridSize, setGridSize]   = useState<"small" | "large">("large");
 
   useEffect(() => {
     const loaded = getNotes();
@@ -328,11 +330,14 @@ export default function NotesPage() {
 
   const filteredNotes = notes
     .filter(n => !search || n.title.toLowerCase().includes(search.toLowerCase()) || stripHtml(n.content).toLowerCase().includes(search.toLowerCase()))
-    .filter(n => !activeTag || (n.tags ?? []).includes(activeTag))
+    .filter(n => activeTags.every(t => (n.tags ?? []).includes(t)))
+    .filter(n => activeColors.length === 0 || activeColors.includes(n.color ?? ""))
     .sort((a, b) => {
       if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
+
+  const activeFilterCount = activeTags.length + activeColors.length;
 
   const selectedNote = notes.find(n => n.id === selectedId);
 
@@ -353,6 +358,22 @@ export default function NotesPage() {
                 className="pl-7 pr-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-lg text-slate-300 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-600 w-48"
               />
             </div>
+            <button
+              onClick={() => setFilterOpen(v => !v)}
+              className={clsx(
+                "flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border transition-colors",
+                filterOpen || activeFilterCount > 0
+                  ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                  : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600 hover:text-slate-300"
+              )}
+            >
+              <SlidersHorizontal size={13} />
+              Filter
+              {activeFilterCount > 0 && (
+                <span className="bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">{activeFilterCount}</span>
+              )}
+              <ChevronDown size={12} className={clsx("transition-transform", filterOpen && "rotate-180")} />
+            </button>
             <button onClick={handleNew} title="New note" className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition-colors">
               <Plus size={13} />
               New
@@ -360,26 +381,62 @@ export default function NotesPage() {
           </div>
         </div>
 
-        {/* Tag filter */}
-        {allTags.length > 0 && (
-          <div className="flex gap-1.5 px-4 sm:px-6 py-2 border-b border-slate-800 overflow-x-auto scrollbar-none shrink-0">
-            <button
-              onClick={() => setActiveTag(null)}
-              className={clsx(
-                "shrink-0 text-xs rounded-full px-2.5 py-1 border transition-colors",
-                activeTag === null ? "bg-blue-600/20 border-blue-600/50 text-blue-300" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
-              )}
-            >All</button>
-            {allTags.map(tag => (
+        {/* Collapsible filter panel */}
+        {filterOpen && (
+          <div className="px-4 sm:px-6 py-3 border-b border-slate-800 bg-slate-900/60 shrink-0 space-y-3">
+            {/* Tags */}
+            {allTags.length > 0 && (
+              <div>
+                <p className="text-xs text-slate-500 mb-1.5">Tags</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {allTags.map(tag => {
+                    const active = activeTags.includes(tag);
+                    return (
+                      <button
+                        key={tag}
+                        onClick={() => setActiveTags(prev => active ? prev.filter(t => t !== tag) : [...prev, tag])}
+                        className={clsx(
+                          "text-xs rounded-full px-2.5 py-1 border transition-colors",
+                          active ? "bg-blue-600/20 border-blue-600/50 text-blue-300" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
+                        )}
+                      >{tag}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Colours */}
+            <div>
+              <p className="text-xs text-slate-500 mb-1.5">Colour</p>
+              <div className="flex flex-wrap gap-2">
+                {NOTE_COLORS.map(c => {
+                  const active = activeColors.includes(c.value);
+                  return (
+                    <button
+                      key={c.value}
+                      title={c.label}
+                      onClick={() => setActiveColors(prev => active ? prev.filter(v => v !== c.value) : [...prev, c.value])}
+                      className={clsx(
+                        "w-6 h-6 rounded-full border-2 transition-all hover:scale-110",
+                        c.value === "" ? "bg-slate-700" : c.bg.replace("/40", ""),
+                        active ? "border-blue-400 ring-2 ring-blue-500/40" : "border-slate-600 hover:border-slate-400"
+                      )}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Clear */}
+            {activeFilterCount > 0 && (
               <button
-                key={tag}
-                onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                className={clsx(
-                  "shrink-0 text-xs rounded-full px-2.5 py-1 border transition-colors",
-                  activeTag === tag ? "bg-blue-600/20 border-blue-600/50 text-blue-300" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
-                )}
-              >{tag}</button>
-            ))}
+                onClick={() => { setActiveTags([]); setActiveColors([]); }}
+                className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                Clear all filters
+              </button>
+            )}
           </div>
         )}
 
@@ -462,27 +519,19 @@ export default function NotesPage() {
           </div>
           {allTags.length > 0 && (
             <div className="flex gap-1 overflow-x-auto pb-0.5 scrollbar-none">
-              <button
-                onClick={() => setActiveTag(null)}
-                className={clsx(
-                  "shrink-0 text-xs rounded-full px-2 py-0.5 border transition-colors",
-                  activeTag === null
-                    ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
-                    : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
-                )}
-              >All</button>
-              {allTags.map(tag => (
-                <button
-                  key={tag}
-                  onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                  className={clsx(
-                    "shrink-0 text-xs rounded-full px-2 py-0.5 border transition-colors",
-                    activeTag === tag
-                      ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
-                      : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
-                  )}
-                >{tag}</button>
-              ))}
+              {allTags.map(tag => {
+                const active = activeTags.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    onClick={() => setActiveTags(prev => active ? prev.filter(t => t !== tag) : [...prev, tag])}
+                    className={clsx(
+                      "shrink-0 text-xs rounded-full px-2 py-0.5 border transition-colors",
+                      active ? "bg-blue-600/20 border-blue-600/50 text-blue-300" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600"
+                    )}
+                  >{tag}</button>
+                );
+              })}
             </div>
           )}
           <div className="relative">
