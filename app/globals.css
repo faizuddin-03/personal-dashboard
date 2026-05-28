@@ -30,7 +30,7 @@ body {
 .ProseMirror h1 { font-size: 1.5rem; font-weight: 700; color: #f1f5f9; margin-top: 0.75em; }
 .ProseMirror h2 { font-size: 1.25rem; font-weight: 600; color: #f1f5f9; margin-top: 0.6em; }
 .ProseMirror h3 { font-size: 1.05rem; font-weight: 600; color: #e2e8f0; margin-top: 0.5em; }
-.ProseMirror strong { font-weight: 700; }
+.ProseMirror strong { font-weight: 700; color: #f1f5f9; }
 .ProseMirror em { font-style: italic; }
 .ProseMirror s { text-decoration: line-through; opacity: 0.55; }
 .ProseMirror u { text-decoration: underline; }
@@ -42,6 +42,14 @@ body {
 .ProseMirror pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 0.4em 0; }
 .ProseMirror pre code { background: none; border: none; padding: 0; }
 .ProseMirror p.is-editor-empty:first-child::before { color: #475569; content: attr(data-placeholder); float: left; height: 0; pointer-events: none; }
+.ProseMirror ul[data-type="taskList"] { list-style: none; padding-left: 0.25rem; }
+.ProseMirror ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0.2em 0; }
+.ProseMirror ul[data-type="taskList"] li > label { flex-shrink: 0; margin-top: 0.2em; cursor: pointer; }
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] { appearance: none; width: 14px; height: 14px; border: 1.5px solid #475569; border-radius: 3px; background: transparent; cursor: pointer; position: relative; display: block; }
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"]:checked { background: #3a6490; border-color: #3a6490; }
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"]:checked::after { content: ""; position: absolute; top: 1px; left: 3px; width: 5px; height: 8px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(40deg); }
+.ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div { opacity: 0.5; text-decoration: line-through; }
+.ProseMirror ul[data-type="taskList"] li > div { flex: 1; }
 
 /* ── Theme overrides ──────────────────────────────────────────
    :root prefix raises specificity above Tailwind's single-class
@@ -70,98 +78,15 @@ body {
 
 /* Kanban accent left-borders — !important overrides the border-color
    shorthand set by :root .border-slate-700 { border-color: ... } */
-:root .border-l-red-500    { border-left-color: #a05252 !important; }
-:root .border-l-sky-400    { border-left-color: #4a8aaa !important; }
-:root .border-l-blue-500   { border-left-color: #3a6490 !important; }
-:root .border-l-purple-500 { border-left-color: #7a5aa0 !important; }
-:root .border-l-green-500  { border-left-color: #4a8860 !important; }
-:root .border-l-yellow-500 { border-left-color: #9a8830 !important; }
-:root .border-l-orange-500 { border-left-color: #9a5e30 !important; }
-:root .border-l-pink-500   { border-left-color: #a04878 !important; }
+:root .border-l-red-500    { border-left-color: #ef4444 !important; }
+:root .border-l-sky-400    { border-left-color: #38bdf8 !important; }
+:root .border-l-blue-500   { border-left-color: #3b82f6 !important; }
+:root .border-l-purple-500 { border-left-color: #a855f7 !important; }
+:root .border-l-green-500  { border-left-color: #22c55e !important; }
+:root .border-l-yellow-500 { border-left-color: #eab308 !important; }
+:root .border-l-orange-500 { border-left-color: #f97316 !important; }
+:root .border-l-pink-500   { border-left-color: #ec4899 !important; }
 :root .border-l-slate-700  { border-left-color: var(--border-main, #334155); }
-
-/* ── Matte accent palette — desaturates Tailwind vivid defaults ──────
-   All accent colours are toned down to a dusty/palette feel.
-   Light-theme counterparts further down in this file override these.  */
-
-/* Blue — primary accent (buttons, links, active states) */
-:root .text-blue-400              { color: #5688b0; }
-:root .text-blue-300              { color: #7aaad4; }
-:root .text-blue-500              { color: #4575a0; }
-:root .bg-blue-600                { background-color: #3a6490; }
-:root .bg-blue-500                { background-color: #4575a0; }
-:root .bg-blue-400                { background-color: #5688b0; }
-:root .hover\:bg-blue-700:hover   { background-color: #305a80; }
-:root .hover\:bg-blue-600:hover   { background-color: #3a6490; }
-:root .hover\:bg-blue-500:hover   { background-color: #4575a0; }
-:root .hover\:text-blue-400:hover { color: #5688b0; }
-:root .hover\:text-blue-300:hover { color: #7aaad4; }
-:root .bg-blue-600\/10  { background-color: color-mix(in srgb, #3a6490 10%, transparent); }
-:root .bg-blue-600\/20  { background-color: color-mix(in srgb, #3a6490 20%, transparent); }
-:root .bg-blue-600\/30  { background-color: color-mix(in srgb, #3a6490 30%, transparent); }
-:root .bg-blue-600\/40  { background-color: color-mix(in srgb, #3a6490 40%, transparent); }
-:root .bg-blue-900\/40  { background-color: color-mix(in srgb, #3a6490 15%, transparent); }
-:root .border-blue-500             { border-color: #4575a0; }
-:root .border-blue-600             { border-color: #3a6490; }
-:root .border-blue-600\/30         { border-color: color-mix(in srgb, #3a6490 30%, transparent); }
-:root .border-blue-600\/50         { border-color: color-mix(in srgb, #3a6490 50%, transparent); }
-:root .border-blue-600\/60         { border-color: color-mix(in srgb, #3a6490 60%, transparent); }
-:root .focus\:ring-blue-600:focus  { --tw-ring-color: #3a6490; }
-
-/* Green — progress bars, success states */
-:root .text-green-400             { color: #5a9470; }
-:root .text-green-300             { color: #78b494; }
-:root .bg-green-500               { background-color: #467558; }
-:root .bg-green-400               { background-color: #5a9470; }
-:root .border-green-500           { border-color: #467558; }
-
-/* Red — urgent, overdue, errors */
-:root .text-red-400               { color: #b06464; }
-:root .text-red-300               { color: #cc8080; }
-:root .text-red-500               { color: #a05555; }
-:root .text-red-200               { color: #d4a0a0; }
-:root .text-red-400\/80           { color: #b0646499; }
-:root .bg-red-500                 { background-color: #904c4c; }
-:root .bg-red-400                 { background-color: #a06060; }
-:root .hover\:text-red-400:hover  { color: #b06464; }
-:root .hover\:text-red-300:hover  { color: #cc8080; }
-:root .border-red-700             { border-color: #804040; }
-
-/* Amber — medium priority, on-hold */
-:root .text-amber-400              { color: #b09050; }
-:root .text-amber-300              { color: #ccaa70; }
-:root .bg-amber-500                { background-color: #8a7035; }
-:root .hover\:text-amber-400:hover { color: #b09050; }
-
-/* Orange — high priority */
-:root .text-orange-400            { color: #b07850; }
-:root .text-orange-300            { color: #cca480; }
-
-/* Yellow — low priority */
-:root .text-yellow-400            { color: #a89840; }
-:root .text-yellow-300            { color: #bcb058; }
-
-/* Purple */
-:root .text-purple-400            { color: #9078c0; }
-:root .text-purple-300            { color: #a890d4; }
-:root .bg-purple-500              { background-color: #6a5490; }
-:root .hover\:bg-purple-600:hover { background-color: #5a4480; }
-
-/* Pink */
-:root .text-pink-400              { color: #b87098; }
-:root .text-pink-300              { color: #cca0c0; }
-
-/* Indigo — CR card badges */
-:root .text-indigo-400            { color: #7888b8; }
-:root .text-indigo-300            { color: #9090cc; }
-
-/* Sky */
-:root .text-sky-400               { color: #5090b0; }
-:root .text-sky-300               { color: #70aac8; }
-
-/* Teal */
-:root .text-teal-400              { color: #509090; }
-:root .text-teal-300              { color: #70aaaa; }
 
 /* Text */
 :root .text-slate-100 { color: var(--text-brightest, #f8fafc); }
@@ -184,7 +109,8 @@ body {
 :root .ProseMirror ul,
 :root .ProseMirror ol { color: var(--text-secondary, #cbd5e1); }
 :root .ProseMirror h1,
-:root .ProseMirror h2 { color: var(--text-primary, #f1f5f9); }
+:root .ProseMirror h2,
+:root .ProseMirror strong { color: var(--text-primary, #f1f5f9); }
 :root .ProseMirror h3 { color: var(--text-secondary, #e2e8f0); }
 :root .ProseMirror blockquote { color: var(--text-label, #94a3b8); }
 :root .ProseMirror p.is-editor-empty:first-child::before { color: var(--text-faint, #475569); }

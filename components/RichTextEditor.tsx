@@ -6,11 +6,13 @@ import { Color, TextStyle } from "@tiptap/extension-text-style";
 import FontFamily from "@tiptap/extension-font-family";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
 import { useState, useCallback } from "react";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, Quote, Heading1, Heading2, Heading3,
-  Palette, Highlighter, RemoveFormatting, ChevronDown,
+  Palette, Highlighter, RemoveFormatting, ChevronDown, CheckSquare,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -105,6 +107,8 @@ export default function RichTextEditor({
       FontSize,
       Highlight.configure({ multicolor: true }),
       Underline,
+      TaskList,
+      TaskItem.configure({ nested: true }),
     ],
     content,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -228,6 +232,7 @@ export default function RichTextEditor({
         {/* Lists */}
         <TBtn active={editor.isActive("bulletList")}  onClick={() => editor.chain().focus().toggleBulletList().run()}  title="Bullet list"><List size={14} /></TBtn>
         <TBtn active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()} title="Numbered list"><ListOrdered size={14} /></TBtn>
+        <TBtn active={editor.isActive("taskList")}    onClick={() => editor.chain().focus().toggleTaskList().run()}    title="Checklist"><CheckSquare size={14} /></TBtn>
         <TBtn active={editor.isActive("blockquote")}  onClick={() => editor.chain().focus().toggleBlockquote().run()}  title="Quote"><Quote size={14} /></TBtn>
         <Sep />
 
