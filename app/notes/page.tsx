@@ -180,6 +180,7 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [pipContainer, setPipContainer] = useState<Element | null>(null);
   const pipWinRef = useRef<Window | null>(null);
+  const originalTitleRef = useRef<string>("");
 
   async function openPiP() {
     if (!(window as any).documentPictureInPicture) {
@@ -218,7 +219,10 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
       const themeStyle = document.documentElement.getAttribute("style") ?? "";
       if (themeStyle) pipWin.document.documentElement.setAttribute("style", themeStyle);
       pipWin.document.body.style.cssText = "margin:0;height:100vh;overflow:hidden;";
-      pipWin.document.title = note.title || "Note";
+
+      // PiP title bar shows the opener document's title — set it now and restore on close
+      originalTitleRef.current = document.title;
+      document.title = note.title || "Note";
 
       const container = pipWin.document.createElement("div");
       container.style.cssText = "height:100vh;overflow:hidden;";
@@ -227,6 +231,7 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
       setPipContainer(container);
 
       pipWin.addEventListener("pagehide", () => {
+        document.title = originalTitleRef.current;
         setPipContainer(null);
         pipWinRef.current = null;
       });
@@ -236,15 +241,16 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
   }
 
   function closePiP() {
+    document.title = originalTitleRef.current;
     pipWinRef.current?.close();
     setPipContainer(null);
     pipWinRef.current = null;
   }
 
-  // Keep PiP window title in sync with note title
+  // Keep PiP title bar in sync with note title while PiP is open
   useEffect(() => {
     if (pipWinRef.current) {
-      pipWinRef.current.document.title = note.title || "Note";
+      document.title = note.title || "Note";
     }
   }, [note.title]);
 
