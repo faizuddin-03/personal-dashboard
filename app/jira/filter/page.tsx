@@ -113,7 +113,7 @@ function ChipRow({ label, options, values, onToggle }: {
               title={mode === "include" ? "Click to exclude" : mode === "exclude" ? "Click to reset" : "Click to include"}
               className={clsx(
                 "text-xs px-2.5 py-1 rounded-full border transition-colors",
-                mode === "include" ? "bg-blue-600/20 text-blue-300 border-blue-500/50"
+                mode === "include" ? "bg-green-600/20 text-green-300 border-green-500/50"
                 : mode === "exclude" ? "bg-red-600/20 text-red-300 border-red-500/50 line-through"
                 : "bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500 hover:text-slate-200"
               )}
