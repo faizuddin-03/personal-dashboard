@@ -136,10 +136,9 @@ function NoteGalleryCard({ note, size, onClick }: { note: Note; size: "small" | 
 }
 
 // ── PiP note editor (renders inside the floating window) ────
-function PiPNoteEditor({ note, onChange, onClose }: {
+function PiPNoteEditor({ note, onChange }: {
   note: Note;
   onChange: (updated: Note) => void;
-  onClose: () => void;
 }) {
   const meta = noteColorMeta(note.color);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -155,26 +154,8 @@ function PiPNoteEditor({ note, onChange, onClose }: {
 
   return (
     <div className={clsx("flex flex-col h-screen overflow-hidden bg-slate-950", meta.bg)}>
-      {/* PiP header */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 bg-slate-900/80 shrink-0">
-        <span className="text-xs text-slate-500 flex-1 truncate">{note.title || "Untitled"}</span>
-        <button onClick={onClose} title="Close floating note" className="p-1 text-slate-600 hover:text-slate-300 hover:bg-slate-800 rounded transition-colors">
-          <X size={13} />
-        </button>
-      </div>
-
-      {/* Title */}
-      <div className="px-3 pt-3 pb-2 shrink-0">
-        <input
-          value={note.title}
-          onChange={e => update({ title: e.target.value })}
-          placeholder="Untitled"
-          className="w-full bg-transparent text-lg font-bold text-slate-100 placeholder-slate-700 focus:outline-none"
-        />
-      </div>
-
-      {/* Editor */}
-      <div className="flex-1 overflow-y-auto px-3 pb-3">
+      {/* Editor — no header/title row, browser title bar shows the note name */}
+      <div className="flex-1 overflow-y-auto px-3 pt-2 pb-3">
         <RichTextEditor
           content={note.content}
           onChange={handleContentChange}
@@ -237,6 +218,7 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
       const themeStyle = document.documentElement.getAttribute("style") ?? "";
       if (themeStyle) pipWin.document.documentElement.setAttribute("style", themeStyle);
       pipWin.document.body.style.cssText = "margin:0;height:100vh;overflow:hidden;";
+      pipWin.document.title = note.title || "Note";
 
       const container = pipWin.document.createElement("div");
       container.style.cssText = "height:100vh;overflow:hidden;";
@@ -258,6 +240,13 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
     setPipContainer(null);
     pipWinRef.current = null;
   }
+
+  // Keep PiP window title in sync with note title
+  useEffect(() => {
+    if (pipWinRef.current) {
+      pipWinRef.current.document.title = note.title || "Note";
+    }
+  }, [note.title]);
 
   function addTag(raw: string) {
     const tag = raw.trim().toLowerCase();
@@ -365,7 +354,7 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
 
       {/* PiP portal */}
       {pipContainer && createPortal(
-        <PiPNoteEditor note={note} onChange={onChange} onClose={closePiP} />,
+        <PiPNoteEditor note={note} onChange={onChange} />,
         pipContainer
       )}
 
