@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import {
   Search, RefreshCw, Loader2, X, Filter, ChevronDown, ChevronUp, Plus,
+  Bookmark, BookmarkPlus,
 } from "lucide-react";
 import { JiraIssue, JiraSearchResult } from "@/lib/jira";
 import { useApp } from "@/components/AppShell";
@@ -66,8 +67,16 @@ function makeTab(name: string): FilterTab {
   };
 }
 
-const TABS_KEY   = "jira_filter_tabs_v5";
-const ACTIVE_KEY = "jira_filter_active_tab";
+interface SavedPreset {
+  id: string;
+  name: string;
+  filters: FilterState;
+  savedAt: string;
+}
+
+const TABS_KEY    = "jira_filter_tabs_v5";
+const ACTIVE_KEY  = "jira_filter_active_tab";
+const PRESETS_KEY = "jira_filter_presets";
 
 type SlimTab = Pick<FilterTab, "id" | "name" | "crKey" | "crInput" | "filters" | "filtersOpen">;
 
@@ -173,6 +182,11 @@ export default function IssueFilterPage() {
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
+  const [savedPresets, setSavedPresets]     = useState<SavedPreset[]>([]);
+  const [savePresetOpen, setSavePresetOpen] = useState(false);
+  const [presetsOpen, setPresetsOpen]       = useState(false);
+  const [presetName, setPresetName]         = useState("");
+
   // ── Hydrate ────────────────────────────────────────────────
   useEffect(() => {
     const { tabs: saved, activeId } = restoreTabs();
@@ -184,6 +198,7 @@ export default function IssueFilterPage() {
       setTabs([first]);
       setActiveTabId(first.id);
     }
+    try { setSavedPresets(JSON.parse(localStorage.getItem(PRESETS_KEY) ?? "[]")); } catch {}
     setHydrated(true);
   }, []);
 
@@ -321,6 +336,28 @@ export default function IssueFilterPage() {
   function setDateFilter(field: DateField, range: DateRange) {
     if (!activeTab) return;
     updateTab(activeTab.id, { filters: { ...activeTab.filters, [field]: range } });
+  }
+
+  // ── Preset management ──────────────────────────────────────
+  function savePreset(name: string) {
+    if (!activeTab) return;
+    const preset: SavedPreset = { id: crypto.randomUUID(), name, filters: activeTab.filters, savedAt: new Date().toISOString() };
+    const updated = [preset, ...savedPresets];
+    setSavedPresets(updated);
+    localStorage.setItem(PRESETS_KEY, JSON.stringify(updated));
+  }
+
+  function applyPreset(preset: SavedPreset) {
+    if (!activeTab) return;
+    updateTab(activeTab.id, { filters: preset.filters });
+    setPresetsOpen(false);
+  }
+
+  function deletePreset(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    const updated = savedPresets.filter(p => p.id !== id);
+    setSavedPresets(updated);
+    localStorage.setItem(PRESETS_KEY, JSON.stringify(updated));
   }
 
   // ── Tab management ─────────────────────────────────────────
@@ -670,11 +707,92 @@ export default function IssueFilterPage() {
                         {hasActiveFilters && (
                           <span
                             onClick={e => { e.stopPropagation(); updateTab(activeTab.id, { filters: emptyFilters() }); }}
-                            className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+                            className="text-xs text-slate-500 hover:text-red-400 transition-colors cursor-pointer"
                           >
                             Clear all
                           </span>
                         )}
+
+                        {/* Save preset */}
+                        <div className="relative" onClick={e => e.stopPropagation()}>
+                          <button
+                            onClick={() => { setSavePresetOpen(v => !v); setPresetsOpen(false); setPresetName(activeTab.name); }}
+                            title="Save filter as preset"
+                            className={clsx("transition-colors", savePresetOpen ? "text-blue-400" : "text-slate-500 hover:text-slate-300")}
+                          >
+                            <BookmarkPlus size={14} />
+                          </button>
+                          {savePresetOpen && (
+                            <>
+                              <div className="fixed inset-0 z-20" onClick={() => setSavePresetOpen(false)} />
+                              <div className="absolute bottom-full right-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 p-3 w-56">
+                                <p className="text-xs text-slate-400 font-medium mb-2">Save filter preset</p>
+                                <input
+                                  value={presetName}
+                                  onChange={e => setPresetName(e.target.value)}
+                                  placeholder="Preset name…"
+                                  autoFocus
+                                  onKeyDown={e => {
+                                    if (e.key === "Enter" && presetName.trim()) { savePreset(presetName.trim()); setSavePresetOpen(false); }
+                                    if (e.key === "Escape") setSavePresetOpen(false);
+                                  }}
+                                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 mb-2"
+                                />
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => { if (presetName.trim()) { savePreset(presetName.trim()); setSavePresetOpen(false); } }}
+                                    disabled={!presetName.trim()}
+                                    className="flex-1 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-xs rounded-lg transition-colors"
+                                  >
+                                    Save
+                                  </button>
+                                  <button onClick={() => setSavePresetOpen(false)} className="px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 transition-colors">
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Load preset */}
+                        {savedPresets.length > 0 && (
+                          <div className="relative" onClick={e => e.stopPropagation()}>
+                            <button
+                              onClick={() => { setPresetsOpen(v => !v); setSavePresetOpen(false); }}
+                              title="Load a saved preset"
+                              className={clsx("transition-colors", presetsOpen ? "text-blue-400" : "text-slate-500 hover:text-slate-300")}
+                            >
+                              <Bookmark size={14} />
+                            </button>
+                            {presetsOpen && (
+                              <>
+                                <div className="fixed inset-0 z-20" onClick={() => setPresetsOpen(false)} />
+                                <div className="absolute bottom-full right-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 overflow-hidden min-w-[200px] max-h-64 overflow-y-auto">
+                                  <p className="text-xs text-slate-500 px-3 py-2 border-b border-slate-700 font-medium">Saved presets</p>
+                                  {savedPresets.map(p => (
+                                    <div key={p.id} className="flex items-center gap-1 px-3 py-2 hover:bg-slate-700 group border-b border-slate-700/50 last:border-0 transition-colors">
+                                      <button
+                                        onClick={() => applyPreset(p)}
+                                        className="flex-1 text-left text-xs text-slate-300 hover:text-white transition-colors truncate"
+                                      >
+                                        {p.name}
+                                      </button>
+                                      <button
+                                        onClick={e => deletePreset(p.id, e)}
+                                        title="Delete preset"
+                                        className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all shrink-0"
+                                      >
+                                        <X size={11} />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+
                         {activeTab.filtersOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       </div>
                     </div>
