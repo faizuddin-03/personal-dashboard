@@ -6,7 +6,7 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send, Filter,
+  Briefcase, Send, Filter, Music2,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -32,6 +32,7 @@ const nav = [
       { label: "To-Do List",    href: "/todo",           icon: CheckSquare },
       { label: "Notes",         href: "/notes",          icon: FileText },
       { label: "Daily Update",  href: "/daily-update",   icon: Send },
+      { label: "Music",         href: "/music",          icon: Music2 },
     ],
   },
   {
