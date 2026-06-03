@@ -2,12 +2,13 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import {
   RefreshCw, Loader2, SearchX, Layers, UserCheck, Bug,
-  ChevronDown, ChevronRight, X, Ticket, Plus, CheckCheck,
+  ChevronDown, ChevronRight, X, Ticket,
   BookOpen, Search,
 } from "lucide-react";
 import {
   JiraIssue, JiraSearchResult, reporterIs,
 } from "@/lib/jira";
+import { getKanbanState } from "@/lib/kanban";
 import { useApp } from "@/components/AppShell";
 import IssueCard from "@/components/IssueCard";
 import IssueDrawer from "@/components/IssueDrawer";
@@ -26,16 +27,17 @@ function statusChipCls(colorName: string) {
   return "bg-blue-950/50 text-blue-300";
 }
 
-// ── localStorage helpers ───────────────────────────────────────
-const ASSIGNED_CR_STORE = "jira_assigned_cr_keys";
-const BUG_CR_STORE      = "jira_bug_cr_key";
+// ── Kanban column order for Assigned CR ───────────────────────
+const CR_COLUMN_ORDER: Record<string, number> = { urgent: 0, ongoing: 1, todo: 2, "on-hold": 3 };
+const CR_COLUMN_META: Record<string, { label: string; cls: string }> = {
+  urgent:   { label: "Urgent",  cls: "bg-red-950/50 text-red-300 border-red-800/40" },
+  ongoing:  { label: "Ongoing", cls: "bg-blue-950/50 text-blue-300 border-blue-800/40" },
+  todo:     { label: "To Do",   cls: "bg-slate-800 text-slate-400 border-slate-700" },
+  "on-hold":{ label: "On Hold", cls: "bg-amber-950/50 text-amber-300 border-amber-800/40" },
+};
 
-function loadAssignedCrKeys(): string[] {
-  try { return JSON.parse(localStorage.getItem(ASSIGNED_CR_STORE) ?? "[]"); } catch { return []; }
-}
-function saveAssignedCrKeys(keys: string[]) {
-  localStorage.setItem(ASSIGNED_CR_STORE, JSON.stringify(keys));
-}
+const BUG_CR_STORE = "jira_bug_cr_key";
+
 function loadBugCrKey(): string | null {
   return localStorage.getItem(BUG_CR_STORE) ?? null;
 }
@@ -67,18 +69,14 @@ export default function JiraPage() {
   const [bugsThisWeekLoading, setBugsThisWeekLoading] = useState(false);
   const [bugsThisWeekError, setBugsThisWeekError]     = useState("");
 
-  // ── Assigned CR ────────────────────────────────────────────
+  // ── Assigned CR (derived from Kanban) ─────────────────────
   const [assignedCrKeys, setAssignedCrKeys]           = useState<string[]>([]);
+  const [crColumnMap, setCrColumnMap]                 = useState<Record<string, string>>({});
   const [assignedCrData, setAssignedCrData]           = useState<Record<string, JiraIssue>>({});
   const [assignedCrLoading, setAssignedCrLoading]     = useState(false);
   const [assignedCrChildren, setAssignedCrChildren]   = useState<Record<string, JiraIssue[]>>({});
   const [assignedCrChildLoading, setAssignedCrChildLoading] = useState<Record<string, boolean>>({});
   const [assignedCrExpanded, setAssignedCrExpanded]   = useState<Record<string, boolean>>({});
-  const [showAddCr, setShowAddCr]                     = useState(false);
-  const [addCrQuery, setAddCrQuery]                   = useState("");
-  const [addCrResults, setAddCrResults]               = useState<JiraIssue[]>([]);
-  const [addCrSearching, setAddCrSearching]           = useState(false);
-  const addCrInputRef = useRef<HTMLInputElement>(null);
 
   // ── Bug Tickets (CR-scoped) ────────────────────────────────
   const [bugCrKey, setBugCrKey]             = useState<string | null>(null);
@@ -95,16 +93,20 @@ export default function JiraPage() {
   const [jiraSearchResults, setJiraSearchResults] = useState<JiraIssue[]>([]);
   const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
 
-  // ── On mount: restore localStorage ───────────────────────
+  // ── On mount: derive Assigned CR from Kanban + restore bug CR
   useEffect(() => {
-    setAssignedCrKeys(loadAssignedCrKeys());
+    const kanban  = getKanbanState();
+    const colIds  = ["urgent", "ongoing", "todo", "on-hold"] as const;
+    const crCards = colIds.flatMap(col =>
+      (kanban[col] ?? [])
+        .filter(c => c.boardType === "cr" && c.jiraKey)
+        .map(c => ({ jiraKey: c.jiraKey!, columnId: col }))
+    );
+    setAssignedCrKeys(crCards.map(c => c.jiraKey));
+    setCrColumnMap(Object.fromEntries(crCards.map(c => [c.jiraKey, c.columnId])));
     setBugCrKey(loadBugCrKey());
   }, []);
 
-  // ── Auto-focus add CR input when panel opens ──────────────
-  useEffect(() => {
-    if (showAddCr) setTimeout(() => addCrInputRef.current?.focus(), 50);
-  }, [showAddCr]);
   useEffect(() => {
     if (showSelectBugCr) setTimeout(() => selectBugInputRef.current?.focus(), 50);
   }, [showSelectBugCr]);
@@ -200,55 +202,6 @@ export default function JiraPage() {
     }
   }
 
-  function completeCr(crKey: string) {
-    const next = assignedCrKeys.filter(k => k !== crKey);
-    setAssignedCrKeys(next);
-    saveAssignedCrKeys(next);
-    setAssignedCrData(prev => { const n = { ...prev }; delete n[crKey]; return n; });
-    setAssignedCrChildren(prev => { const n = { ...prev }; delete n[crKey]; return n; });
-    setAssignedCrExpanded(prev => { const n = { ...prev }; delete n[crKey]; return n; });
-  }
-
-  function addCr(issue: JiraIssue) {
-    if (assignedCrKeys.includes(issue.key)) return;
-    const next = [...assignedCrKeys, issue.key];
-    setAssignedCrKeys(next);
-    saveAssignedCrKeys(next);
-    setAssignedCrData(prev => ({ ...prev, [issue.key]: issue }));
-    setShowAddCr(false);
-    setAddCrQuery("");
-    setAddCrResults([]);
-  }
-
-  // ── Add CR search ─────────────────────────────────────────
-  useEffect(() => {
-    if (!creds || !showAddCr) return;
-    const pk = creds.defaultProjectKey;
-    const q = addCrQuery.trim();
-    let jql: string;
-    if (!q) {
-      jql = pk
-        ? `project = "${pk}" AND issuetype = Task AND resolution = Unresolved ORDER BY updated DESC`
-        : `issuetype = Task AND resolution = Unresolved AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC`;
-    } else {
-      const isKey = /^[A-Za-z]+-\d+$/.test(q);
-      const isNum = /^\d+$/.test(q);
-      const resolved = isNum && pk ? `${pk}-${q}` : null;
-      jql = resolved ? `key = "${resolved}" ORDER BY updated DESC`
-          : isKey    ? `key = "${q}" ORDER BY updated DESC`
-          : pk       ? `project = "${pk}" AND issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`
-          : `issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`;
-    }
-    const t = setTimeout(() => {
-      setAddCrSearching(true);
-      fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...creds, jql, maxResults: 20 }) })
-        .then(r => r.json()).then(d => setAddCrResults(d.issues ?? []))
-        .catch(() => setAddCrResults([]))
-        .finally(() => setAddCrSearching(false));
-    }, q ? 400 : 0);
-    return () => clearTimeout(t);
-  }, [addCrQuery, showAddCr, creds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Bug Tickets: fetch CR + children when bugCrKey changes ─
   useEffect(() => {
@@ -661,47 +614,26 @@ export default function JiraPage() {
 
             {/* ── Assigned CR (full width) ── */}
             <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Layers size={14} className="text-indigo-400" />
-                  <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Assigned CR</p>
-                  {assignedCrKeys.length > 0 && (
-                    <span className="text-xs bg-indigo-900/40 text-indigo-300 border border-indigo-800/50 px-1.5 py-0.5 rounded-full font-semibold">{assignedCrKeys.length}</span>
-                  )}
-                  {assignedCrLoading && <Loader2 size={13} className="animate-spin text-indigo-400" />}
-                </div>
-                <button
-                  onClick={() => setShowAddCr(v => !v)}
-                  className={clsx("flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border transition-colors",
-                    showAddCr ? "bg-slate-700 border-slate-600 text-slate-200" : "border-slate-700 text-slate-500 hover:text-slate-300 hover:border-slate-600"
-                  )}
-                  title="Add a CR ticket to track"
-                >
-                  <Plus size={12} />Add CR
-                </button>
+              <div className="flex items-center gap-2 mb-3">
+                <Layers size={14} className="text-indigo-400" />
+                <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Assigned CR</p>
+                {assignedCrKeys.length > 0 && (
+                  <span className="text-xs bg-indigo-900/40 text-indigo-300 border border-indigo-800/50 px-1.5 py-0.5 rounded-full font-semibold">{assignedCrKeys.length}</span>
+                )}
+                {assignedCrLoading && <Loader2 size={13} className="animate-spin text-indigo-400" />}
               </div>
 
-              {/* Add CR search panel */}
-              {showAddCr && SearchPanel({
-                query: addCrQuery, setQuery: setAddCrQuery,
-                results: addCrResults.filter(r => !assignedCrKeys.includes(r.key)),
-                searching: addCrSearching,
-                onPick: addCr, inputRef: addCrInputRef,
-                placeholder: "Search CR by key or text…",
-              })}
-
               {/* Empty state */}
-              {!showAddCr && assignedCrKeys.length === 0 && (
+              {assignedCrKeys.length === 0 && (
                 <div className="flex flex-col items-center py-8 text-slate-600 text-sm">
                   <Layers size={20} className="mb-2 opacity-40" />
-                  <p>No CRs tracked yet</p>
-                  <p className="text-xs mt-1 text-slate-700">Click "Add CR" to start tracking a change request</p>
+                  <p>No active CR tickets on the Kanban board</p>
                 </div>
               )}
 
               {/* CR list */}
               {assignedCrKeys.length > 0 && (
-                <div className={clsx("space-y-2 max-h-[480px] overflow-y-auto pr-0.5", showAddCr && "mt-2")}>
+                <div className="space-y-2 max-h-[480px] overflow-y-auto pr-0.5">
                   {assignedCrKeys.map(crKey => {
                     const cr = assignedCrData[crKey];
                     const isOpen = assignedCrExpanded[crKey] === true;
@@ -731,6 +663,11 @@ export default function JiraPage() {
 
                           {/* Key + summary */}
                           <span className="text-xs font-mono text-indigo-400 font-bold shrink-0">{crKey}</span>
+                          {crColumnMap[crKey] && CR_COLUMN_META[crColumnMap[crKey]] && (
+                            <span className={clsx("text-[10px] px-1.5 py-0.5 rounded border font-semibold shrink-0", CR_COLUMN_META[crColumnMap[crKey]].cls)}>
+                              {CR_COLUMN_META[crColumnMap[crKey]].label}
+                            </span>
+                          )}
                           {cr ? (
                             <>
                               <span className="text-xs text-slate-200 font-medium flex-1 line-clamp-1">{cr.fields.summary}</span>
@@ -757,13 +694,6 @@ export default function JiraPage() {
                               className="text-xs text-indigo-400 hover:text-indigo-200 px-1.5 py-0.5 rounded hover:bg-indigo-950/40 transition-colors"
                             >
                               View
-                            </button>
-                            <button
-                              onClick={() => completeCr(crKey)}
-                              title="Mark as complete and remove from list"
-                              className="flex items-center gap-0.5 text-xs text-green-500 hover:text-green-300 px-1.5 py-0.5 rounded hover:bg-green-950/40 transition-colors"
-                            >
-                              <CheckCheck size={11} />Done
                             </button>
                           </div>
                         </div>
