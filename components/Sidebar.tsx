@@ -6,7 +6,7 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send, Filter, Music2,
+  Briefcase, Send, Filter, Music2, AtSign,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -18,8 +18,9 @@ const nav = [
     label: "JIRA",
     icon: Ticket,
     children: [
-      { label: "Dashboard",    href: "/jira",        icon: LayoutDashboard },
-      { label: "Issue Filter", href: "/jira/filter", icon: Filter },
+      { label: "Dashboard",    href: "/jira",          icon: LayoutDashboard },
+      { label: "Issue Filter", href: "/jira/filter",   icon: Filter },
+      { label: "Mentions",     href: "/jira/mentions", icon: AtSign },
     ],
   },
   { label: "Kanban",     href: "/kanban",   icon: Kanban },
