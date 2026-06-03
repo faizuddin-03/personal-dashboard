@@ -21,10 +21,10 @@ const nav = [
       { label: "Dashboard",    href: "/jira",          icon: LayoutDashboard },
       { label: "Issue Filter", href: "/jira/filter",   icon: Filter },
       { label: "Mentions",     href: "/jira/mentions", icon: AtSign },
+      { label: "TS Tracker",   href: "/tests",         icon: ClipboardList },
     ],
   },
   { label: "Kanban",     href: "/kanban",   icon: Kanban },
-  { label: "TS Tracker", href: "/tests",    icon: ClipboardList },
   { label: "Calendar",   href: "/calendar", icon: CalendarDays },
   {
     label: "Productivity",
