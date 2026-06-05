@@ -361,6 +361,24 @@ export default function TestTrackerPage() {
     return grouped;
   }, [dateRows]);
 
+  // ── Today's stats per CR ─────────────────────────────────
+  const today = todayLocal();
+  const todayByCR = useMemo(() => {
+    return data
+      .map(cr => {
+        const cases = cr.suites.flatMap(s => s.cases).filter(c => !c.disabled && c.dateTested === today);
+        return {
+          crKey:     cr.crKey,
+          crSummary: cr.crSummary,
+          pass:      cases.filter(c => c.status === "pass").length,
+          wip:       cases.filter(c => c.status === "in-progress").length,
+          fail:      cases.filter(c => c.status === "fail").length,
+          total:     cases.length,
+        };
+      })
+      .filter(r => r.total > 0);
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (!hydrated) return null;
 
   return (
@@ -393,6 +411,53 @@ export default function TestTrackerPage() {
       </header>
 
       <div className="flex-1 px-3 py-4 sm:p-6 max-w-4xl mx-auto w-full">
+
+        {/* ── Today's Summary ── */}
+        {todayByCR.length > 0 && (() => {
+          const totalPass = todayByCR.reduce((s, r) => s + r.pass, 0);
+          const totalWip  = todayByCR.reduce((s, r) => s + r.wip,  0);
+          const totalFail = todayByCR.reduce((s, r) => s + r.fail, 0);
+          const totalAll  = todayByCR.reduce((s, r) => s + r.total, 0);
+          return (
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 mb-5">
+              <div className="flex items-center gap-2 mb-3">
+                <CalendarDays size={13} className="text-blue-400" />
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Today's Progress</p>
+                <div className="flex items-center gap-2.5 ml-auto text-xs">
+                  {totalPass > 0 && <span className="flex items-center gap-1 text-green-400 font-medium"><CheckCircle2 size={11} />{totalPass} pass</span>}
+                  {totalWip  > 0 && <span className="flex items-center gap-1 text-amber-400 font-medium"><Timer size={11} />{totalWip} wip</span>}
+                  {totalFail > 0 && <span className="flex items-center gap-1 text-red-400 font-medium"><XCircle size={11} />{totalFail} fail</span>}
+                  <span className="text-slate-600">{totalAll} total</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {todayByCR.map(r => {
+                  const passPct = r.total ? Math.round((r.pass / r.total) * 100) : 0;
+                  const failPct = r.total ? Math.round((r.fail / r.total) * 100) : 0;
+                  return (
+                    <div key={r.crKey} className="flex items-center gap-2.5 bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 min-w-fit">
+                      <span className="text-xs font-mono text-blue-400 font-bold">{r.crKey}</span>
+                      <span className="text-slate-700">·</span>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        {r.pass > 0 && <span className="flex items-center gap-0.5 text-green-400 font-medium"><CheckCircle2 size={10} />{r.pass}</span>}
+                        {r.wip  > 0 && <span className="flex items-center gap-0.5 text-amber-400 font-medium"><Timer size={10} />{r.wip}</span>}
+                        {r.fail > 0 && <span className="flex items-center gap-0.5 text-red-400 font-medium"><XCircle size={10} />{r.fail}</span>}
+                      </div>
+                      {r.total > 0 && (
+                        <div className="w-12 h-1 rounded-full bg-slate-700 overflow-hidden flex shrink-0">
+                          <div className="h-full bg-green-500" style={{ width: `${passPct}%` }} />
+                          <div className="h-full bg-red-500"   style={{ width: `${failPct}%` }} />
+                        </div>
+                      )}
+                      <span className="text-xs text-slate-600">{r.total}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── BY CR VIEW ── */}
         {view === "cr" && (
           <>
