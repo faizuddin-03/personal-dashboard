@@ -542,7 +542,7 @@ export default function Dashboard() {
                     {completedToday.length > 0 && (
                       <button
                         onClick={() => {
-                          const keys = completedToday.map(i => `[${i.key}]`).join(", ");
+                          const keys = completedToday.map(i => i.key).join(", ");
                           navigator.clipboard.writeText(`Retested Today : ${keys}`);
                           setCopiedCompleted(true);
                           setTimeout(() => setCopiedCompleted(false), 2000);
