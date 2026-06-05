@@ -220,7 +220,7 @@ export default function Dashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...creds,
-        jql: "status changed by currentUser() after startOfDay() ORDER BY updated DESC",
+        jql: "statusCategory = Done AND status changed by currentUser() after startOfDay() ORDER BY updated DESC",
         maxResults: 50,
         fields: ["summary", "status", "priority", "issuetype", "project", "labels", "duedate", "assignee", "parent"],
       }),
