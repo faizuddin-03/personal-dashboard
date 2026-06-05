@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import {
   Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
   Clock, Rocket, FileText, Ticket, Settings2, GripVertical,
-  Eye, EyeOff, ClipboardList, CheckCheck,
+  Eye, EyeOff, ClipboardList, CheckCheck, Copy, Check,
 } from "lucide-react";
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
@@ -111,6 +111,7 @@ export default function Dashboard() {
   // Completed today widget
   const [completedToday, setCompletedToday]               = useState<JiraIssue[]>([]);
   const [completedTodayLoading, setCompletedTodayLoading] = useState(false);
+  const [copiedCompleted, setCopiedCompleted]             = useState(false);
 
   // Local data
   const [ongoingCards, setOngoingCards]   = useState<KanbanCard[]>([]);
@@ -538,6 +539,20 @@ export default function Dashboard() {
                     <h2 className="text-sm font-semibold text-slate-200">Completed Today</h2>
                     {completedToday.length > 0 && <span className="text-xs bg-green-900/40 text-green-300 border border-green-800/50 px-1.5 py-0.5 rounded-full font-semibold">{completedToday.length}</span>}
                     {completedTodayLoading && <Loader2 size={13} className="animate-spin text-green-400" />}
+                    {completedToday.length > 0 && (
+                      <button
+                        onClick={() => {
+                          const keys = completedToday.map(i => `[${i.key}]`).join(", ");
+                          navigator.clipboard.writeText(`Retested Today : ${keys}`);
+                          setCopiedCompleted(true);
+                          setTimeout(() => setCopiedCompleted(false), 2000);
+                        }}
+                        title="Copy ticket keys"
+                        className="ml-auto flex items-center gap-1.5 px-2.5 py-1 text-xs border rounded-lg transition-colors border-slate-700 text-slate-500 hover:text-slate-200 hover:border-slate-500"
+                      >
+                        {copiedCompleted ? <><Check size={11} className="text-green-400" /><span className="text-green-400">Copied!</span></> : <><Copy size={11} />Copy</>}
+                      </button>
+                    )}
                   </div>
                   {completedTodayLoading && completedToday.length === 0 ? (
                     <div className="flex items-center justify-center py-8 text-slate-600"><Loader2 size={18} className="animate-spin mr-2" /> Loading…</div>
