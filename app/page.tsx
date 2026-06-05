@@ -112,6 +112,7 @@ export default function Dashboard() {
   const [completedToday, setCompletedToday]               = useState<JiraIssue[]>([]);
   const [completedTodayLoading, setCompletedTodayLoading] = useState(false);
   const [copiedCompleted, setCopiedCompleted]             = useState(false);
+  const [copiedRaised, setCopiedRaised]                   = useState(false);
 
   // Local data
   const [ongoingCards, setOngoingCards]   = useState<KanbanCard[]>([]);
@@ -501,6 +502,20 @@ export default function Dashboard() {
                       <h2 className="text-sm font-semibold text-slate-200">Raised Tickets</h2>
                       {todayRaised.length > 0 && <span className="text-xs bg-blue-900/40 text-blue-300 border border-blue-800/50 px-1.5 py-0.5 rounded-full font-semibold">{todayRaised.length}</span>}
                       {todayRaisedLoading && <Loader2 size={13} className="animate-spin text-blue-400" />}
+                      {todayRaised.length > 0 && (
+                        <button
+                          onClick={() => {
+                            const keys = todayRaised.map(i => i.key).join(", ");
+                            navigator.clipboard.writeText(`Raised Today : ${keys}`);
+                            setCopiedRaised(true);
+                            setTimeout(() => setCopiedRaised(false), 2000);
+                          }}
+                          title="Copy ticket keys"
+                          className="flex items-center gap-1.5 px-2.5 py-1 text-xs border rounded-lg transition-colors border-slate-700 text-slate-500 hover:text-slate-200 hover:border-slate-500"
+                        >
+                          {copiedRaised ? <><Check size={11} className="text-green-400" /><span className="text-green-400">Copied!</span></> : <><Copy size={11} />Copy</>}
+                        </button>
+                      )}
                     </div>
                     <div className="flex items-center gap-1.5">
                       {raisedDate !== todayLocal() && (
