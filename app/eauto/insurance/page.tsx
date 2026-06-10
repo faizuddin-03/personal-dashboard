@@ -60,7 +60,7 @@ const COLUMNS: { key: keyof InsuranceRow; label: string }[] = [
 // ── Helpers ───────────────────────────────────────────────────
 function formatCoverType(v: string) {
   if (!v) return "—";
-  if (v.trim().toLowerCase() === "third party") return "TPFT";
+  if (/third/i.test(v)) return v.replace(/third.*/i, "TPFT");
   return v;
 }
 
