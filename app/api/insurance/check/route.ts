@@ -2,6 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import * as path from "node:path";
 import * as fs from "node:fs";
+import { spawn, type ChildProcess } from "node:child_process";
+
+// ── Running-process registry ──────────────────────────────────
+// Module-level so a separate DELETE request can find and stop the
+// child spawned by an in-flight POST. Single dev-server instance, so
+// one run at a time is the expected case.
+let currentChild: ChildProcess | null = null;
+let stopRequested = false;
+
+// Kill the whole process tree (npx → playwright → browsers). On Windows
+// use taskkill /T; on POSIX kill the detached process group via -pid.
+function killProcessTree(child: ChildProcess) {
+  if (!child.pid) return;
+  if (process.platform === "win32") {
+    try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); }
+    catch { /* ignore */ }
+  } else {
+    try { process.kill(-child.pid, "SIGTERM"); }
+    catch { try { child.kill("SIGTERM"); } catch { /* ignore */ } }
+  }
+}
 
 // ── Configuration ─────────────────────────────────────────────
 // By default the script lives at scripts/eauto-insurance/ inside the project.
@@ -94,13 +115,15 @@ export async function POST(req: NextRequest) {
   // Remove stale output
   if (fs.existsSync(OUTPUT_XLSX)) fs.unlinkSync(OUTPUT_XLSX);
 
-  // Run Playwright test (dynamic import avoids Turbopack static analysis)
-  const { spawn } = await import("node:child_process");
+  // Run Playwright test
+  stopRequested = false;
 
   const result = await new Promise<{ code: number; output: string }>((resolve) => {
     const child = spawn("npx", ["playwright", "test", "--project=insurance-checker"], {
       cwd: SCRIPT_DIR,
       shell: true,
+      // Detach on POSIX so the whole tree shares a process group we can kill.
+      detached: process.platform !== "win32",
       env: {
         ...process.env,
         ...(username    && { EAUTO_USERNAME:    username }),
@@ -109,17 +132,24 @@ export async function POST(req: NextRequest) {
         ...(concurrency && { INSURANCE_CONCURRENCY: String(concurrency) }),
       },
     });
+    currentChild = child;
     let output = "";
     const timer = setTimeout(() => {
-      child.kill();
+      killProcessTree(child);
       resolve({ code: 1, output: "Timed out after 30 minutes." });
     }, TIMEOUT_MS);
 
     child.stdout.on("data", (d: Buffer) => { output += d.toString(); });
     child.stderr.on("data", (d: Buffer) => { output += d.toString(); });
-    child.on("close",  (code) => { clearTimeout(timer); resolve({ code: code ?? 1, output }); });
-    child.on("error",  (err)  => { clearTimeout(timer); resolve({ code: 1, output: err.message }); });
+    child.on("close",  (code) => { clearTimeout(timer); currentChild = null; resolve({ code: code ?? 1, output }); });
+    child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; resolve({ code: 1, output: err.message }); });
   });
+
+  // If the run was stopped, return whatever partial results were flushed to disk
+  if (stopRequested) {
+    const rows = readOutputExcel();
+    return NextResponse.json({ rows, log: result.output, stopped: true });
+  }
 
   // If test failed AND no output file was produced, surface the error
   if (result.code !== 0 && !fs.existsSync(OUTPUT_XLSX)) {
@@ -128,4 +158,16 @@ export async function POST(req: NextRequest) {
 
   const rows = readOutputExcel();
   return NextResponse.json({ rows, log: result.output });
+}
+
+// ── Stop the in-flight run ────────────────────────────────────
+// The pending POST resolves on its own once the child is killed and
+// returns the partial results flushed to disk.
+export async function DELETE() {
+  if (currentChild) {
+    stopRequested = true;
+    killProcessTree(currentChild);
+    return NextResponse.json({ stopped: true });
+  }
+  return NextResponse.json({ stopped: false, message: "No run in progress." });
 }

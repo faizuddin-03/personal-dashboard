@@ -20,6 +20,7 @@ interface AppCtx {
   openWhatsNew: () => void;
   insuranceJob: InsuranceJob | null;
   startInsuranceRun: (params: InsuranceRunParams) => void;
+  stopInsuranceRun: () => void;
   clearInsuranceJob: () => void;
   restoreInsuranceJob: (job: InsuranceJob) => void;
 }
@@ -32,6 +33,7 @@ export const AppContext = createContext<AppCtx>({
   openWhatsNew: () => {},
   insuranceJob: null,
   startInsuranceRun: () => {},
+  stopInsuranceRun: () => {},
   clearInsuranceJob: () => {},
   restoreInsuranceJob: () => {},
 });
@@ -78,7 +80,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         const rows = data.rows ?? [];
         const log  = data.log ?? "";
         if (data.error) throw new Error(data.error);
-        setInsuranceJob(j => j ? { ...j, loading: false, rows, log, savedAt: now } : null);
+        setInsuranceJob(j => j ? { ...j, loading: false, stopping: false, rows, log, savedAt: now } : null);
         saveInsuranceResults({
           rows, runLog: log, savedAt: now,
           vehicleInput: params.vehicleInput,
@@ -87,8 +89,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         });
       })
       .catch(e => {
-        setInsuranceJob(j => j ? { ...j, loading: false, error: e instanceof Error ? e.message : "Something went wrong" } : null);
+        setInsuranceJob(j => j ? { ...j, loading: false, stopping: false, error: e instanceof Error ? e.message : "Something went wrong" } : null);
       });
+  }
+
+  function stopInsuranceRun() {
+    // Mark as stopping for immediate UI feedback; the pending POST resolves
+    // on its own with whatever partial results were flushed to disk.
+    setInsuranceJob(j => j ? { ...j, stopping: true } : null);
+    fetch("/api/insurance/check", { method: "DELETE" }).catch(() => {});
   }
 
   function clearInsuranceJob() {
@@ -145,7 +154,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       openSettings: () => router.push("/settings"),
       openSearch: () => setSearchOpen(true),
       openWhatsNew: () => setWhatsNewOpen(true),
-      insuranceJob, startInsuranceRun, clearInsuranceJob, restoreInsuranceJob,
+      insuranceJob, startInsuranceRun, stopInsuranceRun, clearInsuranceJob, restoreInsuranceJob,
     }}>
       <div className="flex h-screen overflow-hidden">
         {/* Mobile overlay */}

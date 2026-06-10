@@ -30,6 +30,7 @@ export interface InsuranceRunParams {
 
 export interface InsuranceJob {
   loading:      boolean;
+  stopping?:    boolean;
   rows:         InsuranceRow[];
   error:        string;
   log:          string;

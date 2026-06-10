@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import {
-  Shield, Play, Download, Loader2,
+  Shield, Play, Download, Loader2, Square,
   TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
   Search, X,
 } from "lucide-react";
@@ -162,7 +162,7 @@ function AllowBadge({ value }: { value: string }) {
 
 // ── Main page ─────────────────────────────────────────────────
 export default function InsurancePage() {
-  const { insuranceJob, startInsuranceRun, clearInsuranceJob, restoreInsuranceJob } = useApp();
+  const { insuranceJob, startInsuranceRun, stopInsuranceRun, clearInsuranceJob, restoreInsuranceJob } = useApp();
 
   // Input — local only, restored from job/localStorage on mount
   const [vehicleInput, setVehicleInput]     = useState("");
@@ -186,7 +186,8 @@ export default function InsurancePage() {
   const [sort, setSort]                   = useState<SortState>({ key: null, dir: "asc" });
 
   // Derive run state from context job
-  const loading = insuranceJob?.loading ?? false;
+  const loading  = insuranceJob?.loading  ?? false;
+  const stopping = insuranceJob?.stopping ?? false;
   const rows    = insuranceJob?.rows    ?? [];
   const error   = insuranceJob?.error   ?? "";
   const runLog  = insuranceJob?.log     ?? "";
@@ -564,8 +565,20 @@ export default function InsurancePage() {
               {loading ? "Running…" : "Run Check"}
             </button>
             {loading && (
+              <button
+                onClick={stopInsuranceRun}
+                disabled={stopping}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
+              >
+                {stopping ? <Loader2 size={15} className="animate-spin" /> : <Square size={14} />}
+                {stopping ? "Stopping…" : "Stop"}
+              </button>
+            )}
+            {loading && (
               <p className="text-xs text-slate-500 animate-pulse">
-                Checking {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""} — please wait (est. {estimateTime(vehicles.length, concurrency)})…
+                {stopping
+                  ? "Stopping — finishing current vehicle, partial results will be shown…"
+                  : `Checking ${vehicles.length} vehicle${vehicles.length !== 1 ? "s" : ""} — please wait (est. ${estimateTime(vehicles.length, concurrency)})…`}
               </p>
             )}
             {!loading && vehicles.length > 0 && (
