@@ -390,14 +390,9 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
       table.querySelectorAll('td').forEach((td) => {
         const text = clean(td.textContent || '');
 
-        // Cover type: capture with or without "Cover Type" prefix
-        if (!coverType) {
-          if (text.startsWith('Cover Type')) {
-            const match = text.match(/^(Cover Type[^P]+)/);
-            coverType = match ? clean(match[1]) : text.split(/Period/i)[0].trim();
-          } else if (/^(third|comprehensive|fire)/i.test(text)) {
-            coverType = text.split(/Period/i)[0].trim();
-          }
+        // Cover type: capture full text before "Period of insurance"
+        if (text.startsWith('Cover Type') && !coverType) {
+          coverType = text.split(/\bPeriod\b/i)[0].trim();
         }
 
         if (text.includes('Refer Risk')) {
