@@ -777,24 +777,38 @@ export default function InsurancePage() {
           <div className="space-y-6">
             {/* Eligibility grid */}
             <div className="overflow-x-auto rounded-2xl border border-slate-800">
-              <table className="text-xs border-collapse w-full">
+              <table className="text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-slate-800 bg-slate-900">
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[130px]">Vehicle</th>
-                    {matrixCols.map(col => (
-                      <th key={col.key} className="px-4 py-2.5 text-center min-w-[110px]">
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{col.label}</div>
-                        {col.sub && <div className="text-[10px] font-medium text-slate-600 mt-0.5">{col.sub}</div>}
-                      </th>
-                    ))}
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Vehicle</th>
+                    {matrixCols.map((col, i) => {
+                      const isFirstOfPair = col.plan === "first";
+                      const isSecondOfPair = col.plan === "tpft";
+                      return (
+                        <th key={col.key} className={clsx(
+                          "px-4 py-2.5 text-center whitespace-nowrap",
+                          isFirstOfPair && "border-l-2 border-slate-700",
+                          isSecondOfPair && "border-r-2 border-slate-700",
+                        )}>
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            {col.sub ? col.sub : col.label}
+                          </div>
+                          {col.sub && (
+                            <div className="text-[10px] font-medium text-slate-600 mt-0.5">{col.label}</div>
+                          )}
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody>
                   {matrixVehicles.map(vn => (
                     <tr key={vn} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
-                      <td className="px-4 py-2.5 font-mono font-bold text-slate-200">{vn}</td>
+                      <td className="px-4 py-2.5 font-mono font-bold text-slate-200 whitespace-nowrap">{vn}</td>
                       {matrixCols.map(col => {
                         const cell = matrix.get(vn)?.get(col.insurer);
+                        const isFirstOfPair = col.plan === "first";
+                        const isSecondOfPair = col.plan === "tpft";
                         if (col.plan === "single") {
                           return (
                             <td key={col.key} className="px-4 py-2.5 text-center">
@@ -805,7 +819,11 @@ export default function InsurancePage() {
                         const dual = (cell ?? { firstParty: "", tpft: "" }) as DualCover;
                         const val  = col.plan === "first" ? dual.firstParty : dual.tpft;
                         return (
-                          <td key={col.key} className="px-4 py-2.5 text-center">
+                          <td key={col.key} className={clsx(
+                            "px-4 py-2.5 text-center",
+                            isFirstOfPair && "border-l-2 border-slate-700",
+                            isSecondOfPair && "border-r-2 border-slate-700",
+                          )}>
                             <AllowBadge value={val || "No"} />
                           </td>
                         );
@@ -840,7 +858,14 @@ export default function InsurancePage() {
                         {first.transmission && <span><span className="text-slate-400">Trans</span> {first.transmission}</span>}
                       </div>
                     </div>
-                    <table className="text-xs border-collapse w-full">
+                    <table className="text-xs border-collapse w-full table-fixed">
+                      <colgroup>
+                        <col className="w-[18%]" />
+                        <col className="w-[28%]" />
+                        <col className="w-[16%]" />
+                        <col className="w-[20%]" />
+                        <col className="w-[18%]" />
+                      </colgroup>
                       <thead>
                         <tr className="border-b border-slate-800">
                           <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Insurer</th>
@@ -853,10 +878,10 @@ export default function InsurancePage() {
                       <tbody>
                         {vRows.map((r, i) => (
                           <tr key={i} className="border-b border-slate-800/40">
-                            <td className="py-1.5 pr-4 text-blue-300 font-medium">{r.insurer || "—"}</td>
-                            <td className="py-1.5 pr-4 text-slate-400">{formatCoverType(r.coverType)}</td>
+                            <td className="py-1.5 pr-4 text-blue-300 font-medium truncate">{r.insurer || "—"}</td>
+                            <td className="py-1.5 pr-4 text-slate-400 truncate">{formatCoverType(r.coverType)}</td>
                             <td className="py-1.5 pr-4"><AllowBadge value={r.allowPurchase} /></td>
-                            <td className="py-1.5 pr-4 text-slate-400">{r.referRiskCode || "—"}</td>
+                            <td className="py-1.5 pr-4 text-slate-400 truncate">{r.referRiskCode || "—"}</td>
                             <td className="py-1.5 text-right text-slate-200 font-medium">{r.totalPrice || "—"}</td>
                           </tr>
                         ))}
