@@ -136,7 +136,7 @@ function buildMatrix(rows: InsuranceRow[]) {
     if (!r.insurer) continue;
     if (isDualCover(r.insurer)) {
       const prev = (map.get(vn)!.get(r.insurer) ?? { firstParty: "", tpft: "" }) as DualCover;
-      const isTPFT = r.coverType?.toLowerCase().includes("third party");
+      const isTPFT = /third/i.test(r.coverType ?? "");
       map.get(vn)!.set(r.insurer, isTPFT
         ? { ...prev, tpft: r.allowPurchase }
         : { ...prev, firstParty: r.allowPurchase }
