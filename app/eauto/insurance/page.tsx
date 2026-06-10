@@ -179,6 +179,7 @@ export default function InsurancePage() {
 
   // Display
   const [view, setView]         = useState<ViewMode>("table");
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [shownInsurers, setShownInsurers] = useState<Set<string>>(new Set(ALL_INSURERS));
   const [search, setSearch]               = useState("");
   const [allowFilter, setAllowFilter]     = useState<AllowFilter>("all");
@@ -848,9 +849,19 @@ export default function InsurancePage() {
                   .sort((a, b) => (a.insurer || "").localeCompare(b.insurer || ""));
                 const first = vRows[0];
                 if (!first) return null;
+                const isExpanded = expandedCards.has(vn);
+                const toggleCard = () => setExpandedCards(prev => {
+                  const next = new Set(prev);
+                  next.has(vn) ? next.delete(vn) : next.add(vn);
+                  return next;
+                });
                 return (
-                  <div key={vn} className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-                    <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
+                  <div key={vn} className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                    {/* Card header — click to expand */}
+                    <div
+                      className="flex items-start justify-between flex-wrap gap-3 px-4 pt-4 pb-3 cursor-pointer hover:bg-slate-800/40 transition-colors select-none"
+                      onClick={toggleCard}
+                    >
                       <div>
                         <p className="font-mono font-bold text-slate-100 text-sm">{vn}</p>
                         <p className="text-xs text-slate-400 mt-0.5">
@@ -858,40 +869,44 @@ export default function InsurancePage() {
                           {first.mfgYear && <span className="ml-2 text-slate-500">({first.mfgYear})</span>}
                         </p>
                       </div>
-                      <div className="flex gap-4 text-xs text-slate-500">
+                      <div className="flex items-center gap-4 text-xs text-slate-500">
                         {first.engineCC    && <span><span className="text-slate-400">CC</span> {first.engineCC}</span>}
                         {first.transmission && <span><span className="text-slate-400">Trans</span> {first.transmission}</span>}
+                        {isExpanded ? <ChevronUp size={14} className="text-slate-500" /> : <ChevronDown size={14} className="text-slate-500" />}
                       </div>
                     </div>
-                    <table className="text-xs border-collapse w-full table-fixed">
-                      <colgroup>
-                        <col className="w-[18%]" />
-                        <col className="w-[28%]" />
-                        <col className="w-[16%]" />
-                        <col className="w-[20%]" />
-                        <col className="w-[18%]" />
-                      </colgroup>
-                      <thead>
-                        <tr className="border-b border-slate-800">
-                          <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Insurer</th>
-                          <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Cover Type</th>
-                          <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Allow Purchase</th>
-                          <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Refer Risk Code</th>
-                          <th className="pb-1.5 text-right text-xs text-slate-500 font-semibold">Total Price</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {vRows.map((r, i) => (
-                          <tr key={i} className="border-b border-slate-800/40">
-                            <td className="py-1.5 pr-4 text-blue-300 font-medium truncate">{r.insurer || "—"}</td>
-                            <td className="py-1.5 pr-4 text-slate-400 truncate">{formatCoverType(r.coverType)}</td>
-                            <td className="py-1.5 pr-4"><AllowBadge value={r.allowPurchase} /></td>
-                            <td className="py-1.5 pr-4 text-slate-400 truncate">{r.referRiskCode || "—"}</td>
-                            <td className="py-1.5 text-right text-slate-200 font-medium">{r.totalPrice || "—"}</td>
+                    {/* Table */}
+                    <div className="px-4 pb-4">
+                      <table className="text-xs border-collapse w-full table-fixed">
+                        <colgroup>
+                          <col className="w-[18%]" />
+                          <col className="w-[28%]" />
+                          <col className="w-[16%]" />
+                          <col className="w-[20%]" />
+                          <col className="w-[18%]" />
+                        </colgroup>
+                        <thead>
+                          <tr className="border-b border-slate-800">
+                            <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Insurer</th>
+                            <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Cover Type</th>
+                            <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Allow Purchase</th>
+                            <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Refer Risk Code</th>
+                            <th className="pb-1.5 text-right text-xs text-slate-500 font-semibold">Total Price</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {vRows.map((r, i) => (
+                            <tr key={i} className="border-b border-slate-800/40">
+                              <td className={clsx("py-1.5 pr-4 text-blue-300 font-medium", !isExpanded && "truncate")}>{r.insurer || "—"}</td>
+                              <td className={clsx("py-1.5 pr-4 text-slate-400", !isExpanded && "truncate")}>{formatCoverType(r.coverType)}</td>
+                              <td className="py-1.5 pr-4"><AllowBadge value={r.allowPurchase} /></td>
+                              <td className={clsx("py-1.5 pr-4 text-slate-400", !isExpanded && "truncate")}>{r.referRiskCode || "—"}</td>
+                              <td className="py-1.5 text-right text-slate-200 font-medium">{r.totalPrice || "—"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 );
               })}
