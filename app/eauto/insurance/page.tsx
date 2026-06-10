@@ -780,7 +780,7 @@ export default function InsurancePage() {
           <div className="space-y-6">
             {/* Eligibility grid */}
             <div className="overflow-x-auto rounded-2xl border border-slate-800">
-              <table className="text-xs border-collapse">
+              <table className="text-xs border-collapse w-full">
                 <thead>
                   <tr className="border-b border-slate-800 bg-slate-900">
                     <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Vehicle</th>
