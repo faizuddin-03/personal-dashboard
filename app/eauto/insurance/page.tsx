@@ -92,12 +92,27 @@ function exportToExcel(rows: InsuranceRow[]) {
   XLSX.writeFile(wb, `insurance_${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
 
+const DUAL_COVER_INSURERS = new Set(["Zurich", "Takaful"]);
+
+type DualCover = { firstParty: string; tpft: string };
+type MatrixCell = DualCover | string;
+
 function buildMatrix(rows: InsuranceRow[]) {
-  const map = new Map<string, Map<string, string>>();
+  const map = new Map<string, Map<string, MatrixCell>>();
   for (const r of rows) {
     const vn = r.vehicleNumber.toUpperCase();
     if (!map.has(vn)) map.set(vn, new Map());
-    if (r.insurer) map.get(vn)!.set(r.insurer, r.allowPurchase);
+    if (!r.insurer) continue;
+    if (DUAL_COVER_INSURERS.has(r.insurer)) {
+      const prev = (map.get(vn)!.get(r.insurer) ?? { firstParty: "", tpft: "" }) as DualCover;
+      const isTPFT = r.coverType?.toLowerCase().includes("third party");
+      map.get(vn)!.set(r.insurer, isTPFT
+        ? { ...prev, tpft: r.allowPurchase }
+        : { ...prev, firstParty: r.allowPurchase }
+      );
+    } else {
+      map.get(vn)!.set(r.insurer, r.allowPurchase);
+    }
   }
   return map;
 }
@@ -728,24 +743,41 @@ export default function InsurancePage() {
             <div className="overflow-x-auto rounded-2xl border border-slate-800">
               <table className="text-xs border-collapse w-full">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-900">
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[130px]">Vehicle</th>
-                    {matrixInsurers.map(ins => (
-                      <th key={ins} className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[120px]">{ins}</th>
-                    ))}
+                  <tr className="bg-slate-900">
+                    <th rowSpan={2} className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[130px] border-b border-slate-800">Vehicle</th>
+                    {matrixInsurers.map(ins => DUAL_COVER_INSURERS.has(ins)
+                      ? <th key={ins} colSpan={2} className="px-4 py-2 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-700 min-w-[200px]">{ins}</th>
+                      : <th key={ins} rowSpan={2} className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-800 min-w-[120px]">{ins}</th>
+                    )}
+                  </tr>
+                  <tr className="bg-slate-900/80 border-b border-slate-800">
+                    {matrixInsurers.flatMap(ins => DUAL_COVER_INSURERS.has(ins)
+                      ? [
+                          <th key={`${ins}-1p`} className="px-4 py-1.5 text-center text-[10px] font-semibold text-slate-600 uppercase tracking-wider min-w-[100px]">1st Party</th>,
+                          <th key={`${ins}-tp`} className="px-4 py-1.5 text-center text-[10px] font-semibold text-slate-600 uppercase tracking-wider min-w-[100px]">TPFT</th>,
+                        ]
+                      : []
+                    )}
                   </tr>
                 </thead>
                 <tbody>
                   {matrixVehicles.map(vn => (
                     <tr key={vn} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
                       <td className="px-4 py-2.5 font-mono font-bold text-slate-200">{vn}</td>
-                      {matrixInsurers.map(ins => {
-                        const val = matrix.get(vn)?.get(ins) ?? "";
-                        return (
+                      {matrixInsurers.flatMap(ins => {
+                        const cell = matrix.get(vn)?.get(ins);
+                        if (DUAL_COVER_INSURERS.has(ins)) {
+                          const dual = (cell ?? { firstParty: "", tpft: "" }) as DualCover;
+                          return [
+                            <td key={`${ins}-1p`} className="px-4 py-2.5 text-center"><AllowBadge value={dual.firstParty || "No"} /></td>,
+                            <td key={`${ins}-tp`} className="px-4 py-2.5 text-center"><AllowBadge value={dual.tpft || "No"} /></td>,
+                          ];
+                        }
+                        return [
                           <td key={ins} className="px-4 py-2.5 text-center">
-                            {val ? <AllowBadge value={val} /> : <span className="text-slate-700">—</span>}
+                            {cell ? <AllowBadge value={cell as string} /> : <span className="text-slate-700">—</span>}
                           </td>
-                        );
+                        ];
                       })}
                     </tr>
                   ))}
