@@ -117,7 +117,10 @@ async function exportToExcel(rows: InsuranceRow[]) {
   URL.revokeObjectURL(url);
 }
 
-const DUAL_COVER_INSURERS = new Set(["Zurich", "Takaful"]);
+function isDualCover(ins: string) {
+  const n = ins.toLowerCase().trim();
+  return n === "zurich" || n === "takaful" || n.startsWith("zurich") || n.startsWith("takaful");
+}
 type MatrixColDef = { key: string; insurer: string; plan: "first" | "tpft" | "single"; label: string; sub: string };
 
 type DualCover = { firstParty: string; tpft: string };
@@ -129,7 +132,7 @@ function buildMatrix(rows: InsuranceRow[]) {
     const vn = r.vehicleNumber.toUpperCase();
     if (!map.has(vn)) map.set(vn, new Map());
     if (!r.insurer) continue;
-    if (DUAL_COVER_INSURERS.has(r.insurer)) {
+    if (isDualCover(r.insurer)) {
       const prev = (map.get(vn)!.get(r.insurer) ?? { firstParty: "", tpft: "" }) as DualCover;
       const isTPFT = r.coverType?.toLowerCase().includes("third party");
       map.get(vn)!.set(r.insurer, isTPFT
@@ -309,7 +312,7 @@ export default function InsurancePage() {
   // Flat column list — dual insurers expand into two columns
   const matrixCols: MatrixColDef[] = [];
   for (const ins of matrixInsurers) {
-    if (DUAL_COVER_INSURERS.has(ins)) {
+    if (isDualCover(ins)) {
       matrixCols.push({ key: `${ins}__1st`,  insurer: ins, plan: "first",  label: ins, sub: "1st Party" });
       matrixCols.push({ key: `${ins}__tpft`, insurer: ins, plan: "tpft",   label: ins, sub: "TPFT"      });
     } else {
