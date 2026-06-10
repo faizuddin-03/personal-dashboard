@@ -118,6 +118,7 @@ async function exportToExcel(rows: InsuranceRow[]) {
 }
 
 const DUAL_COVER_INSURERS = new Set(["Zurich", "Takaful"]);
+type MatrixColDef = { key: string; insurer: string; plan: "first" | "tpft" | "single"; label: string; sub: string };
 
 type DualCover = { firstParty: string; tpft: string };
 type MatrixCell = DualCover | string;
@@ -305,6 +306,16 @@ export default function InsurancePage() {
   const matrix         = buildMatrix(afterSearch);
   const matrixVehicles = Array.from(matrix.keys());
   const matrixInsurers = Array.from(new Set(afterSearch.map(r => r.insurer).filter(Boolean)));
+  // Flat column list — dual insurers expand into two columns
+  const matrixCols: MatrixColDef[] = [];
+  for (const ins of matrixInsurers) {
+    if (DUAL_COVER_INSURERS.has(ins)) {
+      matrixCols.push({ key: `${ins}__1st`,  insurer: ins, plan: "first",  label: ins, sub: "1st Party" });
+      matrixCols.push({ key: `${ins}__tpft`, insurer: ins, plan: "tpft",   label: ins, sub: "TPFT"      });
+    } else {
+      matrixCols.push({ key: ins,             insurer: ins, plan: "single", label: ins, sub: "" });
+    }
+  }
   const foundInsurers  = Array.from(new Set(rows.map(r => r.insurer).filter(Boolean)));
 
   const [activeTab, setActiveTab] = useState<"check" | "tab2">("check");
@@ -768,41 +779,36 @@ export default function InsurancePage() {
             <div className="overflow-x-auto rounded-2xl border border-slate-800">
               <table className="text-xs border-collapse w-full">
                 <thead>
-                  <tr className="bg-slate-900">
-                    <th rowSpan={2} className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[130px] border-b border-slate-800">Vehicle</th>
-                    {matrixInsurers.map(ins => DUAL_COVER_INSURERS.has(ins)
-                      ? <th key={ins} colSpan={2} className="px-4 py-2 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-700 min-w-[200px]">{ins}</th>
-                      : <th key={ins} rowSpan={2} className="px-4 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-800 min-w-[120px]">{ins}</th>
-                    )}
-                  </tr>
-                  <tr className="bg-slate-900/80 border-b border-slate-800">
-                    {matrixInsurers.flatMap(ins => DUAL_COVER_INSURERS.has(ins)
-                      ? [
-                          <th key={`${ins}-1p`} className="px-4 py-1.5 text-center text-[10px] font-semibold text-slate-600 uppercase tracking-wider min-w-[100px]">1st Party</th>,
-                          <th key={`${ins}-tp`} className="px-4 py-1.5 text-center text-[10px] font-semibold text-slate-600 uppercase tracking-wider min-w-[100px]">TPFT</th>,
-                        ]
-                      : []
-                    )}
+                  <tr className="border-b border-slate-800 bg-slate-900">
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[130px]">Vehicle</th>
+                    {matrixCols.map(col => (
+                      <th key={col.key} className="px-4 py-2.5 text-center min-w-[110px]">
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{col.label}</div>
+                        {col.sub && <div className="text-[10px] font-medium text-slate-600 mt-0.5">{col.sub}</div>}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {matrixVehicles.map(vn => (
                     <tr key={vn} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
                       <td className="px-4 py-2.5 font-mono font-bold text-slate-200">{vn}</td>
-                      {matrixInsurers.flatMap(ins => {
-                        const cell = matrix.get(vn)?.get(ins);
-                        if (DUAL_COVER_INSURERS.has(ins)) {
-                          const dual = (cell ?? { firstParty: "", tpft: "" }) as DualCover;
-                          return [
-                            <td key={`${ins}-1p`} className="px-4 py-2.5 text-center"><AllowBadge value={dual.firstParty || "No"} /></td>,
-                            <td key={`${ins}-tp`} className="px-4 py-2.5 text-center"><AllowBadge value={dual.tpft || "No"} /></td>,
-                          ];
+                      {matrixCols.map(col => {
+                        const cell = matrix.get(vn)?.get(col.insurer);
+                        if (col.plan === "single") {
+                          return (
+                            <td key={col.key} className="px-4 py-2.5 text-center">
+                              {cell ? <AllowBadge value={cell as string} /> : <span className="text-slate-700">—</span>}
+                            </td>
+                          );
                         }
-                        return [
-                          <td key={ins} className="px-4 py-2.5 text-center">
-                            {cell ? <AllowBadge value={cell as string} /> : <span className="text-slate-700">—</span>}
+                        const dual = (cell ?? { firstParty: "", tpft: "" }) as DualCover;
+                        const val  = col.plan === "first" ? dual.firstParty : dual.tpft;
+                        return (
+                          <td key={col.key} className="px-4 py-2.5 text-center">
+                            <AllowBadge value={val || "No"} />
                           </td>
-                        ];
+                        );
                       })}
                     </tr>
                   ))}
