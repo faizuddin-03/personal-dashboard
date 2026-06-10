@@ -5,7 +5,7 @@ import {
   TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
   Search, X,
 } from "lucide-react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 import { InsuranceRow, loadInsuranceSaved, clearInsuranceSaved } from "@/lib/insurance";
@@ -71,25 +71,50 @@ function parseVehicles(raw: string): string[] {
     .filter(Boolean);
 }
 
-function exportToExcel(rows: InsuranceRow[]) {
-  const data = rows.map(r => ({
-    "Vehicle Number":  r.vehicleNumber,
-    "Make":            r.make,
-    "Model":           r.model,
-    "Mfg Year":        r.mfgYear,
-    "Engine CC":       r.engineCC,
-    "Transmission":    r.transmission,
-    "Variant":         r.variant,
-    "Insurer":         r.insurer,
-    "Cover Type":      r.coverType,
-    "Allow Purchase":  r.allowPurchase,
-    "Refer Risk Code": r.referRiskCode,
-    "Total Price":     r.totalPrice,
+async function exportToExcel(rows: InsuranceRow[]) {
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet("Insurance Results");
+
+  ws.columns = [
+    { header: "Vehicle Number",  key: "vehicleNumber",  width: 16 },
+    { header: "Make",            key: "make",           width: 12 },
+    { header: "Model",           key: "model",          width: 16 },
+    { header: "Mfg Year",        key: "mfgYear",        width: 10 },
+    { header: "Engine CC",       key: "engineCC",       width: 11 },
+    { header: "Transmission",    key: "transmission",   width: 14 },
+    { header: "Variant",         key: "variant",        width: 16 },
+    { header: "Insurer",         key: "insurer",        width: 15 },
+    { header: "Cover Type",      key: "coverType",      width: 13 },
+    { header: "Allow Purchase",  key: "allowPurchase",  width: 15 },
+    { header: "Refer Risk Code", key: "referRiskCode",  width: 17 },
+    { header: "Total Price",     key: "totalPrice",     width: 14 },
+  ];
+
+  // Bold + light blue header row
+  const headerRow = ws.getRow(1);
+  headerRow.font = { bold: true };
+  headerRow.eachCell(cell => {
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFBDD7EE" } };
+  });
+
+  // Auto-filter across all header columns
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: ws.columns.length } };
+
+  rows.forEach(r => ws.addRow({
+    vehicleNumber: r.vehicleNumber, make: r.make, model: r.model,
+    mfgYear: r.mfgYear, engineCC: r.engineCC, transmission: r.transmission,
+    variant: r.variant, insurer: r.insurer, coverType: r.coverType,
+    allowPurchase: r.allowPurchase, referRiskCode: r.referRiskCode, totalPrice: r.totalPrice,
   }));
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Insurance Results");
-  XLSX.writeFile(wb, `insurance_${new Date().toISOString().slice(0, 10)}.xlsx`);
+
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `insurance_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 const DUAL_COVER_INSURERS = new Set(["Zurich", "Takaful"]);
