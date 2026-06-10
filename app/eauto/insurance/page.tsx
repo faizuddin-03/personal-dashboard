@@ -60,8 +60,10 @@ const COLUMNS: { key: keyof InsuranceRow; label: string }[] = [
 // ── Helpers ───────────────────────────────────────────────────
 function formatCoverType(v: string) {
   if (!v) return "—";
-  if (/third/i.test(v)) return v.replace(/third.*/i, "TPFT");
-  return v;
+  const stripped = v.replace(/^cover type\s*/i, "").trim();
+  if (!stripped) return "—";
+  if (/^third/i.test(stripped)) return "TPFT";
+  return stripped;
 }
 
 function parseVehicles(raw: string): string[] {
