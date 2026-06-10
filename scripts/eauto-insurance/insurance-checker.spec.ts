@@ -390,10 +390,14 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
       table.querySelectorAll('td').forEach((td) => {
         const text = clean(td.textContent || '');
 
-        // Cover type: only get the first line (before "Period of insurance")
-        if (text.startsWith('Cover Type') && !coverType) {
-          const match = text.match(/^(Cover Type[^P]+)/);
-          coverType = match ? clean(match[1]) : text.split('Period')[0].trim();
+        // Cover type: capture with or without "Cover Type" prefix
+        if (!coverType) {
+          if (text.startsWith('Cover Type')) {
+            const match = text.match(/^(Cover Type[^P]+)/);
+            coverType = match ? clean(match[1]) : text.split(/Period/i)[0].trim();
+          } else if (/^(third|comprehensive|fire)/i.test(text)) {
+            coverType = text.split(/Period/i)[0].trim();
+          }
         }
 
         if (text.includes('Refer Risk')) {
@@ -429,7 +433,7 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
   });
 
   console.log(`   📋 ${insurers.length} insurer(s):`);
-  insurers.forEach(i => console.log(`     - ${i.insurerName}: Allow=${i.allowToPurchase}, Risk=${i.referRiskCode}, Price=${i.totalPrice}`));
+  insurers.forEach(i => console.log(`     - ${i.insurerName}: Cover=${i.coverType}, Allow=${i.allowToPurchase}, Risk=${i.referRiskCode}, Price=${i.totalPrice}`));
 
   return { vehicleNumber: vn, ...vehicleInfo, insurers, status: 'SUCCESS' };
 }
