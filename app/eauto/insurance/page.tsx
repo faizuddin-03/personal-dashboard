@@ -62,7 +62,7 @@ function formatCoverType(v: string) {
   if (!v) return "—";
   const stripped = v.replace(/^cover type\s*/i, "").trim();
   if (!stripped) return "—";
-  if (/^third/i.test(stripped)) return "TPFT";
+  if (/^third/i.test(stripped)) return "Third Party";
   return stripped;
 }
 
@@ -317,7 +317,7 @@ export default function InsurancePage() {
   for (const ins of matrixInsurers) {
     if (isDualCover(ins)) {
       matrixCols.push({ key: `${ins}__1st`,  insurer: ins, plan: "first",  label: ins, sub: "1st Party" });
-      matrixCols.push({ key: `${ins}__tpft`, insurer: ins, plan: "tpft",   label: ins, sub: "TPFT"      });
+      matrixCols.push({ key: `${ins}__tpft`, insurer: ins, plan: "tpft",   label: ins, sub: "Third Party" });
     } else {
       matrixCols.push({ key: ins,             insurer: ins, plan: "single", label: ins, sub: "" });
     }
