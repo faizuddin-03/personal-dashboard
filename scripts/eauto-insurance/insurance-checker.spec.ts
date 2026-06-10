@@ -372,6 +372,12 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
   await page.waitForTimeout(CONFIG.waitAfterClick);
 
   // ── Step 10: Extract insurer data ──────────────────────────────────
+  // Log all classes on the page that contain "plan" so we can diagnose missing insurers
+  const planClasses = await page.evaluate(() =>
+    [...new Set([...document.querySelectorAll('[class*="plan"]')].map(el => el.className))].join(', ')
+  );
+  console.log(`   🔍 Plan-related classes on page: ${planClasses || '(none)'}`);
+
   const insurers = await page.evaluate(() => {
     const clean = (s: string) => s.replace(/[\t\n\r]+/g, ' ').replace(/\s+/g, ' ').trim();
     // Normalise insurer names that the page renders without spaces
@@ -383,8 +389,13 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
       referRiskCode: string; totalPrice: string;
     }[] = [];
 
-    document.querySelectorAll('.plan-detail-table').forEach((table) => {
-      const insurerName = normalise(clean(table.querySelector('.plan-name')?.textContent || 'Unknown'));
+    // Try primary selector, fall back to any table/div that contains a plan name
+    const tables = document.querySelectorAll('.plan-detail-table');
+    console.log(`[page] Found ${tables.length} .plan-detail-table elements`);
+
+    tables.forEach((table) => {
+      const nameEl = table.querySelector('.plan-name') ?? table.querySelector('[class*="plan-name"]') ?? table.querySelector('th') ?? table.querySelector('td');
+      const insurerName = normalise(clean(nameEl?.textContent || 'Unknown'));
       let coverType = '', allowToPurchase = '', referRiskCode = '', totalPrice = '';
 
       table.querySelectorAll('td').forEach((td) => {
@@ -427,8 +438,12 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
     return results;
   });
 
-  console.log(`   📋 ${insurers.length} insurer(s):`);
+  console.log(`   📋 ${insurers.length} insurer(s) found:`);
   insurers.forEach(i => console.log(`     - ${i.insurerName}: Cover=${i.coverType}, Allow=${i.allowToPurchase}, Risk=${i.referRiskCode}, Price=${i.totalPrice}`));
+  if (insurers.length === 0) {
+    const bodySnippet = await page.locator('body').innerText().catch(() => '');
+    console.log(`   ⚠️  No insurers found. Page text snippet:\n${bodySnippet.slice(0, 500)}`);
+  }
 
   return { vehicleNumber: vn, ...vehicleInfo, insurers, status: 'SUCCESS' };
 }
