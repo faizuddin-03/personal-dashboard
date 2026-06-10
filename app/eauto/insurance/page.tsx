@@ -58,6 +58,12 @@ const COLUMNS: { key: keyof InsuranceRow; label: string }[] = [
 ];
 
 // ── Helpers ───────────────────────────────────────────────────
+function formatCoverType(v: string) {
+  if (!v) return "—";
+  if (v.trim().toLowerCase() === "third party") return "Third Party Fire & Theft";
+  return v;
+}
+
 function parseVehicles(raw: string): string[] {
   return raw
     .split(/[\n,]+/)
@@ -704,7 +710,7 @@ export default function InsurancePage() {
                     <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.transmission || "—"}</td>
                     <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.variant || "—"}</td>
                     <td className="px-3 py-2 text-blue-300 font-medium whitespace-nowrap">{row.insurer || "—"}</td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.coverType || "—"}</td>
+                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{formatCoverType(row.coverType)}</td>
                     <td className="px-3 py-2 whitespace-nowrap"><AllowBadge value={row.allowPurchase} /></td>
                     <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.referRiskCode || "—"}</td>
                     <td className="px-3 py-2 text-slate-200 font-medium whitespace-nowrap">{row.totalPrice || "—"}</td>
@@ -785,7 +791,7 @@ export default function InsurancePage() {
                         {vRows.map((r, i) => (
                           <tr key={i} className="border-b border-slate-800/40">
                             <td className="py-1.5 pr-4 text-blue-300 font-medium">{r.insurer || "—"}</td>
-                            <td className="py-1.5 pr-4 text-slate-400">{r.coverType || "—"}</td>
+                            <td className="py-1.5 pr-4 text-slate-400">{formatCoverType(r.coverType)}</td>
                             <td className="py-1.5 pr-4"><AllowBadge value={r.allowPurchase} /></td>
                             <td className="py-1.5 pr-4 text-slate-400">{r.referRiskCode || "—"}</td>
                             <td className="py-1.5 text-right text-slate-200 font-medium">{r.totalPrice || "—"}</td>
