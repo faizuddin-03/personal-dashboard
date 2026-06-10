@@ -751,7 +751,9 @@ export default function InsurancePage() {
             <div className="space-y-3">
               <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Vehicle Details</p>
               {matrixVehicles.map(vn => {
-                const vRows = afterSearch.filter(r => r.vehicleNumber.toUpperCase() === vn);
+                const vRows = afterSearch
+                  .filter(r => r.vehicleNumber.toUpperCase() === vn)
+                  .sort((a, b) => (a.insurer || "").localeCompare(b.insurer || ""));
                 const first = vRows[0];
                 if (!first) return null;
                 return (
