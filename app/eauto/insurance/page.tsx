@@ -14,6 +14,8 @@ import {
   VehicleEntry as ScVehicleEntry,
   loadSecarangSaved, clearSecarangSaved,
   loadRegressionSecarangSaved, clearRegressionSecarangSaved,
+  RegressionResult, RegressionStepResult,
+  loadRegressionTestResult, saveRegressionTestResult, clearRegressionTestResult,
   buildVehicles,
 } from "@/lib/secarang";
 
@@ -405,7 +407,7 @@ export default function InsurancePage() {
       </div>
 
       {activeTab === "tab2" && <SecarangTab mode="standard" />}
-      {activeTab === "tab3" && <SecarangTab mode="regression" />}
+      {activeTab === "tab3" && <RegressionTab />}
 
       {activeTab === "check" && <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
 
@@ -1763,6 +1765,314 @@ function SecarangTab({ mode = "standard" }: { mode?: "standard" | "regression" }
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Regression Tab ────────────────────────────────────────────────────────────
+const SC_REGRESSION_ENV_PRESETS = SC_ENV_PRESETS;
+
+function StepBadge({ status }: { status: RegressionStepResult["status"] }) {
+  if (status === "PASS") return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-900/50 border border-green-700/60 text-green-300">
+      <span className="text-[10px]">✓</span> PASS
+    </span>
+  );
+  if (status === "FAIL") return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-900/50 border border-red-700/60 text-red-300">
+      <span className="text-[10px]">✗</span> FAIL
+    </span>
+  );
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800 border border-slate-700 text-slate-400">
+      <span className="text-[10px]">–</span> SKIP
+    </span>
+  );
+}
+
+function RegressionTab() {
+  const [vehicleNumber,  setVehicleNumber]  = useState("WYN3837");
+  const [icNumber,       setIcNumber]       = useState("730620065847");
+  const [postcode,       setPostcode]       = useState("55000");
+  const [targetInsurer,  setTargetInsurer]  = useState("Zurich");
+  const [baseUrl,        setBaseUrl]        = useState<string>(SC_DEFAULT_ENV);
+  const [customEnv,      setCustomEnv]      = useState(false);
+  const [sitePassword,   setSitePassword]   = useState(SC_DEFAULT_PASSWORD);
+  const [showPassword,   setShowPassword]   = useState(false);
+  const [showAdvanced,   setShowAdvanced]   = useState(false);
+  const [showLog,        setShowLog]        = useState(false);
+
+  const [loading,  setLoading]  = useState(false);
+  const [stopping, setStopping] = useState(false);
+  const [result,   setResult]   = useState<RegressionResult | null>(null);
+  const [error,    setError]    = useState("");
+  const [log,      setLog]      = useState("");
+
+  useEffect(() => {
+    const saved = loadRegressionTestResult();
+    if (saved) { setResult(saved); setLog(saved.log ?? ""); }
+  }, []);
+
+  function handleRun() {
+    setLoading(true);
+    setStopping(false);
+    setResult(null);
+    setError("");
+    setLog("");
+    fetch("/api/secarang/regression", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        baseUrl:       baseUrl       || undefined,
+        sitePassword:  sitePassword  || undefined,
+        vehicleNumber,
+        icNumber:      icNumber.replace(/[-\s]/g, ""),
+        postcode,
+        targetInsurer,
+      }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        setLoading(false);
+        setStopping(false);
+        if (data.error && !data.steps) { setError(data.error); return; }
+        const res = data as RegressionResult;
+        setResult(res);
+        setLog(data.log ?? "");
+        saveRegressionTestResult({ ...res, log: data.log ?? "" });
+      })
+      .catch(e => {
+        setLoading(false);
+        setStopping(false);
+        setError(e instanceof Error ? e.message : "Something went wrong");
+      });
+  }
+
+  function handleStop() {
+    setStopping(true);
+    fetch("/api/secarang/regression", { method: "DELETE" }).catch(() => {});
+  }
+
+  function handleClear() {
+    setResult(null);
+    setError("");
+    setLog("");
+    clearRegressionTestResult();
+  }
+
+  const passed = result?.steps.filter(s => s.status === "PASS").length ?? 0;
+  const failed = result?.steps.filter(s => s.status === "FAIL").length ?? 0;
+  const duration = result ? (result.durationMs / 1000).toFixed(1) : null;
+
+  return (
+    <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
+
+      {/* Config panel */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+
+        {/* Fixed test identity */}
+        <div className="flex items-start gap-3">
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">Vehicle Number</label>
+              <input
+                value={vehicleNumber}
+                onChange={e => setVehicleNumber(e.target.value.toUpperCase())}
+                disabled={loading}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">IC Number</label>
+              <input
+                value={icNumber}
+                onChange={e => setIcNumber(e.target.value)}
+                disabled={loading}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">Target Insurer</label>
+              <input
+                value={targetInsurer}
+                onChange={e => setTargetInsurer(e.target.value)}
+                disabled={loading}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Advanced toggle */}
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(v => !v)}
+          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+        >
+          {showAdvanced ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+          Advanced settings
+        </button>
+
+        {showAdvanced && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">Environment</label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {SC_REGRESSION_ENV_PRESETS.map(p => (
+                  <button key={p.value} type="button"
+                    onClick={() => { setBaseUrl(p.value); setCustomEnv(false); }}
+                    disabled={loading}
+                    className={clsx(
+                      "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all disabled:opacity-50",
+                      !customEnv && baseUrl === p.value
+                        ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                    )}>{p.label}</button>
+                ))}
+              </div>
+              <input
+                value={customEnv ? baseUrl : ""}
+                onChange={e => { setBaseUrl(e.target.value); setCustomEnv(true); }}
+                placeholder="Custom URL…"
+                disabled={loading}
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">Site Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={sitePassword}
+                  onChange={e => setSitePassword(e.target.value)}
+                  disabled={loading}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 pr-9 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50"
+                />
+                <button type="button" onClick={() => setShowPassword(v => !v)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Run / Stop */}
+        <div className="flex items-center gap-3 pt-1">
+          {!loading ? (
+            <button onClick={handleRun}
+              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-colors">
+              <Play size={14} /> Run Regression
+            </button>
+          ) : (
+            <button onClick={handleStop} disabled={stopping}
+              className="flex items-center gap-2 px-5 py-2.5 bg-red-700 hover:bg-red-600 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors">
+              <Square size={14} /> {stopping ? "Stopping…" : "Stop"}
+            </button>
+          )}
+
+          {loading && !stopping && (
+            <span className="flex items-center gap-2 text-sm text-slate-400">
+              <Loader2 size={14} className="animate-spin" />
+              Running E2E test…
+            </span>
+          )}
+
+          {result && !loading && (
+            <button onClick={handleClear}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-lg border border-slate-800 transition-colors">
+              <Trash2 size={12} /> Clear
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Error (API/network level) */}
+      {error && (
+        <div className="bg-red-950/40 border border-red-800/60 rounded-2xl p-4 flex gap-3">
+          <AlertCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
+          <pre className="text-sm text-red-300 whitespace-pre-wrap font-mono">{error}</pre>
+        </div>
+      )}
+
+      {/* Results */}
+      {result && (
+        <div className="space-y-4">
+
+          {/* Overall status banner */}
+          <div className={clsx(
+            "rounded-2xl border p-5 flex items-center justify-between gap-4",
+            result.overallStatus === "PASS"
+              ? "bg-green-950/40 border-green-800/60"
+              : "bg-red-950/40 border-red-800/60"
+          )}>
+            <div className="flex items-center gap-3">
+              <span className={clsx(
+                "text-3xl font-black tracking-tight",
+                result.overallStatus === "PASS" ? "text-green-400" : "text-red-400"
+              )}>
+                {result.overallStatus === "PASS" ? "✓ PASS" : "✗ FAIL"}
+              </span>
+              <div className="text-sm text-slate-400 space-y-0.5">
+                <div>{result.vehicleNumber} → {result.targetInsurer}</div>
+                <div className="text-xs text-slate-500">
+                  {passed} / {result.steps.length} steps passed
+                  {duration && <> · {duration}s</>}
+                  {result.completedAt && <> · {new Date(result.completedAt).toLocaleString()}</>}
+                </div>
+              </div>
+            </div>
+            {failed > 0 && (
+              <span className="text-sm font-semibold text-red-400">{failed} failed</span>
+            )}
+          </div>
+
+          {/* Steps list */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+            <div className="px-5 py-3 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wide">
+              Steps
+            </div>
+            <div className="divide-y divide-slate-800">
+              {result.steps.map((step, i) => (
+                <div key={i} className={clsx(
+                  "flex items-start gap-3 px-5 py-3.5",
+                  step.status === "FAIL" && "bg-red-950/20",
+                )}>
+                  <span className="text-xs text-slate-600 w-5 shrink-0 pt-0.5 text-right">{i + 1}.</span>
+                  <StepBadge status={step.status} />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-slate-200">{step.name}</div>
+                    {step.message && (
+                      <div className="text-xs text-slate-500 mt-0.5">{step.message}</div>
+                    )}
+                  </div>
+                  <span className="text-xs text-slate-700 shrink-0 hidden sm:block">
+                    {new Date(step.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Error message (script-level) */}
+          {result.errorMessage && (
+            <div className="bg-red-950/30 border border-red-800/50 rounded-xl px-4 py-3 text-sm text-red-300 font-mono">
+              {result.errorMessage}
+            </div>
+          )}
+
+          {/* Log */}
+          {log && (
+            <details open={showLog} onToggle={e => setShowLog((e.target as HTMLDetailsElement).open)}
+              className="bg-slate-900 border border-slate-800 rounded-xl">
+              <summary className="px-4 py-2.5 text-xs text-slate-500 cursor-pointer hover:text-slate-300 select-none">
+                Show run log
+              </summary>
+              <pre className="px-4 pb-3 text-xs text-slate-500 font-mono whitespace-pre-wrap overflow-x-auto max-h-64 overflow-y-auto">{log}</pre>
+            </details>
+          )}
         </div>
       )}
     </div>

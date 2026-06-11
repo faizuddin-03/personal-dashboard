@@ -94,6 +94,45 @@ export function clearRegressionSecarangSaved() {
   localStorage.removeItem(REGRESSION_STORAGE_KEY);
 }
 
+// ── Regression test result ────────────────────────────────────
+export interface RegressionStepResult {
+  name:      string;
+  status:    "PASS" | "FAIL" | "SKIP";
+  message:   string;
+  timestamp: string;
+}
+
+export interface RegressionResult {
+  vehicleNumber:  string;
+  icNumber:       string;
+  targetInsurer:  string;
+  overallStatus:  "PASS" | "FAIL";
+  steps:          RegressionStepResult[];
+  errorMessage?:  string;
+  startedAt:      string;
+  completedAt:    string;
+  durationMs:     number;
+  log?:           string;
+  stopped?:       boolean;
+}
+
+const REGRESSION_TEST_KEY = "secarang_regression_test_result";
+
+export function loadRegressionTestResult(): RegressionResult | null {
+  try {
+    const raw = localStorage.getItem(REGRESSION_TEST_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+export function saveRegressionTestResult(data: RegressionResult) {
+  localStorage.setItem(REGRESSION_TEST_KEY, JSON.stringify(data));
+}
+
+export function clearRegressionTestResult() {
+  localStorage.removeItem(REGRESSION_TEST_KEY);
+}
+
 // Derive structured vehicles from flat rows
 export function buildVehicles(rows: SecarangRow[]): SecarangVehicle[] {
   const map = new Map<string, SecarangVehicle>();
