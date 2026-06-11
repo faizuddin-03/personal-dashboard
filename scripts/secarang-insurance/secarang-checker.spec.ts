@@ -290,84 +290,82 @@ async function selectVehicleType(page: Page, vehicleType: 'car' | 'motorcycle', 
     console.log(`   ⚠️  Could not find "${vtLabel}" button. Available buttons: ${btns.slice(0, 10).join(' | ')}`);
   }
 
-  // Step 2: Select Private or Company
+  // Step 2: Select Private or Company.
+  // Try a text-labelled control first; fall back to the radio inputs by index
+  // (radio #0 = Private, radio #1 = Company).
   const ownerLabels = ownerType === 'company'
     ? ['Company Car', 'Company Motorcycle', 'Company', 'Business']
     : ['Private Car', 'Private Motorcycle', 'Private', 'Individual'];
 
+  let ownerSelected = false;
   for (const label of ownerLabels) {
-    const btn = page.locator(`button:has-text("${label}"), [role="radio"]:has-text("${label}"), label:has-text("${label}")`).first();
-    if ((await btn.count()) > 0) {
-      console.log(`   👤 Selecting owner type: ${label}`);
-      await btn.click();
+    const ctrl = page.locator(`button:has-text("${label}"), label:has-text("${label}")`).first();
+    if ((await ctrl.count()) > 0 && await ctrl.isVisible().catch(() => false)) {
+      console.log(`   👤 Selecting owner type via label: ${label}`);
+      await ctrl.click();
+      ownerSelected = true;
       await page.waitForTimeout(CONFIG.waitAfterClick);
       break;
     }
   }
-}
 
-// Fill a field using a list of candidate selectors. Returns true if filled.
-async function fillFirstMatch(page: Page, selectors: string[], value: string, fieldName: string): Promise<boolean> {
-  for (const sel of selectors) {
-    const el = page.locator(sel).first();
-    if ((await el.count()) > 0 && await el.isVisible().catch(() => false)) {
-      await el.fill(value);
-      console.log(`   ✅ ${fieldName} filled via "${sel}"`);
-      return true;
+  if (!ownerSelected) {
+    const radios = page.locator('input[type="radio"]');
+    const rc = await radios.count();
+    const idx = ownerType === 'company' ? 1 : 0;
+    if (rc > idx) {
+      console.log(`   👤 Selecting owner type via radio #${idx} (${ownerType})`);
+      // Radios may be visually hidden behind a styled label — force the click.
+      await radios.nth(idx).click({ force: true }).catch(async () => {
+        await radios.nth(idx).check({ force: true }).catch(() => {});
+      });
+      await page.waitForTimeout(CONFIG.waitAfterClick);
+    } else {
+      console.log(`   ⚠️  Could not select owner type (found ${rc} radios)`);
     }
   }
-  return false;
 }
 
 // ─── FILL QUOTATION FORM ──────────────────────────────────────────────────────
-// Returns whether the critical plate field was filled.
+// Secarang renders 3 bare text inputs with no name/id/placeholder, in DOM order:
+//   [0] Vehicle Plate No.   [1] Owner IC / Company SSM   [2] Postal Code
+// So we fill them positionally.
 async function fillQuotationForm(page: Page, v: VehicleInput, defaultIc: string): Promise<{ plateFilled: boolean; icFilled: boolean; postcodeFilled: boolean }> {
   const ic       = (v.icNumber || defaultIc).replace(/[-\s]/g, '');
   const postcode = v.postcode || CONFIG.postcode;
 
   console.log(`   📝 Filling form: VN=${v.vehicleNumber} IC=${ic} PC=${postcode}`);
 
-  const plateFilled = await fillFirstMatch(page, [
-    'input[placeholder*="plate" i]',
-    'input[placeholder*="vehicle" i]',
-    'input[placeholder*="registration" i]',
-    'input[name*="plate" i]',
-    'input[name*="vehicle" i]',
-    'input[name*="registration" i]',
-    'input[id*="plate" i]',
-    'input[id*="vehicle" i]',
-    'input[aria-label*="plate" i]',
-    'input[aria-label*="vehicle" i]',
-  ], v.vehicleNumber, 'Plate');
+  // Visible text inputs, in DOM order
+  const textInputs = page.locator('input[type="text"]:visible, input:not([type]):visible');
+  const n = await textInputs.count();
+  console.log(`   🔢 Found ${n} visible text input(s)`);
 
-  const icFilled = await fillFirstMatch(page, [
-    'input[placeholder*="ic" i]',
-    'input[placeholder*="identity" i]',
-    'input[placeholder*="ssm" i]',
-    'input[placeholder*="owner" i]',
-    'input[name*="ic" i]',
-    'input[name*="ssm" i]',
-    'input[name*="identity" i]',
-    'input[id*="ic" i]',
-    'input[id*="ssm" i]',
-    'input[aria-label*="ic" i]',
-    'input[aria-label*="ssm" i]',
-  ], ic, 'IC/SSM');
+  if (n < 3) {
+    console.log(`   ⚠️  Expected 3 text inputs, found ${n}. Filling what is available.`);
+  }
 
-  const postcodeFilled = await fillFirstMatch(page, [
-    'input[placeholder*="postcode" i]',
-    'input[placeholder*="postal" i]',
-    'input[placeholder*="post code" i]',
-    'input[name*="postcode" i]',
-    'input[name*="postal" i]',
-    'input[id*="postcode" i]',
-    'input[id*="postal" i]',
-    'input[aria-label*="postcode" i]',
-    'input[aria-label*="postal" i]',
-  ], postcode, 'Postcode');
+  const values = [v.vehicleNumber, ic, postcode];
+  const labels = ['Plate', 'IC/SSM', 'Postcode'];
+  const filled = [false, false, false];
+
+  for (let i = 0; i < Math.min(3, n); i++) {
+    try {
+      const el = textInputs.nth(i);
+      await el.click();
+      await el.fill('');
+      await el.fill(values[i]);
+      // Verify the value stuck
+      const got = await el.inputValue().catch(() => '');
+      filled[i] = got.replace(/\s/g, '') === values[i].replace(/\s/g, '');
+      console.log(`   ${filled[i] ? '✅' : '⚠️'} ${labels[i]} [input #${i}] = "${got}"`);
+    } catch (err) {
+      console.log(`   ❌ ${labels[i]} [input #${i}] failed: ${err}`);
+    }
+  }
 
   await page.waitForTimeout(500);
-  return { plateFilled, icFilled, postcodeFilled };
+  return { plateFilled: filled[0], icFilled: filled[1], postcodeFilled: filled[2] };
 }
 
 // ─── SUBMIT QUOTATION FORM ────────────────────────────────────────────────────
