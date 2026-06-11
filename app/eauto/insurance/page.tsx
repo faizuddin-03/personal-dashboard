@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Shield, Play, Download, Loader2, Square,
   TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
@@ -9,6 +9,11 @@ import ExcelJS from "exceljs";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 import { InsuranceRow, VehicleEntry, loadInsuranceSaved, clearInsuranceSaved } from "@/lib/insurance";
+import {
+  SecarangRow, SecarangJob, SecarangVehicle,
+  VehicleEntry as ScVehicleEntry,
+  loadSecarangSaved, saveSecarangResults, clearSecarangSaved, buildVehicles,
+} from "@/lib/secarang";
 
 // ── Environment presets ───────────────────────────────────────
 const ENV_PRESETS = [
@@ -383,11 +388,7 @@ export default function InsurancePage() {
         </button>
       </div>
 
-      {activeTab === "tab2" && (
-        <div className="flex-1 flex items-center justify-center text-slate-600 text-sm py-24">
-          Coming soon
-        </div>
-      )}
+      {activeTab === "tab2" && <SecarangTab />}
 
       {activeTab === "check" && <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
 
@@ -952,6 +953,507 @@ export default function InsurancePage() {
           </div>
         )}
       </div>}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SECARANG TAB
+// ══════════════════════════════════════════════════════════════════════════════
+
+const SC_ENV_PRESETS = [
+  { label: "Preprod", value: "https://staging.secarang.com/preprod" },
+  { label: "IA",      value: "https://staging.secarang.com/ia"      },
+  { label: "Zurich",  value: "https://staging.secarang.com/zurich"  },
+] as const;
+
+const SC_DEFAULT_ENV      = SC_ENV_PRESETS[0].value;
+const SC_DEFAULT_PASSWORD = "eAuTo<2025#";
+const SC_SECS_PER_VEHICLE = 60;
+
+function scEstimateTime(count: number, concurrency: number): string {
+  const secs = Math.ceil(count / concurrency) * SC_SECS_PER_VEHICLE;
+  if (secs < 60) return `~${secs}s`;
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return s > 0 ? `~${m}m ${s}s` : `~${m}m`;
+}
+
+function parseScVehicles(raw: string): ScVehicleEntry[] {
+  return raw
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line => {
+      const parts = line.split(/[\s,]+/).filter(Boolean);
+      const vehicleNumber = (parts[0] ?? "").toUpperCase();
+      const icNumber = (parts[1] ?? "").replace(/[-\s]/g, "") || undefined;
+      return { vehicleNumber, icNumber };
+    })
+    .filter(v => v.vehicleNumber);
+}
+
+async function exportSecarangExcel(rows: SecarangRow[]) {
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet("Secarang Quotations");
+  ws.columns = [
+    { header: "Vehicle Number",  key: "vn",        width: 18 },
+    { header: "Make",            key: "make",       width: 15 },
+    { header: "Model",           key: "model",      width: 30 },
+    { header: "Year",            key: "year",       width: 8  },
+    { header: "Variant",         key: "variant",    width: 25 },
+    { header: "Insurer",         key: "insurer",    width: 25 },
+    { header: "Available",       key: "available",  width: 12 },
+    { header: "Reason",          key: "reason",     width: 40 },
+    { header: "Sum Insured",     key: "sumInsured", width: 18 },
+    { header: "Price",           key: "price",      width: 18 },
+  ];
+  const h = ws.getRow(1);
+  h.font      = { bold: true, color: { argb: "FFFFFFFF" } };
+  h.fill      = { type: "pattern", pattern: "solid", fgColor: { argb: "FF2E75B6" } };
+  h.alignment = { vertical: "middle", horizontal: "center" };
+
+  for (const r of rows) {
+    const row = ws.addRow({
+      vn: r.vehicleNumber, make: r.make, model: r.model, year: r.year,
+      variant: r.variant, insurer: r.insurer,
+      available: r.available, reason: r.unavailableReason,
+      sumInsured: r.sumInsured, price: r.price,
+    });
+    const c = row.getCell("available");
+    c.font = { color: { argb: r.available === "Yes" ? "FF008000" : "FFFF0000" }, bold: true };
+  }
+  if (ws.rowCount > 1) ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: ws.rowCount, column: 10 } };
+
+  const buf  = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a"); a.href = url; a.download = "secarang-results.xlsx"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function ScAvailBadge({ value }: { value: string }) {
+  const yes = value.toLowerCase() === "yes";
+  return (
+    <span className={clsx("inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold",
+      yes ? "bg-green-900/40 text-green-400" : "bg-red-900/30 text-red-400"
+    )}>
+      {yes ? "Yes" : "No"}
+    </span>
+  );
+}
+
+function SecarangTab() {
+  const [vehicleInput,  setVehicleInput]  = useState("");
+  const [icNumber,      setIcNumber]      = useState("");
+  const [postcode,      setPostcode]      = useState("55000");
+  const [vehicleType,   setVehicleType]   = useState<"car" | "motorcycle">("car");
+  const [ownerType,     setOwnerType]     = useState<"private" | "company">("private");
+  const [baseUrl,       setBaseUrl]       = useState<string>(SC_DEFAULT_ENV);
+  const [customEnv,     setCustomEnv]     = useState(false);
+  const [sitePassword,  setSitePassword]  = useState(SC_DEFAULT_PASSWORD);
+  const [showPassword,  setShowPassword]  = useState(false);
+  const [showAdvanced,  setShowAdvanced]  = useState(false);
+  const [concurrency,   setConcurrency]   = useState(1);
+  const [view,          setView]          = useState<"table" | "matrix">("matrix");
+
+  const [job,      setJob]      = useState<SecarangJob | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const loading  = job?.loading  ?? false;
+  const stopping = job?.stopping ?? false;
+  const rows     = job?.rows     ?? [];
+  const error    = job?.error    ?? "";
+  const hasRun   = job !== null;
+
+  const idLabel  = ownerType === "company" ? "SSM" : "IC";
+  const vehicles = parseScVehicles(vehicleInput);
+
+  // Restore saved on mount
+  useEffect(() => {
+    const saved = loadSecarangSaved();
+    if (!saved || saved.rows.length === 0) return;
+    setVehicleInput(saved.vehicleInput);
+    setJob({ loading: false, rows: saved.rows, error: "", log: saved.runLog ?? "", savedAt: saved.savedAt, vehicleInput: saved.vehicleInput });
+  }, []);
+
+  // Build structured view
+  const scVehicles = useMemo(() => buildVehicles(rows), [rows]);
+  const insurerNames = useMemo(() => {
+    const s = new Set<string>();
+    scVehicles.forEach(v => v.insurers.forEach(i => s.add(i.name)));
+    return Array.from(s).sort();
+  }, [scVehicles]);
+
+  function toggleExpand(key: string) {
+    setExpanded(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
+  }
+
+  async function handleRun() {
+    if (!vehicles.length) return;
+    setJob({ loading: true, stopping: false, rows: [], error: "", log: "", savedAt: null, vehicleInput });
+
+    try {
+      const res = await fetch("/api/secarang/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vehicles,
+          icNumber:     icNumber.trim()    || undefined,
+          postcode:     postcode.trim()    || undefined,
+          vehicleType,
+          ownerType,
+          baseUrl:      baseUrl            || undefined,
+          sitePassword: sitePassword.trim() || undefined,
+          concurrency,
+        }),
+      });
+      const data = await res.json();
+      const now  = new Date().toISOString();
+      const r: SecarangRow[] = data.rows ?? [];
+      const log = data.log ?? "";
+      if (data.error) throw new Error(data.error);
+      setJob(j => j ? { ...j, loading: false, stopping: false, rows: r, log, savedAt: now } : null);
+      saveSecarangResults({ rows: r, runLog: log, savedAt: now, vehicleInput });
+    } catch (e) {
+      setJob(j => j ? { ...j, loading: false, stopping: false, error: e instanceof Error ? e.message : "Something went wrong" } : null);
+    }
+  }
+
+  async function handleStop() {
+    setJob(j => j ? { ...j, stopping: true } : null);
+    await fetch("/api/secarang/check", { method: "DELETE" }).catch(() => {});
+  }
+
+  function handleClear() {
+    clearSecarangSaved();
+    setJob(null);
+    setVehicleInput("");
+  }
+
+  return (
+    <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
+
+      {/* ── Input panel ── */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:items-stretch">
+
+          {/* Left column */}
+          <div className="space-y-4">
+
+            {/* Environment */}
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-2">Environment</label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {SC_ENV_PRESETS.map(p => (
+                  <button key={p.value} type="button"
+                    onClick={() => { setBaseUrl(p.value); setCustomEnv(false); }}
+                    className={clsx("px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                      !customEnv && baseUrl === p.value
+                        ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                    )}>{p.label}</button>
+                ))}
+                <button type="button" onClick={() => setCustomEnv(true)}
+                  className={clsx("px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                    customEnv ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                               : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                  )}>Custom</button>
+              </div>
+              {customEnv && (
+                <input value={baseUrl} onChange={e => setBaseUrl(e.target.value)}
+                  placeholder="https://staging.secarang.com/preprod"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono" />
+              )}
+              {!customEnv && <p className="text-xs text-slate-600 font-mono">{baseUrl}</p>}
+            </div>
+
+            {/* Site password */}
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">Site Password</label>
+              <div className="relative">
+                <input value={sitePassword} onChange={e => setSitePassword(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="eAuTo<2025#"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                <button type="button" onClick={() => setShowPassword(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors" tabIndex={-1}>
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Vehicle + Owner type */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-slate-500 mb-1.5">Vehicle Type</label>
+                <div className="flex gap-1.5 h-[38px]">
+                  {(["car", "motorcycle"] as const).map(vt => (
+                    <button key={vt} onClick={() => setVehicleType(vt)}
+                      className={clsx("flex-1 rounded-lg text-xs font-medium border transition-all capitalize",
+                        vehicleType === vt ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                                           : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300")}>
+                      {vt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1.5">Owner Type</label>
+                <div className="flex gap-1.5 h-[38px]">
+                  {(["private", "company"] as const).map(ot => (
+                    <button key={ot} onClick={() => setOwnerType(ot)}
+                      className={clsx("flex-1 rounded-lg text-xs font-medium border transition-all capitalize",
+                        ownerType === ot ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                                         : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300")}>
+                      {ot}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Advanced toggle */}
+            <button onClick={() => setShowAdvanced(v => !v)}
+              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors">
+              {showAdvanced ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+              Advanced options
+            </button>
+
+            {showAdvanced && (
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block text-xs text-slate-500 mb-1.5">
+                    {idLabel} Number <span className="text-slate-700">default: 030217141005</span>
+                  </label>
+                  <input value={icNumber} onChange={e => setIcNumber(e.target.value)}
+                    placeholder="030217141005"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-500 mb-1.5">Postcode <span className="text-slate-700">default: 55000</span></label>
+                  <input value={postcode} onChange={e => setPostcode(e.target.value)}
+                    placeholder="55000"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs text-slate-500 mb-1.5">Workers (concurrency) <span className="text-slate-700">max 10</span></label>
+                  <div className="flex items-center gap-1.5 h-[38px]">
+                    <button type="button" onClick={() => setConcurrency(v => Math.max(1, v - 1))}
+                      className="w-8 h-8 flex items-center justify-center bg-slate-800 border border-slate-700 rounded-lg text-slate-400 hover:text-slate-200 transition-colors text-base font-bold">−</button>
+                    <span className="w-6 text-center text-sm font-semibold text-slate-200">{concurrency}</span>
+                    <button type="button" onClick={() => setConcurrency(v => Math.min(10, v + 1))}
+                      className="w-8 h-8 flex items-center justify-center bg-slate-800 border border-slate-700 rounded-lg text-slate-400 hover:text-slate-200 transition-colors text-base font-bold">+</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>{/* end left */}
+
+          {/* Right column — vehicle input */}
+          <div className="flex flex-col">
+            <label className="block text-xs font-medium text-slate-400 mb-1.5">
+              Vehicle Numbers
+              <span className="text-slate-600 font-normal ml-1">— one per line, optional {idLabel} after plate (paste 2 columns from Excel)</span>
+            </label>
+            <textarea value={vehicleInput} onChange={e => setVehicleInput(e.target.value)}
+              placeholder={"ALA2133\t980121066038\nCDJ7398\t910920126347\nPNA3787  (uses default IC)"}
+              className="w-full flex-1 min-h-[260px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none" />
+            {vehicles.length > 0 && (
+              <p className="text-xs text-slate-600 mt-1">
+                {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}{" · "}
+                <span className="text-slate-500 font-medium">est. {scEstimateTime(vehicles.length, concurrency)}</span>
+                {vehicles.some(v => v.icNumber) && (
+                  <span className="text-slate-500">{" · "}{vehicles.filter(v => v.icNumber).length} with custom {idLabel}</span>
+                )}
+              </p>
+            )}
+          </div>
+        </div>{/* end grid */}
+
+        {/* Run / Stop */}
+        <div className="flex items-center gap-3 pt-1">
+          <button onClick={handleRun} disabled={loading || vehicles.length === 0}
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-colors">
+            {loading ? <Loader2 size={15} className="animate-spin" /> : <Play size={15} />}
+            {loading ? "Running…" : "Run Check"}
+          </button>
+          {loading && (
+            <button onClick={handleStop} disabled={stopping}
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-colors">
+              {stopping ? <Loader2 size={15} className="animate-spin" /> : <Square size={14} />}
+              {stopping ? "Stopping…" : "Stop"}
+            </button>
+          )}
+          {loading && (
+            <p className="text-xs text-slate-500 animate-pulse">
+              {stopping
+                ? "Stopping — partial results will be shown…"
+                : `Checking ${vehicles.length} vehicle${vehicles.length !== 1 ? "s" : ""} — est. ${scEstimateTime(vehicles.length, concurrency)}…`}
+            </p>
+          )}
+          {!loading && rows.length > 0 && (
+            <div className="flex items-center gap-2 ml-auto">
+              <button onClick={() => exportSecarangExcel(rows)}
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg transition-colors">
+                <Download size={13} /> Export Excel
+              </button>
+              <button onClick={handleClear}
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-500 rounded-lg transition-colors">
+                <Trash2 size={13} /> Clear
+              </button>
+            </div>
+          )}
+        </div>
+      </div>{/* end input panel */}
+
+      {/* Error */}
+      {error && (
+        <div className="bg-red-950/40 border border-red-800/50 rounded-2xl p-4 flex gap-3">
+          <AlertCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
+          <pre className="text-xs text-red-300 whitespace-pre-wrap break-all">{error}</pre>
+        </div>
+      )}
+
+      {/* Results */}
+      {hasRun && !loading && !error && rows.length === 0 && (
+        <div className="text-center py-12 text-slate-600">
+          <Shield size={28} className="mx-auto mb-2 opacity-40" />
+          <p className="text-sm">No results returned.</p>
+        </div>
+      )}
+
+      {rows.length > 0 && (
+        <div className="space-y-4">
+
+          {/* View toggle + stats */}
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1">
+              <button onClick={() => setView("matrix")}
+                className={clsx("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                  view === "matrix" ? "bg-blue-600 text-white" : "text-slate-500 hover:text-slate-300")}>
+                <TableProperties size={13} /> Matrix
+              </button>
+              <button onClick={() => setView("table")}
+                className={clsx("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                  view === "table" ? "bg-blue-600 text-white" : "text-slate-500 hover:text-slate-300")}>
+                <LayoutGrid size={13} /> Table
+              </button>
+            </div>
+            <p className="text-xs text-slate-600">
+              {scVehicles.length} vehicle{scVehicles.length !== 1 ? "s" : ""}{" · "}
+              {scVehicles.reduce((s, v) => s + v.totalDisplayed, 0)} insurer entries
+            </p>
+          </div>
+
+          {/* Matrix view */}
+          {view === "matrix" && (
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="text-xs border-collapse w-full">
+                  <thead>
+                    <tr className="border-b border-slate-800 bg-slate-900/80">
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Vehicle</th>
+                      {insurerNames.map(name => (
+                        <th key={name} className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                          {name}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {scVehicles.map(v => (
+                      <tr key={v.vehicleNumber} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
+                        <td className="px-4 py-2.5 font-mono font-bold text-slate-200 whitespace-nowrap">
+                          {v.vehicleNumber}
+                          {(v.make || v.model) && (
+                            <div className="text-[10px] font-normal text-slate-500">{[v.make, v.model, v.year].filter(Boolean).join(" ")}</div>
+                          )}
+                        </td>
+                        {insurerNames.map(name => {
+                          const ins = v.insurers.find(i => i.name === name);
+                          if (!ins) return <td key={name} className="px-3 py-2.5 text-center text-slate-700">—</td>;
+                          if (!ins.available) return (
+                            <td key={name} className="px-3 py-2.5 text-center">
+                              <span className="text-red-400 text-xs font-semibold">N/A</span>
+                            </td>
+                          );
+                          const prices = ins.sumInsuredOptions;
+                          const cheapest = prices[0];
+                          return (
+                            <td key={name} className="px-3 py-2.5 text-center">
+                              <button onClick={() => toggleExpand(`${v.vehicleNumber}-${name}`)}
+                                className="group text-left">
+                                <span className="text-green-400 text-xs font-semibold block">✓ Available</span>
+                                {cheapest && (
+                                  <span className="text-slate-400 text-[10px] group-hover:text-slate-300 transition-colors">
+                                    from {cheapest.price}
+                                  </span>
+                                )}
+                                {prices.length > 1 && (
+                                  <span className="text-slate-600 text-[10px] block">{prices.length} options</span>
+                                )}
+                              </button>
+                              {expanded.has(`${v.vehicleNumber}-${name}`) && (
+                                <div className="mt-1.5 text-left bg-slate-800 border border-slate-700 rounded-lg p-2 min-w-[160px]">
+                                  <table className="w-full">
+                                    <thead>
+                                      <tr>
+                                        <th className="text-[10px] text-slate-500 font-medium pb-1 text-left">Sum Insured</th>
+                                        <th className="text-[10px] text-slate-500 font-medium pb-1 text-right">Price</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {prices.map((opt, i) => (
+                                        <tr key={i}>
+                                          <td className="text-[10px] text-slate-300 py-0.5 pr-3">{opt.sumInsured}</td>
+                                          <td className="text-[10px] text-slate-200 font-medium py-0.5 text-right">{opt.price}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Table view — flat rows */}
+          {view === "table" && (
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="text-xs border-collapse w-full">
+                  <thead>
+                    <tr className="border-b border-slate-800 bg-slate-900/80">
+                      {["Vehicle", "Make/Model", "Insurer", "Available", "Sum Insured", "Price"].map(h => (
+                        <th key={h} className="px-3 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((r, i) => (
+                      <tr key={i} className="border-b border-slate-800/50 hover:bg-slate-900/40 transition-colors">
+                        <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{r.vehicleNumber}</td>
+                        <td className="px-3 py-2 text-slate-400">{[r.make, r.model, r.year].filter(Boolean).join(" ") || "—"}</td>
+                        <td className="px-3 py-2 text-blue-300">{r.insurer || "—"}</td>
+                        <td className="px-3 py-2"><ScAvailBadge value={r.available} /></td>
+                        <td className="px-3 py-2 text-slate-400">{r.sumInsured || "—"}</td>
+                        <td className="px-3 py-2 text-slate-200 font-medium">{r.price || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
