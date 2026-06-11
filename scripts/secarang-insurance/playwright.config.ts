@@ -25,10 +25,13 @@ export default defineConfig({
   projects: [
     {
       name: 'secarang-checker',
-      use: {
-        ...devices['Desktop Chrome'],
-        headless: false,
-      },
+      use: { ...devices['Desktop Chrome'], headless: false },
+      testMatch: '**/secarang-checker.spec.ts',
+    },
+    {
+      name: 'secarang-regression',
+      use: { ...devices['Desktop Chrome'], headless: false },
+      testMatch: '**/secarang-regression.spec.ts',
     },
   ],
 });
