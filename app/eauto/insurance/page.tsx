@@ -195,7 +195,10 @@ export default function InsurancePage() {
   // Display
   const [view, setView]         = useState<ViewMode>("table");
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
-  const [shownInsurers, setShownInsurers] = useState<Set<string>>(new Set(ALL_INSURERS));
+  const [shownInsurers, setShownInsurers] = useState<Set<string>>(() => {
+    const found = (insuranceJob?.rows ?? []).map(r => r.insurer).filter(Boolean);
+    return found.length > 0 ? new Set(found) : new Set(ALL_INSURERS);
+  });
   const [search, setSearch]               = useState("");
   const [allowFilter, setAllowFilter]     = useState<AllowFilter>("all");
   const [sort, setSort]                   = useState<SortState>({ key: null, dir: "asc" });
@@ -1076,7 +1079,10 @@ function SecarangTab() {
   // Filters & search
   const [search,        setSearch]        = useState("");
   const [availFilter,   setAvailFilter]   = useState<ScAvailFilter>("all");
-  const [shownInsurers, setShownInsurers] = useState<Set<string>>(new Set());
+  const [shownInsurers, setShownInsurers] = useState<Set<string>>(() => {
+    const found = (secarangJob?.rows ?? []).map(r => r.insurer).filter(Boolean);
+    return new Set(found);
+  });
   const [sort,          setSort]          = useState<ScSortState>({ key: null, dir: "asc" });
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
 
