@@ -838,7 +838,7 @@ export default function InsurancePage() {
                             {col.sub ? col.sub : col.label}
                           </div>
                           {col.sub && (
-                            <div className="text-[10px] font-medium text-slate-600 mt-0.5">{col.label}</div>
+                            <div className="text-[10px] font-bold text-slate-400 mt-0.5">{col.label}</div>
                           )}
                         </th>
                       );
