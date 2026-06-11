@@ -392,6 +392,11 @@ export default function InsurancePage() {
         {/* ── Input panel ── */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:items-stretch">
+
+          {/* ── Left: connection + options ── */}
+          <div className="space-y-4">
+
           {/* ── Environment ── */}
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-2">Environment</label>
@@ -472,37 +477,6 @@ export default function InsurancePage() {
             </div>
           </div>
 
-          {/* ── Vehicle numbers ── */}
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1.5">
-              Vehicle Numbers
-              <span className="text-slate-600 font-normal ml-1">— one per line, optional IC after the plate (paste 2 columns from Excel)</span>
-            </label>
-            <textarea
-              value={vehicleInput}
-              onChange={e => setVehicleInput(e.target.value)}
-              placeholder={"WXX1234\t030217141005\nABC5678\t900101015523\nXYZ9012  (uses default IC)"}
-              rows={4}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
-            />
-            {vehicles.length > 0 && (
-              <p className="text-xs text-slate-600 mt-1">
-                {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}
-                {" · "}
-                <span className="text-slate-500 font-medium">
-                  est. {estimateTime(vehicles.length, concurrency)}
-                </span>
-                {" "}
-                <span className="text-slate-700">({concurrency} workers)</span>
-                {vehicles.some(v => v.icNumber) && (
-                  <span className="text-slate-500">
-                    {" · "}{vehicles.filter(v => v.icNumber).length} with custom IC
-                  </span>
-                )}
-              </p>
-            )}
-          </div>
-
           {/* ── Advanced options toggle ── */}
           <button
             onClick={() => setShowAdvanced(v => !v)}
@@ -513,7 +487,7 @@ export default function InsurancePage() {
           </button>
 
           {showAdvanced && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+            <div className="grid grid-cols-2 gap-3 pt-1">
               <div>
                 <label className="block text-xs text-slate-500 mb-1.5">
                   IC Number <span className="text-slate-700">default: 030217141005</span>
@@ -568,6 +542,40 @@ export default function InsurancePage() {
               </div>
             </div>
           )}
+
+          </div>{/* end left column */}
+
+          {/* ── Right: vehicle numbers + IC (tall) ── */}
+          <div className="flex flex-col">
+            <label className="block text-xs font-medium text-slate-400 mb-1.5">
+              Vehicle Numbers
+              <span className="text-slate-600 font-normal ml-1">— one per line, optional IC after the plate (paste 2 columns from Excel)</span>
+            </label>
+            <textarea
+              value={vehicleInput}
+              onChange={e => setVehicleInput(e.target.value)}
+              placeholder={"WXX1234\t030217141005\nABC5678\t900101015523\nXYZ9012  (uses default IC)"}
+              className="w-full flex-1 min-h-[260px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+            />
+            {vehicles.length > 0 && (
+              <p className="text-xs text-slate-600 mt-1">
+                {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}
+                {" · "}
+                <span className="text-slate-500 font-medium">
+                  est. {estimateTime(vehicles.length, concurrency)}
+                </span>
+                {" "}
+                <span className="text-slate-700">({concurrency} workers)</span>
+                {vehicles.some(v => v.icNumber) && (
+                  <span className="text-slate-500">
+                    {" · "}{vehicles.filter(v => v.icNumber).length} with custom IC
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
+
+          </div>{/* end grid */}
 
           {/* ── Run button ── */}
           <div className="flex items-center gap-3 pt-1">
