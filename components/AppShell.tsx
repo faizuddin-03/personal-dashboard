@@ -4,7 +4,10 @@ import { useRouter } from "next/navigation";
 import { Menu, X, Search } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import GlobalSearch from "@/components/GlobalSearch";
+import WhatsNewModal from "@/components/WhatsNewModal";
 import { JiraCredentials, getStoredCredentials, storeCredentials } from "@/lib/jira";
+import { CURRENT_CHANGES } from "@/lib/changelog";
+import { InsuranceJob, InsuranceRunParams, saveInsuranceResults } from "@/lib/insurance";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { loadAndApplyTheme } from "@/lib/themes";
 import clsx from "clsx";
@@ -14,6 +17,12 @@ interface AppCtx {
   setCreds: (c: JiraCredentials | null) => void;
   openSettings: () => void;
   openSearch: () => void;
+  openWhatsNew: () => void;
+  insuranceJob: InsuranceJob | null;
+  startInsuranceRun: (params: InsuranceRunParams) => void;
+  stopInsuranceRun: () => void;
+  clearInsuranceJob: () => void;
+  restoreInsuranceJob: (job: InsuranceJob) => void;
 }
 
 export const AppContext = createContext<AppCtx>({
@@ -21,6 +30,12 @@ export const AppContext = createContext<AppCtx>({
   setCreds: () => {},
   openSettings: () => {},
   openSearch: () => {},
+  openWhatsNew: () => {},
+  insuranceJob: null,
+  startInsuranceRun: () => {},
+  stopInsuranceRun: () => {},
+  clearInsuranceJob: () => {},
+  restoreInsuranceJob: () => {},
 });
 
 export function useApp() {
@@ -32,7 +47,66 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  const [insuranceJob, setInsuranceJob] = useState<InsuranceJob | null>(null);
   const router = useRouter();
+
+  function startInsuranceRun(params: InsuranceRunParams) {
+    // Called with no vehicles = just restore display state from saved results, no fetch
+    if (!params.vehicles.length) return;
+    setInsuranceJob({
+      loading: true, rows: [], error: "", log: "", savedAt: null,
+      vehicleInput: params.vehicleInput,
+      username: params.usernameDisplay,
+      baseUrl: params.baseUrlDisplay,
+    });
+    fetch("/api/insurance/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        vehicles:        params.vehicles,
+        username:        params.username,
+        password:        params.password,
+        icNumber:        params.icNumber,
+        postcode:        params.postcode,
+        vehicleCategory: params.vehicleCategory,
+        baseUrl:         params.baseUrl,
+        concurrency:     params.concurrency,
+      }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        const now = new Date().toISOString();
+        const rows = data.rows ?? [];
+        const log  = data.log ?? "";
+        if (data.error) throw new Error(data.error);
+        setInsuranceJob(j => j ? { ...j, loading: false, stopping: false, rows, log, savedAt: now } : null);
+        saveInsuranceResults({
+          rows, runLog: log, savedAt: now,
+          vehicleInput: params.vehicleInput,
+          username: params.usernameDisplay,
+          baseUrl: params.baseUrlDisplay,
+        });
+      })
+      .catch(e => {
+        setInsuranceJob(j => j ? { ...j, loading: false, stopping: false, error: e instanceof Error ? e.message : "Something went wrong" } : null);
+      });
+  }
+
+  function stopInsuranceRun() {
+    // Mark as stopping for immediate UI feedback; the pending POST resolves
+    // on its own with whatever partial results were flushed to disk.
+    setInsuranceJob(j => j ? { ...j, stopping: true } : null);
+    fetch("/api/insurance/check", { method: "DELETE" }).catch(() => {});
+  }
+
+  function clearInsuranceJob() {
+    setInsuranceJob(null);
+  }
+
+  function restoreInsuranceJob(job: InsuranceJob) {
+    setInsuranceJob(job);
+  }
 
   useAutoBackup();
 
@@ -41,6 +115,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setCreds(stored);
     loadAndApplyTheme();
     setHydrated(true);
+    if (!sessionStorage.getItem("whats_new_seen") && CURRENT_CHANGES.length > 0) {
+      setWhatsNewOpen(true);
+    }
     // If accountId isn't cached yet, fetch it now so reporter queries work reliably
     if (stored && !stored.accountId) {
       fetch("/api/jira/myself", {
@@ -76,6 +153,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       creds, setCreds,
       openSettings: () => router.push("/settings"),
       openSearch: () => setSearchOpen(true),
+      openWhatsNew: () => setWhatsNewOpen(true),
+      insuranceJob, startInsuranceRun, stopInsuranceRun, clearInsuranceJob, restoreInsuranceJob,
     }}>
       <div className="flex h-screen overflow-hidden">
         {/* Mobile overlay */}
@@ -127,6 +206,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         >
           <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
         </div>
+      )}
+
+      {/* What's New modal — auto-shown once per session */}
+      {whatsNewOpen && (
+        <WhatsNewModal onClose={() => {
+          sessionStorage.setItem("whats_new_seen", "true");
+          setWhatsNewOpen(false);
+        }} />
       )}
     </AppContext.Provider>
   );

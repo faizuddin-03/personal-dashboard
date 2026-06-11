@@ -14,7 +14,7 @@ const CONFIG = {
   password: process.env.EAUTO_PASSWORD || 'password',
 
   // Defaults used when input Excel doesn't specify these
-  icNumber: '020406081081',
+  icNumber: '030217141005',
   postcode: '31150',
   vehicleCategory: 'individual', // lowercase: 'individual' or 'company'
 
@@ -82,6 +82,7 @@ async function readInputExcel(filePath: string): Promise<VehicleInput[]> {
 
 // ─── WRITE OUTPUT EXCEL ──────────────────────────────────────────────────────
 async function writeOutputExcel(results: VehicleResult[], filePath: string): Promise<void> {
+  const tmpPath = `${filePath}.tmp`;
   const wb = new ExcelJS.Workbook();
   wb.creator = 'eAuto Insurance Checker';
   wb.created = new Date();
@@ -141,7 +142,22 @@ async function writeOutputExcel(results: VehicleResult[], filePath: string): Pro
     sk.addRow({ vn: r.vehicleNumber, st: r.status, reason: r.errorMessage || 'No info' });
   }
 
-  await wb.xlsx.writeFile(filePath);
+  await wb.xlsx.writeFile(tmpPath);
+  // Atomic swap so a reader never sees a half-written file (important when the
+  // run is stopped mid-flight and the API reads partial results).
+  fs.renameSync(tmpPath, filePath);
+}
+
+// Serialise incremental writes so concurrent workers don't clobber each other.
+// Each flush writes the full snapshot of results gathered so far, so if the
+// process is killed the output file always holds every vehicle done up to then.
+let writeChain: Promise<void> = Promise.resolve();
+function flushOutput(results: VehicleResult[], filePath: string): Promise<void> {
+  const snapshot = [...results];
+  writeChain = writeChain
+    .then(() => writeOutputExcel(snapshot, filePath))
+    .catch(err => console.error('   ⚠️ flush failed:', err));
+  return writeChain;
 }
 
 // ─── LOGIN ───────────────────────────────────────────────────────────────────
@@ -372,6 +388,12 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
   await page.waitForTimeout(CONFIG.waitAfterClick);
 
   // ── Step 10: Extract insurer data ──────────────────────────────────
+  // Log all classes on the page that contain "plan" so we can diagnose missing insurers
+  const planClasses = await page.evaluate(() =>
+    [...new Set([...document.querySelectorAll('[class*="plan"]')].map(el => el.className))].join(', ')
+  );
+  console.log(`   🔍 Plan-related classes on page: ${planClasses || '(none)'}`);
+
   const insurers = await page.evaluate(() => {
     const clean = (s: string) => s.replace(/[\t\n\r]+/g, ' ').replace(/\s+/g, ' ').trim();
     // Normalise insurer names that the page renders without spaces
@@ -383,17 +405,21 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
       referRiskCode: string; totalPrice: string;
     }[] = [];
 
-    document.querySelectorAll('.plan-detail-table').forEach((table) => {
-      const insurerName = normalise(clean(table.querySelector('.plan-name')?.textContent || 'Unknown'));
+    // Try primary selector, fall back to any table/div that contains a plan name
+    const tables = document.querySelectorAll('.plan-detail-table');
+    console.log(`[page] Found ${tables.length} .plan-detail-table elements`);
+
+    tables.forEach((table) => {
+      const nameEl = table.querySelector('.plan-name') ?? table.querySelector('[class*="plan-name"]') ?? table.querySelector('th') ?? table.querySelector('td');
+      const insurerName = normalise(clean(nameEl?.textContent || 'Unknown'));
       let coverType = '', allowToPurchase = '', referRiskCode = '', totalPrice = '';
 
       table.querySelectorAll('td').forEach((td) => {
         const text = clean(td.textContent || '');
 
-        // Cover type: only get the first line (before "Period of insurance")
+        // Cover type: capture full text before "Period of insurance"
         if (text.startsWith('Cover Type') && !coverType) {
-          const match = text.match(/^(Cover Type[^P]+)/);
-          coverType = match ? clean(match[1]) : text.split('Period')[0].trim();
+          coverType = text.split(/\bPeriod\b/i)[0].trim();
         }
 
         if (text.includes('Refer Risk')) {
@@ -428,8 +454,12 @@ async function processVehicle(page: Page, vehicle: VehicleInput): Promise<Vehicl
     return results;
   });
 
-  console.log(`   📋 ${insurers.length} insurer(s):`);
-  insurers.forEach(i => console.log(`     - ${i.insurerName}: Allow=${i.allowToPurchase}, Risk=${i.referRiskCode}, Price=${i.totalPrice}`));
+  console.log(`   📋 ${insurers.length} insurer(s) found:`);
+  insurers.forEach(i => console.log(`     - ${i.insurerName}: Cover=${i.coverType}, Allow=${i.allowToPurchase}, Risk=${i.referRiskCode}, Price=${i.totalPrice}`));
+  if (insurers.length === 0) {
+    const bodySnippet = await page.locator('body').innerText().catch(() => '');
+    console.log(`   ⚠️  No insurers found. Page text snippet:\n${bodySnippet.slice(0, 500)}`);
+  }
 
   return { vehicleNumber: vn, ...vehicleInfo, insurers, status: 'SUCCESS' };
 }
@@ -447,7 +477,13 @@ function chunkArray<T>(arr: T[], n: number): T[][] {
   return chunks;
 }
 
-async function runWorker(browser: Browser, workerIdx: number, vehicles: VehicleInput[]): Promise<VehicleResult[]> {
+async function runWorker(
+  browser: Browser,
+  workerIdx: number,
+  vehicles: VehicleInput[],
+  shared: VehicleResult[],
+  outputPath: string,
+): Promise<VehicleResult[]> {
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
   const page = await ctx.newPage();
   page.setDefaultNavigationTimeout(CONFIG.navigationTimeout);
@@ -459,16 +495,22 @@ async function runWorker(browser: Browser, workerIdx: number, vehicles: VehicleI
     for (let i = 0; i < vehicles.length; i++) {
       const vn = vehicles[i].vehicleNumber;
       console.log(`[Worker ${workerIdx + 1}] ━━━ ${i + 1}/${vehicles.length}: ${vn}`);
+      let res: VehicleResult;
       try {
-        results.push(await processVehicle(page, vehicles[i]));
+        res = await processVehicle(page, vehicles[i]);
       } catch (err) {
         console.error(`[Worker ${workerIdx + 1}] ❌ ${vn}:`, err);
-        results.push({
+        res = {
           vehicleNumber: vn, make: '', model: '', manufacturingYear: '',
           engineCapacity: '', transmission: '', variant: '',
           insurers: [], status: 'ERROR', errorMessage: String(err),
-        });
+        };
       }
+      results.push(res);
+      // Flush partial results to disk after every vehicle so a stopped run
+      // still surfaces everything gathered so far.
+      shared.push(res);
+      await flushOutput(shared, outputPath);
     }
   } finally {
     await ctx.close();
@@ -512,17 +554,21 @@ test.describe('eAuto Insurance Quote Checker', () => {
     console.log(`🚀 Running ${concurrency} parallel worker(s) for ${vehicles.length} vehicle(s)`);
 
     const chunks = chunkArray(vehicles, concurrency);
+    const outputPath = path.resolve(CONFIG.outputFile);
+
+    // Shared accumulator flushed to disk after each vehicle (completion order),
+    // so a stopped run leaves a readable partial output file.
+    const shared: VehicleResult[] = [];
 
     // Launch all workers concurrently — each gets its own browser context + login session
     const chunkResults = await Promise.all(
-      chunks.map((chunk, idx) => runWorker(browser, idx, chunk))
+      chunks.map((chunk, idx) => runWorker(browser, idx, chunk, shared, outputPath))
     );
 
     // Flatten in original vehicle order (chunks preserve ordering within each slice)
     const results: VehicleResult[] = chunkResults.flat();
 
-    // Write output
-    const outputPath = path.resolve(CONFIG.outputFile);
+    // Final write in proper vehicle order, overwriting the completion-order flushes
     await writeOutputExcel(results, outputPath);
 
     const ok   = results.filter(r => r.status === 'SUCCESS').length;

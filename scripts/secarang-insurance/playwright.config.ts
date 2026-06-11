@@ -16,7 +16,7 @@ export default defineConfig({
   use: {
     headless: false,
     viewport: { width: 1920, height: 1080 },
-    navigationTimeout: 60000,
+    navigationTimeout: 90000,
     actionTimeout: 30000,
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
@@ -24,7 +24,7 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'insurance-checker',
+      name: 'secarang-checker',
       use: {
         ...devices['Desktop Chrome'],
         headless: false,
