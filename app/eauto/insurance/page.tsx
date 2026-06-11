@@ -10,9 +10,9 @@ import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 import { InsuranceRow, VehicleEntry, loadInsuranceSaved, clearInsuranceSaved } from "@/lib/insurance";
 import {
-  SecarangRow, SecarangJob, SecarangVehicle,
+  SecarangRow, SecarangJob, SecarangVehicle, SecarangRunParams,
   VehicleEntry as ScVehicleEntry,
-  loadSecarangSaved, saveSecarangResults, clearSecarangSaved, buildVehicles,
+  loadSecarangSaved, clearSecarangSaved, buildVehicles,
 } from "@/lib/secarang";
 
 // ── Environment presets ───────────────────────────────────────
@@ -1070,7 +1070,8 @@ function SecarangTab() {
   const [view,          setView]          = useState<"table" | "matrix">("matrix");
 
   const [checkVehicleDetails, setCheckVehicleDetails] = useState(true);
-  const [job, setJob] = useState<SecarangJob | null>(null);
+
+  const { secarangJob, startSecarangRun, stopSecarangRun, clearSecarangJob, restoreSecarangJob } = useApp();
 
   // Filters & search
   const [search,        setSearch]        = useState("");
@@ -1079,24 +1080,28 @@ function SecarangTab() {
   const [sort,          setSort]          = useState<ScSortState>({ key: null, dir: "asc" });
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
 
-  const loading  = job?.loading  ?? false;
-  const stopping = job?.stopping ?? false;
-  const rows     = job?.rows     ?? [];
-  const error    = job?.error    ?? "";
-  const runLog   = job?.log      ?? "";
-  const savedAt  = job?.savedAt  ?? null;
-  const hasRun   = job !== null;
+  const loading  = secarangJob?.loading  ?? false;
+  const stopping = secarangJob?.stopping ?? false;
+  const rows     = secarangJob?.rows     ?? [];
+  const error    = secarangJob?.error    ?? "";
+  const runLog   = secarangJob?.log      ?? "";
+  const savedAt  = secarangJob?.savedAt  ?? null;
+  const hasRun   = secarangJob !== null;
 
   const idLabel  = ownerType === "company" ? "SSM" : "IC";
   const vehicles = parseScVehicles(vehicleInput);
 
-  // Restore saved on mount
+  // Restore saved on mount (if no active job in context)
   useEffect(() => {
+    if (secarangJob) {
+      setVehicleInput(secarangJob.vehicleInput);
+      return;
+    }
     const saved = loadSecarangSaved();
     if (!saved || saved.rows.length === 0) return;
     setVehicleInput(saved.vehicleInput);
-    setJob({ loading: false, rows: saved.rows, error: "", log: saved.runLog ?? "", savedAt: saved.savedAt, vehicleInput: saved.vehicleInput });
-  }, []);
+    restoreSecarangJob({ loading: false, rows: saved.rows, error: "", log: saved.runLog ?? "", savedAt: saved.savedAt, vehicleInput: saved.vehicleInput });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Build structured view
   const scVehicles = useMemo(() => buildVehicles(rows), [rows]);
@@ -1181,45 +1186,30 @@ function SecarangTab() {
     setShownInsurers(new Set(allInsurerNames));
   }
 
-  async function handleRun() {
+  function handleRun() {
     if (!vehicles.length) return;
-    setJob({ loading: true, stopping: false, rows: [], error: "", log: "", savedAt: null, vehicleInput });
-    try {
-      const res = await fetch("/api/secarang/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          vehicles,
-          icNumber:     icNumber.trim()     || undefined,
-          postcode:     postcode.trim()     || undefined,
-          vehicleType,
-          ownerType,
-          baseUrl:      baseUrl             || undefined,
-          sitePassword: sitePassword.trim() || undefined,
-          concurrency,
-          checkVehicleDetails,
-        }),
-      });
-      const data = await res.json();
-      const now  = new Date().toISOString();
-      const r: SecarangRow[] = data.rows ?? [];
-      const log = data.log ?? "";
-      if (data.error) throw new Error(data.error);
-      setJob(j => j ? { ...j, loading: false, stopping: false, rows: r, log, savedAt: now } : null);
-      saveSecarangResults({ rows: r, runLog: log, savedAt: now, vehicleInput });
-    } catch (e) {
-      setJob(j => j ? { ...j, loading: false, stopping: false, error: e instanceof Error ? e.message : "Something went wrong" } : null);
-    }
+    const params: SecarangRunParams = {
+      vehicles,
+      icNumber:            icNumber.trim()     || undefined,
+      postcode:            postcode.trim()     || undefined,
+      vehicleType,
+      ownerType,
+      baseUrl:             baseUrl             || undefined,
+      sitePassword:        sitePassword.trim() || undefined,
+      concurrency,
+      checkVehicleDetails,
+      vehicleInput,
+    };
+    startSecarangRun(params);
   }
 
-  async function handleStop() {
-    setJob(j => j ? { ...j, stopping: true } : null);
-    await fetch("/api/secarang/check", { method: "DELETE" }).catch(() => {});
+  function handleStop() {
+    stopSecarangRun();
   }
 
   function handleClear() {
     clearSecarangSaved();
-    setJob(null);
+    clearSecarangJob();
     setVehicleInput("");
     setShownInsurers(new Set());
   }
@@ -1584,23 +1574,33 @@ function SecarangTab() {
                         <div className="text-[10px] font-normal text-slate-500">{[v.make, v.model, v.year].filter(Boolean).join(" ")}</div>
                       )}
                     </td>
-                    <td className="px-3 py-2.5 text-center text-slate-300 font-semibold">{v.totalDisplayed}</td>
-                    <td className="px-3 py-2.5 text-center">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-green-900/40 text-green-400">
-                        {v.totalAvailable}
-                      </span>
-                    </td>
-                    {filteredInsurerNames.map(name => {
-                      const ins = v.insurers.find(i => i.name === name);
-                      if (!ins) return <td key={name} className="px-3 py-2.5 text-center text-slate-700">—</td>;
-                      return (
-                        <td key={name} className="px-3 py-2.5 text-center">
-                          {ins.available
-                            ? <span className="text-green-400 text-xs font-semibold">✓</span>
-                            : <span className="text-red-400 text-xs font-semibold" title={ins.unavailableReason}>N/A</span>}
+                    {v.status === "ERROR" ? (
+                      <td colSpan={2 + filteredInsurerNames.length} className="px-3 py-2.5">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-red-900/40 text-red-400">
+                          <AlertCircle size={11} /> {v.errorMessage || "Error"}
+                        </span>
+                      </td>
+                    ) : (
+                      <>
+                        <td className="px-3 py-2.5 text-center text-slate-300 font-semibold">{v.totalDisplayed}</td>
+                        <td className="px-3 py-2.5 text-center">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-green-900/40 text-green-400">
+                            {v.totalAvailable}
+                          </span>
                         </td>
-                      );
-                    })}
+                        {filteredInsurerNames.map(name => {
+                          const ins = v.insurers.find(i => i.name === name);
+                          if (!ins) return <td key={name} className="px-3 py-2.5 text-center text-slate-700">—</td>;
+                          return (
+                            <td key={name} className="px-3 py-2.5 text-center">
+                              {ins.available
+                                ? <span className="text-green-400 text-xs font-semibold">✓</span>
+                                : <span className="text-red-400 text-xs font-semibold" title={ins.unavailableReason}>N/A</span>}
+                            </td>
+                          );
+                        })}
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -1632,13 +1632,23 @@ function SecarangTab() {
                       </p>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-slate-500">
-                      <span><span className="text-slate-400">Displayed</span> {v.totalDisplayed}</span>
-                      <span><span className="text-green-400 font-semibold">Available</span> {v.totalAvailable}</span>
+                      {v.status === "ERROR"
+                        ? <span className="flex items-center gap-1 text-red-400 font-semibold"><AlertCircle size={12} /> Error</span>
+                        : <>
+                            <span><span className="text-slate-400">Displayed</span> {v.totalDisplayed}</span>
+                            <span><span className="text-green-400 font-semibold">Available</span> {v.totalAvailable}</span>
+                          </>
+                      }
                       {isExpanded ? <ChevronUp size={14} className="text-slate-500" /> : <ChevronDown size={14} className="text-slate-500" />}
                     </div>
                   </div>
                   {isExpanded && (
                     <div className="px-4 pb-4">
+                      {v.status === "ERROR" ? (
+                        <p className="text-xs text-red-400 bg-red-950/40 border border-red-800/50 rounded-lg px-3 py-2">
+                          {v.errorMessage || "An error occurred processing this vehicle."}
+                        </p>
+                      ) : (
                       <table className="text-xs border-collapse w-full table-fixed">
                         <colgroup>
                           <col className="w-[30%]" />
@@ -1662,6 +1672,7 @@ function SecarangTab() {
                           ))}
                         </tbody>
                       </table>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1701,11 +1712,21 @@ function SecarangTab() {
                 <tr key={i} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
                   <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{r.vehicleNumber}</td>
                   <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{[r.make, r.model, r.year].filter(Boolean).join(" ") || "—"}</td>
-                  <td className="px-3 py-2 text-blue-300 font-medium whitespace-nowrap">{r.insurer || "—"}</td>
-                  <td className="px-3 py-2 whitespace-nowrap"><ScAvailBadge value={r.available} /></td>
-                  <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{r.totalDisplayed || "—"}</td>
-                  <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{r.totalAvailable || "—"}</td>
-                  <td className="px-3 py-2 text-slate-500 text-[11px]">{r.unavailableReason || "—"}</td>
+                  {r.status === "ERROR" ? (
+                    <td colSpan={5} className="px-3 py-2">
+                      <span className="inline-flex items-center gap-1.5 text-xs text-red-400">
+                        <AlertCircle size={11} /> {r.errorMessage || "Error"}
+                      </span>
+                    </td>
+                  ) : (
+                    <>
+                      <td className="px-3 py-2 text-blue-300 font-medium whitespace-nowrap">{r.insurer || "—"}</td>
+                      <td className="px-3 py-2 whitespace-nowrap"><ScAvailBadge value={r.available} /></td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{r.totalDisplayed || "—"}</td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{r.totalAvailable || "—"}</td>
+                      <td className="px-3 py-2 text-slate-500 text-[11px]">{r.unavailableReason || "—"}</td>
+                    </>
+                  )}
                 </tr>
               ))}
             </tbody>

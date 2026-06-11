@@ -75,23 +75,55 @@ function writeInputExcel(
 function readOutputExcel(): SecarangRow[] {
   if (!fs.existsSync(OUTPUT_XLSX)) return [];
   const wb = XLSX.read(fs.readFileSync(OUTPUT_XLSX));
-  const ws = wb.Sheets["Quotations"];
-  if (!ws) return [];
-  const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
-  return raw.map(r => ({
-    vehicleNumber:    String(r["Vehicle Number"]  ?? ""),
-    make:             String(r["Make"]            ?? ""),
-    model:            String(r["Model"]           ?? ""),
-    year:             String(r["Year"]            ?? ""),
-    variant:          String(r["Variant"]         ?? ""),
-    insurer:          String(r["Insurer"]         ?? ""),
-    available:        String(r["Available"]       ?? ""),
-    unavailableReason:String(r["Reason"]          ?? ""),
-    totalDisplayed:   String(r["Total Displayed"] ?? ""),
-    totalAvailable:   String(r["Total Available"] ?? ""),
-    status:           "SUCCESS",
-    errorMessage:     "",
-  }));
+
+  // Read quotation rows (successful vehicles)
+  const rows: SecarangRow[] = [];
+  const qs = wb.Sheets["Quotations"];
+  if (qs) {
+    const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(qs, { defval: "" });
+    for (const r of raw) {
+      rows.push({
+        vehicleNumber:    String(r["Vehicle Number"]  ?? ""),
+        make:             String(r["Make"]            ?? ""),
+        model:            String(r["Model"]           ?? ""),
+        year:             String(r["Year"]            ?? ""),
+        variant:          String(r["Variant"]         ?? ""),
+        insurer:          String(r["Insurer"]         ?? ""),
+        available:        String(r["Available"]       ?? ""),
+        unavailableReason:String(r["Reason"]          ?? ""),
+        totalDisplayed:   String(r["Total Displayed"] ?? ""),
+        totalAvailable:   String(r["Total Available"] ?? ""),
+        status:           "SUCCESS",
+        errorMessage:     "",
+      });
+    }
+  }
+
+  // Read error rows from the Vehicles sheet (status === ERROR) and add them
+  // as synthetic rows so the UI can display the failure message
+  const vs = wb.Sheets["Vehicles"];
+  if (vs) {
+    const vraw = XLSX.utils.sheet_to_json<Record<string, unknown>>(vs, { defval: "" });
+    for (const r of vraw) {
+      if (String(r["Status"] ?? "").toUpperCase() !== "ERROR") continue;
+      rows.push({
+        vehicleNumber:    String(r["Vehicle Number"]  ?? ""),
+        make:             String(r["Make"]            ?? ""),
+        model:            String(r["Model"]           ?? ""),
+        year:             String(r["Year"]            ?? ""),
+        variant:          String(r["Variant"]         ?? ""),
+        insurer:          "",
+        available:        "No",
+        unavailableReason:"",
+        totalDisplayed:   "0",
+        totalAvailable:   "0",
+        status:           "ERROR",
+        errorMessage:     String(r["Error"]           ?? ""),
+      });
+    }
+  }
+
+  return rows;
 }
 
 // ── POST — run the checker ────────────────────────────────────

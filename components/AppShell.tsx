@@ -8,6 +8,7 @@ import WhatsNewModal from "@/components/WhatsNewModal";
 import { JiraCredentials, getStoredCredentials, storeCredentials } from "@/lib/jira";
 import { CURRENT_CHANGES } from "@/lib/changelog";
 import { InsuranceJob, InsuranceRunParams, saveInsuranceResults } from "@/lib/insurance";
+import { SecarangJob, SecarangRunParams, SecarangRow, saveSecarangResults } from "@/lib/secarang";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { loadAndApplyTheme } from "@/lib/themes";
 import clsx from "clsx";
@@ -23,6 +24,11 @@ interface AppCtx {
   stopInsuranceRun: () => void;
   clearInsuranceJob: () => void;
   restoreInsuranceJob: (job: InsuranceJob) => void;
+  secarangJob: SecarangJob | null;
+  startSecarangRun: (params: SecarangRunParams) => void;
+  stopSecarangRun: () => void;
+  clearSecarangJob: () => void;
+  restoreSecarangJob: (job: SecarangJob) => void;
 }
 
 export const AppContext = createContext<AppCtx>({
@@ -36,6 +42,11 @@ export const AppContext = createContext<AppCtx>({
   stopInsuranceRun: () => {},
   clearInsuranceJob: () => {},
   restoreInsuranceJob: () => {},
+  secarangJob: null,
+  startSecarangRun: () => {},
+  stopSecarangRun: () => {},
+  clearSecarangJob: () => {},
+  restoreSecarangJob: () => {},
 });
 
 export function useApp() {
@@ -49,6 +60,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   const [insuranceJob, setInsuranceJob] = useState<InsuranceJob | null>(null);
+  const [secarangJob,  setSecarangJob]  = useState<SecarangJob  | null>(null);
   const router = useRouter();
 
   function startInsuranceRun(params: InsuranceRunParams) {
@@ -108,6 +120,54 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setInsuranceJob(job);
   }
 
+  function startSecarangRun(params: SecarangRunParams) {
+    if (!params.vehicles.length) return;
+    setSecarangJob({
+      loading: true, stopping: false, rows: [], error: "", log: "",
+      savedAt: null, vehicleInput: params.vehicleInput,
+    });
+    fetch("/api/secarang/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        vehicles:            params.vehicles,
+        icNumber:            params.icNumber,
+        postcode:            params.postcode,
+        vehicleType:         params.vehicleType,
+        ownerType:           params.ownerType,
+        baseUrl:             params.baseUrl,
+        sitePassword:        params.sitePassword,
+        concurrency:         params.concurrency,
+        checkVehicleDetails: params.checkVehicleDetails,
+      }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        const now  = new Date().toISOString();
+        const rows: SecarangRow[] = data.rows ?? [];
+        const log  = data.log ?? "";
+        if (data.error) throw new Error(data.error);
+        setSecarangJob(j => j ? { ...j, loading: false, stopping: false, rows, log, savedAt: now } : null);
+        saveSecarangResults({ rows, runLog: log, savedAt: now, vehicleInput: params.vehicleInput });
+      })
+      .catch(e => {
+        setSecarangJob(j => j ? { ...j, loading: false, stopping: false, error: e instanceof Error ? e.message : "Something went wrong" } : null);
+      });
+  }
+
+  function stopSecarangRun() {
+    setSecarangJob(j => j ? { ...j, stopping: true } : null);
+    fetch("/api/secarang/check", { method: "DELETE" }).catch(() => {});
+  }
+
+  function clearSecarangJob() {
+    setSecarangJob(null);
+  }
+
+  function restoreSecarangJob(job: SecarangJob) {
+    setSecarangJob(job);
+  }
+
   useAutoBackup();
 
   useEffect(() => {
@@ -155,6 +215,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       openSearch: () => setSearchOpen(true),
       openWhatsNew: () => setWhatsNewOpen(true),
       insuranceJob, startInsuranceRun, stopInsuranceRun, clearInsuranceJob, restoreInsuranceJob,
+      secarangJob, startSecarangRun, stopSecarangRun, clearSecarangJob, restoreSecarangJob,
     }}>
       <div className="flex h-screen overflow-hidden">
         {/* Mobile overlay */}

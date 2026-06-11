@@ -21,6 +21,8 @@ export interface SecarangVehicle {
   variant:        string;
   totalDisplayed: number;
   totalAvailable: number;
+  status:         "SUCCESS" | "ERROR";
+  errorMessage:   string;
   insurers: {
     name:              string;
     available:         boolean;
@@ -31,6 +33,19 @@ export interface SecarangVehicle {
 export interface VehicleEntry {
   vehicleNumber: string;
   icNumber?:     string;
+}
+
+export interface SecarangRunParams {
+  vehicles:            VehicleEntry[];
+  icNumber?:           string;
+  postcode?:           string;
+  vehicleType:         "car" | "motorcycle";
+  ownerType:           "private" | "company";
+  baseUrl?:            string;
+  sitePassword?:       string;
+  concurrency:         number;
+  checkVehicleDetails: boolean;
+  vehicleInput:        string;
 }
 
 export interface SecarangJob {
@@ -81,6 +96,8 @@ export function buildVehicles(rows: SecarangRow[]): SecarangVehicle[] {
         variant:        r.variant,
         totalDisplayed: parseInt(r.totalDisplayed) || 0,
         totalAvailable: parseInt(r.totalAvailable) || 0,
+        status:         r.status === "ERROR" ? "ERROR" : "SUCCESS",
+        errorMessage:   r.errorMessage || "",
         insurers: [],
       });
     }

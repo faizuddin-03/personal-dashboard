@@ -179,6 +179,31 @@ function flushOutput(results: VehicleResult[], filePath: string): Promise<void> 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 const clean = (s: string) => s.replace(/[\t\n\r]+/g, ' ').replace(/\s+/g, ' ').trim();
 
+// Detect and dismiss any error modal (app-info-modal or generic .modal-content).
+// Returns the modal's title/message if one was found, or null if none.
+async function checkAndDismissErrorModal(page: Page): Promise<string | null> {
+  const modal = page.locator('app-info-modal').first();
+  if ((await modal.count()) === 0 || !await modal.isVisible().catch(() => false)) return null;
+
+  // Extract the primary message from the title element
+  const title = clean(await modal.locator('h5.title, h5, h4').first().textContent().catch(() => '') || '');
+  const sub   = clean(await modal.locator('h6').first().textContent().catch(() => '') || '');
+  const msg   = [title, sub].filter(Boolean).join(' — ') || 'Error modal detected';
+
+  console.log(`   🚫 Error modal: "${msg}"`);
+
+  // Dismiss: prefer the OK button, fall back to the ✕ close button
+  const ok = modal.locator('button:has-text("OK"), button:has-text("Ok"), button:has-text("ok")').first();
+  if ((await ok.count()) > 0) {
+    await ok.click().catch(() => {});
+  } else {
+    const close = modal.locator('button.close, button:has-text("×"), button:has-text("✕")').first();
+    await close.click().catch(() => {});
+  }
+  await page.waitForTimeout(300);
+  return msg;
+}
+
 async function waitForCondition(
   page: Page,
   fn: () => Promise<boolean>,
@@ -576,15 +601,23 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
   }
 
   // Wait until the page actually settles into one of: quotation cards, the
-  // vehicle-details confirmation step, or an error. Exits the instant ready.
+  // vehicle-details confirmation step, an error modal, or a text error.
+  // Exits the instant any terminal condition appears.
   console.log('   ⏳ Waiting for next page…');
   await waitForCondition(page, async () => {
     if (await findCardSelector(page)) return true;
     if (await isDetailsStep(page)) return true;
+    // Error modal (e.g. "Owner's ID no. & vehicle plate no. do not match")
+    const modal = page.locator('app-info-modal').first();
+    if ((await modal.count()) > 0 && await modal.isVisible().catch(() => false)) return true;
     const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
     return /vehicle not found|no record|invalid plate|something went wrong/.test(t);
   }, CONFIG.quotationTimeout, CONFIG.pollingInterval);
   console.log(`   📍 After submit: ${page.url()}`);
+
+  // Check for error modal first (dismiss and record as error)
+  const modalErr = await checkAndDismissErrorModal(page);
+  if (modalErr) return emptyResult(modalErr);
 
   const bodyText = await page.locator('body').innerText().catch(() => '');
   if (/vehicle not found|no record|invalid plate|error occurred|something went wrong/i.test(bodyText)) {
@@ -601,6 +634,10 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     } catch (err) {
       return emptyResult(`Vehicle details page error: ${err}`);
     }
+    // Check for an error modal that appeared right after clicking proceed
+    const detailsModalErr = await checkAndDismissErrorModal(page);
+    if (detailsModalErr) return emptyResult(detailsModalErr);
+
     // Quotation API can be slow — wait but exit the instant cards show.
     // Re-click proceed up to 3 times if we're still on the details step.
     console.log('   ⏳ Waiting for quotations…');
@@ -608,6 +645,9 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     for (let attempt = 0; !got && attempt < 3 && await isDetailsStep(page); attempt++) {
       console.log(`   🔁 Still on details — retrying proceed (${attempt + 1}/3)`);
       await handleVehicleDetailsPage(page).catch(() => {});
+      // Also check for modal after each retry
+      const retryModalErr = await checkAndDismissErrorModal(page);
+      if (retryModalErr) return emptyResult(retryModalErr);
       got = await waitForCards(page, 15000);
     }
   } else {
