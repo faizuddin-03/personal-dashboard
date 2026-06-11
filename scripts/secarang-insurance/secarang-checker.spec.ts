@@ -436,25 +436,25 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
     }
   }
 
-  // Click the page's primary "Get quotation" button. Prefer the last VISIBLE
-  // match (the details-confirmation button, not any stale/hidden one).
-  const candidates = page.locator(
-    'button.primary-btn, button:has-text("Get quotation"), button:has-text("Proceed"), button:has-text("Continue")'
-  );
-  const cn = await candidates.count();
-  for (let i = cn - 1; i >= 0; i--) {
-    const b = candidates.nth(i);
-    if (await b.isVisible().catch(() => false) && await b.isEnabled().catch(() => true)) {
-      const label = clean(await b.textContent() || '');
-      console.log(`   ➡️  Clicking proceed: "${label}"`);
-      await b.scrollIntoViewIfNeeded().catch(() => {});
-      await b.click({ force: true }).catch(async () => {
-        await b.evaluate((el: HTMLElement) => el.click()).catch(() => {});
-      });
-      return selectedVariant;
-    }
+  // Let Angular finish rendering the confirmation button, then click it.
+  await page.waitForTimeout(300);
+
+  // The CTA is `<button class="btn primary-btn ...">Get quotation</button>`.
+  let proceed = page.locator('button.primary-btn');
+  if ((await proceed.count()) === 0) {
+    proceed = page.locator('button:has-text("Get quotation"), button:has-text("Proceed"), button:has-text("Continue")');
   }
-  console.log('   ⚠️  No visible proceed button found on vehicle details page');
+  const target = proceed.last();
+  if ((await target.count()) > 0) {
+    const label = clean(await target.textContent().catch(() => '') || 'Get quotation');
+    console.log(`   ➡️  Clicking proceed: "${label}"`);
+    await target.scrollIntoViewIfNeeded().catch(() => {});
+    await target.click({ force: true, timeout: 5000 }).catch(async () => {
+      await target.evaluate((el: HTMLElement) => el.click()).catch(() => {});
+    });
+    return selectedVariant;
+  }
+  console.log('   ⚠️  No proceed button found on vehicle details page');
 
   throw new Error('Could not find proceed button on vehicle details page');
 }
