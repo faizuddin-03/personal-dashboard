@@ -400,18 +400,38 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
   // Let Angular finish rendering the confirmation button, then click it.
   await page.waitForTimeout(300);
 
-  // The CTA is `<button class="btn primary-btn ...">Get quotation</button>`.
-  let proceed = page.locator('button.primary-btn');
-  if ((await proceed.count()) === 0) {
-    proceed = page.locator('button:has-text("Get quotation"), button:has-text("Proceed"), button:has-text("Continue")');
+  // Some flows gate "Get quotation" behind a declaration checkbox — tick any.
+  const checkboxes = page.locator('input[type="checkbox"]');
+  const cbCount = await checkboxes.count();
+  for (let i = 0; i < cbCount; i++) {
+    await checkboxes.nth(i).check({ force: true }).catch(() => {});
   }
+
+  // Diagnostic: list buttons (with disabled state) + checkboxes once
+  const diag = await page.evaluate(() => {
+    const btns = [...document.querySelectorAll('button')]
+      .map(b => `"${(b.textContent || '').trim().slice(0, 25)}"${(b as HTMLButtonElement).disabled ? '[disabled]' : ''}`)
+      .filter(t => t !== '""');
+    const checks = [...document.querySelectorAll('input[type="checkbox"]')]
+      .map(c => `checked=${(c as HTMLInputElement).checked}`);
+    return { btns, checks };
+  });
+  console.log(`   🔎 buttons: ${diag.btns.join(' | ')}`);
+  console.log(`   🔎 checkboxes: ${diag.checks.join(' | ') || 'none'}`);
+
+  // Prefer the explicit "Get quotation" CTA; fall back to the primary button.
+  let proceed = page.locator('button:has-text("Get quotation")');
+  if ((await proceed.count()) === 0) proceed = page.locator('button.primary-btn');
   const target = proceed.last();
   if ((await target.count()) > 0) {
     const label = clean(await target.textContent().catch(() => '') || 'Get quotation');
     console.log(`   ➡️  Clicking proceed: "${label}"`);
     await target.scrollIntoViewIfNeeded().catch(() => {});
-    await target.click({ force: true, timeout: 5000 }).catch(async () => {
-      await target.evaluate((el: HTMLElement) => el.click()).catch(() => {});
+    // Real click first (proper mouse events that Angular needs); then force; then JS.
+    await target.click({ timeout: 8000 }).catch(async () => {
+      await target.click({ force: true, timeout: 4000 }).catch(async () => {
+        await target.evaluate((el: HTMLElement) => el.click()).catch(() => {});
+      });
     });
     return selectedVariant;
   }
@@ -582,14 +602,14 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     } catch (err) {
       return emptyResult(`Vehicle details page error: ${err}`);
     }
-    // Quotation API can be slow — wait up to 30s but exit the instant cards show
+    // Quotation API can be slow — wait but exit the instant cards show.
+    // Re-click proceed up to 3 times if we're still on the details step.
     console.log('   ⏳ Waiting for quotations…');
-    let got = await waitForCards(page, 30000);
-    if (!got && await isDetailsStep(page)) {
-      // First proceed click didn't register — try once more
-      console.log('   🔁 Still on details — retrying proceed');
+    let got = await waitForCards(page, 15000);
+    for (let attempt = 0; !got && attempt < 3 && await isDetailsStep(page); attempt++) {
+      console.log(`   🔁 Still on details — retrying proceed (${attempt + 1}/3)`);
       await handleVehicleDetailsPage(page).catch(() => {});
-      got = await waitForCards(page, 30000);
+      got = await waitForCards(page, 15000);
     }
   } else {
     console.log('   ⚡ Quotation cards already present — skipping details step');
