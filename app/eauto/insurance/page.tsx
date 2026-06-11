@@ -198,6 +198,8 @@ export default function InsurancePage() {
   // Derive run state from context job
   const loading  = insuranceJob?.loading  ?? false;
   const stopping = insuranceJob?.stopping ?? false;
+  // "IC" for individuals, "SSM" for companies — display label only, no process change
+  const idLabel  = vehicleCategory === "company" ? "SSM" : "IC";
   const rows    = insuranceJob?.rows    ?? [];
   const error   = insuranceJob?.error   ?? "";
   const runLog  = insuranceJob?.log     ?? "";
@@ -366,7 +368,7 @@ export default function InsurancePage() {
               : "border-transparent text-slate-500 hover:text-slate-300"
           )}
         >
-          Check VN Insurance Stats
+          Insurance Availability - eAuto
         </button>
         <button
           onClick={() => setActiveTab("tab2")}
@@ -377,7 +379,7 @@ export default function InsurancePage() {
               : "border-transparent text-slate-500 hover:text-slate-300"
           )}
         >
-          Tab 2
+          Insurance Availability - Secarang
         </button>
       </div>
 
@@ -490,7 +492,7 @@ export default function InsurancePage() {
             <div className="grid grid-cols-2 gap-3 pt-1">
               <div>
                 <label className="block text-xs text-slate-500 mb-1.5">
-                  IC Number <span className="text-slate-700">default: 030217141005</span>
+                  {vehicleCategory === "company" ? "SSM Number" : "IC Number"} <span className="text-slate-700">default: 030217141005</span>
                 </label>
                 <input
                   value={icNumber}
@@ -549,7 +551,7 @@ export default function InsurancePage() {
           <div className="flex flex-col">
             <label className="block text-xs font-medium text-slate-400 mb-1.5">
               Vehicle Numbers
-              <span className="text-slate-600 font-normal ml-1">— one per line, optional IC after the plate (paste 2 columns from Excel)</span>
+              <span className="text-slate-600 font-normal ml-1">— one per line, optional {idLabel} after the plate (paste 2 columns from Excel)</span>
             </label>
             <textarea
               value={vehicleInput}
@@ -568,7 +570,7 @@ export default function InsurancePage() {
                 <span className="text-slate-700">({concurrency} workers)</span>
                 {vehicles.some(v => v.icNumber) && (
                   <span className="text-slate-500">
-                    {" · "}{vehicles.filter(v => v.icNumber).length} with custom IC
+                    {" · "}{vehicles.filter(v => v.icNumber).length} with custom {idLabel}
                   </span>
                 )}
               </p>
