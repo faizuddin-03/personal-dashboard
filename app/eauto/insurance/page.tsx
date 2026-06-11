@@ -1042,6 +1042,19 @@ function ScAvailBadge({ value }: { value: string }) {
   );
 }
 
+type ScAvailFilter = "all" | "yes" | "no";
+type ScSortKey = "vehicleNumber" | "make" | "insurer" | "available" | "totalDisplayed" | "totalAvailable";
+interface ScSortState { key: ScSortKey | null; dir: SortDir }
+
+const SC_TABLE_COLS: { key: ScSortKey; label: string }[] = [
+  { key: "vehicleNumber",  label: "Vehicle"    },
+  { key: "make",           label: "Make/Model" },
+  { key: "insurer",        label: "Insurer"    },
+  { key: "available",      label: "Available"  },
+  { key: "totalDisplayed", label: "Displayed"  },
+  { key: "totalAvailable", label: "Avail."     },
+];
+
 function SecarangTab() {
   const [vehicleInput,  setVehicleInput]  = useState("");
   const [icNumber,      setIcNumber]      = useState("");
@@ -1056,15 +1069,22 @@ function SecarangTab() {
   const [concurrency,   setConcurrency]   = useState(1);
   const [view,          setView]          = useState<"table" | "matrix">("matrix");
 
-  // Feature toggles — what the scraper should check
   const [checkVehicleDetails, setCheckVehicleDetails] = useState(true);
-
   const [job, setJob] = useState<SecarangJob | null>(null);
+
+  // Filters & search
+  const [search,        setSearch]        = useState("");
+  const [availFilter,   setAvailFilter]   = useState<ScAvailFilter>("all");
+  const [shownInsurers, setShownInsurers] = useState<Set<string>>(new Set());
+  const [sort,          setSort]          = useState<ScSortState>({ key: null, dir: "asc" });
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
 
   const loading  = job?.loading  ?? false;
   const stopping = job?.stopping ?? false;
   const rows     = job?.rows     ?? [];
   const error    = job?.error    ?? "";
+  const runLog   = job?.log      ?? "";
+  const savedAt  = job?.savedAt  ?? null;
   const hasRun   = job !== null;
 
   const idLabel  = ownerType === "company" ? "SSM" : "IC";
@@ -1080,27 +1100,101 @@ function SecarangTab() {
 
   // Build structured view
   const scVehicles = useMemo(() => buildVehicles(rows), [rows]);
-  const insurerNames = useMemo(() => {
+  const allInsurerNames = useMemo(() => {
     const s = new Set<string>();
     scVehicles.forEach(v => v.insurers.forEach(i => s.add(i.name)));
     return Array.from(s).sort();
   }, [scVehicles]);
 
+  // Keep insurer filter in sync when rows arrive
+  useEffect(() => {
+    if (!allInsurerNames.length) return;
+    setShownInsurers(new Set(allInsurerNames));
+  }, [allInsurerNames]);
+
+  // Filtering
+  const searchLower = search.trim().toLowerCase();
+  const filteredRows = useMemo(() => rows.filter(r => {
+    if (r.insurer && !shownInsurers.has(r.insurer)) return false;
+    if (searchLower) {
+      const hit = [r.vehicleNumber, r.make, r.model, r.insurer, r.variant]
+        .some(f => f.toLowerCase().includes(searchLower));
+      if (!hit) return false;
+    }
+    if (availFilter !== "all") {
+      const yes = r.available.toLowerCase() === "yes";
+      if (availFilter === "yes" && !yes) return false;
+      if (availFilter === "no"  &&  yes) return false;
+    }
+    return true;
+  }), [rows, shownInsurers, searchLower, availFilter]);
+
+  // Sort (table view)
+  const sortedRows = useMemo(() => {
+    if (!sort.key) return filteredRows;
+    return [...filteredRows].sort((a, b) => {
+      let av: string, bv: string;
+      if (sort.key === "make") {
+        av = [a.make, a.model, a.year].filter(Boolean).join(" ");
+        bv = [b.make, b.model, b.year].filter(Boolean).join(" ");
+      } else {
+        av = a[sort.key!] ?? "";
+        bv = b[sort.key!] ?? "";
+      }
+      const cmp = av.localeCompare(bv, undefined, { numeric: true, sensitivity: "base" });
+      return sort.dir === "asc" ? cmp : -cmp;
+    });
+  }, [filteredRows, sort]);
+
+  // Filtered vehicles for matrix view
+  const filteredVehicles = useMemo(() => {
+    const vns = new Set(filteredRows.map(r => r.vehicleNumber));
+    return scVehicles.filter(v => vns.has(v.vehicleNumber));
+  }, [scVehicles, filteredRows]);
+
+  const filteredInsurerNames = useMemo(() => {
+    const s = new Set<string>();
+    filteredVehicles.forEach(v => v.insurers.filter(i => shownInsurers.has(i.name)).forEach(i => s.add(i.name)));
+    return Array.from(s).sort();
+  }, [filteredVehicles, shownInsurers]);
+
+  const statsYes = filteredRows.filter(r => r.available.toLowerCase() === "yes").length;
+  const statsNo  = filteredRows.filter(r => r.available.toLowerCase() !== "yes" && r.insurer).length;
+  const hasActiveFilters = !!(search || availFilter !== "all" || shownInsurers.size < allInsurerNames.length);
+
+  function toggleSort(key: ScSortKey) {
+    setSort(prev => prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" });
+  }
+
+  function toggleInsurer(ins: string) {
+    setShownInsurers(prev => {
+      const next = new Set(prev);
+      if (next.has(ins)) { if (next.size > 1) next.delete(ins); }
+      else next.add(ins);
+      return next;
+    });
+  }
+
+  function clearFilters() {
+    setSearch("");
+    setAvailFilter("all");
+    setShownInsurers(new Set(allInsurerNames));
+  }
+
   async function handleRun() {
     if (!vehicles.length) return;
     setJob({ loading: true, stopping: false, rows: [], error: "", log: "", savedAt: null, vehicleInput });
-
     try {
       const res = await fetch("/api/secarang/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           vehicles,
-          icNumber:     icNumber.trim()    || undefined,
-          postcode:     postcode.trim()    || undefined,
+          icNumber:     icNumber.trim()     || undefined,
+          postcode:     postcode.trim()     || undefined,
           vehicleType,
           ownerType,
-          baseUrl:      baseUrl            || undefined,
+          baseUrl:      baseUrl             || undefined,
           sitePassword: sitePassword.trim() || undefined,
           concurrency,
           checkVehicleDetails,
@@ -1127,6 +1221,7 @@ function SecarangTab() {
     clearSecarangSaved();
     setJob(null);
     setVehicleInput("");
+    setShownInsurers(new Set());
   }
 
   return (
@@ -1244,8 +1339,6 @@ function SecarangTab() {
                       className="w-8 h-8 flex items-center justify-center bg-slate-800 border border-slate-700 rounded-lg text-slate-400 hover:text-slate-200 transition-colors text-base font-bold">+</button>
                   </div>
                 </div>
-
-                {/* Checks to perform — click to enable/disable */}
                 <div className="col-span-2">
                   <label className="block text-xs text-slate-500 mb-1.5">Checks <span className="text-slate-700">click to enable / disable</span></label>
                   <div className="flex flex-wrap gap-1.5">
@@ -1255,9 +1348,8 @@ function SecarangTab() {
                       <button key={t.key} type="button" onClick={() => t.set(v => !v)}
                         className={clsx(
                           "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
-                          t.on
-                            ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                            : "bg-slate-800 border-slate-700 text-slate-500 grayscale"
+                          t.on ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                               : "bg-slate-800 border-slate-700 text-slate-500 grayscale"
                         )}>
                         {t.on ? "✓ " : "✕ "}{t.label}
                       </button>
@@ -1310,139 +1402,314 @@ function SecarangTab() {
                 : `Checking ${vehicles.length} vehicle${vehicles.length !== 1 ? "s" : ""} — est. ${scEstimateTime(vehicles.length, concurrency)}…`}
             </p>
           )}
-          {!loading && rows.length > 0 && (
-            <div className="flex items-center gap-2 ml-auto">
-              <button onClick={() => exportSecarangExcel(rows)}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg transition-colors">
-                <Download size={13} /> Export Excel
-              </button>
-              <button onClick={handleClear}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-500 rounded-lg transition-colors">
-                <Trash2 size={13} /> Clear
-              </button>
-            </div>
-          )}
         </div>
       </div>{/* end input panel */}
 
       {/* Error */}
       {error && (
-        <div className="bg-red-950/40 border border-red-800/50 rounded-2xl p-4 flex gap-3">
-          <AlertCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
-          <pre className="text-xs text-red-300 whitespace-pre-wrap break-all">{error}</pre>
+        <div className="flex items-start gap-3 bg-red-950/50 border border-red-800 rounded-xl p-4 text-red-400 text-sm">
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
+          <div className="min-w-0">
+            <p className="font-medium mb-1">Error</p>
+            <pre className="text-xs text-red-500 whitespace-pre-wrap break-words font-mono">{error}</pre>
+          </div>
         </div>
       )}
 
-      {/* Results */}
+      {/* Run log (collapsed) */}
+      {runLog && rows.length > 0 && (
+        <details className="bg-slate-900 border border-slate-800 rounded-xl">
+          <summary className="px-4 py-2.5 text-xs text-slate-500 cursor-pointer select-none hover:text-slate-300">
+            Show run log
+          </summary>
+          <pre className="px-4 pb-3 text-xs text-slate-500 font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">{runLog}</pre>
+        </details>
+      )}
+
+      {/* No results */}
       {hasRun && !loading && !error && rows.length === 0 && (
         <div className="text-center py-12 text-slate-600">
           <Shield size={28} className="mx-auto mb-2 opacity-40" />
           <p className="text-sm">No results returned.</p>
+          <p className="text-xs mt-1">Check that the script ran correctly and output-results.xlsx was created.</p>
         </div>
       )}
 
+      {/* ── Results toolbar ── */}
       {rows.length > 0 && (
-        <div className="space-y-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+            <button onClick={() => setView("matrix")}
+              className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
+                view === "matrix" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+              <TableProperties size={12} /> Matrix
+            </button>
+            <button onClick={() => setView("table")}
+              className={clsx("px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1.5",
+                view === "table" ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+              <LayoutGrid size={12} /> Table
+            </button>
+          </div>
+          <button onClick={() => exportSecarangExcel(sortedRows.length ? sortedRows : rows)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 text-white rounded-lg transition-colors">
+            <Download size={12} /> Export Excel
+          </button>
+          <button onClick={handleClear} title="Clear saved results"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-lg transition-colors border border-slate-800">
+            <Trash2 size={12} /> Clear
+          </button>
+          {savedAt && (
+            <span className="text-xs text-slate-600 ml-auto">
+              Saved {new Date(savedAt).toLocaleString()}
+            </span>
+          )}
+        </div>
+      )}
 
-          {/* View toggle + stats */}
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1">
-              <button onClick={() => setView("matrix")}
-                className={clsx("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                  view === "matrix" ? "bg-blue-600 text-white" : "text-slate-500 hover:text-slate-300")}>
-                <TableProperties size={13} /> Matrix
+      {/* ── Filter card ── */}
+      {rows.length > 0 && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          {/* Search */}
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search vehicle number, make, model, insurer..."
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 pl-9 pr-9 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            {search && (
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                <X size={14} />
               </button>
-              <button onClick={() => setView("table")}
-                className={clsx("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                  view === "table" ? "bg-blue-600 text-white" : "text-slate-500 hover:text-slate-300")}>
-                <LayoutGrid size={13} /> Table
-              </button>
-            </div>
-            <p className="text-xs text-slate-600">
-              {scVehicles.length} vehicle{scVehicles.length !== 1 ? "s" : ""}{" · "}
-              {scVehicles.reduce((s, v) => s + v.totalDisplayed, 0)} insurer entries
-            </p>
+            )}
           </div>
 
-          {/* Matrix view */}
-          {view === "matrix" && (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="text-xs border-collapse w-full">
-                  <thead>
-                    <tr className="border-b border-slate-800 bg-slate-900/80">
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Vehicle</th>
-                      <th className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Displayed</th>
-                      <th className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Available</th>
-                      {insurerNames.map(name => (
-                        <th key={name} className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                          {name}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {scVehicles.map(v => (
-                      <tr key={v.vehicleNumber} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
-                        <td className="px-4 py-2.5 font-mono font-bold text-slate-200 whitespace-nowrap">
-                          {v.vehicleNumber}
-                          {(v.make || v.model) && (
-                            <div className="text-[10px] font-normal text-slate-500">{[v.make, v.model, v.year].filter(Boolean).join(" ")}</div>
-                          )}
-                        </td>
-                        <td className="px-3 py-2.5 text-center text-slate-300 font-semibold">{v.totalDisplayed}</td>
-                        <td className="px-3 py-2.5 text-center">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-green-900/40 text-green-400">
-                            {v.totalAvailable}
-                          </span>
-                        </td>
-                        {insurerNames.map(name => {
-                          const ins = v.insurers.find(i => i.name === name);
-                          if (!ins) return <td key={name} className="px-3 py-2.5 text-center text-slate-700">—</td>;
-                          return (
-                            <td key={name} className="px-3 py-2.5 text-center">
-                              {ins.available
-                                ? <span className="text-green-400 text-xs font-semibold">✓</span>
-                                : <span className="text-red-400 text-xs font-semibold" title={ins.unavailableReason}>N/A</span>}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          {/* Filter pills */}
+          <div className="flex flex-wrap gap-x-5 gap-y-2 items-center">
+            {allInsurerNames.length > 0 && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-xs text-slate-500 uppercase tracking-wide font-semibold shrink-0">Insurer</span>
+                <button
+                  onClick={() => setShownInsurers(new Set(allInsurerNames))}
+                  className={clsx("px-2.5 py-1 rounded-full text-xs font-medium border transition-all",
+                    shownInsurers.size === allInsurerNames.length
+                      ? "bg-slate-700 border-slate-600 text-slate-200"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                  )}>All</button>
+                {allInsurerNames.map(ins => (
+                  <button key={ins} onClick={() => toggleInsurer(ins)}
+                    className={clsx("px-2.5 py-1 rounded-full text-xs font-medium border transition-all",
+                      shownInsurers.has(ins)
+                        ? "bg-blue-600/20 border-blue-500/50 text-blue-300"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                    )}>{ins}</button>
+                ))}
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Table view — flat rows */}
-          {view === "table" && (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="text-xs border-collapse w-full">
-                  <thead>
-                    <tr className="border-b border-slate-800 bg-slate-900/80">
-                      {["Vehicle", "Make/Model", "Insurer", "Available", "Displayed", "Avail."].map(h => (
-                        <th key={h} className="px-3 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((r, i) => (
-                      <tr key={i} className="border-b border-slate-800/50 hover:bg-slate-900/40 transition-colors">
-                        <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{r.vehicleNumber}</td>
-                        <td className="px-3 py-2 text-slate-400">{[r.make, r.model, r.year].filter(Boolean).join(" ") || "—"}</td>
-                        <td className="px-3 py-2 text-blue-300">{r.insurer || "—"}</td>
-                        <td className="px-3 py-2"><ScAvailBadge value={r.available} /></td>
-                        <td className="px-3 py-2 text-slate-400">{r.totalDisplayed || "—"}</td>
-                        <td className="px-3 py-2 text-slate-400">{r.totalAvailable || "—"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            {allInsurerNames.length > 0 && <span className="text-slate-700 hidden sm:block">|</span>}
+
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs text-slate-500 uppercase tracking-wide font-semibold shrink-0">Available</span>
+              {(["all", "yes", "no"] as ScAvailFilter[]).map(f => (
+                <button key={f} onClick={() => setAvailFilter(f)}
+                  className={clsx("px-2.5 py-1 rounded-full text-xs font-medium border transition-all capitalize",
+                    availFilter === f
+                      ? f === "yes" ? "bg-green-900/60 border-green-700 text-green-300"
+                        : f === "no" ? "bg-red-900/60 border-red-700 text-red-300"
+                        : "bg-slate-700 border-slate-600 text-slate-200"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                  )}>{f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Active filter summary */}
+          {hasActiveFilters && (
+            <div className="flex items-center justify-between text-xs pt-0.5 border-t border-slate-800">
+              <span className="text-slate-500">
+                Showing <span className="text-slate-200 font-medium">{filteredRows.length}</span> of <span className="text-slate-200 font-medium">{rows.length}</span> rows
+              </span>
+              <button onClick={clearFilters} className="text-blue-400 hover:text-blue-300 font-medium">Clear filters</button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Summary stats ── */}
+      {filteredRows.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-slate-500">
+            {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? "s" : ""}
+            {" · "}{filteredRows.filter(r => r.insurer).length} row{filteredRows.filter(r => r.insurer).length !== 1 ? "s" : ""}
+          </span>
+          <span className="text-slate-700">·</span>
+          <span className="px-2 py-0.5 rounded-full bg-green-900/60 text-green-300 border border-green-800 font-semibold">Yes {statsYes}</span>
+          <span className="px-2 py-0.5 rounded-full bg-red-900/60 text-red-300 border border-red-800 font-semibold">No {statsNo}</span>
+        </div>
+      )}
+
+      {/* Empty filter state */}
+      {filteredRows.length === 0 && rows.length > 0 && (
+        <div className="text-center py-10 text-slate-600 text-sm">
+          No rows match your filters — try adjusting the search or filters above.
+        </div>
+      )}
+
+      {/* ── Matrix view ── */}
+      {filteredRows.length > 0 && view === "matrix" && (
+        <div className="space-y-6">
+          <div className="overflow-x-auto rounded-2xl border border-slate-800">
+            <table className="text-xs border-collapse w-full">
+              <thead>
+                <tr className="border-b border-slate-800 bg-slate-900">
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Vehicle</th>
+                  <th className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Displayed</th>
+                  <th className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Available</th>
+                  {filteredInsurerNames.map(name => (
+                    <th key={name} className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                      {name}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredVehicles.map(v => (
+                  <tr key={v.vehicleNumber} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
+                    <td className="px-4 py-2.5 font-mono font-bold text-slate-200 whitespace-nowrap">
+                      {v.vehicleNumber}
+                      {(v.make || v.model) && (
+                        <div className="text-[10px] font-normal text-slate-500">{[v.make, v.model, v.year].filter(Boolean).join(" ")}</div>
+                      )}
+                    </td>
+                    <td className="px-3 py-2.5 text-center text-slate-300 font-semibold">{v.totalDisplayed}</td>
+                    <td className="px-3 py-2.5 text-center">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-green-900/40 text-green-400">
+                        {v.totalAvailable}
+                      </span>
+                    </td>
+                    {filteredInsurerNames.map(name => {
+                      const ins = v.insurers.find(i => i.name === name);
+                      if (!ins) return <td key={name} className="px-3 py-2.5 text-center text-slate-700">—</td>;
+                      return (
+                        <td key={name} className="px-3 py-2.5 text-center">
+                          {ins.available
+                            ? <span className="text-green-400 text-xs font-semibold">✓</span>
+                            : <span className="text-red-400 text-xs font-semibold" title={ins.unavailableReason}>N/A</span>}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Per-vehicle detail cards */}
+          <div className="space-y-3">
+            <p className="text-xs text-slate-600 uppercase tracking-wider font-semibold">Vehicle Details</p>
+            {filteredVehicles.map(v => {
+              const isExpanded = expandedCards.has(v.vehicleNumber);
+              const toggleCard = () => setExpandedCards(prev => {
+                const next = new Set(prev);
+                next.has(v.vehicleNumber) ? next.delete(v.vehicleNumber) : next.add(v.vehicleNumber);
+                return next;
+              });
+              const visibleInsurers = v.insurers.filter(i => shownInsurers.has(i.name));
+              return (
+                <div key={v.vehicleNumber} className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                  <div
+                    className="flex items-start justify-between flex-wrap gap-3 px-4 pt-4 pb-3 cursor-pointer hover:bg-slate-800/40 transition-colors select-none"
+                    onClick={toggleCard}
+                  >
+                    <div>
+                      <p className="font-mono font-bold text-slate-100 text-sm">{v.vehicleNumber}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {[v.make, v.model, v.variant].filter(Boolean).join(" · ")}
+                        {v.year && <span className="ml-2 text-slate-500">({v.year})</span>}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                      <span><span className="text-slate-400">Displayed</span> {v.totalDisplayed}</span>
+                      <span><span className="text-green-400 font-semibold">Available</span> {v.totalAvailable}</span>
+                      {isExpanded ? <ChevronUp size={14} className="text-slate-500" /> : <ChevronDown size={14} className="text-slate-500" />}
+                    </div>
+                  </div>
+                  {isExpanded && (
+                    <div className="px-4 pb-4">
+                      <table className="text-xs border-collapse w-full table-fixed">
+                        <colgroup>
+                          <col className="w-[30%]" />
+                          <col className="w-[15%]" />
+                          <col className="w-[55%]" />
+                        </colgroup>
+                        <thead>
+                          <tr className="border-b border-slate-800">
+                            <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Insurer</th>
+                            <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold pr-4">Available</th>
+                            <th className="pb-1.5 text-left text-xs text-slate-500 font-semibold">Reason</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {visibleInsurers.map((ins, i) => (
+                            <tr key={i} className="border-b border-slate-800/40">
+                              <td className="py-1.5 pr-4 text-blue-300 font-medium">{ins.name}</td>
+                              <td className="py-1.5 pr-4"><ScAvailBadge value={ins.available ? "Yes" : "No"} /></td>
+                              <td className="py-1.5 text-slate-500 text-[11px]">{ins.unavailableReason || "—"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Table view ── */}
+      {filteredRows.length > 0 && view === "table" && (
+        <div className="overflow-x-auto rounded-2xl border border-slate-800">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-slate-800 bg-slate-900">
+                {SC_TABLE_COLS.map(col => {
+                  const active = sort.key === col.key;
+                  return (
+                    <th key={col.key}
+                      onClick={() => toggleSort(col.key)}
+                      className="px-3 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap cursor-pointer select-none hover:text-slate-300 transition-colors">
+                      <span className="inline-flex items-center gap-1">
+                        {col.label}
+                        {active
+                          ? <span className="text-blue-400">{sort.dir === "asc" ? "▲" : "▼"}</span>
+                          : <span className="text-slate-700 opacity-0 group-hover:opacity-100">▲</span>
+                        }
+                      </span>
+                    </th>
+                  );
+                })}
+                <th className="px-3 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedRows.map((r, i) => (
+                <tr key={i} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
+                  <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{r.vehicleNumber}</td>
+                  <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{[r.make, r.model, r.year].filter(Boolean).join(" ") || "—"}</td>
+                  <td className="px-3 py-2 text-blue-300 font-medium whitespace-nowrap">{r.insurer || "—"}</td>
+                  <td className="px-3 py-2 whitespace-nowrap"><ScAvailBadge value={r.available} /></td>
+                  <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{r.totalDisplayed || "—"}</td>
+                  <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{r.totalAvailable || "—"}</td>
+                  <td className="px-3 py-2 text-slate-500 text-[11px]">{r.unavailableReason || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
