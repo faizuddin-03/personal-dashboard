@@ -189,7 +189,7 @@ export default function InsurancePage() {
   const [icNumber, setIcNumber]             = useState("");
   const [postcode, setPostcode]             = useState("");
   const [vehicleCategory, setVehicleCategory] = useState<"individual" | "company">("individual");
-  const [concurrency, setConcurrency]       = useState(4);
+  const [concurrency, setConcurrency]       = useState(8);
   const [showAdvanced, setShowAdvanced]     = useState(false);
 
   // Display
@@ -1066,7 +1066,7 @@ function SecarangTab() {
   const [sitePassword,  setSitePassword]  = useState(SC_DEFAULT_PASSWORD);
   const [showPassword,  setShowPassword]  = useState(false);
   const [showAdvanced,  setShowAdvanced]  = useState(false);
-  const [concurrency,   setConcurrency]   = useState(1);
+  const [concurrency,   setConcurrency]   = useState(8);
   const [view,          setView]          = useState<"table" | "matrix">("matrix");
 
   const [checkVehicleDetails, setCheckVehicleDetails] = useState(true);
