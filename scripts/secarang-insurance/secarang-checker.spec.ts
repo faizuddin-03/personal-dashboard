@@ -213,21 +213,6 @@ async function waitForCondition(
   return false;
 }
 
-// Wait for a positive signal that the page advanced: either quotation cards
-// appear, or the URL changes away from `fromUrl`, or a terminal message shows.
-// Capped at `timeout` ms (default 10s) so it never hangs on Angular pages.
-async function waitForAdvance(page: Page, fromUrl: string, timeout = CONFIG.quotationTimeout): Promise<'cards' | 'navigated' | 'message' | 'timeout'> {
-  let outcome: 'cards' | 'navigated' | 'message' | 'timeout' = 'timeout';
-  await waitForCondition(page, async () => {
-    if (await findCardSelector(page)) { outcome = 'cards'; return true; }
-    if (fromUrl && page.url() !== fromUrl && !/confirm-/i.test(page.url())) { outcome = 'navigated'; return true; }
-    const text = await page.locator('body').innerText().catch(() => '');
-    if (/no quotation|quotation unavailable|not available|unable to|no record|vehicle not found/i.test(text)) { outcome = 'message'; return true; }
-    return false;
-  }, timeout, CONFIG.pollingInterval);
-  return outcome;
-}
-
 // Wait until a value-producing function returns non-empty AND differs from
 // `prev` (i.e. the price refreshed after changing the sum insured). Returns
 // the new value as soon as it settles, capped at `timeout`.
@@ -246,6 +231,22 @@ async function waitForValueChange(
     await page.waitForTimeout(CONFIG.pollingInterval);
   }
   return last; // never changed (or same price) — return whatever we have
+}
+
+// True when the "Are these your vehicle details?" confirmation step is showing.
+async function isDetailsStep(page: Page): Promise<boolean> {
+  const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
+  return t.includes('are these your vehicle details')
+    || (t.includes('get quotation') && /plate no|chassis|engine no|seat\b/.test(t));
+}
+
+// Wait (early-exit) until quotation cards render or a "no quote" message shows.
+async function waitForCards(page: Page, timeout: number): Promise<boolean> {
+  return waitForCondition(page, async () => {
+    if (await findCardSelector(page)) return true;
+    const t = await page.locator('body').innerText().catch(() => '');
+    return /no quotation|quotation unavailable|not available|unable to provide/i.test(t);
+  }, timeout, CONFIG.pollingInterval);
 }
 
 // ─── SITE PASSWORD HANDLER ────────────────────────────────────────────────────
@@ -435,27 +436,25 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
     }
   }
 
-  // Click the proceed button (the page's primary "Get quotation" button)
-  const btn = page.locator(
-    'button:has-text("Get quotation"), button:has-text("Proceed"), button:has-text("Continue"), button.primary-btn, button[type="button"].btn'
-  ).filter({ hasNot: page.locator('[disabled]') }).last();
-  if ((await btn.count()) > 0) {
-    console.log(`   ➡️  Clicking proceed`);
-    await btn.click({ force: true }).catch(async () => {
-      await btn.evaluate((el: HTMLElement) => el.click()).catch(() => {});
-    });
-    return selectedVariant;
+  // Click the page's primary "Get quotation" button. Prefer the last VISIBLE
+  // match (the details-confirmation button, not any stale/hidden one).
+  const candidates = page.locator(
+    'button.primary-btn, button:has-text("Get quotation"), button:has-text("Proceed"), button:has-text("Continue")'
+  );
+  const cn = await candidates.count();
+  for (let i = cn - 1; i >= 0; i--) {
+    const b = candidates.nth(i);
+    if (await b.isVisible().catch(() => false) && await b.isEnabled().catch(() => true)) {
+      const label = clean(await b.textContent() || '');
+      console.log(`   ➡️  Clicking proceed: "${label}"`);
+      await b.scrollIntoViewIfNeeded().catch(() => {});
+      await b.click({ force: true }).catch(async () => {
+        await b.evaluate((el: HTMLElement) => el.click()).catch(() => {});
+      });
+      return selectedVariant;
+    }
   }
-
-  // Fallback: any submit / primary-styled button
-  const fallback = page.locator('button[type="submit"], button.primary, button.btn-primary, button').last();
-  if ((await fallback.count()) > 0) {
-    const fallbackText = clean(await fallback.textContent() || '');
-    console.log(`   ➡️  Clicking fallback button: "${fallbackText}"`);
-    await fallback.click({ force: true }).catch(() => {});
-    return selectedVariant;
-  }
-  console.log('   ⚠️  No proceed button found on vehicle details page');
+  console.log('   ⚠️  No visible proceed button found on vehicle details page');
 
   throw new Error('Could not find proceed button on vehicle details page');
 }
@@ -659,9 +658,15 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     return emptyResult(`Form submit failed: ${err}`);
   }
 
-  console.log('   ⏳ Waiting for next page (max 10s)…');
-  await waitForAdvance(page, urlBeforeSubmit);
-  await page.waitForTimeout(CONFIG.waitAfterPageLoad);
+  // Wait until the page actually settles into one of: quotation cards, the
+  // vehicle-details confirmation step, or an error. Exits the instant ready.
+  console.log('   ⏳ Waiting for next page…');
+  await waitForCondition(page, async () => {
+    if (await findCardSelector(page)) return true;
+    if (await isDetailsStep(page)) return true;
+    const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
+    return /vehicle not found|no record|invalid plate|something went wrong/.test(t);
+  }, CONFIG.quotationTimeout, CONFIG.pollingInterval);
   console.log(`   📍 After submit: ${page.url()}`);
 
   const bodyText = await page.locator('body').innerText().catch(() => '');
@@ -670,21 +675,26 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     return emptyResult(`Error after submit: ${errLine.slice(0, 200)}`);
   }
 
-  // ── Decide: quotation page already, or intermediate (vehicle details)? ──
+  // ── Vehicle details confirmation step → choose variant + proceed ──
   let variant = '';
   if (!(await findCardSelector(page))) {
-    console.log('   📋 No quotation cards yet — handling vehicle details page');
-    const urlBeforeProceed = page.url();
+    console.log('   📋 Vehicle details step — selecting variant (if any) and proceeding');
     try {
       variant = await handleVehicleDetailsPage(page);
     } catch (err) {
       return emptyResult(`Vehicle details page error: ${err}`);
     }
-    console.log('   ⏳ Waiting for quotation page (max 10s)…');
-    await waitForAdvance(page, urlBeforeProceed);
-    await page.waitForTimeout(CONFIG.waitAfterPageLoad);
+    // Quotation API can be slow — wait up to 30s but exit the instant cards show
+    console.log('   ⏳ Waiting for quotations…');
+    let got = await waitForCards(page, 30000);
+    if (!got && await isDetailsStep(page)) {
+      // First proceed click didn't register — try once more
+      console.log('   🔁 Still on details — retrying proceed');
+      await handleVehicleDetailsPage(page).catch(() => {});
+      got = await waitForCards(page, 30000);
+    }
   } else {
-    console.log('   ⚡ Quotation cards already present — skipping details page');
+    console.log('   ⚡ Quotation cards already present — skipping details step');
   }
 
   // ── Quotation results page ────────────────────────────────────
