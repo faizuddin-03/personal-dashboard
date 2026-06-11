@@ -14,10 +14,10 @@ const CONFIG = {
   outputFile: './output-results.xlsx',
 
   navigationTimeout: 90000,
-  waitAfterPageLoad:  3000,
-  waitAfterClick:     2000,
-  quotationTimeout:  120000,
-  pollingInterval:    1500,
+  waitAfterPageLoad:  1500,
+  waitAfterClick:     1000,
+  quotationTimeout:   10000,  // max wait (ms) for a page transition / cards
+  pollingInterval:     500,
 };
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
@@ -209,17 +209,19 @@ async function waitForCondition(
   return false;
 }
 
-// Wait for page to stop showing loading indicators
-async function waitForPageReady(page: Page, timeout = CONFIG.quotationTimeout): Promise<void> {
+// Wait for a positive signal that the page advanced: either quotation cards
+// appear, or the URL changes away from `fromUrl`, or a terminal message shows.
+// Capped at `timeout` ms (default 10s) so it never hangs on Angular pages.
+async function waitForAdvance(page: Page, fromUrl: string, timeout = CONFIG.quotationTimeout): Promise<'cards' | 'navigated' | 'message' | 'timeout'> {
+  let outcome: 'cards' | 'navigated' | 'message' | 'timeout' = 'timeout';
   await waitForCondition(page, async () => {
+    if (await findCardSelector(page)) { outcome = 'cards'; return true; }
+    if (fromUrl && page.url() !== fromUrl && !/confirm-/i.test(page.url())) { outcome = 'navigated'; return true; }
     const text = await page.locator('body').innerText().catch(() => '');
-    const hasLoader = /loading|please wait|fetching|getting.*quot/i.test(text);
-    // Also check for common spinner elements
-    const spinnerCount = await page.locator('[class*="loading"], [class*="spinner"], [class*="skeleton"]').count().catch(() => 0);
-    return !hasLoader && spinnerCount === 0;
-  }, timeout);
-  // Extra settle time
-  await page.waitForTimeout(1500);
+    if (/no quotation|quotation unavailable|not available|unable to|no record|vehicle not found/i.test(text)) { outcome = 'message'; return true; }
+    return false;
+  }, timeout, CONFIG.pollingInterval);
+  return outcome;
 }
 
 // ─── SITE PASSWORD HANDLER ────────────────────────────────────────────────────
@@ -392,7 +394,7 @@ async function submitForm(page: Page): Promise<void> {
 // ─── VEHICLE DETAILS PAGE ─────────────────────────────────────────────────────
 // Returns the variant chosen (or empty string if none needed)
 async function handleVehicleDetailsPage(page: Page): Promise<string> {
-  await waitForPageReady(page);
+  await page.waitForTimeout(CONFIG.waitAfterClick);
   await dumpFormStructure(page, 'vehicle details page');
 
   const text = await page.locator('body').innerText().catch(() => '');
@@ -402,42 +404,45 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
     throw new Error(`Vehicle details error: ${text.slice(0, 200)}`);
   }
 
-  // Check if there's a Variant dropdown
-  const variantSelectors = [
-    'select[name*="variant" i]',
-    'select[id*="variant" i]',
-    '[class*="variant"] select',
-    'label:has-text("Variant") + * select',
-    'label:has-text("Variant") ~ select',
-  ];
-
   let selectedVariant = '';
-  for (const sel of variantSelectors) {
-    const el = page.locator(sel).first();
-    if ((await el.count()) > 0) {
-      const options = await el.locator('option').allTextContents();
-      const validOptions = options.filter(o => o.trim() && !/select|choose|--/i.test(o));
-      if (validOptions.length > 0) {
-        selectedVariant = validOptions[0].trim();
-        console.log(`   🔧 Variant dropdown found, choosing: ${selectedVariant} (from ${validOptions.length} options)`);
-        await el.selectOption({ label: selectedVariant });
-        await page.waitForTimeout(CONFIG.waitAfterClick);
-      }
-      break;
+
+  // (a) Native <select> — variant-specific first, then any select on the page
+  //     (the details page typically only carries the variant dropdown).
+  const nativeSelect = page.locator(
+    'select[name*="variant" i], select[id*="variant" i], [class*="variant" i] select, select'
+  ).first();
+  if ((await nativeSelect.count()) > 0) {
+    const optionEls = await nativeSelect.locator('option').all();
+    const valid: { value: string; label: string }[] = [];
+    for (const o of optionEls) {
+      const label = clean(await o.textContent() || '');
+      const value = (await o.getAttribute('value')) ?? '';
+      if (label && !/^(select|choose|--|please)/i.test(label) && value !== '') valid.push({ value, label });
+    }
+    if (valid.length > 0) {
+      const pick = valid[0];
+      selectedVariant = pick.label;
+      console.log(`   🔧 Variant <select> found, choosing "${pick.label}" (of ${valid.length})`);
+      await nativeSelect.selectOption(pick.value).catch(async () => {
+        await nativeSelect.selectOption({ label: pick.label }).catch(() => {});
+      });
+      await page.waitForTimeout(CONFIG.waitAfterClick);
     }
   }
 
-  // Also check for React-style custom dropdown (div-based)
+  // (b) Angular Material / custom div dropdown (mat-select, ng-select, etc.)
   if (!selectedVariant) {
-    const customVariant = page.locator('[class*="variant" i] [class*="select" i], [aria-label*="variant" i]').first();
-    if ((await customVariant.count()) > 0) {
-      await customVariant.click();
-      await page.waitForTimeout(500);
-      const firstOption = page.locator('[role="option"], [class*="option"]').first();
-      if ((await firstOption.count()) > 0) {
-        selectedVariant = clean(await firstOption.textContent() || '');
-        await firstOption.click();
-        console.log(`   🔧 Custom variant chosen: ${selectedVariant}`);
+    const customTrigger = page.locator(
+      'mat-select, ng-select, [class*="variant" i] [class*="select" i], [aria-label*="variant" i], [class*="dropdown" i]'
+    ).first();
+    if ((await customTrigger.count()) > 0 && await customTrigger.isVisible().catch(() => false)) {
+      await customTrigger.click().catch(() => {});
+      await page.waitForTimeout(600);
+      const option = page.locator('mat-option, .ng-option, [role="option"], [class*="option" i] li, li[role="option"]').first();
+      if ((await option.count()) > 0) {
+        selectedVariant = clean(await option.textContent() || '');
+        console.log(`   🔧 Custom variant dropdown, choosing "${selectedVariant}"`);
+        await option.click().catch(() => {});
         await page.waitForTimeout(CONFIG.waitAfterClick);
       }
     }
@@ -504,6 +509,9 @@ async function extractQuotations(page: Page): Promise<{
   totalDisplayed: number;
   totalAvailable: number;
 }> {
+  // Give cards a moment to render (cap 10s) before reading
+  await waitForCondition(page, async () => !!(await findCardSelector(page)), CONFIG.quotationTimeout, CONFIG.pollingInterval);
+
   // Log page structure for debugging
   const classes = await page.evaluate(() =>
     [...new Set([...document.querySelectorAll('[class]')].map(el => (el as HTMLElement).className.split(' ').filter(c => c.length > 2 && c.length < 40)).flat())].slice(0, 50).join(', ')
@@ -641,57 +649,38 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     console.log(`   ⚠️  Partial fill — plate ok, but ic=${icFilled} postcode=${postcodeFilled}. Submitting anyway.`);
   }
 
-  // Submit
+  // Submit (homepage → vehicle details OR straight to quotations)
+  const urlBeforeSubmit = page.url();
   try {
     await submitForm(page);
   } catch (err) {
     return emptyResult(`Form submit failed: ${err}`);
   }
 
-  // Wait for navigation / loading to finish
-  console.log('   ⏳ Waiting for results…');
-  await waitForPageReady(page, CONFIG.quotationTimeout);
+  console.log('   ⏳ Waiting for next page (max 10s)…');
+  await waitForAdvance(page, urlBeforeSubmit);
   await page.waitForTimeout(CONFIG.waitAfterPageLoad);
-
-  const urlAfterSubmit = page.url();
-  console.log(`   📍 After submit: ${urlAfterSubmit}`);
+  console.log(`   📍 After submit: ${page.url()}`);
 
   const bodyText = await page.locator('body').innerText().catch(() => '');
-
-  // Check for error on the form result
-  if (/vehicle not found|no record|invalid|error occurred|something went wrong/i.test(bodyText)) {
-    const errLine = bodyText.match(/[^\n]*(?:vehicle not found|no record|invalid|error occurred|something went wrong)[^\n]*/i)?.[0] || '';
+  if (/vehicle not found|no record|invalid plate|error occurred|something went wrong/i.test(bodyText)) {
+    const errLine = bodyText.match(/[^\n]*(?:vehicle not found|no record|invalid plate|error occurred|something went wrong)[^\n]*/i)?.[0] || '';
     return emptyResult(`Error after submit: ${errLine.slice(0, 200)}`);
   }
 
-  // ── Decide: are we already on the quotation page, or an intermediate one? ──
-  // Detect by presence of quotation cards rather than fragile text matching.
+  // ── Decide: quotation page already, or intermediate (vehicle details)? ──
   let variant = '';
-  const cardsPresent = await findCardSelector(page);
-
-  if (!cardsPresent) {
-    // No quotation cards yet → this is the vehicle details / intermediate page.
-    // Handle any variant dropdown and click its "Get Quotation" button.
+  if (!(await findCardSelector(page))) {
     console.log('   📋 No quotation cards yet — handling vehicle details page');
+    const urlBeforeProceed = page.url();
     try {
       variant = await handleVehicleDetailsPage(page);
     } catch (err) {
       return emptyResult(`Vehicle details page error: ${err}`);
     }
-    console.log('   ⏳ Waiting for quotation page…');
-    await waitForPageReady(page, CONFIG.quotationTimeout);
+    console.log('   ⏳ Waiting for quotation page (max 10s)…');
+    await waitForAdvance(page, urlBeforeProceed);
     await page.waitForTimeout(CONFIG.waitAfterPageLoad);
-
-    // If still no cards after clicking, try once more (sometimes a second
-    // confirm step appears) before giving up.
-    if (!(await findCardSelector(page))) {
-      console.log('   🔁 Still no cards — attempting a second proceed click');
-      try {
-        await handleVehicleDetailsPage(page);
-        await waitForPageReady(page, CONFIG.quotationTimeout);
-        await page.waitForTimeout(CONFIG.waitAfterPageLoad);
-      } catch { /* ignore, extract whatever is present */ }
-    }
   } else {
     console.log('   ⚡ Quotation cards already present — skipping details page');
   }
