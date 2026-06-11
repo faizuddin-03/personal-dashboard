@@ -8,7 +8,7 @@ import {
 import ExcelJS from "exceljs";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
-import { InsuranceRow, loadInsuranceSaved, clearInsuranceSaved } from "@/lib/insurance";
+import { InsuranceRow, VehicleEntry, loadInsuranceSaved, clearInsuranceSaved } from "@/lib/insurance";
 
 // ── Environment presets ───────────────────────────────────────
 const ENV_PRESETS = [
@@ -66,11 +66,21 @@ function formatCoverType(v: string) {
   return stripped;
 }
 
-function parseVehicles(raw: string): string[] {
+// One vehicle per line. Each line may carry an optional IC number after the
+// plate, separated by a tab (Excel paste), comma, or spaces. IC dashes/spaces
+// are stripped so "030217-14-1005" and "030217141005" normalise the same.
+function parseVehicles(raw: string): VehicleEntry[] {
   return raw
-    .split(/[\n,]+/)
-    .map(v => v.trim().toUpperCase())
-    .filter(Boolean);
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line => {
+      const parts = line.split(/[\s,]+/).filter(Boolean);
+      const vehicleNumber = (parts[0] ?? "").toUpperCase();
+      const icNumber = (parts[1] ?? "").replace(/[-\s]/g, "") || undefined;
+      return { vehicleNumber, icNumber };
+    })
+    .filter(v => v.vehicleNumber);
 }
 
 async function exportToExcel(rows: InsuranceRow[]) {
@@ -466,12 +476,12 @@ export default function InsurancePage() {
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1.5">
               Vehicle Numbers
-              <span className="text-slate-600 font-normal ml-1">— one per line or comma-separated</span>
+              <span className="text-slate-600 font-normal ml-1">— one per line, optional IC after the plate (paste 2 columns from Excel)</span>
             </label>
             <textarea
               value={vehicleInput}
               onChange={e => setVehicleInput(e.target.value)}
-              placeholder={"WXX1234\nABC5678\nXYZ9012"}
+              placeholder={"WXX1234\t030217141005\nABC5678\t900101015523\nXYZ9012  (uses default IC)"}
               rows={4}
               className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
             />
@@ -484,6 +494,11 @@ export default function InsurancePage() {
                 </span>
                 {" "}
                 <span className="text-slate-700">({concurrency} workers)</span>
+                {vehicles.some(v => v.icNumber) && (
+                  <span className="text-slate-500">
+                    {" · "}{vehicles.filter(v => v.icNumber).length} with custom IC
+                  </span>
+                )}
               </p>
             )}
           </div>
@@ -501,12 +516,12 @@ export default function InsurancePage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
               <div>
                 <label className="block text-xs text-slate-500 mb-1.5">
-                  IC Number <span className="text-slate-700">default: 020406081081</span>
+                  IC Number <span className="text-slate-700">default: 030217141005</span>
                 </label>
                 <input
                   value={icNumber}
                   onChange={e => setIcNumber(e.target.value)}
-                  placeholder="020406081081"
+                  placeholder="030217141005"
                   className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>

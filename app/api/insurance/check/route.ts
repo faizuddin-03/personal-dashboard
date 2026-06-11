@@ -34,11 +34,23 @@ const INPUT_XLSX  = path.join(SCRIPT_DIR, "input-vehicles.xlsx");
 const OUTPUT_XLSX = path.join(SCRIPT_DIR, "output-results.xlsx");
 const TIMEOUT_MS  = 30 * 60 * 1000; // 30 minutes
 
+// Default IC used when a vehicle has no IC and no global IC is supplied.
+const DEFAULT_IC = "030217141005";
+
+interface VehicleEntry { vehicleNumber: string; icNumber?: string }
+
 // ── Write input-vehicles.xlsx for the Playwright script to read ──
-function writeInputExcel(vehicles: string[], icNumber: string, postcode: string, vehicleCategory: string) {
+// Per-vehicle IC wins; otherwise the global IC field; otherwise DEFAULT_IC.
+function writeInputExcel(vehicles: VehicleEntry[], icNumber: string, postcode: string, vehicleCategory: string) {
+  const fallbackIc = icNumber.trim() || DEFAULT_IC;
   const rows = [
     ["Vehicle Number", "IC Number", "Postcode", "Vehicle Category"],
-    ...vehicles.map(vn => [vn, icNumber, postcode, vehicleCategory]),
+    ...vehicles.map(v => [
+      v.vehicleNumber,
+      (v.icNumber?.trim() || fallbackIc),
+      postcode,
+      vehicleCategory,
+    ]),
   ];
   const ws = XLSX.utils.aoa_to_sheet(rows);
   const wb = XLSX.utils.book_new();
@@ -80,7 +92,7 @@ function readOutputExcel(): InsuranceRow[] {
 // ── Route handler ─────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   const body = await req.json() as {
-    vehicles: string[];
+    vehicles: VehicleEntry[];
     icNumber?: string;
     postcode?: string;
     vehicleCategory?: string;

@@ -13,8 +13,15 @@ export interface InsuranceRow {
   totalPrice:     string;
 }
 
+// A vehicle to check, with an optional per-vehicle IC number.
+// When icNumber is omitted, the run falls back to the default IC.
+export interface VehicleEntry {
+  vehicleNumber: string;
+  icNumber?:     string;
+}
+
 export interface InsuranceRunParams {
-  vehicles:        string[];
+  vehicles:        VehicleEntry[];
   username?:       string;
   password?:       string;
   icNumber?:       string;

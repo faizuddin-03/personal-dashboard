@@ -14,7 +14,7 @@ const CONFIG = {
   password: process.env.EAUTO_PASSWORD || 'password',
 
   // Defaults used when input Excel doesn't specify these
-  icNumber: '020406081081',
+  icNumber: '030217141005',
   postcode: '31150',
   vehicleCategory: 'individual', // lowercase: 'individual' or 'company'
 
