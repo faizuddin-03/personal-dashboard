@@ -247,6 +247,33 @@ async function handleSitePassword(page: Page): Promise<void> {
   console.log('   ✅ Password gate passed');
 }
 
+// ─── DIAGNOSTIC: dump the form structure ──────────────────────────────────────
+// Logs every input, select, and button on the page so we can map real selectors.
+async function dumpFormStructure(page: Page, label: string): Promise<void> {
+  const info = await page.evaluate(() => {
+    const inputs = [...document.querySelectorAll('input, textarea')].map(el => {
+      const i = el as HTMLInputElement;
+      return `<${i.tagName.toLowerCase()} type="${i.type}" name="${i.name}" id="${i.id}" placeholder="${i.placeholder}" aria-label="${i.getAttribute('aria-label') || ''}">`;
+    });
+    const selects = [...document.querySelectorAll('select')].map(el => {
+      const s = el as HTMLSelectElement;
+      const opts = [...s.options].map(o => o.textContent?.trim()).filter(Boolean).slice(0, 6);
+      return `<select name="${s.name}" id="${s.id}"> opts: [${opts.join(', ')}]`;
+    });
+    const buttons = [...document.querySelectorAll('button, [role="button"], [role="radio"], a.btn, input[type="submit"], input[type="button"]')]
+      .map(el => `"${(el.textContent || (el as HTMLInputElement).value || '').trim().slice(0, 40)}"`)
+      .filter(t => t !== '""');
+    return { inputs, selects, buttons };
+  });
+  console.log(`   ── DOM DUMP [${label}] ──`);
+  console.log(`   INPUTS (${info.inputs.length}):`);
+  info.inputs.forEach(i => console.log(`      ${i}`));
+  console.log(`   SELECTS (${info.selects.length}):`);
+  info.selects.forEach(s => console.log(`      ${s}`));
+  console.log(`   BUTTONS (${info.buttons.length}): ${info.buttons.join(' | ')}`);
+  console.log(`   ── END DUMP ──`);
+}
+
 // ─── VEHICLE TYPE + OWNER TYPE SELECTION ─────────────────────────────────────
 async function selectVehicleType(page: Page, vehicleType: 'car' | 'motorcycle', ownerType: 'private' | 'company'): Promise<void> {
   // Step 1: Select Car or Motorcycle
@@ -279,33 +306,41 @@ async function selectVehicleType(page: Page, vehicleType: 'car' | 'motorcycle', 
   }
 }
 
+// Fill a field using a list of candidate selectors. Returns true if filled.
+async function fillFirstMatch(page: Page, selectors: string[], value: string, fieldName: string): Promise<boolean> {
+  for (const sel of selectors) {
+    const el = page.locator(sel).first();
+    if ((await el.count()) > 0 && await el.isVisible().catch(() => false)) {
+      await el.fill(value);
+      console.log(`   ✅ ${fieldName} filled via "${sel}"`);
+      return true;
+    }
+  }
+  return false;
+}
+
 // ─── FILL QUOTATION FORM ──────────────────────────────────────────────────────
-async function fillQuotationForm(page: Page, v: VehicleInput, defaultIc: string): Promise<void> {
+// Returns whether the critical plate field was filled.
+async function fillQuotationForm(page: Page, v: VehicleInput, defaultIc: string): Promise<{ plateFilled: boolean; icFilled: boolean; postcodeFilled: boolean }> {
   const ic       = (v.icNumber || defaultIc).replace(/[-\s]/g, '');
   const postcode = v.postcode || CONFIG.postcode;
 
   console.log(`   📝 Filling form: VN=${v.vehicleNumber} IC=${ic} PC=${postcode}`);
 
-  // Vehicle plate — try multiple label patterns
-  const plateSelectors = [
+  const plateFilled = await fillFirstMatch(page, [
     'input[placeholder*="plate" i]',
     'input[placeholder*="vehicle" i]',
+    'input[placeholder*="registration" i]',
     'input[name*="plate" i]',
     'input[name*="vehicle" i]',
+    'input[name*="registration" i]',
     'input[id*="plate" i]',
     'input[id*="vehicle" i]',
-  ];
-  for (const sel of plateSelectors) {
-    const el = page.locator(sel).first();
-    if ((await el.count()) > 0) {
-      await el.fill(v.vehicleNumber);
-      console.log(`   ✅ Plate filled via "${sel}"`);
-      break;
-    }
-  }
+    'input[aria-label*="plate" i]',
+    'input[aria-label*="vehicle" i]',
+  ], v.vehicleNumber, 'Plate');
 
-  // IC / SSM number
-  const icSelectors = [
+  const icFilled = await fillFirstMatch(page, [
     'input[placeholder*="ic" i]',
     'input[placeholder*="identity" i]',
     'input[placeholder*="ssm" i]',
@@ -315,35 +350,24 @@ async function fillQuotationForm(page: Page, v: VehicleInput, defaultIc: string)
     'input[name*="identity" i]',
     'input[id*="ic" i]',
     'input[id*="ssm" i]',
-  ];
-  for (const sel of icSelectors) {
-    const el = page.locator(sel).first();
-    if ((await el.count()) > 0) {
-      await el.fill(ic);
-      console.log(`   ✅ IC filled via "${sel}"`);
-      break;
-    }
-  }
+    'input[aria-label*="ic" i]',
+    'input[aria-label*="ssm" i]',
+  ], ic, 'IC/SSM');
 
-  // Postcode
-  const pcSelectors = [
+  const postcodeFilled = await fillFirstMatch(page, [
     'input[placeholder*="postcode" i]',
     'input[placeholder*="postal" i]',
+    'input[placeholder*="post code" i]',
     'input[name*="postcode" i]',
     'input[name*="postal" i]',
     'input[id*="postcode" i]',
     'input[id*="postal" i]',
-  ];
-  for (const sel of pcSelectors) {
-    const el = page.locator(sel).first();
-    if ((await el.count()) > 0) {
-      await el.fill(postcode);
-      console.log(`   ✅ Postcode filled via "${sel}"`);
-      break;
-    }
-  }
+    'input[aria-label*="postcode" i]',
+    'input[aria-label*="postal" i]',
+  ], postcode, 'Postcode');
 
   await page.waitForTimeout(500);
+  return { plateFilled, icFilled, postcodeFilled };
 }
 
 // ─── SUBMIT QUOTATION FORM ────────────────────────────────────────────────────
@@ -581,11 +605,29 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     await page.waitForTimeout(CONFIG.waitAfterPageLoad);
   }
 
+  // Dump the homepage form structure (always, until selectors are confirmed)
+  await dumpFormStructure(page, 'homepage before type selection');
+
   // Select vehicle type + owner type
   await selectVehicleType(page, vehicleType, ownerType);
 
+  // Dump again — selecting type usually reveals the input fields
+  await dumpFormStructure(page, 'after type selection');
+
   // Fill quotation form
-  await fillQuotationForm(page, v, defaultIc);
+  const { plateFilled, icFilled, postcodeFilled } = await fillQuotationForm(page, v, defaultIc);
+
+  // Guard: never submit an empty form. If the plate didn't get filled, the
+  // selectors don't match this DOM — abort with the dump above for diagnosis.
+  if (!plateFilled) {
+    return emptyResult(
+      `Could not fill vehicle plate field — form selectors did not match. ` +
+      `(ic=${icFilled} postcode=${postcodeFilled}). See DOM DUMP in log to map the real field names/placeholders.`
+    );
+  }
+  if (!icFilled || !postcodeFilled) {
+    console.log(`   ⚠️  Partial fill — plate ok, but ic=${icFilled} postcode=${postcodeFilled}. Submitting anyway.`);
+  }
 
   // Submit
   try {
