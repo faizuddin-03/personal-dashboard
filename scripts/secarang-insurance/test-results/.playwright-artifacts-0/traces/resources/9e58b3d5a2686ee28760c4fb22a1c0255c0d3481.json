@@ -1,0 +1,816 @@
+{
+    "GLOBAL": {
+        "ACTION": {
+            "CAR_INSURANCE": "Vehicle Insurance",
+            "ABOUT_US": "About Us",
+            "FAQ": "FAQs",
+            "SUPPORT": "Support",
+            "REFUND_POLICY": "Refund Policy",
+            "TERMS_OF_USE": "Terms of Use",
+            "LOG_IN": "Log In",
+            "SIGN_UP": "Sign Up",
+            "ACCOUNT": "Account",
+            "LOG_OUT": "Log Out",
+            "FAQ_LONG": "Frequently Asked Questions (FAQs)",
+            "MY_ACCOUNT": "My Account",
+            "DASHBOARD": "Dashboard",
+            "ACCOUNT_SETTING": "Account Settings",
+            "SUBMIT": "Submit",
+            "CONTINUE": "Continue",
+            "BACK": "Back",
+            "EDIT": "Edit",
+            "CANCEL": "Cancel",
+            "SAVE": "Save",
+            "VERIFICATION": "Verification",
+            "VERIFICATION_CODE": "Verification Code",
+            "INCORRRECT_CODE": "Ops, incorrect code. Try again",
+            "DEFAULT": "Default",
+            "TRY_AGAIN": "Try again",
+            "SUCCESS": "Successful!",
+            "HOME": "Home",
+            "ADD": "Add",
+            "REMOVE": "Remove",
+            "CHANGE": "Change",
+            "CLOSE": "Close",
+            "BUY": "Buy",
+            "SESSION_INACTIVITY": "Your session has expired. You've been inactive for at least 30 minutes, so we've signed you out to safeguard your personal information",
+            "SELECT": "Select",
+            "YES": "Yes",
+            "NO": "No",
+            "PRINT": "Print"
+        },
+        "STATUS": {
+            "ACTIVE": "Active",
+            "INACTIVE": "Inactive",
+            "EXPIRED": "Expired"
+        }
+    },
+    "SUPPORT": {
+        "HOW_HELP": "How can we help?",
+        "LIVE_CHAT": "Live chat",
+        "OPERATING_HOUR": "Operating hours",
+        "MON_TO_FRI": "9AM - 6PM, Monday to Friday except public holiday",
+        "CHAT_NOW": "Chat now",
+        "LEAVE_MESSAGE": "Leave your message",
+        "REPLY_WITHIN": "We will reply within 48 operating hours",
+        "GENERAL": "General",
+        "TRANSACTION_PAYMENT": "Transaction, Payment & Refund",
+        "CLAIM": "Claim",
+        "THIS_ABOUT": "This is about….",
+        "CONTACT_INSURANCE": "Contact insurance company",
+        "GENERAL_ENQUIRY": "General enquiry",
+        "BREAKDOWN_HOTLINE": "Breakdown hotline",
+        "CLAIM_HOTLINE": "Claim hotline",
+        "LABEL": {
+            "NICKNAME": "Your Nickname",
+            "EMAIL": "Your Email",
+            "PHONE_NO": "Your Phone No.",
+            "SUBJECT": "Subject",
+            "MESSAGE": "Your Message"
+        },
+        "VALIDATION": {
+            "WRITE_YOUR_MESSAGE": "Write your message (At least 30 characters)",
+            "ATTACH": "Attach documents / images",
+            "FILE_VALIDATION": "jpg, png, and pdf format only (Max size: 5MB)",
+            "FILE_SIZE_LIMIT": "Please ensure that the attachment does not exceed 5MB",
+            "FILE_TYPE": "Please ensure that the attachment is in either of JPG, PNG or PDF format",
+            "INVALID_NAME": "The entered name seems to be invalid. Try again.",
+            "INVALID_EMAIL": "The entered email seems to be invalid. Try again.",
+            "INVALID_PHONE_NO": "The entered mobile number seems to be invalid. Try again.",
+            "MESSAGE_NOT_EXCEED": "Kindly elaborate more (at least 30 characters)",
+            "SUBMIT_SUCCESS": {
+                "0": "Thank you for contacting us!",
+                "1": "We will get back to you. Your case ID is {{caseId}}."
+            }
+        }
+    },
+    "FAQ": {
+        "0": {
+            "TITLE": "Topic 1: General Info",
+            "0": {
+                "Q": "Who can use the service provided by {{brandName}}?",
+                "A": "Both private & company JPJ-registered vehicles."
+            },
+            "1": {
+                "Q": "Which insurers can I get instant quotation from?",
+                "A": ""
+            },
+            "2": {
+                "Q": "Is this service available all the time?",
+                "A": "Yes, this Internet-based service is available 24 hours daily."
+            },
+            "3": {
+                "Q": "What factors to take into consideration in choosing policy that is suitable for me?",
+                "A": {
+                    "0": "In choosing a policy that well-suits your need, there are many aspects to take into consideration. Among all, you may want to look for the following:",
+                    "1": "Coverage Type",
+                    "2": "For motor insurance, there are three main coverage types. Each and every coverage type provides different forms of compensations to you. The three coverage types are:",
+                    "3": "Third Party cover",
+                    "4": "This policy insures you against claims for bodily injuries or deaths caused to other persons (known as the third party), as well as loss or damage to third party property caused by your car.",
+                    "5": "Third Party, Fire and Theft cover",
+                    "6": "This policy insures you against claims for third party bodily injury and death, third party property loss or damage, and loss or damage to your own car due to accidental fire or theft.",
+                    "7": "Comprehensive cover",
+                    "8": "This policy provides the widest coverage among these three. i.e. third party bodily injury and death, third party property loss or damage and loss or damage to your own car due to accidental fire, theft or an accident.",
+                    "9": "Premium Amount",
+                    "10": "Your premium is the amount of money you pay to an insurance company to provide insurance on your car. Policy with low premium undeniably lead to cost-saving, yet that option may compromise some protection that you may need for your car. On the other hand, opting for policy with high premium too may not neccessarily be a wise move for you.  Always consider your financial circumstances and the type of protection that your car truly needs when making choices related to your car insurance as what may work for some may not be ideal for others.",
+                    "11": "Insurer's Credibility",
+                    "12": "Another important factor is to check insurers' credibility before proceeding with plan purchase. This research will assist you  in understanding the reliability of the company, which is paramount, particularly if the needs to make claim settlement arises.",
+                    "13": "Exclusions",
+                    "14": "Exclusions are specific factors/situations that are not covered under insurance plan. It is important to go through the policy documents well in advance before buying one, to avoid any unpleasant surprise during the claim process."
+                }
+            },
+            "4": {
+                "Q": "What is the policy coverage type that you offer?",
+                "A": "Currently, we offer comprehensive cover. "
+            },
+            "5": {
+                "Q": "What is the major exclusions for insurance policy with comprehensive coverage?",
+                "A": {
+                    "0": "Comprehensive coverage provides the most elaborated protection among all coverages. However, policy with this coverage does not cover certain losses such as:",
+                    "1": "Policyholder's death or bodily injury due to a motor accident;",
+                    "2": "Policyholder's liability against claims from passengers in your car; and",
+                    "3": "Loss, damage or liability arising from an act of nature i.e. flood, storm or landslide.",
+                    "4": "(Note: This list is non-exhaustive. Please refer to the policy contract for the full list of exclusions under this policy.)."
+                }
+            },
+            "6": {
+                "Q": "What is the importance of insuring my car at the appropriate market value?",
+                "A": {
+                    "0": "The importance of insuring the car at the correct market value cannot be overstated. If your car is under-insured, you run the risk of getting penalised. The insurer will only bear part of the loss in proportion to the difference between the market value and the sum insured. Kindly refer to the following illustration:",
+                    "1": "Car market value is RM60,000. Sum Insured is RM50,000.",
+                    "2": "Assuming your car involved in an accident which resulted in losses worth RM20,000, what is highest amount of compensation that you may attain?",
+                    "3": "Loss payable by insurer",
+                    "4": "Sum insured / Car market value  x loss",
+                    "5": "RM50,000/RM60,000 x RM20,000",
+                    "6": "RM16,666.67",
+                    "7": "The balance of RM3,333.33 (RM20,000 - RM16,666.67) will need to be borne by you.",
+                    "8": "*Do keep in mind that the above illustration is a general illustration only.",
+                    "9": "On the contrary, over-insuring your car would be a waste of money as the insurer will compensate you up till the market value of your car only."
+                }
+            },
+            "7": {
+                "Q": "What is No Claim Discount (NCD)?",
+                "A": {
+                    "0": "No Claim Discount (NCD) is a discount for drivers who have not made any insurance claims during the preceding years of the insured period. If you didn’t file any claims over the years, your NCD discount will increase. However, once you make a claim, your NCD will go to 0% again and after 1 year of paying your premium to full, you start building your NCD again.",
+                    "1": "The amount of NCD you may receive depends on the type of vehicle, coverage and the number of years you have not filed a claim. Normally private cars can go up to 55% of NCD."
+                }
+            },
+            "8": {
+                "Q": "What are market value and agreed value coverages?",
+                "A": {
+                    "0": "Market value refers to the current calculated worth of your car.",
+                    "1": "If you choose the market value coverage, your car would be covered for what it is ",
+                    "2": "currently",
+                    "3": "worth in the market, and you will be compensated for your car theft or loss based on the ",
+                    "4": "market value of your car at the time of theft or loss, rather than market value at the time of your insurance renewal.",
+                    "5": "Agreed value refers to the value agreed by both the insurer and policyholder at the time of insurance renewal.",
+                    "6": "Insurers determine the agreed value based on a few underwriting factors and risk assessment. Say that you choose the agreed value as the sum insured for your car, ",
+                    "7": "your insurer will compensate you exactly as the agreed value.",
+                    "8": "Refer to our example below:",
+                    "9": "You have insured your car at RM60,000 in January this year. In September, you would need to make claim on a total loss or theft of your car. In the instance where your car is valued at RM58,000 in September, if you chose:",
+                    "10": "market value coverage",
+                    "11": ", your compensation pay-out would be based on RM58,000 rather than RM60,000.",
+                    "12": "agreed value coverage",
+                    "13": ", your compensation pay-out would be based on RM60,000."
+                }
+            },
+            "9": {
+                "Q": "What are the services offered on the platform?",
+                "A": {
+                    "0": "Following are some of the services offered:",
+                    "1": "Instant quotes from our insurance partners",
+                    "2": "Insurance plans and benefits comparison",
+                    "3": "Thorough product information via Product Disclosure Sheet or Policy Wordings",
+                    "4": "Secured online payment via multiple payment options"
+                }
+            }
+        },
+        "1": {
+            "TITLE": "Topic 2: Account",
+            "0": {
+                "Q": "I forgot my password to my account. What should I do?",
+                "A": "You may go for \"Forgot Password\" to recover access to your account."
+            },
+            "1": {
+                "Q": "I want to create account with {{brandName}} however system prompts \"Unable to find record.\" Why is that so?",
+                "A": {
+                    "0": "You will be granted with the opportunity to create an account if you have performed at least one successful transaction. For your note, upon successful transaction, you will be presented with the option to sign up, if you have not had an account already. Otherwise, if you already have performed a successful transaction yet unable to proceed with account creation, you may reach out to our Customer Support team via:",
+                    "1": "live chat (service available during business hours)",
+                    "2": "Contact Us form."
+                }
+            },
+            "2": {
+                "Q": "I have performed a successful transaction however I cannot seem to find the stated account creation option on the final page. What is that so and what should I do?",
+                "A": "There can be few reasons for this occurrence. One of them is that you may have created an account with us. Could that be the reason? Our aim is to deliver a greatly convenient experience to you. Thus, all you need is to create an account with us. In the event you have ownership over few cars and have renewed their insurance with us, those successful transactions should be perpetuated in the account."
+            },
+            "3": {
+                "Q": "I am not able to log into my account. Why is that so and why should I do?",
+                "A": {
+                    "0": "Could you possibly forget your password? If that is the case, you may go for \"Forgot Password\" to recover access to your account. If it is not due to forgotten password case, we still suggest you to give \"Forgot Password\" at try. Alternatively, you may reach out to our Customer Support team via:",
+                    "1": "live chat (service available during business hours)",
+                    "2": "Contact Us form."
+                }
+            }
+        },
+        "2": {
+            "TITLE": "Topic 2: Transaction, Payment & Refund",
+            "0": {
+                "Q": "What are the types of payment options available?",
+                "A": "Debit Card / Credit Card & Online banking."
+            },
+            "1": {
+                "Q": "My transaction was successful. What should I expect next?",
+                "A": "Upon successful transaction, you can expect to receive 2 emails within 24hours following your transaction. We will send an email entailing successful transaction with an attachment of e-Receipt. The respective insurer will send e-Certificate to your email."
+            },
+            "2": {
+                "Q": "It has been more than 24 hours since my purchase. However, I yet to receive the above-mentioned emails. What should I do?",
+                "A": {
+                    "0": "Apology for the inconvenience that you might have faced. We advise you to reach out to our Customer Support team at",
+                    "1": "+60 18 288 4889"
+                }
+            },
+            "3": {
+                "Q": "Besides email, is there a way for me to view my past transaction(s)?",
+                "A": "Yes. You too can view your past transaction(s) in your account, if you already have an account with us. Otherwise, if you yet to have an account with us and you are interested in opening one with us, you may do so."
+            },
+            "4": {
+                "Q": "My transaction is unsuccessful. Why is that so & what should I do?",
+                "A": {
+                    "0": "There are a few possibilities if your payment is declined. Depending on the exact situation, the problem may, but not necessarily occur as a result of the following:",
+                    "1": "If you use credit or debit card, you may need to refer to your respective bank to ensure that it is valid.",
+                    "2": "System, be it on ours or the banking system may experience intermittent disruption occassionally or may be under scheduled maintenance.  We would advise you to avoid midnight transaction as most system maintenance work is likely to take place around that hour.",
+                    "3": "Alternatively, you may reach out to our Customer Support team via:",
+                    "4": "+60 18 288 4889"
+                }
+            },
+            "5": {
+                "Q": "Can I cancel and get a refund?",
+                "A": {
+                    "0": "We endeavour to deliver your e-Policy to you soonest possible. If we yet to deliver e-Policy to you, you may reach out to our Customer Support team via:",
+                    "1": "+60 18 288 4889",
+                    "2": "Otherwise,  you will need to request the refund directly with the respective insurance company."
+                }
+            }
+        },
+        "3": {
+            "TITLE": "Topic 3: Claim & Support",
+            "0": {
+                "Q": "How do I go about making a claim?",
+                "A": ""
+            },
+            "1": {
+                "Q": "How do I contact your Customer Support team?",
+                "A": {
+                    "0": "You may reach out to our Customer Support team via:",
+                    "1": "+60 18 288 4889"
+                }
+            },
+            "2": {
+                "Q": "How do I change my policy information?",
+                "A": {
+                    "0": "You may reach out to our Customer Support team via:",
+                    "1": "+60 18 288 4889"
+                }
+            },
+            "3": {
+                "Q": "If my vehicle is stolen, do I get my full sum insured?",
+                "A": "Claims will be based on the present market value of the vehicle. Therefore, we recommend that your car is insured based on the current fair market value or agreed value proposed by the respective company."
+            },
+            "4": {
+                "Q": "How fast can my motor claim be settled?",
+                "A": "Your claim will be processed once the adjuster’s report and other relevant documents are received by Insurer. Therefore, it is important for you to notify us or insurer and give complete documents as soon as possible so they can process your claim without any delay."
+            },
+            "5": {
+                "Q": "What should I do, in the event of a car accident?",
+                "A": {
+                    "0": "In the event of an accident, ensure that your vehicle is sent to your own Panel of Workshops or an authorized franchise repairer/dealer (car manufacturer service centre). A police report should be lodged within 24 hours. You are also required to notify us of the accident immediately; where upon we shall advise you of the procedures & furnish you with a claim form to be duly completed & returned to us together with all the other relevant documents requested.",
+                    "1": "If your vehicle is involved in a minor accident whereby you may not want to make a claim on your own policy but the accident involved third party property damage or third party bodily injury, please call your selected insurance company to make the notification."
+                }
+            }
+        }
+    },
+    "SIGN_UP": {
+        "ATTENTION": "Attention!",
+        "ATTENTION_DESC": "Account creation is exclusively available for those who have successfully purchased insurance policy with us.",
+        "HAVE_ACCOUNT": "Already have an account?",
+        "CREATED_ACCOUNT": "You have created an account with us. To access your account, kindly log into it.",
+        "SIGN_UP_EMAIL": "Sign up email has been sent to your email. Kindly follow the email guide to complete the process.",
+        "CREATE_ACCOUNT_FOR": "Create an account for",
+        "CREATE_PASSWORD": "Create Password",
+        "CREATE_ACCOUNT": "Create account",
+        "TOS_AGREE": "By signing up, you agree to our",
+        "HAVE_ACCOUNT_2": "Already have an account? Log in",
+        "HIDE_PASSWORD": "Hide Password",
+        "SHOW_PASSWORD": "Show Password",
+        "LABEL": {
+            "EMAIL": "Your Email",
+            "NICKNAME": "Your Nickname"
+        },
+        "VALIDATION": {
+            "VALID_NICKNAME": "Please enter a valid nickname",
+            "VALID_PASSWORD": {
+                "TITLE": "Password should be at least 8 characters long with a mix of:",
+                "0": "upper case (A-Z),",
+                "1": "lower case (a-z),",
+                "2": "digit (0-9) ",
+                "3": "symbol (~! @#$%^&*_-+=`|\\(){}[]:;”’<>,.?/)"
+            }
+        }
+    },
+    "NEW_PASSWORD": {
+        "NEW_PASSWORD": "Create New Password"
+    },
+    "LOG_IN": {
+        "FORGOT_PASSWORD": "Forgot your password?",
+        "DONT_HAVE_ACCOUNT": "Don’t have an account yet?",
+        "CONCURRENT_LOGIN_NOT_ALLOWED": "Concurrent login attempt is not allowed.",
+        "ALREADY_LOGIN": "You have already logged in another session. Try again later.\nIf it is not you, you may contact our customer service team.",
+        "CONTACT_CS": "Ops. Kindly contact our customer service team.",
+        "LOGIN_ATTEMPT_EXCEEDED": "Your attempt to login has reached maximum limit of 5 times. To protect your account from any unauthorized access, this account will be locked for 1 hour time",
+        "SIGN_UP_FIRST": "Ops. Perhaps you have yet created an account? Let's sign up first.",
+        "LABEL": {
+            "EMAIL": "Your Email",
+            "PASSWORD": "Password"
+        },
+        "VALIDATION": {
+            "VALID_EMAIL": "Please enter a valid email address"
+        }
+    },
+    "FORGOT_PASSWORD": {
+        "FORGOT_PASSWORD": "Forgot Password?",
+        "ENTER_EMAIL": "Enter your email and we will send you a reset password email.",
+        "RESET_SENT": "Reset password email has been sent to your email. Kindly follow the email guide to complete the process.",
+        "BACK_TO_LOGIN": "Back to login",
+        "CREATE_NEW_PASSWORD": "Create a new password",
+        "CREATE_STRONG_PASSWORD": "Create a strong password",
+        "NEW_PASSWORD": "New Password",
+        "CONFIRM_NEW_PASSWORD": "Confirm New Password",
+        "RESET_LOGIN": "Reset & login",
+        "RESET_SUCCESS": "You have successfully reset your password",
+        "DOES_NOT_MATCH": "Ops, does not match with New Password. Try again",
+        "CURRENT_PASSWORD": "Current Password",
+        "INCORRECT_CODE": "Ops, incorrect. Try again. Alternatively, you may click on Forgot Password link to reset password in case you have forgotten your current password",
+        "SET_NEW_PASSWORD": "Set New Password",
+        "UPDATE_SUCCESS": "Successfully Updated!",
+        "PASSWORD_RULE": "Please enter a valid password"
+    },
+    "DASHBOARD": {
+        "WELCOME": "Welcome",
+        "ACCOUNT_SETTING": "Account Settings",
+        "FILTER": "Filter",
+        "ALL_CAR": "All cars",
+        "QUOTATION": "Quotations",
+        "QUOTATION_NOT_AVAILABLE": "Quotation not available for viewing",
+        "PURCHASE": "Purchases"
+    },
+    "ACCOUNT_SETTING": {
+        "PROFILE": "Profile",
+        "CHANGE_PASSWORD": "Change Password"
+    },
+    "PROFILE": {
+        "LABEL": {
+            "NICKNAME": "Nickname",
+            "EMAIL": "Email",
+            "PHONE_NO": "Phone No.",
+            "CORR_ADDRESS": "Correspondence Address"
+        }
+    },
+    "CHANGE_NICKNAME": {
+        "CHANGE_NICKNAME": "Change Nickname",
+        "NEW_NICKNAME": "Your Nickname",
+        "UPDATE_SUCCESS": "Your nickname has been updated!",
+        "VALID_NICKNAME": "Please enter a valid nickname"
+    },
+    "CHANGE_EMAIL": {
+        "EDIT_EMAIL": "Edit Email",
+        "NEW_EMAIL": "Your New Email",
+        "VERIFICATION_SENT": "Verification code for the changing of email has been sent to {{email}} on {{sendDateTime}} and valid for 30 minutes from the time it was requested. It may be in your Spam folder. If it is not there, please spare few minutes for it to reach you. ",
+        "CONTACT_CS": "Issue persists? Our Customer Service team can assist you.",
+        "ENTER_CODE": "Enter 6-digit verification code sent to {{email}} to confirm the changing of your email.",
+        "CHANGE_EMAIL": "Change email",
+        "UPDATE_SUCCESS": "Your email has been updated!",
+        "VALID_EMAIL": "Please enter a valid email address"
+    },
+    "CHANGE_PHONE_NO": {
+        "CHANGE_PHONE_NO": "Change Phone No.",
+        "NEW_PHONE_NO": "New Phone No.",
+        "PHONE_NO_RULE_10": "At least 10 digits including +60. ie: +601234567",
+        "PHONE_NO_RULE_12": "At least 12 digits including +60. ie: +60123456789",
+        "VERIFICATION_SENT": "Verification code for the changing of phone number has been sent to {{email}} on {{sendDateTime}} and valid for 30 minutes from the time it was requested. It may be in your Spam folder. If it is not there, please spare few minutes for it to reach you.",
+        "CONTACT_CS": "Issue persists? Our Customer Service team can assist you.",
+        "ENTER_CODE": "Enter 6-digit verification code sent to {{email}} to confirm the changing of your phone number to {{phoneNo}}",
+        "UPDATE_SUCCESS": "Your phone no. has been updated!"
+    },
+    "CHANGE_CORR_ADDRESS": {
+        "CHANGE_CORR_ADDRESS": "Change Correspondence Address",
+        "ADDRESS_LINE_1": "Address Line 1",
+        "ADDRESS_LINE_2": "Address Line 2",
+        "ADDRESS_LINE_3": "Address Line 3",
+        "POSTAL_CODE": "Postal Code",
+        "CITY": "City",
+        "STATE": "State",
+        "POSTAL_CODE_RULE": "Postal code should be made up of 5-digits",
+        "CITY_RULE": "City should be made up of at least 3 alphabetical characters",
+        "VERIFICATION_SENT": "Verification code for the changing of correspondence address has been sent to {{email}} on {{sendDateTime}} and valid for 30 minutes from the time it was requested. It may be in your Spam folder. If it is not there, please spare few minutes for it to reach you.",
+        "CONTACT_CS": "Issue persists? Our Customer Service team can assist you.",
+        "UPDATE_SUCCESS": "Your correspondence address has been updated!",
+        "ENTER_CODE": "Enter 6-digit verification code sent to {{email}} to confirm the changing of your correspondence address"
+    },
+    "CHANGE_TIN_NO": {
+        "TIN_NO_RULE": "TIN should be between 9 and 14 characters"
+    },
+    "CHANGE_SST_NO": {
+        "SST_NO_RULE": "SST No should be between 15 and 17 characters"
+    },
+    "VEHICLE_DETAIL": {
+        "CAR_DETAIL": "Vehicle details",
+        "PLATE_NO": "Plate No",
+        "MAKE": "Make",
+        "MODEL": "Model",
+        "YEAR": "Year",
+        "SEAT": "Seat",
+        "CC": "cc",
+        "VARIANT": "Variant",
+        "TRANSMISSION": "Transmission",
+        "CONFIRM_CAR_DETAIL": "Are these your vehicle details?",
+        "BACK_HOME": "Back to Home",
+        "USER_AGREEMENT": "By continuing, I confirm and declare that the above vehicle details are true, accurate and the vehicle is not blacklisted by any of the authoritative bodies/agencies.",
+        "SELECT_VARIANT": "Select your vehicle variant"
+    },
+    "PROGRESS_STEP": {
+        "VEHICLE_DETAIL": "Vehicle Details",
+        "ALL_QUOTATION": "All Quotation",
+        "ADD_ON": "Add-On",
+        "CONFIRMATION": "Confirmation",
+        "PAYMENT": "Payment"
+    },
+    "PRICING_DETAIL": {
+        "COMPREHENSIVE": "Comprehensive",
+        "SUM_COVERAGE": "Sum coverage",
+        "CURRENT_COVERAGE": "Current Coverage",
+        "BASIC_PREMIUM": "Basic Premium",
+        "NCD": "NCD",
+        "NCD_LONG": "No Claim Discount",
+        "GROSS_PREMIUM": "Gross Premium",
+        "PREMIUM_NCD": "Premium After NCD",
+        "ADD_ON": "Add-Ons",
+        "WINDSCREEN": "Windscreen, Windows and Sunroof",
+        "WINDSCREEN_ZURICH": "Breakage of Glass in Windscreen, Window or Sunroof",
+        "SUM_INSURED": "Sum Insured",
+        "SPECIAL_PERIL": "Special Perils",
+        "INCLUSION_SPECIAL_PERIL": "Inclusion of Special Perils",
+        "LEGAL_LIABILITY": "Legal Liability to Passengers",
+        "LEGAL_LIABILITY_2": "Legal Liability of Passengers for Negligent Acts",
+        "VEHICLE_ACCESSORIES": "Vehicle Accessories",
+        "BETTERMENT_BUYBACK": "Betterment Buyback",
+        "SRCC": "Strike, Riot and Civil Commotion (SRCC)",
+        "MPA_LONG": "Motorist Personal Accident",
+        "MPA": "MPA",
+        "PLAN": "Plan",
+        "ANNUAL_PREMIUM": "Annual Premium",
+        "DISCOUNT": "Discount",
+        "DISCOUNT_TYPE": "Discount type (if any)",
+        "POST_DISCOUNT_PRMIUM": "Post-Discount Premium",
+        "SST_LONG": "Service Tax",
+        "STAMP_DUTY": "Stamp Duty",
+        "TOTAL_PAYABLE": "Total Payable",
+        "TOTAL_PREMIUM": "Total Premium",
+        "NCD_EXPLANATION": "No Claim Discount (NCD) is a discount for drivers who have not made any insurance claims during the preceding years of the insured period.\n\nIf you didn’t file any claims over the years, your NCD discount will increase. However, once you make a claim, your NCD will go to 0% again and after 1 year of paying your premium to full, you start building your NCD again.\n\nThe amount of NCD you may receive depends on the type of vehicle, coverage and the number of years you have not filed a claim. Normally private cars can go up to 55% of NCD.",
+        "MIN_2_MONTH_RULE": "Too early for policy renewal. Policy for {{vehicleNo}} is still active. We will remind you at least 2 months prior to the expiry of your current policy.",
+        "INSURANCE_DETAIL": "Insurance Details",
+        "PLAN_DETAIL": "Plan Details",
+        "INSURER": "Insurer",
+        "COVERAGE_PERIOD": "Coverage Period",
+        "PRICING_DETAIL": "Pricing details",
+        "PRICE": "Price",
+        "BENEFIT": "Benefits",
+        "TOTAL_PAID": "Total Paid",
+        "EARLY_BIRD_DISCOUNT": "Early Bird Discount",
+        "ALL_DRIVERS": "All Drivers",
+        "ALL_RIDERS": "All Riders",
+        "LEGAL_LIABILITY_PILLION": "Legal Liability to Pillion",
+        "MERW": "Motor Enhanced Road Warrior",
+        "MERWA": "Motor Enhanced Road Warrior - Plan A",
+        "MERWB": "Motor Enhanced Road Warrior - Plan B",
+        "MERWC": "Motor Enhanced Road Warrior - Plan C",
+        "EHAILING": "Private Hire Car (e-Hailing)",
+        "CART": "Compensation for Assessed Repair Time (CART)",
+        "CART_ZURICH": "CART (Compensation for Assessed Repair Time)",
+        "CAR_BREAKIN": "Car Break-In/Robbery",
+        "KEY_CARE": "Key Care",
+        "ROAD_RANGERS": "Allianz Road Rangers",
+        "BETTERMENT_WAIVER": "Waiver of Betterment Contribution",
+        "ROADTAX": "Road tax",
+        "ROADTAX_DESC": "Digital road tax will be accessible on your JPJ account on their website and/or app within 24 working hours of successful payment and policy generation.",
+        "ROADTAX_DESC_COMPANY": "Road tax delivery is estimated to take place within 72 working hours from purchase time.",
+        "DISCOUNT_DESC": "You can apply one discount code per transaction",
+        "DISCOUNT_CODE": "Discount code",
+        "APPLY_DISCOUNT_CODE": "Apply discount code",
+        "POST_DISCOUNT_PREMIUM": "Post-Discount Premium",
+        "COMPREHENSIVE_LONPAC": "Private Car Secure Comprehensive",
+        "WINDSCREEN_TOKIOMARINE": "Breakage of Glass in Windscreen",
+        "NCD_RELIEF": "Current Year Non-Claim Discount (NCD) Relief",
+        "UNLIMITED_TOWING": "Unlimited Towing",
+        "UNNAMEd_DRIVER": "Waiver of compulsory excess for unnamed driver (non- tariff)",
+        "INCLUSION_SPECIAL_PERIL_LONPAC": "Enhanced Inclusion of Special Perils",
+        "COMPREHENSIVE_TOKIOMARINE": "Private Comprehensive",
+        "COMPREHENSIVE_ZURICH": "Motor Takaful",
+        "COMMISSION": "Commission"
+    },
+    "HOMEPAGE": {
+        "TITLE1": "Buy your vehicle insurance here",
+        "CAR_TAB": "Car",
+        "MOTORCYCLE_TAB": "Motorcycle",
+        "PRIVATE_CAR": "Private <br class='d-sm-none'> Car",
+        "COMPANY_CAR": "Company <br class='d-sm-none'> Car",
+        "PRIVATE_MOTORCYCLE": "Private <br class='d-sm-none'> Motorcycle",
+        "COMPANY_MOTORCYCLE": "Company <br class='d-sm-none'> Motorcycle",
+        "CAR_PLATE_NO": "Vehicle Plate No.",
+        "VEHICLE_PLATE_NO": "Vehicle Plate No.",
+        "OWNER_IC_NO": "Owner IC No.",
+        "COMPANY_SSM_NO": "Company SSM No.",
+        "POSTAL_CODE": "Postal Code (Vehicle Location)",
+        "GET_QUOTATION": "Get quotation",
+        "AGREE_TOC": "By continuing, you agree to our",
+        "PRIVACY_POLICY": "Privacy Policy",
+        "AND": "and",
+        "TERMS": "Terms of Use",
+        "UNABLE_TO_RETRIEVE": "Unable to retrieve your vehicle information. Kindly ensure that all information provided is correct.",
+        "UNABLE_TO_PROCEED": "Ops, unable to proceed. This vehicle does not meet Insurer’s requirement. Should you require further details, kindly contact our customer service team.",
+        "TOO_EARLY_RENEWAL": "Too early for policy renewal. Policy for {{vehicleNo}} is still active. We will remind you at least 2 months prior to the expiry of your current policy.",
+        "POLICY_EXPIRED": "Ops, your policy has expired at least 36months. To renew your policy, your vehicle is required to undergo Puspakom’s inspection.",
+        "CAR_PLATE_RULE": "Vehicle plate number should be made up of at least 1 alphabet and 1 numerical characters.",
+        "IC_NO_RULE": "IC number should be made up of 12 numerical characters",
+        "INVALID_SSM": "Your SSM number seems to be invalid. Try again."
+    },
+    "CAR_OWNER_VERIFICATION": {
+        "CARE_PRIVACY": "We care about your data privacy.",
+        "VIEW_QUOTATION_IC": "To view your quotation, enter the last 4 digits of your IC number",
+        "VIEW_QUOTATION_SSM": "To view your quotation, enter the last 4 digits of your company's SSM number",
+        "CHAT_WITH_US": "Chat with us"
+    },
+    "INSURANCE_QUOTATION": {
+        "SELECT_INSURANCE": "Choose your insurance",
+        "SET_SUM_INSURED": "Set sum insured",
+        "SORTING": "Sorting",
+        "PRICE_LOW_HIGH": "Price - Low to high",
+        "PRICE_HIGH_LOW": "Price - High to low",
+        "COMPARE": "Compare",
+        "CLEAR": "Clear",
+        "CURRENT_POLICY": "Current Policy",
+        "ADD_PLAN": "Add another plan to compare",
+        "MAX_PLAN": "Max {{maxNumOfPlan}} plans",
+        "NEED_HELP": "Need help in choosing your ideal insurance? Chat with us now.",
+        "SCROLL_DOWN_QUOTATION": "Quotations last up to 24hours & previous ones have expired. Scroll down for fresh set of quotations!",
+        "HAVE_ACCOUNT": "You have an account with us! Log into your account to speed up your insurance renewal process!",
+        "BACK_TO_VEHICLE_DETAILS": "Back to vehicle details confirmation",
+        "POLICY_WORDING": "Policy Wording",
+        "PDPN": "Personal Data Protection Notice ({{language}})",
+        "POSTCODE_INFO_TITLE": "It is essential to key in the right postal code.",
+        "POSTCODE_INFO_DETAILS1": "Right postal code refers to postal code of where you live and where the car is used at mostly. \n\nPostal code is one of the building blocks in deriving premium rate. For instance, for a particular car, you may find premium quoted for postal code in Perak to be higher than those of Klang Valley as per sample follows:",
+        "POSTCODE_INFO_DETAILS2": "You may run into a risk of having your claims to be refused by respective insurer should the provided postal code is not representative of where you live and where the car is used at mostly.",
+        "YOUR_COVERAGE": "Your coverage"
+    },
+    "SUM_INSURED_FILTER": {
+        "SLIDER": "Slide through the slider to change value",
+        "PLAN_OFFER": "{{numOfPlan}} plan offers this value",
+        "CURRENT_VALUE": "Your vehicle current market value:",
+        "APPLY": "Apply"
+    },
+    "INSURANCE_COMPARISON": {
+        "COMPARE_INSURANCE": "Compare insurances",
+        "VIEW_ALL_INSURANCE": "View all insurances",
+        "FREE_TOWING": "Free towing",
+        "UP_TO_ACCIDENT": "Up to {{accidentCost}}/accident",
+        "UP_TO_BREAKDOWN": "Up to {{breakdownCost}}/breakdown",
+        "UP_TO_KM": "Free up to {{coverageInKm}}KM",
+        "COVER_ALL_DRIVER": "Cover all drivers",
+        "COVER_ALL_RIDER": "Cover all riders",
+        "DAILY_HOSPITAL_INCOME": "Daily Hospital Income",
+        "INCONVENIENCE_ALLOWANCE_FLOOD": "Inconvenience Allowance due to Flood",
+        "COVER_UP_TO_DRIVER": "Free up to {{numOfDriver}} drivers",
+        "NO_CHARGE": "With no charge",
+        "ROAD_ASSISTANCE": "Road assistance",
+        "READY_HELP": "Ready to help",
+        "MORE_DETAIL": "More Details",
+        "PRODUCT_DISCLOSURE": "Product Disclosure",
+        "PRODUCT_BROCHURE": "Product Brochure",
+        "TERM_CONDITION": "Terms and Conditions",
+        "MORE_INFO": "More info",
+        "NEED_HELP": "Need help in comparing insurances? Chat with us now",
+        "SELECT_INSURANCE_COMPARE": "Select insurance to compare",
+        "FREE_TOWING_LONPAC": "Free towing & emergency roadside assistance",
+        "DOCUMENT_REPLACEMENT_DESC":"RM{{documentPay}} per accident for the loss of NRIC, passport or driver’s license during an in-vehicle burglary",
+        "DAMAGE_COVER_DESC":"Limited to {{percent}}% of your vehicle coverage amount",
+        "24_HOURS_ASSISTANCE":"24-hours roadside assistance",
+        "PRODUCT_DISCLOSURE_SHEET": "Product Disclosure Sheet",
+        "CERTIFICATE_WORDING": "Certificate Wording",
+        "Z_DRIVE_ASSIST_TAKAFUL": "Z-Drive Assist Takaful",
+        "Z_RIDER_PLUS_TAKAFUL": "Z-Rider (Plus) Takaful"
+    },
+    "ADD_ON": {
+        "CHOOSE_ADD_ON": "Choose Add-ons",
+        "BACK_TO_INSURANCE": "Back to insurance selection",
+        "SUM_INSURED_WINDSCREEN": "Sum Insured for Windscreen, Windows and Sunroof",
+        "SUM_INSURED_RANGE": "Sum insured ranges between {{sumInsuredMin}} and {{sumInsuredMax}}",
+        "SUM_INSURED_ACCESSORIES": "Sum insured for vehicle accessories",
+        "MIN_SUM_INSURED": "Minimum sum insured is {{sumInsuredMin}}",
+        "MPA_PLAN": "Motorist Personal Accident (MPA)",
+        "MPA_PLAN1": "Motorist Personal Accident - Plan 1",
+        "MPA_PLAN2": "Motorist Personal Accident - Plan 2",
+        "MPA_PLAN3": "Motorist Personal Accident - Plan 3",
+        "MPA_PLAN4": "Motorist Personal Accident - Plan 4",
+        "MPA_PLAN_COVERAGE": "Motorist Personal Accident (MPA) Coverage Plan",
+        "SDPA_COVERAGE": "Smart Driver Personal Accident Coverage Plan",
+        "SDPA": "Smart Driver Personal Accident",
+        "PAB3": "Driver and Passengers' Personal Accident",
+        "PAB3_PLANS": "Driver and Passengers' Personal Accident Plans",
+        "INVALID_CODE": "Invalid coverage code"
+    },
+    "GENERAL_INFO": {
+        "WINDSCREEN": "This extra coverage covers the repair and/or replacement cost to windscreen, window, sunroof, lamination and/or tinted film damages without compromising your Non Claim Discount benefit.\n\nYou may set the preferred sum insured value based on the range of sum insured recommendation made by respective insurer.",
+        "LEGAL_LIABILITY": "This extra coverage covers you against legal liabilities in the event that you are faced with legal action sought by your passenger(s) against you.",
+        "SPECIAL_PERIL": "This extra coverage covers your vehicle against loss or damage caused by natural perils such as flood, hurricane, storm, volcanic eruption, earthquake, landslide, subsidence or sinking of the soil/earth and/or other natural perils.",
+        "LEGAL_LIABILITY_2": "This extra coverage covers you against a third party claim against you for the negligence of your passengers. For example, damage to another vehicle when your passenger(s) open your car door.",
+        "VEHICLE_ACCESSORIES": "This extra coverage covers your vehicle accessories such as disc player, dashboard camera, etc. against loss or damage, without compromising your Non Claim Discount benefit.\n\nIt can be seen that accessories coverage is extremely useful and advisable to purchase in order to protect your expensive and valuable car accessories in case of damage or theft.",
+        "MPA": "This extra coverage covers you, any Authorised Drivers and your passengers against personal injury, death and any medical expenses incurred due to road accident.\n\nRoad accidents and their degree of repercussions may vary, ranging from no to minor injury to loss of life. Protect yourself and your loved ones by getting this extra coverage.",
+        "BETTERMENT_BUYBACK": "By buying this cover you will not be required to pay any amount towards your car's betterment if new original parts are used to repair your car.",
+        "SRCC": "Get covered against loss or damages to your car in the event of strikes, riots, and civil commotions.",
+        "CART": "This extra coverage compensates you up to 21 days for the number of days required (assessed by Allianz) to repair your damaged car.\n\nThe compensation amount will be based on the rate per day and number of days that you have chosen for this add-on at the point of purchase.",
+        "CAR_BREAKIN": "This extra coverage reimburses you the actual expenses incurred up to RM500, to repair or replace your personal effects that were in your car if they are lost or damaged due to a break-in committed by way of actual forcible and violent entry into your car, or armed robbery or robbery with threatened violence, whilst you are in your car. This benefit is limited to one claim only during the period of insurance of your policy.\n\nPersonal effects shall comprise the following: Smart Tag, Touch n Go card, National Registration Identity Card (NRIC), driver’s license, credit cards or charge cards, access cards, eye glasses, personal electronic devices (such as mobile phone, power bank, tablet, laptop, camera), wallet, handbag, purse, keys (except keys to your car) and shoes.",
+        "KEY_CARE": "This extra coverage reimburses you the actual expenses up to RM1,000, to replace one set of car key if your car key is lost, stolen or damaged due to theft or attempted theft or house break-in that is committed by way of actual forcible and violent entry, or armed robbery or robbery with violence.",
+        "ROAD_RANGERS": "This extra coverage is a nationwide motor accident assistance provided free-of-charge to all Allianz Motor Comprehensive (Private Car) policyholders.",
+        "BETTERMENT_WAIVER": "By buying this cover you will not be required to pay any amount towards your car's betterment if new original parts are used to repair your car.",
+        "WINDSCREEN_LONPAC": "This extra coverage covers the repair and/or replacement cost to windscreen, window, sunroof, lamination and/or tinted film damages without compromising your Non Claim Discount benefit.\n\nYou may set the preferred sum insured value based on the range of sum insured recommendation made by respective insurer.\n\nYou will receive a special advantage when insuring with Lonpac: if your windscreen is repaired instead of replaced, the sum insured for your windscreen will be automatically reinstated to the original amount without any additional premium.",
+        "UNLIMITED_TOWING": "In the event your vehicle is immobilized due to breakdown/accident, the Insurer will extend their Auto Partner roadside assistance to provide unlimited towing distant within Malaysia to a panel workshop. Up to 3 times per duration of the policy in forced.",
+        "NCD_RELIEF": "Compensates you for the NCD that you may forfeit due to a claim being made, the amount is the equal to your NCD entitlement stated in the policy schedule for the current period insurance.",
+        "WINDSCREEN_TOKIOMARINE": "Covers the cost to replace or repair any glass in the windscreen, window or sunroof of your vehicle that is accidentally damaged, including the cost of lamination/tinting film (if any)",
+        "SPECIAL_PERIL_TOKIOMARINE": "Covers the loss or damage to your car caused by flood, typhoon, hurricane, storm, tempest, volcanic eruption, earthquake, landslide, landslip, subsidence or sinking of the soil/earth or other convulsions of nature. \n\nThe Insurer will pay the cost of repair if your car is repairable. If your car is total loss, the amount payable will be the Market Value at the time of the loss or the Sum Insured as shown in the Schedule, whichever sum is the lesser.",
+        "SPECIAL_PERIL_LONPAC": "This extra coverage covers your vehicle against loss or damage caused by natural perils such as flood, hurricane, storm, volcanic eruption, earthquake, landslide, subsidence or sinking of the soil/earth and/or other natural perils.\n\nIn addition, if your car cannot be driven as a result of any damage due the above mentioned, the Insurer will reimburse you up to a maximum of RM600 under the policy for the towing cost (excluding toll charges and any repair cost) to remove your car to the nearest approved repairer or to a safe place of storage while awaiting repair or disposal.",
+        "WINDSCREEN_89A": "Covers the breakage of glass in windscreens, windows and sunroofs. Includes one free reinstatement for repairs of damaged glass. Your No Claim Discount (NCD) entitlement will not be affected if this additional coverage is extended.",
+        "LEGAL_LIABILITY_ZURICH": "We'll protect you against any legal liability brought against you by your passengers.",
+        "SPECIAL_PERIL_ZURICH": "We'll cover your vehicle in the event of floods, storms and other natural disasters.",
+        "LEGAL_LIABILITY_2_ZURICH": "We'll protect you against any liability due to negligence that was caused by your passengers.",
+        "CART_ZURICH": "We'll compensate you based on the estimated time it takes for your vehicle to be repaired.",
+        "ALL_DRIVERS_ZURICH": "This will allow any driver with your consent to drive your vehicle and have the same takaful protection extended to them.",
+        "ALL_RIDERS_ZURICH": "This will allow any rider with your consent to ride your motorcycle and have the same takaful protection extended to them.",
+        "LEGAL_LIABILITY_PILLION_ZURICH": "We'll protect you against any legal liability brought against you by your pillion.",
+        "SPECIAL_PERIL_ZURICH_MOTORCYCLE": "We'll cover your motorcycle in the event of floods, storms and other natural disasters."
+
+    },
+    "MPA_OVERLAY": {
+        "DRIVER_ENTITLEMENT": "Authorized Driver's Entitlement",
+        "DRIVER_PASSENGER_ENTITLEMENT": "Authorized Driver & Passengers",
+        "PASSENGER_ENTITLEMENT": "Passengers' Entitlement",
+        "BREAKDOWN_TOWING": "Breakdown towing up to RM {{breakdownMax}}",
+        "DEATH": "Death",
+        "PERMANENT_DISABILITY": "Permanent Disablement",
+        "LOSS_BOTH_HAND_FEET_EYE": "Loss of both hands or feet or sight of both eyes",
+        "LOSS_ONE_HAND_FOOT": "Loss of one hand and one foot",
+        "LOSS_EITHER_HAND_FOOT_EYE": "Loss of either hand or foot and sight of one eye",
+        "LOSS_EITHER_HAND_FOOT": "Loss of either hand or foot",
+        "LOSS_EYE": "Loss of sight of one eye",
+        "MEDICAL_REIMBURSEMENT": "Medical Expenses Reimbursement",
+        "MEDICAL_REIMBURSEMENT_TOS": "Pays the actual cost per person for medical and surgical treatment trained nurses and hospitalisation incurred within 52 weeks from the date of accident and resulting from injuries sustained."
+    },
+    "PLAN_OVERLAY": {
+        "COVERAGE_INCLUSION": "Coverage Inclusion",
+        "DEATH_INJURY": "Third Party bodily injury and death",
+        "DEATH_INJURY_ZURICH": "Third Party Bodily Injury and Death",
+        "DAMAGE_PROPERTY": "Third Party Property loss or damage",
+        "VEHICLE_THEFT_FIRE": "Loss/damage to your vehicle caused by theft or fire",
+        "VEHICLE_ACCIDENT": "Damage to your vehicle due to accident",
+        "TOWING_SERVICE": "Towing service",
+        "FREE_TOWING_ACCIDENT": "Free towing up to RM{{freeTowingMax}} per accident",
+        "FREE_TOWING_BREAKDOWN": "Free towing up to RM{{freeTowingMax}} per breakdown",
+        "FREE_TOWING_EVENT": "24/7 towing service up to RM{{freeTowingMax}} (round trip) per event",
+        "EMERGENCY_TOWING_EVENT": "24-hour emergency towing services up to RM{{freeTowingMax}} (round trip) per event",
+        "DRIVER_COVERAGE": "Driver coverage",
+        "RIDER_COVERAGE": "Rider coverage",
+        "COVER_DRIVER": "Cover all drivers",
+        "COVER_DRIVER_DESC1": "Free cost up to 2 drivers",
+        "COVER_DRIVER_DESC2": "No extra cost for additional driver",
+        "ROAD_SERVICE": "Road assistance services",
+        "JUMPSTART": "Jumpstart or change of battery",
+        "REPLACEMENT_TYRE": "Replacement of tyre",
+        "REFUEL_TANK": "Refuel empty tank",
+        "ACCIDENT_ASSISTANCE": "Accident assistance",
+        "OPTIONAL_COVERAGE": "Optional coverage",
+        "COVERAGE_EXCLUSION": "Coverage exclusion",
+        "DAMAGE_EARTHQUAKE": "Damage due to earthquake",
+        "DAMAGE_TREE_FALL": "Damage due to tree fall",
+        "ADDITIONAL_DRIVERS": "Additional Drivers",
+        "FREE_UP_TO_DRIVER": "Free cost up to {{numOfDriver}} drivers",
+        "UNLIMITED_BREAKDOWN": "Unlimited number of breakdown towing up to {{breakdownInKM}}KM",
+        "24_7_TOWING": "24/7 towing service",
+        "24_7_REPAIR": "24/7 free minor roadside repair",
+        "24_HOUR_REPAIR": "24-hour free minor roadside repair",
+        "24_7_REPAIR2": "24/7 minor repair service (free labour charge up to RM{{charge}} per incident)",
+        "BATTERY_ASSISTANCE": "Battery assistance",
+        "JUMPSTART_SUPPORT": "Jumpstart support",
+        "FUEL_DELIVERY": "Fuel delivery",
+        "MINOR_WIRE": "Minor wire work fix",
+        "CHANGE_TYRE": "Change of flat tyre",
+        "CHANGE_BATTERY": "Change of flat battery",
+        "NO_EXTRA_COST_DRIVER": "No extra cost for additional drivers",
+        "SUBSCRIPTION_TOS": "Subscriptions billed as one-time payments. Reccurring billing. Cancel anytime.",
+        "CAR_RENTAL": "Car rental referral services",
+        "ARRANGEMENT_HOTEL": "Arrangement for hotel accommodation",
+        "PANEL_WORKSHOP": "Panel workshops referral services",
+        "CAR_LOCKSMITH": "Car locksmith services",
+        "TRANSMISSION_EMERGENCY_INFO": "Transmission of emergency information",
+        "TRANSPORTATION_ALLOWANCE": "Transportation allowance",
+        "DOCUMENT_ALLOWANCE": "Document replacement allowance",
+        "DAMAGE_COVER": "Impact damage cover caused by falling objects due to convulsion of nature",
+        "TRANSPORTATION_ALLOWANCE_EVENT": "RM{{transportallowance}} per accident claim, excluding windscreen claims",
+        "ACCIDENTAL_FIRE_DAMAGE": "Accidental or fire damage to your vehicle",
+        "THEFT_YOUR_VEHICLE": "Theft of your vehicle",
+        "LIABILITIES_OTHER_PARTIES": "Liabilities to other parties for injury or death",
+        "DAMAGE_OTHER_PARTIES": "Damage to other parties property",
+        "DRIVER_COVERAGE_TOKIOMARINE": "1st additional driver is free and subsequent named drivers RM10",
+        "ALL_RIDERS": "All Riders",
+        "LEGAL_LIABILITY_PILLION": "Legal Liability to Pillion",
+        "THIRD_PARTY_COVERAGES": "Third Party Coverages",
+        "THIRD_PARTY_LOSS_DAMAGE": "Third Party Loss or Damage",
+        "UNLIMITED_TOWING_NATIONWIDE": "Unlimited towing & breakdown assistance nationwide",
+        "COURTESY_CAR": "Courtesy Car"
+    },
+    "CAR_OWNER_DETAIL": {
+        "CAR_OWNER_DETAIL": "Vehicle owner details",
+        "FULL_NAME": "Full Name",
+        "COMPANY_NAME": "Company Name",
+        "IC_NO": "IC No",
+        "SSM_NO": "SSM No",
+        "EMAIL": "Email",
+        "PHONE_NO": "Mobile Phone No.",
+        "COMP_PHONE_NO": "Company Phone No.",
+        "GENDER": "Gender",
+        "MALE": "Male",
+        "FEMALE": "Female",
+        "TIN_NO": "Tax Identification Number (TIN)",
+        "SST_NO": "SST No"
+    },
+    "CONFIRMATION": {
+        "YOUR_TOTAL_PAYABLE": "Your total payable is",
+        "SELECT_OPTION": "Please select an option",
+        "AGREE_TOC": "By continuing, you agree to our Privacy Policy and Terms and you declare that all information given is true",
+        "CONFIRM_PAY": "Confirm and Pay",
+        "HAVE_QUESTION": "Have any question before making payment? Chat with us now.",
+        "BACK_TO_ADD_ON": "Back to add-on selection",
+        "CONFIRM_CHANGE_PLAN": "Confirm to change your insurance plan? You will lose the current plan if you select 'Yes'."
+    },
+    "PAYMENT": {
+        "HOW_PAY": "How would you like to pay?",
+        "CREDEIT_DEBIT_CARD": "Credit or Debit Card",
+        "ONLINE_BANKING": "Online banking",
+        "FPX_BANKING": "FPX Online banking",
+        "PAY": "Pay",
+        "BACK_CONFIRMATION": "Back to confirmation",
+        "PROCESSING_PAYMENT": "Processing payment",
+        "DONT_CLOSE_WINDOW": "Don’t close this window",
+        "BANK_DECLINE_1": "Your bank declines the transaction.",
+        "BANK_DECLINE_2": "Contact your bank or try again using other payment options.",
+        "SERVER_ERROR_PAYMENT_1": "The server is unable to process the payment at the moment.",
+        "SERVER_ERROR_PAYMENT_2": "Please try again or use other payment method.",
+        "PAYMENT_ERROR": "Ops, something is not quite right. You may try again now or spare a moment before give it another try.",
+        "PAYMENT_SUCCESS": "Payment successful!",
+        "THANK_YOU_PURCHASE": "Thank you for your purchase!",
+        "EMAIL_CERTIFICATE": "We will email receipt, policy and other important details.\nNote: Your insurance coverage valid upon successful payment & policy generation.",
+        "DOWNLOAD_ECERT": "Download e-certificate",
+        "THANK_YOU_PURCHASE_2": "Thank you for your puchase. We will email you e-Certificate and receipt once it is ready.",
+        "SIGN_UP_NOW": "Sign up now",
+        "SIGN_UP_KEEP_TRACK": "Sign up to conveniently keep track of your purchases and the upcoming policy renewal.",
+        "RECEIPT_NO": "Receipt No",
+        "POLICY_NO": "Policy No",
+        "COVER_NOTE_NO": "Cover Note No",
+        "TOTAL_PRICE": "Total Price",
+        "ECERT": "e-Certificate",
+        "RECEIPT": "Receipt",
+        "INSURER_CONTACT_NO": "{{insurerName}} important contact no.",
+        "BREAKDOWN": "Breakdown",
+        "PURCHASE_DETAIL": "Purchase Details",
+        "PURCHASE_DATE": "Purchase Date",
+        "PAYMENT_METHOD": "Payment Method",
+        "CREDIT_DEBIT_CARD_2": "Credit/Debit Card",
+        "HAVE_QUESTION": "Have any question regarding this policy? Chat now with us.",
+        "BACK_HOME": "Back to home",
+        "SELECT_BANK": "Select your bank",
+        "LIST_BANKS": "List of Banks"
+    },
+    "FORM_VALIDATION": {
+        "REQUIRED_FIELD": "Required field",
+        "INVALID_FORMAT": "Invalid format",
+        "MIN_CHAR": "Minimum {{ minCharacter }} characters",
+        "MAX_CHAR": "Maximum {{ maxCharacter }} characters",
+        "LEAST_UPPER_CHAR": "At least 1 uppercase character",
+        "LEAST_LOWER_CHAR": "At least 1 lowercase character",
+        "LEAST_NUMERICAL": "At least 1 numerical (0-9)",
+        "LEAST_SPECIAL_CHAR": "At least 1 special character",
+        "MAX_NUMBER": "Maximum {{ max }}",
+        "MIN_NUMBER": "Minimum {{ min }}",
+        "PLATE_NO_FORMAT": "Vehicle plate number should be made up of at least 1 alphabet and 1 numerical character",
+        "POSTAL_CODE_FORMAT": "Postal code should be made up of 5-digits",
+        "IC_FORMAT": "IC number should be made up of 12 numerical character",
+        "SSM_FORMAT": "Your SSM number seems to be invalid. Try again."
+    }
+}
