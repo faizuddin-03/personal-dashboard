@@ -530,67 +530,91 @@ async function extractQuotations(page: Page): Promise<{
 
   const cards = page.locator(cardSel);
   const count = await cards.count();
+  console.log(`   📦 ${count} card(s) found`);
   const insurers: InsurerResult[] = [];
 
+  // Dump the first card's HTML once so we can map real structure for selectors
+  if (count > 0) {
+    const html = await cards.first().evaluate(el => el.outerHTML).catch(() => '');
+    console.log(`   ── FIRST CARD HTML (truncated) ──\n${html.slice(0, 2500)}\n   ── END CARD HTML ──`);
+  }
+
   for (let i = 0; i < count; i++) {
-    const card = cards.nth(i);
-    const cardText = clean(await card.innerText().catch(() => ''));
+    try {
+      const card = cards.nth(i);
+      const cardText = clean(await card.innerText().catch(() => ''));
 
-    // Get insurer name
-    const nameEl = card.locator('[class*="name" i], [class*="title" i], [class*="insurer" i], h3, h4, h2').first();
-    const name = clean(await nameEl.textContent().catch(() => '') || cardText.split('\n')[0]);
+      // Get insurer name
+      const nameEl = card.locator('[class*="name" i], [class*="title" i], [class*="insurer" i], img[alt], h3, h4, h2').first();
+      let name = clean(await nameEl.getAttribute('alt').catch(() => '') || '');
+      if (!name) name = clean(await nameEl.textContent().catch(() => '') || cardText.split('\n')[0]);
 
-    // Check if unavailable
-    const unavailableReason = /quotation unavailable|not available|unable to provide|unavailable/i.test(cardText)
-      ? clean(cardText.match(/quotation unavailable[^\n]*/i)?.[0] || 'Unavailable')
-      : '';
+      // Check if unavailable
+      const unavailableReason = /quotation unavailable|not available|unable to provide|currently unavailable|unavailable|no quote/i.test(cardText)
+        ? clean(cardText.match(/[^\n]*(?:unavailable|not available|unable to provide|no quote)[^\n]*/i)?.[0] || 'Unavailable')
+        : '';
 
-    if (unavailableReason) {
-      console.log(`   ❌ ${name}: ${unavailableReason}`);
-      insurers.push({ name, available: false, unavailableReason, sumInsuredOptions: [] });
-      continue;
-    }
-
-    // Get sum insured options
-    const sumInsuredOptions: SumInsuredOption[] = [];
-
-    // Look for sum insured dropdown
-    const siDropdown = card.locator('select[name*="sum" i], select[name*="insured" i], select[id*="sum" i], select[id*="insured" i], [class*="sum-insured" i] select, select').first();
-    const siCount = await siDropdown.count();
-
-    if (siCount > 0) {
-      const options = await siDropdown.locator('option').all();
-      for (const opt of options) {
-        const optVal  = clean(await opt.getAttribute('value') || '');
-        const optText = clean(await opt.textContent() || '');
-        if (!optVal || /select|choose|--/i.test(optText)) continue;
-
-        // Select this option and read the price
-        await siDropdown.selectOption(optVal);
-        await page.waitForTimeout(800);
-
-        // Find price within this card
-        const priceEl = card.locator('[class*="price" i], [class*="premium" i], [class*="amount" i], [class*="total" i]').first();
-        const price = clean(await priceEl.textContent().catch(() => '') || '');
-
-        // Normalise sum insured display
-        const sumInsured = optText || optVal;
-        console.log(`      Sum insured: ${sumInsured} → ${price}`);
-        sumInsuredOptions.push({ sumInsured, price });
+      if (unavailableReason) {
+        console.log(`   ❌ ${name}: ${unavailableReason}`);
+        insurers.push({ name, available: false, unavailableReason, sumInsuredOptions: [] });
+        continue;
       }
-    }
 
-    // If no dropdown, capture the displayed price directly
-    if (sumInsuredOptions.length === 0) {
-      const priceEl = card.locator('[class*="price" i], [class*="premium" i], [class*="amount" i]').first();
-      const price = clean(await priceEl.textContent().catch(() => '') || '');
-      const sumInsuredEl = card.locator('[class*="sum" i], [class*="coverage" i]').first();
-      const sumInsured = clean(await sumInsuredEl.textContent().catch(() => '') || 'N/A');
-      if (price) sumInsuredOptions.push({ sumInsured, price });
-    }
+      const sumInsuredOptions: SumInsuredOption[] = [];
 
-    console.log(`   ✅ ${name}: available, ${sumInsuredOptions.length} sum insured option(s)`);
-    insurers.push({ name, available: true, unavailableReason: '', sumInsuredOptions });
+      // Helper to read the current price text in this card
+      const readPrice = async (): Promise<string> => {
+        const priceEl = card.locator('[class*="price" i], [class*="premium" i], [class*="amount" i], [class*="total" i]').first();
+        let p = clean(await priceEl.textContent().catch(() => '') || '');
+        if (!p) {
+          // Fallback: any "RM ..." token in the card text
+          const m = clean(await card.innerText().catch(() => '')).match(/RM\s?[\d,]+(?:\.\d{2})?/);
+          p = m ? m[0] : '';
+        }
+        return p;
+      };
+
+      // Sum insured dropdown (native select)
+      const siDropdown = card.locator('select').first();
+      const siCount = await siDropdown.count();
+
+      if (siCount > 0) {
+        const options = await siDropdown.locator('option').all();
+        for (const opt of options) {
+          const optVal  = (await opt.getAttribute('value')) ?? '';
+          const optText = clean(await opt.textContent() || '');
+          if (!optText || /select|choose|^--|please/i.test(optText)) continue;
+
+          // Select by value, fall back to label; swallow errors
+          let ok = true;
+          try {
+            if (optVal !== '') await siDropdown.selectOption(optVal);
+            else await siDropdown.selectOption({ label: optText });
+          } catch {
+            try { await siDropdown.selectOption({ label: optText }); } catch { ok = false; }
+          }
+          await page.waitForTimeout(700);
+
+          const price = await readPrice();
+          const sumInsured = optText;
+          console.log(`      Sum insured: ${sumInsured} → ${price || '(no price)'}${ok ? '' : ' [select failed]'}`);
+          sumInsuredOptions.push({ sumInsured, price });
+        }
+      }
+
+      // No dropdown → capture displayed price directly
+      if (sumInsuredOptions.length === 0) {
+        const price = await readPrice();
+        const sumInsuredEl = card.locator('[class*="sum" i], [class*="coverage" i], [class*="insured" i]').first();
+        const sumInsured = clean(await sumInsuredEl.textContent().catch(() => '') || 'N/A');
+        if (price) sumInsuredOptions.push({ sumInsured, price });
+      }
+
+      console.log(`   ✅ ${name}: available, ${sumInsuredOptions.length} sum insured option(s)`);
+      insurers.push({ name, available: true, unavailableReason: '', sumInsuredOptions });
+    } catch (err) {
+      console.log(`   ⚠️  Card #${i} extraction error (continuing): ${err}`);
+    }
   }
 
   const totalAvailable = insurers.filter(i => i.available).length;
