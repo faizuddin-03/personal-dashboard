@@ -14,10 +14,14 @@ const CONFIG = {
   outputFile: './output-results.xlsx',
 
   navigationTimeout: 90000,
-  waitAfterPageLoad:  1500,
-  waitAfterClick:     1000,
-  quotationTimeout:   10000,  // max wait (ms) for a page transition / cards
-  pollingInterval:     500,
+  waitAfterPageLoad:   300,   // small settle after a detected page advance
+  waitAfterClick:      250,   // settle after a UI click
+  quotationTimeout:   15000,  // max wait (ms) for a page transition / cards
+  pollingInterval:     150,   // fast polling so we proceed the instant content appears
+
+  // Feature toggles (set "0" to disable via env)
+  checkSumInsured:    process.env.SECARANG_CHECK_SUM_INSURED    !== '0',
+  checkVehicleDetails:process.env.SECARANG_CHECK_VEHICLE_DETAILS !== '0',
 };
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
@@ -224,13 +228,35 @@ async function waitForAdvance(page: Page, fromUrl: string, timeout = CONFIG.quot
   return outcome;
 }
 
+// Wait until a value-producing function returns non-empty AND differs from
+// `prev` (i.e. the price refreshed after changing the sum insured). Returns
+// the new value as soon as it settles, capped at `timeout`.
+async function waitForValueChange(
+  read: () => Promise<string>,
+  prev: string,
+  page: Page,
+  timeout = 4000,
+): Promise<string> {
+  const deadline = Date.now() + timeout;
+  let last = '';
+  while (Date.now() < deadline) {
+    const v = await read();
+    if (v && v !== prev) return v;     // changed → done immediately
+    last = v;
+    await page.waitForTimeout(CONFIG.pollingInterval);
+  }
+  return last; // never changed (or same price) — return whatever we have
+}
+
 // ─── SITE PASSWORD HANDLER ────────────────────────────────────────────────────
 async function handleSitePassword(page: Page): Promise<void> {
-  // Wait briefly to see if a password gate appears
-  await page.waitForTimeout(2000);
-
-  // Check for a password-only input form (custom gate, not HTTP Basic Auth)
+  // Proceed as soon as either the password gate OR the real form appears
   const pwField = page.locator('input[type="password"]').first();
+  await waitForCondition(page, async () =>
+    (await pwField.count()) > 0 || (await page.locator('button:has-text("Car")').count()) > 0,
+    5000, CONFIG.pollingInterval,
+  );
+
   if ((await pwField.count()) === 0) return; // no gate
 
   console.log('   🔒 Password gate detected, entering site password…');
@@ -576,10 +602,15 @@ async function extractQuotations(page: Page): Promise<{
 
       // Sum insured dropdown (native select)
       const siDropdown = card.locator('select').first();
-      const siCount = await siDropdown.count();
+      const siCount = CONFIG.checkSumInsured ? await siDropdown.count() : 0;
 
-      if (siCount > 0) {
+      if (!CONFIG.checkSumInsured) {
+        // Sum-insured checking disabled — record just the displayed price
+        const price = await readPrice();
+        if (price) sumInsuredOptions.push({ sumInsured: 'N/A (check disabled)', price });
+      } else if (siCount > 0) {
         const options = await siDropdown.locator('option').all();
+        let prevPrice = await readPrice();
         for (const opt of options) {
           const optVal  = (await opt.getAttribute('value')) ?? '';
           const optText = clean(await opt.textContent() || '');
@@ -593,9 +624,10 @@ async function extractQuotations(page: Page): Promise<{
           } catch {
             try { await siDropdown.selectOption({ label: optText }); } catch { ok = false; }
           }
-          await page.waitForTimeout(700);
 
-          const price = await readPrice();
+          // Proceed the instant the premium refreshes (no fixed sleep)
+          const price = await waitForValueChange(readPrice, prevPrice, page);
+          prevPrice = price;
           const sumInsured = optText;
           console.log(`      Sum insured: ${sumInsured} → ${price || '(no price)'}${ok ? '' : ' [select failed]'}`);
           sumInsuredOptions.push({ sumInsured, price });
@@ -713,19 +745,20 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
   console.log('   📊 Extracting quotation results…');
   const { insurers, totalDisplayed, totalAvailable } = await extractQuotations(page);
 
-  // Extract vehicle info from the page if possible
-  const pageText = await page.locator('body').innerText().catch(() => '');
-  const makeMatch  = pageText.match(/(?:make|brand)[:\s]+([A-Z][A-Z\s]+)/i);
-  const modelMatch = pageText.match(/(?:model)[:\s]+([A-Z0-9][A-Z0-9\s\-]+)/i);
-  const yearMatch  = pageText.match(/(?:year|manufactured)[:\s]+(\d{4})/i);
+  // Extract vehicle info from the page (skipped when the toggle is off)
+  let make = '', model = '', year = '';
+  if (CONFIG.checkVehicleDetails) {
+    const pageText = await page.locator('body').innerText().catch(() => '');
+    make  = clean(pageText.match(/(?:make|brand)[:\s]+([A-Z][A-Z\s]+)/i)?.[1] || '');
+    model = clean(pageText.match(/(?:model)[:\s]+([A-Z0-9][A-Z0-9\s\-]+)/i)?.[1] || '');
+    year  = clean(pageText.match(/(?:year|manufactured)[:\s]+(\d{4})/i)?.[1] || '');
+  }
 
   console.log(`   📋 ${totalDisplayed} displayed, ${totalAvailable} available`);
 
   return {
     vehicleNumber: vn,
-    make:  clean(makeMatch?.[1]  || ''),
-    model: clean(modelMatch?.[1] || ''),
-    year:  clean(yearMatch?.[1]  || ''),
+    make, model, year,
     variant,
     totalDisplayed,
     totalAvailable,

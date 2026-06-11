@@ -111,12 +111,15 @@ export async function POST(req: NextRequest) {
     baseUrl?:      string;
     sitePassword?: string;
     concurrency?:  number;
+    checkSumInsured?:     boolean;
+    checkVehicleDetails?: boolean;
   };
 
   const {
     vehicles = [], icNumber = "", postcode = "55000",
     vehicleType = "car", ownerType = "private",
     baseUrl = "", sitePassword = "", concurrency,
+    checkSumInsured = true, checkVehicleDetails = true,
   } = body;
 
   if (!vehicles.length) {
@@ -152,6 +155,8 @@ export async function POST(req: NextRequest) {
         ...(postcode     && { SECARANG_POSTCODE:        postcode }),
         ...(icNumber     && { SECARANG_IC:              icNumber.replace(/[-\s]/g, '') }),
         ...(concurrency  && { SECARANG_CONCURRENCY:     String(concurrency) }),
+        ...(checkSumInsured     === false && { SECARANG_CHECK_SUM_INSURED:     "0" }),
+        ...(checkVehicleDetails === false && { SECARANG_CHECK_VEHICLE_DETAILS: "0" }),
       },
     });
     currentChild = child;

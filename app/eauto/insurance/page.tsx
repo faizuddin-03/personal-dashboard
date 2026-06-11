@@ -1056,6 +1056,10 @@ function SecarangTab() {
   const [concurrency,   setConcurrency]   = useState(1);
   const [view,          setView]          = useState<"table" | "matrix">("matrix");
 
+  // Feature toggles — what the scraper should check
+  const [checkSumInsured,     setCheckSumInsured]     = useState(true);
+  const [checkVehicleDetails, setCheckVehicleDetails] = useState(true);
+
   const [job,      setJob]      = useState<SecarangJob | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -1105,6 +1109,8 @@ function SecarangTab() {
           baseUrl:      baseUrl            || undefined,
           sitePassword: sitePassword.trim() || undefined,
           concurrency,
+          checkSumInsured,
+          checkVehicleDetails,
         }),
       });
       const data = await res.json();
@@ -1243,6 +1249,27 @@ function SecarangTab() {
                     <span className="w-6 text-center text-sm font-semibold text-slate-200">{concurrency}</span>
                     <button type="button" onClick={() => setConcurrency(v => Math.min(10, v + 1))}
                       className="w-8 h-8 flex items-center justify-center bg-slate-800 border border-slate-700 rounded-lg text-slate-400 hover:text-slate-200 transition-colors text-base font-bold">+</button>
+                  </div>
+                </div>
+
+                {/* Checks to perform — click to enable/disable */}
+                <div className="col-span-2">
+                  <label className="block text-xs text-slate-500 mb-1.5">Checks <span className="text-slate-700">click to enable / disable</span></label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {([
+                      { key: "sum", label: "Sum Insured",     on: checkSumInsured,     set: setCheckSumInsured },
+                      { key: "veh", label: "Vehicle Details", on: checkVehicleDetails, set: setCheckVehicleDetails },
+                    ] as const).map(t => (
+                      <button key={t.key} type="button" onClick={() => t.set(v => !v)}
+                        className={clsx(
+                          "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                          t.on
+                            ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                            : "bg-slate-800 border-slate-700 text-slate-500 grayscale"
+                        )}>
+                        {t.on ? "✓ " : "✕ "}{t.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
