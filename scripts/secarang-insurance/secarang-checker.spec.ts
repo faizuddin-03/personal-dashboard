@@ -393,6 +393,7 @@ async function submitForm(page: Page): Promise<void> {
 // Returns the variant chosen (or empty string if none needed)
 async function handleVehicleDetailsPage(page: Page): Promise<string> {
   await waitForPageReady(page);
+  await dumpFormStructure(page, 'vehicle details page');
 
   const text = await page.locator('body').innerText().catch(() => '');
 
@@ -447,27 +448,54 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
   const model = clean(await page.locator('[class*="model" i]').first().textContent().catch(() => ''));
   console.log(`   🚘 Vehicle details page: make="${make}" model="${model}" variant="${selectedVariant}"`);
 
-  // Click proceed / Get Quotation button
-  const proceedLabels = ['Get Quotation', 'Get Quote', 'Proceed', 'Continue', 'Next'];
+  // Click proceed / Get Quotation button — search buttons, links, and role=button
+  const proceedLabels = ['Get Quotation', 'Get Quote', 'Proceed', 'Continue', 'Next', 'Confirm', 'View Quotation'];
   for (const label of proceedLabels) {
-    const btn = page.locator(`button:has-text("${label}")`).first();
-    if ((await btn.count()) > 0) {
-      console.log(`   ➡️  Clicking: "${label}"`);
-      await btn.click();
+    const btn = page.locator(
+      `button:has-text("${label}"), a:has-text("${label}"), [role="button"]:has-text("${label}"), input[value*="${label}" i]`
+    ).filter({ hasNot: page.locator('[disabled]') }).first();
+    if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+      console.log(`   ➡️  Clicking proceed: "${label}"`);
+      await btn.scrollIntoViewIfNeeded().catch(() => {});
+      await btn.click({ force: true }).catch(async () => {
+        // JS click fallback for overlay-covered buttons
+        await btn.evaluate((el: HTMLElement) => el.click()).catch(() => {});
+      });
       return selectedVariant;
     }
   }
 
-  // Fallback: any primary/submit button
-  const fallback = page.locator('button[type="submit"], button.primary, button.btn-primary').first();
+  // Fallback: any submit / primary-styled button
+  const fallback = page.locator('button[type="submit"], button.primary, button.btn-primary, button').last();
   if ((await fallback.count()) > 0) {
     const fallbackText = clean(await fallback.textContent() || '');
     console.log(`   ➡️  Clicking fallback button: "${fallbackText}"`);
-    await fallback.click();
+    await fallback.click({ force: true }).catch(() => {});
     return selectedVariant;
   }
+  console.log('   ⚠️  No proceed button found on vehicle details page');
 
   throw new Error('Could not find proceed button on vehicle details page');
+}
+
+// Candidate selectors for an insurer/quotation card on the results page
+const CARD_SELECTORS = [
+  '[class*="quote-card"]',
+  '[class*="quotation-card"]',
+  '[class*="insurer-card"]',
+  '[class*="insurance-card"]',
+  '[class*="plan-card"]',
+  '[class*="QuoteCard"]',
+  '[class*="InsuranceCard"]',
+];
+
+// Returns the first matching card selector, or '' if none.
+async function findCardSelector(page: Page): Promise<string> {
+  for (const sel of CARD_SELECTORS) {
+    const count = await page.locator(sel).count();
+    if (count > 0) return sel;
+  }
+  return '';
 }
 
 // ─── EXTRACT QUOTATION RESULTS ────────────────────────────────────────────────
@@ -482,22 +510,8 @@ async function extractQuotations(page: Page): Promise<{
   );
   console.log(`   🔍 Page classes (sample): ${classes}`);
 
-  // Wait for quotation cards to appear
-  const cardSelectors = [
-    '[class*="quote-card"]',
-    '[class*="quotation-card"]',
-    '[class*="insurer-card"]',
-    '[class*="insurance-card"]',
-    '[class*="plan-card"]',
-    '[class*="QuoteCard"]',
-    '[class*="InsuranceCard"]',
-  ];
-
-  let cardSel = '';
-  for (const sel of cardSelectors) {
-    const count = await page.locator(sel).count();
-    if (count > 0) { cardSel = sel; console.log(`   ✅ Found ${count} cards via "${sel}"`); break; }
-  }
+  const cardSel = await findCardSelector(page);
+  if (cardSel) console.log(`   ✅ Found cards via "${cardSel}"`);
 
   if (!cardSel) {
     // Last resort: look for repeated sections that have insurer names + prices
@@ -650,27 +664,36 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     return emptyResult(`Error after submit: ${errLine.slice(0, 200)}`);
   }
 
-  // ── Vehicle details page ──────────────────────────────────────
+  // ── Decide: are we already on the quotation page, or an intermediate one? ──
+  // Detect by presence of quotation cards rather than fragile text matching.
   let variant = '';
-  const isVehicleDetailsPage =
-    /vehicle detail|confirm.*detail|check.*detail|your.*vehicle/i.test(bodyText) ||
-    urlAfterSubmit.includes('vehicle-detail') ||
-    urlAfterSubmit.includes('vehicle-info');
+  const cardsPresent = await findCardSelector(page);
 
-  if (isVehicleDetailsPage) {
-    console.log('   📋 Vehicle details page detected');
+  if (!cardsPresent) {
+    // No quotation cards yet → this is the vehicle details / intermediate page.
+    // Handle any variant dropdown and click its "Get Quotation" button.
+    console.log('   📋 No quotation cards yet — handling vehicle details page');
     try {
       variant = await handleVehicleDetailsPage(page);
     } catch (err) {
       return emptyResult(`Vehicle details page error: ${err}`);
     }
-    // Wait for quotation page to load
     console.log('   ⏳ Waiting for quotation page…');
     await waitForPageReady(page, CONFIG.quotationTimeout);
     await page.waitForTimeout(CONFIG.waitAfterPageLoad);
+
+    // If still no cards after clicking, try once more (sometimes a second
+    // confirm step appears) before giving up.
+    if (!(await findCardSelector(page))) {
+      console.log('   🔁 Still no cards — attempting a second proceed click');
+      try {
+        await handleVehicleDetailsPage(page);
+        await waitForPageReady(page, CONFIG.quotationTimeout);
+        await page.waitForTimeout(CONFIG.waitAfterPageLoad);
+      } catch { /* ignore, extract whatever is present */ }
+    }
   } else {
-    // Some flows go straight to quotation
-    console.log('   ⚡ No vehicle details page — went straight to quotations');
+    console.log('   ⚡ Quotation cards already present — skipping details page');
   }
 
   // ── Quotation results page ────────────────────────────────────
