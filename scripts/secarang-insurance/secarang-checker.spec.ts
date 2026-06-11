@@ -235,7 +235,7 @@ async function waitForValueChange(
   read: () => Promise<string>,
   prev: string,
   page: Page,
-  timeout = 4000,
+  timeout = 1500,
 ): Promise<string> {
   const deadline = Date.now() + timeout;
   let last = '';
@@ -273,33 +273,6 @@ async function handleSitePassword(page: Page): Promise<void> {
   await page.waitForLoadState('networkidle', { timeout: CONFIG.navigationTimeout }).catch(() => {});
   await page.waitForTimeout(CONFIG.waitAfterPageLoad);
   console.log('   ✅ Password gate passed');
-}
-
-// ─── DIAGNOSTIC: dump the form structure ──────────────────────────────────────
-// Logs every input, select, and button on the page so we can map real selectors.
-async function dumpFormStructure(page: Page, label: string): Promise<void> {
-  const info = await page.evaluate(() => {
-    const inputs = [...document.querySelectorAll('input, textarea')].map(el => {
-      const i = el as HTMLInputElement;
-      return `<${i.tagName.toLowerCase()} type="${i.type}" name="${i.name}" id="${i.id}" placeholder="${i.placeholder}" aria-label="${i.getAttribute('aria-label') || ''}">`;
-    });
-    const selects = [...document.querySelectorAll('select')].map(el => {
-      const s = el as HTMLSelectElement;
-      const opts = [...s.options].map(o => o.textContent?.trim()).filter(Boolean).slice(0, 6);
-      return `<select name="${s.name}" id="${s.id}"> opts: [${opts.join(', ')}]`;
-    });
-    const buttons = [...document.querySelectorAll('button, [role="button"], [role="radio"], a.btn, input[type="submit"], input[type="button"]')]
-      .map(el => `"${(el.textContent || (el as HTMLInputElement).value || '').trim().slice(0, 40)}"`)
-      .filter(t => t !== '""');
-    return { inputs, selects, buttons };
-  });
-  console.log(`   ── DOM DUMP [${label}] ──`);
-  console.log(`   INPUTS (${info.inputs.length}):`);
-  info.inputs.forEach(i => console.log(`      ${i}`));
-  console.log(`   SELECTS (${info.selects.length}):`);
-  info.selects.forEach(s => console.log(`      ${s}`));
-  console.log(`   BUTTONS (${info.buttons.length}): ${info.buttons.join(' | ')}`);
-  console.log(`   ── END DUMP ──`);
 }
 
 // ─── VEHICLE TYPE + OWNER TYPE SELECTION ─────────────────────────────────────
@@ -420,9 +393,6 @@ async function submitForm(page: Page): Promise<void> {
 // ─── VEHICLE DETAILS PAGE ─────────────────────────────────────────────────────
 // Returns the variant chosen (or empty string if none needed)
 async function handleVehicleDetailsPage(page: Page): Promise<string> {
-  await page.waitForTimeout(CONFIG.waitAfterClick);
-  await dumpFormStructure(page, 'vehicle details page');
-
   const text = await page.locator('body').innerText().catch(() => '');
 
   // Check for error on this page
@@ -432,13 +402,12 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
 
   let selectedVariant = '';
 
-  // (a) Native <select> — variant-specific first, then any select on the page
-  //     (the details page typically only carries the variant dropdown).
-  const nativeSelect = page.locator(
-    'select[name*="variant" i], select[id*="variant" i], [class*="variant" i] select, select'
-  ).first();
-  if ((await nativeSelect.count()) > 0) {
-    const optionEls = await nativeSelect.locator('option').all();
+  // Variant dropdown (flow #2). Only a real <select> or a variant-labelled
+  // custom control — never generic nav dropdowns. Most cars have no variant,
+  // so this is usually skipped instantly.
+  const variantSelect = page.locator('select').first();
+  if ((await variantSelect.count()) > 0) {
+    const optionEls = await variantSelect.locator('option').all();
     const valid: { value: string; label: string }[] = [];
     for (const o of optionEls) {
       const label = clean(await o.textContent() || '');
@@ -448,52 +417,34 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
     if (valid.length > 0) {
       const pick = valid[0];
       selectedVariant = pick.label;
-      console.log(`   🔧 Variant <select> found, choosing "${pick.label}" (of ${valid.length})`);
-      await nativeSelect.selectOption(pick.value).catch(async () => {
-        await nativeSelect.selectOption({ label: pick.label }).catch(() => {});
+      console.log(`   🔧 Variant select: choosing "${pick.label}" (of ${valid.length})`);
+      await variantSelect.selectOption(pick.value).catch(async () => {
+        await variantSelect.selectOption({ label: pick.label }).catch(() => {});
       });
-      await page.waitForTimeout(CONFIG.waitAfterClick);
     }
-  }
-
-  // (b) Angular Material / custom div dropdown (mat-select, ng-select, etc.)
-  if (!selectedVariant) {
-    const customTrigger = page.locator(
-      'mat-select, ng-select, [class*="variant" i] [class*="select" i], [aria-label*="variant" i], [class*="dropdown" i]'
-    ).first();
-    if ((await customTrigger.count()) > 0 && await customTrigger.isVisible().catch(() => false)) {
-      await customTrigger.click().catch(() => {});
-      await page.waitForTimeout(600);
-      const option = page.locator('mat-option, .ng-option, [role="option"], [class*="option" i] li, li[role="option"]').first();
-      if ((await option.count()) > 0) {
+  } else {
+    const mat = page.locator('mat-select, ng-select, [class*="variant" i] [role="combobox"]').first();
+    if ((await mat.count()) > 0 && await mat.isVisible().catch(() => false)) {
+      await mat.click().catch(() => {});
+      const option = page.locator('mat-option, .ng-option, [role="option"]').first();
+      if (await option.count().then(c => c > 0).catch(() => false)) {
         selectedVariant = clean(await option.textContent() || '');
-        console.log(`   🔧 Custom variant dropdown, choosing "${selectedVariant}"`);
+        console.log(`   🔧 Variant dropdown: choosing "${selectedVariant}"`);
         await option.click().catch(() => {});
-        await page.waitForTimeout(CONFIG.waitAfterClick);
       }
     }
   }
 
-  // Log vehicle details for reference
-  const make  = clean(await page.locator('[class*="make" i], [class*="brand" i]').first().textContent().catch(() => ''));
-  const model = clean(await page.locator('[class*="model" i]').first().textContent().catch(() => ''));
-  console.log(`   🚘 Vehicle details page: make="${make}" model="${model}" variant="${selectedVariant}"`);
-
-  // Click proceed / Get Quotation button — search buttons, links, and role=button
-  const proceedLabels = ['Get Quotation', 'Get Quote', 'Proceed', 'Continue', 'Next', 'Confirm', 'View Quotation'];
-  for (const label of proceedLabels) {
-    const btn = page.locator(
-      `button:has-text("${label}"), a:has-text("${label}"), [role="button"]:has-text("${label}"), input[value*="${label}" i]`
-    ).filter({ hasNot: page.locator('[disabled]') }).first();
-    if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
-      console.log(`   ➡️  Clicking proceed: "${label}"`);
-      await btn.scrollIntoViewIfNeeded().catch(() => {});
-      await btn.click({ force: true }).catch(async () => {
-        // JS click fallback for overlay-covered buttons
-        await btn.evaluate((el: HTMLElement) => el.click()).catch(() => {});
-      });
-      return selectedVariant;
-    }
+  // Click the proceed button (the page's primary "Get quotation" button)
+  const btn = page.locator(
+    'button:has-text("Get quotation"), button:has-text("Proceed"), button:has-text("Continue"), button.primary-btn, button[type="button"].btn'
+  ).filter({ hasNot: page.locator('[disabled]') }).last();
+  if ((await btn.count()) > 0) {
+    console.log(`   ➡️  Clicking proceed`);
+    await btn.click({ force: true }).catch(async () => {
+      await btn.evaluate((el: HTMLElement) => el.click()).catch(() => {});
+    });
+    return selectedVariant;
   }
 
   // Fallback: any submit / primary-styled button
@@ -610,7 +561,8 @@ async function extractQuotations(page: Page): Promise<{
         if (price) sumInsuredOptions.push({ sumInsured: 'N/A (check disabled)', price });
       } else if (siCount > 0) {
         const options = await siDropdown.locator('option').all();
-        let prevPrice = await readPrice();
+        // Start empty so the first option returns the instant a price renders.
+        let prevPrice = '';
         for (const opt of options) {
           const optVal  = (await opt.getAttribute('value')) ?? '';
           const optText = clean(await opt.textContent() || '');
@@ -625,7 +577,7 @@ async function extractQuotations(page: Page): Promise<{
             try { await siDropdown.selectOption({ label: optText }); } catch { ok = false; }
           }
 
-          // Proceed the instant the premium refreshes (no fixed sleep)
+          // Proceed the instant the premium refreshes (capped ~1.5s)
           const price = await waitForValueChange(readPrice, prevPrice, page);
           prevPrice = price;
           const sumInsured = optText;
@@ -681,14 +633,8 @@ async function processVehicle(page: Page, v: VehicleInput, defaultIc: string): P
     await page.waitForTimeout(CONFIG.waitAfterPageLoad);
   }
 
-  // Dump the homepage form structure (always, until selectors are confirmed)
-  await dumpFormStructure(page, 'homepage before type selection');
-
   // Select vehicle type + owner type
   await selectVehicleType(page, vehicleType, ownerType);
-
-  // Dump again — selecting type usually reveals the input fields
-  await dumpFormStructure(page, 'after type selection');
 
   // Fill quotation form
   const { plateFilled, icFilled, postcodeFilled } = await fillQuotationForm(page, v, defaultIc);
