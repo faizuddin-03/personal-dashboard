@@ -1004,8 +1004,8 @@ async function exportSecarangExcel(rows: SecarangRow[]) {
     { header: "Insurer",         key: "insurer",    width: 25 },
     { header: "Available",       key: "available",  width: 12 },
     { header: "Reason",          key: "reason",     width: 40 },
-    { header: "Sum Insured",     key: "sumInsured", width: 18 },
-    { header: "Price",           key: "price",      width: 18 },
+    { header: "Total Displayed", key: "displayed",  width: 16 },
+    { header: "Total Available", key: "avail2",     width: 16 },
   ];
   const h = ws.getRow(1);
   h.font      = { bold: true, color: { argb: "FFFFFFFF" } };
@@ -1017,7 +1017,7 @@ async function exportSecarangExcel(rows: SecarangRow[]) {
       vn: r.vehicleNumber, make: r.make, model: r.model, year: r.year,
       variant: r.variant, insurer: r.insurer,
       available: r.available, reason: r.unavailableReason,
-      sumInsured: r.sumInsured, price: r.price,
+      displayed: r.totalDisplayed, avail2: r.totalAvailable,
     });
     const c = row.getCell("available");
     c.font = { color: { argb: r.available === "Yes" ? "FF008000" : "FFFF0000" }, bold: true };
@@ -1057,11 +1057,9 @@ function SecarangTab() {
   const [view,          setView]          = useState<"table" | "matrix">("matrix");
 
   // Feature toggles — what the scraper should check
-  const [checkSumInsured,     setCheckSumInsured]     = useState(true);
   const [checkVehicleDetails, setCheckVehicleDetails] = useState(true);
 
-  const [job,      setJob]      = useState<SecarangJob | null>(null);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [job, setJob] = useState<SecarangJob | null>(null);
 
   const loading  = job?.loading  ?? false;
   const stopping = job?.stopping ?? false;
@@ -1088,10 +1086,6 @@ function SecarangTab() {
     return Array.from(s).sort();
   }, [scVehicles]);
 
-  function toggleExpand(key: string) {
-    setExpanded(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
-  }
-
   async function handleRun() {
     if (!vehicles.length) return;
     setJob({ loading: true, stopping: false, rows: [], error: "", log: "", savedAt: null, vehicleInput });
@@ -1109,7 +1103,6 @@ function SecarangTab() {
           baseUrl:      baseUrl            || undefined,
           sitePassword: sitePassword.trim() || undefined,
           concurrency,
-          checkSumInsured,
           checkVehicleDetails,
         }),
       });
@@ -1257,7 +1250,6 @@ function SecarangTab() {
                   <label className="block text-xs text-slate-500 mb-1.5">Checks <span className="text-slate-700">click to enable / disable</span></label>
                   <div className="flex flex-wrap gap-1.5">
                     {([
-                      { key: "sum", label: "Sum Insured",     on: checkSumInsured,     set: setCheckSumInsured },
                       { key: "veh", label: "Vehicle Details", on: checkVehicleDetails, set: setCheckVehicleDetails },
                     ] as const).map(t => (
                       <button key={t.key} type="button" onClick={() => t.set(v => !v)}
@@ -1380,6 +1372,8 @@ function SecarangTab() {
                   <thead>
                     <tr className="border-b border-slate-800 bg-slate-900/80">
                       <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Vehicle</th>
+                      <th className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Displayed</th>
+                      <th className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Available</th>
                       {insurerNames.map(name => (
                         <th key={name} className="px-3 py-2.5 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                           {name}
@@ -1396,50 +1390,20 @@ function SecarangTab() {
                             <div className="text-[10px] font-normal text-slate-500">{[v.make, v.model, v.year].filter(Boolean).join(" ")}</div>
                           )}
                         </td>
+                        <td className="px-3 py-2.5 text-center text-slate-300 font-semibold">{v.totalDisplayed}</td>
+                        <td className="px-3 py-2.5 text-center">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-green-900/40 text-green-400">
+                            {v.totalAvailable}
+                          </span>
+                        </td>
                         {insurerNames.map(name => {
                           const ins = v.insurers.find(i => i.name === name);
                           if (!ins) return <td key={name} className="px-3 py-2.5 text-center text-slate-700">—</td>;
-                          if (!ins.available) return (
-                            <td key={name} className="px-3 py-2.5 text-center">
-                              <span className="text-red-400 text-xs font-semibold">N/A</span>
-                            </td>
-                          );
-                          const prices = ins.sumInsuredOptions;
-                          const cheapest = prices[0];
                           return (
                             <td key={name} className="px-3 py-2.5 text-center">
-                              <button onClick={() => toggleExpand(`${v.vehicleNumber}-${name}`)}
-                                className="group text-left">
-                                <span className="text-green-400 text-xs font-semibold block">✓ Available</span>
-                                {cheapest && (
-                                  <span className="text-slate-400 text-[10px] group-hover:text-slate-300 transition-colors">
-                                    from {cheapest.price}
-                                  </span>
-                                )}
-                                {prices.length > 1 && (
-                                  <span className="text-slate-600 text-[10px] block">{prices.length} options</span>
-                                )}
-                              </button>
-                              {expanded.has(`${v.vehicleNumber}-${name}`) && (
-                                <div className="mt-1.5 text-left bg-slate-800 border border-slate-700 rounded-lg p-2 min-w-[160px]">
-                                  <table className="w-full">
-                                    <thead>
-                                      <tr>
-                                        <th className="text-[10px] text-slate-500 font-medium pb-1 text-left">Sum Insured</th>
-                                        <th className="text-[10px] text-slate-500 font-medium pb-1 text-right">Price</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {prices.map((opt, i) => (
-                                        <tr key={i}>
-                                          <td className="text-[10px] text-slate-300 py-0.5 pr-3">{opt.sumInsured}</td>
-                                          <td className="text-[10px] text-slate-200 font-medium py-0.5 text-right">{opt.price}</td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              )}
+                              {ins.available
+                                ? <span className="text-green-400 text-xs font-semibold">✓</span>
+                                : <span className="text-red-400 text-xs font-semibold" title={ins.unavailableReason}>N/A</span>}
                             </td>
                           );
                         })}
@@ -1458,7 +1422,7 @@ function SecarangTab() {
                 <table className="text-xs border-collapse w-full">
                   <thead>
                     <tr className="border-b border-slate-800 bg-slate-900/80">
-                      {["Vehicle", "Make/Model", "Insurer", "Available", "Sum Insured", "Price"].map(h => (
+                      {["Vehicle", "Make/Model", "Insurer", "Available", "Displayed", "Avail."].map(h => (
                         <th key={h} className="px-3 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
@@ -1470,8 +1434,8 @@ function SecarangTab() {
                         <td className="px-3 py-2 text-slate-400">{[r.make, r.model, r.year].filter(Boolean).join(" ") || "—"}</td>
                         <td className="px-3 py-2 text-blue-300">{r.insurer || "—"}</td>
                         <td className="px-3 py-2"><ScAvailBadge value={r.available} /></td>
-                        <td className="px-3 py-2 text-slate-400">{r.sumInsured || "—"}</td>
-                        <td className="px-3 py-2 text-slate-200 font-medium">{r.price || "—"}</td>
+                        <td className="px-3 py-2 text-slate-400">{r.totalDisplayed || "—"}</td>
+                        <td className="px-3 py-2 text-slate-400">{r.totalAvailable || "—"}</td>
                       </tr>
                     ))}
                   </tbody>

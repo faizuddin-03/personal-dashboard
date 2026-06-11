@@ -29,8 +29,6 @@ function killProcessTree(child: ChildProcess) {
 // ── Types ─────────────────────────────────────────────────────
 interface VehicleEntry { vehicleNumber: string; icNumber?: string; vehicleType?: string; ownerType?: string }
 
-export interface SumInsuredOption { sumInsured: string; price: string }
-export interface InsurerResult    { name: string; available: boolean; unavailableReason: string; sumInsuredOptions: SumInsuredOption[] }
 export interface SecarangRow {
   vehicleNumber:   string;
   make:            string;
@@ -40,8 +38,6 @@ export interface SecarangRow {
   insurer:         string;
   available:       string;
   unavailableReason: string;
-  sumInsured:      string;
-  price:           string;
   totalDisplayed:  string;
   totalAvailable:  string;
   status:          string;
@@ -91,10 +87,8 @@ function readOutputExcel(): SecarangRow[] {
     insurer:          String(r["Insurer"]         ?? ""),
     available:        String(r["Available"]       ?? ""),
     unavailableReason:String(r["Reason"]          ?? ""),
-    sumInsured:       String(r["Sum Insured"]     ?? ""),
-    price:            String(r["Price"]           ?? ""),
-    totalDisplayed:   "",
-    totalAvailable:   "",
+    totalDisplayed:   String(r["Total Displayed"] ?? ""),
+    totalAvailable:   String(r["Total Available"] ?? ""),
     status:           "SUCCESS",
     errorMessage:     "",
   }));
@@ -111,7 +105,6 @@ export async function POST(req: NextRequest) {
     baseUrl?:      string;
     sitePassword?: string;
     concurrency?:  number;
-    checkSumInsured?:     boolean;
     checkVehicleDetails?: boolean;
   };
 
@@ -119,7 +112,7 @@ export async function POST(req: NextRequest) {
     vehicles = [], icNumber = "", postcode = "55000",
     vehicleType = "car", ownerType = "private",
     baseUrl = "", sitePassword = "", concurrency,
-    checkSumInsured = true, checkVehicleDetails = true,
+    checkVehicleDetails = true,
   } = body;
 
   if (!vehicles.length) {
@@ -155,7 +148,6 @@ export async function POST(req: NextRequest) {
         ...(postcode     && { SECARANG_POSTCODE:        postcode }),
         ...(icNumber     && { SECARANG_IC:              icNumber.replace(/[-\s]/g, '') }),
         ...(concurrency  && { SECARANG_CONCURRENCY:     String(concurrency) }),
-        ...(checkSumInsured     === false && { SECARANG_CHECK_SUM_INSURED:     "0" }),
         ...(checkVehicleDetails === false && { SECARANG_CHECK_VEHICLE_DETAILS: "0" }),
       },
     });

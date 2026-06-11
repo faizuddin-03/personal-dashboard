@@ -1,8 +1,3 @@
-export interface SumInsuredOption {
-  sumInsured: string;
-  price:      string;
-}
-
 export interface SecarangRow {
   vehicleNumber:    string;
   make:             string;
@@ -12,8 +7,6 @@ export interface SecarangRow {
   insurer:          string;
   available:        string;  // "Yes" | "No"
   unavailableReason:string;
-  sumInsured:       string;
-  price:            string;
   totalDisplayed:   string;
   totalAvailable:   string;
   status:           string;
@@ -32,7 +25,6 @@ export interface SecarangVehicle {
     name:              string;
     available:         boolean;
     unavailableReason: string;
-    sumInsuredOptions: SumInsuredOption[];
   }[];
 }
 
@@ -96,20 +88,18 @@ export function buildVehicles(rows: SecarangRow[]): SecarangVehicle[] {
 
     if (!r.insurer) continue;
 
-    let ins = v.insurers.find(i => i.name === r.insurer);
-    if (!ins) {
-      ins = {
-        name:              r.insurer,
-        available:         r.available.toLowerCase() === "yes",
-        unavailableReason: r.unavailableReason,
-        sumInsuredOptions: [],
-      };
-      v.insurers.push(ins);
-    }
+    // One row per displayed card; keep each as its own entry
+    v.insurers.push({
+      name:              r.insurer,
+      available:         r.available.toLowerCase() === "yes",
+      unavailableReason: r.unavailableReason,
+    });
+  }
 
-    if (r.sumInsured && r.price) {
-      ins.sumInsuredOptions.push({ sumInsured: r.sumInsured, price: r.price });
-    }
+  // Fall back to deriving counts from rows if the sheet didn't carry them
+  for (const v of map.values()) {
+    if (!v.totalDisplayed) v.totalDisplayed = v.insurers.length;
+    if (!v.totalAvailable) v.totalAvailable = v.insurers.filter(i => i.available).length;
   }
 
   return Array.from(map.values());

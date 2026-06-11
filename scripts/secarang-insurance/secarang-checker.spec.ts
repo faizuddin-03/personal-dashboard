@@ -20,7 +20,6 @@ const CONFIG = {
   pollingInterval:     150,   // fast polling so we proceed the instant content appears
 
   // Feature toggles (set "0" to disable via env)
-  checkSumInsured:    process.env.SECARANG_CHECK_SUM_INSURED    !== '0',
   checkVehicleDetails:process.env.SECARANG_CHECK_VEHICLE_DETAILS !== '0',
 };
 
@@ -33,16 +32,10 @@ interface VehicleInput {
   ownerType?:     'private' | 'company';
 }
 
-interface SumInsuredOption {
-  sumInsured: string;
-  price:      string;
-}
-
 interface InsurerResult {
   name:              string;
   available:         boolean;
   unavailableReason: string;
-  sumInsuredOptions: SumInsuredOption[];
 }
 
 interface VehicleResult {
@@ -97,16 +90,16 @@ async function writeOutputExcel(results: VehicleResult[], filePath: string): Pro
   // ── Quotations sheet ─────────────────────────────────────────
   const qs = wb.addWorksheet('Quotations', { views: [{ state: 'frozen', ySplit: 1 }] });
   qs.columns = [
-    { header: 'Vehicle Number', key: 'vn',       width: 18 },
-    { header: 'Make',           key: 'make',      width: 15 },
-    { header: 'Model',          key: 'model',     width: 30 },
-    { header: 'Year',           key: 'year',      width: 8  },
-    { header: 'Variant',        key: 'variant',   width: 25 },
-    { header: 'Insurer',        key: 'insurer',   width: 25 },
-    { header: 'Available',      key: 'available', width: 12 },
-    { header: 'Reason',         key: 'reason',    width: 40 },
-    { header: 'Sum Insured',    key: 'sumInsured',width: 18 },
-    { header: 'Price',          key: 'price',     width: 18 },
+    { header: 'Vehicle Number',  key: 'vn',        width: 18 },
+    { header: 'Make',            key: 'make',      width: 15 },
+    { header: 'Model',           key: 'model',     width: 30 },
+    { header: 'Year',            key: 'year',      width: 8  },
+    { header: 'Variant',         key: 'variant',   width: 25 },
+    { header: 'Insurer',         key: 'insurer',   width: 25 },
+    { header: 'Available',       key: 'available', width: 12 },
+    { header: 'Reason',          key: 'reason',    width: 40 },
+    { header: 'Total Displayed', key: 'displayed', width: 16 },
+    { header: 'Total Available', key: 'available2',width: 16 },
   ];
   qs.getRow(1).font      = headerFont;
   qs.getRow(1).fill      = headerFill;
@@ -115,27 +108,14 @@ async function writeOutputExcel(results: VehicleResult[], filePath: string): Pro
   for (const r of results) {
     if (r.status !== 'SUCCESS') continue;
     for (const ins of r.insurers) {
-      if (!ins.available || ins.sumInsuredOptions.length === 0) {
-        const row = qs.addRow({
-          vn: r.vehicleNumber, make: r.make, model: r.model, year: r.year,
-          variant: r.variant, insurer: ins.name,
-          available: ins.available ? 'Yes' : 'No',
-          reason: ins.unavailableReason || '',
-          sumInsured: '', price: '',
-        });
-        const cell = row.getCell('available');
-        cell.font = { color: { argb: ins.available ? 'FF008000' : 'FFFF0000' }, bold: true };
-      } else {
-        for (const opt of ins.sumInsuredOptions) {
-          const row = qs.addRow({
-            vn: r.vehicleNumber, make: r.make, model: r.model, year: r.year,
-            variant: r.variant, insurer: ins.name,
-            available: 'Yes', reason: '',
-            sumInsured: opt.sumInsured, price: opt.price,
-          });
-          row.getCell('available').font = { color: { argb: 'FF008000' }, bold: true };
-        }
-      }
+      const row = qs.addRow({
+        vn: r.vehicleNumber, make: r.make, model: r.model, year: r.year,
+        variant: r.variant, insurer: ins.name,
+        available: ins.available ? 'Yes' : 'No',
+        reason: ins.unavailableReason || '',
+        displayed: r.totalDisplayed, available2: r.totalAvailable,
+      });
+      row.getCell('available').font = { color: { argb: ins.available ? 'FF008000' : 'FFFF0000' }, bold: true };
     }
   }
   if (qs.rowCount > 1) {
@@ -213,25 +193,6 @@ async function waitForCondition(
   return false;
 }
 
-// Wait until a value-producing function returns non-empty AND differs from
-// `prev` (i.e. the price refreshed after changing the sum insured). Returns
-// the new value as soon as it settles, capped at `timeout`.
-async function waitForValueChange(
-  read: () => Promise<string>,
-  prev: string,
-  page: Page,
-  timeout = 1500,
-): Promise<string> {
-  const deadline = Date.now() + timeout;
-  let last = '';
-  while (Date.now() < deadline) {
-    const v = await read();
-    if (v && v !== prev) return v;     // changed → done immediately
-    last = v;
-    await page.waitForTimeout(CONFIG.pollingInterval);
-  }
-  return last; // never changed (or same price) — return whatever we have
-}
 
 // True when the "Are these your vehicle details?" confirmation step is showing.
 async function isDetailsStep(page: Page): Promise<boolean> {
@@ -509,92 +470,29 @@ async function extractQuotations(page: Page): Promise<{
   console.log(`   📦 ${count} card(s) found`);
   const insurers: InsurerResult[] = [];
 
-  // Dump the first card's HTML once so we can map real structure for selectors
-  if (count > 0) {
-    const html = await cards.first().evaluate(el => el.outerHTML).catch(() => '');
-    console.log(`   ── FIRST CARD HTML (truncated) ──\n${html.slice(0, 2500)}\n   ── END CARD HTML ──`);
-  }
-
   for (let i = 0; i < count; i++) {
     try {
       const card = cards.nth(i);
       const cardText = clean(await card.innerText().catch(() => ''));
 
-      // Get insurer name
-      const nameEl = card.locator('[class*="name" i], [class*="title" i], [class*="insurer" i], img[alt], h3, h4, h2').first();
-      let name = clean(await nameEl.getAttribute('alt').catch(() => '') || '');
-      if (!name) name = clean(await nameEl.textContent().catch(() => '') || cardText.split('\n')[0]);
+      // Insurer name from the logo's alt text (e.g. "Lonpac logo" → "Lonpac"),
+      // falling back to a heading / first line.
+      const logo = card.locator('img[alt]').first();
+      let name = clean(await logo.getAttribute('alt').catch(() => '') || '');
+      name = name.replace(/\s*logo\s*$/i, '').trim();
+      if (!name) {
+        const nameEl = card.locator('[class*="name" i], [class*="title" i], h3, h4, h2').first();
+        name = clean(await nameEl.textContent().catch(() => '') || cardText.split('\n')[0]);
+      }
 
-      // Check if unavailable
+      // Available unless the card says the quotation is unavailable
       const unavailableReason = /quotation unavailable|not available|unable to provide|currently unavailable|unavailable|no quote/i.test(cardText)
         ? clean(cardText.match(/[^\n]*(?:unavailable|not available|unable to provide|no quote)[^\n]*/i)?.[0] || 'Unavailable')
         : '';
 
-      if (unavailableReason) {
-        console.log(`   ❌ ${name}: ${unavailableReason}`);
-        insurers.push({ name, available: false, unavailableReason, sumInsuredOptions: [] });
-        continue;
-      }
-
-      const sumInsuredOptions: SumInsuredOption[] = [];
-
-      // Helper to read the current price text in this card
-      const readPrice = async (): Promise<string> => {
-        const priceEl = card.locator('[class*="price" i], [class*="premium" i], [class*="amount" i], [class*="total" i]').first();
-        let p = clean(await priceEl.textContent().catch(() => '') || '');
-        if (!p) {
-          // Fallback: any "RM ..." token in the card text
-          const m = clean(await card.innerText().catch(() => '')).match(/RM\s?[\d,]+(?:\.\d{2})?/);
-          p = m ? m[0] : '';
-        }
-        return p;
-      };
-
-      // Sum insured dropdown (native select)
-      const siDropdown = card.locator('select').first();
-      const siCount = CONFIG.checkSumInsured ? await siDropdown.count() : 0;
-
-      if (!CONFIG.checkSumInsured) {
-        // Sum-insured checking disabled — record just the displayed price
-        const price = await readPrice();
-        if (price) sumInsuredOptions.push({ sumInsured: 'N/A (check disabled)', price });
-      } else if (siCount > 0) {
-        const options = await siDropdown.locator('option').all();
-        // Start empty so the first option returns the instant a price renders.
-        let prevPrice = '';
-        for (const opt of options) {
-          const optVal  = (await opt.getAttribute('value')) ?? '';
-          const optText = clean(await opt.textContent() || '');
-          if (!optText || /select|choose|^--|please/i.test(optText)) continue;
-
-          // Select by value, fall back to label; swallow errors
-          let ok = true;
-          try {
-            if (optVal !== '') await siDropdown.selectOption(optVal);
-            else await siDropdown.selectOption({ label: optText });
-          } catch {
-            try { await siDropdown.selectOption({ label: optText }); } catch { ok = false; }
-          }
-
-          // Proceed the instant the premium refreshes (capped ~1.5s)
-          const price = await waitForValueChange(readPrice, prevPrice, page);
-          prevPrice = price;
-          const sumInsured = optText;
-          console.log(`      Sum insured: ${sumInsured} → ${price || '(no price)'}${ok ? '' : ' [select failed]'}`);
-          sumInsuredOptions.push({ sumInsured, price });
-        }
-      }
-
-      // No dropdown → capture displayed price directly
-      if (sumInsuredOptions.length === 0) {
-        const price = await readPrice();
-        const sumInsuredEl = card.locator('[class*="sum" i], [class*="coverage" i], [class*="insured" i]').first();
-        const sumInsured = clean(await sumInsuredEl.textContent().catch(() => '') || 'N/A');
-        if (price) sumInsuredOptions.push({ sumInsured, price });
-      }
-
-      console.log(`   ✅ ${name}: available, ${sumInsuredOptions.length} sum insured option(s)`);
-      insurers.push({ name, available: true, unavailableReason: '', sumInsuredOptions });
+      const available = !unavailableReason;
+      console.log(`   ${available ? '✅' : '❌'} ${name}: ${available ? 'available' : unavailableReason}`);
+      insurers.push({ name, available, unavailableReason });
     } catch (err) {
       console.log(`   ⚠️  Card #${i} extraction error (continuing): ${err}`);
     }
