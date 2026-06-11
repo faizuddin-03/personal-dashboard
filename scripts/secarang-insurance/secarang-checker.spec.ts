@@ -397,30 +397,23 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
     }
   }
 
-  // Let Angular finish rendering the confirmation button, then click it.
-  await page.waitForTimeout(300);
-
-  // Some flows gate "Get quotation" behind a declaration checkbox — tick any.
+  // Tick any declaration checkbox that might gate the CTA.
   const checkboxes = page.locator('input[type="checkbox"]');
   const cbCount = await checkboxes.count();
   for (let i = 0; i < cbCount; i++) {
     await checkboxes.nth(i).check({ force: true }).catch(() => {});
   }
 
-  // Diagnostic: list buttons (with disabled state) + checkboxes once
-  const diag = await page.evaluate(() => {
-    const btns = [...document.querySelectorAll('button')]
-      .map(b => `"${(b.textContent || '').trim().slice(0, 25)}"${(b as HTMLButtonElement).disabled ? '[disabled]' : ''}`)
-      .filter(t => t !== '""');
-    const checks = [...document.querySelectorAll('input[type="checkbox"]')]
-      .map(c => `checked=${(c as HTMLInputElement).checked}`);
-    return { btns, checks };
-  });
-  console.log(`   🔎 buttons: ${diag.btns.join(' | ')}`);
-  console.log(`   🔎 checkboxes: ${diag.checks.join(' | ') || 'none'}`);
+  // The "Get quotation" CTA starts disabled while the details validate.
+  // Wait until it's enabled before clicking (avoids a wasted no-op click).
+  const ctaSel = 'button:has-text("Get quotation")';
+  await waitForCondition(page, async () => {
+    const c = page.locator(ctaSel).last();
+    return (await c.count()) > 0 && await c.isEnabled().catch(() => false);
+  }, 12000, CONFIG.pollingInterval);
 
   // Prefer the explicit "Get quotation" CTA; fall back to the primary button.
-  let proceed = page.locator('button:has-text("Get quotation")');
+  let proceed = page.locator(ctaSel);
   if ((await proceed.count()) === 0) proceed = page.locator('button.primary-btn');
   const target = proceed.last();
   if ((await target.count()) > 0) {
@@ -440,15 +433,15 @@ async function handleVehicleDetailsPage(page: Page): Promise<string> {
   throw new Error('Could not find proceed button on vehicle details page');
 }
 
-// Candidate selectors for an insurer/quotation card on the results page
+// Candidate selectors for an insurer/quotation card on the results page.
+// Exact class tokens (not [class*=...]) so we don't also match child elements
+// like `insurance-card-header-lg`.
 const CARD_SELECTORS = [
-  '[class*="quote-card"]',
-  '[class*="quotation-card"]',
-  '[class*="insurer-card"]',
-  '[class*="insurance-card"]',
-  '[class*="plan-card"]',
-  '[class*="QuoteCard"]',
-  '[class*="InsuranceCard"]',
+  '.insurance-card',
+  '.quotation-card',
+  '.quote-card',
+  '.insurer-card',
+  '.plan-card',
 ];
 
 // Returns the first matching card selector, or '' if none.
@@ -485,14 +478,20 @@ async function extractQuotations(page: Page): Promise<{
     return { insurers: [], totalDisplayed: 0, totalAvailable: 0 };
   }
 
-  const cards = page.locator(cardSel);
-  const count = await cards.count();
-  console.log(`   📦 ${count} card(s) found`);
+  // Only the visible cards — the page renders hidden responsive duplicates.
+  const all = page.locator(cardSel);
+  const total = await all.count();
+  const cards = [];
+  for (let i = 0; i < total; i++) {
+    const c = all.nth(i);
+    if (await c.isVisible().catch(() => false)) cards.push(c);
+  }
+  console.log(`   📦 ${cards.length} visible card(s) (${total} total incl. hidden)`);
   const insurers: InsurerResult[] = [];
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < cards.length; i++) {
     try {
-      const card = cards.nth(i);
+      const card = cards[i];
       const cardText = clean(await card.innerText().catch(() => ''));
 
       // Insurer name from the logo's alt text (e.g. "Lonpac logo" → "Lonpac"),
@@ -519,7 +518,7 @@ async function extractQuotations(page: Page): Promise<{
   }
 
   const totalAvailable = insurers.filter(i => i.available).length;
-  return { insurers, totalDisplayed: count, totalAvailable };
+  return { insurers, totalDisplayed: cards.length, totalAvailable };
 }
 
 // ─── PROCESS A SINGLE VEHICLE ─────────────────────────────────────────────────
