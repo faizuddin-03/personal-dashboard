@@ -171,7 +171,7 @@ async function handleVehicleDetails(page: Page): Promise<void> {
   });
 }
 
-// ─── STEP 6: Wait for quotation cards ────────────────────────────────────────
+// ─── Quotation card helpers (needed by steps 6 and 7) ────────────────────────
 const CARD_SELS = ['.insurance-card', '.quotation-card', '.quote-card', '.insurer-card', '.plan-card'];
 
 async function findCardSel(page: Page): Promise<string> {
@@ -179,6 +179,41 @@ async function findCardSel(page: Page): Promise<string> {
   return '';
 }
 
+// ─── STEP 6: Click "Get Quotation" on the post-details summary page ──────────
+// After confirming vehicle details the site lands on a summary page that
+// requires an explicit "Get Quotation" button click before cards render.
+async function clickGetQuotationButton(page: Page): Promise<boolean> {
+  await page.waitForTimeout(600);
+
+  // Already on cards — nothing to do
+  if (await findCardSel(page)) return false;
+
+  const sels = [
+    'button:has-text("Get Quotation")',
+    'button:has-text("Get quotation")',
+    'button:has-text("Get Quote")',
+  ];
+
+  for (const sel of sels) {
+    const btn = page.locator(sel).last();
+    if ((await btn.count()) === 0 || !(await btn.isVisible().catch(() => false))) continue;
+
+    // Wait until the button is enabled (sometimes it takes a moment)
+    await poll(page, () => btn.isEnabled().catch(() => false), 10_000);
+
+    console.log(`   🖱️  Clicking "${sel.match(/"([^"]+)"/)?.[1] ?? 'Get Quotation'}"`);
+    await btn.scrollIntoViewIfNeeded().catch(() => {});
+    await btn.click({ timeout: 8_000 }).catch(async () => {
+      await btn.click({ force: true }).catch(() => {});
+    });
+    await page.waitForTimeout(CONFIG.waitAfterClick);
+    return true;
+  }
+
+  return false;
+}
+
+// ─── STEP 7: Wait for quotation cards ────────────────────────────────────────
 async function waitForQuotations(page: Page): Promise<string> {
   const ok = await poll(page, async () => !!(await findCardSel(page)), 25_000);
   if (!ok) throw new Error('Quotation cards did not appear within 25 s');
@@ -426,7 +461,18 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 6. Wait for quotation cards ──────────────────────────────
+    // ── 6. Get Quotation button (intermediate page after vehicle details) ───────
+    try {
+      const clicked = await clickGetQuotationButton(page);
+      recordStep('Get Quotation', clicked ? 'PASS' : 'SKIP',
+        clicked ? 'Clicked Get Quotation button' : 'Not shown — cards already loading');
+    } catch (e) {
+      recordStep('Get Quotation', 'FAIL', String(e));
+      writeResult('FAIL', String(e));
+      return;
+    }
+
+    // ── 7. Wait for quotation cards ──────────────────────────────
     let cardSel = '';
     try {
       cardSel = await waitForQuotations(page);
@@ -438,7 +484,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 7. Select Zurich ─────────────────────────────────────────
+    // ── 8. Select Zurich ─────────────────────────────────────────
     try {
       await selectInsurer(page, cardSel, CONFIG.targetInsurer);
       await page.waitForTimeout(CONFIG.waitAfterClick);
@@ -449,7 +495,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 8. Add-ons page ──────────────────────────────────────────
+    // ── 9. Add-ons page ──────────────────────────────────────────
     try {
       await handleAddOns(page);
       await page.waitForTimeout(CONFIG.waitAfterClick);
@@ -460,7 +506,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 9. Post add-ons popup ────────────────────────────────────
+    // ── 10. Post add-ons popup ───────────────────────────────────
     try {
       await handlePostAddOnsPopup(page);
       recordStep('Post add-ons popup', 'PASS', 'Popup dismissed (or not shown)');
@@ -470,7 +516,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 10. Payment confirmation ─────────────────────────────────
+    // ── 11. Payment confirmation ─────────────────────────────────
     try {
       await handlePaymentConfirmation(page);
       await page.waitForTimeout(CONFIG.waitAfterClick);
@@ -481,7 +527,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 11. Payment method page ──────────────────────────────────
+    // ── 12. Payment method page ──────────────────────────────────
     try {
       await verifyPaymentMethodPage(page);
       recordStep('Payment method page', 'PASS', 'Online banking / card options visible');
