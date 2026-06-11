@@ -8,7 +8,7 @@ import WhatsNewModal from "@/components/WhatsNewModal";
 import { JiraCredentials, getStoredCredentials, storeCredentials } from "@/lib/jira";
 import { CURRENT_CHANGES } from "@/lib/changelog";
 import { InsuranceJob, InsuranceRunParams, saveInsuranceResults } from "@/lib/insurance";
-import { SecarangJob, SecarangRunParams, SecarangRow, saveSecarangResults } from "@/lib/secarang";
+import { SecarangJob, SecarangRunParams, SecarangRow, saveSecarangResults, saveRegressionSecarangResults } from "@/lib/secarang";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { loadAndApplyTheme } from "@/lib/themes";
 import clsx from "clsx";
@@ -29,6 +29,11 @@ interface AppCtx {
   stopSecarangRun: () => void;
   clearSecarangJob: () => void;
   restoreSecarangJob: (job: SecarangJob) => void;
+  regressionSecarangJob: SecarangJob | null;
+  startRegressionSecarangRun: (params: SecarangRunParams) => void;
+  stopRegressionSecarangRun: () => void;
+  clearRegressionSecarangJob: () => void;
+  restoreRegressionSecarangJob: (job: SecarangJob) => void;
 }
 
 export const AppContext = createContext<AppCtx>({
@@ -47,6 +52,11 @@ export const AppContext = createContext<AppCtx>({
   stopSecarangRun: () => {},
   clearSecarangJob: () => {},
   restoreSecarangJob: () => {},
+  regressionSecarangJob: null,
+  startRegressionSecarangRun: () => {},
+  stopRegressionSecarangRun: () => {},
+  clearRegressionSecarangJob: () => {},
+  restoreRegressionSecarangJob: () => {},
 });
 
 export function useApp() {
@@ -59,8 +69,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
-  const [insuranceJob, setInsuranceJob] = useState<InsuranceJob | null>(null);
-  const [secarangJob,  setSecarangJob]  = useState<SecarangJob  | null>(null);
+  const [insuranceJob,          setInsuranceJob]          = useState<InsuranceJob | null>(null);
+  const [secarangJob,           setSecarangJob]           = useState<SecarangJob  | null>(null);
+  const [regressionSecarangJob, setRegressionSecarangJob] = useState<SecarangJob  | null>(null);
   const router = useRouter();
 
   function startInsuranceRun(params: InsuranceRunParams) {
@@ -168,6 +179,54 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setSecarangJob(job);
   }
 
+  function startRegressionSecarangRun(params: SecarangRunParams) {
+    if (!params.vehicles.length) return;
+    setRegressionSecarangJob({
+      loading: true, stopping: false, rows: [], error: "", log: "",
+      savedAt: null, vehicleInput: params.vehicleInput,
+    });
+    fetch("/api/secarang/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        vehicles:            params.vehicles,
+        icNumber:            params.icNumber,
+        postcode:            params.postcode,
+        vehicleType:         params.vehicleType,
+        ownerType:           params.ownerType,
+        baseUrl:             params.baseUrl,
+        sitePassword:        params.sitePassword,
+        concurrency:         params.concurrency,
+        checkVehicleDetails: params.checkVehicleDetails,
+      }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        const now  = new Date().toISOString();
+        const rows: SecarangRow[] = data.rows ?? [];
+        const log  = data.log ?? "";
+        if (data.error) throw new Error(data.error);
+        setRegressionSecarangJob(j => j ? { ...j, loading: false, stopping: false, rows, log, savedAt: now } : null);
+        saveRegressionSecarangResults({ rows, runLog: log, savedAt: now, vehicleInput: params.vehicleInput });
+      })
+      .catch(e => {
+        setRegressionSecarangJob(j => j ? { ...j, loading: false, stopping: false, error: e instanceof Error ? e.message : "Something went wrong" } : null);
+      });
+  }
+
+  function stopRegressionSecarangRun() {
+    setRegressionSecarangJob(j => j ? { ...j, stopping: true } : null);
+    fetch("/api/secarang/check", { method: "DELETE" }).catch(() => {});
+  }
+
+  function clearRegressionSecarangJob() {
+    setRegressionSecarangJob(null);
+  }
+
+  function restoreRegressionSecarangJob(job: SecarangJob) {
+    setRegressionSecarangJob(job);
+  }
+
   useAutoBackup();
 
   useEffect(() => {
@@ -216,6 +275,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       openWhatsNew: () => setWhatsNewOpen(true),
       insuranceJob, startInsuranceRun, stopInsuranceRun, clearInsuranceJob, restoreInsuranceJob,
       secarangJob, startSecarangRun, stopSecarangRun, clearSecarangJob, restoreSecarangJob,
+      regressionSecarangJob, startRegressionSecarangRun, stopRegressionSecarangRun, clearRegressionSecarangJob, restoreRegressionSecarangJob,
     }}>
       <div className="flex h-screen overflow-hidden">
         {/* Mobile overlay */}

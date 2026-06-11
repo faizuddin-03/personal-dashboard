@@ -58,28 +58,40 @@ export interface SecarangJob {
   vehicleInput: string;
 }
 
-const STORAGE_KEY = "secarang_results";
+const STORAGE_KEY            = "secarang_results";
+const REGRESSION_STORAGE_KEY = "regression_secarang_results";
 
-interface SavedResults {
+export interface SavedResults {
   rows:         SecarangRow[];
   vehicleInput: string;
   runLog:       string;
   savedAt:      string;
 }
 
-export function loadSecarangSaved(): SavedResults | null {
+function loadSaved(key: string): SavedResults | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : null;
   } catch { return null; }
 }
+
+export function loadSecarangSaved():            SavedResults | null { return loadSaved(STORAGE_KEY); }
+export function loadRegressionSecarangSaved():  SavedResults | null { return loadSaved(REGRESSION_STORAGE_KEY); }
 
 export function saveSecarangResults(data: SavedResults) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+export function saveRegressionSecarangResults(data: SavedResults) {
+  localStorage.setItem(REGRESSION_STORAGE_KEY, JSON.stringify(data));
+}
+
 export function clearSecarangSaved() {
   localStorage.removeItem(STORAGE_KEY);
+}
+
+export function clearRegressionSecarangSaved() {
+  localStorage.removeItem(REGRESSION_STORAGE_KEY);
 }
 
 // Derive structured vehicles from flat rows

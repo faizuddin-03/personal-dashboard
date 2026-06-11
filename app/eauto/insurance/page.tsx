@@ -12,7 +12,9 @@ import { InsuranceRow, VehicleEntry, loadInsuranceSaved, clearInsuranceSaved } f
 import {
   SecarangRow, SecarangJob, SecarangVehicle, SecarangRunParams,
   VehicleEntry as ScVehicleEntry,
-  loadSecarangSaved, clearSecarangSaved, buildVehicles,
+  loadSecarangSaved, clearSecarangSaved,
+  loadRegressionSecarangSaved, clearRegressionSecarangSaved,
+  buildVehicles,
 } from "@/lib/secarang";
 
 // ── Environment presets ───────────────────────────────────────
@@ -345,7 +347,7 @@ export default function InsurancePage() {
   }
   const foundInsurers  = Array.from(new Set(rows.map(r => r.insurer).filter(Boolean)));
 
-  const [activeTab, setActiveTab] = useState<"check" | "tab2">("check");
+  const [activeTab, setActiveTab] = useState<"check" | "tab2" | "tab3">("check");
 
   return (
     <div className="flex flex-col min-h-full">
@@ -389,9 +391,21 @@ export default function InsurancePage() {
         >
           Insurance Availability - Secarang
         </button>
+        <button
+          onClick={() => setActiveTab("tab3")}
+          className={clsx(
+            "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+            activeTab === "tab3"
+              ? "border-blue-500 text-blue-400"
+              : "border-transparent text-slate-500 hover:text-slate-300"
+          )}
+        >
+          Regression - Secarang
+        </button>
       </div>
 
-      {activeTab === "tab2" && <SecarangTab />}
+      {activeTab === "tab2" && <SecarangTab mode="standard" />}
+      {activeTab === "tab3" && <SecarangTab mode="regression" />}
 
       {activeTab === "check" && <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
 
@@ -1058,7 +1072,7 @@ const SC_TABLE_COLS: { key: ScSortKey; label: string }[] = [
   { key: "totalAvailable", label: "Avail."     },
 ];
 
-function SecarangTab() {
+function SecarangTab({ mode = "standard" }: { mode?: "standard" | "regression" }) {
   const [vehicleInput,  setVehicleInput]  = useState("");
   const [icNumber,      setIcNumber]      = useState("");
   const [postcode,      setPostcode]      = useState("55000");
@@ -1074,39 +1088,51 @@ function SecarangTab() {
 
   const [checkVehicleDetails, setCheckVehicleDetails] = useState(true);
 
-  const { secarangJob, startSecarangRun, stopSecarangRun, clearSecarangJob, restoreSecarangJob } = useApp();
+  const {
+    secarangJob,           startSecarangRun,           stopSecarangRun,           clearSecarangJob,           restoreSecarangJob,
+    regressionSecarangJob, startRegressionSecarangRun, stopRegressionSecarangRun, clearRegressionSecarangJob, restoreRegressionSecarangJob,
+  } = useApp();
+
+  const isRegression  = mode === "regression";
+  const activeJob     = isRegression ? regressionSecarangJob : secarangJob;
+  const startRun      = isRegression ? startRegressionSecarangRun  : startSecarangRun;
+  const stopRun       = isRegression ? stopRegressionSecarangRun   : stopSecarangRun;
+  const clearJob      = isRegression ? clearRegressionSecarangJob  : clearSecarangJob;
+  const restoreJob    = isRegression ? restoreRegressionSecarangJob : restoreSecarangJob;
+  const loadSaved     = isRegression ? loadRegressionSecarangSaved  : loadSecarangSaved;
+  const clearSaved    = isRegression ? clearRegressionSecarangSaved : clearSecarangSaved;
 
   // Filters & search
   const [search,        setSearch]        = useState("");
   const [availFilter,   setAvailFilter]   = useState<ScAvailFilter>("all");
   const [shownInsurers, setShownInsurers] = useState<Set<string>>(() => {
-    const found = (secarangJob?.rows ?? []).map(r => r.insurer).filter(Boolean);
+    const found = (activeJob?.rows ?? []).map(r => r.insurer).filter(Boolean);
     return new Set(found);
   });
   const [sort,          setSort]          = useState<ScSortState>({ key: null, dir: "asc" });
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
 
-  const loading  = secarangJob?.loading  ?? false;
-  const stopping = secarangJob?.stopping ?? false;
-  const rows     = secarangJob?.rows     ?? [];
-  const error    = secarangJob?.error    ?? "";
-  const runLog   = secarangJob?.log      ?? "";
-  const savedAt  = secarangJob?.savedAt  ?? null;
-  const hasRun   = secarangJob !== null;
+  const loading  = activeJob?.loading  ?? false;
+  const stopping = activeJob?.stopping ?? false;
+  const rows     = activeJob?.rows     ?? [];
+  const error    = activeJob?.error    ?? "";
+  const runLog   = activeJob?.log      ?? "";
+  const savedAt  = activeJob?.savedAt  ?? null;
+  const hasRun   = activeJob !== null;
 
   const idLabel  = ownerType === "company" ? "SSM" : "IC";
   const vehicles = parseScVehicles(vehicleInput);
 
   // Restore saved on mount (if no active job in context)
   useEffect(() => {
-    if (secarangJob) {
-      setVehicleInput(secarangJob.vehicleInput);
+    if (activeJob) {
+      setVehicleInput(activeJob.vehicleInput);
       return;
     }
-    const saved = loadSecarangSaved();
+    const saved = loadSaved();
     if (!saved || saved.rows.length === 0) return;
     setVehicleInput(saved.vehicleInput);
-    restoreSecarangJob({ loading: false, rows: saved.rows, error: "", log: saved.runLog ?? "", savedAt: saved.savedAt, vehicleInput: saved.vehicleInput });
+    restoreJob({ loading: false, rows: saved.rows, error: "", log: saved.runLog ?? "", savedAt: saved.savedAt, vehicleInput: saved.vehicleInput });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Build structured view
@@ -1206,16 +1232,16 @@ function SecarangTab() {
       checkVehicleDetails,
       vehicleInput,
     };
-    startSecarangRun(params);
+    startRun(params);
   }
 
   function handleStop() {
-    stopSecarangRun();
+    stopRun();
   }
 
   function handleClear() {
-    clearSecarangSaved();
-    clearSecarangJob();
+    clearSaved();
+    clearJob();
     setVehicleInput("");
     setShownInsurers(new Set());
   }
