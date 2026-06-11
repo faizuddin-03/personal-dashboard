@@ -46,3 +46,8 @@ scripts/eauto-insurance/test-results/
 scripts/eauto-insurance/input-vehicles.xlsx
 scripts/eauto-insurance/output-results.xlsx
 scripts/eauto-insurance/node_modules/
+scripts/secarang-insurance/playwright-report/
+scripts/secarang-insurance/test-results/
+scripts/secarang-insurance/input-vehicles.xlsx
+scripts/secarang-insurance/output-results.xlsx
+scripts/secarang-insurance/node_modules/
