@@ -224,43 +224,77 @@ async function waitForQuotations(page: Page): Promise<string> {
 async function selectInsurer(page: Page, cardSel: string, insurerName: string): Promise<void> {
   const cards = page.locator(cardSel);
   const total = await cards.count();
-  console.log(`   🃏 ${total} card(s) — looking for "${insurerName}"`);
+  const nameLower = insurerName.toLowerCase();
 
+  // Collect visible cards with their insurer names (from alt text and inner text)
+  const visible: { idx: number; detectedBy: string }[] = [];
   for (let i = 0; i < total; i++) {
     const card = cards.nth(i);
     if (!(await card.isVisible().catch(() => false))) continue;
-    const text = clean(await card.innerText().catch(() => ''));
-    if (!text.toLowerCase().includes(insurerName.toLowerCase())) continue;
 
-    console.log(`   🎯 Found ${insurerName} card (${i + 1}/${total})`);
+    // Primary: check all img alt attributes (insurer name lives here, not in text)
+    const alts: string[] = await card.locator('img[alt]').evaluateAll(
+      (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.alt.toLowerCase())
+    ).catch(() => []);
+    const nameInAlt = alts.some(a => a.includes(nameLower));
 
-    // Try a labelled CTA inside the card first
-    for (const label of ['Select', 'Buy Now', 'Buy', 'Proceed', 'Get Quote', 'Choose']) {
-      const btn = card.locator(`button:has-text("${label}")`).first();
-      if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
-        console.log(`   🖱️  Clicking "${label}" button`);
-        await btn.scrollIntoViewIfNeeded().catch(() => {});
-        await btn.click();
-        return;
-      }
+    // Secondary: inner text (covers cases where name IS rendered as text)
+    const text = (await card.innerText().catch(() => '')).toLowerCase();
+    const nameInText = text.includes(nameLower);
+
+    // Also check src attribute of images (e.g. "zurich.png" contains "zurich")
+    const srcs: string[] = await card.locator('img[src]').evaluateAll(
+      (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.src.toLowerCase())
+    ).catch(() => []);
+    const nameInSrc = srcs.some(s => s.includes(nameLower));
+
+    if (nameInAlt || nameInText || nameInSrc) {
+      visible.push({ idx: i, detectedBy: nameInAlt ? 'img alt' : nameInSrc ? 'img src' : 'text' });
     }
+  }
 
-    // Fallback: any primary button inside the card
-    const primary = card.locator('button.primary-btn, button[class*="primary"], button[class*="select"]').first();
-    if ((await primary.count()) > 0) {
-      console.log('   🖱️  Clicking primary button in card');
-      await primary.scrollIntoViewIfNeeded().catch(() => {});
-      await primary.click();
+  console.log(`   🃏 ${total} total card(s), ${visible.length} match "${insurerName}"`);
+
+  if (!visible.length) {
+    // Log what we found to help diagnose
+    for (let i = 0; i < Math.min(total, 6); i++) {
+      const card = cards.nth(i);
+      if (!(await card.isVisible().catch(() => false))) continue;
+      const alts: string[] = await card.locator('img[alt]').evaluateAll(
+        (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.alt)
+      ).catch(() => []);
+      console.log(`   Card ${i + 1} alts: [${alts.join(', ')}]`);
+    }
+    throw new Error(`Insurer "${insurerName}" not found among ${total} card(s)`);
+  }
+
+  // Use the first matching card
+  const { idx, detectedBy } = visible[0];
+  const card = cards.nth(idx);
+  console.log(`   🎯 Found ${insurerName} at card index ${idx + 1} via ${detectedBy}`);
+
+  // "Buy" is the confirmed button label from the HTML; list it first
+  for (const label of ['Buy', 'Select', 'Buy Now', 'Proceed', 'Get Quote', 'Choose']) {
+    const btn = card.locator(`button:has-text("${label}")`).first();
+    if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+      console.log(`   🖱️  Clicking "${label}" button`);
+      await btn.scrollIntoViewIfNeeded().catch(() => {});
+      await btn.click();
       return;
     }
+  }
 
-    // Last resort: click the card itself
-    console.log('   🖱️  Clicking card directly');
-    await card.click();
+  // Fallback: any primary button inside the card
+  const primary = card.locator('button.primary-btn, button[class*="primary"]').first();
+  if ((await primary.count()) > 0) {
+    console.log('   🖱️  Clicking primary-btn in card');
+    await primary.scrollIntoViewIfNeeded().catch(() => {});
+    await primary.click();
     return;
   }
 
-  throw new Error(`Insurer "${insurerName}" not found among ${total} visible card(s)`);
+  console.log('   🖱️  Clicking card directly');
+  await card.click();
 }
 
 // ─── STEP 8: Add-ons page ─────────────────────────────────────────────────────
