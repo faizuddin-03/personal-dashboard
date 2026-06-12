@@ -429,7 +429,7 @@ async function handlePostAddOnsPopup(page: Page): Promise<void> {
 }
 
 // ─── STEP 10: Payment confirmation page ──────────────────────────────────────
-async function handlePaymentConfirmation(page: Page): Promise<void> {
+async function handlePaymentConfirmation(page: Page): Promise<Page> {
   const appeared = await poll(page, async () => {
     const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
     return /confirm.*pay|payment detail|order summary|premium|total.*payable/i.test(t);
@@ -482,9 +482,9 @@ async function handlePaymentConfirmation(page: Page): Promise<void> {
       await page.waitForTimeout(500);
       console.log(`   🏷️  Discount code entered: "${CONFIG.discountCode}"`);
 
-      // Wait for Apply button to become enabled, then click it
+      // Wait 1s for Apply button to become enabled, then click it
+      await page.waitForTimeout(1000);
       const applyBtn = page.locator('button:has-text("Apply discount code"), button:has-text("Apply")').last();
-      await poll(page, () => applyBtn.isEnabled().catch(() => false), 5_000);
       if (await applyBtn.isEnabled().catch(() => false)) {
         await applyBtn.scrollIntoViewIfNeeded().catch(() => {});
         await applyBtn.click();
@@ -501,26 +501,69 @@ async function handlePaymentConfirmation(page: Page): Promise<void> {
   await page.waitForTimeout(1000);
 
   const confirmBtn = page.locator('button[type="submit"]:has-text("Confirm and Pay"), button:has-text("Confirm and Pay")').last();
-  if ((await confirmBtn.count()) > 0 && await confirmBtn.isVisible().catch(() => false)) {
-    console.log('   🖱️  Clicking "Confirm and Pay"');
-    await confirmBtn.scrollIntoViewIfNeeded().catch(() => {});
-    await confirmBtn.click();
-    return;
+  if ((await confirmBtn.count()) === 0 || !(await confirmBtn.isVisible().catch(() => false))) {
+    throw new Error('Confirm and Pay button not found on payment confirmation page');
   }
-  throw new Error('Confirm and Pay button not found on payment confirmation page');
+
+  console.log('   🖱️  Clicking "Confirm and Pay" — waiting for payment popup…');
+  await confirmBtn.scrollIntoViewIfNeeded().catch(() => {});
+
+  // Capture the popup window that opens when Confirm and Pay is clicked
+  const [popup] = await Promise.all([
+    page.context().waitForEvent('page', { timeout: 30_000 }),
+    confirmBtn.click(),
+  ]);
+
+  await popup.waitForLoadState('domcontentloaded', { timeout: CONFIG.navTimeout }).catch(() => {});
+  await popup.waitForTimeout(1500);
+  console.log(`   🪟  Popup opened: ${popup.url()}`);
+
+  return popup;
 }
 
-// ─── STEP 11: Verify payment method page ─────────────────────────────────────
-async function verifyPaymentMethodPage(page: Page): Promise<void> {
-  const appeared = await poll(page, async () => {
-    const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
-    return /online banking|credit card|debit card|fpx|payment method|select.*payment/i.test(t);
+// ─── STEP 11: Select payment method in popup ──────────────────────────────────
+async function selectPaymentMethod(popup: Page): Promise<void> {
+  // Wait for payment options to appear
+  const appeared = await poll(popup, async () => {
+    const t = (await popup.locator('body').innerText().catch(() => '')).toLowerCase();
+    return /online banking|credit|debit|fpx|payment method|select.*payment/i.test(t);
   }, CONFIG.stepTimeout);
 
-  const bodyText = await page.locator('body').innerText().catch(() => '');
-  console.log(`   🏦 Payment method page snippet:\n${bodyText.slice(0, 400)}`);
+  const bodyText = await popup.locator('body').innerText().catch(() => '');
+  console.log(`   🏦 Payment popup snippet:\n${bodyText.slice(0, 500)}`);
 
-  if (!appeared) throw new Error('Payment method page did not appear — check if flow stopped earlier');
+  if (!appeared) throw new Error('Payment method options did not appear in popup');
+
+  // Try to click "Online Banking" option — could be button, div, a, or li
+  const onlineBankingSelectors = [
+    'button:has-text("Online Banking")',
+    'button:has-text("Online Payment")',
+    'button:has-text("FPX")',
+    '[role="button"]:has-text("Online Banking")',
+    'div:has-text("Online Banking")',
+    'a:has-text("Online Banking")',
+    'li:has-text("Online Banking")',
+  ];
+
+  for (const sel of onlineBankingSelectors) {
+    const el = popup.locator(sel).first();
+    if ((await el.count()) > 0 && await el.isVisible().catch(() => false)) {
+      console.log(`   🖱️  Clicking "Online Banking" via "${sel}"`);
+      await el.scrollIntoViewIfNeeded().catch(() => {});
+      await el.click();
+      await popup.waitForTimeout(1000);
+      return;
+    }
+  }
+
+  // Log what IS visible to help diagnose if none matched
+  console.log('   ⚠️  Could not find Online Banking option — logging all buttons/links in popup:');
+  const allBtns = popup.locator('button, [role="button"], a');
+  for (let i = 0; i < Math.min(await allBtns.count(), 10); i++) {
+    const txt = (await allBtns.nth(i).textContent().catch(() => '')).trim();
+    if (txt) console.log(`      [${i}] "${txt}"`);
+  }
+  throw new Error('Could not find Online Banking / FPX payment option in popup');
 }
 
 // ─── MAIN TEST ───────────────────────────────────────────────────────────────
@@ -660,23 +703,24 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     }
 
     // ── 11. Payment confirmation ─────────────────────────────────
+    let paymentPopup: Page | null = null;
     try {
       await page.waitForTimeout(1000);
-      await handlePaymentConfirmation(page);
-      await page.waitForTimeout(1000);
-      recordStep('Payment confirmation', 'PASS', 'Clicked Confirm and Pay');
+      paymentPopup = await handlePaymentConfirmation(page) as unknown as Page;
+      recordStep('Payment confirmation', 'PASS', 'Filled details, clicked Confirm and Pay, popup opened');
     } catch (e) {
       recordStep('Payment confirmation', 'FAIL', String(e));
       writeResult('FAIL', String(e));
       return;
     }
 
-    // ── 12. Payment method page ──────────────────────────────────
+    // ── 12. Select payment method in popup ───────────────────────
     try {
-      await verifyPaymentMethodPage(page);
-      recordStep('Payment method page', 'PASS', 'Online banking / card options visible');
+      if (!paymentPopup) throw new Error('Payment popup was not captured');
+      await selectPaymentMethod(paymentPopup);
+      recordStep('Select payment method', 'PASS', 'Clicked Online Banking in payment popup');
     } catch (e) {
-      recordStep('Payment method page', 'FAIL', String(e));
+      recordStep('Select payment method', 'FAIL', String(e));
       writeResult('FAIL', String(e));
       return;
     }
