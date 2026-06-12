@@ -11,7 +11,7 @@ import { ConfirmationPage }   from './pages/ConfirmationPage';
 import { PaymentTypePage }    from './pages/PaymentTypePage';
 import { BankLoginPage }      from './pages/BankLoginPage';
 import { BankTACPage }        from './pages/BankTACPage';
-import { PaymentSuccessPage } from './pages/PaymentSuccessPage';
+import { PaymentSuccessPage, VerificationData } from './pages/PaymentSuccessPage';
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 const CONFIG = {
@@ -59,11 +59,13 @@ interface RegressionResult {
   completedAt:         string;
   durationMs:          number;
   verificationReport?: string;
+  verificationData?:   VerificationData;
 }
 
 const steps: StepResult[] = [];
-let startedAt = new Date().toISOString();
+let startedAt          = new Date().toISOString();
 let verificationReport = '';
+let verificationData: VerificationData | undefined;
 
 function recordStep(name: string, status: StepResult['status'], message: string) {
   const s: StepResult = { name, status, message, timestamp: new Date().toISOString() };
@@ -83,8 +85,9 @@ function writeResult(overallStatus: 'PASS' | 'FAIL', errorMessage?: string) {
     errorMessage,
     startedAt,
     completedAt,
-    durationMs:         new Date(completedAt).getTime() - new Date(startedAt).getTime(),
-    verificationReport: verificationReport || undefined,
+    durationMs:          new Date(completedAt).getTime() - new Date(startedAt).getTime(),
+    verificationReport:  verificationReport  || undefined,
+    verificationData:    verificationData    || undefined,
   };
   const outPath = path.resolve(CONFIG.outputFile);
   fs.writeFileSync(outPath, JSON.stringify(result, null, 2));
@@ -324,15 +327,17 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       await successPage.waitForPage(CONFIG.sitePassword);
       const successData = await successPage.extractData();
       const pdfText = await successPage.downloadReceiptPDF(path.dirname(path.resolve(CONFIG.outputFile)));
-      verificationReport = successPage.generateVerificationReport(
+      const vr = successPage.generateVerificationReport(
         confirmationPage.getCapturedData(),
         successData,
         CONFIG.vehicleNumber,
         CONFIG.targetInsurer,
         pdfText,
       );
-      const allRows = verificationReport.match(/[✅❌]/g) || [];
-      const fail = allRows.filter(x => x === '❌').length;
+      verificationReport = vr.report;
+      verificationData   = vr.data;
+      const allDataRows = [...vr.data.vehicleRows, ...vr.data.ownerRows, ...vr.data.pricingRows];
+      const fail = allDataRows.filter(r => !r.match).length;
       recordStep(
         'Payment verification',
         fail === 0 ? 'PASS' : 'FAIL',

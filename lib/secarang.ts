@@ -102,6 +102,29 @@ export interface RegressionStepResult {
   timestamp: string;
 }
 
+export interface VerificationRow {
+  label:     string;
+  confirmed: string;
+  success:   string;
+  match:     boolean;
+}
+
+export interface PdfVerificationRow {
+  label:    string;
+  expected: string;
+  found:    boolean;
+}
+
+export interface VerificationData {
+  receiptNo:     string;
+  purchaseDate:  string;
+  paymentMethod: string;
+  vehicleRows:   VerificationRow[];
+  ownerRows:     VerificationRow[];
+  pricingRows:   VerificationRow[];
+  pdfRows?:      PdfVerificationRow[];
+}
+
 export interface RegressionResult {
   vehicleNumber:       string;
   icNumber:            string;
@@ -115,6 +138,7 @@ export interface RegressionResult {
   log?:                string;
   stopped?:            boolean;
   verificationReport?: string;
+  verificationData?:   VerificationData;
 }
 
 const REGRESSION_TEST_KEY = "secarang_regression_test_result";

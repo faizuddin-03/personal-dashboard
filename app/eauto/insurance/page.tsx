@@ -15,6 +15,7 @@ import {
   loadSecarangSaved, clearSecarangSaved,
   loadRegressionSecarangSaved, clearRegressionSecarangSaved,
   RegressionResult, RegressionStepResult,
+  VerificationData, VerificationRow, PdfVerificationRow,
   loadRegressionTestResult, saveRegressionTestResult, clearRegressionTestResult,
   buildVehicles,
 } from "@/lib/secarang";
@@ -1774,6 +1775,152 @@ function SecarangTab({ mode = "standard" }: { mode?: "standard" | "regression" }
 // ── Regression Tab ────────────────────────────────────────────────────────────
 const SC_REGRESSION_ENV_PRESETS = SC_ENV_PRESETS;
 
+// ── Verification Report UI ────────────────────────────────────────────────────
+function VerifTable({ title, rows }: { title: string; rows: VerificationRow[] }) {
+  return (
+    <div>
+      <div className="px-5 py-2.5 border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-900/60">
+        {title}
+      </div>
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="border-b border-slate-800/80 bg-slate-950/40">
+            <th className="text-left px-5 py-2 text-slate-500 font-medium w-[22%]">Field</th>
+            <th className="text-left px-4 py-2 text-slate-500 font-medium w-[35%]">Confirmation Page</th>
+            <th className="text-left px-4 py-2 text-slate-500 font-medium w-[35%]">Success Page</th>
+            <th className="text-center px-3 py-2 text-slate-500 font-medium w-[8%]">Match</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-800/50">
+          {rows.map((row, i) => (
+            <tr key={i} className={clsx(
+              "transition-colors",
+              !row.match && "bg-red-950/20",
+              row.match  && "hover:bg-slate-800/30",
+            )}>
+              <td className="px-5 py-2.5 text-slate-400 font-medium">{row.label}</td>
+              <td className={clsx("px-4 py-2.5 font-mono", row.confirmed ? "text-slate-300" : "text-slate-600")}>
+                {row.confirmed || "—"}
+              </td>
+              <td className={clsx("px-4 py-2.5 font-mono", row.success ? "text-slate-300" : "text-slate-600")}>
+                {row.success || "—"}
+              </td>
+              <td className="px-3 py-2.5 text-center">
+                {row.match
+                  ? <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-900/60 border border-green-700/50 text-green-400 text-[10px] font-bold">✓</span>
+                  : <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-900/60 border border-red-700/50 text-red-400 text-[10px] font-bold">✗</span>
+                }
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function PdfTable({ rows }: { rows: PdfVerificationRow[] }) {
+  return (
+    <div>
+      <div className="px-5 py-2.5 border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-900/60">
+        PDF Receipt Verification
+      </div>
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="border-b border-slate-800/80 bg-slate-950/40">
+            <th className="text-left px-5 py-2 text-slate-500 font-medium w-[28%]">Field</th>
+            <th className="text-left px-4 py-2 text-slate-500 font-medium w-[64%]">Expected Value</th>
+            <th className="text-center px-3 py-2 text-slate-500 font-medium w-[8%]">Found</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-800/50">
+          {rows.map((row, i) => (
+            <tr key={i} className={clsx(
+              "transition-colors",
+              !row.found && "bg-red-950/20",
+              row.found  && "hover:bg-slate-800/30",
+            )}>
+              <td className="px-5 py-2.5 text-slate-400 font-medium">{row.label}</td>
+              <td className={clsx("px-4 py-2.5 font-mono", row.expected ? "text-slate-300" : "text-slate-600")}>
+                {row.expected || "—"}
+              </td>
+              <td className="px-3 py-2.5 text-center">
+                {row.found
+                  ? <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-900/60 border border-green-700/50 text-green-400 text-[10px] font-bold">✓</span>
+                  : <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-900/60 border border-red-700/50 text-red-400 text-[10px] font-bold">✗</span>
+                }
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function VerificationReportUI({ data }: { data: VerificationData }) {
+  const allRows = [...data.vehicleRows, ...data.ownerRows, ...data.pricingRows];
+  const passed  = allRows.filter(r => r.match).length;
+  const failed  = allRows.filter(r => !r.match).length;
+
+  const pdfPassed = (data.pdfRows ?? []).filter(r => r.found).length;
+  const pdfFailed = (data.pdfRows ?? []).filter(r => !r.found).length;
+
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+
+      {/* Header */}
+      <div className="px-5 py-3 border-b border-slate-800 flex items-center justify-between gap-4">
+        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Verification Report</span>
+        <span className={clsx(
+          "text-[11px] font-semibold px-3 py-1 rounded-full border",
+          failed === 0
+            ? "bg-green-900/40 border-green-700/50 text-green-300"
+            : "bg-red-900/40 border-red-700/50 text-red-300"
+        )}>
+          {failed === 0 ? `✓ All ${allRows.length} checks passed` : `✗ ${failed} mismatch(es) · ${passed}/${allRows.length} passed`}
+        </span>
+      </div>
+
+      {/* Metadata row */}
+      <div className="px-5 py-3.5 border-b border-slate-800 grid grid-cols-3 gap-4 bg-slate-950/40">
+        {[
+          { label: "Receipt No",     value: data.receiptNo },
+          { label: "Purchase Date",  value: data.purchaseDate },
+          { label: "Payment Method", value: data.paymentMethod },
+        ].map(item => (
+          <div key={item.label}>
+            <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">{item.label}</div>
+            <div className="text-sm text-slate-200 font-mono">{item.value || "—"}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Comparison tables */}
+      <div className="divide-y divide-slate-800">
+        <VerifTable title="Vehicle Details" rows={data.vehicleRows} />
+        <VerifTable title="Owner Details"   rows={data.ownerRows}   />
+        <VerifTable title="Pricing"         rows={data.pricingRows} />
+
+        {data.pdfRows && data.pdfRows.length > 0 && (
+          <>
+            <PdfTable rows={data.pdfRows} />
+            <div className="px-5 py-2.5 bg-slate-950/30 text-xs">
+              <span className={clsx(
+                "font-semibold",
+                pdfFailed === 0 ? "text-green-400" : "text-red-400",
+              )}>
+                PDF: {pdfFailed === 0 ? `✓ All ${data.pdfRows.length} fields found` : `✗ ${pdfFailed} field(s) missing`}
+              </span>
+              <span className="text-slate-600 ml-2">({pdfPassed}/{data.pdfRows.length})</span>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function StepBadge({ status }: { status: RegressionStepResult["status"] }) {
   if (status === "PASS") return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-900/50 border border-green-700/60 text-green-300">
@@ -2090,15 +2237,18 @@ function RegressionTab() {
             </div>
           </div>
 
-          {/* Verification report */}
-          {result.verificationReport && (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wide">
-                Verification Report
+          {/* Verification report — structured table if available, raw text as fallback */}
+          {result.verificationData
+            ? <VerificationReportUI data={result.verificationData} />
+            : result.verificationReport && (
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  Verification Report
+                </div>
+                <pre className="px-5 py-4 text-xs font-mono text-slate-300 whitespace-pre overflow-x-auto leading-relaxed">{result.verificationReport}</pre>
               </div>
-              <pre className="px-5 py-4 text-xs font-mono text-slate-300 whitespace-pre overflow-x-auto leading-relaxed">{result.verificationReport}</pre>
-            </div>
-          )}
+            )
+          }
 
           {/* Error message (script-level) */}
           {result.errorMessage && (

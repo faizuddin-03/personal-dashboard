@@ -5,13 +5,29 @@ import pdfParse from 'pdf-parse';
 import { BasePage } from './BasePage';
 import { SiteGatePage } from './SiteGatePage';
 
+// ── Local types (mirrored in lib/secarang.ts for the UI) ─────────────────────
+export interface VerificationRow {
+  label: string; confirmed: string; success: string; match: boolean;
+}
+export interface PdfVerificationRow {
+  label: string; expected: string; found: boolean;
+}
+export interface VerificationData {
+  receiptNo:     string;
+  purchaseDate:  string;
+  paymentMethod: string;
+  vehicleRows:   VerificationRow[];
+  ownerRows:     VerificationRow[];
+  pricingRows:   VerificationRow[];
+  pdfRows?:      PdfVerificationRow[];
+}
+
 export class PaymentSuccessPage extends BasePage {
   constructor(page: Page) {
     super(page);
   }
 
   async waitForPage(sitePassword: string): Promise<void> {
-    // May show site password gate again after returning to main window
     const siteGate = new SiteGatePage(this.page);
     await siteGate.passSiteGate(sitePassword);
 
@@ -35,7 +51,6 @@ export class PaymentSuccessPage extends BasePage {
       if (!container) return result;
 
       container.querySelectorAll('.row.mb-2, .row.mb-4, .row.mb-5').forEach(row => {
-        // Pattern 1: .text-muted label
         const muted = row.querySelector('.text-muted');
         if (muted) {
           const label = (muted.textContent || '').replace(/\s+/g, ' ').trim();
@@ -50,7 +65,6 @@ export class PaymentSuccessPage extends BasePage {
           if (value) result[label] = value;
           return;
         }
-        // Pattern 2: .col label + .col-auto value (pricing)
         const cols = Array.from(row.querySelectorAll('.col, .col-auto'));
         if (cols.length >= 2) {
           const label = (cols[0].textContent || '').replace(/\s+/g, ' ').trim();
@@ -106,10 +120,7 @@ export class PaymentSuccessPage extends BasePage {
     vehicleNumber: string,
     targetInsurer: string,
     pdfText: string | null,
-  ): string {
-    // ── Build comparison ──────────────────────────────────────────────────────
-    interface Row { label: string; confirmed: string; success: string; match: boolean; }
-
+  ): { report: string; data: VerificationData } {
     const receiptNo     = successData['Receipt No']     || '';
     const purchaseDate  = successData['Purchase Date']  || '';
     const paymentMethod = successData['Payment Method'] || '';
@@ -117,22 +128,21 @@ export class PaymentSuccessPage extends BasePage {
     function normalise(s: string) { return s.replace(/\s+/g, ' ').trim().toUpperCase(); }
     function normPhone(s: string) { return s.replace(/^\+?60/, '').replace(/\s/g, ''); }
 
-    function cmp(label: string, confirmKey: string, successKey: string, phoneMode = false): Row {
-      const c = confirmData[confirmKey] || '';
-      const s = successData[successKey] || '';
+    function cmp(label: string, confirmKey: string, successKey: string, phoneMode = false): VerificationRow {
+      const confirmed = confirmData[confirmKey] || '';
+      const success   = successData[successKey] || '';
       let match: boolean;
       if (phoneMode) {
-        match = normPhone(normalise(c)) === normPhone(normalise(s));
+        match = normPhone(normalise(confirmed)) === normPhone(normalise(success));
       } else {
-        // Name may be truncated on success page — check if success contains first two words
-        const cWords = normalise(c).split(' ');
-        match = normalise(s) === normalise(c) ||
-                (cWords.length > 2 && normalise(s).includes(cWords.slice(0, 2).join(' ')));
+        const cWords = normalise(confirmed).split(' ');
+        match = normalise(success) === normalise(confirmed) ||
+                (cWords.length > 2 && normalise(success).includes(cWords.slice(0, 2).join(' ')));
       }
-      return { label, confirmed: c, success: s, match };
+      return { label, confirmed, success, match };
     }
 
-    const vehicleRows: Row[] = [
+    const vehicleRows: VerificationRow[] = [
       cmp('Plate No',     'Plate No',     'Plate No'),
       cmp('Model',        'Model',        'Model'),
       cmp('Year',         'Year',         'Year'),
@@ -142,14 +152,14 @@ export class PaymentSuccessPage extends BasePage {
       cmp('cc',           'cc',           'cc'),
     ];
 
-    const ownerRows: Row[] = [
+    const ownerRows: VerificationRow[] = [
       cmp('Full Name',        'Full Name',        'Full Name'),
       cmp('IC No',            'IC No',            'IC No'),
       cmp('Email',            'Email',            'Email'),
       cmp('Mobile Phone No.', 'Mobile Phone No.', 'Mobile Phone No.', true),
     ];
 
-    const pricingRows: Row[] = [
+    const pricingRows: VerificationRow[] = [
       cmp('Basic Premium',     'Basic Premium',     'Basic Premium'),
       cmp('Premium After NCD', 'Premium After NCD', 'Premium After NCD'),
       cmp('Gross Premium',     'Gross Premium',     'Gross Premium'),
@@ -158,18 +168,17 @@ export class PaymentSuccessPage extends BasePage {
       cmp('Total Premium',     'Total Premium',     'Total Premium'),
     ];
 
-    // ── Format table ──────────────────────────────────────────────────────────
+    // ── ASCII text report ─────────────────────────────────────────────────────
     const W = { f: 22, v: 28, ok: 4 };
-    const pad  = (s: string, n: number) => s.length > n ? s.slice(0, n - 1) + '…' : s.padEnd(n);
+    const pad      = (s: string, n: number) => s.length > n ? s.slice(0, n - 1) + '…' : s.padEnd(n);
     const divider  = `├${'─'.repeat(W.f + 2)}┼${'─'.repeat(W.v + 2)}┼${'─'.repeat(W.v + 2)}┼${'─'.repeat(W.ok + 2)}┤`;
     const topLine  = `┌${'─'.repeat(W.f + 2)}┬${'─'.repeat(W.v + 2)}┬${'─'.repeat(W.v + 2)}┬${'─'.repeat(W.ok + 2)}┐`;
     const botLine  = `└${'─'.repeat(W.f + 2)}┴${'─'.repeat(W.v + 2)}┴${'─'.repeat(W.v + 2)}┴${'─'.repeat(W.ok + 2)}┘`;
     const heading  = `│ ${pad('Field', W.f)} │ ${pad('Confirmation Page', W.v)} │ ${pad('Success Page', W.v)} │ ${'OK'.padEnd(W.ok)} │`;
-
-    const fmtRow = (r: Row) =>
+    const fmtRow   = (r: VerificationRow) =>
       `│ ${pad(r.label, W.f)} │ ${pad(r.confirmed, W.v)} │ ${pad(r.success, W.v)} │ ${r.match ? '✅  ' : '❌  '} │`;
 
-    const section = (title: string, rows: Row[]) => [
+    const section = (title: string, rows: VerificationRow[]) => [
       `  ${title}`,
       `  ${topLine}`,
       `  ${heading}`,
@@ -182,7 +191,7 @@ export class PaymentSuccessPage extends BasePage {
     const allRows = [...vehicleRows, ...ownerRows, ...pricingRows];
     const passed  = allRows.filter(r => r.match).length;
     const failed  = allRows.filter(r => !r.match).length;
-    const hr = '  ' + '━'.repeat(W.f + W.v * 2 + 16);
+    const hr      = '  ' + '━'.repeat(W.f + W.v * 2 + 16);
 
     const report = [
       '',
@@ -194,9 +203,9 @@ export class PaymentSuccessPage extends BasePage {
       `  Vehicle : ${vehicleNumber}  |  Insurer : ${targetInsurer}`,
       hr,
       '',
-      section('VEHICLE DETAILS',  vehicleRows),
-      section('OWNER DETAILS',    ownerRows),
-      section('PRICING',          pricingRows),
+      section('VEHICLE DETAILS', vehicleRows),
+      section('OWNER DETAILS',   ownerRows),
+      section('PRICING',         pricingRows),
       `  RESULT  : ${failed === 0 ? '✅  ALL CHECKS PASSED' : `❌  ${failed} MISMATCH(ES) FOUND`}  (${passed} / ${allRows.length})`,
       hr,
       '',
@@ -204,45 +213,55 @@ export class PaymentSuccessPage extends BasePage {
 
     console.log(report);
 
-    // ── PDF receipt check ─────────────────────────────────────────────────────
+    // ── PDF check ─────────────────────────────────────────────────────────────
     let fullReport = report;
+    let pdfRows: PdfVerificationRow[] | undefined;
+
     if (pdfText) {
-      const pdfReport = this._comparePDFWithSuccess(pdfText, successData, vehicleNumber);
+      const { report: pdfReport, rows } = this._comparePDFWithSuccess(pdfText, successData, vehicleNumber);
       console.log(pdfReport);
       fullReport += pdfReport;
+      pdfRows = rows;
     }
 
-    return fullReport;
+    const data: VerificationData = {
+      receiptNo,
+      purchaseDate,
+      paymentMethod,
+      vehicleRows,
+      ownerRows,
+      pricingRows,
+      pdfRows,
+    };
+
+    return { report: fullReport, data };
   }
 
   private _comparePDFWithSuccess(
     pdfText: string,
     successData: Record<string, string>,
     vehicleNumber: string,
-  ): string {
-    // Normalise: collapse whitespace, uppercase
-    const norm = (s: string) => s.replace(/\s+/g, ' ').trim().toUpperCase();
+  ): { report: string; rows: PdfVerificationRow[] } {
+    const norm    = (s: string) => s.replace(/\s+/g, ' ').trim().toUpperCase();
     const pdfNorm = norm(pdfText);
 
-    interface PdfRow { label: string; expected: string; found: boolean; }
-
-    const checks: PdfRow[] = [
-      { label: 'Receipt No',       expected: successData['Receipt No']       || '' },
-      { label: 'Plate No',         expected: successData['Plate No']         || vehicleNumber },
-      { label: 'Model',            expected: successData['Model']            || '' },
-      { label: 'Full Name',        expected: successData['Full Name']        || '' },
-      { label: 'IC No',            expected: successData['IC No']            || '' },
-      { label: 'Email',            expected: successData['Email']            || '' },
-      { label: 'Total Premium',    expected: successData['Total Premium']    || '' },
-      { label: 'Basic Premium',    expected: successData['Basic Premium']    || '' },
-      { label: 'Gross Premium',    expected: successData['Gross Premium']    || '' },
-      { label: 'Stamp Duty',       expected: successData['Stamp Duty']       || '' },
+    const rows: PdfVerificationRow[] = [
+      { label: 'Receipt No',    expected: successData['Receipt No']    || '' },
+      { label: 'Plate No',      expected: successData['Plate No']      || vehicleNumber },
+      { label: 'Model',         expected: successData['Model']         || '' },
+      { label: 'Full Name',     expected: successData['Full Name']     || '' },
+      { label: 'IC No',         expected: successData['IC No']         || '' },
+      { label: 'Email',         expected: successData['Email']         || '' },
+      { label: 'Total Premium', expected: successData['Total Premium'] || '' },
+      { label: 'Basic Premium', expected: successData['Basic Premium'] || '' },
+      { label: 'Gross Premium', expected: successData['Gross Premium'] || '' },
+      { label: 'Stamp Duty',    expected: successData['Stamp Duty']    || '' },
     ].map(c => ({ ...c, found: !!c.expected && pdfNorm.includes(norm(c.expected)) }));
 
-    const passed = checks.filter(c => c.found).length;
-    const failed = checks.filter(c => !c.found).length;
+    const passed = rows.filter(r => r.found).length;
+    const failed = rows.filter(r => !r.found).length;
 
-    const W = { f: 22, v: 30 };
+    const W   = { f: 22, v: 30 };
     const pad = (s: string, n: number) => s.length > n ? s.slice(0, n - 1) + '…' : s.padEnd(n);
     const top = `┌${'─'.repeat(W.f + 2)}┬${'─'.repeat(W.v + 2)}┬──────┐`;
     const bot = `└${'─'.repeat(W.f + 2)}┴${'─'.repeat(W.v + 2)}┴──────┘`;
@@ -250,11 +269,7 @@ export class PaymentSuccessPage extends BasePage {
     const hdr = `│ ${pad('Field', W.f)} │ ${pad('Expected Value', W.v)} │ In PDF │`;
     const hr  = '  ' + '━'.repeat(W.f + W.v + 16);
 
-    const rows = checks.map(c =>
-      `  │ ${pad(c.label, W.f)} │ ${pad(c.expected, W.v)} │ ${c.found ? '✅    ' : '❌    '} │`
-    );
-
-    return [
+    const report = [
       '',
       hr,
       '  PDF RECEIPT VERIFICATION',
@@ -262,12 +277,14 @@ export class PaymentSuccessPage extends BasePage {
       `  ${top}`,
       `  ${hdr}`,
       `  ${div}`,
-      ...rows,
+      ...rows.map(r => `  │ ${pad(r.label, W.f)} │ ${pad(r.expected, W.v)} │ ${r.found ? '✅    ' : '❌    '} │`),
       `  ${bot}`,
       '',
-      `  RESULT  : ${failed === 0 ? '✅  ALL FIELDS FOUND IN PDF' : `❌  ${failed} FIELD(S) NOT FOUND`}  (${passed} / ${checks.length})`,
+      `  RESULT  : ${failed === 0 ? '✅  ALL FIELDS FOUND IN PDF' : `❌  ${failed} FIELD(S) NOT FOUND`}  (${passed} / ${rows.length})`,
       hr,
       '',
     ].join('\n');
+
+    return { report, rows };
   }
 }
