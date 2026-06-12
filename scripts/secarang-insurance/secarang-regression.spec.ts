@@ -523,47 +523,40 @@ async function handlePaymentConfirmation(page: Page): Promise<Page> {
 
 // ─── STEP 11: Select payment method in popup ──────────────────────────────────
 async function selectPaymentMethod(popup: Page): Promise<void> {
-  // Wait for payment options to appear
-  const appeared = await poll(popup, async () => {
-    const t = (await popup.locator('body').innerText().catch(() => '')).toLowerCase();
-    return /online banking|credit|debit|fpx|payment method|select.*payment/i.test(t);
-  }, CONFIG.stepTimeout);
+  // Wait for payment option cards to appear
+  const appeared = await poll(popup, async () =>
+    (await popup.locator('input[formcontrolname="paymentType"]').count()) > 0,
+    CONFIG.stepTimeout,
+  );
 
   const bodyText = await popup.locator('body').innerText().catch(() => '');
   console.log(`   🏦 Payment popup snippet:\n${bodyText.slice(0, 500)}`);
 
   if (!appeared) throw new Error('Payment method options did not appear in popup');
 
-  // Try to click "Online Banking" option — could be button, div, a, or li
-  const onlineBankingSelectors = [
-    'button:has-text("Online Banking")',
-    'button:has-text("Online Payment")',
-    'button:has-text("FPX")',
-    '[role="button"]:has-text("Online Banking")',
-    'div:has-text("Online Banking")',
-    'a:has-text("Online Banking")',
-    'li:has-text("Online Banking")',
-  ];
-
-  for (const sel of onlineBankingSelectors) {
-    const el = popup.locator(sel).first();
-    if ((await el.count()) > 0 && await el.isVisible().catch(() => false)) {
-      console.log(`   🖱️  Clicking "Online Banking" via "${sel}"`);
-      await el.scrollIntoViewIfNeeded().catch(() => {});
-      await el.click();
+  // Payment type uses hidden radio buttons (d-none) inside <label> cards.
+  // Click the label that contains "Online Banking" / "FPX" / "Online Payment" text.
+  const keywords = ['Online Banking', 'FPX', 'Online Payment', 'Internet Banking'];
+  for (const kw of keywords) {
+    const label = popup.locator('label').filter({ hasText: kw }).first();
+    if ((await label.count()) > 0 && await label.isVisible().catch(() => false)) {
+      console.log(`   🖱️  Selecting payment type: "${kw}"`);
+      await label.scrollIntoViewIfNeeded().catch(() => {});
+      await label.click();
       await popup.waitForTimeout(1000);
       return;
     }
   }
 
-  // Log what IS visible to help diagnose if none matched
-  console.log('   ⚠️  Could not find Online Banking option — logging all buttons/links in popup:');
-  const allBtns = popup.locator('button, [role="button"], a');
-  for (let i = 0; i < Math.min(await allBtns.count(), 10); i++) {
-    const txt = (await allBtns.nth(i).textContent().catch(() => '')).trim();
+  // Log all label texts to diagnose if keywords didn't match
+  const allLabels = popup.locator('label');
+  const labelCount = await allLabels.count();
+  console.log(`   ⚠️  No matching label found — ${labelCount} label(s) in popup:`);
+  for (let i = 0; i < Math.min(labelCount, 10); i++) {
+    const txt = (await allLabels.nth(i).textContent().catch(() => '')).replace(/\s+/g, ' ').trim();
     if (txt) console.log(`      [${i}] "${txt}"`);
   }
-  throw new Error('Could not find Online Banking / FPX payment option in popup');
+  throw new Error('Could not find Online Banking payment option in popup');
 }
 
 // ─── MAIN TEST ───────────────────────────────────────────────────────────────
