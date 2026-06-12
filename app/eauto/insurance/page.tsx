@@ -301,7 +301,7 @@ export default function InsurancePage() {
   const isErrorRow = (r: InsuranceRow) => r.status === "ERROR" || r.status === "NO_VEHICLE_INFO";
   const afterSearch = filteredRows.filter(r => {
     if (searchLower) {
-      const hit = [r.vehicleNumber, r.make, r.model, r.insurer, r.errorMessage]
+      const hit = [r.vehicleNumber, r.make, r.model, r.insurer, r.errorMessage ?? ""]
         .some(f => f.toLowerCase().includes(searchLower));
       if (!hit) return false;
     }
@@ -1188,10 +1188,11 @@ function SecarangTab({ mode = "standard" }: { mode?: "standard" | "regression" }
   // Filtering
   const searchLower = search.trim().toLowerCase();
   const filteredRows = useMemo(() => rows.filter(r => {
-    if (r.insurer && !shownInsurers.has(r.insurer)) return false;
+    // Empty shownInsurers means "no selection yet" — show all rather than none
+    if (r.insurer && shownInsurers.size > 0 && !shownInsurers.has(r.insurer)) return false;
     if (searchLower) {
       const hit = [r.vehicleNumber, r.make, r.model, r.insurer, r.variant]
-        .some(f => f.toLowerCase().includes(searchLower));
+        .some(f => (f ?? "").toLowerCase().includes(searchLower));
       if (!hit) return false;
     }
     if (availFilter !== "all") {

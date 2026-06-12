@@ -5,22 +5,23 @@ import * as fs from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
 
 // ── Running-process registry ──────────────────────────────────
-// Module-level so a separate DELETE request can find and stop the
-// child spawned by an in-flight POST. Single dev-server instance, so
-// one run at a time is the expected case.
 let currentChild: ChildProcess | null = null;
 let stopRequested = false;
+// Force-resolve the in-flight POST promise when Stop is called, so the
+// UI never gets stuck at "Stopping…" even if the browser process won't die.
+let forceResolveRun: ((r: { code: number; output: string }) => void) | null = null;
+let runOutputBuffer = "";
 
-// Kill the whole process tree (npx → playwright → browsers). On Windows
-// use taskkill /T; on POSIX kill the detached process group via -pid.
 function killProcessTree(child: ChildProcess) {
   if (!child.pid) return;
   if (process.platform === "win32") {
     try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); }
     catch { /* ignore */ }
   } else {
-    try { process.kill(-child.pid, "SIGTERM"); }
-    catch { try { child.kill("SIGTERM"); } catch { /* ignore */ } }
+    // SIGKILL cannot be caught or ignored — more reliable than SIGTERM for
+    // Playwright + headless-Chrome trees that may swallow SIGTERM.
+    try { process.kill(-child.pid, "SIGKILL"); }
+    catch { try { child.kill("SIGKILL"); } catch { /* ignore */ } }
   }
 }
 
@@ -156,12 +157,13 @@ export async function POST(req: NextRequest) {
 
   // Run Playwright test
   stopRequested = false;
+  runOutputBuffer = "";
 
   const result = await new Promise<{ code: number; output: string }>((resolve) => {
+    forceResolveRun = resolve;
     const child = spawn("npx", ["playwright", "test", "--project=insurance-checker"], {
       cwd: SCRIPT_DIR,
       shell: true,
-      // Detach on POSIX so the whole tree shares a process group we can kill.
       detached: process.platform !== "win32",
       env: {
         ...process.env,
@@ -178,10 +180,10 @@ export async function POST(req: NextRequest) {
       resolve({ code: 1, output: "Timed out after 30 minutes." });
     }, TIMEOUT_MS);
 
-    child.stdout.on("data", (d: Buffer) => { output += d.toString(); });
-    child.stderr.on("data", (d: Buffer) => { output += d.toString(); });
-    child.on("close",  (code) => { clearTimeout(timer); currentChild = null; resolve({ code: code ?? 1, output }); });
-    child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; resolve({ code: 1, output: err.message }); });
+    child.stdout.on("data", (d: Buffer) => { output += d.toString(); runOutputBuffer = output; });
+    child.stderr.on("data", (d: Buffer) => { output += d.toString(); runOutputBuffer = output; });
+    child.on("close",  (code) => { clearTimeout(timer); currentChild = null; forceResolveRun = null; resolve({ code: code ?? 1, output }); });
+    child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; forceResolveRun = null; resolve({ code: 1, output: err.message }); });
   });
 
   // If the run was stopped, return whatever partial results were flushed to disk
@@ -200,12 +202,23 @@ export async function POST(req: NextRequest) {
 }
 
 // ── Stop the in-flight run ────────────────────────────────────
-// The pending POST resolves on its own once the child is killed and
-// returns the partial results flushed to disk.
 export async function DELETE() {
   if (currentChild) {
     stopRequested = true;
     killProcessTree(currentChild);
+
+    // If the child process doesn't close within 5 s (e.g. Chrome ignores SIGKILL
+    // in a restricted container), force-resolve the pending POST so the UI exits
+    // "Stopping…" and shows whatever partial results were flushed to disk.
+    const savedResolve = forceResolveRun;
+    const savedOutput  = runOutputBuffer;
+    setTimeout(() => {
+      if (savedResolve) {
+        if (forceResolveRun === savedResolve) forceResolveRun = null;
+        savedResolve({ code: 1, output: savedOutput });
+      }
+    }, 5000);
+
     return NextResponse.json({ stopped: true });
   }
   return NextResponse.json({ stopped: false, message: "No run in progress." });

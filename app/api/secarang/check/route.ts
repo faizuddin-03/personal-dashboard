@@ -15,14 +15,16 @@ const DEFAULT_IC = "030217141005";
 // ── Running-process registry ──────────────────────────────────
 let currentChild: ChildProcess | null = null;
 let stopRequested = false;
+let forceResolveRun: ((r: { code: number; output: string }) => void) | null = null;
+let runOutputBuffer = "";
 
 function killProcessTree(child: ChildProcess) {
   if (!child.pid) return;
   if (process.platform === "win32") {
     try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); } catch { /* ignore */ }
   } else {
-    try { process.kill(-child.pid, "SIGTERM"); }
-    catch { try { child.kill("SIGTERM"); } catch { /* ignore */ } }
+    try { process.kill(-child.pid, "SIGKILL"); }
+    catch { try { child.kill("SIGKILL"); } catch { /* ignore */ } }
   }
 }
 
@@ -167,8 +169,10 @@ export async function POST(req: NextRequest) {
   if (fs.existsSync(OUTPUT_XLSX)) fs.unlinkSync(OUTPUT_XLSX);
 
   stopRequested = false;
+  runOutputBuffer = "";
 
   const result = await new Promise<{ code: number; output: string }>((resolve) => {
+    forceResolveRun = resolve;
     const child = spawn("npx", ["playwright", "test", "--project=secarang-checker"], {
       cwd: SCRIPT_DIR,
       shell: true,
@@ -186,10 +190,10 @@ export async function POST(req: NextRequest) {
     currentChild = child;
     let output = "";
     const timer = setTimeout(() => { killProcessTree(child); resolve({ code: 1, output: "Timed out after 30 minutes." }); }, TIMEOUT_MS);
-    child.stdout.on("data", (d: Buffer) => { output += d.toString(); });
-    child.stderr.on("data", (d: Buffer) => { output += d.toString(); });
-    child.on("close",  (code) => { clearTimeout(timer); currentChild = null; resolve({ code: code ?? 1, output }); });
-    child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; resolve({ code: 1, output: err.message }); });
+    child.stdout.on("data", (d: Buffer) => { output += d.toString(); runOutputBuffer = output; });
+    child.stderr.on("data", (d: Buffer) => { output += d.toString(); runOutputBuffer = output; });
+    child.on("close",  (code) => { clearTimeout(timer); currentChild = null; forceResolveRun = null; resolve({ code: code ?? 1, output }); });
+    child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; forceResolveRun = null; resolve({ code: 1, output: err.message }); });
   });
 
   if (stopRequested) {
@@ -210,6 +214,16 @@ export async function DELETE() {
   if (currentChild) {
     stopRequested = true;
     killProcessTree(currentChild);
+
+    const savedResolve = forceResolveRun;
+    const savedOutput  = runOutputBuffer;
+    setTimeout(() => {
+      if (savedResolve) {
+        if (forceResolveRun === savedResolve) forceResolveRun = null;
+        savedResolve({ code: 1, output: savedOutput });
+      }
+    }, 5000);
+
     return NextResponse.json({ stopped: true });
   }
   return NextResponse.json({ stopped: false, message: "No run in progress." });

@@ -11,14 +11,16 @@ const TIMEOUT_MS   = 10 * 60 * 1000; // 10 min
 
 let currentChild: ChildProcess | null = null;
 let stopRequested = false;
+let forceResolveRun: ((r: { code: number; output: string }) => void) | null = null;
+let runOutputBuffer = "";
 
 function killTree(child: ChildProcess) {
   if (!child.pid) return;
   if (process.platform === "win32") {
     try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); } catch { /* ignore */ }
   } else {
-    try { process.kill(-child.pid, "SIGTERM"); }
-    catch { try { child.kill("SIGTERM"); } catch { /* ignore */ } }
+    try { process.kill(-child.pid, "SIGKILL"); }
+    catch { try { child.kill("SIGKILL"); } catch { /* ignore */ } }
   }
 }
 
@@ -63,8 +65,10 @@ export async function POST(req: NextRequest) {
   try { fs.writeFileSync(LOG_FILE, ""); } catch { /* ignore */ }
 
   stopRequested = false;
+  runOutputBuffer = "";
 
   const result = await new Promise<{ code: number; output: string }>((resolve) => {
+    forceResolveRun = resolve;
     const child = spawn(
       "npx", ["playwright", "test", "--project=secarang-regression"],
       {
@@ -93,15 +97,17 @@ export async function POST(req: NextRequest) {
     child.stdout?.on("data", (d: Buffer) => {
       const chunk = d.toString();
       output += chunk;
+      runOutputBuffer = output;
       try { fs.appendFileSync(LOG_FILE, chunk); } catch { /* ignore */ }
     });
     child.stderr?.on("data", (d: Buffer) => {
       const chunk = d.toString();
       output += chunk;
+      runOutputBuffer = output;
       try { fs.appendFileSync(LOG_FILE, chunk); } catch { /* ignore */ }
     });
-    child.on("close",  (code) => { clearTimeout(timer); currentChild = null; resolve({ code: code ?? 1, output }); });
-    child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; resolve({ code: 1, output: err.message }); });
+    child.on("close",  (code) => { clearTimeout(timer); currentChild = null; forceResolveRun = null; resolve({ code: code ?? 1, output }); });
+    child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; forceResolveRun = null; resolve({ code: 1, output: err.message }); });
   });
 
   if (stopRequested) {
@@ -132,6 +138,16 @@ export async function DELETE() {
   if (currentChild) {
     stopRequested = true;
     killTree(currentChild);
+
+    const savedResolve = forceResolveRun;
+    const savedOutput  = runOutputBuffer;
+    setTimeout(() => {
+      if (savedResolve) {
+        if (forceResolveRun === savedResolve) forceResolveRun = null;
+        savedResolve({ code: 1, output: savedOutput });
+      }
+    }, 5000);
+
     return NextResponse.json({ stopped: true });
   }
   return NextResponse.json({ stopped: false, message: "No run in progress." });
