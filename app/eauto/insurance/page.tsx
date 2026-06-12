@@ -407,10 +407,10 @@ export default function InsurancePage() {
         </button>
       </div>
 
-      {activeTab === "tab2" && <SecarangTab mode="standard" />}
-      {activeTab === "tab3" && <RegressionTab />}
+      <div className={clsx(activeTab !== "tab2" && "hidden")}><SecarangTab mode="standard" /></div>
+      <div className={clsx(activeTab !== "tab3" && "hidden")}><RegressionTab /></div>
 
-      {activeTab === "check" && <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
+      <div className={clsx(activeTab !== "check" && "hidden", "px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5")}>
 
         {/* ── Input panel ── */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
@@ -972,7 +972,7 @@ export default function InsurancePage() {
             </div>
           </div>
         )}
-      </div>}
+      </div>
     </div>
   );
 }
