@@ -1862,8 +1862,8 @@ function RegressionTab() {
     clearRegressionTestResult();
   }
 
-  const passed = result?.steps.filter(s => s.status === "PASS").length ?? 0;
-  const failed = result?.steps.filter(s => s.status === "FAIL").length ?? 0;
+  const passed = (result?.steps ?? []).filter(s => s.status === "PASS").length;
+  const failed = (result?.steps ?? []).filter(s => s.status === "FAIL").length;
   const duration = result ? (result.durationMs / 1000).toFixed(1) : null;
 
   return (

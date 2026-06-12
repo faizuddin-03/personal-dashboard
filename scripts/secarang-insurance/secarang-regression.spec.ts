@@ -300,19 +300,43 @@ async function selectInsurer(page: Page, cardSel: string, insurerName: string): 
 // ─── STEP 8: Add-ons page ─────────────────────────────────────────────────────
 // Default add-ons are already selected — just continue.
 async function handleAddOns(page: Page): Promise<void> {
-  // Wait for the add-ons page to load (look for characteristic content)
+  // Wait for add-on cards or a continue button to appear
   const appeared = await poll(page, async () => {
+    if ((await page.locator('.addon-card').count()) > 0) return true;
     const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
-    return /add.?on|extra cover|optional cover|additional benefit/i.test(t)
-      || (await page.locator('button:has-text("Continue"), button:has-text("Proceed"), button:has-text("Next")').count()) > 0;
+    return /add.?on|extra cover|optional cover|additional benefit/i.test(t);
   }, CONFIG.stepTimeout);
 
   if (!appeared) throw new Error('Add-ons page did not load');
 
-  const bodySnip = (await page.locator('body').innerText().catch(() => '')).slice(0, 400);
-  console.log(`   📝 Add-ons page snippet:\n${bodySnip}`);
+  // Click [ADD] on the first 3 visible add-on cards (or fewer if less available)
+  const allCards = page.locator('.addon-card');
+  const totalCards = await allCards.count();
 
-  // Click the continue / next button (prefer bottom-of-page / last instance)
+  const visibleCards: number[] = [];
+  for (let i = 0; i < totalCards; i++) {
+    if (await allCards.nth(i).isVisible().catch(() => false)) visibleCards.push(i);
+  }
+
+  const toAdd = Math.min(visibleCards.length, 3);
+  console.log(`   📦 ${visibleCards.length} visible add-on card(s) — clicking ADD on first ${toAdd}`);
+
+  for (let n = 0; n < toAdd; n++) {
+    const card = allCards.nth(visibleCards[n]);
+    const addBtn = card.locator('button:has-text("ADD"), button:has-text("Add")').first();
+    if ((await addBtn.count()) > 0 && await addBtn.isVisible().catch(() => false)) {
+      console.log(`   ➕ ADD on card ${n + 1}`);
+      await addBtn.scrollIntoViewIfNeeded().catch(() => {});
+      await addBtn.click();
+      await page.waitForTimeout(300);
+    } else {
+      console.log(`   ⚠️  No ADD button on card ${n + 1} — skipping`);
+    }
+  }
+
+  await page.waitForTimeout(400);
+
+  // Click Continue / Proceed
   for (const label of ['Continue', 'Proceed', 'Next', 'Add to Cart', 'Confirm']) {
     const btn = page.locator(`button:has-text("${label}")`).last();
     if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
