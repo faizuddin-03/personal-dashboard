@@ -324,21 +324,31 @@ async function handleAddOns(page: Page): Promise<void> {
     if (await allCards.nth(i).isVisible().catch(() => false)) visibleCards.push(i);
   }
 
-  const toAdd = Math.min(visibleCards.length, 2);
-  console.log(`   📦 ${visibleCards.length} visible add-on card(s) — clicking ADD on first ${toAdd}`);
+  console.log(`   📦 ${visibleCards.length} visible add-on card(s) — targeting first 2 simple ones`);
 
-  for (let n = 0; n < toAdd; n++) {
+  let added = 0;
+  for (let n = 0; n < visibleCards.length && added < 2; n++) {
     const card = allCards.nth(visibleCards[n]);
+
+    // Skip cards with sub-options (dropdowns/selects inside) — they need extra interaction
+    const hasSubOptions = (await card.locator('select, input[type="radio"], input[type="number"]').count()) > 0;
+    if (hasSubOptions) {
+      console.log(`   ⏭️  Card ${n + 1} has sub-options — skipping`);
+      continue;
+    }
+
     const addBtn = card.locator('button:has-text("ADD"), button:has-text("Add")').first();
     if ((await addBtn.count()) > 0 && await addBtn.isVisible().catch(() => false)) {
       console.log(`   ➕ ADD on card ${n + 1}`);
       await addBtn.scrollIntoViewIfNeeded().catch(() => {});
       await addBtn.click();
       await page.waitForTimeout(1000);
+      added++;
     } else {
       console.log(`   ⚠️  No ADD button on card ${n + 1} — skipping`);
     }
   }
+  console.log(`   ✅ Added ${added} add-on(s)`);
 
   await page.waitForTimeout(1000);
 
