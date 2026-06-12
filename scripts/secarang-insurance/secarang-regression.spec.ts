@@ -1,6 +1,7 @@
 import { test, Page } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import pdfParse from 'pdf-parse';
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 const CONFIG = {
@@ -757,6 +758,89 @@ async function handleOTPAndPay(popup: Page): Promise<void> {
   console.log('   ✅ Popup closed — back on main window');
 }
 
+// ─── PDF download + field extraction ─────────────────────────────────────────
+async function downloadAndParsePDF(page: Page): Promise<string | null> {
+  // Look for a Receipt download button (bi-download icon or text "Receipt")
+  const dlBtn = page.locator('button:has-text("Receipt"), a:has-text("Receipt")').first();
+  if ((await dlBtn.count()) === 0 || !(await dlBtn.isVisible().catch(() => false))) {
+    console.log('   ℹ️  No Receipt download button found — skipping PDF check');
+    return null;
+  }
+
+  console.log('   📥 Downloading receipt PDF…');
+  const [download] = await Promise.all([
+    page.waitForEvent('download', { timeout: 30_000 }),
+    dlBtn.click(),
+  ]);
+
+  const tmpPath = path.join(path.dirname(CONFIG.outputFile), `receipt-${Date.now()}.pdf`);
+  await download.saveAs(tmpPath);
+  console.log(`   💾 PDF saved to: ${tmpPath}`);
+
+  try {
+    const buf = fs.readFileSync(tmpPath);
+    const data = await pdfParse(buf);
+    const text = data.text.replace(/\s+/g, ' ').trim();
+    console.log(`   📄 PDF text (${text.length} chars):\n${text.slice(0, 800)}`);
+    return text;
+  } catch (e) {
+    console.log(`   ⚠️  Failed to parse PDF: ${e}`);
+    return null;
+  }
+}
+
+function comparePDFWithSuccess(pdfText: string, successData: Record<string, string>): string {
+  // Normalise: collapse whitespace, uppercase
+  const norm = (s: string) => s.replace(/\s+/g, ' ').trim().toUpperCase();
+  const pdfNorm = norm(pdfText);
+
+  interface PdfRow { label: string; expected: string; found: boolean; }
+
+  const checks: PdfRow[] = [
+    { label: 'Receipt No',       expected: successData['Receipt No']       || '' },
+    { label: 'Plate No',         expected: successData['Plate No']         || CONFIG.vehicleNumber },
+    { label: 'Model',            expected: successData['Model']            || '' },
+    { label: 'Full Name',        expected: successData['Full Name']        || '' },
+    { label: 'IC No',            expected: successData['IC No']            || '' },
+    { label: 'Email',            expected: successData['Email']            || '' },
+    { label: 'Total Premium',    expected: successData['Total Premium']    || '' },
+    { label: 'Basic Premium',    expected: successData['Basic Premium']    || '' },
+    { label: 'Gross Premium',    expected: successData['Gross Premium']    || '' },
+    { label: 'Stamp Duty',       expected: successData['Stamp Duty']       || '' },
+  ].map(c => ({ ...c, found: !!c.expected && pdfNorm.includes(norm(c.expected)) }));
+
+  const passed = checks.filter(c => c.found).length;
+  const failed = checks.filter(c => !c.found).length;
+
+  const W = { f: 22, v: 30 };
+  const pad = (s: string, n: number) => s.length > n ? s.slice(0, n - 1) + '…' : s.padEnd(n);
+  const top = `┌${'─'.repeat(W.f + 2)}┬${'─'.repeat(W.v + 2)}┬──────┐`;
+  const bot = `└${'─'.repeat(W.f + 2)}┴${'─'.repeat(W.v + 2)}┴──────┘`;
+  const div = `├${'─'.repeat(W.f + 2)}┼${'─'.repeat(W.v + 2)}┼──────┤`;
+  const hdr = `│ ${pad('Field', W.f)} │ ${pad('Expected Value', W.v)} │ In PDF │`;
+  const hr  = '  ' + '━'.repeat(W.f + W.v + 16);
+
+  const rows = checks.map(c =>
+    `  │ ${pad(c.label, W.f)} │ ${pad(c.expected, W.v)} │ ${c.found ? '✅    ' : '❌    '} │`
+  );
+
+  return [
+    '',
+    hr,
+    '  PDF RECEIPT VERIFICATION',
+    hr,
+    `  ${top}`,
+    `  ${hdr}`,
+    `  ${div}`,
+    ...rows,
+    `  ${bot}`,
+    '',
+    `  RESULT  : ${failed === 0 ? '✅  ALL FIELDS FOUND IN PDF' : `❌  ${failed} FIELD(S) NOT FOUND`}  (${passed} / ${checks.length})`,
+    hr,
+    '',
+  ].join('\n');
+}
+
 // ─── STEP 16: Verify payment success + comparison report ─────────────────────
 async function verifyAndReport(page: Page): Promise<string> {
   // May show site password gate again after returning to main window
@@ -908,7 +992,17 @@ async function verifyAndReport(page: Page): Promise<string> {
   ].join('\n');
 
   console.log(report);
-  return report;
+
+  // ── PDF receipt check ────────────────────────────────────────────────────────
+  let fullReport = report;
+  const pdfText = await downloadAndParsePDF(page);
+  if (pdfText) {
+    const pdfReport = comparePDFWithSuccess(pdfText, successData);
+    console.log(pdfReport);
+    fullReport += pdfReport;
+  }
+
+  return fullReport;
 }
 
 // ─── MAIN TEST ───────────────────────────────────────────────────────────────
