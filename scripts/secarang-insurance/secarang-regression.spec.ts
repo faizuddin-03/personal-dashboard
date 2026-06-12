@@ -18,6 +18,10 @@ const CONFIG = {
   addressLine2:   process.env.REGRESSION_ADDR2       || 'Taman Monyet Kutub',
   addressLine3:   process.env.REGRESSION_ADDR3       || 'Shah Alam, Selangor',
   discountCode:   process.env.REGRESSION_DISCOUNT    || 'YEAY7',
+  // Payment gateway
+  targetBank:     process.env.REGRESSION_BANK        || 'fpx_mb2u',   // Maybank
+  bankUsername:   process.env.REGRESSION_BANK_USER   || 'Gaara',
+  bankPassword:   process.env.REGRESSION_BANK_PASS   || 'letmepaywithsand',
   outputFile:     './regression-result.json',
   navTimeout:     90_000,
   stepTimeout:    30_000,
@@ -521,42 +525,203 @@ async function handlePaymentConfirmation(page: Page): Promise<Page> {
   return popup;
 }
 
-// ─── STEP 11: Select payment method in popup ──────────────────────────────────
+// ─── STEP 11: Select FPX + bank in popup ─────────────────────────────────────
 async function selectPaymentMethod(popup: Page): Promise<void> {
-  // Wait for payment option cards to appear
+  // Wait for paymentType radio cards to appear
   const appeared = await poll(popup, async () =>
     (await popup.locator('input[formcontrolname="paymentType"]').count()) > 0,
     CONFIG.stepTimeout,
   );
+  if (!appeared) throw new Error('Payment type options did not appear in popup');
 
-  const bodyText = await popup.locator('body').innerText().catch(() => '');
-  console.log(`   🏦 Payment popup snippet:\n${bodyText.slice(0, 500)}`);
+  // ── 1. Click "FPX Online banking" payment type ──────────────────────────────
+  // Each option is a hidden radio inside a <label> card — click the label.
+  const fpxLabel = popup.locator('label').filter({ hasText: /FPX/i }).first();
+  if ((await fpxLabel.count()) === 0 || !(await fpxLabel.isVisible().catch(() => false))) {
+    throw new Error('FPX Online banking label not found');
+  }
+  console.log('   🖱️  Selecting "FPX Online banking"');
+  await fpxLabel.scrollIntoViewIfNeeded().catch(() => {});
+  await fpxLabel.click();
+  await popup.waitForTimeout(1000);
 
-  if (!appeared) throw new Error('Payment method options did not appear in popup');
+  // ── 2. Wait for bank grid and log all available banks ───────────────────────
+  await poll(popup, async () =>
+    (await popup.locator('input[formcontrolname="bank"]').count()) > 0,
+    10_000,
+  );
 
-  // Payment type uses hidden radio buttons (d-none) inside <label> cards.
-  // Click the label that contains "Online Banking" / "FPX" / "Online Payment" text.
-  const keywords = ['Online Banking', 'FPX', 'Online Payment', 'Internet Banking'];
-  for (const kw of keywords) {
-    const label = popup.locator('label').filter({ hasText: kw }).first();
-    if ((await label.count()) > 0 && await label.isVisible().catch(() => false)) {
-      console.log(`   🖱️  Selecting payment type: "${kw}"`);
-      await label.scrollIntoViewIfNeeded().catch(() => {});
-      await label.click();
+  // Read bank names from img alt attributes — use only the desktop grid (d-md-block)
+  // to avoid duplicates from the responsive grids
+  const bankInputs = popup.locator('.d-md-block input[formcontrolname="bank"]');
+  const bankCount = await bankInputs.count();
+  console.log(`   🏦 ${bankCount} bank option(s) available:`);
+  for (let i = 0; i < bankCount; i++) {
+    const input = bankInputs.nth(i);
+    const value = await input.getAttribute('value').catch(() => '');
+    const img   = input.locator('xpath=ancestor::label//img').first();
+    const alt   = await img.getAttribute('alt').catch(() => '');
+    console.log(`      [${i + 1}] value="${value}" name="${alt}"`);
+  }
+
+  // ── 3. Click the target bank label (first visible one matching the value) ───
+  const bankLabels = popup.locator(`label`).filter({
+    has: popup.locator(`input[formcontrolname="bank"][value="${CONFIG.targetBank}"]`),
+  });
+  let clicked = false;
+  for (let i = 0; i < await bankLabels.count(); i++) {
+    const lbl = bankLabels.nth(i);
+    if (await lbl.isVisible().catch(() => false)) {
+      const alt = await lbl.locator('img').getAttribute('alt').catch(() => CONFIG.targetBank);
+      console.log(`   🖱️  Selecting bank: "${alt}" (${CONFIG.targetBank})`);
+      await lbl.scrollIntoViewIfNeeded().catch(() => {});
+      await lbl.click();
+      await popup.waitForTimeout(1000);
+      clicked = true;
+      break;
+    }
+  }
+  if (!clicked) throw new Error(`Bank "${CONFIG.targetBank}" not found or not visible`);
+
+  // ── 4. Click Proceed / Pay / Submit ─────────────────────────────────────────
+  for (const label of ['Proceed', 'Pay', 'Continue', 'Submit', 'Next']) {
+    const btn = popup.locator(`button:has-text("${label}"), input[type="submit"][value*="${label}" i]`).last();
+    if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+      console.log(`   🖱️  Clicking "${label}"`);
+      await btn.scrollIntoViewIfNeeded().catch(() => {});
+      await btn.click();
       await popup.waitForTimeout(1000);
       return;
     }
   }
+  // No explicit proceed button found — some flows auto-navigate on bank click
+  console.log('   ℹ️  No Proceed button found — assuming auto-navigation after bank selection');
+}
 
-  // Log all label texts to diagnose if keywords didn't match
-  const allLabels = popup.locator('label');
-  const labelCount = await allLabels.count();
-  console.log(`   ⚠️  No matching label found — ${labelCount} label(s) in popup:`);
-  for (let i = 0; i < Math.min(labelCount, 10); i++) {
-    const txt = (await allLabels.nth(i).textContent().catch(() => '')).replace(/\s+/g, ' ').trim();
-    if (txt) console.log(`      [${i}] "${txt}"`);
+// ─── STEP 12: Bank login (may be preceded by site password gate) ─────────────
+async function handleBankLogin(popup: Page): Promise<void> {
+  // The staging gateway sometimes shows the same site password gate
+  await passSiteGate(popup);
+  await popup.waitForTimeout(1000);
+
+  // Wait for a login form (username + password fields)
+  const loginAppeared = await poll(popup, async () =>
+    (await popup.locator('input[type="text"], input[type="email"], input[name*="user" i], input[id*="user" i]').count()) > 0 &&
+    (await popup.locator('input[type="password"]').count()) > 0,
+    CONFIG.stepTimeout,
+  );
+  if (!loginAppeared) throw new Error('Bank login page did not appear');
+
+  // Log what's on the page before filling
+  const snippet = (await popup.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').trim().slice(0, 300);
+  console.log(`   🔑 Bank login page: "${snippet}"`);
+
+  // Fill username
+  const usernameField = popup.locator(
+    'input[name*="user" i], input[id*="user" i], input[placeholder*="user" i], input[type="text"]'
+  ).first();
+  await usernameField.scrollIntoViewIfNeeded().catch(() => {});
+  await usernameField.click();
+  await usernameField.fill(CONFIG.bankUsername);
+  await popup.waitForTimeout(500);
+  console.log(`   ✏️  Username: "${CONFIG.bankUsername}"`);
+
+  // Fill password
+  const passwordField = popup.locator('input[type="password"]').first();
+  await passwordField.scrollIntoViewIfNeeded().catch(() => {});
+  await passwordField.click();
+  await passwordField.fill(CONFIG.bankPassword);
+  await popup.waitForTimeout(500);
+  console.log('   ✏️  Password: [filled]');
+
+  // Click Login / Sign In / Submit
+  for (const label of ['Login', 'Log In', 'Sign In', 'Submit', 'Enter']) {
+    const btn = popup.locator(`button:has-text("${label}"), input[type="submit"][value*="${label}" i]`).first();
+    if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+      console.log(`   🖱️  Clicking "${label}"`);
+      await btn.scrollIntoViewIfNeeded().catch(() => {});
+      await btn.click();
+      await popup.waitForTimeout(1000);
+      return;
+    }
   }
-  throw new Error('Could not find Online Banking payment option in popup');
+  // Fallback: press Enter on password field
+  console.log('   🖱️  No Login button found — pressing Enter on password field');
+  await passwordField.press('Enter');
+  await popup.waitForTimeout(1000);
+}
+
+// ─── STEP 13: Log page options, click Request TAC ────────────────────────────
+async function handleRequestTAC(popup: Page): Promise<void> {
+  await popup.waitForTimeout(1000);
+
+  // Log everything visible on this page
+  const bodyText = (await popup.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+  console.log(`   📋 Post-login page content:\n${bodyText.slice(0, 800)}`);
+
+  // Log all buttons
+  const allBtns = popup.locator('button, input[type="submit"], input[type="button"]');
+  const btnCount = await allBtns.count();
+  console.log(`   🔘 ${btnCount} button(s) on page:`);
+  for (let i = 0; i < btnCount; i++) {
+    const txt = ((await allBtns.nth(i).textContent().catch(() => '')) ||
+                 (await allBtns.nth(i).getAttribute('value').catch(() => '')) || '').replace(/\s+/g, ' ').trim();
+    if (txt) console.log(`      [${i + 1}] "${txt}"`);
+  }
+
+  // Click Request TAC
+  for (const label of ['Request TAC', 'Request OTP', 'Get TAC', 'Get OTP', 'Send TAC', 'TAC']) {
+    const btn = popup.locator(`button:has-text("${label}"), input[value*="${label}" i]`).first();
+    if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+      console.log(`   🖱️  Clicking "${label}"`);
+      await btn.scrollIntoViewIfNeeded().catch(() => {});
+      await btn.click();
+      await popup.waitForTimeout(1500);
+      return;
+    }
+  }
+  throw new Error('Request TAC button not found');
+}
+
+// ─── STEP 14: Read OTP, fill it, click Pay Now ───────────────────────────────
+async function handleOTPAndPay(popup: Page): Promise<void> {
+  // Wait for OTP to appear
+  const otpAppeared = await poll(popup, async () =>
+    (await popup.locator('div.otp, .otp, [class*="otp"]').count()) > 0,
+    CONFIG.stepTimeout,
+  );
+  if (!otpAppeared) throw new Error('OTP/TAC element did not appear');
+
+  const otpEl = popup.locator('div.otp, .otp, [class*="otp"]').first();
+  const otpRaw = await otpEl.textContent().catch(() => '');
+  console.log(`   🔢 OTP element text: "${otpRaw}"`);
+
+  // Extract the 6-digit number
+  const match = otpRaw.match(/\d{6}/);
+  if (!match) throw new Error(`Could not extract 6-digit OTP from: "${otpRaw}"`);
+  const otp = match[0];
+  console.log(`   🔢 Extracted OTP: ${otp}`);
+
+  // Fill OTP input
+  const otpInput = popup.locator('input#otp-input, input[name="otp-input"], input[class*="otp" i]').first();
+  if ((await otpInput.count()) === 0) throw new Error('OTP input field not found');
+  await otpInput.scrollIntoViewIfNeeded().catch(() => {});
+  await otpInput.click();
+  await otpInput.fill(otp);
+  await popup.waitForTimeout(500);
+  console.log(`   ✏️  OTP entered: ${otp}`);
+
+  // Click Pay Now
+  const payBtn = popup.locator('button.pay-btn, button:has-text("Pay Now")').first();
+  if ((await payBtn.count()) === 0) throw new Error('Pay Now button not found');
+  console.log('   🖱️  Clicking "Pay Now"');
+  await payBtn.scrollIntoViewIfNeeded().catch(() => {});
+  await payBtn.click();
+  await popup.waitForTimeout(2000);
+
+  // Log the final page
+  const finalText = (await popup.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+  console.log(`   📋 Post-payment page content:\n${finalText.slice(0, 1000)}`);
 }
 
 // ─── MAIN TEST ───────────────────────────────────────────────────────────────
@@ -707,19 +872,49 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 12. Select payment method in popup ───────────────────────
+    // ── 12. Select FPX + Maybank in popup ───────────────────────
     try {
       if (!paymentPopup) throw new Error('Payment popup was not captured');
       await selectPaymentMethod(paymentPopup);
-      recordStep('Select payment method', 'PASS', 'Clicked Online Banking in payment popup');
+      recordStep('Select payment method', 'PASS', `FPX selected, bank: ${CONFIG.targetBank}`);
     } catch (e) {
       recordStep('Select payment method', 'FAIL', String(e));
       writeResult('FAIL', String(e));
       return;
     }
 
+    // ── 13. Bank login ───────────────────────────────────────────
+    try {
+      await handleBankLogin(paymentPopup!);
+      recordStep('Bank login', 'PASS', `Logged in as ${CONFIG.bankUsername}`);
+    } catch (e) {
+      recordStep('Bank login', 'FAIL', String(e));
+      writeResult('FAIL', String(e));
+      return;
+    }
+
+    // ── 14. Request TAC ──────────────────────────────────────────
+    try {
+      await handleRequestTAC(paymentPopup!);
+      recordStep('Request TAC', 'PASS', 'TAC requested');
+    } catch (e) {
+      recordStep('Request TAC', 'FAIL', String(e));
+      writeResult('FAIL', String(e));
+      return;
+    }
+
+    // ── 15. Enter OTP and Pay Now ────────────────────────────────
+    try {
+      await handleOTPAndPay(paymentPopup!);
+      recordStep('OTP and Pay Now', 'PASS', 'OTP entered and Pay Now clicked');
+    } catch (e) {
+      recordStep('OTP and Pay Now', 'FAIL', String(e));
+      writeResult('FAIL', String(e));
+      return;
+    }
+
     // ── All steps done ───────────────────────────────────────────
     writeResult('PASS');
-    console.log('\n🎉 Regression PASSED — reached payment method selection page');
+    console.log('\n🎉 Regression PASSED — payment submitted');
   });
 });
