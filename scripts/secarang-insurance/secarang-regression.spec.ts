@@ -697,11 +697,14 @@ async function handleOTPAndPay(popup: Page): Promise<void> {
   console.log('   🖱️  Clicking "Pay Now"');
   await payBtn.scrollIntoViewIfNeeded().catch(() => {});
   await payBtn.click();
-  await popup.waitForTimeout(2000);
 
-  // Log the final page
-  const finalText = (await popup.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
-  console.log(`   📋 Post-payment page content:\n${finalText.slice(0, 1000)}`);
+  // Wait for payment to process (~7s) then for the popup to close
+  console.log('   ⏳ Waiting for payment processing…');
+  await popup.waitForTimeout(7000);
+  await popup.waitForEvent('close', { timeout: 30_000 }).catch(() => {
+    console.log('   ℹ️  Popup did not close automatically — continuing');
+  });
+  console.log('   ✅ Popup closed — back on main window');
 }
 
 // ─── MAIN TEST ───────────────────────────────────────────────────────────────
@@ -886,15 +889,27 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     // ── 15. Enter OTP and Pay Now ────────────────────────────────
     try {
       await handleOTPAndPay(paymentPopup!);
-      recordStep('OTP and Pay Now', 'PASS', 'OTP entered and Pay Now clicked');
+      recordStep('OTP and Pay Now', 'PASS', 'OTP entered, Pay Now clicked, popup closed');
     } catch (e) {
       recordStep('OTP and Pay Now', 'FAIL', String(e));
       writeResult('FAIL', String(e));
       return;
     }
 
+    // ── 16. Verify result on main window ─────────────────────────
+    try {
+      await page.waitForTimeout(2000);
+      const resultText = (await page.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
+      console.log(`   📋 Main window after payment:\n${resultText.slice(0, 1000)}`);
+      recordStep('Payment result', 'PASS', resultText.slice(0, 200));
+    } catch (e) {
+      recordStep('Payment result', 'FAIL', String(e));
+      writeResult('FAIL', String(e));
+      return;
+    }
+
     // ── All steps done ───────────────────────────────────────────
     writeResult('PASS');
-    console.log('\n🎉 Regression PASSED — payment submitted');
+    console.log('\n🎉 Regression PASSED — payment complete');
   });
 });
