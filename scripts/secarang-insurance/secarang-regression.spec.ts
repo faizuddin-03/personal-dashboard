@@ -103,13 +103,13 @@ async function passSiteGate(page: Page): Promise<void> {
 async function selectCarPrivate(page: Page): Promise<void> {
   // Car
   const car = page.locator('button:has-text("Car"), [role="radio"]:has-text("Car"), label:has-text("Car")').first();
-  if ((await car.count()) > 0) { await car.click(); await page.waitForTimeout(300); }
+  if ((await car.count()) > 0) { await car.click(); await page.waitForTimeout(1000); }
 
   // Private
   for (const label of ['Private Car', 'Private', 'Individual']) {
     const ctrl = page.locator(`button:has-text("${label}"), label:has-text("${label}")`).first();
     if ((await ctrl.count()) > 0 && await ctrl.isVisible().catch(() => false)) {
-      await ctrl.click(); await page.waitForTimeout(300); return;
+      await ctrl.click(); await page.waitForTimeout(1000); return;
     }
   }
   const radio = page.locator('input[type="radio"]').first();
@@ -129,8 +129,8 @@ async function fillForm(page: Page): Promise<void> {
     await el.fill('');
     await el.fill(values[i]);
     console.log(`   ✏️  input[${i}] = "${await el.inputValue()}"`);
+    await page.waitForTimeout(1000);
   }
-  await page.waitForTimeout(300);
 }
 
 // ─── STEP 4: Submit form ──────────────────────────────────────────────────────
@@ -298,18 +298,24 @@ async function selectInsurer(page: Page, cardSel: string, insurerName: string): 
 }
 
 // ─── STEP 8: Add-ons page ─────────────────────────────────────────────────────
-// Default add-ons are already selected — just continue.
 async function handleAddOns(page: Page): Promise<void> {
-  // Wait for add-on cards or a continue button to appear
-  const appeared = await poll(page, async () => {
-    if ((await page.locator('.addon-card').count()) > 0) return true;
+  // Step 1: wait for page text to confirm we're on the add-ons page
+  const textAppeared = await poll(page, async () => {
     const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
     return /add.?on|extra cover|optional cover|additional benefit/i.test(t);
   }, CONFIG.stepTimeout);
 
-  if (!appeared) throw new Error('Add-ons page did not load');
+  if (!textAppeared) throw new Error('Add-ons page did not load');
 
-  // Click [ADD] on the first 3 visible add-on cards (or fewer if less available)
+  // Step 2: wait an extra second for Angular to render the card components
+  await page.waitForTimeout(1000);
+
+  // Step 3: now wait specifically for .addon-card elements to appear
+  const cardsAppeared = await poll(page, async () =>
+    (await page.locator('.addon-card').count()) > 0, 10_000);
+
+  if (!cardsAppeared) throw new Error('Add-on cards did not render after page load');
+
   const allCards = page.locator('.addon-card');
   const totalCards = await allCards.count();
 
@@ -470,6 +476,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
 
     // ── 2. Select Car / Private ──────────────────────────────────
     try {
+      await page.waitForTimeout(1000);
       await selectCarPrivate(page);
       recordStep('Select Car / Private', 'PASS', 'Car and Private selected');
     } catch (e) {
@@ -480,6 +487,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
 
     // ── 3. Fill form ─────────────────────────────────────────────
     try {
+      await page.waitForTimeout(1000);
       await fillForm(page);
       recordStep('Fill form', 'PASS', `VN=${CONFIG.vehicleNumber} IC=${CONFIG.icNumber}`);
     } catch (e) {
@@ -490,7 +498,9 @@ test.describe('Secarang Regression – Zurich E2E', () => {
 
     // ── 4. Submit ────────────────────────────────────────────────
     try {
+      await page.waitForTimeout(1000);
       await submitForm(page);
+      await page.waitForTimeout(1000);
       recordStep('Submit form', 'PASS', 'Form submitted');
     } catch (e) {
       recordStep('Submit form', 'FAIL', String(e));
@@ -578,8 +588,9 @@ test.describe('Secarang Regression – Zurich E2E', () => {
 
     // ── 11. Payment confirmation ─────────────────────────────────
     try {
+      await page.waitForTimeout(1000);
       await handlePaymentConfirmation(page);
-      await page.waitForTimeout(CONFIG.waitAfterClick);
+      await page.waitForTimeout(1000);
       recordStep('Payment confirmation', 'PASS', 'Clicked Confirm and Pay');
     } catch (e) {
       recordStep('Payment confirmation', 'FAIL', String(e));
