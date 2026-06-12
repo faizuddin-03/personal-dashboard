@@ -46,6 +46,13 @@ export interface SecarangRow {
   errorMessage:    string;
 }
 
+// IC format has 2 dashes: "030217-14-1005" → strip → "030217141005"
+// SSM format has 1 dash:  "1234567-X"      → keep  → "1234567-X"
+function normalizeIdNumber(raw: string): string {
+  const s = raw.replace(/\s/g, "");
+  return (s.match(/-/g) ?? []).length >= 2 ? s.replace(/-/g, "") : s;
+}
+
 // ── Write input xlsx ──────────────────────────────────────────
 function writeInputExcel(
   vehicles: VehicleEntry[],
@@ -54,12 +61,12 @@ function writeInputExcel(
   vehicleType: string,
   ownerType: string,
 ) {
-  const fallbackIc = icNumber.trim() || DEFAULT_IC;
+  const fallbackIc = icNumber.trim() ? normalizeIdNumber(icNumber.trim()) : DEFAULT_IC;
   const rows = [
     ["Vehicle Number", "IC Number", "Postcode", "Notes", "Owner Type", "Vehicle Type"],
     ...vehicles.map(v => [
       v.vehicleNumber,
-      (v.icNumber?.replace(/[-\s]/g, '') || fallbackIc),
+      v.icNumber ? normalizeIdNumber(v.icNumber) : fallbackIc,
       postcode,
       "",
       v.ownerType || ownerType,
@@ -182,7 +189,7 @@ export async function POST(req: NextRequest) {
         ...(baseUrl      && { SECARANG_BASE_URL:       baseUrl }),
         ...(sitePassword && { SECARANG_SITE_PASSWORD:  sitePassword }),
         ...(postcode     && { SECARANG_POSTCODE:        postcode }),
-        ...(icNumber     && { SECARANG_IC:              icNumber.replace(/[-\s]/g, '') }),
+        ...(icNumber     && { SECARANG_IC:              normalizeIdNumber(icNumber) }),
         ...(concurrency  && { SECARANG_CONCURRENCY:     String(concurrency) }),
         ...(checkVehicleDetails === false && { SECARANG_CHECK_VEHICLE_DETAILS: "0" }),
       },

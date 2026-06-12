@@ -76,9 +76,17 @@ function formatCoverType(v: string) {
   return stripped;
 }
 
-// One vehicle per line. Each line may carry an optional IC number after the
-// plate, separated by a tab (Excel paste), comma, or spaces. IC dashes/spaces
-// are stripped so "030217-14-1005" and "030217141005" normalise the same.
+// Normalise an IC or SSM number typed / pasted by the user.
+// IC  format has 2 dashes: "030217-14-1005" → strip all → "030217141005"
+// SSM format has 1 dash:   "1234567-X"      → keep dash → "1234567-X"
+// Whitespace is always removed regardless.
+function normalizeIdNumber(raw: string): string {
+  const s = raw.replace(/\s/g, "");
+  return (s.match(/-/g) ?? []).length >= 2 ? s.replace(/-/g, "") : s;
+}
+
+// One vehicle per line. Each line may carry an optional IC/SSM number after
+// the plate, separated by a tab (Excel paste), comma, or spaces.
 function parseVehicles(raw: string): VehicleEntry[] {
   return raw
     .split(/\r?\n/)
@@ -87,7 +95,7 @@ function parseVehicles(raw: string): VehicleEntry[] {
     .map(line => {
       const parts = line.split(/[\s,]+/).filter(Boolean);
       const vehicleNumber = (parts[0] ?? "").toUpperCase();
-      const icNumber = (parts[1] ?? "").replace(/[-\s]/g, "") || undefined;
+      const icNumber = parts[1] ? normalizeIdNumber(parts[1]) : undefined;
       return { vehicleNumber, icNumber };
     })
     .filter(v => v.vehicleNumber);
@@ -1039,7 +1047,7 @@ function parseScVehicles(raw: string): ScVehicleEntry[] {
     .map(line => {
       const parts = line.split(/[\s,]+/).filter(Boolean);
       const vehicleNumber = (parts[0] ?? "").toUpperCase();
-      const icNumber = (parts[1] ?? "").replace(/[-\s]/g, "") || undefined;
+      const icNumber = parts[1] ? normalizeIdNumber(parts[1]) : undefined;
       return { vehicleNumber, icNumber };
     })
     .filter(v => v.vehicleNumber);

@@ -41,14 +41,21 @@ const DEFAULT_IC = "030217141005";
 interface VehicleEntry { vehicleNumber: string; icNumber?: string }
 
 // ── Write input-vehicles.xlsx for the Playwright script to read ──
-// Per-vehicle IC wins; otherwise the global IC field; otherwise DEFAULT_IC.
+// IC format has 2 dashes: "030217-14-1005" → strip → "030217141005"
+// SSM format has 1 dash:  "1234567-X"      → keep  → "1234567-X"
+function normalizeIdNumber(raw: string): string {
+  const s = raw.replace(/\s/g, "");
+  return (s.match(/-/g) ?? []).length >= 2 ? s.replace(/-/g, "") : s;
+}
+
+// Per-vehicle IC/SSM wins; otherwise the global field; otherwise DEFAULT_IC.
 function writeInputExcel(vehicles: VehicleEntry[], icNumber: string, postcode: string, vehicleCategory: string) {
-  const fallbackIc = icNumber.trim() || DEFAULT_IC;
+  const fallbackIc = icNumber.trim() ? normalizeIdNumber(icNumber.trim()) : DEFAULT_IC;
   const rows = [
     ["Vehicle Number", "IC Number", "Postcode", "Vehicle Category"],
     ...vehicles.map(v => [
       v.vehicleNumber,
-      (v.icNumber?.trim() || fallbackIc),
+      v.icNumber ? normalizeIdNumber(v.icNumber) : fallbackIc,
       postcode,
       vehicleCategory,
     ]),
