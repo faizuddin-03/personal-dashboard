@@ -2018,7 +2018,7 @@ function RegressionTab() {
               <div className="text-sm text-slate-400 space-y-0.5">
                 <div>{result.vehicleNumber} → {result.targetInsurer}</div>
                 <div className="text-xs text-slate-500">
-                  {passed} / {result.steps.length} steps passed
+                  {passed} / {(result.steps ?? []).length} steps passed
                   {duration && <> · {duration}s</>}
                   {result.completedAt && <> · {new Date(result.completedAt).toLocaleString()}</>}
                 </div>
@@ -2035,7 +2035,7 @@ function RegressionTab() {
               Steps
             </div>
             <div className="divide-y divide-slate-800">
-              {result.steps.map((step, i) => (
+              {(result.steps ?? []).map((step, i) => (
                 <div key={i} className={clsx(
                   "flex items-start gap-3 px-5 py-3.5",
                   step.status === "FAIL" && "bg-red-950/20",
