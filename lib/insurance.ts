@@ -11,6 +11,8 @@ export interface InsuranceRow {
   allowPurchase:  string;
   referRiskCode:  string;
   totalPrice:     string;
+  status:         string;   // "SUCCESS" | "ERROR" | "NO_VEHICLE_INFO" | ""
+  errorMessage:   string;
 }
 
 // A vehicle to check, with an optional per-vehicle IC number.

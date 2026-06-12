@@ -65,28 +65,55 @@ interface InsuranceRow {
   engineCC: string; transmission: string; variant: string;
   insurer: string; coverType: string; allowPurchase: string;
   referRiskCode: string; totalPrice: string;
+  status: string; errorMessage: string;
 }
 
 function readOutputExcel(): InsuranceRow[] {
   if (!fs.existsSync(OUTPUT_XLSX)) return [];
   const wb = XLSX.read(fs.readFileSync(OUTPUT_XLSX));
+
+  // Successful rows from the Summary sheet
+  const rows: InsuranceRow[] = [];
   const ws = wb.Sheets["Summary"];
-  if (!ws) return [];
-  const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
-  return raw.map(r => ({
-    vehicleNumber:  String(r["Vehicle Number"]  ?? ""),
-    make:           String(r["Make"]            ?? ""),
-    model:          String(r["Model"]           ?? ""),
-    mfgYear:        String(r["Mfg Year"]        ?? ""),
-    engineCC:       String(r["Engine CC"]       ?? ""),
-    transmission:   String(r["Transmission"]    ?? ""),
-    variant:        String(r["Variant"]         ?? ""),
-    insurer:        String(r["Insurer"]         ?? ""),
-    coverType:      String(r["Cover Type"]      ?? ""),
-    allowPurchase:  String(r["Allow Purchase"]  ?? ""),
-    referRiskCode:  String(r["Refer Risk Code"] ?? ""),
-    totalPrice:     String(r["Total Price"]     ?? ""),
-  }));
+  if (ws) {
+    const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
+    for (const r of raw) {
+      rows.push({
+        vehicleNumber:  String(r["Vehicle Number"]  ?? ""),
+        make:           String(r["Make"]            ?? ""),
+        model:          String(r["Model"]           ?? ""),
+        mfgYear:        String(r["Mfg Year"]        ?? ""),
+        engineCC:       String(r["Engine CC"]       ?? ""),
+        transmission:   String(r["Transmission"]    ?? ""),
+        variant:        String(r["Variant"]         ?? ""),
+        insurer:        String(r["Insurer"]         ?? ""),
+        coverType:      String(r["Cover Type"]      ?? ""),
+        allowPurchase:  String(r["Allow Purchase"]  ?? ""),
+        referRiskCode:  String(r["Refer Risk Code"] ?? ""),
+        totalPrice:     String(r["Total Price"]     ?? ""),
+        status:         "SUCCESS",
+        errorMessage:   "",
+      });
+    }
+  }
+
+  // Error / skipped rows from the Skipped Vehicles sheet
+  const sk = wb.Sheets["Skipped Vehicles"];
+  if (sk) {
+    const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(sk, { defval: "" });
+    for (const r of raw) {
+      rows.push({
+        vehicleNumber: String(r["Vehicle Number"] ?? ""),
+        make: "", model: "", mfgYear: "", engineCC: "", transmission: "",
+        variant: "", insurer: "", coverType: "", allowPurchase: "",
+        referRiskCode: "", totalPrice: "",
+        status:       String(r["Status"] ?? "ERROR"),
+        errorMessage: String(r["Reason"] ?? ""),
+      });
+    }
+  }
+
+  return rows;
 }
 
 // ── Route handler ─────────────────────────────────────────────

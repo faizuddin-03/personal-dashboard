@@ -296,14 +296,16 @@ export default function InsurancePage() {
   const filteredRows = rows.filter(r => !r.insurer || shownInsurers.has(r.insurer));
 
   // Search + allowPurchase filter
+  // Error rows bypass the allowPurchase filter (they have no purchase data) but still respect search
   const searchLower = search.trim().toLowerCase();
+  const isErrorRow = (r: InsuranceRow) => r.status === "ERROR" || r.status === "NO_VEHICLE_INFO";
   const afterSearch = filteredRows.filter(r => {
     if (searchLower) {
-      const hit = [r.vehicleNumber, r.make, r.model, r.insurer]
+      const hit = [r.vehicleNumber, r.make, r.model, r.insurer, r.errorMessage]
         .some(f => f.toLowerCase().includes(searchLower));
       if (!hit) return false;
     }
-    if (allowFilter !== "all") {
+    if (!isErrorRow(r) && allowFilter !== "all") {
       const v = r.allowPurchase.trim().toLowerCase();
       if (allowFilter === "yes"   && !["yes","y","true","1"].includes(v))          return false;
       if (allowFilter === "no"    && !["no","n","false","0"].includes(v))           return false;
@@ -312,9 +314,11 @@ export default function InsurancePage() {
     return true;
   });
 
-  // Sort
+  // Sort (error rows always sort to the bottom)
   const displayRows = sort.key
     ? [...afterSearch].sort((a, b) => {
+        const aErr = isErrorRow(a), bErr = isErrorRow(b);
+        if (aErr !== bErr) return aErr ? 1 : -1;
         const av = a[sort.key!] ?? "";
         const bv = b[sort.key!] ?? "";
         const cmp = av.localeCompare(bv, undefined, { numeric: true, sensitivity: "base" });
@@ -330,14 +334,17 @@ export default function InsurancePage() {
     );
   }
 
-  // Summary stats over displayRows
-  const statsYes   = displayRows.filter(r => ["yes","y","true","1"].includes(r.allowPurchase.trim().toLowerCase())).length;
-  const statsNo    = displayRows.filter(r => ["no","n","false","0"].includes(r.allowPurchase.trim().toLowerCase())).length;
-  const statsRefer = displayRows.filter(r => r.allowPurchase.trim().toLowerCase().startsWith("refer")).length;
+  // Summary stats over displayRows (error rows counted separately)
+  const statsYes   = displayRows.filter(r => !isErrorRow(r) && ["yes","y","true","1"].includes(r.allowPurchase.trim().toLowerCase())).length;
+  const statsNo    = displayRows.filter(r => !isErrorRow(r) && ["no","n","false","0"].includes(r.allowPurchase.trim().toLowerCase())).length;
+  const statsRefer = displayRows.filter(r => !isErrorRow(r) && r.allowPurchase.trim().toLowerCase().startsWith("refer")).length;
+  const statsError = displayRows.filter(isErrorRow).length;
 
-  const matrix         = buildMatrix(afterSearch);
+  // Matrix only uses successful rows (error rows have no insurer data)
+  const matrixRows     = afterSearch.filter(r => !isErrorRow(r));
+  const matrix         = buildMatrix(matrixRows);
   const matrixVehicles = Array.from(matrix.keys());
-  const matrixInsurers = Array.from(new Set(afterSearch.map(r => r.insurer).filter(Boolean)));
+  const matrixInsurers = Array.from(new Set(matrixRows.map(r => r.insurer).filter(Boolean)));
   // Flat column list — dual insurers expand into two columns
   const matrixCols: MatrixColDef[] = [];
   for (const ins of matrixInsurers) {
@@ -781,11 +788,14 @@ export default function InsurancePage() {
             <span className="px-2 py-0.5 rounded-full bg-green-900/60 text-green-300 border border-green-800 font-semibold">Yes {statsYes}</span>
             <span className="px-2 py-0.5 rounded-full bg-red-900/60 text-red-300 border border-red-800 font-semibold">No {statsNo}</span>
             <span className="px-2 py-0.5 rounded-full bg-yellow-900/60 text-yellow-300 border border-yellow-800 font-semibold">Refer {statsRefer}</span>
+            {statsError > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-orange-900/60 text-orange-300 border border-orange-800 font-semibold">Error {statsError}</span>
+            )}
           </div>
         )}
 
         {/* ── Empty state: filters produced no results ── */}
-        {afterSearch.length === 0 && rows.length > 0 && (
+        {afterSearch.length === 0 && rows.length > 0 && view === "table" && (
           <div className="text-center py-10 text-slate-600 text-sm">
             No rows match your filters — try adjusting the search or filters above.
           </div>
@@ -816,29 +826,52 @@ export default function InsurancePage() {
                 </tr>
               </thead>
               <tbody>
-                {displayRows.map((row, idx) => (
-                  <tr key={idx} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
-                    <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{row.vehicleNumber || "—"}</td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.make || "—"}</td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.model || "—"}</td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.mfgYear || "—"}</td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.engineCC || "—"}</td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.transmission || "—"}</td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.variant || "—"}</td>
-                    <td className="px-3 py-2 text-blue-300 font-medium whitespace-nowrap">{row.insurer || "—"}</td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{formatCoverType(row.coverType)}</td>
-                    <td className="px-3 py-2 whitespace-nowrap"><AllowBadge value={row.allowPurchase} /></td>
-                    <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.referRiskCode || "—"}</td>
-                    <td className="px-3 py-2 text-slate-200 font-medium whitespace-nowrap">{row.totalPrice || "—"}</td>
-                  </tr>
-                ))}
+                {displayRows.map((row, idx) => {
+                  if (isErrorRow(row)) {
+                    const isNoInfo = row.status === "NO_VEHICLE_INFO";
+                    return (
+                      <tr key={idx} className="border-b border-red-900/30 bg-red-950/15">
+                        <td className="px-3 py-2.5 font-mono font-bold text-slate-300 whitespace-nowrap">{row.vehicleNumber || "—"}</td>
+                        <td colSpan={COLUMNS.length - 1} className="px-3 py-2.5">
+                          <div className="flex items-center gap-2.5">
+                            <span className={clsx(
+                              "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap",
+                              isNoInfo
+                                ? "bg-yellow-900/50 border-yellow-700/60 text-yellow-300"
+                                : "bg-red-900/50 border-red-700/60 text-red-300"
+                            )}>
+                              {isNoInfo ? "⚠ No Info" : "✗ Error"}
+                            </span>
+                            <span className="text-sm text-slate-400">{row.errorMessage || "Unknown error"}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                  return (
+                    <tr key={idx} className="border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors">
+                      <td className="px-3 py-2 font-mono font-bold text-slate-200 whitespace-nowrap">{row.vehicleNumber || "—"}</td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.make || "—"}</td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.model || "—"}</td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.mfgYear || "—"}</td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.engineCC || "—"}</td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.transmission || "—"}</td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.variant || "—"}</td>
+                      <td className="px-3 py-2 text-blue-300 font-medium whitespace-nowrap">{row.insurer || "—"}</td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{formatCoverType(row.coverType)}</td>
+                      <td className="px-3 py-2 whitespace-nowrap"><AllowBadge value={row.allowPurchase} /></td>
+                      <td className="px-3 py-2 text-slate-400 whitespace-nowrap">{row.referRiskCode || "—"}</td>
+                      <td className="px-3 py-2 text-slate-200 font-medium whitespace-nowrap">{row.totalPrice || "—"}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
 
         {/* ── Matrix view ── */}
-        {afterSearch.length > 0 && view === "matrix" && (
+        {matrixRows.length > 0 && view === "matrix" && (
           <div className="space-y-6">
             {/* Eligibility grid */}
             <div className="overflow-x-auto rounded-2xl border border-slate-800">
