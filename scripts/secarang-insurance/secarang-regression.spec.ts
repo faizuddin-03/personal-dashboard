@@ -509,15 +509,14 @@ async function handlePaymentConfirmation(page: Page): Promise<Page> {
     throw new Error('Confirm and Pay button not found on payment confirmation page');
   }
 
+  // Register the listener BEFORE clicking so we never miss the event
+  const newPagePromise = page.context().waitForEvent('page', { timeout: 30_000 });
+
   console.log('   🖱️  Clicking "Confirm and Pay" — waiting for payment popup…');
   await confirmBtn.scrollIntoViewIfNeeded().catch(() => {});
+  await confirmBtn.click();
 
-  // Capture the popup window that opens when Confirm and Pay is clicked
-  const [popup] = await Promise.all([
-    page.context().waitForEvent('page', { timeout: 30_000 }),
-    confirmBtn.click(),
-  ]);
-
+  const popup = await newPagePromise;
   await popup.waitForLoadState('domcontentloaded', { timeout: CONFIG.navTimeout }).catch(() => {});
   await popup.waitForTimeout(1500);
   console.log(`   🪟  Popup opened: ${popup.url()}`);
