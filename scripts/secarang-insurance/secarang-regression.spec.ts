@@ -10,6 +10,14 @@ const CONFIG = {
   icNumber:       process.env.REGRESSION_IC          || '730620065847',
   postcode:       process.env.REGRESSION_POSTCODE    || '55000',
   targetInsurer:  process.env.REGRESSION_INSURER     || 'Zurich',
+  // Owner / contact details for payment confirmation page
+  ownerName:      process.env.REGRESSION_NAME        || 'MUHAMMAD FAIZUDDIN BIN BIDI',
+  ownerEmail:     process.env.REGRESSION_EMAIL       || 'faizuddin@modefair.com',
+  ownerPhone:     process.env.REGRESSION_PHONE       || '189812839',
+  addressLine1:   process.env.REGRESSION_ADDR1       || '2505, Arctic Monkeys Road',
+  addressLine2:   process.env.REGRESSION_ADDR2       || 'Taman Monyet Kutub',
+  addressLine3:   process.env.REGRESSION_ADDR3       || 'Shah Alam, Selangor',
+  discountCode:   process.env.REGRESSION_DISCOUNT    || 'YEAY7',
   outputFile:     './regression-result.json',
   navTimeout:     90_000,
   stepTimeout:    30_000,
@@ -432,8 +440,93 @@ async function handlePaymentConfirmation(page: Page): Promise<void> {
     throw new Error(`Payment confirmation page did not load. Page snippet: ${t}`);
   }
 
+  // Extra wait for Angular form fields to render
+  await page.waitForTimeout(1000);
+
   const bodySnip = (await page.locator('body').innerText().catch(() => '')).slice(0, 400);
   console.log(`   💳 Payment confirmation snippet:\n${bodySnip}`);
+
+  // Helper: fill a field identified by its visible label text
+  async function fillByLabel(labelText: string, value: string) {
+    // Try: label element whose text matches → find associated input
+    const label = page.locator(`label`).filter({ hasText: labelText }).first();
+    if ((await label.count()) > 0) {
+      const forAttr = await label.getAttribute('for').catch(() => null);
+      if (forAttr) {
+        const inp = page.locator(`#${CSS.escape(forAttr)}`).first();
+        if ((await inp.count()) > 0) {
+          await inp.scrollIntoViewIfNeeded().catch(() => {});
+          await inp.click();
+          await inp.fill(value);
+          await page.waitForTimeout(500);
+          console.log(`   ✏️  Filled "${labelText}" via label[for]`);
+          return;
+        }
+      }
+      // label wraps the input directly
+      const wrapped = label.locator('input, textarea').first();
+      if ((await wrapped.count()) > 0) {
+        await wrapped.scrollIntoViewIfNeeded().catch(() => {});
+        await wrapped.click();
+        await wrapped.fill(value);
+        await page.waitForTimeout(500);
+        console.log(`   ✏️  Filled "${labelText}" via wrapped input`);
+        return;
+      }
+    }
+    // Fallback: placeholder contains label text
+    const byPlaceholder = page.locator(`input[placeholder*="${labelText}" i], textarea[placeholder*="${labelText}" i]`).first();
+    if ((await byPlaceholder.count()) > 0) {
+      await byPlaceholder.scrollIntoViewIfNeeded().catch(() => {});
+      await byPlaceholder.click();
+      await byPlaceholder.fill(value);
+      await page.waitForTimeout(500);
+      console.log(`   ✏️  Filled "${labelText}" via placeholder`);
+      return;
+    }
+    console.log(`   ⚠️  Could not find field for "${labelText}" — skipping`);
+  }
+
+  // Fill owner details
+  await fillByLabel('Full Name',        CONFIG.ownerName);
+  await fillByLabel('Email',            CONFIG.ownerEmail);
+  await fillByLabel('Mobile Phone No',  CONFIG.ownerPhone);
+
+  // Address fields
+  await fillByLabel('Address Line 1',   CONFIG.addressLine1);
+  await fillByLabel('Address Line 2',   CONFIG.addressLine2);
+  await fillByLabel('Address Line 3',   CONFIG.addressLine3);
+
+  await page.waitForTimeout(1000);
+
+  // Discount code
+  if (CONFIG.discountCode) {
+    // Look for a discount/promo code input
+    const discountInput = page.locator(
+      'input[placeholder*="discount" i], input[placeholder*="promo" i], input[placeholder*="code" i], input[name*="discount" i], input[name*="promo" i]'
+    ).first();
+    if ((await discountInput.count()) > 0) {
+      await discountInput.scrollIntoViewIfNeeded().catch(() => {});
+      await discountInput.click();
+      await discountInput.fill(CONFIG.discountCode);
+      await page.waitForTimeout(500);
+      // Click Apply / Submit button near the discount field
+      for (const label of ['Apply', 'Submit', 'Redeem', 'Use']) {
+        const btn = page.locator(`button:has-text("${label}")`).first();
+        if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+          console.log(`   🏷️  Discount: clicking "${label}"`);
+          await btn.click();
+          await page.waitForTimeout(1000);
+          break;
+        }
+      }
+      console.log(`   🏷️  Discount code "${CONFIG.discountCode}" applied`);
+    } else {
+      console.log(`   ⚠️  Discount code field not found`);
+    }
+  }
+
+  await page.waitForTimeout(1000);
 
   for (const label of ['Confirm and Pay', 'Confirm & Pay', 'Confirm and pay', 'Pay Now', 'Pay', 'Confirm']) {
     const btn = page.locator(`button:has-text("${label}")`).last();
