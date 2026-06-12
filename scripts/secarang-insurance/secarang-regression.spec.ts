@@ -433,7 +433,7 @@ async function handlePostAddOnsPopup(page: Page): Promise<void> {
 }
 
 // ─── STEP 10: Payment confirmation page ──────────────────────────────────────
-async function handlePaymentConfirmation(page: Page): Promise<Page> {
+async function handlePaymentConfirmation(page: Page): Promise<void> {
   const appeared = await poll(page, async () => {
     const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
     return /confirm.*pay|payment detail|order summary|premium|total.*payable/i.test(t);
@@ -509,92 +509,73 @@ async function handlePaymentConfirmation(page: Page): Promise<Page> {
     throw new Error('Confirm and Pay button not found on payment confirmation page');
   }
 
-  // Register the listener BEFORE clicking so we never miss the event
-  const newPagePromise = page.context().waitForEvent('page', { timeout: 30_000 });
-
-  console.log('   🖱️  Clicking "Confirm and Pay" — waiting for payment popup…');
+  console.log('   🖱️  Clicking "Confirm and Pay"');
   await confirmBtn.scrollIntoViewIfNeeded().catch(() => {});
   await confirmBtn.click();
-
-  const popup = await newPagePromise;
-  await popup.waitForLoadState('domcontentloaded', { timeout: CONFIG.navTimeout }).catch(() => {});
-  await popup.waitForTimeout(1500);
-  console.log(`   🪟  Popup opened: ${popup.url()}`);
-
-  return popup;
 }
 
 // ─── STEP 11: Select FPX + bank in popup ─────────────────────────────────────
-async function selectPaymentMethod(popup: Page): Promise<void> {
+async function selectPaymentMethod(page: Page): Promise<Page> {
   // Wait for paymentType radio cards to appear
-  const appeared = await poll(popup, async () =>
-    (await popup.locator('input[formcontrolname="paymentType"]').count()) > 0,
+  const appeared = await poll(page, async () =>
+    (await page.locator('input[formcontrolname="paymentType"]').count()) > 0,
     CONFIG.stepTimeout,
   );
-  if (!appeared) throw new Error('Payment type options did not appear in popup');
+  if (!appeared) throw new Error('Payment type options did not appear');
 
   // ── 1. Click "FPX Online banking" payment type ──────────────────────────────
-  // Each option is a hidden radio inside a <label> card — click the label.
-  const fpxLabel = popup.locator('label').filter({ hasText: /FPX/i }).first();
+  const fpxLabel = page.locator('label').filter({ hasText: /FPX/i }).first();
   if ((await fpxLabel.count()) === 0 || !(await fpxLabel.isVisible().catch(() => false))) {
     throw new Error('FPX Online banking label not found');
   }
   console.log('   🖱️  Selecting "FPX Online banking"');
   await fpxLabel.scrollIntoViewIfNeeded().catch(() => {});
   await fpxLabel.click();
-  await popup.waitForTimeout(1000);
+  await page.waitForTimeout(1000);
 
   // ── 2. Wait for bank grid and log all available banks ───────────────────────
-  await poll(popup, async () =>
-    (await popup.locator('input[formcontrolname="bank"]').count()) > 0,
+  await poll(page, async () =>
+    (await page.locator('input[formcontrolname="bank"]').count()) > 0,
     10_000,
   );
 
-  // Read bank names from img alt attributes — use only the desktop grid (d-md-block)
-  // to avoid duplicates from the responsive grids
-  const bankInputs = popup.locator('.d-md-block input[formcontrolname="bank"]');
+  // Read bank names from img alt — desktop grid only to avoid responsive duplicates
+  const bankInputs = page.locator('.d-md-block input[formcontrolname="bank"]');
   const bankCount = await bankInputs.count();
   console.log(`   🏦 ${bankCount} bank option(s) available:`);
   for (let i = 0; i < bankCount; i++) {
-    const input = bankInputs.nth(i);
-    const value = await input.getAttribute('value').catch(() => '');
-    const img   = input.locator('xpath=ancestor::label//img').first();
-    const alt   = await img.getAttribute('alt').catch(() => '');
+    const value = await bankInputs.nth(i).getAttribute('value').catch(() => '');
+    const alt   = await bankInputs.nth(i).locator('xpath=ancestor::label//img').first().getAttribute('alt').catch(() => '');
     console.log(`      [${i + 1}] value="${value}" name="${alt}"`);
   }
 
-  // ── 3. Click the target bank label (first visible one matching the value) ───
-  const bankLabels = popup.locator(`label`).filter({
-    has: popup.locator(`input[formcontrolname="bank"][value="${CONFIG.targetBank}"]`),
+  // ── 3. Register popup listener THEN click the bank label ────────────────────
+  const bankLabels = page.locator('label').filter({
+    has: page.locator(`input[formcontrolname="bank"][value="${CONFIG.targetBank}"]`),
   });
-  let clicked = false;
+  let bankLabel: ReturnType<typeof page.locator> | null = null;
   for (let i = 0; i < await bankLabels.count(); i++) {
-    const lbl = bankLabels.nth(i);
-    if (await lbl.isVisible().catch(() => false)) {
-      const alt = await lbl.locator('img').getAttribute('alt').catch(() => CONFIG.targetBank);
-      console.log(`   🖱️  Selecting bank: "${alt}" (${CONFIG.targetBank})`);
-      await lbl.scrollIntoViewIfNeeded().catch(() => {});
-      await lbl.click();
-      await popup.waitForTimeout(1000);
-      clicked = true;
+    if (await bankLabels.nth(i).isVisible().catch(() => false)) {
+      bankLabel = bankLabels.nth(i);
       break;
     }
   }
-  if (!clicked) throw new Error(`Bank "${CONFIG.targetBank}" not found or not visible`);
+  if (!bankLabel) throw new Error(`Bank "${CONFIG.targetBank}" not found or not visible`);
 
-  // ── 4. Click Proceed / Pay / Submit ─────────────────────────────────────────
-  for (const label of ['Proceed', 'Pay', 'Continue', 'Submit', 'Next']) {
-    const btn = popup.locator(`button:has-text("${label}"), input[type="submit"][value*="${label}" i]`).last();
-    if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
-      console.log(`   🖱️  Clicking "${label}"`);
-      await btn.scrollIntoViewIfNeeded().catch(() => {});
-      await btn.click();
-      await popup.waitForTimeout(1000);
-      return;
-    }
-  }
-  // No explicit proceed button found — some flows auto-navigate on bank click
-  console.log('   ℹ️  No Proceed button found — assuming auto-navigation after bank selection');
+  const alt = await bankLabel.locator('img').getAttribute('alt').catch(() => CONFIG.targetBank);
+  console.log(`   🖱️  Selecting bank: "${alt}" — waiting for popup…`);
+
+  // Register listener BEFORE the click so the event is never missed
+  const popupPromise = page.context().waitForEvent('page', { timeout: 30_000 });
+  await bankLabel.scrollIntoViewIfNeeded().catch(() => {});
+  await bankLabel.click();
+
+  const popup = await popupPromise;
+  await popup.waitForLoadState('domcontentloaded', { timeout: CONFIG.navTimeout }).catch(() => {});
+  await popup.waitForTimeout(1500);
+  console.log(`   🪟  Popup opened: ${popup.url()}`);
+
+  return popup;
 }
 
 // ─── STEP 12: Bank login (may be preceded by site password gate) ─────────────
@@ -860,21 +841,21 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     }
 
     // ── 11. Payment confirmation ─────────────────────────────────
-    let paymentPopup: Page | null = null;
     try {
       await page.waitForTimeout(1000);
-      paymentPopup = await handlePaymentConfirmation(page) as unknown as Page;
-      recordStep('Payment confirmation', 'PASS', 'Filled details, clicked Confirm and Pay, popup opened');
+      await handlePaymentConfirmation(page);
+      await page.waitForTimeout(1000);
+      recordStep('Payment confirmation', 'PASS', 'Filled details and clicked Confirm and Pay');
     } catch (e) {
       recordStep('Payment confirmation', 'FAIL', String(e));
       writeResult('FAIL', String(e));
       return;
     }
 
-    // ── 12. Select FPX + Maybank in popup ───────────────────────
+    // ── 12. Select FPX + Maybank — popup opens on bank click ────
+    let paymentPopup: Page | null = null;
     try {
-      if (!paymentPopup) throw new Error('Payment popup was not captured');
-      await selectPaymentMethod(paymentPopup);
+      paymentPopup = await selectPaymentMethod(page);
       recordStep('Select payment method', 'PASS', `FPX selected, bank: ${CONFIG.targetBank}`);
     } catch (e) {
       recordStep('Select payment method', 'FAIL', String(e));
