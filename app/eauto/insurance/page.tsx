@@ -2090,6 +2090,16 @@ function RegressionTab() {
             </div>
           </div>
 
+          {/* Verification report */}
+          {result.verificationReport && (
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                Verification Report
+              </div>
+              <pre className="px-5 py-4 text-xs font-mono text-slate-300 whitespace-pre overflow-x-auto leading-relaxed">{result.verificationReport}</pre>
+            </div>
+          )}
+
           {/* Error message (script-level) */}
           {result.errorMessage && (
             <div className="bg-red-950/30 border border-red-800/50 rounded-xl px-4 py-3 text-sm text-red-300 font-mono">

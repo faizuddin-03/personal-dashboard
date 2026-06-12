@@ -103,17 +103,18 @@ export interface RegressionStepResult {
 }
 
 export interface RegressionResult {
-  vehicleNumber:  string;
-  icNumber:       string;
-  targetInsurer:  string;
-  overallStatus:  "PASS" | "FAIL";
-  steps:          RegressionStepResult[];
-  errorMessage?:  string;
-  startedAt:      string;
-  completedAt:    string;
-  durationMs:     number;
-  log?:           string;
-  stopped?:       boolean;
+  vehicleNumber:       string;
+  icNumber:            string;
+  targetInsurer:       string;
+  overallStatus:       "PASS" | "FAIL";
+  steps:               RegressionStepResult[];
+  errorMessage?:       string;
+  startedAt:           string;
+  completedAt:         string;
+  durationMs:          number;
+  log?:                string;
+  stopped?:            boolean;
+  verificationReport?: string;
 }
 
 const REGRESSION_TEST_KEY = "secarang_regression_test_result";

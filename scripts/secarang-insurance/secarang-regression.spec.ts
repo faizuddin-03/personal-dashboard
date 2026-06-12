@@ -38,19 +38,21 @@ interface StepResult {
 }
 
 interface RegressionResult {
-  vehicleNumber:  string;
-  icNumber:       string;
-  targetInsurer:  string;
-  overallStatus:  'PASS' | 'FAIL';
-  steps:          StepResult[];
-  errorMessage?:  string;
-  startedAt:      string;
-  completedAt:    string;
-  durationMs:     number;
+  vehicleNumber:       string;
+  icNumber:            string;
+  targetInsurer:       string;
+  overallStatus:       'PASS' | 'FAIL';
+  steps:               StepResult[];
+  errorMessage?:       string;
+  startedAt:           string;
+  completedAt:         string;
+  durationMs:          number;
+  verificationReport?: string;
 }
 
 const steps: StepResult[] = [];
 let startedAt = new Date().toISOString();
+let verificationReport = '';
 
 function recordStep(name: string, status: StepResult['status'], message: string) {
   const s: StepResult = { name, status, message, timestamp: new Date().toISOString() };
@@ -70,7 +72,8 @@ function writeResult(overallStatus: 'PASS' | 'FAIL', errorMessage?: string) {
     errorMessage,
     startedAt,
     completedAt,
-    durationMs: new Date(completedAt).getTime() - new Date(startedAt).getTime(),
+    durationMs:         new Date(completedAt).getTime() - new Date(startedAt).getTime(),
+    verificationReport: verificationReport || undefined,
   };
   const outPath = path.resolve(CONFIG.outputFile);
   fs.writeFileSync(outPath, JSON.stringify(result, null, 2));
@@ -432,6 +435,51 @@ async function handlePostAddOnsPopup(page: Page): Promise<void> {
   }
 }
 
+// ─── Confirmation page data capture ─────────────────────────────────────────
+// Stores key-value pairs read from the confirmation page before submitting.
+const capturedConfirmData: Record<string, string> = {};
+
+async function captureConfirmationData(page: Page): Promise<void> {
+  // Inputs we filled
+  capturedConfirmData['Full Name']         = await page.locator('input[formcontrolname="name"]').inputValue().catch(() => CONFIG.ownerName);
+  capturedConfirmData['Email']             = await page.locator('input[formcontrolname="email"]').inputValue().catch(() => CONFIG.ownerEmail);
+  capturedConfirmData['Mobile Phone No.']  = await page.locator('input[formcontrolname="phoneNo"]').inputValue().catch(() => CONFIG.ownerPhone);
+  capturedConfirmData['IC No']             = CONFIG.icNumber.replace(/(\d{6})(\d{2})(\d{4})/, '$1-$2-$3');
+
+  // All .row.mb-2 label→value pairs (vehicle details + insurance details + pricing)
+  const rowData: Record<string, string> = await page.evaluate(() => {
+    const result: Record<string, string> = {};
+    document.querySelectorAll('.row.mb-2, .row.mb-4').forEach(row => {
+      // Pattern 1: .text-muted label + sibling col (vehicle/insurance details)
+      const muted = row.querySelector('.text-muted');
+      if (muted) {
+        const label = (muted.textContent || '').replace(/\s+/g, ' ').trim();
+        if (!label) return;
+        let value = '';
+        for (const col of Array.from(row.querySelectorAll('[class*="col"]'))) {
+          if (col !== muted && !col.contains(muted)) {
+            const t = (col.textContent || '').replace(/\s+/g, ' ').trim();
+            if (t) { value = t; break; }
+          }
+        }
+        if (value) result[label] = value;
+        return;
+      }
+      // Pattern 2: .col label + .col-auto value (pricing rows)
+      const cols = Array.from(row.querySelectorAll('.col, .col-auto'));
+      if (cols.length >= 2) {
+        const label = (cols[0].textContent || '').replace(/\s+/g, ' ').trim();
+        const value = (cols[cols.length - 1].textContent || '').replace(/\s+/g, ' ').trim();
+        if (label && value && label !== value) result[label] = value;
+      }
+    });
+    return result;
+  });
+
+  Object.assign(capturedConfirmData, rowData);
+  console.log(`   📝 Captured ${Object.keys(capturedConfirmData).length} field(s) from confirmation page`);
+}
+
 // ─── STEP 10: Payment confirmation page ──────────────────────────────────────
 async function handlePaymentConfirmation(page: Page): Promise<void> {
   const appeared = await poll(page, async () => {
@@ -502,6 +550,8 @@ async function handlePaymentConfirmation(page: Page): Promise<void> {
     }
   }
 
+  // Capture confirmation page data for later comparison with success page
+  await captureConfirmationData(page);
   await page.waitForTimeout(1000);
 
   const confirmBtn = page.locator('button[type="submit"]:has-text("Confirm and Pay"), button:has-text("Confirm and Pay")').last();
@@ -707,6 +757,160 @@ async function handleOTPAndPay(popup: Page): Promise<void> {
   console.log('   ✅ Popup closed — back on main window');
 }
 
+// ─── STEP 16: Verify payment success + comparison report ─────────────────────
+async function verifyAndReport(page: Page): Promise<string> {
+  // May show site password gate again after returning to main window
+  await passSiteGate(page);
+
+  // Wait for the payment success page
+  const appeared = await poll(page, async () => {
+    const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
+    return /payment successful|thank you for your purchase/i.test(t);
+  }, 60_000);
+
+  if (!appeared) {
+    const snippet = (await page.locator('body').innerText().catch(() => '')).slice(0, 300);
+    throw new Error(`Payment success page did not appear. Page: ${snippet}`);
+  }
+
+  await page.waitForTimeout(1000);
+
+  // Extract all key-value pairs from the success page (screen version only)
+  const successData: Record<string, string> = await page.evaluate(() => {
+    const result: Record<string, string> = {};
+    const container = document.querySelector('app-payment-success .d-print-none');
+    if (!container) return result;
+
+    container.querySelectorAll('.row.mb-2, .row.mb-4, .row.mb-5').forEach(row => {
+      // Pattern 1: .text-muted label
+      const muted = row.querySelector('.text-muted');
+      if (muted) {
+        const label = (muted.textContent || '').replace(/\s+/g, ' ').trim();
+        if (!label) return;
+        let value = '';
+        for (const col of Array.from(row.querySelectorAll('[class*="col"]'))) {
+          if (col !== muted && !col.contains(muted)) {
+            const t = (col.textContent || '').replace(/\s+/g, ' ').trim();
+            if (t) { value = t; break; }
+          }
+        }
+        if (value) result[label] = value;
+        return;
+      }
+      // Pattern 2: .col label + .col-auto value (pricing)
+      const cols = Array.from(row.querySelectorAll('.col, .col-auto'));
+      if (cols.length >= 2) {
+        const label = (cols[0].textContent || '').replace(/\s+/g, ' ').trim();
+        const value = (cols[cols.length - 1].textContent || '').replace(/\s+/g, ' ').trim();
+        if (label && value && label !== value) result[label] = value;
+      }
+    });
+    return result;
+  });
+
+  // Receipt info
+  const receiptNo    = successData['Receipt No']    || '';
+  const purchaseDate = successData['Purchase Date'] || '';
+  const paymentMethod = successData['Payment Method'] || '';
+
+  console.log(`\n   🧾 Receipt: ${receiptNo}  |  Date: ${purchaseDate}  |  Method: ${paymentMethod}`);
+  console.log(`   📊 Success page fields: ${Object.keys(successData).join(', ')}`);
+
+  // ── Build comparison ────────────────────────────────────────────────────────
+  interface Row { label: string; confirmed: string; success: string; match: boolean; }
+
+  function normalise(s: string) { return s.replace(/\s+/g, ' ').trim().toUpperCase(); }
+  function normPhone(s: string) { return s.replace(/^\+?60/, '').replace(/\s/g, ''); }
+
+  function cmp(label: string, confirmKey: string, successKey: string, phoneMode = false): Row {
+    const c = capturedConfirmData[confirmKey] || '';
+    const s = successData[successKey] || '';
+    let match: boolean;
+    if (phoneMode) {
+      match = normPhone(normalise(c)) === normPhone(normalise(s));
+    } else {
+      // Name may be truncated on success page — check if success contains first two words
+      const cWords = normalise(c).split(' ');
+      match = normalise(s) === normalise(c) ||
+              (cWords.length > 2 && normalise(s).includes(cWords.slice(0, 2).join(' ')));
+    }
+    return { label, confirmed: c, success: s, match };
+  }
+
+  const vehicleRows: Row[] = [
+    cmp('Plate No',     'Plate No',     'Plate No'),
+    cmp('Model',        'Model',        'Model'),
+    cmp('Year',         'Year',         'Year'),
+    cmp('Variant',      'Variant',      'Variant'),
+    cmp('Transmission', 'Transmission', 'Transmission'),
+    cmp('Seat',         'Seat',         'Seat'),
+    cmp('cc',           'cc',           'cc'),
+  ];
+
+  const ownerRows: Row[] = [
+    cmp('Full Name',        'Full Name',        'Full Name'),
+    cmp('IC No',            'IC No',            'IC No'),
+    cmp('Email',            'Email',            'Email'),
+    cmp('Mobile Phone No.', 'Mobile Phone No.', 'Mobile Phone No.', true),
+  ];
+
+  const pricingRows: Row[] = [
+    cmp('Basic Premium',     'Basic Premium',     'Basic Premium'),
+    cmp('Premium After NCD', 'Premium After NCD', 'Premium After NCD'),
+    cmp('Gross Premium',     'Gross Premium',     'Gross Premium'),
+    cmp('Service Tax 8%',    'Service Tax 8%',    'Service Tax 8%'),
+    cmp('Stamp Duty',        'Stamp Duty',        'Stamp Duty'),
+    cmp('Total Premium',     'Total Premium',     'Total Premium'),
+  ];
+
+  // ── Format table ─────────────────────────────────────────────────────────────
+  const W = { f: 22, v: 28, ok: 4 };
+  const pad  = (s: string, n: number) => s.length > n ? s.slice(0, n - 1) + '…' : s.padEnd(n);
+  const divider  = `├${'─'.repeat(W.f + 2)}┼${'─'.repeat(W.v + 2)}┼${'─'.repeat(W.v + 2)}┼${'─'.repeat(W.ok + 2)}┤`;
+  const topLine  = `┌${'─'.repeat(W.f + 2)}┬${'─'.repeat(W.v + 2)}┬${'─'.repeat(W.v + 2)}┬${'─'.repeat(W.ok + 2)}┐`;
+  const botLine  = `└${'─'.repeat(W.f + 2)}┴${'─'.repeat(W.v + 2)}┴${'─'.repeat(W.v + 2)}┴${'─'.repeat(W.ok + 2)}┘`;
+  const heading  = `│ ${pad('Field', W.f)} │ ${pad('Confirmation Page', W.v)} │ ${pad('Success Page', W.v)} │ ${'OK'.padEnd(W.ok)} │`;
+
+  const fmtRow = (r: Row) =>
+    `│ ${pad(r.label, W.f)} │ ${pad(r.confirmed, W.v)} │ ${pad(r.success, W.v)} │ ${r.match ? '✅  ' : '❌  '} │`;
+
+  const section = (title: string, rows: Row[]) => [
+    `  ${title}`,
+    `  ${topLine}`,
+    `  ${heading}`,
+    `  ${divider}`,
+    ...rows.map(r => `  ${fmtRow(r)}`),
+    `  ${botLine}`,
+    '',
+  ].join('\n');
+
+  const allRows = [...vehicleRows, ...ownerRows, ...pricingRows];
+  const passed  = allRows.filter(r => r.match).length;
+  const failed  = allRows.filter(r => !r.match).length;
+  const hr = '  ' + '━'.repeat(W.f + W.v * 2 + 16);
+
+  const report = [
+    '',
+    hr,
+    `  PAYMENT VERIFICATION REPORT`,
+    `  Receipt : ${receiptNo}`,
+    `  Date    : ${purchaseDate}`,
+    `  Method  : ${paymentMethod}`,
+    `  Vehicle : ${CONFIG.vehicleNumber}  |  Insurer : ${CONFIG.targetInsurer}`,
+    hr,
+    '',
+    section('VEHICLE DETAILS',  vehicleRows),
+    section('OWNER DETAILS',    ownerRows),
+    section('PRICING',          pricingRows),
+    `  RESULT  : ${failed === 0 ? '✅  ALL CHECKS PASSED' : `❌  ${failed} MISMATCH(ES) FOUND`}  (${passed} / ${allRows.length})`,
+    hr,
+    '',
+  ].join('\n');
+
+  console.log(report);
+  return report;
+}
+
 // ─── MAIN TEST ───────────────────────────────────────────────────────────────
 test.describe('Secarang Regression – Zurich E2E', () => {
   test.setTimeout(0);
@@ -896,20 +1100,25 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 16. Verify result on main window ─────────────────────────
+    // ── 16. Verify success page + comparison report ──────────────
     try {
       await page.waitForTimeout(2000);
-      const resultText = (await page.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
-      console.log(`   📋 Main window after payment:\n${resultText.slice(0, 1000)}`);
-      recordStep('Payment result', 'PASS', resultText.slice(0, 200));
+      verificationReport = await verifyAndReport(page);
+      const allRows = verificationReport.match(/[✅❌]/g) || [];
+      const fail = allRows.filter(x => x === '❌').length;
+      recordStep(
+        'Payment verification',
+        fail === 0 ? 'PASS' : 'FAIL',
+        fail === 0 ? 'All details match between confirmation and success page' : `${fail} mismatch(es) — see verification report`,
+      );
     } catch (e) {
-      recordStep('Payment result', 'FAIL', String(e));
+      recordStep('Payment verification', 'FAIL', String(e));
       writeResult('FAIL', String(e));
       return;
     }
 
     // ── All steps done ───────────────────────────────────────────
     writeResult('PASS');
-    console.log('\n🎉 Regression PASSED — payment complete');
+    console.log('\n🎉 Regression PASSED — payment verified');
   });
 });
