@@ -318,7 +318,7 @@ async function handleAddOns(page: Page): Promise<void> {
     if (await allCards.nth(i).isVisible().catch(() => false)) visibleCards.push(i);
   }
 
-  const toAdd = Math.min(visibleCards.length, 3);
+  const toAdd = Math.min(visibleCards.length, 2);
   console.log(`   📦 ${visibleCards.length} visible add-on card(s) — clicking ADD on first ${toAdd}`);
 
   for (let n = 0; n < toAdd; n++) {
@@ -328,13 +328,13 @@ async function handleAddOns(page: Page): Promise<void> {
       console.log(`   ➕ ADD on card ${n + 1}`);
       await addBtn.scrollIntoViewIfNeeded().catch(() => {});
       await addBtn.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(1000);
     } else {
       console.log(`   ⚠️  No ADD button on card ${n + 1} — skipping`);
     }
   }
 
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(1000);
 
   // Click Continue / Proceed
   for (const label of ['Continue', 'Proceed', 'Next', 'Add to Cart', 'Confirm']) {
@@ -343,6 +343,7 @@ async function handleAddOns(page: Page): Promise<void> {
       console.log(`   🖱️  Add-ons: clicking "${label}"`);
       await btn.scrollIntoViewIfNeeded().catch(() => {});
       await btn.click();
+      await page.waitForTimeout(1000);
       return;
     }
   }
@@ -352,15 +353,15 @@ async function handleAddOns(page: Page): Promise<void> {
 // ─── STEP 9: Popup after add-ons ─────────────────────────────────────────────
 async function handlePostAddOnsPopup(page: Page): Promise<void> {
   // Give the popup a moment to appear
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(1500);
 
   const popupSels = [
+    'app-info-modal',
     'mat-dialog-container',
     '[role="dialog"]',
     '.modal-content',
     '.modal',
     'app-modal',
-    'app-info-modal',
     '.dialog',
   ];
 
@@ -382,12 +383,13 @@ async function handlePostAddOnsPopup(page: Page): Promise<void> {
   const popupText = clean(await modal.innerText().catch(() => ''));
   console.log(`   💬 Popup text: "${popupText.slice(0, 200)}"`);
 
-  for (const label of ['Continue', 'Proceed', 'OK', 'Ok', 'Confirm', 'Yes', 'Accept']) {
+  // Prefer "Proceed" first (the Reminder modal uses this)
+  for (const label of ['Proceed', 'Continue', 'OK', 'Ok', 'Confirm', 'Yes', 'Accept']) {
     const btn = modal.locator(`button:has-text("${label}")`).first();
-    if ((await btn.count()) > 0) {
+    if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
       console.log(`   🖱️  Popup: clicking "${label}"`);
       await btn.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(1000);
       return;
     }
   }
@@ -398,7 +400,7 @@ async function handlePostAddOnsPopup(page: Page): Promise<void> {
     const label = clean(await any.textContent().catch(() => '') || 'button');
     console.log(`   🖱️  Popup fallback: clicking "${label}"`);
     await any.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
   }
 }
 
@@ -545,7 +547,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     // ── 8. Select Zurich ─────────────────────────────────────────
     try {
       await selectInsurer(page, cardSel, CONFIG.targetInsurer);
-      await page.waitForTimeout(CONFIG.waitAfterClick);
+      await page.waitForTimeout(1000);
       recordStep(`Select ${CONFIG.targetInsurer}`, 'PASS', 'Clicked Zurich card');
     } catch (e) {
       recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', String(e));
@@ -556,8 +558,8 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     // ── 9. Add-ons page ──────────────────────────────────────────
     try {
       await handleAddOns(page);
-      await page.waitForTimeout(CONFIG.waitAfterClick);
-      recordStep('Add-ons page', 'PASS', 'Default add-ons kept, clicked Continue');
+      await page.waitForTimeout(1000);
+      recordStep('Add-ons page', 'PASS', 'Selected first 2 add-ons, clicked Continue');
     } catch (e) {
       recordStep('Add-ons page', 'FAIL', String(e));
       writeResult('FAIL', String(e));

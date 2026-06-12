@@ -6,6 +6,7 @@ import { spawn, type ChildProcess } from "node:child_process";
 const SCRIPT_DIR   = process.env.SECARANG_SCRIPT_DIR
   ?? path.join(process.cwd(), "scripts", "secarang-insurance");
 const RESULT_FILE  = path.join(SCRIPT_DIR, "regression-result.json");
+const LOG_FILE     = path.join(SCRIPT_DIR, "regression-log.txt");
 const TIMEOUT_MS   = 10 * 60 * 1000; // 10 min
 
 let currentChild: ChildProcess | null = null;
@@ -57,8 +58,9 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 
-  // Remove stale result so the UI can tell the test is running
+  // Remove stale result and log so the UI can tell the test is running
   if (fs.existsSync(RESULT_FILE)) fs.unlinkSync(RESULT_FILE);
+  try { fs.writeFileSync(LOG_FILE, ""); } catch { /* ignore */ }
 
   stopRequested = false;
 
@@ -88,8 +90,16 @@ export async function POST(req: NextRequest) {
       resolve({ code: 1, output: "Timed out after 10 minutes." });
     }, TIMEOUT_MS);
 
-    child.stdout?.on("data", (d: Buffer) => { output += d.toString(); });
-    child.stderr?.on("data", (d: Buffer) => { output += d.toString(); });
+    child.stdout?.on("data", (d: Buffer) => {
+      const chunk = d.toString();
+      output += chunk;
+      try { fs.appendFileSync(LOG_FILE, chunk); } catch { /* ignore */ }
+    });
+    child.stderr?.on("data", (d: Buffer) => {
+      const chunk = d.toString();
+      output += chunk;
+      try { fs.appendFileSync(LOG_FILE, chunk); } catch { /* ignore */ }
+    });
     child.on("close",  (code) => { clearTimeout(timer); currentChild = null; resolve({ code: code ?? 1, output }); });
     child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; resolve({ code: 1, output: err.message }); });
   });

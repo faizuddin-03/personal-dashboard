@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Shield, Play, Download, Loader2, Square,
   TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
@@ -1809,11 +1809,30 @@ function RegressionTab() {
   const [result,   setResult]   = useState<RegressionResult | null>(null);
   const [error,    setError]    = useState("");
   const [log,      setLog]      = useState("");
+  const [liveLog,  setLiveLog]  = useState("");
+  const liveLogRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
     const saved = loadRegressionTestResult();
     if (saved) { setResult(saved); setLog(saved.log ?? ""); }
   }, []);
+
+  // Poll for live log while test is running
+  useEffect(() => {
+    if (!loading) return;
+    const id = setInterval(() => {
+      fetch("/api/secarang/regression/log")
+        .then(r => r.text())
+        .then(text => {
+          setLiveLog(text);
+          if (liveLogRef.current) {
+            liveLogRef.current.scrollTop = liveLogRef.current.scrollHeight;
+          }
+        })
+        .catch(() => {});
+    }, 500);
+    return () => clearInterval(id);
+  }, [loading]);
 
   function handleRun() {
     setLoading(true);
@@ -1821,6 +1840,7 @@ function RegressionTab() {
     setResult(null);
     setError("");
     setLog("");
+    setLiveLog("");
     fetch("/api/secarang/regression", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1988,6 +2008,20 @@ function RegressionTab() {
           )}
         </div>
       </div>
+
+      {/* Live log while running */}
+      {loading && liveLog && (
+        <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
+          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-slate-800 text-xs text-slate-400">
+            <Loader2 size={11} className="animate-spin text-blue-400 shrink-0" />
+            Live output
+          </div>
+          <pre
+            ref={liveLogRef}
+            className="px-4 py-3 text-xs text-slate-400 font-mono whitespace-pre-wrap overflow-x-auto max-h-56 overflow-y-auto leading-relaxed"
+          >{liveLog}</pre>
+        </div>
+      )}
 
       {/* Error (API/network level) */}
       {error && (
