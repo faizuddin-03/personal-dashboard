@@ -166,15 +166,19 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       const vehicleDetailsPage = new VehicleDetailsPage(page);
       const CARD_SELS = ['.insurance-card', '.quotation-card', '.quote-card', '.insurer-card', '.plan-card'];
 
-      const deadline = Date.now() + 25_000;
+      // Wait until we see either: quotation cards, the vehicle-details component,
+      // or "vehicle not found". Do NOT match "get quotation" because that text
+      // is on the home page submit button and would fire too early.
+      const deadline = Date.now() + 30_000;
       while (Date.now() < deadline) {
         const hasCards = await (async () => {
           for (const s of CARD_SELS) if ((await page.locator(s).count()) > 0) return true;
           return false;
         })();
         if (hasCards) break;
+        if ((await page.locator('app-confirm-details').count()) > 0) break;
         const t = (await page.locator('body').innerText().catch(() => '')).toLowerCase();
-        if (/are these your vehicle|get quotation|vehicle not found/i.test(t)) break;
+        if (/are these your vehicle|vehicle not found/i.test(t)) break;
         await page.waitForTimeout(200);
       }
 
