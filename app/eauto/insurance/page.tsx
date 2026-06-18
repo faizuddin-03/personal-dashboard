@@ -1995,7 +1995,6 @@ const REGRESSION_BANKS = [
   { value: "fpx_bsn",        label: "BSN"         },
 ];
 
-const WIZARD_STEPS = ["Environment", "Vehicle", "Owner Details", "Payment"] as const;
 
 interface RegressionWizardConfig {
   baseUrl:       string;
@@ -2049,39 +2048,15 @@ function saveWizardConfig(cfg: RegressionWizardConfig) {
   try { localStorage.setItem(REGRESSION_CONFIG_KEY, JSON.stringify(cfg)); } catch { /* ignore */ }
 }
 
-// ── Stepper node component ────────────────────────────────────
-function WizardStepper({ currentStep }: { currentStep: number }) {
+// ── Horizontal section divider used in the right panel ───────
+function RightSectionHeader({ num, label }: { num: number; label: string }) {
   return (
-    <div className="flex items-center gap-0">
-      {WIZARD_STEPS.map((label, idx) => {
-        const step = idx + 1;
-        const completed = step < currentStep;
-        const active    = step === currentStep;
-        return (
-          <div key={step} className="flex items-center">
-            <div className="flex flex-col items-center gap-1">
-              <div className={clsx(
-                "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all",
-                completed ? "bg-blue-600 border-blue-600 text-white"
-                  : active ? "bg-blue-600/20 border-blue-500 text-blue-300"
-                  : "bg-slate-800 border-slate-700 text-slate-500"
-              )}>
-                {completed ? "✓" : step}
-              </div>
-              <span className={clsx(
-                "text-[10px] font-medium whitespace-nowrap hidden sm:block",
-                active ? "text-blue-300" : completed ? "text-slate-400" : "text-slate-600"
-              )}>{label}</span>
-            </div>
-            {idx < WIZARD_STEPS.length - 1 && (
-              <div className={clsx(
-                "h-0.5 w-12 sm:w-20 mx-1 mb-4 transition-colors",
-                step < currentStep ? "bg-blue-600" : "bg-slate-700"
-              )} />
-            )}
-          </div>
-        );
-      })}
+    <div className="flex items-center gap-2 mb-3">
+      <div className="w-5 h-5 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[10px] font-bold text-slate-300 shrink-0">
+        {num}
+      </div>
+      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">{label}</span>
+      <div className="flex-1 h-px bg-slate-800" />
     </div>
   );
 }
@@ -2102,7 +2077,6 @@ function WField({ label, hint, children }: { label: string; hint?: string; child
 const INPUT_CLS = "w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50";
 
 function RegressionTab() {
-  const [wizardStep, setWizardStep] = useState(1);
   const [phase, setPhase] = useState<"wizard" | "running" | "done">("wizard");
   const [cfg, setCfg] = useState<RegressionWizardConfig>(loadWizardConfig);
 
@@ -2204,7 +2178,6 @@ function RegressionTab() {
     setError("");
     setLog("");
     setPhase("wizard");
-    setWizardStep(1);
     clearRegressionTestResult();
   }
 
@@ -2348,108 +2321,109 @@ function RegressionTab() {
     );
   }
 
-  // ── Wizard phase ──────────────────────────────────────────
+  // ── Config form (two-column) ──────────────────────────────
   return (
-    <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-5">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-6">
+    <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
 
-        {/* Stepper */}
-        <WizardStepper currentStep={wizardStep} />
-
-        {/* Step 1: Environment */}
-        {wizardStep === 1 && (
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-200">Environment</h3>
-            <WField label="Environment Preset">
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                {SC_REGRESSION_ENV_PRESETS.map(p => (
-                  <button key={p.value} type="button"
-                    onClick={() => patch({ baseUrl: p.value, customEnv: false })}
+          {/* ── LEFT: Environment + Vehicle ── */}
+          <div className="p-5 space-y-5">
+            {/* Environment */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Environment</p>
+              <WField label="Preset">
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {SC_REGRESSION_ENV_PRESETS.map(p => (
+                    <button key={p.value} type="button"
+                      onClick={() => patch({ baseUrl: p.value, customEnv: false })}
+                      className={clsx(
+                        "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                        !cfg.customEnv && cfg.baseUrl === p.value
+                          ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                          : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                      )}>{p.label}</button>
+                  ))}
+                  <button type="button"
+                    onClick={() => patch({ customEnv: true })}
                     className={clsx(
                       "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
-                      !cfg.customEnv && cfg.baseUrl === p.value
+                      cfg.customEnv
                         ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
                         : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
-                    )}>{p.label}</button>
-                ))}
-                <button type="button"
-                  onClick={() => patch({ customEnv: true })}
-                  className={clsx(
-                    "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
-                    cfg.customEnv
-                      ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                      : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
-                  )}>Custom</button>
-              </div>
-              {cfg.customEnv ? (
-                <input value={cfg.baseUrl}
-                  onChange={e => patch({ baseUrl: e.target.value })}
-                  placeholder="https://..."
-                  className={INPUT_CLS}
-                />
-              ) : (
-                <p className="text-xs text-slate-600 font-mono">{cfg.baseUrl}</p>
-              )}
-            </WField>
-            <WField label="Site Password">
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={cfg.sitePassword}
-                  onChange={e => patch({ sitePassword: e.target.value })}
-                  className={INPUT_CLS}
-                />
-                <button type="button" onClick={() => setShowPassword(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-              </div>
-            </WField>
-          </div>
-        )}
-
-        {/* Step 2: Vehicle */}
-        {wizardStep === 2 && (
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-200">Vehicle Details</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <WField label="Vehicle Number">
-                <input value={cfg.vehicleNumber}
-                  onChange={e => patch({ vehicleNumber: e.target.value.toUpperCase() })}
-                  placeholder="WXX1234"
-                  className={clsx(INPUT_CLS, "font-mono")}
-                />
+                    )}>Custom</button>
+                </div>
+                {cfg.customEnv ? (
+                  <input value={cfg.baseUrl}
+                    onChange={e => patch({ baseUrl: e.target.value })}
+                    placeholder="https://..."
+                    className={INPUT_CLS}
+                  />
+                ) : (
+                  <p className="text-xs text-slate-600 font-mono">{cfg.baseUrl}</p>
+                )}
               </WField>
-              <WField label="IC / SSM Number">
-                <input value={cfg.icNumber}
-                  onChange={e => patch({ icNumber: e.target.value })}
-                  placeholder="730620065847"
-                  className={clsx(INPUT_CLS, "font-mono")}
-                />
-              </WField>
-              <WField label="Postcode">
-                <input value={cfg.postcode}
-                  onChange={e => patch({ postcode: e.target.value })}
-                  placeholder="55000"
-                  className={INPUT_CLS}
-                />
-              </WField>
-              <WField label="Target Insurer">
-                <input value={cfg.targetInsurer}
-                  onChange={e => patch({ targetInsurer: e.target.value })}
-                  placeholder="Zurich"
-                  className={INPUT_CLS}
-                />
+              <WField label="Site Password">
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={cfg.sitePassword}
+                    onChange={e => patch({ sitePassword: e.target.value })}
+                    className={INPUT_CLS}
+                  />
+                  <button type="button" onClick={() => setShowPassword(v => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
               </WField>
             </div>
-          </div>
-        )}
 
-        {/* Step 3: Owner Details */}
-        {wizardStep === 3 && (
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-200">Owner Details</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Divider */}
+            <div className="h-px bg-slate-800" />
+
+            {/* Vehicle */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Vehicle</p>
+              <div className="grid grid-cols-2 gap-3">
+                <WField label="Vehicle Number">
+                  <input value={cfg.vehicleNumber}
+                    onChange={e => patch({ vehicleNumber: e.target.value.toUpperCase() })}
+                    placeholder="WXX1234"
+                    className={clsx(INPUT_CLS, "font-mono")}
+                  />
+                </WField>
+                <WField label="IC / SSM Number">
+                  <input value={cfg.icNumber}
+                    onChange={e => patch({ icNumber: e.target.value })}
+                    placeholder="730620065847"
+                    className={clsx(INPUT_CLS, "font-mono")}
+                  />
+                </WField>
+                <WField label="Postcode">
+                  <input value={cfg.postcode}
+                    onChange={e => patch({ postcode: e.target.value })}
+                    placeholder="55000"
+                    className={INPUT_CLS}
+                  />
+                </WField>
+                <WField label="Target Insurer">
+                  <input value={cfg.targetInsurer}
+                    onChange={e => patch({ targetInsurer: e.target.value })}
+                    placeholder="Zurich"
+                    className={INPUT_CLS}
+                  />
+                </WField>
+              </div>
+            </div>
+          </div>
+
+          {/* ── RIGHT: Owner Details + Payment (horizontal sections) ── */}
+          <div className="p-5 space-y-5">
+
+            {/* Section 1: Owner Details */}
+            <RightSectionHeader num={1} label="Owner Details" />
+            <div className="space-y-3">
               <WField label="Full Name" hint="(as per MyKad)">
                 <input value={cfg.ownerName}
                   onChange={e => patch({ ownerName: e.target.value.toUpperCase() })}
@@ -2457,30 +2431,23 @@ function RegressionTab() {
                   className={INPUT_CLS}
                 />
               </WField>
-              <WField label="Email">
-                <input value={cfg.ownerEmail}
-                  onChange={e => patch({ ownerEmail: e.target.value })}
-                  type="email"
-                  placeholder="owner@example.com"
-                  className={INPUT_CLS}
-                />
-              </WField>
-              <WField label="Phone Number">
-                <input value={cfg.ownerPhone}
-                  onChange={e => patch({ ownerPhone: e.target.value })}
-                  placeholder="0123456789"
-                  className={INPUT_CLS}
-                />
-              </WField>
-              <WField label="Discount Code" hint="(optional)">
-                <input value={cfg.discountCode}
-                  onChange={e => patch({ discountCode: e.target.value })}
-                  placeholder="PROMO123"
-                  className={INPUT_CLS}
-                />
-              </WField>
-            </div>
-            <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-2 gap-3">
+                <WField label="Email">
+                  <input value={cfg.ownerEmail}
+                    onChange={e => patch({ ownerEmail: e.target.value })}
+                    type="email"
+                    placeholder="owner@example.com"
+                    className={INPUT_CLS}
+                  />
+                </WField>
+                <WField label="Phone">
+                  <input value={cfg.ownerPhone}
+                    onChange={e => patch({ ownerPhone: e.target.value })}
+                    placeholder="0123456789"
+                    className={INPUT_CLS}
+                  />
+                </WField>
+              </div>
               <WField label="Address Line 1">
                 <input value={cfg.addressLine1}
                   onChange={e => patch({ addressLine1: e.target.value })}
@@ -2502,87 +2469,77 @@ function RegressionTab() {
                   className={INPUT_CLS}
                 />
               </WField>
-            </div>
-          </div>
-        )}
-
-        {/* Step 4: Payment */}
-        {wizardStep === 4 && (
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-200">Payment (FPX)</h3>
-            <WField label="Bank">
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
-                {REGRESSION_BANKS.map(b => (
-                  <button key={b.value} type="button"
-                    onClick={() => patch({ targetBank: b.value })}
-                    className={clsx(
-                      "px-2 py-2 rounded-lg text-xs font-medium border transition-all text-center",
-                      cfg.targetBank === b.value
-                        ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
-                    )}>{b.label}</button>
-                ))}
-              </div>
-            </WField>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <WField label="Bank Username">
-                <input value={cfg.bankUsername}
-                  onChange={e => patch({ bankUsername: e.target.value })}
-                  placeholder="Bank login username"
-                  autoComplete="off"
+              <WField label="Discount Code" hint="(optional)">
+                <input value={cfg.discountCode}
+                  onChange={e => patch({ discountCode: e.target.value })}
+                  placeholder="PROMO123"
                   className={INPUT_CLS}
                 />
               </WField>
-              <WField label="Bank Password">
-                <div className="relative">
-                  <input
-                    type={showBankPassword ? "text" : "password"}
-                    value={cfg.bankPassword}
-                    onChange={e => patch({ bankPassword: e.target.value })}
-                    placeholder="Bank login password"
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-slate-800" />
+
+            {/* Section 2: Payment */}
+            <RightSectionHeader num={2} label="Payment (FPX)" />
+            <div className="space-y-3">
+              <WField label="Bank">
+                <div className="grid grid-cols-5 gap-1.5">
+                  {REGRESSION_BANKS.map(b => (
+                    <button key={b.value} type="button"
+                      onClick={() => patch({ targetBank: b.value })}
+                      className={clsx(
+                        "px-1 py-2 rounded-lg text-[11px] font-medium border transition-all text-center leading-tight",
+                        cfg.targetBank === b.value
+                          ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                          : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                      )}>{b.label}</button>
+                  ))}
+                </div>
+              </WField>
+              <div className="grid grid-cols-2 gap-3">
+                <WField label="Bank Username">
+                  <input value={cfg.bankUsername}
+                    onChange={e => patch({ bankUsername: e.target.value })}
+                    placeholder="Username"
                     autoComplete="off"
                     className={INPUT_CLS}
                   />
-                  <button type="button" onClick={() => setShowBankPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                    {showBankPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                  </button>
-                </div>
-              </WField>
+                </WField>
+                <WField label="Bank Password">
+                  <div className="relative">
+                    <input
+                      type={showBankPassword ? "text" : "password"}
+                      value={cfg.bankPassword}
+                      onChange={e => patch({ bankPassword: e.target.value })}
+                      placeholder="Password"
+                      autoComplete="off"
+                      className={INPUT_CLS}
+                    />
+                    <button type="button" onClick={() => setShowBankPassword(v => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                      {showBankPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                  </div>
+                </WField>
+              </div>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+        {/* Run button — full-width footer */}
+        <div className="px-5 py-4 border-t border-slate-800 flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setWizardStep(s => Math.max(1, s - 1))}
-            disabled={wizardStep === 1}
-            className="px-4 py-2 text-sm font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-xl transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            onClick={handleRun}
+            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors"
           >
-            Back
+            <Play size={14} /> Run Regression
           </button>
-
-          <span className="text-xs text-slate-600">{wizardStep} / {WIZARD_STEPS.length}</span>
-
-          {wizardStep < WIZARD_STEPS.length ? (
-            <button
-              type="button"
-              onClick={() => setWizardStep(s => Math.min(WIZARD_STEPS.length, s + 1))}
-              className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors"
-            >
-              Next
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleRun}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors"
-            >
-              <Play size={14} /> Run Regression
-            </button>
-          )}
+          <span className="text-xs text-slate-600">
+            {cfg.vehicleNumber || "—"} · {cfg.targetInsurer || "—"} · {REGRESSION_BANKS.find(b => b.value === cfg.targetBank)?.label ?? "—"}
+          </span>
         </div>
       </div>
     </div>
