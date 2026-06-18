@@ -203,12 +203,11 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     }
 
     // ── 7. Wait for quotation cards ──────────────────────────────
-    let cardSel = '';
     try {
       const quotationPage = new QuotationPage(page);
-      cardSel = await quotationPage.waitForCards();
-      const count = await page.locator(cardSel).count();
-      recordStep('Quotation results loaded', 'PASS', `${count} card(s) via "${cardSel}"`);
+      await quotationPage.waitForCards();
+      const count = await page.locator('.insurance-card').count();
+      recordStep('Quotation results loaded', 'PASS', `${count} card element(s) loaded`);
     } catch (e) {
       recordStep('Quotation results loaded', 'FAIL', String(e));
       writeResult('FAIL', String(e));
@@ -218,15 +217,19 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     // ── 8. Select insurer ────────────────────────────────────
     try {
       const quotationPage = new QuotationPage(page);
-      const { foundTarget } = await quotationPage.selectInsurer(cardSel, CONFIG.targetInsurer);
+      const { foundTarget, unavailable } = await quotationPage.selectInsurer(CONFIG.targetInsurer);
       await page.waitForTimeout(1000);
-      if (foundTarget) {
-        recordStep(`Select ${CONFIG.targetInsurer}`, 'PASS', `Selected "${CONFIG.targetInsurer}"`);
-      } else {
-        recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', 'Quotation unavailable');
-        writeResult('FAIL', 'Quotation unavailable');
+      if (!foundTarget) {
+        recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', `${CONFIG.targetInsurer} card not found on quotation page`);
+        writeResult('FAIL', `${CONFIG.targetInsurer} card not found on quotation page`);
         return;
       }
+      if (unavailable) {
+        recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', `Quotation unavailable for ${CONFIG.targetInsurer}`);
+        writeResult('FAIL', `Quotation unavailable for ${CONFIG.targetInsurer}`);
+        return;
+      }
+      recordStep(`Select ${CONFIG.targetInsurer}`, 'PASS', `Selected "${CONFIG.targetInsurer}"`);
     } catch (e) {
       recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', String(e));
       writeResult('FAIL', String(e));
