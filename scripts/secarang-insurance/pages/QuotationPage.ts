@@ -14,7 +14,9 @@ export class QuotationPage extends BasePage {
   }
 
   async clickGetQuotationIfShown(): Promise<boolean> {
-    await this.wait(600);
+    // Wait for the page transition from the previous step to finish, then settle for 1s
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 15_000 }).catch(() => {});
+    await this.wait(1_000);
 
     // Already on cards — nothing to do
     if (await this.findCardSel()) return false;
