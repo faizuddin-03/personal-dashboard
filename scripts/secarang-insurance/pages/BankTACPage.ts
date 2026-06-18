@@ -6,7 +6,7 @@ export class BankTACPage extends BasePage {
     super(popup);
   }
 
-  async logOptionsAndRequestTAC(): Promise<void> {
+  async logOptionsAndRequestTAC(paymentStatus?: string): Promise<void> {
     await this.wait(1000);
 
     // Log everything visible on this page
@@ -21,6 +21,16 @@ export class BankTACPage extends BasePage {
       const txt = ((await allBtns.nth(i).textContent().catch(() => '')) ||
                    (await allBtns.nth(i).getAttribute('value').catch(() => '')) || '').replace(/\s+/g, ' ').trim();
       if (txt) console.log(`      [${i + 1}] "${txt}"`);
+    }
+
+    // Select payment status code before clicking Request TAC
+    const statusCode = paymentStatus ?? '00';
+    const statusSelect = this.page.locator('select#status_code');
+    if ((await statusSelect.count()) > 0) {
+      await statusSelect.selectOption(statusCode).catch(() => {});
+      console.log(`   💳 Payment status set to: ${statusCode}`);
+    } else {
+      console.log(`   ⚠️  #status_code select not found — skipping status selection`);
     }
 
     // Click Request TAC

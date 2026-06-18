@@ -2025,6 +2025,78 @@ const REGRESSION_BANKS = [
   { value: "fpx_bsn",        label: "BSN"         },
 ];
 
+const FPX_STATUS_CODES = [
+  { value: "00", label: "Approved" },
+  { value: "03", label: "Invalid Merchant" },
+  { value: "05", label: "Seller Account Closed" },
+  { value: "12", label: "Invalid Transaction" },
+  { value: "13", label: "Invalid Amount" },
+  { value: "14", label: "Invalid Buyer Amount" },
+  { value: "20", label: "Invalid Response" },
+  { value: "22", label: "Pending Response From Bank" },
+  { value: "30", label: "Transaction Not Supported" },
+  { value: "31", label: "Invalid Bank" },
+  { value: "39", label: "No Credit Account" },
+  { value: "45", label: "Duplicate Seller Order Number" },
+  { value: "46", label: "Invalid Seller Exchange or Seller" },
+  { value: "47", label: "Invalid Currency" },
+  { value: "48", label: "Transaction Limit Exceeded" },
+  { value: "51", label: "Insufficient Funds" },
+  { value: "53", label: "No Savings Account" },
+  { value: "57", label: "Transaction Not Permitted" },
+  { value: "61", label: "Withdrawal Limit Exceeded" },
+  { value: "65", label: "Withdrawal Frequency Exceeded" },
+  { value: "70", label: "Invalid Serial Number" },
+  { value: "72", label: "Duplicate Exchange Order Number" },
+  { value: "76", label: "Transaction Not Found" },
+  { value: "77", label: "Invalid Buyer Name Or Buyer ID" },
+  { value: "78", label: "Decryption Failed" },
+  { value: "79", label: "Host Decline When Down" },
+  { value: "80", label: "Buyer Cancel Transaction" },
+  { value: "83", label: "Invalid Transaction Model" },
+  { value: "84", label: "Invalid Transaction Type" },
+  { value: "85", label: "Internal Error At Bank System" },
+  { value: "87", label: "Debit Failed Exception Handling" },
+  { value: "88", label: "Credit Failed Exception Handling" },
+  { value: "89", label: "Transaction Not Received" },
+  { value: "93", label: "Transaction Cannot Be Completed" },
+  { value: "96", label: "System Malfunction" },
+  { value: "98", label: "MAC Error" },
+  { value: "99", label: "Pending for Authorization (B2B)" },
+  { value: "FE", label: "Internal Error" },
+  { value: "BC", label: "Transaction Cancelled By Customer" },
+  { value: "OE", label: "Not In FPX Operating Hours" },
+  { value: "OF", label: "Transaction Timeout" },
+  { value: "OA", label: "Session Timeout at FPX Entry" },
+  { value: "SB", label: "Invalid Seller Bank Code" },
+  { value: "XA", label: "Invalid Source IP Address" },
+  { value: "XE", label: "Invalid Message" },
+  { value: "XM", label: "Invalid FPX Transaction Model" },
+  { value: "XN", label: "Duplicate Seller Exchange Order Number" },
+  { value: "XO", label: "Duplicate Exchange Order Number" },
+  { value: "XS", label: "Seller Not In Exchange" },
+  { value: "XC", label: "Seller Exchange Encryption Error" },
+  { value: "XI", label: "Invalid Seller Exchange" },
+  { value: "XB", label: "Invalid Seller Exchange IP" },
+  { value: "XF", label: "Invalid Number Of Orders" },
+  { value: "XT", label: "Invalid Transaction Type (X)" },
+  { value: "XW", label: "Date Difference Exceeded" },
+  { value: "1A", label: "Buyer Session Timeout at IB Login" },
+  { value: "1B", label: "Buyer Failed Login" },
+  { value: "1C", label: "Buyer Cancelled at Login" },
+  { value: "1D", label: "Buyer Session Timeout at Account Selection" },
+  { value: "1E", label: "Buyer Failed at Account Selection" },
+  { value: "1F", label: "Buyer Cancelled at Account Selection" },
+  { value: "1G", label: "Buyer Session Timeout at TAC" },
+  { value: "1H", label: "Buyer Failed at TAC" },
+  { value: "1I", label: "Buyer Cancelled at TAC" },
+  { value: "1J", label: "Buyer Session Timeout at Confirmation" },
+  { value: "1K", label: "Buyer Failed at Confirmation" },
+  { value: "1L", label: "Buyer Cancelled at Confirmation" },
+  { value: "2A", label: "Amount Below Minimum Limit" },
+  { value: "ZZ", label: "Status Not Found" },
+];
+
 
 interface RegressionWizardConfig {
   baseUrl:            string;
@@ -2048,6 +2120,7 @@ interface RegressionWizardConfig {
   targetBank:         string;
   bankUsername:       string;
   bankPassword:       string;
+  paymentStatus:      string;
   cardNumber:         string;
   cardExpiry:         string;
   cardCvv:            string;
@@ -2079,6 +2152,7 @@ function loadWizardConfig(): RegressionWizardConfig {
     targetBank:         "fpx_mb2u",
     bankUsername:       "",
     bankPassword:       "",
+    paymentStatus:      "00",
     cardNumber:         "",
     cardExpiry:         "",
     cardCvv:            "",
@@ -2230,9 +2304,10 @@ function RegressionTab() {
         addressLine3:  cfg.addressLine3  || undefined,
         discountCode:  cfg.discountCode  || undefined,
         ...(cfg.paymentMethod === "fpx" && {
-          targetBank:   cfg.targetBank   || undefined,
-          bankUsername: cfg.bankUsername || undefined,
-          bankPassword: cfg.bankPassword || undefined,
+          targetBank:    cfg.targetBank    || undefined,
+          bankUsername:  cfg.bankUsername  || undefined,
+          bankPassword:  cfg.bankPassword  || undefined,
+          paymentStatus: cfg.paymentStatus || undefined,
         }),
       }),
     })
@@ -2834,6 +2909,20 @@ function RegressionTab() {
                     </div>
                   </WField>
                 </div>
+                <WField label="Payment Status">
+                  <select
+                    value={cfg.paymentStatus}
+                    onChange={e => patch({ paymentStatus: e.target.value })}
+                    disabled={loading}
+                    className={clsx(INPUT_CLS, "cursor-pointer")}
+                  >
+                    {FPX_STATUS_CODES.map(s => (
+                      <option key={s.value} value={s.value}>
+                        {s.value} — {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </WField>
               </div>
             )}
 

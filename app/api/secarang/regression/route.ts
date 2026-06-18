@@ -56,9 +56,10 @@ export async function POST(req: NextRequest) {
     addressLine2?: string;
     addressLine3?: string;
     discountCode?: string;
-    targetBank?:   string;
-    bankUsername?: string;
-    bankPassword?: string;
+    targetBank?:    string;
+    bankUsername?:  string;
+    bankPassword?:  string;
+    paymentStatus?: string;
   };
 
   if (!fs.existsSync(SCRIPT_DIR)) {
@@ -107,8 +108,9 @@ export async function POST(req: NextRequest) {
           ...(body.addressLine3   && { REGRESSION_ADDR3:        body.addressLine3 }),
           ...(body.discountCode   && { REGRESSION_DISCOUNT:     body.discountCode }),
           ...(body.targetBank     && { REGRESSION_BANK:         body.targetBank }),
-          ...(body.bankUsername   && { REGRESSION_BANK_USER:    body.bankUsername }),
-          ...(body.bankPassword   && { REGRESSION_BANK_PASS:    body.bankPassword }),
+          ...(body.bankUsername    && { REGRESSION_BANK_USER:    body.bankUsername }),
+          ...(body.bankPassword    && { REGRESSION_BANK_PASS:    body.bankPassword }),
+          ...(body.paymentStatus   && { REGRESSION_PAYMENT_STATUS: body.paymentStatus }),
         },
       },
     );

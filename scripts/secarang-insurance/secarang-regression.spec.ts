@@ -35,9 +35,10 @@ const CONFIG = {
   addressLine3:   process.env.REGRESSION_ADDR3       || 'Shah Alam, Selangor',
   discountCode:   process.env.REGRESSION_DISCOUNT    || 'YEAY7',
   // Payment gateway
-  targetBank:     process.env.REGRESSION_BANK        || 'fpx_mb2u',   // Maybank
-  bankUsername:   process.env.REGRESSION_BANK_USER   || 'Gaara',
-  bankPassword:   process.env.REGRESSION_BANK_PASS   || 'letmepaywithsand',
+  targetBank:     process.env.REGRESSION_BANK            || 'fpx_mb2u',   // Maybank
+  bankUsername:   process.env.REGRESSION_BANK_USER       || 'Gaara',
+  bankPassword:   process.env.REGRESSION_BANK_PASS       || 'letmepaywithsand',
+  paymentStatus:  process.env.REGRESSION_PAYMENT_STATUS  || '00',
   outputFile:     './regression-result.json',
   navTimeout:     90_000,
   stepTimeout:    30_000,
@@ -364,7 +365,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     // ── 14. Request TAC ──────────────────────────────────────────
     const bankTACPage = new BankTACPage(paymentPopup!);
     try {
-      await bankTACPage.logOptionsAndRequestTAC();
+      await bankTACPage.logOptionsAndRequestTAC(cfg.paymentStatus);
       recordStep('Request TAC', 'PASS', 'TAC requested');
     } catch (e) {
       recordStep('Request TAC', 'FAIL', String(e));
