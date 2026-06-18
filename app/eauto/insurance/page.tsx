@@ -2217,6 +2217,117 @@ function RegressionTab() {
   const failed   = (result?.steps ?? []).filter(s => s.status === "FAIL").length;
   const duration = result ? (result.durationMs / 1000).toFixed(1) : null;
 
+  function handleDownloadPDF() {
+    if (!result) return;
+
+    const statusColor  = result.overallStatus === "PASS" ? "#22c55e" : "#ef4444";
+    const statusSymbol = result.overallStatus === "PASS" ? "✓ PASS" : "✗ FAIL";
+
+    const stepRows = (result.steps ?? []).map((s, i) => {
+      const icon  = s.status === "PASS" ? "✓" : s.status === "FAIL" ? "✗" : "⏭";
+      const color = s.status === "PASS" ? "#22c55e" : s.status === "FAIL" ? "#ef4444" : "#94a3b8";
+      const bg    = s.status === "FAIL" ? "#450a0a" : "transparent";
+      return `<tr style="background:${bg}">
+        <td style="padding:6px 10px;color:#64748b;width:28px;text-align:right">${i + 1}.</td>
+        <td style="padding:6px 8px;width:52px"><span style="color:${color};font-weight:700;font-size:11px">${icon} ${s.status}</span></td>
+        <td style="padding:6px 8px;font-weight:600">${s.name}</td>
+        <td style="padding:6px 8px;color:#94a3b8;font-size:11px">${s.message || ""}</td>
+        <td style="padding:6px 8px;color:#475569;font-size:10px;white-space:nowrap">${new Date(s.timestamp).toLocaleTimeString()}</td>
+      </tr>`;
+    }).join("");
+
+    let verifSection = "";
+    if (result.verificationData) {
+      const vd = result.verificationData;
+      const buildVerifTable = (title: string, rows: VerificationRow[]) => {
+        if (!rows.length) return "";
+        const trs = rows.map(r => `<tr>
+          <td style="padding:5px 8px;color:#94a3b8;font-size:11px">${r.field}</td>
+          <td style="padding:5px 8px;font-size:11px;font-family:monospace">${r.confirmation || "—"}</td>
+          <td style="padding:5px 8px;font-size:11px;font-family:monospace">${r.success || "—"}</td>
+          <td style="padding:5px 8px;text-align:center">${r.match ? '<span style="color:#22c55e;font-weight:700">✓</span>' : '<span style="color:#ef4444;font-weight:700">✗</span>'}</td>
+        </tr>`).join("");
+        return `<div style="margin-top:14px">
+          <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">${title}</div>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;color:#e2e8f0">
+            <thead><tr style="border-bottom:1px solid #334155">
+              <th style="padding:4px 8px;text-align:left;color:#64748b;font-size:10px">Field</th>
+              <th style="padding:4px 8px;text-align:left;color:#64748b;font-size:10px">Confirmation Page</th>
+              <th style="padding:4px 8px;text-align:left;color:#64748b;font-size:10px">Success Page</th>
+              <th style="padding:4px 8px;text-align:center;color:#64748b;font-size:10px">Match</th>
+            </tr></thead>
+            <tbody>${trs}</tbody>
+          </table>
+        </div>`;
+      };
+      const allRows = [...vd.vehicleRows, ...vd.ownerRows, ...vd.pricingRows];
+      const vPassed = allRows.filter(r => r.match).length;
+      const vFailed = allRows.filter(r => !r.match).length;
+      verifSection = `
+        <div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:16px;margin-top:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em">Verification Report</span>
+            <span style="font-size:11px;font-weight:700;color:${vFailed === 0 ? "#22c55e" : "#ef4444"}">${vFailed === 0 ? `✓ All ${allRows.length} checks passed` : `✗ ${vFailed} mismatch(es) · ${vPassed}/${allRows.length} passed`}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:10px 0;border-top:1px solid #1e293b;border-bottom:1px solid #1e293b;margin-bottom:8px">
+            ${[["Receipt No", vd.receiptNo], ["Purchase Date", vd.purchaseDate], ["Payment Method", vd.paymentMethod]].map(([l, v]) => `
+              <div><div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.05em">${l}</div><div style="font-size:13px;font-family:monospace;color:#e2e8f0">${v || "—"}</div></div>`).join("")}
+          </div>
+          ${buildVerifTable("Vehicle Details", vd.vehicleRows)}
+          ${buildVerifTable("Owner Details", vd.ownerRows)}
+          ${buildVerifTable("Pricing", vd.pricingRows)}
+        </div>`;
+    } else if (result.verificationReport) {
+      verifSection = `<div style="margin-top:16px;background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:16px">
+        <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Verification Report</div>
+        <pre style="font-size:11px;font-family:monospace;color:#cbd5e1;white-space:pre-wrap;margin:0">${result.verificationReport}</pre>
+      </div>`;
+    }
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Regression Report — ${result.vehicleNumber} ${result.targetInsurer}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #020617; color: #e2e8f0; font-size: 13px; padding: 28px; }
+  table { border-collapse: collapse; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+  <div style="border-bottom:1px solid #1e293b;padding-bottom:14px;margin-bottom:18px;display:flex;align-items:flex-start;justify-content:space-between">
+    <div>
+      <div style="font-size:18px;font-weight:800;color:${statusColor}">${statusSymbol}</div>
+      <div style="font-size:14px;color:#94a3b8;margin-top:4px">${result.vehicleNumber} → ${result.targetInsurer}</div>
+      <div style="font-size:11px;color:#475569;margin-top:3px">${passed}/${(result.steps ?? []).length} steps passed${duration ? ` · ${duration}s` : ""}${result.completedAt ? ` · ${new Date(result.completedAt).toLocaleString()}` : ""}</div>
+    </div>
+    <div style="font-size:10px;color:#334155;text-align:right">Secarang Regression<br/>Generated ${new Date().toLocaleString()}</div>
+  </div>
+
+  <div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;overflow:hidden">
+    <div style="padding:10px 14px;border-bottom:1px solid #1e293b;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em">Steps</div>
+    <table style="width:100%;color:#e2e8f0">${stepRows}</table>
+  </div>
+
+  ${result.errorMessage ? `<div style="margin-top:14px;background:#450a0a;border:1px solid #7f1d1d;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#fca5a5">${result.errorMessage}</div>` : ""}
+
+  ${verifSection}
+</body>
+</html>`;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed;width:0;height:0;border:0;opacity:0";
+    document.body.appendChild(iframe);
+    iframe.contentDocument!.open();
+    iframe.contentDocument!.write(html);
+    iframe.contentDocument!.close();
+    iframe.contentWindow!.focus();
+    iframe.contentWindow!.print();
+    setTimeout(() => document.body.removeChild(iframe), 2000);
+  }
+
   // ── Done phase ────────────────────────────────────────────
   if (phase === "done") {
     return (
@@ -2230,6 +2341,14 @@ function RegressionTab() {
           >
             Reconfigure &amp; run again
           </button>
+          {result && (
+            <button
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 rounded-xl text-sm font-medium transition-colors"
+            >
+              <Download size={14} /> Download PDF
+            </button>
+          )}
         </div>
 
         {error && (
