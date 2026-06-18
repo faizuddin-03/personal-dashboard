@@ -1843,6 +1843,10 @@ const INSURER_ADDONS: Record<string, string[]> = {
   ],
 };
 
+const INSURER_DEFAULT_ADDONS: Record<string, string[]> = {
+  "Zurich": ["All Drivers"],
+};
+
 // ── Verification Report UI ────────────────────────────────────────────────────
 function VerifTable({ title, rows }: { title: string; rows: VerificationRow[] }) {
   return (
@@ -2063,7 +2067,7 @@ function loadWizardConfig(): RegressionWizardConfig {
     targetInsurer:      "Zurich",
     vehicleType:        "car" as const,
     ownerType:          "private" as const,
-    selectedAddons:     [],
+    selectedAddons:     ["All Drivers"],
     ownerName:          "MUHAMMAD FAIZUDDIN BIN BIDI",
     ownerEmail:         "faizuddin@modefair.com",
     ownerPhone:         "189812839",
@@ -2641,7 +2645,7 @@ function RegressionTab() {
             <div className="flex gap-2">
               {(["Zurich", "Lonpac", "Tokio Marine"] as const).map(ins => (
                 <button key={ins} type="button"
-                  onClick={() => patch({ targetInsurer: ins, selectedAddons: [] })}
+                  onClick={() => patch({ targetInsurer: ins, selectedAddons: INSURER_DEFAULT_ADDONS[ins] ?? [] })}
                   disabled={loading}
                   className={clsx(
                     "flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all",
