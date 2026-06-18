@@ -1817,6 +1817,32 @@ function SecarangTab({ mode = "standard" }: { mode?: "standard" | "regression" }
 // ── Regression Tab ────────────────────────────────────────────────────────────
 const SC_REGRESSION_ENV_PRESETS = SC_ENV_PRESETS;
 
+const INSURER_ADDONS: Record<string, string[]> = {
+  "Zurich": [
+    "CART (Compensation for Assessed Repair Time)",
+    "Special Perils",
+    "Legal Liability of Passengers for Negligent Acts",
+    "All Drivers",
+    "Legal Liability to Passengers",
+  ],
+  "Tokio Marine": [
+    "Breakage of glass in windscreen",
+    "Inclusion of special perils",
+    "Legal liability to passengers",
+    "Legal liability of passengers for negligent acts",
+    "Unlimited Towing",
+    "Current year non claim discount relief",
+  ],
+  "Lonpac": [
+    "Breakage of glass in windscreen",
+    "Inclusion of special perils",
+    "Legal liability to passengers",
+    "Legal liability of passengers for negligent acts",
+    "Unlimited Towing",
+    "Current year non claim discount relief",
+  ],
+};
+
 // ── Verification Report UI ────────────────────────────────────────────────────
 function VerifTable({ title, rows }: { title: string; rows: VerificationRow[] }) {
   return (
@@ -2006,10 +2032,7 @@ interface RegressionWizardConfig {
   targetInsurer:      string;
   vehicleType:        "car" | "motorcycle";
   ownerType:          "private" | "company";
-  addonWindshield:    boolean;
-  addonSpecialPerils: boolean;
-  addonLegalLiab:     boolean;
-  addonCart:          boolean;
+  selectedAddons:     string[];
   ownerName:          string;
   ownerEmail:         string;
   ownerPhone:         string;
@@ -2044,10 +2067,7 @@ function loadWizardConfig(): RegressionWizardConfig {
     targetInsurer:      "Zurich",
     vehicleType:        "car" as const,
     ownerType:          "private" as const,
-    addonWindshield:    false,
-    addonSpecialPerils: false,
-    addonLegalLiab:     false,
-    addonCart:          false,
+    selectedAddons:     [] as string[],
     ownerName:          "MUHAMMAD FAIZUDDIN BIN BIDI",
     ownerEmail:         "faizuddin@modefair.com",
     ownerPhone:         "189812839",
@@ -2194,12 +2214,7 @@ function RegressionTab() {
         targetInsurer: cfg.targetInsurer || undefined,
         vehicleType:   cfg.vehicleType   || undefined,
         ownerType:     cfg.ownerType     || undefined,
-        addons: [
-          cfg.addonWindshield    && "Windshield",
-          cfg.addonSpecialPerils && "Special Perils",
-          cfg.addonLegalLiab     && "Legal Liability to Passengers",
-          cfg.addonCart          && "CART",
-        ].filter(Boolean) as string[] || undefined,
+        addons: cfg.selectedAddons.length > 0 ? cfg.selectedAddons : undefined,
         ownerName:     cfg.ownerName     || undefined,
         ownerEmail:    cfg.ownerEmail    || undefined,
         ownerPhone:    cfg.ownerPhone    || undefined,
@@ -2623,7 +2638,7 @@ function RegressionTab() {
             <div className="flex gap-2">
               {(["Zurich", "Lonpac", "Tokio Marine"] as const).map(ins => (
                 <button key={ins} type="button"
-                  onClick={() => patch({ targetInsurer: ins })}
+                  onClick={() => patch({ targetInsurer: ins, selectedAddons: [] })}
                   disabled={loading}
                   className={clsx(
                     "flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all",
@@ -2639,38 +2654,46 @@ function RegressionTab() {
 
             <div className="h-px bg-slate-800" />
 
-            {/* Section 2: Add-ons */}
+            {/* Section 2: Add-ons — list changes based on the selected insurer */}
             <RightSectionHeader num={2} label="Add-ons" />
-            <div className="grid grid-cols-2 gap-2">
-              {([
-                { key: "addonWindshield"    as const, label: "Windshield"                     },
-                { key: "addonSpecialPerils" as const, label: "Special Perils"                 },
-                { key: "addonLegalLiab"     as const, label: "Legal Liability to Passengers"  },
-                { key: "addonCart"          as const, label: "CART"                           },
-              ]).map(({ key, label }) => {
-                const on = cfg[key];
-                return (
-                  <button key={key} type="button"
-                    onClick={() => patch({ [key]: !on })}
-                    disabled={loading}
-                    className={clsx(
-                      "flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left",
-                      on
-                        ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300",
-                      loading && "opacity-50 cursor-not-allowed pointer-events-none"
-                    )}>
-                    <span className={clsx(
-                      "w-3.5 h-3.5 rounded-sm border flex items-center justify-center shrink-0 transition-all",
-                      on ? "bg-blue-500 border-blue-500" : "border-slate-600"
-                    )}>
-                      {on && <span className="text-white text-[9px] font-black leading-none">✓</span>}
-                    </span>
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
+            {(() => {
+              const available = INSURER_ADDONS[cfg.targetInsurer] ?? [];
+              if (!available.length) {
+                return <p className="text-xs text-slate-600 italic">No add-ons available for {cfg.targetInsurer}.</p>;
+              }
+              return (
+                <div className="space-y-1.5">
+                  {available.map(addon => {
+                    const on = cfg.selectedAddons.includes(addon);
+                    return (
+                      <button key={addon} type="button"
+                        onClick={() => {
+                          const next = on
+                            ? cfg.selectedAddons.filter(a => a !== addon)
+                            : [...cfg.selectedAddons, addon];
+                          patch({ selectedAddons: next });
+                        }}
+                        disabled={loading}
+                        className={clsx(
+                          "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left",
+                          on
+                            ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                            : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300",
+                          loading && "opacity-50 cursor-not-allowed pointer-events-none"
+                        )}>
+                        <span className={clsx(
+                          "w-3.5 h-3.5 rounded-sm border flex items-center justify-center shrink-0 transition-all",
+                          on ? "bg-blue-500 border-blue-500" : "border-slate-600"
+                        )}>
+                          {on && <span className="text-white text-[9px] font-black leading-none">✓</span>}
+                        </span>
+                        {addon}
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })()}
 
             <div className="h-px bg-slate-800" />
 
