@@ -72,12 +72,15 @@ export class BankTACPage extends BasePage {
   }
 
   async waitForClose(): Promise<void> {
-    // Wait for payment to process (~7s) then for the popup to close
-    console.log('   ⏳ Waiting for payment processing…');
-    await this.wait(7000);
-    await this.page.waitForEvent('close', { timeout: 30_000 }).catch(() => {
-      console.log('   ℹ️  Popup did not close automatically — continuing');
-    });
-    console.log('   ✅ Popup closed — back on main window');
+    console.log('   ⏳ Waiting for popup to close after Pay Now…');
+    // The popup closes immediately on its own after Pay Now redirects.
+    // page.waitForTimeout / any page method throws if the page is already
+    // gone, so check isClosed() first before attaching any listener.
+    if (!this.page.isClosed()) {
+      await this.page.waitForEvent('close', { timeout: 30_000 }).catch(() => {
+        console.log('   ℹ️  Popup did not close within 30 s — continuing anyway');
+      });
+    }
+    console.log('   ✅ Popup closed — processing continues on main window');
   }
 }
