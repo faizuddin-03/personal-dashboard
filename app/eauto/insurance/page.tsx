@@ -2115,11 +2115,19 @@ function RegressionTab() {
   const [liveLog,  setLiveLog]  = useState("");
   const liveLogRef = useRef<HTMLPreElement>(null);
 
+  const RUNNING_KEY = "regression_e2e_running";
+
+  // On mount: restore a completed result OR resume a run that was in progress
+  // when the user navigated away.
   useEffect(() => {
     const saved = loadRegressionTestResult();
-    if (saved) { setResult(saved); setLog(saved.log ?? ""); setPhase("done"); }
-  }, []);
+    if (saved) { setResult(saved); setLog(saved.log ?? ""); setPhase("done"); return; }
+    if (localStorage.getItem(RUNNING_KEY) === "1") {
+      setLoading(true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Poll the live log every 500 ms while running.
   useEffect(() => {
     if (!loading) return;
     const id = setInterval(() => {
@@ -2134,6 +2142,30 @@ function RegressionTab() {
     return () => clearInterval(id);
   }, [loading]);
 
+  // Poll the result endpoint every 3 s while running.
+  // This recovers the result even if the user navigated away and came back.
+  useEffect(() => {
+    if (!loading) return;
+    const id = setInterval(() => {
+      fetch("/api/secarang/regression")
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (!data || !data.completedAt) return;
+          localStorage.removeItem(RUNNING_KEY);
+          setLoading(false);
+          setStopping(false);
+          setPhase("done");
+          if (data.error && !data.steps) { setError(data.error); return; }
+          const res = data as RegressionResult;
+          setResult(res);
+          setLog(data.log ?? "");
+          saveRegressionTestResult({ ...res, log: data.log ?? "" });
+        })
+        .catch(() => {});
+    }, 3_000);
+    return () => clearInterval(id);
+  }, [loading]); // eslint-disable-line react-hooks/exhaustive-deps
+
   function patch(updates: Partial<RegressionWizardConfig>) {
     setCfg(prev => {
       const next = { ...prev, ...updates };
@@ -2143,6 +2175,7 @@ function RegressionTab() {
   }
 
   function handleRun() {
+    localStorage.setItem(RUNNING_KEY, "1");
     setLoading(true);
     setStopping(false);
     setResult(null);
@@ -2183,6 +2216,7 @@ function RegressionTab() {
     })
       .then(r => r.json())
       .then(data => {
+        localStorage.removeItem(RUNNING_KEY);
         setLoading(false);
         setStopping(false);
         setPhase("done");
@@ -2193,6 +2227,7 @@ function RegressionTab() {
         saveRegressionTestResult({ ...res, log: data.log ?? "" });
       })
       .catch(e => {
+        localStorage.removeItem(RUNNING_KEY);
         setLoading(false);
         setStopping(false);
         setPhase("done");
@@ -2201,11 +2236,13 @@ function RegressionTab() {
   }
 
   function handleStop() {
+    localStorage.removeItem(RUNNING_KEY);
     setStopping(true);
     fetch("/api/secarang/regression", { method: "DELETE" }).catch(() => {});
   }
 
   function handleClear() {
+    localStorage.removeItem(RUNNING_KEY);
     setResult(null);
     setError("");
     setLog("");

@@ -83,8 +83,10 @@ async function captureScreenshot(page: import('@playwright/test').Page, label: s
   try {
     const buf = await page.screenshot({ type: 'jpeg', quality: 55, fullPage: false });
     screenshots.push({ label, dataUrl: `data:image/jpeg;base64,${buf.toString('base64')}` });
-    console.log(`   📷 Screenshot: "${label}"`);
-  } catch { /* non-critical — skip silently */ }
+    console.log(`   📷 Screenshot: "${label}" (${Math.round(buf.length / 1024)} KB)`);
+  } catch (e) {
+    console.log(`   ⚠️  Screenshot failed for "${label}": ${e}`);
+  }
 }
 
 function recordStep(name: string, status: StepResult['status'], message: string) {
