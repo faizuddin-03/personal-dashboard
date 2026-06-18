@@ -2206,6 +2206,7 @@ function RegressionTab() {
   const [showPassword,     setShowPassword]     = useState(false);
   const [showBankPassword, setShowBankPassword] = useState(false);
   const [showCardCvv,      setShowCardCvv]      = useState(false);
+  const [editingBankCreds, setEditingBankCreds] = useState(false);
   const [showLog,          setShowLog]          = useState(false);
 
   const [loading,  setLoading]  = useState(false);
@@ -2642,6 +2643,61 @@ function RegressionTab() {
             {/* Divider */}
             <div className="h-px bg-slate-800" />
 
+            {/* Bank Credentials */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Bank Credentials</p>
+                <button type="button"
+                  onClick={() => setEditingBankCreds(v => !v)}
+                  disabled={loading}
+                  className="text-[11px] font-medium text-blue-400 hover:text-blue-300 transition-colors disabled:opacity-40">
+                  {editingBankCreds ? "Done" : "Update"}
+                </button>
+              </div>
+              {editingBankCreds ? (
+                <div className="space-y-2">
+                  <WField label="Bank Username">
+                    <input value={cfg.bankUsername}
+                      onChange={e => patch({ bankUsername: e.target.value })}
+                      placeholder="Username"
+                      autoComplete="off"
+                      className={INPUT_CLS}
+                    />
+                  </WField>
+                  <WField label="Bank Password">
+                    <div className="relative">
+                      <input
+                        type={showBankPassword ? "text" : "password"}
+                        value={cfg.bankPassword}
+                        onChange={e => patch({ bankPassword: e.target.value })}
+                        placeholder="Password"
+                        autoComplete="off"
+                        className={INPUT_CLS}
+                      />
+                      <button type="button" onClick={() => setShowBankPassword(v => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                        {showBankPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                  </WField>
+                </div>
+              ) : (
+                <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl px-3.5 py-2.5 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-slate-500">Username</span>
+                    <span className="text-[12px] text-slate-300 font-mono">{cfg.bankUsername || <span className="text-slate-600 italic">not set</span>}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-slate-500">Password</span>
+                    <span className="text-[12px] text-slate-400 font-mono tracking-widest">{cfg.bankPassword ? "••••••••" : <span className="text-slate-600 italic">not set</span>}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-slate-800" />
+
             {/* Vehicle */}
             <div className="space-y-3">
               <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Vehicle</p>
@@ -2881,34 +2937,6 @@ function RegressionTab() {
                     ))}
                   </div>
                 </WField>
-                <div className="grid grid-cols-2 gap-3">
-                  <WField label="Bank Username">
-                    <input value={cfg.bankUsername}
-                      onChange={e => patch({ bankUsername: e.target.value })}
-                      placeholder="Username"
-                      autoComplete="off"
-                      disabled={loading}
-                      className={INPUT_CLS}
-                    />
-                  </WField>
-                  <WField label="Bank Password">
-                    <div className="relative">
-                      <input
-                        type={showBankPassword ? "text" : "password"}
-                        value={cfg.bankPassword}
-                        onChange={e => patch({ bankPassword: e.target.value })}
-                        placeholder="Password"
-                        autoComplete="off"
-                        disabled={loading}
-                        className={INPUT_CLS}
-                      />
-                      <button type="button" onClick={() => setShowBankPassword(v => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                        {showBankPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                      </button>
-                    </div>
-                  </WField>
-                </div>
                 <WField label="Payment Status">
                   <select
                     value={cfg.paymentStatus}
