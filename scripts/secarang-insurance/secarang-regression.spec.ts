@@ -13,6 +13,12 @@ import { BankLoginPage }      from './pages/BankLoginPage';
 import { BankTACPage }        from './pages/BankTACPage';
 import { PaymentSuccessPage, VerificationData } from './pages/PaymentSuccessPage';
 
+// Add-ons that the site ticks by default per insurer — must be explicitly
+// unchecked when the user has not selected them in the dashboard.
+const SITE_DEFAULT_ON_ADDONS: Record<string, string[]> = {
+  'Zurich': ['All Drivers'],
+};
+
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 const CONFIG = {
   baseUrl:        process.env.SECARANG_BASE_URL      || 'https://staging.secarang.com/preprod',
@@ -275,6 +281,15 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     try {
       await captureScreenshot(page, 'Add-ons Page');
       const addOnsPage = new AddOnsPage(page);
+
+      // Uncheck site-default add-ons the user has deselected in the dashboard
+      const siteDefaults = SITE_DEFAULT_ON_ADDONS[CONFIG.targetInsurer] ?? [];
+      const toUncheck = siteDefaults.filter(d => !CONFIG.targetAddons.includes(d));
+      if (toUncheck.length) {
+        console.log(`   🔲 Unchecking site-default add-ons: ${toUncheck.join(', ')}`);
+        await addOnsPage.uncheckNamedAddons(toUncheck);
+      }
+
       if (CONFIG.targetAddons.length > 0) {
         const { found, notFound } = await addOnsPage.selectNamedAddons(CONFIG.targetAddons);
         await addOnsPage.continue();
@@ -282,6 +297,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
         const msg = [
           found.length    ? `Selected: ${found.join(', ')}` : '',
           notFound.length ? `Not listed: ${notFound.join(', ')}` : '',
+          toUncheck.length ? `Unchecked: ${toUncheck.join(', ')}` : '',
         ].filter(Boolean).join(' | ');
         recordStep('Add-ons page', 'PASS', msg || 'No add-ons configured');
       } else {
@@ -289,7 +305,10 @@ test.describe('Secarang Regression – Zurich E2E', () => {
         await addOnsPage.waitAndAddSimple(2);
         await addOnsPage.continue();
         await page.waitForTimeout(1000);
-        recordStep('Add-ons page', 'PASS', 'Selected first 2 simple add-ons');
+        const msg = toUncheck.length
+          ? `Selected first 2 simple add-ons | Unchecked: ${toUncheck.join(', ')}`
+          : 'Selected first 2 simple add-ons';
+        recordStep('Add-ons page', 'PASS', msg);
       }
     } catch (e) {
       // Non-stopping: record FAIL but carry on

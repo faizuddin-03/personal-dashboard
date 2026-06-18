@@ -31,6 +31,52 @@ export class AddOnsPage extends BasePage {
   }
 
   /**
+   * Uncheck add-ons that are ticked by default on the site but should NOT be selected.
+   * Looks for a REMOVE / Deselect / Uncheck button on the matching card.
+   */
+  async uncheckNamedAddons(targets: string[]): Promise<void> {
+    if (!targets.length) return;
+
+    const allCards  = this.page.locator('.addon-card');
+    const totalCards = await allCards.count();
+
+    for (const target of targets) {
+      const targetLower = target.toLowerCase();
+      let unchecked = false;
+
+      for (let i = 0; i < totalCards; i++) {
+        const card = allCards.nth(i);
+        if (!(await card.isVisible().catch(() => false))) continue;
+
+        const text = (await card.innerText().catch(() => '')).toLowerCase();
+        if (!text.includes(targetLower)) continue;
+
+        // Look for a removal button — site uses REMOVE, Remove, Deselect, etc.
+        for (const label of ['REMOVE', 'Remove', 'Deselect', 'Uncheck', 'DELETE', 'Delete']) {
+          const btn = card.locator(`button:has-text("${label}")`).first();
+          if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+            console.log(`   ➖ Unchecking "${target}" (clicking "${label}")`);
+            await btn.scrollIntoViewIfNeeded().catch(() => {});
+            await btn.click();
+            await this.wait(800);
+            unchecked = true;
+            break;
+          }
+        }
+
+        if (!unchecked) {
+          console.log(`   ℹ️  "${target}" card found but no REMOVE button — may already be unchecked or button label unknown`);
+        }
+        break;
+      }
+
+      if (!unchecked) {
+        console.log(`   ⚠️  Could not uncheck "${target}" — card not found or no removal button`);
+      }
+    }
+  }
+
+  /**
    * Try to find and click ADD for each name in `targets`.
    * Returns an object describing which add-ons were found/clicked and which were not listed.
    * Never throws — missing add-ons are reported as "not listed" and the flow continues.
