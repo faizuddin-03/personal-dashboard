@@ -2053,11 +2053,7 @@ interface RegressionWizardConfig {
 const REGRESSION_CONFIG_KEY = "regression_wizard_config";
 
 function loadWizardConfig(): RegressionWizardConfig {
-  try {
-    const raw = localStorage.getItem(REGRESSION_CONFIG_KEY);
-    if (raw) return JSON.parse(raw) as RegressionWizardConfig;
-  } catch { /* ignore */ }
-  return {
+  const defaults: RegressionWizardConfig = {
     baseUrl:            SC_DEFAULT_ENV,
     customEnv:          false,
     sitePassword:       SC_DEFAULT_PASSWORD,
@@ -2067,7 +2063,7 @@ function loadWizardConfig(): RegressionWizardConfig {
     targetInsurer:      "Zurich",
     vehicleType:        "car" as const,
     ownerType:          "private" as const,
-    selectedAddons:     [] as string[],
+    selectedAddons:     [],
     ownerName:          "MUHAMMAD FAIZUDDIN BIN BIDI",
     ownerEmail:         "faizuddin@modefair.com",
     ownerPhone:         "189812839",
@@ -2084,6 +2080,13 @@ function loadWizardConfig(): RegressionWizardConfig {
     cardCvv:            "",
     cardName:           "",
   };
+  try {
+    const raw = localStorage.getItem(REGRESSION_CONFIG_KEY);
+    // Merge saved config over defaults so any newly added fields
+    // (like selectedAddons) are always present even in old saved configs.
+    if (raw) return { ...defaults, ...JSON.parse(raw) };
+  } catch { /* ignore */ }
+  return defaults;
 }
 
 function saveWizardConfig(cfg: RegressionWizardConfig) {
