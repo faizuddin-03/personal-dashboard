@@ -2010,6 +2010,12 @@ interface RegressionWizardConfig {
   addonSpecialPerils: boolean;
   addonLegalLiab:     boolean;
   addonCart:          boolean;
+  ownerName:          string;
+  ownerEmail:         string;
+  ownerPhone:         string;
+  addressLine1:       string;
+  addressLine2:       string;
+  addressLine3:       string;
   discountCode:       string;
   paymentMethod:      "fpx" | "card";
   targetBank:         string;
@@ -2042,6 +2048,12 @@ function loadWizardConfig(): RegressionWizardConfig {
     addonSpecialPerils: false,
     addonLegalLiab:     false,
     addonCart:          false,
+    ownerName:          "MUHAMMAD FAIZUDDIN BIN BIDI",
+    ownerEmail:         "faizuddin@modefair.com",
+    ownerPhone:         "189812839",
+    addressLine1:       "2505, Arctic Monkeys Road",
+    addressLine2:       "Taman Monyet Kutub",
+    addressLine3:       "Shah Alam, Selangor",
     discountCode:       "",
     paymentMethod:      "fpx" as const,
     targetBank:         "fpx_mb2u",
@@ -2155,6 +2167,12 @@ function RegressionTab() {
           cfg.addonLegalLiab     && "Legal Liability to Passengers",
           cfg.addonCart          && "CART",
         ].filter(Boolean) as string[] || undefined,
+        ownerName:     cfg.ownerName     || undefined,
+        ownerEmail:    cfg.ownerEmail    || undefined,
+        ownerPhone:    cfg.ownerPhone    || undefined,
+        addressLine1:  cfg.addressLine1  || undefined,
+        addressLine2:  cfg.addressLine2  || undefined,
+        addressLine3:  cfg.addressLine3  || undefined,
         discountCode:  cfg.discountCode  || undefined,
         ...(cfg.paymentMethod === "fpx" && {
           targetBank:   cfg.targetBank   || undefined,
@@ -2492,14 +2510,68 @@ function RegressionTab() {
 
             {/* Section 3: Confirmation Payment */}
             <RightSectionHeader num={3} label="Confirmation Payment" />
-            <WField label="Discount Code" hint="(optional)">
-              <input value={cfg.discountCode}
-                onChange={e => patch({ discountCode: e.target.value })}
-                placeholder="PROMO123"
-                disabled={loading}
-                className={INPUT_CLS}
-              />
-            </WField>
+            <div className="space-y-3">
+              <WField label="Full Name">
+                <input value={cfg.ownerName}
+                  onChange={e => patch({ ownerName: e.target.value })}
+                  placeholder="MUHAMMAD FAIZUDDIN BIN BIDI"
+                  disabled={loading}
+                  className={INPUT_CLS}
+                />
+              </WField>
+              <div className="grid grid-cols-2 gap-3">
+                <WField label="Email">
+                  <input value={cfg.ownerEmail}
+                    onChange={e => patch({ ownerEmail: e.target.value })}
+                    placeholder="you@example.com"
+                    disabled={loading}
+                    className={INPUT_CLS}
+                  />
+                </WField>
+                <WField label="Phone">
+                  <input value={cfg.ownerPhone}
+                    onChange={e => patch({ ownerPhone: e.target.value })}
+                    placeholder="189812839"
+                    disabled={loading}
+                    className={INPUT_CLS}
+                  />
+                </WField>
+              </div>
+              <WField label="Address Line 1">
+                <input value={cfg.addressLine1}
+                  onChange={e => patch({ addressLine1: e.target.value })}
+                  placeholder="Street address"
+                  disabled={loading}
+                  className={INPUT_CLS}
+                />
+              </WField>
+              <div className="grid grid-cols-2 gap-3">
+                <WField label="Address Line 2">
+                  <input value={cfg.addressLine2}
+                    onChange={e => patch({ addressLine2: e.target.value })}
+                    placeholder="Taman / Area"
+                    disabled={loading}
+                    className={INPUT_CLS}
+                  />
+                </WField>
+                <WField label="Address Line 3">
+                  <input value={cfg.addressLine3}
+                    onChange={e => patch({ addressLine3: e.target.value })}
+                    placeholder="City, State"
+                    disabled={loading}
+                    className={INPUT_CLS}
+                  />
+                </WField>
+              </div>
+              <WField label="Discount Code" hint="(optional)">
+                <input value={cfg.discountCode}
+                  onChange={e => patch({ discountCode: e.target.value })}
+                  placeholder="PROMO123"
+                  disabled={loading}
+                  className={INPUT_CLS}
+                />
+              </WField>
+            </div>
 
             <div className="h-px bg-slate-800" />
 
