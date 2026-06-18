@@ -46,6 +46,16 @@ export async function POST(req: NextRequest) {
     icNumber?:     string;
     postcode?:     string;
     targetInsurer?: string;
+    ownerName?:    string;
+    ownerEmail?:   string;
+    ownerPhone?:   string;
+    addressLine1?: string;
+    addressLine2?: string;
+    addressLine3?: string;
+    discountCode?: string;
+    targetBank?:   string;
+    bankUsername?: string;
+    bankPassword?: string;
   };
 
   if (!fs.existsSync(SCRIPT_DIR)) {
@@ -83,6 +93,16 @@ export async function POST(req: NextRequest) {
           ...(body.icNumber       && { REGRESSION_IC:           body.icNumber }),
           ...(body.postcode       && { REGRESSION_POSTCODE:     body.postcode }),
           ...(body.targetInsurer  && { REGRESSION_INSURER:      body.targetInsurer }),
+          ...(body.ownerName      && { REGRESSION_NAME:         body.ownerName }),
+          ...(body.ownerEmail     && { REGRESSION_EMAIL:        body.ownerEmail }),
+          ...(body.ownerPhone     && { REGRESSION_PHONE:        body.ownerPhone }),
+          ...(body.addressLine1   && { REGRESSION_ADDR1:        body.addressLine1 }),
+          ...(body.addressLine2   && { REGRESSION_ADDR2:        body.addressLine2 }),
+          ...(body.addressLine3   && { REGRESSION_ADDR3:        body.addressLine3 }),
+          ...(body.discountCode   && { REGRESSION_DISCOUNT:     body.discountCode }),
+          ...(body.targetBank     && { REGRESSION_BANK:         body.targetBank }),
+          ...(body.bankUsername   && { REGRESSION_BANK_USER:    body.bankUsername }),
+          ...(body.bankPassword   && { REGRESSION_BANK_PASS:    body.bankPassword }),
         },
       },
     );
