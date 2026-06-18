@@ -1997,22 +1997,26 @@ const REGRESSION_BANKS = [
 
 
 interface RegressionWizardConfig {
-  baseUrl:       string;
-  customEnv:     boolean;
-  sitePassword:  string;
-  vehicleNumber: string;
-  icNumber:      string;
-  postcode:      string;
-  targetInsurer: string;
-  discountCode:  string;
-  paymentMethod: "fpx" | "card";
-  targetBank:    string;
-  bankUsername:  string;
-  bankPassword:  string;
-  cardNumber:    string;
-  cardExpiry:    string;
-  cardCvv:       string;
-  cardName:      string;
+  baseUrl:            string;
+  customEnv:          boolean;
+  sitePassword:       string;
+  vehicleNumber:      string;
+  icNumber:           string;
+  postcode:           string;
+  targetInsurer:      string;
+  addonWindshield:    boolean;
+  addonSpecialPerils: boolean;
+  addonLegalLiab:     boolean;
+  addonCart:          boolean;
+  discountCode:       string;
+  paymentMethod:      "fpx" | "card";
+  targetBank:         string;
+  bankUsername:       string;
+  bankPassword:       string;
+  cardNumber:         string;
+  cardExpiry:         string;
+  cardCvv:            string;
+  cardName:           string;
 }
 
 const REGRESSION_CONFIG_KEY = "regression_wizard_config";
@@ -2023,22 +2027,26 @@ function loadWizardConfig(): RegressionWizardConfig {
     if (raw) return JSON.parse(raw) as RegressionWizardConfig;
   } catch { /* ignore */ }
   return {
-    baseUrl:       SC_DEFAULT_ENV,
-    customEnv:     false,
-    sitePassword:  SC_DEFAULT_PASSWORD,
-    vehicleNumber: "WYN3837",
-    icNumber:      "730620065847",
-    postcode:      "55000",
-    targetInsurer: "Zurich",
-    discountCode:  "",
-    paymentMethod: "fpx" as const,
-    targetBank:    "fpx_mb2u",
-    bankUsername:  "",
-    bankPassword:  "",
-    cardNumber:    "",
-    cardExpiry:    "",
-    cardCvv:       "",
-    cardName:      "",
+    baseUrl:            SC_DEFAULT_ENV,
+    customEnv:          false,
+    sitePassword:       SC_DEFAULT_PASSWORD,
+    vehicleNumber:      "WYN3837",
+    icNumber:           "730620065847",
+    postcode:           "55000",
+    targetInsurer:      "Zurich",
+    addonWindshield:    false,
+    addonSpecialPerils: false,
+    addonLegalLiab:     false,
+    addonCart:          false,
+    discountCode:       "",
+    paymentMethod:      "fpx" as const,
+    targetBank:         "fpx_mb2u",
+    bankUsername:       "",
+    bankPassword:       "",
+    cardNumber:         "",
+    cardExpiry:         "",
+    cardCvv:            "",
+    cardName:           "",
   };
 }
 
@@ -2136,6 +2144,12 @@ function RegressionTab() {
         icNumber:      normalizeIdNumber(cfg.icNumber) || undefined,
         postcode:      cfg.postcode      || undefined,
         targetInsurer: cfg.targetInsurer || undefined,
+        addons: [
+          cfg.addonWindshield    && "Windshield",
+          cfg.addonSpecialPerils && "Special Perils",
+          cfg.addonLegalLiab     && "Legal Liability to Passengers",
+          cfg.addonCart          && "CART",
+        ].filter(Boolean) as string[] || undefined,
         discountCode:  cfg.discountCode  || undefined,
         ...(cfg.paymentMethod === "fpx" && {
           targetBank:   cfg.targetBank   || undefined,
@@ -2432,15 +2446,15 @@ function RegressionTab() {
             <RightSectionHeader num={2} label="Add-ons" />
             <div className="grid grid-cols-2 gap-2">
               {([
-                { key: "addonWindshield",   label: "Windshield"            },
-                { key: "addonSpecialPerils", label: "Special Perils"       },
-                { key: "addonLegalLiab",    label: "Legal Liability to Passengers" },
-                { key: "addonCart",         label: "CART"                  },
-              ] as const).map(({ key, label }) => {
-                const on = !!(cfg as Record<string, unknown>)[key];
+                { key: "addonWindshield"    as const, label: "Windshield"                     },
+                { key: "addonSpecialPerils" as const, label: "Special Perils"                 },
+                { key: "addonLegalLiab"     as const, label: "Legal Liability to Passengers"  },
+                { key: "addonCart"          as const, label: "CART"                           },
+              ]).map(({ key, label }) => {
+                const on = cfg[key];
                 return (
                   <button key={key} type="button"
-                    onClick={() => patch({ [key]: !on } as Partial<RegressionWizardConfig>)}
+                    onClick={() => patch({ [key]: !on })}
                     className={clsx(
                       "flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left",
                       on

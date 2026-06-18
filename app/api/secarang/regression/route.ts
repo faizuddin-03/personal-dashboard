@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
     icNumber?:     string;
     postcode?:     string;
     targetInsurer?: string;
+    addons?:       string[];
     ownerName?:    string;
     ownerEmail?:   string;
     ownerPhone?:   string;
@@ -93,6 +94,7 @@ export async function POST(req: NextRequest) {
           ...(body.icNumber       && { REGRESSION_IC:           body.icNumber }),
           ...(body.postcode       && { REGRESSION_POSTCODE:     body.postcode }),
           ...(body.targetInsurer  && { REGRESSION_INSURER:      body.targetInsurer }),
+          ...(body.addons?.length && { REGRESSION_ADDONS:       body.addons.join(',') }),
           ...(body.ownerName      && { REGRESSION_NAME:         body.ownerName }),
           ...(body.ownerEmail     && { REGRESSION_EMAIL:        body.ownerEmail }),
           ...(body.ownerPhone     && { REGRESSION_PHONE:        body.ownerPhone }),

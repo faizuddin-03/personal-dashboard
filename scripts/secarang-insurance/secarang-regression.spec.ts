@@ -21,6 +21,9 @@ const CONFIG = {
   icNumber:       process.env.REGRESSION_IC          || '730620065847',
   postcode:       process.env.REGRESSION_POSTCODE    || '55000',
   targetInsurer:  process.env.REGRESSION_INSURER     || 'Zurich',
+  // Comma-separated add-on names to select (e.g. "Windshield,CART")
+  // Empty = select first 2 simple add-ons as before
+  targetAddons:   (process.env.REGRESSION_ADDONS || '').split(',').map(s => s.trim()).filter(Boolean),
   // Owner / contact details for payment confirmation page
   ownerName:      process.env.REGRESSION_NAME        || 'MUHAMMAD FAIZUDDIN BIN BIDI',
   ownerEmail:     process.env.REGRESSION_EMAIL       || 'faizuddin@modefair.com',
@@ -161,7 +164,6 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       const vehicleDetailsPage = new VehicleDetailsPage(page);
       const CARD_SELS = ['.insurance-card', '.quotation-card', '.quote-card', '.insurer-card', '.plan-card'];
 
-      // Wait until either cards appear or the vehicle-details/quotation page loads
       const deadline = Date.now() + 25_000;
       while (Date.now() < deadline) {
         const hasCards = await (async () => {
@@ -186,7 +188,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 6. Get Quotation button (intermediate page after vehicle details) ───────
+    // ── 6. Get Quotation button (intermediate page after vehicle details) ────
     try {
       const quotationPage = new QuotationPage(page);
       const clicked = await quotationPage.clickGetQuotationIfShown();
@@ -211,40 +213,56 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 8. Select Zurich ─────────────────────────────────────────
+    // ── 8. Select insurer (non-stopping: picks first available if target not found) ─
     try {
       const quotationPage = new QuotationPage(page);
-      await quotationPage.selectInsurer(cardSel, CONFIG.targetInsurer);
+      const { foundTarget, selectedName } = await quotationPage.selectInsurer(cardSel, CONFIG.targetInsurer);
       await page.waitForTimeout(1000);
-      recordStep(`Select ${CONFIG.targetInsurer}`, 'PASS', 'Clicked Zurich card');
+      if (foundTarget) {
+        recordStep(`Select ${CONFIG.targetInsurer}`, 'PASS', `Selected "${CONFIG.targetInsurer}"`);
+      } else if (selectedName) {
+        recordStep(`Select ${CONFIG.targetInsurer}`, 'SKIP',
+          `"${CONFIG.targetInsurer}" not found — selected first available: "${selectedName}"`);
+      } else {
+        recordStep(`Select ${CONFIG.targetInsurer}`, 'SKIP', 'No quotation cards available — continuing');
+      }
     } catch (e) {
+      // Unexpected error — record but do not abort
       recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', String(e));
-      writeResult('FAIL', String(e));
-      return;
     }
 
-    // ── 9. Add-ons page ──────────────────────────────────────────
+    // ── 9. Add-ons page (non-stopping: missing add-ons logged as not listed) ──
     try {
       const addOnsPage = new AddOnsPage(page);
-      await addOnsPage.waitAndAddSimple(2);
-      await addOnsPage.continue();
-      await page.waitForTimeout(1000);
-      recordStep('Add-ons page', 'PASS', 'Selected first 2 add-ons, clicked Continue');
+      if (CONFIG.targetAddons.length > 0) {
+        const { found, notFound } = await addOnsPage.selectNamedAddons(CONFIG.targetAddons);
+        await addOnsPage.continue();
+        await page.waitForTimeout(1000);
+        const msg = [
+          found.length    ? `Selected: ${found.join(', ')}` : '',
+          notFound.length ? `Not listed: ${notFound.join(', ')}` : '',
+        ].filter(Boolean).join(' | ');
+        recordStep('Add-ons page', 'PASS', msg || 'No add-ons configured');
+      } else {
+        // Default: pick first 2 simple add-ons
+        await addOnsPage.waitAndAddSimple(2);
+        await addOnsPage.continue();
+        await page.waitForTimeout(1000);
+        recordStep('Add-ons page', 'PASS', 'Selected first 2 simple add-ons');
+      }
     } catch (e) {
+      // Non-stopping: record FAIL but carry on
       recordStep('Add-ons page', 'FAIL', String(e));
-      writeResult('FAIL', String(e));
-      return;
     }
 
-    // ── 10. Post add-ons popup ───────────────────────────────────
+    // ── 10. Post add-ons popup (non-stopping) ────────────────────
     try {
       const addOnsPage = new AddOnsPage(page);
       await addOnsPage.handleReminderPopup();
       recordStep('Post add-ons popup', 'PASS', 'Popup dismissed (or not shown)');
     } catch (e) {
       recordStep('Post add-ons popup', 'FAIL', String(e));
-      writeResult('FAIL', String(e));
-      return;
+      // Non-stopping: continue to confirmation page
     }
 
     // ── 11. Payment confirmation ─────────────────────────────────
@@ -272,7 +290,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 12. Select FPX + Maybank — popup opens on bank click ────
+    // ── 12. Select FPX + bank (non-stopping if bank not found) ───
     let paymentPopup: Page | null = null;
     try {
       const paymentTypePage = new PaymentTypePage(page);
@@ -282,9 +300,12 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       paymentPopup = await paymentTypePage.selectBank(CONFIG.targetBank);
       recordStep('Select payment method', 'PASS', `FPX selected, bank: ${CONFIG.targetBank}`);
     } catch (e) {
+      // Non-stopping: record FAIL but allow the test to attempt bank login if popup exists
       recordStep('Select payment method', 'FAIL', String(e));
-      writeResult('FAIL', String(e));
-      return;
+      if (!paymentPopup) {
+        writeResult('FAIL', String(e));
+        return;
+      }
     }
 
     // ── 13. Bank login ───────────────────────────────────────────

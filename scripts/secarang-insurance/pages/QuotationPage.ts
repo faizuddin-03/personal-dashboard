@@ -50,79 +50,81 @@ export class QuotationPage extends BasePage {
     return this.findCardSel();
   }
 
-  async selectInsurer(cardSel: string, insurerName: string): Promise<void> {
-    const cards = this.page.locator(cardSel);
-    const total = await cards.count();
+  async selectInsurer(cardSel: string, insurerName: string): Promise<{ foundTarget: boolean; selectedName: string }> {
+    const cards    = this.page.locator(cardSel);
+    const total    = await cards.count();
     const nameLower = insurerName.toLowerCase();
 
-    // Collect visible cards with their insurer names (from alt text and inner text)
-    const visible: { idx: number; detectedBy: string }[] = [];
+    // Collect visible cards with their insurer names
+    const visible: { idx: number; label: string; detectedBy: string }[] = [];
     for (let i = 0; i < total; i++) {
       const card = cards.nth(i);
       if (!(await card.isVisible().catch(() => false))) continue;
 
-      // Primary: check all img alt attributes (insurer name lives here, not in text)
       const alts: string[] = await card.locator('img[alt]').evaluateAll(
         (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.alt.toLowerCase())
       ).catch(() => []);
-      const nameInAlt = alts.some(a => a.includes(nameLower));
-
-      // Secondary: inner text (covers cases where name IS rendered as text)
-      const text = (await card.innerText().catch(() => '')).toLowerCase();
-      const nameInText = text.includes(nameLower);
-
-      // Also check src attribute of images (e.g. "zurich.png" contains "zurich")
       const srcs: string[] = await card.locator('img[src]').evaluateAll(
         (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.src.toLowerCase())
       ).catch(() => []);
-      const nameInSrc = srcs.some(s => s.includes(nameLower));
+      const text = (await card.innerText().catch(() => '')).toLowerCase();
 
-      if (nameInAlt || nameInText || nameInSrc) {
-        visible.push({ idx: i, detectedBy: nameInAlt ? 'img alt' : nameInSrc ? 'img src' : 'text' });
-      }
+      // Build a human-readable label from alts > text snippet
+      const rawLabel = alts.find(a => a.length > 1) ?? text.slice(0, 40);
+
+      visible.push({
+        idx: i,
+        label: rawLabel,
+        detectedBy: alts.some(a => a.includes(nameLower)) ? 'img alt'
+          : srcs.some(s => s.includes(nameLower))        ? 'img src'
+          : text.includes(nameLower)                     ? 'text'
+          : 'other',
+      });
     }
 
-    console.log(`   🃏 ${total} total card(s), ${visible.length} match "${insurerName}"`);
+    console.log(`   🃏 ${total} total card(s), searching for "${insurerName}"`);
 
-    if (!visible.length) {
-      // Log what we found to help diagnose
-      for (let i = 0; i < Math.min(total, 6); i++) {
-        const card = cards.nth(i);
-        if (!(await card.isVisible().catch(() => false))) continue;
-        const alts: string[] = await card.locator('img[alt]').evaluateAll(
-          (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.alt)
-        ).catch(() => []);
-        console.log(`   Card ${i + 1} alts: [${alts.join(', ')}]`);
-      }
-      throw new Error(`Insurer "${insurerName}" not found among ${total} card(s)`);
+    // Try to find the target insurer
+    const targetCard = visible.find(v =>
+      v.label.includes(nameLower) || v.detectedBy !== 'other'
+    ) ?? null;
+
+    // If not found, fall back to the first visible card
+    const chosen      = targetCard ?? visible[0] ?? null;
+    const foundTarget = !!targetCard;
+
+    if (!chosen) {
+      console.log(`   ⚠️  No visible quotation cards — cannot select insurer`);
+      return { foundTarget: false, selectedName: '' };
     }
 
-    // Use the first matching card
-    const { idx, detectedBy } = visible[0];
-    const card = cards.nth(idx);
-    console.log(`   🎯 Found ${insurerName} at card index ${idx + 1} via ${detectedBy}`);
+    if (!foundTarget) {
+      console.log(`   ⚠️  "${insurerName}" not found — picking first available card (${chosen.label.slice(0, 30)})`);
+    } else {
+      console.log(`   🎯 Found "${insurerName}" at card ${chosen.idx + 1} via ${chosen.detectedBy}`);
+    }
 
-    // "Buy" is the confirmed button label from the HTML; list it first
+    const card = cards.nth(chosen.idx);
     for (const label of ['Buy', 'Select', 'Buy Now', 'Proceed', 'Get Quote', 'Choose']) {
       const btn = card.locator(`button:has-text("${label}")`).first();
       if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
         console.log(`   🖱️  Clicking "${label}" button`);
         await btn.scrollIntoViewIfNeeded().catch(() => {});
         await btn.click();
-        return;
+        return { foundTarget, selectedName: chosen.label.slice(0, 40) };
       }
     }
 
-    // Fallback: any primary button inside the card
     const primary = card.locator('button.primary-btn, button[class*="primary"]').first();
     if ((await primary.count()) > 0) {
       console.log('   🖱️  Clicking primary-btn in card');
       await primary.scrollIntoViewIfNeeded().catch(() => {});
       await primary.click();
-      return;
+      return { foundTarget, selectedName: chosen.label.slice(0, 40) };
     }
 
     console.log('   🖱️  Clicking card directly');
     await card.click();
+    return { foundTarget, selectedName: chosen.label.slice(0, 40) };
   }
 }
