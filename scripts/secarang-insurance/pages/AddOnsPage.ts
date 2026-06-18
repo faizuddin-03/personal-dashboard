@@ -74,15 +74,6 @@ export class AddOnsPage extends BasePage {
         const text = (await card.innerText().catch(() => '')).toLowerCase();
         if (!text.includes(targetLower)) continue;
 
-        // Found the card — check if it has sub-options (skip those for now)
-        const hasSubOptions = (await card.locator('select, input[type="radio"], input[type="number"]').count()) > 0;
-        if (hasSubOptions) {
-          console.log(`   ⏭️  "${target}" card has sub-options — treating as found but skipping interaction`);
-          found.push(target);
-          matched = true;
-          break;
-        }
-
         const addBtn = card.locator('button:has-text("ADD"), button:has-text("Add")').first();
         if ((await addBtn.count()) > 0 && await addBtn.isVisible().catch(() => false)) {
           console.log(`   ➕ Clicking ADD for "${target}"`);
@@ -134,9 +125,6 @@ export class AddOnsPage extends BasePage {
     let added = 0;
     for (let n = 0; n < visible.length && added < count; n++) {
       const card = allCards.nth(visible[n]);
-      const hasSubOptions = (await card.locator('select, input[type="radio"], input[type="number"]').count()) > 0;
-      if (hasSubOptions) { console.log(`   ⏭️  Card ${n + 1} has sub-options — skipping`); continue; }
-
       const addBtn = card.locator('button:has-text("ADD"), button:has-text("Add")').first();
       if ((await addBtn.count()) > 0 && await addBtn.isVisible().catch(() => false)) {
         console.log(`   ➕ ADD on card ${n + 1}`);
