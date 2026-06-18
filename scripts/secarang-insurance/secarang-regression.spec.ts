@@ -365,7 +365,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     // ── 14. Request TAC ──────────────────────────────────────────
     const bankTACPage = new BankTACPage(paymentPopup!);
     try {
-      await bankTACPage.logOptionsAndRequestTAC(cfg.paymentStatus);
+      await bankTACPage.logOptionsAndRequestTAC(CONFIG.paymentStatus);
       recordStep('Request TAC', 'PASS', 'TAC requested');
     } catch (e) {
       recordStep('Request TAC', 'FAIL', String(e));
