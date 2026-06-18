@@ -2004,6 +2004,8 @@ interface RegressionWizardConfig {
   icNumber:           string;
   postcode:           string;
   targetInsurer:      string;
+  vehicleType:        "car" | "motorcycle";
+  ownerType:          "private" | "company";
   addonWindshield:    boolean;
   addonSpecialPerils: boolean;
   addonLegalLiab:     boolean;
@@ -2034,6 +2036,8 @@ function loadWizardConfig(): RegressionWizardConfig {
     icNumber:           "730620065847",
     postcode:           "55000",
     targetInsurer:      "Zurich",
+    vehicleType:        "car" as const,
+    ownerType:          "private" as const,
     addonWindshield:    false,
     addonSpecialPerils: false,
     addonLegalLiab:     false,
@@ -2127,7 +2131,6 @@ function RegressionTab() {
   }
 
   function handleRun() {
-    setPhase("running");
     setLoading(true);
     setStopping(false);
     setResult(null);
@@ -2144,6 +2147,8 @@ function RegressionTab() {
         icNumber:      normalizeIdNumber(cfg.icNumber) || undefined,
         postcode:      cfg.postcode      || undefined,
         targetInsurer: cfg.targetInsurer || undefined,
+        vehicleType:   cfg.vehicleType   || undefined,
+        ownerType:     cfg.ownerType     || undefined,
         addons: [
           cfg.addonWindshield    && "Windshield",
           cfg.addonSpecialPerils && "Special Perils",
@@ -2193,46 +2198,6 @@ function RegressionTab() {
   const passed   = (result?.steps ?? []).filter(s => s.status === "PASS").length;
   const failed   = (result?.steps ?? []).filter(s => s.status === "FAIL").length;
   const duration = result ? (result.durationMs / 1000).toFixed(1) : null;
-
-  // ── Running phase ─────────────────────────────────────────
-  if (phase === "running") {
-    return (
-      <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Loader2 size={18} className="animate-spin text-blue-400" />
-              <div>
-                <p className="text-sm font-semibold text-slate-200">Running E2E Regression…</p>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {cfg.vehicleNumber} → {cfg.targetInsurer} · {cfg.targetBank ? (REGRESSION_BANKS.find(b => b.value === cfg.targetBank)?.label ?? cfg.targetBank) : "—"}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleStop}
-              disabled={stopping}
-              className="flex items-center gap-2 px-4 py-2 bg-red-700 hover:bg-red-600 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors"
-            >
-              <Square size={13} /> {stopping ? "Stopping…" : "Stop"}
-            </button>
-          </div>
-        </div>
-
-        {liveLog && (
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-slate-800 text-xs text-slate-400">
-              <Loader2 size={11} className="animate-spin text-blue-400 shrink-0" />
-              Live output
-            </div>
-            <pre ref={liveLogRef}
-              className="px-4 py-3 text-xs text-slate-400 font-mono whitespace-pre-wrap overflow-x-auto max-h-72 overflow-y-auto leading-relaxed"
-            >{liveLog}</pre>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   // ── Done phase ────────────────────────────────────────────
   if (phase === "done") {
@@ -2346,20 +2311,24 @@ function RegressionTab() {
                   {SC_REGRESSION_ENV_PRESETS.map(p => (
                     <button key={p.value} type="button"
                       onClick={() => patch({ baseUrl: p.value, customEnv: false })}
+                      disabled={loading}
                       className={clsx(
                         "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
                         !cfg.customEnv && cfg.baseUrl === p.value
                           ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                          : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                          : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300",
+                        loading && "opacity-50 cursor-not-allowed pointer-events-none"
                       )}>{p.label}</button>
                   ))}
                   <button type="button"
                     onClick={() => patch({ customEnv: true })}
+                    disabled={loading}
                     className={clsx(
                       "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
                       cfg.customEnv
                         ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300",
+                      loading && "opacity-50 cursor-not-allowed pointer-events-none"
                     )}>Custom</button>
                 </div>
                 {cfg.customEnv ? (
@@ -2378,6 +2347,7 @@ function RegressionTab() {
                     type={showPassword ? "text" : "password"}
                     value={cfg.sitePassword}
                     onChange={e => patch({ sitePassword: e.target.value })}
+                    disabled={loading}
                     className={INPUT_CLS}
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
@@ -2399,6 +2369,7 @@ function RegressionTab() {
                   <input value={cfg.vehicleNumber}
                     onChange={e => patch({ vehicleNumber: e.target.value.toUpperCase() })}
                     placeholder="WXX1234"
+                    disabled={loading}
                     className={clsx(INPUT_CLS, "font-mono")}
                   />
                 </WField>
@@ -2406,6 +2377,7 @@ function RegressionTab() {
                   <input value={cfg.icNumber}
                     onChange={e => patch({ icNumber: e.target.value })}
                     placeholder="730620065847"
+                    disabled={loading}
                     className={clsx(INPUT_CLS, "font-mono")}
                   />
                 </WField>
@@ -2413,9 +2385,48 @@ function RegressionTab() {
                   <input value={cfg.postcode}
                     onChange={e => patch({ postcode: e.target.value })}
                     placeholder="55000"
+                    disabled={loading}
                     className={INPUT_CLS}
                   />
                 </WField>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-slate-500 mb-1.5">Vehicle Type</label>
+                  <div className="flex gap-1.5 h-[38px]">
+                    {(["car", "motorcycle"] as const).map(vt => (
+                      <button key={vt} type="button"
+                        onClick={() => patch({ vehicleType: vt })}
+                        disabled={loading}
+                        className={clsx("flex-1 rounded-lg text-xs font-medium border transition-all capitalize",
+                          cfg.vehicleType === vt
+                            ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                            : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300",
+                          loading && "opacity-50 cursor-not-allowed pointer-events-none"
+                        )}>
+                        {vt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-500 mb-1.5">Owner Type</label>
+                  <div className="flex gap-1.5 h-[38px]">
+                    {(["private", "company"] as const).map(ot => (
+                      <button key={ot} type="button"
+                        onClick={() => patch({ ownerType: ot })}
+                        disabled={loading}
+                        className={clsx("flex-1 rounded-lg text-xs font-medium border transition-all capitalize",
+                          cfg.ownerType === ot
+                            ? "bg-blue-600/20 border-blue-600/50 text-blue-300"
+                            : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300",
+                          loading && "opacity-50 cursor-not-allowed pointer-events-none"
+                        )}>
+                        {ot}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2429,11 +2440,13 @@ function RegressionTab() {
               {(["Zurich", "Lonpac", "Tokio Marine"] as const).map(ins => (
                 <button key={ins} type="button"
                   onClick={() => patch({ targetInsurer: ins })}
+                  disabled={loading}
                   className={clsx(
                     "flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all",
                     cfg.targetInsurer === ins
                       ? "bg-blue-600/20 border-blue-500 text-blue-200"
-                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
+                    loading && "opacity-50 cursor-not-allowed pointer-events-none"
                   )}>
                   {ins}
                 </button>
@@ -2455,11 +2468,13 @@ function RegressionTab() {
                 return (
                   <button key={key} type="button"
                     onClick={() => patch({ [key]: !on })}
+                    disabled={loading}
                     className={clsx(
                       "flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left",
                       on
                         ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300",
+                      loading && "opacity-50 cursor-not-allowed pointer-events-none"
                     )}>
                     <span className={clsx(
                       "w-3.5 h-3.5 rounded-sm border flex items-center justify-center shrink-0 transition-all",
@@ -2481,6 +2496,7 @@ function RegressionTab() {
               <input value={cfg.discountCode}
                 onChange={e => patch({ discountCode: e.target.value })}
                 placeholder="PROMO123"
+                disabled={loading}
                 className={INPUT_CLS}
               />
             </WField>
@@ -2493,11 +2509,13 @@ function RegressionTab() {
               {(["fpx", "card"] as const).map(m => (
                 <button key={m} type="button"
                   onClick={() => patch({ paymentMethod: m })}
+                  disabled={loading}
                   className={clsx(
                     "flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all uppercase tracking-wide",
                     cfg.paymentMethod === m
                       ? "bg-blue-600/20 border-blue-500 text-blue-200"
-                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
+                    loading && "opacity-50 cursor-not-allowed pointer-events-none"
                   )}>{m === "fpx" ? "FPX" : "Card"}</button>
               ))}
             </div>
@@ -2509,11 +2527,13 @@ function RegressionTab() {
                     {REGRESSION_BANKS.map(b => (
                       <button key={b.value} type="button"
                         onClick={() => patch({ targetBank: b.value })}
+                        disabled={loading}
                         className={clsx(
                           "px-1 py-2 rounded-lg text-[11px] font-medium border transition-all text-center leading-tight",
                           cfg.targetBank === b.value
                             ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                            : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                            : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300",
+                          loading && "opacity-50 cursor-not-allowed pointer-events-none"
                         )}>{b.label}</button>
                     ))}
                   </div>
@@ -2524,6 +2544,7 @@ function RegressionTab() {
                       onChange={e => patch({ bankUsername: e.target.value })}
                       placeholder="Username"
                       autoComplete="off"
+                      disabled={loading}
                       className={INPUT_CLS}
                     />
                   </WField>
@@ -2535,6 +2556,7 @@ function RegressionTab() {
                         onChange={e => patch({ bankPassword: e.target.value })}
                         placeholder="Password"
                         autoComplete="off"
+                        disabled={loading}
                         className={INPUT_CLS}
                       />
                       <button type="button" onClick={() => setShowBankPassword(v => !v)}
@@ -2605,23 +2627,56 @@ function RegressionTab() {
           </div>
         </div>
 
-        {/* Run button — full-width footer */}
+        {/* Footer — Run or Stop */}
         <div className="px-5 py-4 border-t border-slate-800 flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleRun}
-            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors"
-          >
-            <Play size={14} /> Run Regression
-          </button>
-          <span className="text-xs text-slate-600">
-            {cfg.vehicleNumber || "—"} · {cfg.targetInsurer || "—"} ·{" "}
-            {cfg.paymentMethod === "card"
-              ? "Card (WIP)"
-              : (REGRESSION_BANKS.find(b => b.value === cfg.targetBank)?.label ?? "—")}
-          </span>
+          {!loading ? (
+            <button
+              type="button"
+              onClick={handleRun}
+              className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors"
+            >
+              <Play size={14} /> Run Regression
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleStop}
+              disabled={stopping}
+              className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold bg-red-700 hover:bg-red-600 disabled:opacity-60 text-white rounded-xl transition-colors"
+            >
+              <Square size={13} /> {stopping ? "Stopping…" : "Stop"}
+            </button>
+          )}
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <Loader2 size={13} className="animate-spin text-blue-400" />
+              <span className="text-xs text-slate-400 animate-pulse">
+                {stopping ? "Stopping…" : "Running E2E regression…"}
+              </span>
+            </div>
+          ) : (
+            <span className="text-xs text-slate-600">
+              {cfg.vehicleNumber || "—"} · {cfg.targetInsurer || "—"} ·{" "}
+              {cfg.paymentMethod === "card"
+                ? "Card (WIP)"
+                : (REGRESSION_BANKS.find(b => b.value === cfg.targetBank)?.label ?? "—")}
+            </span>
+          )}
         </div>
       </div>
+
+      {/* Live log — shown below config panel while running */}
+      {loading && liveLog && (
+        <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
+          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-slate-800 text-xs text-slate-400">
+            <Loader2 size={11} className="animate-spin text-blue-400 shrink-0" />
+            Live output
+          </div>
+          <pre ref={liveLogRef}
+            className="px-4 py-3 text-xs text-slate-400 font-mono whitespace-pre-wrap overflow-x-auto max-h-72 overflow-y-auto leading-relaxed"
+          >{liveLog}</pre>
+        </div>
+      )}
     </div>
   );
 }

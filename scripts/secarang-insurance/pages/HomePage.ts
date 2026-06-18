@@ -6,20 +6,50 @@ export class HomePage extends BasePage {
     super(page);
   }
 
-  async selectCarPrivate(): Promise<void> {
-    // Car
-    const car = this.page.locator('button:has-text("Car"), [role="radio"]:has-text("Car"), label:has-text("Car")').first();
-    if ((await car.count()) > 0) { await car.click(); await this.wait(1000); }
+  async selectVehicleAndOwner(vehicleType: string, ownerType: string): Promise<void> {
+    const vtLower = vehicleType.toLowerCase();
+    const otLower = ownerType.toLowerCase();
 
-    // Private
-    for (const label of ['Private Car', 'Private', 'Individual']) {
-      const ctrl = this.page.locator(`button:has-text("${label}"), label:has-text("${label}")`).first();
-      if ((await ctrl.count()) > 0 && await ctrl.isVisible().catch(() => false)) {
-        await ctrl.click(); await this.wait(1000); return;
+    // ── Vehicle type: Car / Motorcycle ───────────────────────────
+    const vehicleLabel = vtLower.includes('motor') || vtLower.includes('bike')
+      ? ['Motorcycle', 'Motorbike', 'Motor']
+      : ['Car'];
+
+    for (const label of vehicleLabel) {
+      const btn = this.page.locator(
+        `button:has-text("${label}"), [role="radio"]:has-text("${label}"), label:has-text("${label}")`
+      ).first();
+      if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+        console.log(`   🚗 Selecting vehicle type: "${label}"`);
+        await btn.click();
+        await this.wait(800);
+        break;
       }
     }
+
+    // ── Owner type: Private / Company ────────────────────────────
+    const ownerLabels = otLower.includes('company') || otLower.includes('commercial')
+      ? ['Company Car', 'Commercial', 'Company', 'Corporate']
+      : ['Private Car', 'Private', 'Individual'];
+
+    for (const label of ownerLabels) {
+      const btn = this.page.locator(
+        `button:has-text("${label}"), label:has-text("${label}"), [role="radio"]:has-text("${label}")`
+      ).first();
+      if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+        console.log(`   👤 Selecting owner type: "${label}"`);
+        await btn.click();
+        await this.wait(800);
+        return;
+      }
+    }
+
+    // Fallback: click first radio
     const radio = this.page.locator('input[type="radio"]').first();
-    if ((await radio.count()) > 0) await radio.click({ force: true }).catch(() => {});
+    if ((await radio.count()) > 0) {
+      console.log('   ℹ️  Owner type fallback: clicking first radio');
+      await radio.click({ force: true }).catch(() => {});
+    }
   }
 
   async fillForm(vehicleNumber: string, icNumber: string, postcode: string): Promise<void> {

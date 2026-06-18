@@ -21,6 +21,8 @@ const CONFIG = {
   icNumber:       process.env.REGRESSION_IC          || '730620065847',
   postcode:       process.env.REGRESSION_POSTCODE    || '55000',
   targetInsurer:  process.env.REGRESSION_INSURER     || 'Zurich',
+  vehicleType:    process.env.REGRESSION_VEHICLE_TYPE || 'car',
+  ownerType:      process.env.REGRESSION_OWNER_TYPE   || 'private',
   // Comma-separated add-on names to select (e.g. "Windshield,CART")
   // Empty = select first 2 simple add-ons as before
   targetAddons:   (process.env.REGRESSION_ADDONS || '').split(',').map(s => s.trim()).filter(Boolean),
@@ -126,10 +128,10 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     try {
       await page.waitForTimeout(1000);
       const homePage = new HomePage(page);
-      await homePage.selectCarPrivate();
-      recordStep('Select Car / Private', 'PASS', 'Car and Private selected');
+      await homePage.selectVehicleAndOwner(CONFIG.vehicleType, CONFIG.ownerType);
+      recordStep('Select vehicle / owner', 'PASS', `${CONFIG.vehicleType} / ${CONFIG.ownerType}`);
     } catch (e) {
-      recordStep('Select Car / Private', 'FAIL', String(e));
+      recordStep('Select vehicle / owner', 'FAIL', String(e));
       writeResult('FAIL', String(e));
       return;
     }

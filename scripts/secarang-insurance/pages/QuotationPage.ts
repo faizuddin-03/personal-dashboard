@@ -51,8 +51,8 @@ export class QuotationPage extends BasePage {
   }
 
   async selectInsurer(cardSel: string, insurerName: string): Promise<{ foundTarget: boolean; selectedName: string }> {
-    const cards    = this.page.locator(cardSel);
-    const total    = await cards.count();
+    const cards     = this.page.locator(cardSel);
+    const total     = await cards.count();
     const nameLower = insurerName.toLowerCase();
 
     // Collect visible cards with their insurer names
@@ -64,30 +64,58 @@ export class QuotationPage extends BasePage {
       const alts: string[] = await card.locator('img[alt]').evaluateAll(
         (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.alt.toLowerCase())
       ).catch(() => []);
+
       const srcs: string[] = await card.locator('img[src]').evaluateAll(
         (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.src.toLowerCase())
       ).catch(() => []);
+
+      const ariaLabels: string[] = await card.locator('[aria-label]').evaluateAll(
+        (els: Element[]) => els.map(el => (el.getAttribute('aria-label') ?? '').toLowerCase())
+      ).catch(() => []);
+
+      const dataAttrs: string[] = await card.evaluate((el: Element) => {
+        const vals: string[] = [];
+        const collect = (node: Element) => {
+          for (const attr of Array.from(node.attributes)) {
+            if (attr.name.startsWith('data-') && attr.value) vals.push(attr.value.toLowerCase());
+          }
+        };
+        collect(el);
+        el.querySelectorAll('*').forEach(collect);
+        return vals;
+      }).catch(() => []);
+
       const text = (await card.innerText().catch(() => '')).toLowerCase();
 
-      // Build a human-readable label from alts > text snippet
-      const rawLabel = alts.find(a => a.length > 1) ?? text.slice(0, 40);
+      // Human-readable label: prefer img alt, then aria-label, then first line of text
+      const rawLabel = alts.find(a => a.length > 1)
+        ?? ariaLabels.find(a => a.length > 1)
+        ?? text.slice(0, 40);
 
-      visible.push({
-        idx: i,
-        label: rawLabel,
-        detectedBy: alts.some(a => a.includes(nameLower)) ? 'img alt'
-          : srcs.some(s => s.includes(nameLower))        ? 'img src'
-          : text.includes(nameLower)                     ? 'text'
-          : 'other',
-      });
+      const detectedBy = alts.some(a => a.includes(nameLower))         ? 'img-alt'
+        : srcs.some(s => s.includes(nameLower))                        ? 'img-src'
+        : ariaLabels.some(a => a.includes(nameLower))                  ? 'aria-label'
+        : dataAttrs.some(d => d.includes(nameLower))                   ? 'data-attr'
+        : text.includes(nameLower)                                     ? 'text'
+        : 'other';
+
+      // Verbose per-card debug log so we can see exactly what each card exposes
+      console.log(
+        `   card[${i + 1}/${total}]: detectedBy="${detectedBy}"` +
+        ` | alts=[${alts.slice(0, 3).join(',')}]` +
+        ` | srcs=[${srcs.slice(0, 3).map(s => s.split('/').pop()).join(',')}]` +
+        ` | aria=[${ariaLabels.slice(0, 2).join(',')}]` +
+        ` | data=[${dataAttrs.slice(0, 4).join(',')}]` +
+        ` | text="${text.slice(0, 50)}"`
+      );
+
+      visible.push({ idx: i, label: rawLabel, detectedBy });
     }
 
-    console.log(`   🃏 ${total} total card(s), searching for "${insurerName}"`);
+    console.log(`   🃏 ${total} total card(s), ${visible.length} visible, searching for "${insurerName}"`);
 
     // Try to find the target insurer
-    const targetCard = visible.find(v =>
-      v.label.includes(nameLower) || v.detectedBy !== 'other'
-    ) ?? null;
+    const targetCard = visible.find(v => v.detectedBy !== 'other') ?? null;
 
     // If not found, fall back to the first visible card
     const chosen      = targetCard ?? visible[0] ?? null;
