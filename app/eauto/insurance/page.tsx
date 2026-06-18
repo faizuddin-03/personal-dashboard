@@ -14,7 +14,7 @@ import {
   VehicleEntry as ScVehicleEntry,
   loadSecarangSaved, clearSecarangSaved,
   loadRegressionSecarangSaved, clearRegressionSecarangSaved,
-  RegressionResult, RegressionStepResult,
+  RegressionResult, RegressionStepResult, RegressionScreenshot,
   VerificationData, VerificationRow, PdfVerificationRow,
   loadRegressionTestResult, saveRegressionTestResult, clearRegressionTestResult,
   buildVehicles,
@@ -2242,8 +2242,8 @@ function RegressionTab() {
       const buildVerifTable = (title: string, rows: VerificationRow[]) => {
         if (!rows.length) return "";
         const trs = rows.map(r => `<tr>
-          <td style="padding:5px 8px;color:#94a3b8;font-size:11px">${r.field}</td>
-          <td style="padding:5px 8px;font-size:11px;font-family:monospace">${r.confirmation || "—"}</td>
+          <td style="padding:5px 8px;color:#94a3b8;font-size:11px">${r.label}</td>
+          <td style="padding:5px 8px;font-size:11px;font-family:monospace">${r.confirmed || "—"}</td>
           <td style="padding:5px 8px;font-size:11px;font-family:monospace">${r.success || "—"}</td>
           <td style="padding:5px 8px;text-align:center">${r.match ? '<span style="color:#22c55e;font-weight:700">✓</span>' : '<span style="color:#ef4444;font-weight:700">✗</span>'}</td>
         </tr>`).join("");
@@ -2314,6 +2314,16 @@ function RegressionTab() {
   ${result.errorMessage ? `<div style="margin-top:14px;background:#450a0a;border:1px solid #7f1d1d;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#fca5a5">${result.errorMessage}</div>` : ""}
 
   ${verifSection}
+
+  ${(result.screenshots ?? []).length > 0 ? `
+  <div style="margin-top:20px">
+    <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #1e293b">Screenshots</div>
+    ${(result.screenshots as RegressionScreenshot[]).map(s => `
+      <div style="margin-bottom:20px;break-inside:avoid">
+        <div style="font-size:11px;font-weight:600;color:#94a3b8;margin-bottom:6px">${s.label}</div>
+        <img src="${s.dataUrl}" style="width:100%;border-radius:6px;border:1px solid #1e293b;display:block" />
+      </div>`).join("")}
+  </div>` : ""}
 </body>
 </html>`;
 

@@ -125,6 +125,11 @@ export interface VerificationData {
   pdfRows?:      PdfVerificationRow[];
 }
 
+export interface RegressionScreenshot {
+  label:   string;
+  dataUrl: string; // data:image/jpeg;base64,...
+}
+
 export interface RegressionResult {
   vehicleNumber:       string;
   icNumber:            string;
@@ -139,6 +144,7 @@ export interface RegressionResult {
   stopped?:            boolean;
   verificationReport?: string;
   verificationData?:   VerificationData;
+  screenshots?:        RegressionScreenshot[];
 }
 
 const REGRESSION_TEST_KEY = "secarang_regression_test_result";
@@ -151,7 +157,10 @@ export function loadRegressionTestResult(): RegressionResult | null {
 }
 
 export function saveRegressionTestResult(data: RegressionResult) {
-  localStorage.setItem(REGRESSION_TEST_KEY, JSON.stringify(data));
+  // Strip screenshots before writing to localStorage — they can be several MB
+  // and would exceed the storage quota. Screenshots stay in React state only.
+  const { screenshots: _omit, ...rest } = data;
+  localStorage.setItem(REGRESSION_TEST_KEY, JSON.stringify(rest));
 }
 
 export function clearRegressionTestResult() {

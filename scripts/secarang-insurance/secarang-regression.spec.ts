@@ -53,6 +53,11 @@ interface StepResult {
   timestamp: string;
 }
 
+interface Screenshot {
+  label:   string;
+  dataUrl: string;
+}
+
 interface RegressionResult {
   vehicleNumber:       string;
   icNumber:            string;
@@ -65,12 +70,22 @@ interface RegressionResult {
   durationMs:          number;
   verificationReport?: string;
   verificationData?:   VerificationData;
+  screenshots?:        Screenshot[];
 }
 
 const steps: StepResult[] = [];
 let startedAt          = new Date().toISOString();
 let verificationReport = '';
 let verificationData: VerificationData | undefined;
+const screenshots: Screenshot[] = [];
+
+async function captureScreenshot(page: import('@playwright/test').Page, label: string): Promise<void> {
+  try {
+    const buf = await page.screenshot({ type: 'jpeg', quality: 55, fullPage: false });
+    screenshots.push({ label, dataUrl: `data:image/jpeg;base64,${buf.toString('base64')}` });
+    console.log(`   📷 Screenshot: "${label}"`);
+  } catch { /* non-critical — skip silently */ }
+}
 
 function recordStep(name: string, status: StepResult['status'], message: string) {
   const s: StepResult = { name, status, message, timestamp: new Date().toISOString() };
@@ -93,6 +108,7 @@ function writeResult(overallStatus: 'PASS' | 'FAIL', errorMessage?: string) {
     durationMs:          new Date(completedAt).getTime() - new Date(startedAt).getTime(),
     verificationReport:  verificationReport  || undefined,
     verificationData:    verificationData    || undefined,
+    screenshots:         screenshots.length ? screenshots : undefined,
   };
   const outPath = path.resolve(CONFIG.outputFile);
   fs.writeFileSync(outPath, JSON.stringify(result, null, 2));
@@ -117,6 +133,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       await page.waitForTimeout(500);
       const siteGate = new SiteGatePage(page);
       await siteGate.passSiteGate(CONFIG.sitePassword);
+      await captureScreenshot(page, 'Home Page');
       recordStep('Navigate to site', 'PASS', url);
     } catch (e) {
       recordStep('Navigate to site', 'FAIL', String(e));
@@ -183,6 +200,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       }
 
       if (await vehicleDetailsPage.isShown()) {
+        await captureScreenshot(page, 'Vehicle Details Page');
         await vehicleDetailsPage.proceed();
         recordStep('Vehicle details page', 'PASS', 'Variant selected and proceeded');
       } else {
@@ -210,6 +228,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     try {
       const quotationPage = new QuotationPage(page);
       await quotationPage.waitForCards();
+      await captureScreenshot(page, 'Quotation Page');
       const count = await page.locator('.insurance-card').count();
       recordStep('Quotation results loaded', 'PASS', `${count} card element(s) loaded`);
     } catch (e) {
@@ -242,6 +261,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
 
     // ── 9. Add-ons page (non-stopping: missing add-ons logged as not listed) ──
     try {
+      await captureScreenshot(page, 'Add-ons Page');
       const addOnsPage = new AddOnsPage(page);
       if (CONFIG.targetAddons.length > 0) {
         const { found, notFound } = await addOnsPage.selectNamedAddons(CONFIG.targetAddons);
@@ -279,6 +299,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     try {
       await page.waitForTimeout(1000);
       await confirmationPage.waitForPage();
+      await captureScreenshot(page, 'Confirmation Page');
       await confirmationPage.fillOwnerDetails(
         CONFIG.ownerName,
         CONFIG.ownerEmail,
@@ -304,6 +325,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     try {
       const paymentTypePage = new PaymentTypePage(page);
       await paymentTypePage.waitForPage();
+      await captureScreenshot(page, 'Payment Method Page');
       await paymentTypePage.selectFPX();
       await paymentTypePage.logAvailableBanks();
       paymentPopup = await paymentTypePage.selectBank(CONFIG.targetBank);
@@ -355,6 +377,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       await page.waitForTimeout(2000);
       const successPage = new PaymentSuccessPage(page);
       await successPage.waitForPage(CONFIG.sitePassword);
+      await captureScreenshot(page, 'Payment Success Page');
       const successData = await successPage.extractData();
       const pdfText = await successPage.downloadReceiptPDF(path.dirname(path.resolve(CONFIG.outputFile)));
       const vr = successPage.generateVerificationReport(
