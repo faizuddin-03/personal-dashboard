@@ -72,10 +72,18 @@ export class QuotationPage extends BasePage {
 
       console.log(`   🎯 Found "${insurerName}" card (img alts: [${alts.join(', ')}])`);
 
-      // Check if this insurer's card shows "Quotation unavailable"
+      // Check if this insurer's card shows an unavailability message
       const bodyText = (await card.innerText().catch(() => '')).toLowerCase();
-      if (bodyText.includes('quotation unavailable')) {
-        console.log(`   ⛔  "${insurerName}" → Quotation unavailable`);
+      const unavailablePhrases = [
+        'quotation unavailable',
+        'no quotation',
+        'not available',
+        'unable to provide',
+        'no quote',
+      ];
+      const matchedPhrase = unavailablePhrases.find(p => bodyText.includes(p));
+      if (matchedPhrase) {
+        console.log(`   ⛔  "${insurerName}" → "${matchedPhrase}" — stopping`);
         return { foundTarget: true, unavailable: true };
       }
 
