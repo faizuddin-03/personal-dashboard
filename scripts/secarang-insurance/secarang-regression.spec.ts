@@ -215,22 +215,22 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 8. Select insurer (non-stopping: picks first available if target not found) ─
+    // ── 8. Select insurer ────────────────────────────────────
     try {
       const quotationPage = new QuotationPage(page);
-      const { foundTarget, selectedName } = await quotationPage.selectInsurer(cardSel, CONFIG.targetInsurer);
+      const { foundTarget } = await quotationPage.selectInsurer(cardSel, CONFIG.targetInsurer);
       await page.waitForTimeout(1000);
       if (foundTarget) {
         recordStep(`Select ${CONFIG.targetInsurer}`, 'PASS', `Selected "${CONFIG.targetInsurer}"`);
-      } else if (selectedName) {
-        recordStep(`Select ${CONFIG.targetInsurer}`, 'SKIP',
-          `"${CONFIG.targetInsurer}" not found — selected first available: "${selectedName}"`);
       } else {
-        recordStep(`Select ${CONFIG.targetInsurer}`, 'SKIP', 'No quotation cards available — continuing');
+        recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', 'Quotation unavailable');
+        writeResult('FAIL', 'Quotation unavailable');
+        return;
       }
     } catch (e) {
-      // Unexpected error — record but do not abort
       recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', String(e));
+      writeResult('FAIL', String(e));
+      return;
     }
 
     // ── 9. Add-ons page (non-stopping: missing add-ons logged as not listed) ──

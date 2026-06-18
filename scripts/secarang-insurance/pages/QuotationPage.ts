@@ -116,32 +116,24 @@ export class QuotationPage extends BasePage {
 
     console.log(`   🃏 ${total} total card(s), ${visible.length} visible, searching for "${insurerName}"`);
 
-    // Try to find the target insurer
+    // Try to find the target insurer — no fallback; caller decides what to do if not found
     const targetCard = visible.find(v => v.detectedBy !== 'other') ?? null;
 
-    // If not found, fall back to the first visible card
-    const chosen      = targetCard ?? visible[0] ?? null;
-    const foundTarget = !!targetCard;
-
-    if (!chosen) {
-      console.log(`   ⚠️  No visible quotation cards — cannot select insurer`);
+    if (!targetCard) {
+      console.log(`   ⚠️  "${insurerName}" not found among ${visible.length} visible card(s)`);
       return { foundTarget: false, selectedName: '' };
     }
 
-    if (!foundTarget) {
-      console.log(`   ⚠️  "${insurerName}" not found — picking first available card (${chosen.label.slice(0, 30)})`);
-    } else {
-      console.log(`   🎯 Found "${insurerName}" at card ${chosen.idx + 1} via ${chosen.detectedBy}`);
-    }
+    console.log(`   🎯 Found "${insurerName}" at card ${targetCard.idx + 1} via ${targetCard.detectedBy}`);
 
-    const card = cards.nth(chosen.idx);
+    const card = cards.nth(targetCard.idx);
     for (const label of ['Buy', 'Select', 'Buy Now', 'Proceed', 'Get Quote', 'Choose']) {
       const btn = card.locator(`button:has-text("${label}")`).first();
       if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
         console.log(`   🖱️  Clicking "${label}" button`);
         await btn.scrollIntoViewIfNeeded().catch(() => {});
         await btn.click();
-        return { foundTarget, selectedName: chosen.label.slice(0, 40) };
+        return { foundTarget: true, selectedName: targetCard.label.slice(0, 40) };
       }
     }
 
@@ -150,11 +142,11 @@ export class QuotationPage extends BasePage {
       console.log('   🖱️  Clicking primary-btn in card');
       await primary.scrollIntoViewIfNeeded().catch(() => {});
       await primary.click();
-      return { foundTarget, selectedName: chosen.label.slice(0, 40) };
+      return { foundTarget: true, selectedName: targetCard.label.slice(0, 40) };
     }
 
     console.log('   🖱️  Clicking card directly');
     await card.click();
-    return { foundTarget, selectedName: chosen.label.slice(0, 40) };
+    return { foundTarget: true, selectedName: targetCard.label.slice(0, 40) };
   }
 }
