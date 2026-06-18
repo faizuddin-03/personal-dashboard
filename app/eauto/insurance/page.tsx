@@ -2004,16 +2004,15 @@ interface RegressionWizardConfig {
   icNumber:      string;
   postcode:      string;
   targetInsurer: string;
-  ownerName:     string;
-  ownerEmail:    string;
-  ownerPhone:    string;
-  addressLine1:  string;
-  addressLine2:  string;
-  addressLine3:  string;
   discountCode:  string;
+  paymentMethod: "fpx" | "card";
   targetBank:    string;
   bankUsername:  string;
   bankPassword:  string;
+  cardNumber:    string;
+  cardExpiry:    string;
+  cardCvv:       string;
+  cardName:      string;
 }
 
 const REGRESSION_CONFIG_KEY = "regression_wizard_config";
@@ -2031,16 +2030,15 @@ function loadWizardConfig(): RegressionWizardConfig {
     icNumber:      "730620065847",
     postcode:      "55000",
     targetInsurer: "Zurich",
-    ownerName:     "MUHAMMAD FAIZUDDIN BIN BIDI",
-    ownerEmail:    "",
-    ownerPhone:    "",
-    addressLine1:  "",
-    addressLine2:  "",
-    addressLine3:  "",
     discountCode:  "",
+    paymentMethod: "fpx" as const,
     targetBank:    "fpx_mb2u",
     bankUsername:  "",
     bankPassword:  "",
+    cardNumber:    "",
+    cardExpiry:    "",
+    cardCvv:       "",
+    cardName:      "",
   };
 }
 
@@ -2082,6 +2080,7 @@ function RegressionTab() {
 
   const [showPassword,     setShowPassword]     = useState(false);
   const [showBankPassword, setShowBankPassword] = useState(false);
+  const [showCardCvv,      setShowCardCvv]      = useState(false);
   const [showLog,          setShowLog]          = useState(false);
 
   const [loading,  setLoading]  = useState(false);
@@ -2137,16 +2136,12 @@ function RegressionTab() {
         icNumber:      normalizeIdNumber(cfg.icNumber) || undefined,
         postcode:      cfg.postcode      || undefined,
         targetInsurer: cfg.targetInsurer || undefined,
-        ownerName:     cfg.ownerName     || undefined,
-        ownerEmail:    cfg.ownerEmail    || undefined,
-        ownerPhone:    cfg.ownerPhone    || undefined,
-        addressLine1:  cfg.addressLine1  || undefined,
-        addressLine2:  cfg.addressLine2  || undefined,
-        addressLine3:  cfg.addressLine3  || undefined,
         discountCode:  cfg.discountCode  || undefined,
-        targetBank:    cfg.targetBank    || undefined,
-        bankUsername:  cfg.bankUsername  || undefined,
-        bankPassword:  cfg.bankPassword  || undefined,
+        ...(cfg.paymentMethod === "fpx" && {
+          targetBank:   cfg.targetBank   || undefined,
+          bankUsername: cfg.bankUsername || undefined,
+          bankPassword: cfg.bankPassword || undefined,
+        }),
       }),
     })
       .then(r => r.json())
@@ -2407,124 +2402,192 @@ function RegressionTab() {
                     className={INPUT_CLS}
                   />
                 </WField>
-                <WField label="Target Insurer">
-                  <input value={cfg.targetInsurer}
-                    onChange={e => patch({ targetInsurer: e.target.value })}
-                    placeholder="Zurich"
-                    className={INPUT_CLS}
-                  />
-                </WField>
               </div>
             </div>
           </div>
 
-          {/* ── RIGHT: Owner Details + Payment (horizontal sections) ── */}
-          <div className="p-5 space-y-5">
+          {/* ── RIGHT: 4 flow sections ── */}
+          <div className="p-5 space-y-5 overflow-y-auto">
 
-            {/* Section 1: Owner Details */}
-            <RightSectionHeader num={1} label="Owner Details" />
-            <div className="space-y-3">
-              <WField label="Full Name" hint="(as per MyKad)">
-                <input value={cfg.ownerName}
-                  onChange={e => patch({ ownerName: e.target.value.toUpperCase() })}
-                  placeholder="MUHAMMAD FAIZUDDIN BIN BIDI"
-                  className={INPUT_CLS}
-                />
-              </WField>
-              <div className="grid grid-cols-2 gap-3">
-                <WField label="Email">
-                  <input value={cfg.ownerEmail}
-                    onChange={e => patch({ ownerEmail: e.target.value })}
-                    type="email"
-                    placeholder="owner@example.com"
-                    className={INPUT_CLS}
-                  />
-                </WField>
-                <WField label="Phone">
-                  <input value={cfg.ownerPhone}
-                    onChange={e => patch({ ownerPhone: e.target.value })}
-                    placeholder="0123456789"
-                    className={INPUT_CLS}
-                  />
-                </WField>
-              </div>
-              <WField label="Address Line 1">
-                <input value={cfg.addressLine1}
-                  onChange={e => patch({ addressLine1: e.target.value })}
-                  placeholder="No. 1, Jalan Contoh"
-                  className={INPUT_CLS}
-                />
-              </WField>
-              <WField label="Address Line 2">
-                <input value={cfg.addressLine2}
-                  onChange={e => patch({ addressLine2: e.target.value })}
-                  placeholder="Taman Contoh"
-                  className={INPUT_CLS}
-                />
-              </WField>
-              <WField label="Address Line 3">
-                <input value={cfg.addressLine3}
-                  onChange={e => patch({ addressLine3: e.target.value })}
-                  placeholder="Kuala Lumpur"
-                  className={INPUT_CLS}
-                />
-              </WField>
-              <WField label="Discount Code" hint="(optional)">
-                <input value={cfg.discountCode}
-                  onChange={e => patch({ discountCode: e.target.value })}
-                  placeholder="PROMO123"
-                  className={INPUT_CLS}
-                />
-              </WField>
+            {/* Section 1: Choose Quotation */}
+            <RightSectionHeader num={1} label="Choose Quotation" />
+            <div className="flex gap-2">
+              {(["Zurich", "Lonpac", "Tokio Marine"] as const).map(ins => (
+                <button key={ins} type="button"
+                  onClick={() => patch({ targetInsurer: ins })}
+                  className={clsx(
+                    "flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all",
+                    cfg.targetInsurer === ins
+                      ? "bg-blue-600/20 border-blue-500 text-blue-200"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300"
+                  )}>
+                  {ins}
+                </button>
+              ))}
             </div>
 
-            {/* Divider */}
             <div className="h-px bg-slate-800" />
 
-            {/* Section 2: Payment */}
-            <RightSectionHeader num={2} label="Payment (FPX)" />
-            <div className="space-y-3">
-              <WField label="Bank">
-                <div className="grid grid-cols-5 gap-1.5">
-                  {REGRESSION_BANKS.map(b => (
-                    <button key={b.value} type="button"
-                      onClick={() => patch({ targetBank: b.value })}
-                      className={clsx(
-                        "px-1 py-2 rounded-lg text-[11px] font-medium border transition-all text-center leading-tight",
-                        cfg.targetBank === b.value
-                          ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
-                          : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
-                      )}>{b.label}</button>
-                  ))}
-                </div>
-              </WField>
-              <div className="grid grid-cols-2 gap-3">
-                <WField label="Bank Username">
-                  <input value={cfg.bankUsername}
-                    onChange={e => patch({ bankUsername: e.target.value })}
-                    placeholder="Username"
-                    autoComplete="off"
-                    className={INPUT_CLS}
-                  />
+            {/* Section 2: Add-ons */}
+            <RightSectionHeader num={2} label="Add-ons" />
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                { key: "addonWindshield",   label: "Windshield"            },
+                { key: "addonSpecialPerils", label: "Special Perils"       },
+                { key: "addonLegalLiab",    label: "Legal Liability to Passengers" },
+                { key: "addonCart",         label: "CART"                  },
+              ] as const).map(({ key, label }) => {
+                const on = !!(cfg as Record<string, unknown>)[key];
+                return (
+                  <button key={key} type="button"
+                    onClick={() => patch({ [key]: !on } as Partial<RegressionWizardConfig>)}
+                    className={clsx(
+                      "flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium border transition-all text-left",
+                      on
+                        ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                    )}>
+                    <span className={clsx(
+                      "w-3.5 h-3.5 rounded-sm border flex items-center justify-center shrink-0 transition-all",
+                      on ? "bg-blue-500 border-blue-500" : "border-slate-600"
+                    )}>
+                      {on && <span className="text-white text-[9px] font-black leading-none">✓</span>}
+                    </span>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="h-px bg-slate-800" />
+
+            {/* Section 3: Confirmation Payment */}
+            <RightSectionHeader num={3} label="Confirmation Payment" />
+            <WField label="Discount Code" hint="(optional)">
+              <input value={cfg.discountCode}
+                onChange={e => patch({ discountCode: e.target.value })}
+                placeholder="PROMO123"
+                className={INPUT_CLS}
+              />
+            </WField>
+
+            <div className="h-px bg-slate-800" />
+
+            {/* Section 4: Choose Payment */}
+            <RightSectionHeader num={4} label="Choose Payment" />
+            <div className="flex gap-2 mb-3">
+              {(["fpx", "card"] as const).map(m => (
+                <button key={m} type="button"
+                  onClick={() => patch({ paymentMethod: m })}
+                  className={clsx(
+                    "flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all uppercase tracking-wide",
+                    cfg.paymentMethod === m
+                      ? "bg-blue-600/20 border-blue-500 text-blue-200"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300"
+                  )}>{m === "fpx" ? "FPX" : "Card"}</button>
+              ))}
+            </div>
+
+            {cfg.paymentMethod === "fpx" && (
+              <div className="space-y-3">
+                <WField label="Bank">
+                  <div className="grid grid-cols-5 gap-1.5">
+                    {REGRESSION_BANKS.map(b => (
+                      <button key={b.value} type="button"
+                        onClick={() => patch({ targetBank: b.value })}
+                        className={clsx(
+                          "px-1 py-2 rounded-lg text-[11px] font-medium border transition-all text-center leading-tight",
+                          cfg.targetBank === b.value
+                            ? "bg-blue-600/20 border-blue-500/60 text-blue-300"
+                            : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+                        )}>{b.label}</button>
+                    ))}
+                  </div>
                 </WField>
-                <WField label="Bank Password">
-                  <div className="relative">
-                    <input
-                      type={showBankPassword ? "text" : "password"}
-                      value={cfg.bankPassword}
-                      onChange={e => patch({ bankPassword: e.target.value })}
-                      placeholder="Password"
+                <div className="grid grid-cols-2 gap-3">
+                  <WField label="Bank Username">
+                    <input value={cfg.bankUsername}
+                      onChange={e => patch({ bankUsername: e.target.value })}
+                      placeholder="Username"
                       autoComplete="off"
                       className={INPUT_CLS}
                     />
-                    <button type="button" onClick={() => setShowBankPassword(v => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                      {showBankPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                    </button>
-                  </div>
+                  </WField>
+                  <WField label="Bank Password">
+                    <div className="relative">
+                      <input
+                        type={showBankPassword ? "text" : "password"}
+                        value={cfg.bankPassword}
+                        onChange={e => patch({ bankPassword: e.target.value })}
+                        placeholder="Password"
+                        autoComplete="off"
+                        className={INPUT_CLS}
+                      />
+                      <button type="button" onClick={() => setShowBankPassword(v => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                        {showBankPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                  </WField>
+                </div>
+              </div>
+            )}
+
+            {cfg.paymentMethod === "card" && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-semibold text-amber-500/80 uppercase tracking-wide bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">WIP — UI only</span>
+                </div>
+                <WField label="Card Number">
+                  <input value={cfg.cardNumber}
+                    onChange={e => patch({ cardNumber: e.target.value.replace(/\D/g, "").slice(0, 16) })}
+                    placeholder="1234 5678 9012 3456"
+                    autoComplete="off"
+                    className={clsx(INPUT_CLS, "font-mono tracking-widest")}
+                  />
+                </WField>
+                <div className="grid grid-cols-2 gap-3">
+                  <WField label="Expiry (MM/YY)">
+                    <input value={cfg.cardExpiry}
+                      onChange={e => {
+                        const v = e.target.value.replace(/\D/g, "").slice(0, 4);
+                        patch({ cardExpiry: v.length > 2 ? `${v.slice(0,2)}/${v.slice(2)}` : v });
+                      }}
+                      placeholder="MM/YY"
+                      autoComplete="off"
+                      className={clsx(INPUT_CLS, "font-mono")}
+                    />
+                  </WField>
+                  <WField label="CVV">
+                    <div className="relative">
+                      <input
+                        type={showCardCvv ? "text" : "password"}
+                        value={cfg.cardCvv}
+                        onChange={e => patch({ cardCvv: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                        placeholder="•••"
+                        autoComplete="off"
+                        className={clsx(INPUT_CLS, "font-mono")}
+                      />
+                      <button type="button" onClick={() => setShowCardCvv(v => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                        {showCardCvv ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                  </WField>
+                </div>
+                <WField label="Name on Card">
+                  <input value={cfg.cardName}
+                    onChange={e => patch({ cardName: e.target.value.toUpperCase() })}
+                    placeholder="MUHAMMAD FAIZUDDIN"
+                    autoComplete="off"
+                    className={clsx(INPUT_CLS, "font-mono")}
+                  />
                 </WField>
               </div>
-            </div>
+            )}
+
+            {/* Invisible spacer so the last section isn't flush against the Run button */}
+            <div className="h-1" />
           </div>
         </div>
 
@@ -2538,7 +2601,10 @@ function RegressionTab() {
             <Play size={14} /> Run Regression
           </button>
           <span className="text-xs text-slate-600">
-            {cfg.vehicleNumber || "—"} · {cfg.targetInsurer || "—"} · {REGRESSION_BANKS.find(b => b.value === cfg.targetBank)?.label ?? "—"}
+            {cfg.vehicleNumber || "—"} · {cfg.targetInsurer || "—"} ·{" "}
+            {cfg.paymentMethod === "card"
+              ? "Card (WIP)"
+              : (REGRESSION_BANKS.find(b => b.value === cfg.targetBank)?.label ?? "—")}
           </span>
         </div>
       </div>
