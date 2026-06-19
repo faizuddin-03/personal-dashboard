@@ -393,18 +393,10 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     }
 
     // ── 15. Enter OTP and Pay Now ────────────────────────────────
-    // For non-approved status the bank simulator closes the popup immediately
-    // after Request TAC with no OTP step — skip straight to outcome check.
     try {
-      if (CONFIG.paymentStatus === '00') {
-        await bankTACPage.enterOTPAndPay();
-        await bankTACPage.waitForClose();
-        recordStep('OTP and Pay Now', 'PASS', 'OTP entered, Pay Now clicked, popup closed');
-      } else {
-        console.log(`   ⏭️  Non-approved status (${CONFIG.paymentStatus}) — skipping OTP, waiting for popup to close`);
-        await bankTACPage.waitForClose();
-        recordStep('OTP and Pay Now', 'SKIP', `Payment status ${CONFIG.paymentStatus} — no OTP expected`);
-      }
+      await bankTACPage.enterOTPAndPay();
+      await bankTACPage.waitForClose();
+      recordStep('OTP and Pay Now', 'PASS', 'OTP entered, Pay Now clicked, popup closed');
     } catch (e) {
       recordStep('OTP and Pay Now', 'FAIL', String(e));
       writeResult('FAIL', String(e));
