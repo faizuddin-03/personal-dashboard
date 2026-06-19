@@ -2200,7 +2200,6 @@ function WField({ label, hint, children }: { label: string; hint?: string; child
 const INPUT_CLS = "w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50";
 
 function RegressionTab() {
-  const [phase, setPhase] = useState<"wizard" | "running" | "done">("wizard");
   const [cfg, setCfg] = useState<RegressionWizardConfig>(loadWizardConfig);
 
   const [showPassword,     setShowPassword]     = useState(false);
@@ -2223,7 +2222,7 @@ function RegressionTab() {
   // when the user navigated away.
   useEffect(() => {
     const saved = loadRegressionTestResult();
-    if (saved) { setResult(saved); setLog(saved.log ?? ""); setPhase("done"); return; }
+    if (saved) { setResult(saved); setLog(saved.log ?? ""); return; }
     if (localStorage.getItem(RUNNING_KEY) === "1") {
       setLoading(true);
     }
@@ -2256,7 +2255,6 @@ function RegressionTab() {
           localStorage.removeItem(RUNNING_KEY);
           setLoading(false);
           setStopping(false);
-          setPhase("done");
           if (data.error && !data.steps) { setError(data.error); return; }
           const res = data as RegressionResult;
           setResult(res);
@@ -2317,7 +2315,6 @@ function RegressionTab() {
         localStorage.removeItem(RUNNING_KEY);
         setLoading(false);
         setStopping(false);
-        setPhase("done");
         if (data.error && !data.steps) { setError(data.error); return; }
         const res = data as RegressionResult;
         setResult(res);
@@ -2328,7 +2325,6 @@ function RegressionTab() {
         localStorage.removeItem(RUNNING_KEY);
         setLoading(false);
         setStopping(false);
-        setPhase("done");
         setError(e instanceof Error ? e.message : "Something went wrong");
       });
   }
@@ -2344,7 +2340,6 @@ function RegressionTab() {
     setResult(null);
     setError("");
     setLog("");
-    setPhase("wizard");
     clearRegressionTestResult();
   }
 
@@ -2473,113 +2468,98 @@ function RegressionTab() {
     setTimeout(() => document.body.removeChild(iframe), 2000);
   }
 
-  // ── Done phase ────────────────────────────────────────────
-  if (phase === "done") {
-    return (
-      <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4">
-
-        {/* Reconfigure button */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleClear}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-xl text-sm font-medium transition-colors"
-          >
-            Reconfigure &amp; run again
-          </button>
-          {result && (
-            <button
-              onClick={handleDownloadPDF}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 rounded-xl text-sm font-medium transition-colors"
-            >
-              <Download size={14} /> Download PDF
-            </button>
-          )}
-        </div>
-
-        {error && (
-          <div className="bg-red-950/40 border border-red-800/60 rounded-2xl p-4 flex gap-3">
-            <AlertCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
-            <pre className="text-sm text-red-300 whitespace-pre-wrap font-mono">{error}</pre>
-          </div>
-        )}
-
-        {result && (
-          <div className="space-y-4">
-            <div className={clsx(
-              "rounded-2xl border p-5 flex items-center justify-between gap-4",
-              result.overallStatus === "PASS"
-                ? "bg-green-950/40 border-green-800/60"
-                : "bg-red-950/40 border-red-800/60"
-            )}>
-              <div className="flex items-center gap-3">
-                <span className={clsx(
-                  "text-3xl font-black tracking-tight",
-                  result.overallStatus === "PASS" ? "text-green-400" : "text-red-400"
-                )}>
-                  {result.overallStatus === "PASS" ? "✓ PASS" : "✗ FAIL"}
-                </span>
-                <div className="text-sm text-slate-400 space-y-0.5">
-                  <div>{result.vehicleNumber} → {result.targetInsurer}</div>
-                  <div className="text-xs text-slate-500">
-                    {passed} / {(result.steps ?? []).length} steps passed
-                    {duration && <> · {duration}s</>}
-                    {result.completedAt && <> · {new Date(result.completedAt).toLocaleString()}</>}
-                  </div>
-                </div>
-              </div>
-              {failed > 0 && <span className="text-sm font-semibold text-red-400">{failed} failed</span>}
-            </div>
-
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wide">Steps</div>
-              <div className="divide-y divide-slate-800">
-                {(result.steps ?? []).map((step, i) => (
-                  <div key={i} className={clsx(
-                    "flex items-start gap-3 px-5 py-3.5",
-                    step.status === "FAIL" && "bg-red-950/20",
-                  )}>
-                    <span className="text-xs text-slate-600 w-5 shrink-0 pt-0.5 text-right">{i + 1}.</span>
-                    <StepBadge status={step.status} />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-slate-200">{step.name}</div>
-                      {step.message && <div className="text-xs text-slate-500 mt-0.5">{step.message}</div>}
-                    </div>
-                    <span className="text-xs text-slate-700 shrink-0 hidden sm:block">{new Date(step.timestamp).toLocaleTimeString()}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {result.verificationData
-              ? <VerificationReportUI data={result.verificationData} />
-              : result.verificationReport && (
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-                  <div className="px-5 py-3 border-b border-slate-800 text-xs font-semibold text-slate-400 uppercase tracking-wide">Verification Report</div>
-                  <pre className="px-5 py-4 text-xs font-mono text-slate-300 whitespace-pre overflow-x-auto leading-relaxed">{result.verificationReport}</pre>
-                </div>
-              )
-            }
-
-            {result.errorMessage && (
-              <div className="bg-red-950/30 border border-red-800/50 rounded-xl px-4 py-3 text-sm text-red-300 font-mono">{result.errorMessage}</div>
-            )}
-
-            {log && (
-              <details open={showLog} onToggle={e => setShowLog((e.target as HTMLDetailsElement).open)}
-                className="bg-slate-900 border border-slate-800 rounded-xl">
-                <summary className="px-4 py-2.5 text-xs text-slate-500 cursor-pointer hover:text-slate-300 select-none">Show run log</summary>
-                <pre className="px-4 pb-3 text-xs text-slate-500 font-mono whitespace-pre-wrap overflow-x-auto max-h-64 overflow-y-auto">{log}</pre>
-              </details>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
-
   // ── Config form (two-column) ──────────────────────────────
   return (
-    <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4">
+    <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-3">
+
+      {/* ── Compact result panel — always visible after a run ── */}
+      {(result || error) && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+
+          {/* Result header bar */}
+          {result && (
+            <div className={clsx(
+              "flex items-center gap-3 px-4 py-2.5 border-b border-slate-800",
+              result.overallStatus === "PASS" ? "bg-green-950/30" : "bg-red-950/30"
+            )}>
+              <span className={clsx(
+                "text-sm font-black tracking-tight shrink-0",
+                result.overallStatus === "PASS" ? "text-green-400" : "text-red-400"
+              )}>
+                {result.overallStatus === "PASS" ? "✓ PASS" : "✗ FAIL"}
+              </span>
+              <span className="text-xs text-slate-300 font-medium">{result.vehicleNumber} → {result.targetInsurer}</span>
+              <span className="text-xs text-slate-500">
+                {passed}/{(result.steps ?? []).length} steps
+                {duration && <> · {duration}s</>}
+                {failed > 0 && <span className="text-red-400 ml-1">· {failed} failed</span>}
+              </span>
+              {result.completedAt && <span className="text-xs text-slate-600 hidden sm:block">{new Date(result.completedAt).toLocaleTimeString()}</span>}
+              <div className="ml-auto flex items-center gap-2">
+                <button onClick={handleDownloadPDF}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-600/15 border border-blue-500/30 text-blue-300 hover:bg-blue-600/25 transition-all">
+                  <Download size={11} /> PDF
+                </button>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="flex gap-2 px-4 py-2.5 border-b border-slate-800">
+              <AlertCircle size={13} className="text-red-400 shrink-0 mt-0.5" />
+              <pre className="text-xs text-red-300 whitespace-pre-wrap font-mono">{error}</pre>
+            </div>
+          )}
+
+          {/* Steps — compact rows */}
+          {result && (result.steps ?? []).length > 0 && (
+            <div className="divide-y divide-slate-800/60">
+              {(result.steps ?? []).map((step, i) => (
+                <div key={i} className={clsx(
+                  "flex items-center gap-2.5 px-4 py-1.5",
+                  step.status === "FAIL" && "bg-red-950/20"
+                )}>
+                  <span className="text-[10px] text-slate-700 w-4 shrink-0 text-right">{i + 1}.</span>
+                  <StepBadge status={step.status} />
+                  <span className="text-xs font-medium text-slate-300 shrink-0">{step.name}</span>
+                  {step.message && <span className="text-[11px] text-slate-500 truncate">{step.message}</span>}
+                  <span className="text-[10px] text-slate-700 ml-auto shrink-0 hidden sm:block">{new Date(step.timestamp).toLocaleTimeString()}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Verification + error + log — collapsible */}
+          {result && (result.verificationData || result.verificationReport || result.errorMessage || log) && (
+            <div className="border-t border-slate-800">
+              {result.verificationData
+                ? <VerificationReportUI data={result.verificationData} />
+                : result.verificationReport && (
+                  <details className="group">
+                    <summary className="px-4 py-2 text-xs text-slate-500 cursor-pointer hover:text-slate-300 select-none list-none flex items-center gap-1">
+                      <ChevronDown size={11} className="group-open:rotate-180 transition-transform" /> Verification report
+                    </summary>
+                    <pre className="px-4 pb-3 text-xs font-mono text-slate-300 whitespace-pre overflow-x-auto leading-relaxed">{result.verificationReport}</pre>
+                  </details>
+                )
+              }
+              {result.errorMessage && (
+                <div className="px-4 py-2 text-xs text-red-300 font-mono border-t border-slate-800">{result.errorMessage}</div>
+              )}
+              {log && (
+                <details open={showLog} onToggle={e => setShowLog((e.target as HTMLDetailsElement).open)}
+                  className="border-t border-slate-800 group">
+                  <summary className="px-4 py-2 text-xs text-slate-500 cursor-pointer hover:text-slate-300 select-none list-none flex items-center gap-1">
+                    <ChevronDown size={11} className="group-open:rotate-180 transition-transform" /> Run log
+                  </summary>
+                  <pre className="px-4 pb-3 text-xs text-slate-500 font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">{log}</pre>
+                </details>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
 
@@ -3033,20 +3013,13 @@ function RegressionTab() {
               <Square size={13} /> {stopping ? "Stopping…" : "Stop"}
             </button>
           )}
-          {loading ? (
+          {loading && (
             <div className="flex items-center gap-2">
               <Loader2 size={13} className="animate-spin text-blue-400" />
               <span className="text-xs text-slate-400 animate-pulse">
                 {stopping ? "Stopping…" : "Running E2E regression…"}
               </span>
             </div>
-          ) : (
-            <span className="text-xs text-slate-600">
-              {cfg.vehicleNumber || "—"} · {cfg.targetInsurer || "—"} ·{" "}
-              {cfg.paymentMethod === "card"
-                ? "Card (WIP)"
-                : (REGRESSION_BANKS.find(b => b.value === cfg.targetBank)?.label ?? "—")}
-            </span>
           )}
         </div>
       </div>
