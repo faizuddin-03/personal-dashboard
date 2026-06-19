@@ -2511,26 +2511,37 @@ function RegressionTab() {
             </div>
           )}
 
-          {/* Steps — compact rows */}
+          {/* Steps + Log — 2-column layout */}
           {result && (result.steps ?? []).length > 0 && (
-            <div className="divide-y divide-slate-800/60">
-              {(result.steps ?? []).map((step, i) => (
-                <div key={i} className={clsx(
-                  "flex items-center gap-2.5 px-4 py-1.5",
-                  step.status === "FAIL" && "bg-red-950/20"
-                )}>
-                  <span className="text-[10px] text-slate-700 w-4 shrink-0 text-right">{i + 1}.</span>
-                  <StepBadge status={step.status} />
-                  <span className="text-xs font-medium text-slate-300 shrink-0">{step.name}</span>
-                  {step.message && <span className="text-[11px] text-slate-500 truncate">{step.message}</span>}
-                  <span className="text-[10px] text-slate-700 ml-auto shrink-0 hidden sm:block">{new Date(step.timestamp).toLocaleTimeString()}</span>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-800/60 border-t border-slate-800/60">
+
+              {/* Left: steps */}
+              <div className="divide-y divide-slate-800/60">
+                {(result.steps ?? []).map((step, i) => (
+                  <div key={i} className={clsx(
+                    "flex items-center gap-2.5 px-4 py-1.5",
+                    step.status === "FAIL" && "bg-red-950/20"
+                  )}>
+                    <span className="text-[10px] text-slate-700 w-4 shrink-0 text-right">{i + 1}.</span>
+                    <StepBadge status={step.status} />
+                    <span className="text-xs font-medium text-slate-300 shrink-0">{step.name}</span>
+                    {step.message && <span className="text-[11px] text-slate-500 truncate">{step.message}</span>}
+                    <span className="text-[10px] text-slate-700 ml-auto shrink-0 hidden sm:block">{new Date(step.timestamp).toLocaleTimeString()}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right: run log */}
+              <div className="flex flex-col">
+                <div className="px-4 py-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-widest border-b border-slate-800/60">Run Log</div>
+                <pre className="px-4 py-3 text-[11px] text-slate-500 font-mono whitespace-pre-wrap overflow-y-auto leading-relaxed flex-1" style={{ maxHeight: "calc(1.75rem * 13)" }}>{log || "—"}</pre>
+              </div>
+
             </div>
           )}
 
-          {/* Verification + error + log — collapsible */}
-          {result && (result.verificationData || result.verificationReport || result.errorMessage || log) && (
+          {/* Verification + error — below the 2-col grid */}
+          {result && (result.verificationData || result.verificationReport || result.errorMessage) && (
             <div className="border-t border-slate-800">
               {result.verificationData
                 ? <VerificationReportUI data={result.verificationData} />
@@ -2545,15 +2556,6 @@ function RegressionTab() {
               }
               {result.errorMessage && (
                 <div className="px-4 py-2 text-xs text-red-300 font-mono border-t border-slate-800">{result.errorMessage}</div>
-              )}
-              {log && (
-                <details open={showLog} onToggle={e => setShowLog((e.target as HTMLDetailsElement).open)}
-                  className="border-t border-slate-800 group">
-                  <summary className="px-4 py-2 text-xs text-slate-500 cursor-pointer hover:text-slate-300 select-none list-none flex items-center gap-1">
-                    <ChevronDown size={11} className="group-open:rotate-180 transition-transform" /> Run log
-                  </summary>
-                  <pre className="px-4 pb-3 text-xs text-slate-500 font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">{log}</pre>
-                </details>
               )}
             </div>
           )}
