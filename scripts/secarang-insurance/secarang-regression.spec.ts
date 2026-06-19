@@ -188,7 +188,6 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     }
 
     // ── 5. Vehicle details page (if shown) ───────────────────────
-    // Track whether this step clicked "Get quotation" so step 6 can skip it.
     let vehicleDetailsHandled = false;
     try {
       const vehicleDetailsPage = new VehicleDetailsPage(page);
@@ -224,22 +223,15 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 6. Get Quotation button ───────────────────────────────
-    // Skip entirely if step 5 already clicked the button — clicking twice
-    // would either double-submit or navigate back unexpectedly.
-    try {
-      if (vehicleDetailsHandled) {
-        recordStep('Get Quotation', 'SKIP', 'Already clicked in vehicle details step');
-      } else {
+    // ── 6. Get Quotation button (no report entry — handled inside step 5) ──
+    if (!vehicleDetailsHandled) {
+      try {
         const quotationPage = new QuotationPage(page);
-        const clicked = await quotationPage.clickGetQuotationIfShown();
-        recordStep('Get Quotation', clicked ? 'PASS' : 'SKIP',
-          clicked ? 'Clicked Get Quotation button' : 'Cards already loading — nothing to click');
+        await quotationPage.clickGetQuotationIfShown();
+      } catch (e) {
+        writeResult('FAIL', String(e));
+        return;
       }
-    } catch (e) {
-      recordStep('Get Quotation', 'FAIL', String(e));
-      writeResult('FAIL', String(e));
-      return;
     }
 
     // ── 7. Wait for quotation cards ──────────────────────────────
