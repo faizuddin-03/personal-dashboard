@@ -88,7 +88,7 @@ const screenshots: Screenshot[] = [];
 
 async function captureScreenshot(page: import('@playwright/test').Page, label: string): Promise<void> {
   try {
-    const buf = await page.screenshot({ type: 'jpeg', quality: 55, fullPage: false });
+    const buf = await page.screenshot({ type: 'jpeg', quality: 55, fullPage: true });
     screenshots.push({ label, dataUrl: `data:image/jpeg;base64,${buf.toString('base64')}` });
     console.log(`   📷 Screenshot: "${label}" (${Math.round(buf.length / 1024)} KB)`);
   } catch (e) {
