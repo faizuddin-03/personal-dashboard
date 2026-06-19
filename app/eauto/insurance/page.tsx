@@ -2222,7 +2222,20 @@ function RegressionTab() {
   // when the user navigated away.
   useEffect(() => {
     const saved = loadRegressionTestResult();
-    if (saved) { setResult(saved); setLog(saved.log ?? ""); return; }
+    if (saved) {
+      setResult(saved);
+      setLog(saved.log ?? "");
+      // Fetch the full result from the API to restore screenshots (stripped from localStorage)
+      fetch("/api/secarang/regression")
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data && data.completedAt && (data.screenshots ?? []).length > 0) {
+            setResult(prev => prev ? { ...prev, screenshots: data.screenshots } : prev);
+          }
+        })
+        .catch(() => {});
+      return;
+    }
     if (localStorage.getItem(RUNNING_KEY) === "1") {
       setLoading(true);
     }
