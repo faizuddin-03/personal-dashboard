@@ -6,7 +6,7 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send, Filter, Music2, AtSign,
+  Briefcase, Send, Filter, Music2, AtSign, MessageSquare,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -40,7 +40,8 @@ const nav = [
     label: "eAuto",
     icon: Car,
     children: [
-      { label: "Insurance", href: "/eauto/insurance", icon: Shield },
+      { label: "Insurance",  href: "/eauto/insurance", icon: Shield },
+      { label: "WA Blaster", href: "/wa-blaster",      icon: MessageSquare },
     ],
   },
 ];

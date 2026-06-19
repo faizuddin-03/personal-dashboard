@@ -51,3 +51,8 @@ scripts/secarang-insurance/test-results/
 scripts/secarang-insurance/input-vehicles.xlsx
 scripts/secarang-insurance/output-results.xlsx
 scripts/secarang-insurance/node_modules/
+scripts/WA-Blaster/node_modules/
+scripts/WA-Blaster/playwright-report/
+scripts/WA-Blaster/test-results/
+scripts/WA-Blaster/results/*.json
+scripts/WA-Blaster/screenshots/
