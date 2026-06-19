@@ -2471,22 +2471,14 @@ function RegressionTab() {
 </html>`;
 
     const win = window.open("", "_blank", "width=960,height=700");
-    if (!win) return;
+    if (!win) {
+      alert("Popup blocked — please allow popups for this page and try again.");
+      return;
+    }
     win.document.write(html);
     win.document.close();
-    // Wait for all images (base64 screenshots) to finish rendering before printing
-    const imgs = Array.from(win.document.images);
-    if (imgs.length === 0) {
-      win.focus();
-      win.print();
-    } else {
-      let loaded = 0;
-      const tryPrint = () => { if (++loaded === imgs.length) { win.focus(); win.print(); } };
-      imgs.forEach(img => {
-        if (img.complete) tryPrint();
-        else { img.onload = tryPrint; img.onerror = tryPrint; }
-      });
-    }
+    // Give the browser time to render base64 images before opening the print dialog
+    setTimeout(() => { win.focus(); win.print(); }, 800);
   }
 
   // ── Config form (two-column) ──────────────────────────────
