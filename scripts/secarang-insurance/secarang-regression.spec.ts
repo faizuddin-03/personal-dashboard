@@ -39,7 +39,7 @@ const CONFIG = {
   addressLine1:   process.env.REGRESSION_ADDR1       || '2505, Arctic Monkeys Road',
   addressLine2:   process.env.REGRESSION_ADDR2       || 'Taman Monyet Kutub',
   addressLine3:   process.env.REGRESSION_ADDR3       || 'Shah Alam, Selangor',
-  discountCode:   process.env.REGRESSION_DISCOUNT    || 'YEAY7',
+  discountCode:   process.env.REGRESSION_DISCOUNT    || '',
   // Payment gateway
   targetBank:     process.env.REGRESSION_BANK            || 'fpx_mb2u',   // Maybank
   bankUsername:   process.env.REGRESSION_BANK_USER       || 'Gaara',
