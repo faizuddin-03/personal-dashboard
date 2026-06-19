@@ -6,7 +6,7 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Download, Upload, Kanban,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send,
+  Briefcase, Send, MessageSquare,
 } from "lucide-react";
 import { exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import clsx from "clsx";
@@ -33,6 +33,7 @@ const nav = [
       { label: "Insurance", href: "/eauto/insurance", icon: Shield },
     ],
   },
+  { label: "WA Blaster", href: "/wa-blaster", icon: MessageSquare },
 ];
 
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
