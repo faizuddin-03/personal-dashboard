@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1280" />
+  <title>Design tokens — WhatsApp Blaster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: var(--bg-sunken); }
+    .spec-page { max-width: 1280px; margin: 0 auto; padding: 40px 28px 80px; }
+    .spec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 0.5px solid var(--border); }
+    .spec-h1 { font-size: 28px; font-weight: 500; color: var(--text-heading); letter-spacing: -0.012em; }
+    .spec-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .spec-h2 { font-size: 18px; font-weight: 500; color: var(--green-700); margin-top: 48px; margin-bottom: 6px; letter-spacing: -0.005em; }
+    .spec-h2-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+    .spec-h3 { font-size: 14px; font-weight: 500; color: var(--gray-700); margin-bottom: 10px; }
+
+    .color-ramp { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .swatch { background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .swatch-color { height: 64px; }
+    .swatch-meta { padding: 8px 10px; }
+    .swatch-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .swatch-hex  { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+    .swatch-tw   { font-family: var(--mono); font-size: 10px; color: var(--text-subtle); margin-top: 2px; display: block; }
+
+    .ramp-grid { display: grid; grid-template-columns: 180px 1fr; gap: 16px 24px; align-items: start; margin-bottom: 16px; }
+    .ramp-row-label { font-size: 13px; font-weight: 500; color: var(--text); padding-top: 6px; }
+    .ramp-row-help  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .type-row { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: center; padding: 14px 16px; border: 0.5px solid var(--border); border-radius: 8px; margin-bottom: 8px; background: var(--bg); }
+    .type-meta { font-family: var(--mono); font-size: 11px; color: var(--text-muted); line-height: 1.7; }
+    .type-meta b { color: var(--text); font-weight: 500; }
+    .type-sample.h1 { font-size: 24px; font-weight: 500; color: var(--green-800); }
+    .type-sample.h2 { font-size: 18px; font-weight: 500; color: var(--green-700); }
+    .type-sample.h3 { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+    .type-sample.body { font-size: 14px; font-weight: 400; color: var(--gray-900); }
+    .type-sample.caption { font-size: 12px; font-weight: 400; color: var(--gray-500); }
+    .type-sample.code { font-family: var(--mono); font-size: 12px; background: var(--green-100); color: var(--green-800); padding: 2px 8px; border-radius: 4px; display: inline-block; }
+
+    .scale-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .scale-cell { background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; padding: 14px; }
+    .scale-name { font-family: var(--mono); font-size: 12px; font-weight: 500; }
+    .scale-px   { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+    .scale-tw   { font-family: var(--mono); font-size: 10px; color: var(--text-subtle); display: block; margin-top: 4px; }
+    .scale-bar  { height: 6px; background: var(--green-500); border-radius: 2px; margin-top: 10px; }
+
+    .radii-row { display: flex; flex-wrap: wrap; gap: 16px; }
+    .radii-cell { background: var(--bg); border: 0.5px solid var(--border); padding: 12px; width: 140px; }
+
+    .twin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .panel { background: var(--bg); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px; }
+    .panel-dark { background: #0A0A0B; color: #E6E7E9; border-color: #1F2024; }
+    .panel-dark .swatch { background: #111114; border-color: #1F2024; }
+    .panel-dark .swatch-name { color: #E2E3E6; }
+    .panel-dark .swatch-hex { color: #8A8C92; }
+    .panel-dark .swatch-tw { color: #5F6168; }
+    .panel-label { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; margin-bottom: 12px; font-weight: 500; }
+    .panel-label.light { background: var(--green-100); color: var(--green-800); }
+    .panel-label.dark  { background: rgba(110, 231, 162, 0.16); color: #6EE7A2; }
+
+    .usage-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--bg); border: 0.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .usage-table th, .usage-table td { padding: 9px 12px; text-align: left; border-top: 0.5px solid var(--border-hair); }
+    .usage-table th { background: var(--bg-subtle); font-size: 11px; color: var(--text-muted); font-weight: 500; }
+    .usage-table tr:first-child td { border-top: 0; }
+    .usage-table .mono { font-family: var(--mono); font-size: 12px; }
+    .usage-table .chip-color { width: 14px; height: 14px; border-radius: 3px; display: inline-block; vertical-align: -2px; margin-right: 6px; border: 0.5px solid var(--border-hair); }
+
+    .nav-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); text-decoration: none; font-size: 12px; }
+    .nav-back:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="spec-page">
+    <a class="nav-back" href="deliverables.html">← All deliverables</a>
+
+    <div class="spec-head">
+      <div>
+        <div class="spec-h1">Design tokens</div>
+        <div class="spec-sub">Reference sheet — colour palette, type scale, spacing, radii, motion · light mode primary, dark mode shown alongside</div>
+      </div>
+      <div style="font-family: var(--mono); font-size: 11px; color: var(--text-subtle); text-align: right;">
+        v1.0 · 21 Oct 2025<br/>
+        Tokens live in <span style="color:var(--text-muted)">styles.css</span> as CSS custom properties
+      </div>
+    </div>
+
+    <!-- ───── COLOR — BRAND RAMP ───── -->
+    <div class="spec-h2">Brand · WhatsApp green</div>
+    <div class="spec-h2-sub">Primary colour scale. green-500 is the brand colour. green-800 is heading text. Other ramps follow Tailwind defaults.</div>
+    <div class="color-ramp" style="grid-template-columns: repeat(7, 1fr);">
+      <div class="swatch"><div class="swatch-color" style="background:#F0F9F2"></div><div class="swatch-meta"><div class="swatch-name">green-50</div><div class="swatch-hex">#F0F9F2</div><span class="swatch-tw">bg-green-50</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E7F5E9"></div><div class="swatch-meta"><div class="swatch-name">green-100</div><div class="swatch-hex">#E7F5E9</div><span class="swatch-tw">bg-green-100</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#D6E9DC"></div><div class="swatch-meta"><div class="swatch-name">green-200</div><div class="swatch-hex">#D6E9DC</div><span class="swatch-tw">bg-green-200</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#25D366"></div><div class="swatch-meta"><div class="swatch-name">green-500</div><div class="swatch-hex">#25D366</div><span class="swatch-tw">bg-green-500</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#128C7E"></div><div class="swatch-meta"><div class="swatch-name">green-600</div><div class="swatch-hex">#128C7E</div><span class="swatch-tw">bg-green-600</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#0E7268"></div><div class="swatch-meta"><div class="swatch-name">green-700</div><div class="swatch-hex">#0E7268</div><span class="swatch-tw">bg-green-700</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#075E54"></div><div class="swatch-meta"><div class="swatch-name">green-800</div><div class="swatch-hex">#075E54</div><span class="swatch-tw">bg-green-800</span></div></div>
+    </div>
+
+    <!-- ───── COLOR — STATUS ───── -->
+    <div class="spec-h2">Status</div>
+    <div class="spec-h2-sub">Each status colour uses one stop for the fill (–50) and one for the foreground (–500/–800).</div>
+    <div class="color-ramp" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="swatch"><div class="swatch-color" style="background:#EF4444"></div><div class="swatch-meta"><div class="swatch-name">red-500 · destructive</div><div class="swatch-hex">#EF4444</div><span class="swatch-tw">bg-red-500</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F59E0B"></div><div class="swatch-meta"><div class="swatch-name">amber-500 · warning</div><div class="swatch-hex">#F59E0B</div><span class="swatch-tw">bg-amber-500</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#3B82F6"></div><div class="swatch-meta"><div class="swatch-name">blue-500 · info</div><div class="swatch-hex">#3B82F6</div><span class="swatch-tw">bg-blue-500</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#25D366"></div><div class="swatch-meta"><div class="swatch-name">green-500 · success</div><div class="swatch-hex">#25D366</div><span class="swatch-tw">bg-green-500</span></div></div>
+    </div>
+
+    <!-- ───── COLOR — NEUTRALS ───── -->
+    <div class="spec-h2">Neutrals · Tailwind gray</div>
+    <div class="spec-h2-sub">All chrome is built on these ten stops. Text on coloured fills uses the matching 800 stop of that ramp — never plain black.</div>
+    <div class="color-ramp" style="grid-template-columns: repeat(10, 1fr);">
+      <div class="swatch"><div class="swatch-color" style="background:#F9FAFB"></div><div class="swatch-meta"><div class="swatch-name">gray-50</div><div class="swatch-hex">#F9FAFB</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F3F4F6"></div><div class="swatch-meta"><div class="swatch-name">gray-100</div><div class="swatch-hex">#F3F4F6</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E5E7EB"></div><div class="swatch-meta"><div class="swatch-name">gray-200</div><div class="swatch-hex">#E5E7EB</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#D1D5DB"></div><div class="swatch-meta"><div class="swatch-name">gray-300</div><div class="swatch-hex">#D1D5DB</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#9CA3AF"></div><div class="swatch-meta"><div class="swatch-name">gray-400</div><div class="swatch-hex">#9CA3AF</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#6B7280"></div><div class="swatch-meta"><div class="swatch-name">gray-500</div><div class="swatch-hex">#6B7280</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#4B5563"></div><div class="swatch-meta"><div class="swatch-name">gray-600</div><div class="swatch-hex">#4B5563</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#374151"></div><div class="swatch-meta"><div class="swatch-name">gray-700</div><div class="swatch-hex">#374151</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#1F2937"></div><div class="swatch-meta"><div class="swatch-name">gray-800</div><div class="swatch-hex">#1F2937</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#111827"></div><div class="swatch-meta"><div class="swatch-name">gray-900</div><div class="swatch-hex">#111827</div></div></div>
+    </div>
+
+    <!-- ───── COLOR — SEMANTIC TOKENS LIGHT/DARK ───── -->
+    <div class="spec-h2">Semantic tokens · light vs dark</div>
+    <div class="spec-h2-sub">Reach for these in components rather than picking a hex from the ramps. They re-map automatically when <code style="font-family:var(--mono);font-size:11px">html[data-theme]</code> changes.</div>
+    <div class="twin-grid">
+      <div class="panel">
+        <span class="panel-label light">Light mode (primary)</span>
+        <table class="usage-table">
+          <thead><tr><th>Token</th><th>Hex</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td><span class="chip-color" style="background:#FFFFFF"></span><span class="mono">--bg</span></td><td class="mono">#FFFFFF</td><td>Page surface</td></tr>
+            <tr><td><span class="chip-color" style="background:#F9FAFB"></span><span class="mono">--bg-subtle</span></td><td class="mono">#F9FAFB</td><td>Card row stripe, sidebar</td></tr>
+            <tr><td><span class="chip-color" style="background:#F7F8FA"></span><span class="mono">--bg-sunken</span></td><td class="mono">#F7F8FA</td><td>Page background</td></tr>
+            <tr><td><span class="chip-color" style="background:#F3F4F6"></span><span class="mono">--bg-hover</span></td><td class="mono">#F3F4F6</td><td>Row, button hover</td></tr>
+            <tr><td><span class="chip-color" style="background:#E7F5E9"></span><span class="mono">--bg-selected</span></td><td class="mono">#E7F5E9</td><td>Selected row, active nav</td></tr>
+            <tr><td><span class="chip-color" style="background:#E5E7EB"></span><span class="mono">--border</span></td><td class="mono">#E5E7EB</td><td>Standard 0.5px dividers</td></tr>
+            <tr><td><span class="chip-color" style="background:#111827"></span><span class="mono">--text</span></td><td class="mono">#111827</td><td>Body text</td></tr>
+            <tr><td><span class="chip-color" style="background:#6B7280"></span><span class="mono">--text-muted</span></td><td class="mono">#6B7280</td><td>Captions, helper text</td></tr>
+            <tr><td><span class="chip-color" style="background:#9CA3AF"></span><span class="mono">--text-subtle</span></td><td class="mono">#9CA3AF</td><td>Hints, placeholders</td></tr>
+            <tr><td><span class="chip-color" style="background:#075E54"></span><span class="mono">--text-heading</span></td><td class="mono">#075E54</td><td>H1 / page titles</td></tr>
+            <tr><td><span class="chip-color" style="background:#25D366"></span><span class="mono">--accent</span></td><td class="mono">#25D366</td><td>Primary button, focus ring</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel panel-dark">
+        <span class="panel-label dark">Dark mode</span>
+        <table class="usage-table" style="background:#111114;border-color:#1F2024">
+          <thead style="background:#16171A"><tr style="color:#8A8C92"><th>Token</th><th>Hex</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td><span class="chip-color" style="background:#0A0A0B"></span><span class="mono">--bg</span></td><td class="mono">#0A0A0B</td><td>Page surface</td></tr>
+            <tr><td><span class="chip-color" style="background:#111114"></span><span class="mono">--bg-subtle</span></td><td class="mono">#111114</td><td>Card row stripe, sidebar</td></tr>
+            <tr><td><span class="chip-color" style="background:#07080A"></span><span class="mono">--bg-sunken</span></td><td class="mono">#07080A</td><td>Page background</td></tr>
+            <tr><td><span class="chip-color" style="background:#17181C"></span><span class="mono">--bg-hover</span></td><td class="mono">#17181C</td><td>Row, button hover</td></tr>
+            <tr><td><span class="chip-color" style="background:rgba(37,211,102,0.10)"></span><span class="mono">--bg-selected</span></td><td class="mono">accent-10%</td><td>Selected row, active nav</td></tr>
+            <tr><td><span class="chip-color" style="background:#1F2024"></span><span class="mono">--border</span></td><td class="mono">#1F2024</td><td>Standard 0.5px dividers</td></tr>
+            <tr><td><span class="chip-color" style="background:#E6E7E9"></span><span class="mono">--text</span></td><td class="mono">#E6E7E9</td><td>Body text</td></tr>
+            <tr><td><span class="chip-color" style="background:#8A8C92"></span><span class="mono">--text-muted</span></td><td class="mono">#8A8C92</td><td>Captions, helper text</td></tr>
+            <tr><td><span class="chip-color" style="background:#5F6168"></span><span class="mono">--text-subtle</span></td><td class="mono">#5F6168</td><td>Hints, placeholders</td></tr>
+            <tr><td><span class="chip-color" style="background:#C9F2DC"></span><span class="mono">--text-heading</span></td><td class="mono">#C9F2DC</td><td>H1 / page titles</td></tr>
+            <tr><td><span class="chip-color" style="background:#25D366"></span><span class="mono">--accent</span></td><td class="mono">#25D366</td><td>Primary button, focus ring</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ───── TYPOGRAPHY ───── -->
+    <div class="spec-h2">Typography</div>
+    <div class="spec-h2-sub">Inter at 400 (regular) and 500 (medium) only. JetBrains Mono for code chips, monospace data, kbd hints. Sentence case everywhere.</div>
+
+    <div class="type-row">
+      <div class="type-meta"><b>H1 · Page title</b><br/>24 / 1.2 · weight 500<br/>color: <span style="color:#075E54">green-800</span></div>
+      <div class="type-sample h1">Sign in to your dashboard</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><b>H2 · Section heading</b><br/>18 / 1.2 · weight 500<br/>color: <span style="color:#0E7268">green-700</span></div>
+      <div class="type-sample h2">Account health</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><b>H3 · Subsection label</b><br/>14 / 1.5 · weight 500<br/>color: gray-700</div>
+      <div class="type-sample h3">Recent activity</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><b>Body</b><br/>14 / 1.5 · weight 400<br/>color: gray-900</div>
+      <div class="type-sample body">Free-form messages allowed inside the 24-hour customer service window. Outside it, only approved templates.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><b>Caption</b><br/>12 / 1.5 · weight 400<br/>color: gray-500</div>
+      <div class="type-sample caption">Updated 2 days ago · by Aisyah Rahman</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta"><b>Code</b><br/>12 mono · weight 400<br/>green-800 on green-100<br/>4px corner, 6px h-padding</div>
+      <div><span class="type-sample code">order_confirmation_v3</span> &nbsp; <span class="type-sample code">{{1}}</span></div>
+    </div>
+
+    <!-- ───── SPACING ───── -->
+    <div class="spec-h2">Spacing scale</div>
+    <div class="spec-h2-sub">Tailwind defaults — multiples of 4px. Use the named tokens in components rather than raw values.</div>
+    <div class="scale-grid">
+      <div class="scale-cell"><div class="scale-name">space-1</div><div class="scale-px">4px</div><span class="scale-tw">gap-1 · p-1</span><div class="scale-bar" style="width:4px"></div></div>
+      <div class="scale-cell"><div class="scale-name">space-2</div><div class="scale-px">8px</div><span class="scale-tw">gap-2 · p-2</span><div class="scale-bar" style="width:8px"></div></div>
+      <div class="scale-cell"><div class="scale-name">space-3</div><div class="scale-px">12px</div><span class="scale-tw">gap-3 · p-3</span><div class="scale-bar" style="width:12px"></div></div>
+      <div class="scale-cell"><div class="scale-name">space-4</div><div class="scale-px">16px</div><span class="scale-tw">gap-4 · p-4</span><div class="scale-bar" style="width:16px"></div></div>
+      <div class="scale-cell"><div class="scale-name">space-5</div><div class="scale-px">20px</div><span class="scale-tw">gap-5 · p-5</span><div class="scale-bar" style="width:20px"></div></div>
+      <div class="scale-cell"><div class="scale-name">space-6</div><div class="scale-px">24px</div><span class="scale-tw">gap-6 · p-6</span><div class="scale-bar" style="width:24px"></div></div>
+      <div class="scale-cell"><div class="scale-name">space-8</div><div class="scale-px">32px</div><span class="scale-tw">gap-8 · p-8</span><div class="scale-bar" style="width:32px"></div></div>
+      <div class="scale-cell"><div class="scale-name">space-10</div><div class="scale-px">40px</div><span class="scale-tw">gap-10 · p-10</span><div class="scale-bar" style="width:40px"></div></div>
+    </div>
+
+    <div style="margin-top:18px">
+      <table class="usage-table">
+        <thead><tr><th>Pattern</th><th>Value</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr><td>Page padding</td><td class="mono">24px</td><td>Breathing room around content</td></tr>
+          <tr><td>Card padding</td><td class="mono">16px</td><td>Comfortable but compact</td></tr>
+          <tr><td>Table cell</td><td class="mono">12 × 8 px</td><td>Horizontal 12, vertical 8</td></tr>
+          <tr><td>Section gap</td><td class="mono">16px</td><td>Between cards / blocks</td></tr>
+          <tr><td>Form field gap</td><td class="mono">12px</td><td>Between label, control, hint</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ───── RADII ───── -->
+    <div class="spec-h2">Corner radii</div>
+    <div class="spec-h2-sub">Small and consistent. 8px for most components, 12px for cards, 999px for pills.</div>
+    <div class="radii-row">
+      <div class="radii-cell"><div style="height:48px;background:var(--bg-hover);border-radius:4px"></div><div class="scale-name" style="margin-top:8px">radius-sm</div><div class="scale-px">4px · pills, kbd</div></div>
+      <div class="radii-cell"><div style="height:48px;background:var(--bg-hover);border-radius:6px"></div><div class="scale-name" style="margin-top:8px">radius</div><div class="scale-px">6px · default</div></div>
+      <div class="radii-cell"><div style="height:48px;background:var(--bg-hover);border-radius:8px"></div><div class="scale-name" style="margin-top:8px">radius-md</div><div class="scale-px">8px · buttons, inputs</div></div>
+      <div class="radii-cell"><div style="height:48px;background:var(--bg-hover);border-radius:12px"></div><div class="scale-name" style="margin-top:8px">radius-lg</div><div class="scale-px">12px · cards</div></div>
+      <div class="radii-cell"><div style="height:48px;background:var(--bg-hover);border-radius:999px"></div><div class="scale-name" style="margin-top:8px">full</div><div class="scale-px">999px · pills, avatars</div></div>
+    </div>
+
+    <!-- ───── BORDERS & SHADOWS ───── -->
+    <div class="spec-h2">Borders &amp; elevation</div>
+    <div class="spec-h2-sub">No shadows except the focus ring. 0.5px borders are the entire elevation system.</div>
+    <table class="usage-table">
+      <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">border</td><td class="mono">0.5px solid var(--border)</td><td>Cards, dividers, table cells</td></tr>
+        <tr><td class="mono">border-hair</td><td class="mono">0.5px solid rgba(17,24,39,0.08)</td><td>Faint inner-row separators</td></tr>
+        <tr><td class="mono">border-strong</td><td class="mono">0.5px solid #D1D5DB</td><td>Input borders, button outlines</td></tr>
+        <tr><td class="mono">shadow-focus</td><td class="mono">0 0 0 3px rgba(37,211,102,0.22)</td><td>The only shadow allowed</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ───── MOTION ───── -->
+    <div class="spec-h2">Motion</div>
+    <div class="spec-h2-sub">Restrained. Page transitions are instant. Only three animated UI elements: inbox new-message pulse, send progress bar, three-dot typing indicator. Everything respects <span class="mono">prefers-reduced-motion</span>.</div>
+    <table class="usage-table">
+      <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">duration-instant</td><td class="mono">0ms</td><td>Page navigation</td></tr>
+        <tr><td class="mono">duration-fast</td><td class="mono">80ms ease</td><td>Hover background</td></tr>
+        <tr><td class="mono">duration-base</td><td class="mono">120ms ease</td><td>Toggle, switch</td></tr>
+        <tr><td class="mono">duration-sheet</td><td class="mono">180–220ms cubic-bezier(.3,.7,.4,1)</td><td>Sheet, drawer slide</td></tr>
+        <tr><td class="mono">progress-tick</td><td class="mono">400ms ease</td><td>Campaign send progress</td></tr>
+        <tr><td class="mono">pulse</td><td class="mono">2.2s infinite</td><td>Inbox new-message dot</td></tr>
+        <tr><td class="mono">typing</td><td class="mono">1.2s infinite</td><td>Three-dot chatbot indicator</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ───── ICONOGRAPHY ───── -->
+    <div class="spec-h2">Iconography</div>
+    <div class="spec-h2-sub">lucide-react outline. Stroke 1.75. Three sizes only.</div>
+    <table class="usage-table">
+      <thead><tr><th>Size</th><th>Pixels</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>Large</td><td class="mono">24px</td><td>Sidebar nav, toolbar buttons</td></tr>
+        <tr><td>Inline</td><td class="mono">16px</td><td>Inline with text, primary buttons</td></tr>
+        <tr><td>Indicator</td><td class="mono">12px</td><td>Status dots, table cells</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:48px;padding-top:18px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text-subtle);text-align:center">
+      All tokens are sourced from <span class="mono" style="color:var(--text-muted)">styles.css</span> · changes propagate to every component automatically.
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,746 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String?
+  role         UserRole @default(OPERATOR)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  assignedTickets Ticket[]
+
+  @@map("users")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  UNKNOWN
+}
+
+enum Ethnicity {
+  MALAY
+  CHINESE
+  INDIAN
+  OTHER
+  UNKNOWN
+}
+
+enum Religion {
+  ISLAM
+  BUDDHISM
+  HINDUISM
+  CHRISTIANITY
+  OTHER
+  UNKNOWN
+}
+
+enum Occupation {
+  STUDENT
+  EMPLOYED
+  SELF_EMPLOYED
+  UNEMPLOYED
+  RETIRED
+  OTHER
+  UNKNOWN
+}
+
+enum LanguagePreference {
+  EN
+  MS
+  ZH
+  TA
+  OTHER
+}
+
+enum MalaysianState {
+  JOHOR
+  KEDAH
+  KELANTAN
+  MELAKA
+  NEGERI_SEMBILAN
+  PAHANG
+  PENANG
+  PERAK
+  PERLIS
+  SABAH
+  SARAWAK
+  SELANGOR
+  TERENGGANU
+  KUALA_LUMPUR
+  LABUAN
+  PUTRAJAYA
+}
+
+enum BlastLanguageMode {
+  PREFERENCE
+  STATE
+}
+
+enum OptInStatus {
+  OPTED_IN
+  OPTED_OUT
+  PENDING
+}
+
+enum DealerTier {
+  BRONZE
+  SILVER
+  GOLD
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRING
+  LAPSED
+}
+
+enum VehicleSpecialization {
+  NATIONAL
+  CONTINENTAL_LUXURY
+  SUV_MPV
+  COMMERCIAL_PICKUP
+  EV_HYBRID
+  MOTORCYCLE
+  MULTI_BRAND
+}
+
+enum NumberType {
+  PHONE
+  LANE
+}
+
+enum PicRole {
+  OWNER
+  SALES_MANAGER
+  ADMIN
+}
+
+model Contact {
+  id                  String              @id @default(uuid()) @db.Uuid
+  phoneE164           String              @unique @map("phone_e164")
+  name                String?
+  dateOfBirth         DateTime?           @map("date_of_birth") @db.Date
+  gender              Gender              @default(UNKNOWN)
+  ethnicity           Ethnicity           @default(UNKNOWN)
+  religion            Religion            @default(UNKNOWN)
+  occupation          Occupation          @default(UNKNOWN)
+  languagePreference  LanguagePreference  @default(EN) @map("language_preference")
+  city                String?
+  state               MalaysianState?
+  attributes          Json                @default("{}")
+  // dealer (eAuto) attributes — pivot from B2C demographics (demographic columns kept nullable, unused)
+  picName               String?                @map("pic_name")
+  picRole               PicRole?               @map("pic_role")
+  numberType            NumberType             @default(PHONE) @map("number_type")
+  tier                  DealerTier?            @map("tier")
+  subscriptionStatus    SubscriptionStatus?    @map("subscription_status")
+  vehicleSpecialization VehicleSpecialization? @map("vehicle_specialization")
+  historyCheckCredits   Int                    @default(0) @map("history_check_credits")
+  transfers30d          Int                    @default(0) @map("transfers_30d")
+  lifetimeSpend         Decimal                @default(0) @map("lifetime_spend") @db.Decimal(12, 2)
+  joinedAt              DateTime?              @map("joined_at")
+  lastSeenAt            DateTime?              @map("last_seen_at")
+  optInStatus         OptInStatus         @default(PENDING) @map("opt_in_status")
+  optInSource         String?             @map("opt_in_source")
+  optInAt             DateTime?           @map("opt_in_at")
+  optOutAt            DateTime?           @map("opt_out_at")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  inboxState          InboxConversationState?
+  tickets             Ticket[]
+  conversations       Conversation[]
+
+  @@index([ethnicity])
+  @@index([gender])
+  @@index([languagePreference])
+  @@index([state])
+  @@index([optInStatus])
+  @@index([createdAt])
+  @@index([tier])
+  @@index([subscriptionStatus])
+  @@index([vehicleSpecialization])
+  @@map("contacts")
+}
+
+model ContactSegment {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String?
+  filterJson  Json     @map("filter_json")
+  createdById String   @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("contact_segments")
+}
+
+model CannedReply {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  body        String
+  category    String?
+  createdById String?  @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt       @map("updated_at")
+
+  @@map("canned_replies")
+}
+
+enum TemplateCategory {
+  MARKETING
+  UTILITY
+  AUTHENTICATION
+}
+
+enum TemplateStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  DISABLED
+}
+
+model Template {
+  id              String             @id @default(uuid()) @db.Uuid
+  name            String
+  version         Int                @default(1)
+  language        LanguagePreference
+  category        TemplateCategory   @default(MARKETING)
+  bodyText        String             @map("body_text")
+  headerJson      Json?              @map("header_json")
+  footerText      String?            @map("footer_text")
+  buttonsJson     Json?              @map("buttons_json")
+  variables       String[]           @default([])
+  metaTemplateId  String?            @map("meta_template_id")
+  status          TemplateStatus     @default(DRAFT)
+  rejectionReason String?            @map("rejection_reason")
+  submittedAt     DateTime?          @map("submitted_at")
+  approvedAt      DateTime?          @map("approved_at")
+  createdById     String             @map("created_by") @db.Uuid
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  @@unique([name, version, language])
+  @@index([name])
+  @@index([status])
+  @@index([metaTemplateId])
+  @@map("templates")
+}
+
+enum BlastStatus {
+  DRAFT
+  SCHEDULED
+  RUNNING
+  PAUSED
+  COMPLETED
+  CANCELED
+  FAILED
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+  CANCELED
+}
+
+enum MessageSource {
+  BLAST
+  INBOX
+}
+
+model Blast {
+  id                  String       @id @default(uuid()) @db.Uuid
+  name                String
+  templateName        String       @map("template_name")
+  defaultLanguage     LanguagePreference @default(EN) @map("default_language")
+  segmentId           String?      @map("segment_id") @db.Uuid
+  recipientSnapshot   Json         @default("[]") @map("recipient_snapshot")
+  variableMapping     Json         @default("{}") @map("variable_mapping")
+  scheduledAt         DateTime     @map("scheduled_at")
+  status              BlastStatus  @default(DRAFT)
+  totalRecipients     Int          @default(0) @map("total_recipients")
+  languageMode        BlastLanguageMode @default(PREFERENCE) @map("language_mode")
+  uniqueContacts      Int          @default(0) @map("unique_contacts")
+  createdById         String       @map("created_by") @db.Uuid
+  createdAt           DateTime     @default(now()) @map("created_at")
+  startedAt           DateTime?    @map("started_at")
+  completedAt         DateTime?    @map("completed_at")
+  pausedAt            DateTime?    @map("paused_at")
+
+  messages            Message[]
+
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("blasts")
+}
+
+model Message {
+  id              String        @id @default(uuid()) @db.Uuid
+  blastId         String?       @map("blast_id") @db.Uuid
+  contactId       String        @map("contact_id") @db.Uuid
+  templateId      String?       @map("template_id") @db.Uuid
+  metaMessageId   String?       @unique @map("meta_message_id")
+  status          MessageStatus @default(QUEUED)
+  source          MessageSource @default(BLAST)
+  body            String?
+  errorCode       String?       @map("error_code")
+  errorMessage    String?       @map("error_message")
+  sentAt          DateTime?     @map("sent_at")
+  deliveredAt     DateTime?     @map("delivered_at")
+  readAt          DateTime?     @map("read_at")
+  repliedAt       DateTime?     @map("replied_at")
+
+  blast           Blast?        @relation(fields: [blastId], references: [id], onDelete: Cascade)
+
+  @@index([blastId])
+  @@index([contactId])
+  @@index([status])
+  @@map("messages")
+}
+
+model MessageEvent {
+  id            String   @id @default(uuid()) @db.Uuid
+  messageId     String?  @map("message_id") @db.Uuid
+  metaEventType String   @map("meta_event_type")
+  payloadJson   Json     @map("payload_json")
+  receivedAt    DateTime @default(now()) @map("received_at")
+
+  @@index([messageId])
+  @@index([receivedAt])
+  @@map("message_events")
+}
+
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+
+enum InboundRouting {
+  ANALYTICS
+  CHATBOT
+  NONE
+}
+
+model InboundMessage {
+  id                  String          @id @default(uuid()) @db.Uuid
+  contactId           String          @map("contact_id") @db.Uuid
+  metaMessageId       String          @unique @map("meta_message_id")
+  body                String
+  attributedBlastId   String?         @map("attributed_blast_id") @db.Uuid
+  receivedAt          DateTime        @default(now()) @map("received_at")
+  routedTo            InboundRouting  @default(ANALYTICS) @map("routed_to")
+
+  @@index([contactId])
+  @@index([attributedBlastId])
+  @@index([receivedAt])
+  @@map("inbound_messages")
+}
+
+model InboxConversationState {
+  contactId       String    @id @map("contact_id") @db.Uuid
+  contact         Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  lastInboundAt   DateTime? @map("last_inbound_at")
+  lastOutboundAt  DateTime? @map("last_outbound_at")
+  resolvedAt      DateTime? @map("resolved_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt       @map("updated_at")
+
+  @@index([resolvedAt, lastInboundAt(sort: Desc)])
+  @@map("inbox_conversation_state")
+}
+
+model StateLanguageMapping {
+  state      MalaysianState        @id
+  languages  LanguagePreference[]
+  updatedAt  DateTime              @updatedAt @map("updated_at")
+
+  @@map("state_language_mapping")
+}
+
+enum KnowledgeSource {
+  SYNCED
+  FROM_ESCALATION
+}
+
+enum KnowledgeStatus {
+  PUBLISHED
+  CANDIDATE
+  DISMISSED
+}
+
+model KnowledgeDoc {
+  id        String          @id @default(uuid()) @db.Uuid
+  slug      String
+  question  String
+  answer    String
+  category  String
+  source    KnowledgeSource @default(SYNCED)
+  status    KnowledgeStatus @default(PUBLISHED)
+  uses      Int             @default(0)
+  ticketId  String?         @map("ticket_id") @db.Uuid
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([source])
+  @@index([category])
+  @@map("knowledge_docs")
+}
+
+enum AutopilotAction {
+  AUTO_REPLIED
+  ESCALATED
+  OPTED_OUT
+  SKIPPED
+}
+
+enum EscalationReason {
+  COMPLAINT
+  LOW_CONFIDENCE
+  KNOWLEDGE_GAP
+  SENSITIVE
+}
+
+model AutopilotEvent {
+  id               String            @id @default(uuid()) @db.Uuid
+  contactId        String            @map("contact_id") @db.Uuid
+  inboundMessageId String?           @map("inbound_message_id") @db.Uuid
+  action           AutopilotAction
+  intent           String?
+  confidence       Float?
+  reason           EscalationReason?
+  matchedKbDocId   String?           @map("matched_kb_doc_id") @db.Uuid
+  model            String?
+  replyText        String?           @map("reply_text")
+  createdAt        DateTime          @default(now()) @map("created_at")
+
+  @@index([contactId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("autopilot_events")
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model Ticket {
+  id               String           @id @default(uuid()) @db.Uuid
+  seq              Int              @unique @default(autoincrement())
+  contactId        String           @map("contact_id") @db.Uuid
+  status           TicketStatus     @default(OPEN)
+  reason           EscalationReason
+  intent           String?
+  assigneeId       String?          @map("assignee_id") @db.Uuid
+  autopilotEventId String?          @map("autopilot_event_id") @db.Uuid
+  openedAt         DateTime         @default(now()) @map("opened_at")
+  assignedAt       DateTime?        @map("assigned_at")
+  resolvedAt       DateTime?        @map("resolved_at")
+  closedAt         DateTime?        @map("closed_at")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  contact          Contact          @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  assignee         User?            @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([contactId])
+  @@index([assigneeId])
+  @@map("tickets")
+}
+
+enum ConversationState {
+  NEW
+  AUTO_REPLIED
+  ESCALATION_OFFERED
+  ESCALATED
+  AWAITING_REPLY
+  REPLIED
+  RESOLVED
+}
+
+enum BotDraftState {
+  PENDING
+  APPROVED
+  EDITED
+  REJECTED
+  SENT
+}
+
+enum ChatbotDecisionKind {
+  AUTO_SEND
+  ESCALATE
+  IGNORE
+}
+
+enum KnowledgeDocumentStatus {
+  DRAFT
+  LIVE
+  ARCHIVED
+}
+
+model Conversation {
+  id                          String              @id @default(uuid()) @db.Uuid
+  contactId                   String              @map("contact_id") @db.Uuid
+  state                       ConversationState   @default(NEW)
+  lastInboundAt               DateTime?           @map("last_inbound_at")
+  lastOutboundAt              DateTime?           @map("last_outbound_at")
+  csWindowExpiresAt           DateTime?           @map("cs_window_expires_at")
+  assignedToId                String?             @map("assigned_to") @db.Uuid
+  pinned                      Boolean             @default(false)
+  tags                        String[]            @default([])
+  detectedLanguage            LanguagePreference? @map("detected_language")
+  escalationOfferedAt         DateTime?           @map("escalation_offered_at")
+  escalationOfferInboundId    String?             @map("escalation_offer_inbound_id") @db.Uuid
+  closedAt                    DateTime?           @map("closed_at")
+  closedByUserId              String?             @map("closed_by") @db.Uuid
+  createdAt                   DateTime            @default(now()) @map("created_at")
+  updatedAt                   DateTime            @updatedAt @map("updated_at")
+
+  contact                     Contact                       @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  inboundMessages             ConversationInboundMessage[]
+  outboundMessages            ConversationOutboundMessage[]
+  botDrafts                   BotDraft[]
+  decisions                   ChatbotDecision[]
+  resolutionCapture           ResolutionCapture?
+
+  @@index([contactId])
+  @@index([state])
+  @@index([assignedToId])
+  @@index([lastInboundAt])
+  @@map("conversations")
+}
+
+model ConversationInboundMessage {
+  id                String        @id @default(uuid()) @db.Uuid
+  conversationId    String        @map("conversation_id") @db.Uuid
+  metaMessageId     String        @unique @map("meta_message_id")
+  body              String
+  receivedAt        DateTime      @map("received_at")
+  rawJson           Json          @map("raw_json")
+  createdAt         DateTime      @default(now()) @map("created_at")
+
+  conversation      Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([receivedAt])
+  @@map("conversation_inbound_messages")
+}
+
+model ConversationOutboundMessage {
+  id                String        @id @default(uuid()) @db.Uuid
+  conversationId    String        @map("conversation_id") @db.Uuid
+  metaMessageId     String?       @unique @map("meta_message_id")
+  body              String
+  kind              String        // 'AUTO_REPLY' | 'OPERATOR_REPLY'
+  sentByUserId      String?       @map("sent_by") @db.Uuid
+  botDraftId        String?       @unique @map("bot_draft_id") @db.Uuid
+  sentAt            DateTime?     @map("sent_at")
+  deliveredAt       DateTime?     @map("delivered_at")
+  readAt            DateTime?     @map("read_at")
+  failedAt          DateTime?     @map("failed_at")
+  errorMessage      String?       @map("error_message")
+  createdAt         DateTime      @default(now()) @map("created_at")
+
+  conversation      Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([sentAt])
+  @@map("conversation_outbound_messages")
+}
+
+model BotDraft {
+  id                  String              @id @default(uuid()) @db.Uuid
+  conversationId      String              @map("conversation_id") @db.Uuid
+  inboundMessageId    String              @map("inbound_message_id") @db.Uuid
+  body                String
+  intent              String
+  intentConfidence    Float               @map("intent_confidence")
+  draftConfidence     Float               @map("draft_confidence")
+  modelUsed           String              @map("model_used")
+  embeddingModelUsed  String              @map("embedding_model_used")
+  latencyMs           Int                 @map("latency_ms")
+  state               BotDraftState       @default(PENDING)
+  approvedByUserId    String?             @map("approved_by") @db.Uuid
+  editedBody          String?             @map("edited_body")
+  rejectionReason     String?             @map("rejection_reason")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  conversation        Conversation        @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  citations           BotDraftCitation[]
+
+  @@index([conversationId])
+  @@index([state])
+  @@index([createdAt])
+  @@map("bot_drafts")
+}
+
+model ChatbotDecision {
+  id                  String                @id @default(uuid()) @db.Uuid
+  conversationId      String                @map("conversation_id") @db.Uuid
+  inboundMessageId    String                @map("inbound_message_id") @db.Uuid
+  kind                ChatbotDecisionKind
+  reason              String
+  intent              String?
+  intentConfidence    Float?                @map("intent_confidence")
+  draftConfidence     Float?                @map("draft_confidence")
+  modelUsed           String?               @map("model_used")
+  embeddingModelUsed  String?               @map("embedding_model_used")
+  totalLatencyMs      Int                   @map("total_latency_ms")
+  retrievalLatencyMs  Int?                  @map("retrieval_latency_ms")
+  guardrailFailures   String[]              @default([]) @map("guardrail_failures")
+  topChunkScore       Float?                @map("top_chunk_score")
+  chunksRetrieved     Int                   @default(0) @map("chunks_retrieved")
+  createdAt           DateTime              @default(now()) @map("created_at")
+
+  conversation        Conversation          @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([kind])
+  @@index([createdAt])
+  @@map("chatbot_decisions")
+}
+
+model ChatbotSetting {
+  key         String   @id
+  value       String
+  valueType   String   @map("value_type")
+  description String?
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("chatbot_settings")
+}
+
+model KnowledgeDocument {
+  id                          String                  @id @default(uuid()) @db.Uuid
+  name                        String                  // filename, e.g. "shipping_table.md"
+  title                       String                  // display title
+  category                    String                  // "Logistics" | "Booking" | "Billing" | "Marketing" | "General" | "Menu" | "Resolved tickets" | etc.
+  contentMd                   String                  @map("content_md") @db.Text
+  wordCount                   Int                     @map("word_count")
+  status                      KnowledgeDocumentStatus @default(DRAFT)
+  embeddingModel              String                  @map("embedding_model")
+  capturedFromConversationId  String?                 @unique @map("captured_from_conversation_id") @db.Uuid
+  createdById                 String                  @map("created_by") @db.Uuid
+  createdAt                   DateTime                @default(now()) @map("created_at")
+  updatedAt                   DateTime                @updatedAt @map("updated_at")
+
+  chunks                      KnowledgeChunk[]
+  resolutionCapture           ResolutionCapture?      @relation("CapturedFrom")
+
+  @@unique([name])
+  @@index([category])
+  @@index([status])
+  @@index([createdAt])
+  @@map("knowledge_documents")
+}
+
+model KnowledgeChunk {
+  id              String              @id @default(uuid()) @db.Uuid
+  documentId      String              @map("document_id") @db.Uuid
+  chunkIndex      Int                 @map("chunk_index")
+  text            String              @db.Text
+  tokenCount      Int                 @map("token_count")
+  // embedding column added via raw SQL in the migration (Prisma can't express vector(1024) natively)
+  // See migration.sql Step 4 below.
+  createdAt       DateTime            @default(now()) @map("created_at")
+
+  document        KnowledgeDocument   @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  citations       BotDraftCitation[]
+
+  @@index([documentId])
+  @@map("knowledge_chunks")
+}
+
+model BotDraftCitation {
+  id              String          @id @default(uuid()) @db.Uuid
+  botDraftId      String          @map("bot_draft_id") @db.Uuid
+  chunkId         String          @map("chunk_id") @db.Uuid
+  similarityScore Float           @map("similarity_score")
+  rank            Int
+  createdAt       DateTime        @default(now()) @map("created_at")
+
+  botDraft        BotDraft        @relation(fields: [botDraftId], references: [id], onDelete: Cascade)
+  chunk           KnowledgeChunk  @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+
+  @@index([botDraftId])
+  @@index([chunkId])
+  @@map("bot_draft_citations")
+}
+
+model ResolutionCapture {
+  id                   String              @id @default(uuid()) @db.Uuid
+  conversationId       String              @unique @map("conversation_id") @db.Uuid
+  closedByUserId       String              @map("closed_by") @db.Uuid
+  closedAt             DateTime            @map("closed_at")
+  disposition          String              // 'IMPORT_LIVE' | 'SAVE_DRAFT' | 'SKIP'
+  resolutionNotes      String?             @map("resolution_notes") @db.Text
+  editedAnswer         String?             @map("edited_answer") @db.Text       // operator's cleaned-up version, used as authoritative source for the captured doc
+  forcedDespiteDuplicate Boolean           @default(false) @map("forced_despite_duplicate")
+  documentId           String?             @unique @map("document_id") @db.Uuid // null until job completes; null forever if SKIP / skipped_duplicate / failed
+  duplicateOfId        String?             @map("duplicate_of") @db.Uuid        // points to existing LIVE doc that already covered it
+  status               String              // 'pending' | 'captured_live' | 'captured_draft' | 'skipped_by_operator' | 'skipped_duplicate' | 'failed'
+  failureReason        String?             @map("failure_reason")
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
+
+  conversation         Conversation        @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  document             KnowledgeDocument?  @relation("CapturedFrom", fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([closedAt])
+  @@index([disposition])
+  @@map("resolution_captures")
+}
+
+enum AssistantPlanStatus {
+  PENDING_APPROVAL
+  EXECUTED
+  CANCELLED
+  EXPIRED
+}
+
+model AssistantPlan {
+  id              String              @id @default(uuid()) @db.Uuid
+  status          AssistantPlanStatus @default(PENDING_APPROVAL)
+  plan            Json
+  createdById     String?             @map("created_by") @db.Uuid
+  blastId         String?             @map("blast_id") @db.Uuid
+  templateName    String?             @map("template_name")
+  templateVersion Int?                @map("template_version")
+  error           String?
+  expiresAt       DateTime            @map("expires_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt       @map("updated_at")
+
+  @@index([status])
+  @@map("assistant_plans")
+}

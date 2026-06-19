@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Design review — WhatsApp Blaster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: var(--bg-sunken); }
+
+    /* Document chrome */
+    .doc { max-width: 1320px; margin: 0 auto; padding: 56px 32px 96px; }
+    .doc-head {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+      padding-bottom: 20px; margin-bottom: 12px; border-bottom: 0.5px solid var(--border);
+    }
+    .doc-h1 { font-size: 30px; font-weight: 500; color: var(--text-heading); letter-spacing: -0.014em; }
+    .doc-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; max-width: 600px; }
+    .doc-meta { font-family: var(--mono); font-size: 11px; color: var(--text-subtle); text-align: right; line-height: 1.7; }
+
+    /* TOC */
+    .toc {
+      background: var(--bg); border: 0.5px solid var(--border); border-radius: 12px;
+      padding: 14px 18px; margin-bottom: 40px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 18px;
+      font-size: 12px;
+    }
+    .toc a {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 0; color: var(--text); text-decoration: none;
+    }
+    .toc a:hover { color: var(--green-700); }
+    .toc a span.n { font-family: var(--mono); font-size: 11px; color: var(--text-subtle); width: 22px; }
+    .toc-section {
+      grid-column: 1 / -1;
+      font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-subtle);
+      padding: 10px 0 4px;
+      border-top: 0.5px solid var(--border-hair);
+      margin-top: 4px;
+    }
+    .toc-section:first-child { border-top: 0; margin-top: 0; padding-top: 4px; }
+
+    /* Section */
+    .section { margin: 64px 0; scroll-margin-top: 24px; }
+    .section-num {
+      display: inline-block; font-family: var(--mono); font-size: 11px;
+      color: var(--text-subtle); margin-bottom: 4px;
+    }
+    .section-h2 {
+      font-size: 22px; font-weight: 500; color: var(--text-heading);
+      letter-spacing: -0.01em; margin-bottom: 6px;
+    }
+    .section-sub {
+      font-size: 13px; color: var(--text-muted); max-width: 680px; line-height: 1.55;
+    }
+
+    /* Artifact (single) */
+    .artifact { margin-top: 24px; }
+    .artifact-title {
+      font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .artifact-title .tag {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 5px; border-radius: 4px; background: var(--bg-hover); color: var(--text-muted);
+    }
+    .artifact-caption {
+      font-size: 12px; color: var(--text-muted); margin-top: 10px; line-height: 1.55;
+      max-width: 720px;
+    }
+
+    /* Frame — the "image" container */
+    .frame {
+      position: relative;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .frame iframe {
+      display: block; border: 0; width: 100%;
+    }
+    .frame.tall iframe   { height: 820px; }
+    .frame.std  iframe   { height: 720px; }
+    .frame.short iframe  { height: 560px; }
+    .frame.mini iframe   { height: 320px; }
+    .frame.viewport-1440 iframe { width: 1440px; max-width: 100%; }
+    .frame-label {
+      position: absolute; top: 12px; left: 12px;
+      font-size: 10px; font-family: var(--mono); padding: 2px 8px;
+      background: rgba(15, 23, 42, 0.84); color: #fff; border-radius: 4px;
+      z-index: 2; letter-spacing: 0.02em;
+    }
+
+    /* Pair: two artifacts side-by-side */
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .triple { display: grid; grid-template-columns: 2fr 1.4fr 0.8fr; gap: 16px; align-items: start; }
+    .triple .frame iframe { height: 620px; }
+
+    /* Mobile frame */
+    .mobile {
+      width: 375px;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    .mobile .frame iframe { height: 720px; }
+
+    /* Annotations */
+    .anno-wrap { position: relative; }
+    .anno {
+      position: absolute;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--green-500);
+      color: #fff;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 500;
+      z-index: 3;
+      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.30);
+      cursor: pointer;
+      font-family: var(--mono);
+    }
+    .anno-list {
+      margin-top: 14px;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: grid; gap: 8px;
+      font-size: 12px;
+    }
+    .anno-list .anno-item {
+      display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start;
+    }
+    .anno-list .anno-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--green-100);
+      color: var(--green-800);
+      display: grid; place-items: center;
+      font-size: 10px; font-weight: 500;
+      font-family: var(--mono);
+    }
+    .anno-list .anno-text { color: var(--text); line-height: 1.55; }
+    .anno-list .anno-text b { color: var(--text); font-weight: 500; }
+    .anno-list .anno-text .mono { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+
+    .pull-quote {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: var(--bg-subtle);
+      border-left: 2px solid var(--green-500);
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      max-width: 720px;
+    }
+    .pull-quote b { color: var(--text); font-weight: 500; }
+    .pull-quote .ref {
+      font-family: var(--mono); font-size: 11px; color: var(--text-subtle); margin-left: 6px;
+    }
+
+    .nav-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); text-decoration: none; font-size: 12px; }
+    .nav-back:hover { color: var(--text); }
+
+    @media print {
+      .section { break-inside: avoid; page-break-inside: avoid; }
+      body { background: #fff; }
+      .frame { box-shadow: none; }
+      iframe { border: 1px solid #ddd !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc">
+
+    <div class="doc-head">
+      <div>
+        <a class="nav-back" href="deliverables.html">← All deliverables</a>
+        <h1 class="doc-h1" style="margin-top:8px">Design review</h1>
+        <p class="doc-sub">A grouped, annotated walk-through of every artifact. Live previews instead of flat images — they update with the design system. Each section: title, artifact, caption, numbered callouts.</p>
+      </div>
+      <div class="doc-meta">
+        v1.0 · 21 Oct 2025<br/>
+        Modefair MY<br/>
+        References: <span style="color:var(--text-muted)">Linear · Stripe · Vercel</span>
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc">
+      <div class="toc-section">Foundations</div>
+      <a href="#tokens"><span class="n">01</span> Design tokens</a>
+      <a href="#components"><span class="n">02</span> Component library</a>
+      <a href="#shell"><span class="n">03</span> App shell</a>
+      <div class="toc-section">Page-by-page</div>
+      <a href="#p-overview"><span class="n">04a</span> Overview</a>
+      <a href="#p-inbox"><span class="n">04b</span> Inbox</a>
+      <a href="#p-contacts"><span class="n">04c</span> Contacts</a>
+      <a href="#p-segments"><span class="n">04d</span> Segments</a>
+      <a href="#p-templates"><span class="n">04e</span> Templates</a>
+      <a href="#p-campaigns"><span class="n">04f</span> Campaigns</a>
+      <a href="#p-reports"><span class="n">04g</span> Reports</a>
+      <a href="#p-settings"><span class="n">04h</span> Settings</a>
+      <a href="#p-admin"><span class="n">04i</span> Admin</a>
+      <a href="#p-aux"><span class="n">04j</span> Helpline · Status</a>
+      <div class="toc-section">Flows</div>
+      <a href="#workflows"><span class="n">05</span> Workflow storyboards</a>
+      <a href="#wizards"><span class="n">06</span> Wizards</a>
+      <div class="toc-section">States &amp; signals</div>
+      <a href="#states"><span class="n">07</span> States gallery</a>
+      <a href="#help"><span class="n">08</span> Keyboard help</a>
+      <a href="#palette"><span class="n">09</span> Command palette</a>
+      <a href="#toasts"><span class="n">10</span> Notifications</a>
+    </nav>
+
+    <!-- ─── 01 TOKENS ─── -->
+    <div class="section" id="tokens">
+      <div class="section-num">01 · FOUNDATIONS</div>
+      <h2 class="section-h2">Design tokens</h2>
+      <p class="section-sub">The whole visual system as data. Palette, type, spacing, radii, motion. Light primary, dark alongside. All tokens live as CSS custom properties in <span class="mono" style="font-family:var(--mono);font-size:12px">styles.css</span>; component code never hard-codes a hex.</p>
+
+      <div class="artifact">
+        <div class="artifact-title">Token reference sheet <span class="tag">single image</span></div>
+        <div class="frame std"><span class="frame-label">tokens.html · 1280w</span><iframe src="tokens.html#tokens" loading="lazy" style="height:1200px"></iframe></div>
+        <p class="artifact-caption">Full palette ramps (brand green, status, gray-50→900), semantic token mapping for light + dark side-by-side, type scale with live samples, the 4-px spacing scale, corner radii, the no-shadows-except-focus-ring rule, and motion durations. <a href="tokens.html" target="_blank" class="link">Open standalone →</a></p>
+      </div>
+    </div>
+
+    <!-- ─── 02 COMPONENTS ─── -->
+    <div class="section" id="components">
+      <div class="section-num">02 · FOUNDATIONS</div>
+      <h2 class="section-h2">Component library</h2>
+      <p class="section-sub">Every primitive in every state — buttons, inputs, badges, tables, dialogs, sheets, toasts, palette, sidebar item, wizard chrome. Grouped Inputs / Display / Overlays / Structure.</p>
+
+      <div class="artifact">
+        <div class="artifact-title">Components — every primitive, every state <span class="tag">single long image</span></div>
+        <div class="frame std"><span class="frame-label">components.html</span><iframe src="components.html#buttons" loading="lazy" style="height:1100px"></iframe></div>
+        <p class="artifact-caption">Scroll the embed or <a href="components.html" target="_blank" class="link">open standalone</a>. Sidebar nav inside the doc jumps to any component. Each card shows default / hover / focus / active / disabled, plus size variants where relevant.</p>
+      </div>
+    </div>
+
+    <!-- ─── 03 APP SHELL ─── -->
+    <div class="section" id="shell">
+      <div class="section-num">03 · FOUNDATIONS</div>
+      <h2 class="section-h2">App shell — three viewports</h2>
+      <p class="section-sub">Fixed left sidebar (240 px expanded, 64 px collapsed icon-rail), 56 px top bar with breadcrumbs · search · quality pill · theme toggle · help · role pill. Tested at 1440 / 1024 / 375 px.</p>
+
+      <div class="triple anno-wrap" style="margin-top:24px">
+        <div class="frame std"><span class="frame-label">1440 — desktop</span><iframe src="index.html?r=overview" loading="lazy" style="height:620px"></iframe></div>
+        <div class="frame std"><span class="frame-label">1024 — tablet</span><iframe src="index.html?r=overview" loading="lazy" style="height:620px;width:1024px;transform:scale(0.55);transform-origin:top left;border:0;display:block" scrolling="no"></iframe></div>
+        <div class="frame std" style="width:375px;justify-self:end"><span class="frame-label">375 — phone</span><iframe src="index.html?r=overview" loading="lazy" style="height:620px;width:375px;border:0;display:block"></iframe></div>
+
+        <span class="anno" style="top:18px;  left:18px">1</span>
+        <span class="anno" style="top:18px;  left:54%">2</span>
+        <span class="anno" style="top:18px;  right:54px">3</span>
+      </div>
+      <div class="anno-list">
+        <div class="anno-item"><span class="anno-num">1</span><span class="anno-text"><b>Desktop · 1440 px.</b> Full sidebar with section labels (Workspace / Admin / Help) and badge counts. Active route gets a 3 px green-500 left accent bar and green-100 background.</span></div>
+        <div class="anno-item"><span class="anno-num">2</span><span class="anno-text"><b>Tablet · 1024 px.</b> Sidebar auto-collapses to an icon rail at &lt;1100 px regardless of the stored preference. Breadcrumbs hide; search input shrinks.</span></div>
+        <div class="anno-item"><span class="anno-num">3</span><span class="anno-text"><b>Phone · 375 px.</b> Stat strip reflows to one column; KPI strip stacks. User-menu name hides, leaving the avatar. Tables horizontally scroll (sticky first column).</span></div>
+      </div>
+    </div>
+
+    <!-- ─── 04 PAGE BY PAGE ─── -->
+    <div class="section" id="p-overview">
+      <div class="section-num">04a · PAGES</div>
+      <h2 class="section-h2">Overview</h2>
+      <p class="section-sub">Daily dashboard. KPI strip + 14-day volume chart + account health + active campaigns + inbox attention + recent activity.</p>
+      <div class="frame std" style="margin-top:16px"><span class="frame-label">/?r=overview · 1440</span><iframe src="index.html?r=overview" loading="lazy" style="height:880px"></iframe></div>
+      <p class="artifact-caption">Quality rating tile is colour-coded; volume chart uses three series (sent / read / replied) at the same scale. Active campaigns table is clickable into the campaign detail page.</p>
+    </div>
+
+    <div class="section" id="p-inbox">
+      <div class="section-num">04b · PAGES · the hero</div>
+      <h2 class="section-h2">Inbox</h2>
+      <p class="section-sub">Three columns: conversation list, thread, contact context. Chatbot drafts surface with a confidence bar and Approve/Edit/Reject actions. The most complex screen in the app.</p>
+
+      <div class="anno-wrap" style="margin-top:16px">
+        <div class="frame tall"><span class="frame-label">/?r=inbox · 1440 · escalated tab</span><iframe src="index.html?r=inbox" loading="lazy" style="height:820px"></iframe></div>
+        <span class="anno" style="top:128px; left:14px">1</span>
+        <span class="anno" style="top:128px; left:30%">2</span>
+        <span class="anno" style="top:128px; right:32%">3</span>
+        <span class="anno" style="top:200px; right:14px">4</span>
+      </div>
+      <div class="anno-list">
+        <div class="anno-item"><span class="anno-num">1</span><span class="anno-text"><b>State tabs · row badges.</b> <span class="mono">AUTO</span> (green-100) chatbot handled, <span class="mono">ESC</span> (amber) operator review required, <span class="mono">NEW</span> (blue) no reply yet, <span class="mono">REPLY</span> (green-200) operator already responded. Animated pulse dot on unread items.</span></div>
+        <div class="anno-item"><span class="anno-num">2</span><span class="anno-text"><b>24-hour customer-service window indicator.</b> A conic-gradient ring next to the contact name fills in as the window closes. Below 2 hours it turns amber — outside the window only approved templates can be sent.</span></div>
+        <div class="anno-item"><span class="anno-num">3</span><span class="anno-text"><b>Chatbot draft card.</b> Inline above the composer when state is ESC. Shows draft body, confidence bar (green ≥85, amber 75–84, red &lt;75), intent code, knowledge sources cited. Actions are <b>Approve &amp; send</b> · <b>Edit</b> · <b>Reject &amp; reply manually</b> with <span class="kbd">A</span> · <span class="kbd">E</span> · <span class="kbd">R</span> shortcuts.</span></div>
+        <div class="anno-item"><span class="anno-num">4</span><span class="anno-text"><b>Context panel.</b> Contact card, AI decision audit (intent · confidence · sources used), recent activity, quick actions. Admin-only actions show a "Admin" pill on the locked button.</span></div>
+      </div>
+
+      <div class="pair" style="margin-top:24px">
+        <div>
+          <div class="artifact-title">Empty state</div>
+          <div class="frame short"><span class="frame-label">/?r=inbox&amp;empty=1</span><iframe src="index.html?r=inbox&empty=1" loading="lazy"></iframe></div>
+          <p class="artifact-caption">No active conversations. Copy explains what will trigger inbox population.</p>
+        </div>
+        <div>
+          <div class="artifact-title">Mobile · /inbox/[id]</div>
+          <div class="mobile"><div class="frame short"><span class="frame-label">375</span><iframe src="index.html?r=inbox" loading="lazy" style="width:375px;height:620px"></iframe></div></div>
+          <p class="artifact-caption">At small viewports the three-column layout collapses; context panel becomes a right-side Sheet triggered from the thread header.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="p-contacts">
+      <div class="section-num">04c · PAGES</div>
+      <h2 class="section-h2">Contacts</h2>
+      <p class="section-sub">Master list, table-first. Bulk select reveals an action bar. Add-tag popover lets you tag selections inline.</p>
+
+      <div class="anno-wrap" style="margin-top:16px">
+        <div class="frame std"><span class="frame-label">/?r=contacts · 1440</span><iframe src="index.html?r=contacts" loading="lazy" style="height:760px"></iframe></div>
+        <span class="anno" style="top:170px; left:14px">1</span>
+        <span class="anno" style="top:260px; left:14px">2</span>
+      </div>
+      <div class="anno-list">
+        <div class="anno-item"><span class="anno-num">1</span><span class="anno-text"><b>Filter pills.</b> Dashed-border = inactive, solid = applied. Each opens a popover with its own picker. Reading the active filter set is a glance.</span></div>
+        <div class="anno-item"><span class="anno-num">2</span><span class="anno-text"><b>Phone numbers.</b> E.164 with the country prefix and 🇲🇾 flag emoji — the only emoji allowed in the chrome.</span></div>
+      </div>
+    </div>
+
+    <div class="section" id="p-segments">
+      <div class="section-num">04d · PAGES</div>
+      <h2 class="section-h2">Segments</h2>
+      <p class="section-sub">List of rule-based groups + a detail panel with growth sparkline and sample contacts. Builder is a separate route.</p>
+      <div class="frame std" style="margin-top:16px"><span class="frame-label">/?r=segments · 1440</span><iframe src="index.html?r=segments" loading="lazy" style="height:680px"></iframe></div>
+    </div>
+
+    <div class="section" id="p-templates">
+      <div class="section-num">04e · PAGES</div>
+      <h2 class="section-h2">Templates</h2>
+      <p class="section-sub">Meta-approved message library. Status tabs (All / Approved / In review / Rejected). Row click opens the detail card with body, variables, and live preview.</p>
+      <div class="frame std" style="margin-top:16px"><span class="frame-label">/?r=templates · 1440</span><iframe src="index.html?r=templates" loading="lazy" style="height:780px"></iframe></div>
+      <p class="artifact-caption"><b>Out of scope:</b> the inner WhatsApp message bubble styling itself is Meta's spec — we render their styling unchanged inside our preview frame.</p>
+    </div>
+
+    <div class="section" id="p-campaigns">
+      <div class="section-num">04f · PAGES</div>
+      <h2 class="section-h2">Campaigns</h2>
+      <p class="section-sub">List view with tabs by status, then three detail states: sending (live), complete (final report), failed (Meta error + retry).</p>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:16px">
+        <div>
+          <div class="artifact-title">List</div>
+          <div class="frame short"><span class="frame-label">/?r=campaigns</span><iframe src="index.html?r=campaigns" loading="lazy" style="height:620px"></iframe></div>
+        </div>
+        <div>
+          <div class="artifact-title">Detail · sending</div>
+          <div class="frame short"><span class="frame-label">/?r=campaign-detail-sending</span><iframe src="index.html?r=campaign-detail-sending" loading="lazy" style="height:620px"></iframe></div>
+        </div>
+        <div>
+          <div class="artifact-title">Detail · complete</div>
+          <div class="frame short"><span class="frame-label">/?r=campaign-detail-complete</span><iframe src="index.html?r=campaign-detail-complete" loading="lazy" style="height:620px"></iframe></div>
+        </div>
+        <div>
+          <div class="artifact-title">Detail · failed</div>
+          <div class="frame short"><span class="frame-label">/?r=campaign-detail-failed</span><iframe src="index.html?r=campaign-detail-failed" loading="lazy" style="height:620px"></iframe></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="p-reports">
+      <div class="section-num">04g · PAGES</div>
+      <h2 class="section-h2">Reports</h2>
+      <p class="section-sub">KPI strip, daily volume chart, delivery funnel + cost donut, AI performance, intent distribution. Sortable campaign reports table with multi-select Compare.</p>
+
+      <div class="frame std" style="margin-top:16px"><span class="frame-label">/?r=reports · 1440 · overview tab</span><iframe src="index.html?r=reports" loading="lazy" style="height:880px"></iframe></div>
+
+      <div class="pair" style="margin-top:16px">
+        <div>
+          <div class="artifact-title">Compare view</div>
+          <div class="frame short"><span class="frame-label">/?r=compare</span><iframe src="index.html?r=compare" loading="lazy" style="height:620px"></iframe></div>
+          <p class="artifact-caption">Side-by-side metric table with BEST badges per row, plus a horizontal-bar chart. Export to Excel via the toolbar.</p>
+        </div>
+        <div>
+          <div class="artifact-title">KPI drill-down (Sheet)</div>
+          <div class="frame short"><span class="frame-label">Click any KPI tile</span><iframe src="index.html?r=reports" loading="lazy" style="height:620px"></iframe></div>
+          <p class="artifact-caption">Tile click opens a right-side Sheet with extended sparkline + breakdown by template and segment.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="p-settings">
+      <div class="section-num">04h · PAGES</div>
+      <h2 class="section-h2">Settings</h2>
+      <p class="section-sub">Vertical sidebar within the page. Six sub-sections: General · WhatsApp number · Billing &amp; tier · Integrations · Compliance &amp; PDPA · Developers. Operator-locked controls show an inline "Admin" pill.</p>
+      <div class="frame std" style="margin-top:16px"><span class="frame-label">/?r=settings · 1440</span><iframe src="index.html?r=settings" loading="lazy" style="height:780px"></iframe></div>
+    </div>
+
+    <div class="section" id="p-admin">
+      <div class="section-num">04i · PAGES · admin-only</div>
+      <h2 class="section-h2">Users · Audit · Knowledge</h2>
+      <p class="section-sub">Three admin surfaces. Operators see the sidebar entries locked (lock icon) — clicking is a no-op rather than a redirect-and-error.</p>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; margin-top:16px">
+        <div>
+          <div class="artifact-title">Users &amp; roles</div>
+          <div class="frame short"><span class="frame-label">/?r=users</span><iframe src="index.html?r=users" loading="lazy" style="height:560px"></iframe></div>
+        </div>
+        <div>
+          <div class="artifact-title">Audit log</div>
+          <div class="frame short"><span class="frame-label">/?r=audit</span><iframe src="index.html?r=audit" loading="lazy" style="height:560px"></iframe></div>
+        </div>
+        <div>
+          <div class="artifact-title">Chatbot knowledge</div>
+          <div class="frame short"><span class="frame-label">/?r=knowledge</span><iframe src="index.html?r=knowledge" loading="lazy" style="height:560px"></iframe></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="p-aux">
+      <div class="section-num">04j · PAGES · auxiliary</div>
+      <h2 class="section-h2">Helpline · System status</h2>
+      <p class="section-sub">Reference pages. Helpline shows a live "we're open" indicator based on Asia/Kuala_Lumpur hours. System status auto-refreshes every 10 seconds and shows one service degraded to demo the partial-incident state.</p>
+      <div class="pair" style="margin-top:16px">
+        <div class="frame short"><span class="frame-label">/?r=helpline</span><iframe src="index.html?r=helpline" loading="lazy" style="height:560px"></iframe></div>
+        <div class="frame short"><span class="frame-label">/?r=status</span><iframe src="index.html?r=status" loading="lazy" style="height:560px"></iframe></div>
+      </div>
+    </div>
+
+    <!-- ─── 05 WORKFLOWS ─── -->
+    <div class="section" id="workflows">
+      <div class="section-num">05 · FLOWS</div>
+      <h2 class="section-h2">Workflow storyboards</h2>
+      <p class="section-sub">Three daily workflows mapped as horizontal node-and-arrow strips. Stakeholders can validate flows before any code. Every step is clickable — it deep-links into the matching screen.</p>
+      <div class="frame std" style="margin-top:16px"><span class="frame-label">/?r=workflows</span><iframe src="index.html?r=workflows" loading="lazy" style="height:920px"></iframe></div>
+      <div class="pull-quote">
+        <b>Workflow B branches.</b> The "create → schedule → monitor" flow has an alternate terminus — <span class="mono">Detail · failed</span> with Meta error log + retry — branching off after the launch dialog. This is rendered as an explicit "or" branch on the diagram so the failure path is visible at a glance.
+      </div>
+    </div>
+
+    <!-- ─── 06 WIZARDS ─── -->
+    <div class="section" id="wizards">
+      <div class="section-num">06 · FLOWS</div>
+      <h2 class="section-h2">Wizards</h2>
+      <p class="section-sub">CSV import (Step 1 → 2 → 3 → progress → success) and Campaign create (Template → Audience → Schedule → Review → Launch dialog → sending).</p>
+
+      <div class="pair" style="margin-top:16px">
+        <div>
+          <div class="artifact-title">Import — Step 1 Upload</div>
+          <div class="frame short"><span class="frame-label">/?r=import</span><iframe src="index.html?r=import" loading="lazy" style="height:560px"></iframe></div>
+          <p class="artifact-caption">Drag-and-drop zone with file detail row that appears post-drop.</p>
+        </div>
+        <div>
+          <div class="artifact-title">Campaign — Step 1 Template</div>
+          <div class="frame short"><span class="frame-label">/?r=campaign-new</span><iframe src="index.html?r=campaign-new" loading="lazy" style="height:560px"></iframe></div>
+          <p class="artifact-caption">Approved templates only. Live preview in the right rail with the same bubble styling that contacts will see.</p>
+        </div>
+      </div>
+      <p class="artifact-caption" style="margin-top:14px"><b>Out of scope for this round:</b> the Template creation wizard. Behavioural spec is in <span class="mono" style="font-family:var(--mono);font-size:11px">§ 6.6</span>; deferred to the next pass.</p>
+    </div>
+
+    <!-- ─── 07 STATES ─── -->
+    <div class="section" id="states">
+      <div class="section-num">07 · STATES &amp; SIGNALS</div>
+      <h2 class="section-h2">States gallery</h2>
+      <p class="section-sub">Every page in <b>empty</b> · <b>populated</b> · <b>error</b>. Demo via URL params: <span class="mono" style="font-family:var(--mono);font-size:12px">?empty=1</span> &amp; <span class="mono" style="font-family:var(--mono);font-size:12px">?error=1</span>.</p>
+
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top:16px">
+        <div>
+          <div class="artifact-title">Contacts · empty</div>
+          <div class="frame short"><span class="frame-label">?empty=1</span><iframe src="index.html?r=contacts&empty=1" loading="lazy" style="height:480px"></iframe></div>
+          <p class="artifact-caption">Action-oriented copy: <i>"Add your first contact"</i>, with both CTAs visible.</p>
+        </div>
+        <div>
+          <div class="artifact-title">Contacts · populated</div>
+          <div class="frame short"><span class="frame-label">default</span><iframe src="index.html?r=contacts" loading="lazy" style="height:480px"></iframe></div>
+          <p class="artifact-caption">Standard table with filter chips, opt-in pills, lifetime MYR.</p>
+        </div>
+        <div>
+          <div class="artifact-title">Contacts · error</div>
+          <div class="frame short"><span class="frame-label">?error=1</span><iframe src="index.html?r=contacts&error=1" loading="lazy" style="height:480px"></iframe></div>
+          <p class="artifact-caption">Names the cause + offers two paths forward (Retry, Open Settings).</p>
+        </div>
+
+        <div>
+          <div class="artifact-title">Campaigns · empty</div>
+          <div class="frame short"><span class="frame-label">?empty=1</span><iframe src="index.html?r=campaigns&empty=1" loading="lazy" style="height:480px"></iframe></div>
+        </div>
+        <div>
+          <div class="artifact-title">Reports · empty</div>
+          <div class="frame short"><span class="frame-label">?empty=1</span><iframe src="index.html?r=reports&empty=1" loading="lazy" style="height:480px"></iframe></div>
+        </div>
+        <div>
+          <div class="artifact-title">Reports · error</div>
+          <div class="frame short"><span class="frame-label">?error=1</span><iframe src="index.html?r=reports&error=1" loading="lazy" style="height:480px"></iframe></div>
+        </div>
+      </div>
+      <p class="artifact-caption" style="margin-top:14px">Loading / skeleton states are documented in <a href="components.html#skeleton" class="link">components.html § Skeleton</a> rather than per-page — they all use the same shimmer primitive in row, card, and KPI shapes.</p>
+    </div>
+
+    <!-- ─── 08 HELP DIALOG ─── -->
+    <div class="section" id="help">
+      <div class="section-num">08</div>
+      <h2 class="section-h2">Keyboard shortcut help</h2>
+      <p class="section-sub">Triggered by <span class="kbd">?</span> anywhere. Two-column dialog grouped Global / Inbox / Tables. Sequence shortcuts (like <span class="kbd">g</span> then <span class="kbd">i</span>) show an inline indicator pill at the bottom of the screen while waiting for the second key.</p>
+      <div class="frame std" style="margin-top:16px"><span class="frame-label">?help=1</span><iframe src="index.html?r=inbox&help=1" loading="lazy" style="height:680px"></iframe></div>
+    </div>
+
+    <!-- ─── 09 COMMAND PALETTE ─── -->
+    <div class="section" id="palette">
+      <div class="section-num">09</div>
+      <h2 class="section-h2">Command palette</h2>
+      <p class="section-sub">Triggered by <span class="kbd">⌘K</span>. 600-px wide centered overlay. Empty query shows Recent; typing returns mixed-entity results (contacts · campaigns · templates · segments) plus Actions and Navigate groups.</p>
+
+      <div class="pair" style="margin-top:16px">
+        <div>
+          <div class="artifact-title">No query</div>
+          <div class="frame short"><span class="frame-label">?palette=1</span><iframe src="index.html?r=inbox&palette=1" loading="lazy" style="height:620px"></iframe></div>
+          <p class="artifact-caption">Recent group when no query. Shortcut hints visible on Navigate items.</p>
+        </div>
+        <div>
+          <div class="artifact-title">With query (static)</div>
+          <div class="frame short"><span class="frame-label">components.html#command</span><iframe src="components.html#command" loading="lazy" style="height:620px"></iframe></div>
+          <p class="artifact-caption">Mixed-entity results grouped by type. Each row carries an avatar/icon and metadata to disambiguate similar names.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── 10 NOTIFICATIONS ─── -->
+    <div class="section" id="toasts">
+      <div class="section-num">10</div>
+      <h2 class="section-h2">Notification design</h2>
+      <p class="section-sub">Toast variants (success / info / warning / destructive) plus the undo pattern with 5-second countdown. In-app badge sits in the sidebar nav and on the inbox-tab counts.</p>
+
+      <div class="frame std" style="margin-top:16px"><span class="frame-label">components.html#toast</span><iframe src="components.html#toast" loading="lazy" style="height:640px"></iframe></div>
+
+      <div class="pull-quote">
+        <b>Destructive actions get an undo, not a confirmation modal.</b> When you delete contacts, the rows disappear immediately and a toast appears with <b>Undo (5s)</b>. The progress bar at the bottom of the toast counts down. Bulk send / launch is the only destructive action that still uses an AlertDialog — because it is genuinely irreversible (real messages hit real phones). <span class="ref">§ 9</span>
+      </div>
+    </div>
+
+    <!-- DEVIATIONS NOTE -->
+    <div class="section" id="deviations">
+      <div class="section-num">NOTE</div>
+      <h2 class="section-h2">Deviations from the spec</h2>
+      <p class="section-sub">Two minor calls; flagged here for review.</p>
+
+      <div class="anno-list" style="margin-top:14px">
+        <div class="anno-item"><span class="anno-num">a</span><span class="anno-text"><b>Sidebar order.</b> Spec § 4.2 lists Inbox first. The prototype defaults the landing route to the Workflows page (§ 7) so reviewers see the three flows at a glance; production should default to Inbox. Trade-off: discoverability of flow diagrams vs. operational landing.</span></div>
+        <div class="anno-item"><span class="anno-num">b</span><span class="anno-text"><b>Top-bar quality pill.</b> Spec doesn't mandate this surface; added at request of <span class="mono">§ 4.3</span>-adjacent operational concerns. It's a high-signal status that operators check several times a day. Trade-off: a bit more chrome in the topbar (still calm).</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:80px; padding-top:18px; border-top:0.5px solid var(--border); font-size:11px; color:var(--text-subtle); text-align:center">
+      Live previews stay in sync with the prototype. Print this page (⌘P) for a static PDF version.
+    </div>
+  </div>
+</body>
+</html>

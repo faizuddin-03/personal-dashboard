@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1280" />
+  <title>Component library — WhatsApp Blaster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: var(--bg-sunken); }
+    .lib { display: grid; grid-template-columns: 220px 1fr; height: 100vh; }
+    .lib-nav { background: var(--bg); border-right: 0.5px solid var(--border); padding: 24px 16px; overflow-y: auto; position: sticky; top: 0; height: 100vh; }
+    .lib-nav h1 { font-size: 14px; font-weight: 500; color: var(--text-heading); margin-bottom: 4px; letter-spacing: -0.005em; }
+    .lib-nav p { font-size: 11px; color: var(--text-muted); margin-bottom: 18px; }
+    .lib-nav a { display: block; padding: 5px 8px; font-size: 12px; color: var(--text-muted); border-radius: 6px; text-decoration: none; }
+    .lib-nav a:hover { background: var(--bg-hover); color: var(--text); }
+    .lib-nav a.section { font-weight: 500; color: var(--text); padding-top: 12px; padding-bottom: 4px; pointer-events: none; }
+
+    .lib-main { overflow-y: auto; padding: 32px 40px 80px; max-width: 1100px; }
+    .demo-section { margin-bottom: 56px; }
+    .demo-h2 { font-size: 22px; font-weight: 500; color: var(--text-heading); letter-spacing: -0.012em; margin-bottom: 4px; }
+    .demo-hero { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; max-width: 640px; }
+
+    .demo-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 14px; }
+    .demo-card-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .demo-card-hint { font-size: 11px; color: var(--text-subtle); margin-bottom: 14px; font-family: var(--mono); }
+    .demo-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .demo-row.tight { gap: 8px; }
+    .demo-stack { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+
+    .state-label { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--text-subtle); text-transform: uppercase; text-align: center; min-width: 64px; }
+    .state-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+    .doc-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .doc-table th, .doc-table td { padding: 6px 10px; border-top: 0.5px solid var(--border-hair); text-align: left; }
+    .doc-table th { background: var(--bg-subtle); color: var(--text-muted); font-weight: 500; font-size: 11px; }
+    .doc-table .mono { font-family: var(--mono); font-size: 11px; }
+
+    /* Forced focus-ring demo */
+    .force-focus { border-color: var(--accent) !important; box-shadow: var(--shadow-focus) !important; }
+    .force-active { background: var(--accent-hover) !important; border-color: var(--accent-hover) !important; }
+    .force-hover.btn-primary { background: var(--accent-hover) !important; }
+    .force-hover.btn-secondary { background: var(--bg-hover) !important; }
+
+    /* Tooltip demo */
+    .tip-host { position: relative; display: inline-block; }
+    .tip { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+           background: var(--gray-900); color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
+    .tip::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+                  border: 4px solid transparent; border-top-color: var(--gray-900); }
+    html[data-theme="dark"] .tip { background: #1F2024; }
+
+    /* Pagination */
+    .pag { display: inline-flex; align-items: center; gap: 4px; }
+    .pag button { width: 28px; height: 28px; border: 0.5px solid var(--border); background: var(--bg);
+                  border-radius: 6px; font-family: inherit; font-size: 12px; color: var(--text); cursor: pointer; }
+    .pag button[data-active="true"] { background: var(--green-500); color: #fff; border-color: var(--green-500); }
+    .pag .pag-ellipsis { color: var(--text-muted); padding: 0 4px; }
+
+    /* Step indicator */
+    .step-row { display: flex; align-items: center; gap: 0; }
+    .step { display: flex; align-items: center; gap: 8px; }
+    .step-dot { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+                font-size: 10px; font-weight: 500; }
+    .step-dot.done   { background: var(--green-500); color: #fff; }
+    .step-dot.active { background: var(--green-100); color: var(--green-800); border: 0.5px solid var(--green-500); }
+    .step-dot.todo   { background: var(--bg-hover); color: var(--text-muted); }
+    .step-conn { flex: 1; height: 0.5px; margin: 0 10px; min-width: 36px; }
+    .step-conn.done { background: var(--green-500); }
+    .step-conn.todo { background: var(--border); }
+
+    /* Slider */
+    .slider-track { position: relative; height: 4px; background: var(--bg-hover); border-radius: 999px; }
+    .slider-fill  { position: absolute; top: 0; left: 0; height: 100%; background: var(--green-500); border-radius: 999px; }
+    .slider-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px;
+                    border-radius: 50%; background: #fff; border: 1.5px solid var(--green-500); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+
+    .nav-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); text-decoration: none; font-size: 12px; }
+    .nav-back:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="lib">
+    <aside class="lib-nav">
+      <h1>Components</h1>
+      <p>v1.0 · 21 Oct 2025</p>
+      <a class="nav-back" href="deliverables.html">← All deliverables</a>
+
+      <a class="section">Inputs</a>
+      <a href="#buttons">Button</a>
+      <a href="#icon-buttons">Icon button</a>
+      <a href="#input">Input</a>
+      <a href="#textarea">Textarea</a>
+      <a href="#select">Select</a>
+      <a href="#combobox">Combobox</a>
+      <a href="#cbx">Checkbox · Radio</a>
+      <a href="#switch">Switch</a>
+      <a href="#slider">Slider</a>
+      <a href="#dropzone">File dropzone</a>
+      <a href="#datepicker">Date / time picker</a>
+
+      <a class="section">Display</a>
+      <a href="#avatar">Avatar</a>
+      <a href="#badge">Badge · Pill</a>
+      <a href="#progress">Progress bar</a>
+      <a href="#skeleton">Skeleton</a>
+      <a href="#tabs">Tabs</a>
+      <a href="#breadcrumb">Breadcrumb</a>
+      <a href="#pagination">Pagination</a>
+      <a href="#empty">Empty · Error state</a>
+
+      <a class="section">Overlays</a>
+      <a href="#tooltip">Tooltip</a>
+      <a href="#dropdown">Dropdown</a>
+      <a href="#popover">Popover</a>
+      <a href="#dialog">Dialog · AlertDialog</a>
+      <a href="#sheet">Sheet</a>
+      <a href="#toast">Toast</a>
+      <a href="#command">Command palette</a>
+
+      <a class="section">Structure</a>
+      <a href="#card">Card</a>
+      <a href="#table">Table</a>
+      <a href="#sidebar-item">Sidebar item</a>
+      <a href="#stepper">Step indicator</a>
+      <a href="#wizard">Wizard chrome</a>
+    </aside>
+
+    <main class="lib-main">
+      <div class="demo-section">
+        <h1 style="font-size:28px;font-weight:500;color:var(--text-heading);letter-spacing:-0.012em;margin-bottom:6px">Component library</h1>
+        <p style="font-size:13px;color:var(--text-muted);max-width:680px">Every primitive in all its states. Use this as the styleguide of record. All tokens come from <span style="font-family:var(--mono);font-size:12px">styles.css</span> — modify there, not here.</p>
+      </div>
+
+      <!-- BUTTON -->
+      <div class="demo-section" id="buttons">
+        <div class="demo-h2">Button</div>
+        <div class="demo-hero">Verb + object labels. Sentence case. Icons at 14–16px aligned to the start.</div>
+
+        <div class="demo-card">
+          <div class="demo-card-title">Primary · all states</div>
+          <div class="demo-card-hint">.btn.btn-primary</div>
+          <div class="demo-row">
+            <div class="state-col"><button class="btn btn-primary">Send campaign</button><div class="state-label">Default</div></div>
+            <div class="state-col"><button class="btn btn-primary force-hover">Send campaign</button><div class="state-label">Hover</div></div>
+            <div class="state-col"><button class="btn btn-primary force-focus">Send campaign</button><div class="state-label">Focus</div></div>
+            <div class="state-col"><button class="btn btn-primary force-active">Send campaign</button><div class="state-label">Active</div></div>
+            <div class="state-col"><button class="btn btn-primary" disabled>Send campaign</button><div class="state-label">Disabled</div></div>
+            <div class="state-col"><button class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4z"/></svg>Send campaign</button><div class="state-label">With icon</div></div>
+          </div>
+        </div>
+
+        <div class="demo-card">
+          <div class="demo-card-title">Secondary · all states</div>
+          <div class="demo-card-hint">.btn.btn-secondary</div>
+          <div class="demo-row">
+            <div class="state-col"><button class="btn btn-secondary">Cancel</button><div class="state-label">Default</div></div>
+            <div class="state-col"><button class="btn btn-secondary force-hover">Cancel</button><div class="state-label">Hover</div></div>
+            <div class="state-col"><button class="btn btn-secondary force-focus">Cancel</button><div class="state-label">Focus</div></div>
+            <div class="state-col"><button class="btn btn-secondary" disabled>Cancel</button><div class="state-label">Disabled</div></div>
+          </div>
+        </div>
+
+        <div class="demo-card">
+          <div class="demo-card-title">Ghost · destructive · admin-locked</div>
+          <div class="demo-row">
+            <div class="state-col"><button class="btn btn-ghost">View details</button><div class="state-label">Ghost</div></div>
+            <div class="state-col"><button class="btn btn-destructive">Delete</button><div class="state-label">Destructive</div></div>
+            <div class="state-col"><button class="btn btn-secondary btn-locked">Disconnect</button><div class="state-label">Admin only</div></div>
+          </div>
+        </div>
+
+        <div class="demo-card">
+          <div class="demo-card-title">Size variants</div>
+          <div class="demo-card-hint">.sm (26px) · default (32px) · .lg (36px)</div>
+          <div class="demo-row" style="align-items:center">
+            <button class="btn btn-primary sm">Small</button>
+            <button class="btn btn-primary">Default</button>
+            <button class="btn btn-primary lg">Large</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ICON BUTTON -->
+      <div class="demo-section" id="icon-buttons">
+        <div class="demo-h2">Icon button</div>
+        <div class="demo-hero">32×32 square. Ghost background. Always paired with <span class="mono" style="font-family:var(--mono);font-size:12px">aria-label</span> + tooltip on hover.</div>
+        <div class="demo-card">
+          <div class="demo-row">
+            <div class="state-col">
+              <button class="btn btn-ghost btn-icon" aria-label="More" title="More"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+              <div class="state-label">Default</div>
+            </div>
+            <div class="state-col">
+              <button class="btn btn-ghost btn-icon force-hover" aria-label="More"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+              <div class="state-label">Hover</div>
+            </div>
+            <div class="state-col">
+              <button class="btn btn-ghost btn-icon force-focus" aria-label="More"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+              <div class="state-label">Focus</div>
+            </div>
+            <div class="state-col">
+              <button class="btn btn-ghost btn-icon" disabled aria-label="More"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+              <div class="state-label">Disabled</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="demo-section" id="input">
+        <div class="demo-h2">Input</div>
+        <div class="demo-hero">Single-line text. 32px tall. 0.5px border-strong. Focus ring is the only shadow used app-wide.</div>
+        <div class="demo-card">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:760px">
+            <div class="state-col" style="align-items:stretch;width:100%">
+              <input class="input" placeholder="Search contacts…" />
+              <div class="state-label" style="text-align:left">Default</div>
+            </div>
+            <div class="state-col" style="align-items:stretch;width:100%">
+              <input class="input force-focus" value="Nurul Izzah" />
+              <div class="state-label" style="text-align:left">Focus</div>
+            </div>
+            <div class="state-col" style="align-items:stretch;width:100%">
+              <input class="input" value="Disabled value" disabled />
+              <div class="state-label" style="text-align:left">Disabled</div>
+            </div>
+            <div class="state-col" style="align-items:stretch;width:100%">
+              <input class="input" data-error="true" value="not-an-email" />
+              <div style="font-size:12px;color:var(--red-500);margin-top:2px">Enter a valid email address.</div>
+              <div class="state-label" style="text-align:left;margin-top:4px">Error</div>
+            </div>
+            <div class="state-col" style="align-items:stretch;width:100%">
+              <div class="field"><label class="field-label">Email</label><input class="input" placeholder="you@modefair.com" /><div class="field-hint">We'll email you a magic link.</div></div>
+              <div class="state-label" style="text-align:left">With label + hint</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEXTAREA -->
+      <div class="demo-section" id="textarea">
+        <div class="demo-h2">Textarea</div>
+        <div class="demo-card">
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:680px">
+            <div><textarea class="textarea" placeholder="Reply to Wei Jie…"></textarea><div class="state-label" style="text-align:left">Default</div></div>
+            <div><textarea class="textarea force-focus" rows="3">Hi Wei Jie, confirmed for tomorrow 11 AM.</textarea><div class="state-label" style="text-align:left">Focus · with content</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SELECT -->
+      <div class="demo-section" id="select">
+        <div class="demo-h2">Select</div>
+        <div class="demo-card">
+          <div class="demo-row">
+            <div style="width:200px"><select class="select"><option>All categories</option><option>Marketing</option><option>Utility</option><option>Authentication</option></select></div>
+            <div style="width:200px"><select class="select force-focus"><option>Marketing</option></select></div>
+            <div style="width:200px"><select class="select" disabled><option>Disabled</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMBOBOX -->
+      <div class="demo-section" id="combobox">
+        <div class="demo-h2">Combobox</div>
+        <div class="demo-hero">Multi-select with token chips inline. Press <span class="kbd">↵</span> to add, <span class="kbd">⌫</span> to remove last.</div>
+        <div class="demo-card">
+          <div style="max-width:480px;border:0.5px solid var(--border-strong);border-radius:8px;padding:6px 8px;background:var(--bg);display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+            <span style="padding:2px 4px 2px 8px;background:var(--green-100);color:var(--green-800);font-size:12px;border-radius:6px;display:inline-flex;gap:4px;align-items:center">VIP <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <span style="padding:2px 4px 2px 8px;background:var(--green-100);color:var(--green-800);font-size:12px;border-radius:6px;display:inline-flex;gap:4px;align-items:center">Klang Valley <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+            <input placeholder="Add tag…" style="flex:1;border:0;outline:0;background:transparent;font-size:13px;min-width:80px" />
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECKBOX / RADIO -->
+      <div class="demo-section" id="cbx">
+        <div class="demo-h2">Checkbox &amp; Radio</div>
+        <div class="demo-card">
+          <div class="demo-card-title">Checkbox</div>
+          <div class="demo-row">
+            <div class="state-col"><span class="cbx" data-on="false"></span><div class="state-label">Unchecked</div></div>
+            <div class="state-col"><span class="cbx" data-on="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fff"><polyline points="20 6 9 17 4 12"/></svg></span><div class="state-label">Checked</div></div>
+            <div class="state-col"><span class="cbx" data-on="indeterminate"></span><div class="state-label">Mixed</div></div>
+            <div class="state-col"><span class="cbx" data-on="false" style="opacity:0.5"></span><div class="state-label">Disabled</div></div>
+          </div>
+        </div>
+        <div class="demo-card" style="margin-top:12px">
+          <div class="demo-card-title">Radio (rendered as styled native input)</div>
+          <div class="demo-row">
+            <label class="row" style="gap:6px"><input type="radio" name="r" style="accent-color:var(--green-500)" /> Send now</label>
+            <label class="row" style="gap:6px"><input type="radio" name="r" checked style="accent-color:var(--green-500)" /> Schedule for later</label>
+            <label class="row" style="gap:6px"><input type="radio" name="r" disabled style="accent-color:var(--green-500)" /> Smart send (disabled)</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- SWITCH -->
+      <div class="demo-section" id="switch">
+        <div class="demo-h2">Switch</div>
+        <div class="demo-card">
+          <div class="demo-row">
+            <div class="state-col"><button class="switch" data-on="false"><i></i></button><div class="state-label">Off</div></div>
+            <div class="state-col"><button class="switch" data-on="true"><i></i></button><div class="state-label">On</div></div>
+            <div class="state-col"><button class="switch" data-on="false" style="opacity:0.5"><i></i></button><div class="state-label">Disabled</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDER -->
+      <div class="demo-section" id="slider">
+        <div class="demo-h2">Slider</div>
+        <div class="demo-hero">Used for the campaign rate-limit and thresholds.</div>
+        <div class="demo-card" style="max-width:480px">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Rate limit <b style="color:var(--text)">80 msg / sec</b></div>
+          <div class="slider-track">
+            <div class="slider-fill" style="width:60%"></div>
+            <div class="slider-thumb" style="left:60%"></div>
+          </div>
+          <div class="row" style="justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text-subtle)">
+            <span>10</span><span>250</span><span>500</span><span>1000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DROPZONE -->
+      <div class="demo-section" id="dropzone">
+        <div class="demo-h2">File dropzone</div>
+        <div class="demo-card" style="max-width:560px">
+          <div style="border:1.5px dashed var(--green-200);border-radius:10px;padding:32px;text-align:center;background:var(--green-50)">
+            <div style="font-size:13px;font-weight:500;margin-bottom:4px">Drop your CSV here, or click to browse</div>
+            <div style="font-size:11px;color:var(--text-muted)">Accepts .csv or .tsv · max 50 MB</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATE / TIME -->
+      <div class="demo-section" id="datepicker">
+        <div class="demo-h2">Date / time picker</div>
+        <div class="demo-card">
+          <div class="demo-row">
+            <div style="width:200px"><div class="input row" style="align-items:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);margin-right:6px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 22 Oct 2025</div></div>
+            <div style="width:160px"><div class="input row" style="align-items:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);margin-right:6px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 09:00 MYT</div></div>
+            <div style="width:240px"><div class="input row" style="align-items:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted);margin-right:6px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/></svg> 1 Oct – 21 Oct 2025</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AVATAR -->
+      <div class="demo-section" id="avatar">
+        <div class="demo-h2">Avatar</div>
+        <div class="demo-card">
+          <div class="demo-row" style="align-items:center">
+            <div class="state-col"><span class="avatar sm" style="background:#075E54">AR</span><div class="state-label">sm 20</div></div>
+            <div class="state-col"><span class="avatar md" style="background:#128C7E">AR</span><div class="state-label">md 28</div></div>
+            <div class="state-col"><span class="avatar lg" style="background:#4A6B82">AR</span><div class="state-label">lg 36</div></div>
+            <div class="state-col" style="margin-left:18px"><span class="row" style="gap:-6px"><span class="avatar md" style="background:#075E54;border:1.5px solid var(--bg)">AR</span><span class="avatar md" style="background:#128C7E;border:1.5px solid var(--bg);margin-left:-8px">DN</span><span class="avatar md" style="background:#4A6B82;border:1.5px solid var(--bg);margin-left:-8px">+3</span></span><div class="state-label">Stack</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BADGE / PILL -->
+      <div class="demo-section" id="badge">
+        <div class="demo-h2">Badge &amp; pill</div>
+        <div class="demo-hero">Sentence case. Optional left dot. Optional left icon. Status badges (AUTO, ESC, NEW, REPLY) are the only uppercase content in the UI — they earn it by being ≤4 chars.</div>
+        <div class="demo-card">
+          <div class="demo-card-title">Pill — colour tones</div>
+          <div class="demo-row">
+            <span class="pill" data-tone="gray">draft</span>
+            <span class="pill" data-tone="green" style="display:inline-flex;align-items:center;gap:4px"><i style="width:6px;height:6px;border-radius:50%;background:currentColor"></i> approved</span>
+            <span class="pill" data-tone="amber" style="display:inline-flex;align-items:center;gap:4px"><i style="width:6px;height:6px;border-radius:50%;background:currentColor"></i> pending</span>
+            <span class="pill" data-tone="red" style="display:inline-flex;align-items:center;gap:4px"><i style="width:6px;height:6px;border-radius:50%;background:currentColor"></i> rejected</span>
+            <span class="pill" data-tone="blue" style="display:inline-flex;align-items:center;gap:4px"><i style="width:6px;height:6px;border-radius:50%;background:currentColor"></i> scheduled</span>
+          </div>
+        </div>
+        <div class="demo-card" style="margin-top:12px">
+          <div class="demo-card-title">Status tag — uppercase, ≤4 chars</div>
+          <div class="demo-row">
+            <span class="tag-upper" data-tone="green">AUTO</span>
+            <span class="tag-upper" data-tone="amber">ESC</span>
+            <span class="tag-upper" data-tone="blue">NEW</span>
+            <span class="tag-upper" data-tone="green">REPLY</span>
+            <span class="tag-upper" data-tone="amber">LOW</span>
+            <span class="tag-upper">MS</span>
+            <span class="tag-upper">EN</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="demo-section" id="progress">
+        <div class="demo-h2">Progress bar</div>
+        <div class="demo-card" style="max-width:480px">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Sending campaign · 64%</div>
+          <div class="progress-bar"><i style="width:64%"></i></div>
+          <div style="font-size:11px;color:var(--text-muted);margin:14px 0 4px">Indeterminate</div>
+          <div class="progress-bar"><i style="width:30%;animation:shimmer 1.4s linear infinite;background:linear-gradient(90deg,var(--green-200),var(--green-500),var(--green-200));background-size:200% 100%"></i></div>
+        </div>
+      </div>
+
+      <!-- SKELETON -->
+      <div class="demo-section" id="skeleton">
+        <div class="demo-h2">Skeleton</div>
+        <div class="demo-hero">Matched to the eventual layout, not generic. Animation respects <span class="mono" style="font-family:var(--mono);font-size:12px">prefers-reduced-motion</span>.</div>
+        <div class="demo-card" style="max-width:480px">
+          <div class="row" style="gap:10px">
+            <span class="skel" style="width:28px;height:28px;border-radius:50%;background:var(--bg-hover);animation:shimmer 1.4s linear infinite;background:linear-gradient(90deg,var(--bg-hover),var(--bg-subtle),var(--bg-hover));background-size:200% 100%"></span>
+            <div style="flex:1">
+              <span class="skel" style="display:block;height:12px;width:60%;border-radius:4px;background:linear-gradient(90deg,var(--bg-hover),var(--bg-subtle),var(--bg-hover));background-size:200% 100%;animation:shimmer 1.4s linear infinite"></span>
+              <span class="skel" style="display:block;height:10px;width:40%;margin-top:6px;border-radius:4px;background:linear-gradient(90deg,var(--bg-hover),var(--bg-subtle),var(--bg-hover));background-size:200% 100%;animation:shimmer 1.4s linear infinite"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="demo-section" id="tabs">
+        <div class="demo-h2">Tabs</div>
+        <div class="demo-card">
+          <div class="tabs">
+            <button class="tab" data-active="true">All <span class="tab-count">24</span></button>
+            <button class="tab">Auto-replied <span class="tab-count">14</span></button>
+            <button class="tab">Escalated <span class="tab-count">5</span></button>
+            <button class="tab">Awaiting reply <span class="tab-count">3</span></button>
+            <button class="tab">Replied <span class="tab-count">2</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BREADCRUMB -->
+      <div class="demo-section" id="breadcrumb">
+        <div class="demo-h2">Breadcrumb</div>
+        <div class="demo-card">
+          <div class="crumbs" style="font-size:13px">
+            <span>Campaigns</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="crumb-sep"><polyline points="9 18 15 12 9 6"/></svg>
+            <span>October VIP promo</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="crumb-sep"><polyline points="9 18 15 12 9 6"/></svg>
+            <span class="crumb-cur">Edit</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGINATION -->
+      <div class="demo-section" id="pagination">
+        <div class="demo-h2">Pagination</div>
+        <div class="demo-card">
+          <div class="pag">
+            <button>‹</button>
+            <button>1</button>
+            <button data-active="true">2</button>
+            <button>3</button>
+            <span class="pag-ellipsis">…</span>
+            <button>48</button>
+            <button>›</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMPTY / ERROR -->
+      <div class="demo-section" id="empty">
+        <div class="demo-h2">Empty &amp; error state</div>
+        <div class="demo-hero">Empty states tell the user what to do next. Error states name the cause and offer a path forward.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="demo-card" style="padding:0">
+            <div class="empty">
+              <div class="empty-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+              <div class="empty-title">Add your first contact</div>
+              <div class="empty-body">Import a CSV of opted-in customers, or add a contact manually.</div>
+              <div style="margin-top:8px"><button class="btn btn-primary sm">Import CSV</button></div>
+            </div>
+          </div>
+          <div class="demo-card" style="padding:0">
+            <div class="empty">
+              <div class="empty-icon" style="background:var(--red-50);color:#B91C1C"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+              <div class="empty-title">Couldn't reach the WhatsApp API</div>
+              <div class="empty-body">Check your access token in Settings → Connectors.</div>
+              <code style="margin-top:6px;font-size:11px;padding:4px 8px">403 Forbidden · token expired 14 min ago</code>
+              <div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-secondary sm">Retry now</button><button class="btn btn-primary sm">Open Settings</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOLTIP -->
+      <div class="demo-section" id="tooltip">
+        <div class="demo-h2">Tooltip</div>
+        <div class="demo-card">
+          <div class="demo-row" style="padding:24px 0">
+            <div class="tip-host">
+              <span class="tip">Approve and send chatbot draft</span>
+              <button class="btn btn-secondary sm">Approve &amp; send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DROPDOWN -->
+      <div class="demo-section" id="dropdown">
+        <div class="demo-h2">Dropdown menu</div>
+        <div class="demo-card" style="position:relative">
+          <div style="display:inline-block;position:relative">
+            <button class="btn btn-secondary sm">Actions <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div style="position:absolute;top:calc(100% + 6px);left:0;width:200px;background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:4px 0;box-shadow:0 8px 24px rgba(0,0,0,0.10)">
+              <div style="padding:8px 12px;font-size:13px;color:var(--text);cursor:pointer">Edit campaign</div>
+              <div style="padding:8px 12px;font-size:13px;color:var(--text);cursor:pointer;background:var(--bg-hover)">Duplicate</div>
+              <div style="padding:8px 12px;font-size:13px;color:var(--text);cursor:pointer">Export as CSV</div>
+              <div style="height:0.5px;background:var(--border);margin:4px 0"></div>
+              <div style="padding:8px 12px;font-size:13px;color:var(--red-500);cursor:pointer">Delete campaign</div>
+            </div>
+          </div>
+          <div style="height:140px"></div>
+        </div>
+      </div>
+
+      <!-- POPOVER -->
+      <div class="demo-section" id="popover">
+        <div class="demo-h2">Popover</div>
+        <div class="demo-card" style="position:relative">
+          <div style="display:inline-block;position:relative">
+            <button class="btn btn-secondary sm">Add tag</button>
+            <div style="position:absolute;top:calc(100% + 6px);left:0;width:260px;background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:10px;box-shadow:0 8px 24px rgba(0,0,0,0.10)">
+              <input class="input" placeholder="Type a tag name…" style="height:30px;font-size:13px;margin-bottom:8px" />
+              <div style="font-size:11px;color:var(--text-subtle);margin:4px 4px 6px">Or pick existing:</div>
+              <div class="row" style="flex-wrap:wrap;gap:4px">
+                <button style="padding:2px 8px;border:0.5px solid var(--border-strong);background:var(--bg);color:var(--text);border-radius:999px;font-size:12px;cursor:pointer">VIP</button>
+                <button style="padding:2px 8px;border:0.5px solid var(--border-strong);background:var(--bg);color:var(--text);border-radius:999px;font-size:12px;cursor:pointer">lapsed</button>
+                <button style="padding:2px 8px;border:0.5px solid var(--border-strong);background:var(--bg);color:var(--text);border-radius:999px;font-size:12px;cursor:pointer">foodie</button>
+                <button style="padding:2px 8px;border:0.5px solid var(--border-strong);background:var(--bg);color:var(--text);border-radius:999px;font-size:12px;cursor:pointer">KL</button>
+              </div>
+            </div>
+          </div>
+          <div style="height:200px"></div>
+        </div>
+      </div>
+
+      <!-- DIALOG -->
+      <div class="demo-section" id="dialog">
+        <div class="demo-h2">Dialog &amp; AlertDialog</div>
+        <div class="demo-hero">AlertDialog states the consequence in plain language ("You are about to send N WhatsApp messages immediately…").</div>
+        <div class="demo-card" style="padding:0;background:transparent;border:0">
+          <div style="width:460px;background:var(--bg);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">
+            <div style="padding:16px 20px 0;display:flex;gap:12px;align-items:flex-start">
+              <span style="width:32px;height:32px;border-radius:8px;background:var(--amber-50);color:#B45309;display:grid;place-items:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></span>
+              <div style="flex:1"><div style="font-size:16px;font-weight:500">Launch campaign to 842 contacts?</div></div>
+            </div>
+            <div style="padding:12px 20px 16px;font-size:13px;line-height:1.55">
+              <p style="margin:0 0 10px">You are about to send <b>842</b> WhatsApp messages immediately to <b>VIP — Klang Valley</b>. This action cannot be undone.</p>
+              <p style="margin:0;color:var(--text-muted);font-size:12px">Recipients who reply will appear in your Inbox. Estimated cost: <b style="color:var(--text)">RM 50.52</b>.</p>
+            </div>
+            <div style="padding:12px 20px;border-top:0.5px solid var(--border);background:var(--bg-subtle);display:flex;gap:8px;justify-content:flex-end">
+              <button class="btn btn-ghost sm">Cancel</button>
+              <button class="btn btn-primary sm">Yes, launch</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHEET -->
+      <div class="demo-section" id="sheet">
+        <div class="demo-h2">Sheet</div>
+        <div class="demo-hero">Right-side drawer, 480px wide. Used for contact detail, template detail, KPI drill-down.</div>
+        <div class="demo-card" style="padding:0;background:transparent;border:0">
+          <div style="width:480px;height:360px;background:var(--bg);border:0.5px solid var(--border);border-radius:12px 0 0 12px;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:0.5px solid var(--border)">
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:500">Contact details</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Nurul Izzah · 🇲🇾 +60 12-345 6789</div>
+              </div>
+              <button class="btn btn-ghost btn-icon sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            <div style="flex:1;padding:16px;font-size:13px;color:var(--text-muted)">Sheet body content — tabs, fields, table, etc.</div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:0.5px solid var(--border);background:var(--bg-subtle)">
+              <button class="btn btn-ghost sm">Close</button>
+              <button class="btn btn-primary sm">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOAST -->
+      <div class="demo-section" id="toast">
+        <div class="demo-h2">Toast</div>
+        <div class="demo-hero">Short and informative. Destructive actions get an undo with a 5-second countdown.</div>
+        <div class="demo-card">
+          <div class="demo-stack" style="gap:8px">
+            <div class="toast" style="position:relative"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Campaign launched</div>
+            <div class="toast" style="position:relative;background:#1E40AF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Draft auto-saved 2s ago</div>
+            <div class="toast" style="position:relative;background:#B45309"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg> Quality rating dropped to Medium</div>
+            <div class="toast" style="position:relative;background:#7f1d1d">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span style="flex:1">Deleted 3 contacts</span>
+              <span style="color:#5BE391;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px">Undo <span class="mono" style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.5)">4s</span></span>
+              <span style="position:absolute;left:0;right:0;bottom:0;height:2px;background:rgba(255,255,255,0.08)"><span style="display:block;height:100%;width:80%;background:#5BE391"></span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMMAND PALETTE -->
+      <div class="demo-section" id="command">
+        <div class="demo-h2">Command palette (⌘K)</div>
+        <div class="demo-card" style="padding:0;background:transparent;border:0">
+          <div style="width:600px;background:var(--bg);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:0.5px solid var(--border)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input value="nurul" style="flex:1;border:0;outline:0;background:transparent;font-size:14px;color:var(--text)" />
+              <span class="kbd">ESC</span>
+            </div>
+            <div style="padding:8px 14px 4px;font-size:11px;color:var(--text-subtle);letter-spacing:0.04em">Contacts</div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--bg-subtle);font-size:13px;cursor:pointer">
+              <span class="avatar sm" style="background:#6B4A82">NI</span>
+              <span style="flex:1">Nurul Izzah</span>
+              <span style="font-size:12px;color:var(--text-muted)">🇲🇾 +60 12-345 6789</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:13px;cursor:pointer">
+              <span class="avatar sm" style="background:#075E54">NA</span>
+              <span style="flex:1">Nur Aisyah Binti Hassan</span>
+              <span style="font-size:12px;color:var(--text-muted)">🇲🇾 +60 17-203 1188</span>
+            </div>
+            <div style="padding:8px 14px 4px;font-size:11px;color:var(--text-subtle);letter-spacing:0.04em">Templates</div>
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:13px;cursor:pointer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+              <span style="flex:1" class="mono">nurul_birthday_offer</span>
+              <span style="font-size:12px;color:var(--text-muted)">Marketing · MS</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 14px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text-subtle)">
+              <span><span class="kbd">↑↓</span> navigate · <span class="kbd">↵</span> open</span>
+              <span><span class="kbd">?</span> shortcuts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD -->
+      <div class="demo-section" id="card">
+        <div class="demo-h2">Card</div>
+        <div class="demo-hero">12px corner. 0.5px border. No shadow. Optional head, optional padded body.</div>
+        <div class="demo-card" style="padding:0;background:transparent;border:0">
+          <div class="card" style="max-width:480px">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Account health</div>
+                <div class="card-subtitle">Meta Business · 🇲🇾 +60 19-555 0102</div>
+              </div>
+              <button class="btn btn-ghost btn-icon sm" aria-label="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </div>
+            <div style="padding:16px">
+              <div class="row" style="gap:12px"><span class="pill" data-tone="green"><i style="width:6px;height:6px;border-radius:50%;background:currentColor"></i> High quality rating</span><span class="pill" data-tone="gray">100K / day</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="demo-section" id="table">
+        <div class="demo-h2">Table</div>
+        <div class="demo-hero">Sticky header. Row hover. Selected row gets green-50 background. Sortable headers indicated by chevron.</div>
+        <div class="demo-card" style="padding:0">
+          <table class="table">
+            <thead><tr>
+              <th style="width:32px"><span class="cbx" data-on="false"></span></th>
+              <th class="sortable">Campaign <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></th>
+              <th>Status</th>
+              <th class="num">Delivered</th>
+              <th class="num">Cost</th>
+            </tr></thead>
+            <tbody>
+              <tr><td><span class="cbx" data-on="false"></span></td><td><b>Merdeka flash 2× points</b></td><td><span class="pill" data-tone="green"><i style="width:6px;height:6px;border-radius:50%;background:currentColor"></i> Sending</span></td><td class="num">8,124</td><td class="num">RM 487.36</td></tr>
+              <tr data-selected="true"><td><span class="cbx" data-on="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fff"><polyline points="20 6 9 17 4 12"/></svg></span></td><td><b>Raya VIP early access</b></td><td><span class="pill" data-tone="blue"><i style="width:6px;height:6px;border-radius:50%;background:currentColor"></i> Scheduled</span></td><td class="num">—</td><td class="num">—</td></tr>
+              <tr><td><span class="cbx" data-on="false"></span></td><td><b>Birthday voucher Oct W4</b></td><td><span class="pill" data-tone="gray">Complete</span></td><td class="num">187</td><td class="num">RM 11.22</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SIDEBAR ITEM -->
+      <div class="demo-section" id="sidebar-item">
+        <div class="demo-h2">Sidebar item</div>
+        <div class="demo-card" style="background:var(--bg-subtle);max-width:240px">
+          <button class="nav-item" data-active="true" style="width:100%">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg>
+            <span class="nav-label">Inbox</span>
+            <span class="nav-badge">12</span>
+          </button>
+          <button class="nav-item" style="width:100%">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="nav-label">Contacts</span>
+          </button>
+          <button class="nav-item" style="width:100%;opacity:0.55;cursor:not-allowed">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="nav-label">Audit log</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-subtle)"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEPPER -->
+      <div class="demo-section" id="stepper">
+        <div class="demo-h2">Step indicator</div>
+        <div class="demo-card" style="max-width:760px">
+          <div class="step-row">
+            <div class="step"><span class="step-dot done"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fff"><polyline points="20 6 9 17 4 12"/></svg></span><div><div style="font-size:11px;color:var(--text-subtle)">Step 1</div><div style="font-size:13px;font-weight:500">Upload</div></div></div>
+            <span class="step-conn done"></span>
+            <div class="step"><span class="step-dot active">2</span><div><div style="font-size:11px;color:var(--text-subtle)">Step 2</div><div style="font-size:13px;font-weight:500">Map columns</div></div></div>
+            <span class="step-conn todo"></span>
+            <div class="step"><span class="step-dot todo">3</span><div><div style="font-size:11px;color:var(--text-subtle)">Step 3</div><div style="font-size:13px;color:var(--text-muted)">Review</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WIZARD CHROME -->
+      <div class="demo-section" id="wizard">
+        <div class="demo-h2">Wizard chrome</div>
+        <div class="demo-hero">Header with back link + draft auto-save indicator. Stepper. Card body. Sticky save bar.</div>
+        <div class="demo-card" style="padding:0;background:transparent;border:0">
+          <div style="width:100%;max-width:760px">
+            <div class="row" style="margin-bottom:16px;gap:12px">
+              <button class="btn btn-ghost sm">← Back to contacts</button>
+              <div style="flex:1">
+                <h1 style="font-size:24px;font-weight:500;color:var(--text-heading);letter-spacing:-0.012em">Import contacts</h1>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Draft auto-saved 3s ago</div>
+              </div>
+              <button class="btn btn-ghost sm">Save draft</button>
+            </div>
+            <div style="background:var(--green-50);border:0.5px solid var(--green-200);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:16px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green-700);flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--green-800)">Resume previous draft?</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px">Started 21 Oct, 14:24 — picked up at step 2.</div></div>
+              <button class="btn btn-ghost sm">Discard</button>
+              <button class="btn btn-primary sm">Resume</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:48px;padding-top:18px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text-subtle);text-align:center">
+        All components live in the prototype's <span class="mono" style="font-family:var(--mono);font-size:12px">ui.jsx</span> and <span class="mono" style="font-family:var(--mono);font-size:12px">styles.css</span>. Edit there, not here.
+      </div>
+    </main>
+  </div>
+</body>
+</html>

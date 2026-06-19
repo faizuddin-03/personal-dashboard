@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "sourceMap": true,
+    "incremental": true
+  },
+  "include": ["src/**/*", "prisma/seed.ts", "prisma/seed-analytics.ts"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+}

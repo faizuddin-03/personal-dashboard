@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.modefair.chatbot-worker</string>
+  <key>ProgramArguments</key>
+  <array><string>__NODE_BIN__</string><string>dist/worker</string></array>
+  <key>WorkingDirectory</key><string>/Users/team05/whatsapp-blasting/apps/api</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>10</integer>
+  <key>StandardOutPath</key><string>/Users/team05/Library/Logs/chatbot-worker.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/team05/Library/Logs/chatbot-worker.err.log</string>
+</dict></plist>

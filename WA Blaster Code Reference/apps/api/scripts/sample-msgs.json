@@ -1,0 +1,10 @@
+[
+  { "phone": "60111000001", "message": "What does comprehensive car insurance cover?" },
+  { "phone": "60111000002", "message": "What is the price of comprehensive cover for a Perodua Myvi?" },
+  { "phone": "60111000002", "message": "yes please" },
+  { "phone": "60111000003", "message": "How much does it cost to add windscreen cover?" },
+  { "phone": "60111000003", "message": "no thanks" },
+  { "phone": "60111000004", "message": "stop sending me insurance offers" },
+  { "phone": "60111000005", "message": "Your claims process is terrible, I want a refund" },
+  { "phone": "60111000006", "message": "hi, can you help with my road tax renewal?" }
+]

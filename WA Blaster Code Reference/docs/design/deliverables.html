@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deliverables — WhatsApp Blaster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: var(--bg-sunken); }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 56px 28px 96px; }
+    .head { margin-bottom: 40px; padding-bottom: 18px; border-bottom: 0.5px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+    .h1 { font-size: 32px; font-weight: 500; color: var(--text-heading); letter-spacing: -0.014em; }
+    .sub { font-size: 14px; color: var(--text-muted); margin-top: 6px; max-width: 600px; }
+    .meta { font-family: var(--mono); font-size: 11px; color: var(--text-subtle); text-align: right; line-height: 1.7; }
+    .deliv-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .deliv-card { display: block; padding: 18px 18px 16px; background: var(--bg); border: 0.5px solid var(--border); border-radius: 12px; text-decoration: none; color: inherit; transition: border-color 0.08s, background 0.08s; }
+    .deliv-card:hover { border-color: var(--border-strong); background: var(--bg); }
+    .deliv-card.ghost { background: var(--bg-subtle); }
+    .deliv-card.ghost .deliv-status { color: var(--text-subtle); }
+    .deliv-head { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+    .deliv-n { font-family: var(--mono); font-size: 11px; color: var(--text-subtle); width: 18px; }
+    .deliv-title { font-size: 15px; font-weight: 500; color: var(--text); flex: 1; }
+    .deliv-body { font-size: 13px; color: var(--text-muted); line-height: 1.55; margin-left: 30px; min-height: 38px; }
+    .deliv-foot { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; margin-left: 30px; align-items: center; }
+    .deliv-status { font-size: 11px; color: var(--green-700); font-weight: 500; display: inline-flex; gap: 4px; align-items: center; }
+    .deliv-status.todo { color: var(--text-subtle); }
+    .deliv-status.partial { color: #B45309; }
+    .deliv-link { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
+    .deliv-link.live { color: var(--green-700); }
+
+    .h2 { font-size: 18px; font-weight: 500; color: var(--green-700); margin-top: 48px; margin-bottom: 12px; }
+    .quick { display: flex; gap: 10px; flex-wrap: wrap; padding: 14px; background: var(--bg); border: 0.5px solid var(--border); border-radius: 12px; }
+    .quick a { padding: 6px 12px; background: var(--bg-subtle); border: 0.5px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text); text-decoration: none; font-family: var(--mono); }
+    .quick a:hover { background: var(--bg-hover); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <div class="h1">Deliverables</div>
+        <div class="sub">Ten design artifacts mapped to the WhatsApp Blaster spec. Foundational artifacts are static spec sheets; high-fidelity screens live as routes in the working prototype.</div>
+      </div>
+      <div class="meta">
+        v1.0 · 21 Oct 2025<br/>
+        Modefair MY<br/>
+        <a href="index.html" style="color:var(--green-700);text-decoration:none">→ Open the prototype</a><br/>
+        <a href="presentation.html" style="color:var(--green-700);text-decoration:none">→ Open design review</a>
+      </div>
+    </div>
+
+    <div class="deliv-grid">
+      <!-- 1 Tokens -->
+      <a href="tokens.html" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">01</span>
+          <span class="deliv-title">Design tokens reference sheet</span>
+        </div>
+        <div class="deliv-body">Colour palette · type scale · spacing · radii · borders &amp; elevation · motion · icons. Light primary, dark alongside.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status">● Static spec</span>
+          <span class="deliv-link live">tokens.html</span>
+        </div>
+      </a>
+
+      <!-- 2 Components -->
+      <a href="components.html" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">02</span>
+          <span class="deliv-title">Component library</span>
+        </div>
+        <div class="deliv-body">Every primitive in every state: buttons, inputs, selects, switches, badges, tables, dialogs, sheets, toasts, palette, sidebar item, wizard chrome, stepper, &amp; more.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status">● Static spec</span>
+          <span class="deliv-link live">components.html</span>
+        </div>
+      </a>
+
+      <!-- 3 App shell -->
+      <a href="index.html?r=workflows" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">03</span>
+          <span class="deliv-title">App shell</span>
+        </div>
+        <div class="deliv-body">Fixed sidebar (240px, collapsible to 64px), 56px top bar, breadcrumbs, command-palette search, role pill in user menu. Resize the prototype to see responsive states.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status">● Live in prototype</span>
+          <span class="deliv-link live">/?r=workflows</span>
+        </div>
+      </a>
+
+      <!-- 4 High-fi pages -->
+      <a href="index.html?r=inbox" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">04</span>
+          <span class="deliv-title">High-fidelity page mockups</span>
+        </div>
+        <div class="deliv-body">All ten pages built as the working prototype. Tabs, sheets, dialogs all interactive. Each route deep-links via <span class="mono" style="font-family:var(--mono);font-size:11px">?r=</span> query param.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status">● Live in prototype</span>
+          <span class="deliv-link live">10 routes (see quick links below)</span>
+        </div>
+      </a>
+
+      <!-- 5 Workflows -->
+      <a href="index.html?r=workflows" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">05</span>
+          <span class="deliv-title">Workflow storyboards</span>
+        </div>
+        <div class="deliv-body">All three workflows mapped as horizontal node-and-arrow strips: import → tag → segment, create → schedule → monitor, review → compare → export. Every step deep-links into the screen.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status">● Live in prototype</span>
+          <span class="deliv-link live">/?r=workflows</span>
+        </div>
+      </a>
+
+      <!-- 6 States gallery -->
+      <a href="index.html?r=contacts" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">06</span>
+          <span class="deliv-title">States gallery</span>
+        </div>
+        <div class="deliv-body">Empty &amp; error states are wired in. Toggle <b>Populated data</b> off, or <b>Error state</b> on, in the Tweaks panel to switch any data-driven screen between empty / populated / error.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status partial">◐ Empty + Error live · skeletons in components.html</span>
+        </div>
+      </a>
+
+      <!-- 7 Wizards -->
+      <a href="index.html?r=import" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">07</span>
+          <span class="deliv-title">Wizard mockups</span>
+        </div>
+        <div class="deliv-body">CSV import (3 steps + progress + success) and campaign creation (4 steps + launch confirmation + sending state) are fully interactive. Template creation wizard is open for the next pass.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status partial">◐ 2 of 3 wizards live</span>
+          <span class="deliv-link live">/?r=import &nbsp;·&nbsp; /?r=campaign-new</span>
+        </div>
+      </a>
+
+      <!-- 8 Help dialog -->
+      <a href="index.html?r=inbox" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">08</span>
+          <span class="deliv-title">Keyboard shortcut help dialog</span>
+        </div>
+        <div class="deliv-body">Press <span class="kbd">?</span> anywhere in the prototype to open a 2-column dialog grouped by Global / Inbox / Tables.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status">● Live in prototype</span>
+          <span class="deliv-link live">press ?</span>
+        </div>
+      </a>
+
+      <!-- 9 Command palette -->
+      <a href="index.html?r=inbox" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">09</span>
+          <span class="deliv-title">Command palette</span>
+        </div>
+        <div class="deliv-body">Press <span class="kbd">⌘K</span> for the 600px overlay. Empty query shows Recent, typing searches contacts / campaigns / templates / segments. Arrow + Enter navigation.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status">● Live in prototype</span>
+          <span class="deliv-link live">press ⌘K</span>
+        </div>
+      </a>
+
+      <!-- 10 Notification design -->
+      <a href="components.html#toast" class="deliv-card">
+        <div class="deliv-head">
+          <span class="deliv-n">10</span>
+          <span class="deliv-title">Notification design</span>
+        </div>
+        <div class="deliv-body">Toast variants (success / info / warning / destructive · with undo + countdown). In-app inbox badge in the sidebar. Statics in <span class="mono" style="font-family:var(--mono);font-size:11px">components.html#toast</span>, live behaviour in the prototype.</div>
+        <div class="deliv-foot">
+          <span class="deliv-status">● Static + live</span>
+          <span class="deliv-link live">components.html#toast</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="h2">Open routes</div>
+    <div class="quick">
+      <a href="index.html?r=workflows">/?r=workflows</a>
+      <a href="index.html?r=inbox">/?r=inbox</a>
+      <a href="index.html?r=overview">/?r=overview</a>
+      <a href="index.html?r=contacts">/?r=contacts</a>
+      <a href="index.html?r=import">/?r=import</a>
+      <a href="index.html?r=segments">/?r=segments</a>
+      <a href="index.html?r=segment-builder">/?r=segment-builder</a>
+      <a href="index.html?r=templates">/?r=templates</a>
+      <a href="index.html?r=campaigns">/?r=campaigns</a>
+      <a href="index.html?r=campaign-new">/?r=campaign-new</a>
+      <a href="index.html?r=campaign-detail-sending">/?r=campaign-detail-sending</a>
+      <a href="index.html?r=campaign-detail-complete">/?r=campaign-detail-complete</a>
+      <a href="index.html?r=campaign-detail-failed">/?r=campaign-detail-failed</a>
+      <a href="index.html?r=reports">/?r=reports</a>
+      <a href="index.html?r=compare">/?r=compare</a>
+      <a href="index.html?r=knowledge">/?r=knowledge</a>
+      <a href="index.html?r=users">/?r=users</a>
+      <a href="index.html?r=audit">/?r=audit</a>
+      <a href="index.html?r=settings">/?r=settings</a>
+      <a href="index.html?r=helpline">/?r=helpline</a>
+      <a href="index.html?r=status">/?r=status</a>
+      <a href="login.html">/login.html</a>
+    </div>
+
+    <div class="h2">Export notes</div>
+    <div style="padding:16px 18px;background:var(--bg);border:0.5px solid var(--border);border-radius:12px;font-size:13px;color:var(--text-muted);line-height:1.6">
+      <p style="margin:0 0 8px;color:var(--text)"><b>Static spec pages</b> (tokens.html, components.html, this index) can be exported to PNG via browser screenshot (Cmd+Shift+S) or saved as PDF via <span class="mono" style="font-family:var(--mono);font-size:12px">Cmd+P → Save as PDF</span>.</p>
+      <p style="margin:0 0 8px"><b>Prototype routes</b> are fully responsive — open at 1440 / 1024 / 375 in browser dev tools to capture each viewport. Every screen has a stable <span class="mono" style="font-family:var(--mono);font-size:12px">?r=</span> URL.</p>
+      <p style="margin:0"><b>Figma-compatible specs:</b> all design tokens are sourced from <span class="mono" style="font-family:var(--mono);font-size:12px">styles.css</span> as CSS custom properties — engineering can ingest them directly or use the same hex values to populate Figma styles.</p>
+    </div>
+  </div>
+</body>
+</html>
