@@ -367,8 +367,34 @@ export default function InsurancePage() {
 
   const [activeTab, setActiveTab] = useState<"check" | "tab2" | "tab3">("check");
 
+  // Blocking overlay until 2026-06-19T15:15:00 local time
+  const BLOCK_UNTIL = new Date("2026-06-19T15:15:00");
+  const [blocked, setBlocked] = useState(() => new Date() < BLOCK_UNTIL);
+  useEffect(() => {
+    if (!blocked) return;
+    const ms = BLOCK_UNTIL.getTime() - Date.now();
+    if (ms <= 0) { setBlocked(false); return; }
+    const t = setTimeout(() => setBlocked(false), ms);
+    return () => clearTimeout(t);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <div className="flex flex-col min-h-full">
+    <div className="relative flex flex-col min-h-full">
+
+      {/* ── Blocking overlay — covers page content only, sidebar stays accessible ── */}
+      {blocked && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="max-w-md w-full mx-4 bg-red-950 border-2 border-red-500 rounded-2xl p-8 text-center shadow-2xl">
+            <div className="text-red-400 text-5xl mb-4">⛔</div>
+            <h2 className="text-xl font-black text-red-300 uppercase tracking-wide mb-3">Access Restricted</h2>
+            <p className="text-red-200 text-base font-medium leading-relaxed">
+              messagebird is currently ongoing testing.<br />
+              <span className="font-black">DO NOT proceed with any insurance transaction.</span>
+            </p>
+            <p className="mt-5 text-xs text-red-400/70">This page will unlock automatically at 3:15 PM.</p>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
@@ -2218,16 +2244,6 @@ function RegressionTab() {
 
   const RUNNING_KEY = "regression_e2e_running";
 
-  // Blocking overlay until 2026-06-19T15:15:00 local time
-  const BLOCK_UNTIL = new Date("2026-06-19T15:15:00");
-  const [blocked, setBlocked] = useState(() => new Date() < BLOCK_UNTIL);
-  useEffect(() => {
-    if (!blocked) return;
-    const ms = BLOCK_UNTIL.getTime() - Date.now();
-    if (ms <= 0) { setBlocked(false); return; }
-    const t = setTimeout(() => setBlocked(false), ms);
-    return () => clearTimeout(t);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // On mount: restore a completed result OR resume a run that was in progress
   // when the user navigated away.
@@ -2496,20 +2512,6 @@ function RegressionTab() {
   return (
     <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-3">
 
-      {/* ── Blocking overlay ── */}
-      {blocked && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="max-w-md w-full mx-4 bg-red-950 border-2 border-red-500 rounded-2xl p-8 text-center shadow-2xl">
-            <div className="text-red-400 text-5xl mb-4">⛔</div>
-            <h2 className="text-xl font-black text-red-300 uppercase tracking-wide mb-3">Access Restricted</h2>
-            <p className="text-red-200 text-base font-medium leading-relaxed">
-              messagebird is currently ongoing testing.<br />
-              <span className="font-black">DO NOT proceed with any insurance transaction.</span>
-            </p>
-            <p className="mt-5 text-xs text-red-400/70">This page will unlock automatically at 3:15 PM.</p>
-          </div>
-        </div>
-      )}
 
       {/* ── Compact result panel — always visible after a run ── */}
       {(result || error) && (
