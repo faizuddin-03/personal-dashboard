@@ -3,19 +3,49 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MessageSquare, Play, Square, Settings2, ChevronDown, Download,
   Loader2, Eye, EyeOff, CheckCircle2, XCircle, Clock, AlertTriangle,
-  RotateCcw,
+  RotateCcw, ChevronLeft,
 } from "lucide-react";
 import clsx from "clsx";
 
-// ── Flow definitions ──────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface TestParam {
+  key: string;
+  label: string;
+  defaultValue: string;
+  description?: string;
+  type?: "text" | "select" | "password";
+  options?: { value: string; label: string }[];
+}
 
 interface FlowVar  { key: string; label: string; defaultValue: string; description?: string; }
-interface FlowTest { name: string; defaultEnabled: boolean; metaRisk?: boolean; }
+interface FlowTest { name: string; defaultEnabled: boolean; metaRisk?: boolean; params?: TestParam[]; }
 interface FlowDef  {
   id: string; file: string; title: string; description: string;
   emoji: string; tags: string[]; estimatedDuration: string; metaRisk: boolean;
   tests: FlowTest[]; flowVars: FlowVar[];
 }
+
+// ── Flow definitions ──────────────────────────────────────────────────────────
+
+const MY_STATES = [
+  { value: "JOHOR",          label: "Johor" },
+  { value: "KEDAH",          label: "Kedah" },
+  { value: "KELANTAN",       label: "Kelantan" },
+  { value: "MELAKA",         label: "Melaka" },
+  { value: "N_SEMBILAN",     label: "Negeri Sembilan" },
+  { value: "PAHANG",         label: "Pahang" },
+  { value: "PENANG",         label: "Penang" },
+  { value: "PERAK",          label: "Perak" },
+  { value: "PERLIS",         label: "Perlis" },
+  { value: "SABAH",          label: "Sabah" },
+  { value: "SARAWAK",        label: "Sarawak" },
+  { value: "SELANGOR",       label: "Selangor" },
+  { value: "TERENGGANU",     label: "Terengganu" },
+  { value: "KL",             label: "Kuala Lumpur" },
+  { value: "LABUAN",         label: "Labuan" },
+  { value: "PUTRAJAYA",      label: "Putrajaya" },
+];
 
 const FLOWS: FlowDef[] = [
   {
@@ -26,7 +56,13 @@ const FLOWS: FlowDef[] = [
     tests: [
       { name: "remember-me checkbox is checked by default", defaultEnabled: true },
       { name: "unauthenticated visit to / redirects to /login", defaultEnabled: true },
-      { name: "wrong password shows error message", defaultEnabled: true },
+      {
+        name: "wrong password shows error message", defaultEnabled: true,
+        params: [
+          { key: "E2E_WRONG_PASSWORD", label: "Wrong Password", defaultValue: "wrong-password", type: "password",
+            description: "Password that should be rejected and trigger an error message." },
+        ],
+      },
       { name: "admin logs in, sees dashboard, navigates with keyboard, opens help overlay, then logs out", defaultEnabled: true },
       { name: "session persists across page reload", defaultEnabled: true },
       { name: "after logout, reload stays on /login", defaultEnabled: true },
@@ -48,8 +84,44 @@ const FLOWS: FlowDef[] = [
       { name: "CSV with invalid rows surfaces the error list", defaultEnabled: true },
       { name: "Cancel on the import page navigates back to contacts", defaultEnabled: true },
       { name: "dealers table renders; search filters; specialization chip works", defaultEnabled: true },
-      { name: "admin adds dealer via modal → searchable in table; duplicate phone shows error", defaultEnabled: true },
-      { name: "create → verify in list → edit → delete", defaultEnabled: true },
+      {
+        name: "admin adds dealer via modal → searchable in table; duplicate phone shows error",
+        defaultEnabled: true,
+        params: [
+          {
+            key: "E2E_DEALER_TIER", label: "Dealer Tier", defaultValue: "GOLD", type: "select",
+            description: "Tier assigned to the newly created dealer.",
+            options: [{ value: "GOLD", label: "Gold" }, { value: "SILVER", label: "Silver" }, { value: "BRONZE", label: "Bronze" }],
+          },
+          {
+            key: "E2E_DEALER_SPEC", label: "Vehicle Specialization", defaultValue: "EV_HYBRID", type: "select",
+            description: "Vehicle specialization assigned to the dealer.",
+            options: [
+              { value: "EV_HYBRID",     label: "EV / Hybrid" },
+              { value: "CONVENTIONAL",  label: "Conventional" },
+              { value: "COMMERCIAL",    label: "Commercial" },
+              { value: "LUXURY",        label: "Luxury" },
+            ],
+          },
+        ],
+      },
+      {
+        name: "create → verify in list → edit → delete", defaultEnabled: true,
+        params: [
+          {
+            key: "E2E_CONTACT_ETHNICITY", label: "Ethnicity", defaultValue: "MALAY", type: "select",
+            options: [{ value: "MALAY", label: "Malay" }, { value: "CHINESE", label: "Chinese" }, { value: "INDIAN", label: "Indian" }, { value: "OTHER", label: "Other" }],
+          },
+          {
+            key: "E2E_CONTACT_LANGUAGE", label: "Language", defaultValue: "MS", type: "select",
+            options: [{ value: "MS", label: "Malay (MS)" }, { value: "EN", label: "English (EN)" }, { value: "ZH", label: "Chinese (ZH)" }, { value: "TA", label: "Tamil (TA)" }],
+          },
+          {
+            key: "E2E_CONTACT_STATE", label: "State", defaultValue: "SELANGOR", type: "select",
+            options: MY_STATES,
+          },
+        ],
+      },
       { name: "segment builder page shows filter options", defaultEnabled: true },
       { name: "select all dealers → save as segment → success toast shown", defaultEnabled: true },
       { name: "saved segment is selectable in the blast wizard audience step", defaultEnabled: true },
@@ -86,7 +158,13 @@ const FLOWS: FlowDef[] = [
     tags: ["inbox", "conversations", "canned-replies"], estimatedDuration: "~7 min", metaRisk: false,
     tests: [
       { name: "inbound message appears in Awaiting tab", defaultEnabled: true },
-      { name: "replying to a message moves it to Replied and auto-resolves", defaultEnabled: true },
+      {
+        name: "replying to a message moves it to Replied and auto-resolves", defaultEnabled: true,
+        params: [
+          { key: "E2E_REPLY_MESSAGE", label: "Reply Message", defaultValue: "I will help you shortly.",
+            description: "Text typed into the inbox composer before sending." },
+        ],
+      },
       { name: "manually mark resolved → hidden from active tabs → reopen restores it", defaultEnabled: true },
       { name: "window-closed: composer is locked and re-engage CTA appears", defaultEnabled: true },
       { name: "search filter narrows and then clears conversation list", defaultEnabled: true },
@@ -99,8 +177,8 @@ const FLOWS: FlowDef[] = [
       { name: "Add canned reply button disabled until title and body filled", defaultEnabled: true },
     ],
     flowVars: [
-      { key: "API_BASE",             label: "API Base URL",       defaultValue: "http://localhost:3000", description: "Backend URL for webhook seeding" },
-      { key: "WHATSAPP_APP_SECRET",  label: "WhatsApp App Secret", defaultValue: "3056575083ca35ce9aab0ddc07a705e0", description: "HMAC secret for webhook payloads" },
+      { key: "API_BASE",            label: "API Base URL",       defaultValue: "http://localhost:3000", description: "Backend URL for webhook seeding" },
+      { key: "WHATSAPP_APP_SECRET", label: "WhatsApp App Secret", defaultValue: "3056575083ca35ce9aab0ddc07a705e0", description: "HMAC secret for webhook payloads" },
     ],
   },
   {
@@ -148,7 +226,21 @@ const FLOWS: FlowDef[] = [
       { name: "KPI strip has no demo badge and reply-handling donut renders", defaultEnabled: true },
       { name: "renders real (non-demo) analytics with delivery funnel and range chips", defaultEnabled: true },
       { name: "template list loads and status filter marks chip as active", defaultEnabled: true },
-      { name: "admin creates a multi-language draft, submits to Meta (mock), sees PENDING", defaultEnabled: false, metaRisk: true },
+      {
+        name: "admin creates a multi-language draft, submits to Meta (mock), sees PENDING",
+        defaultEnabled: false, metaRisk: true,
+        params: [
+          {
+            key: "E2E_TEMPLATE_CATEGORY", label: "Template Category", defaultValue: "MARKETING", type: "select",
+            options: [{ value: "MARKETING", label: "Marketing" }, { value: "UTILITY", label: "Utility" }, { value: "AUTHENTICATION", label: "Authentication" }],
+          },
+          {
+            key: "E2E_TEMPLATE_LANG_VARIANT", label: "Second Language Variant", defaultValue: "MS", type: "select",
+            description: "Language added as a second variant alongside the default EN.",
+            options: [{ value: "MS", label: "Malay (MS)" }, { value: "ZH", label: "Chinese (ZH)" }, { value: "TA", label: "Tamil (TA)" }],
+          },
+        ],
+      },
       { name: "Sync button triggers a request and shows a result toast", defaultEnabled: false, metaRisk: true },
       { name: "edit content, save as draft, draft appears in list with edits", defaultEnabled: true },
       { name: "closing the wizard at review step warns before discarding", defaultEnabled: true },
@@ -160,27 +252,24 @@ const FLOWS: FlowDef[] = [
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function escapeRegex(s: string) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-
 function msToHuman(ms: number) {
   if (ms < 1000) return `${ms}ms`;
   const s = Math.round(ms / 1000);
-  if (s < 60) return `${s}s`;
-  return `${Math.floor(s / 60)}m ${s % 60}s`;
+  return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`;
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface FlowConfig { enabledTests: Set<string>; vars: Record<string, string>; }
-
-interface ReportSpec { title: string; ok: boolean; duration: number; error?: string; suite: string; }
-
-interface RunResult {
+interface FlowConfig   { enabledTests: Set<string>; vars: Record<string, string>; }
+interface TestParamVals { [testName: string]: { [paramKey: string]: string }; }
+interface ReportSpec   { title: string; ok: boolean; duration: number; error?: string; suite: string; }
+interface RunResult    {
   exitCode: number; log: string; startedAt: string;
   stats?: { duration: number; expected: number; unexpected: number; skipped: number; };
   specs?: ReportSpec[];
 }
 
-// ── Parse Playwright JSON report ──────────────────────────────────────────────
+// ── Report parser ─────────────────────────────────────────────────────────────
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseReport(raw: any): Omit<RunResult, 'exitCode' | 'log' | 'startedAt'> {
@@ -212,15 +301,14 @@ function defaultConfig(flow: FlowDef): FlowConfig {
 function ReportPanel({ result, baseUrl }: { result: RunResult; baseUrl: string }) {
   if (!result.stats) return null;
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4">
-      {/* Print-only title */}
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
       <div className="hidden print-show" style={{ display: "none" }}>
         <h1 className="text-xl font-bold mb-1">WA Blaster — Test Report</h1>
         <p className="text-sm text-gray-600">Generated: {new Date().toLocaleString()} · {baseUrl}</p>
       </div>
 
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-200">Test Results</h3>
+        <h3 className="text-sm font-semibold text-slate-200">Results</h3>
         <button onClick={() => window.print()}
           className="no-print flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
           <Download size={12} /> Download PDF
@@ -229,14 +317,14 @@ function ReportPanel({ result, baseUrl }: { result: RunResult; baseUrl: string }
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Passed",   value: result.stats.expected,                color: "text-green-400", bg: "bg-green-900/30 border-green-800" },
-          { label: "Failed",   value: result.stats.unexpected,              color: "text-red-400",   bg: "bg-red-900/30 border-red-800" },
-          { label: "Skipped",  value: result.stats.skipped,                 color: "text-slate-400", bg: "bg-slate-800 border-slate-700" },
-          { label: "Duration", value: msToHuman(result.stats.duration),     color: "text-blue-300",  bg: "bg-blue-900/20 border-blue-900" },
-        ].map(stat => (
-          <div key={stat.label} className={clsx("rounded-xl border p-3 text-center", stat.bg)}>
-            <div className={clsx("text-xl font-black", stat.color)}>{stat.value}</div>
-            <div className="text-xs text-slate-500 mt-0.5">{stat.label}</div>
+          { label: "Passed",   value: result.stats.expected,           color: "text-green-400", bg: "bg-green-900/30 border-green-800" },
+          { label: "Failed",   value: result.stats.unexpected,         color: "text-red-400",   bg: "bg-red-900/30 border-red-800" },
+          { label: "Skipped",  value: result.stats.skipped,            color: "text-slate-400", bg: "bg-slate-800 border-slate-700" },
+          { label: "Duration", value: msToHuman(result.stats.duration), color: "text-blue-300",  bg: "bg-blue-900/20 border-blue-900" },
+        ].map(s => (
+          <div key={s.label} className={clsx("rounded-xl border p-3 text-center", s.bg)}>
+            <div className={clsx("text-xl font-black", s.color)}>{s.value}</div>
+            <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
@@ -246,10 +334,10 @@ function ReportPanel({ result, baseUrl }: { result: RunResult; baseUrl: string }
           <table className="w-full text-xs border-collapse">
             <thead>
               <tr className="border-b border-slate-800 bg-slate-900/80">
-                <th className="px-3 py-2 text-left font-semibold text-slate-500 uppercase tracking-wider w-16">Status</th>
+                <th className="px-3 py-2 text-left font-semibold text-slate-500 uppercase tracking-wider w-14">Status</th>
                 <th className="px-3 py-2 text-left font-semibold text-slate-500 uppercase tracking-wider">Suite</th>
                 <th className="px-3 py-2 text-left font-semibold text-slate-500 uppercase tracking-wider">Test</th>
-                <th className="px-3 py-2 text-right font-semibold text-slate-500 uppercase tracking-wider w-20">Duration</th>
+                <th className="px-3 py-2 text-right font-semibold text-slate-500 uppercase tracking-wider w-20">Time</th>
               </tr>
             </thead>
             <tbody>
@@ -259,7 +347,7 @@ function ReportPanel({ result, baseUrl }: { result: RunResult; baseUrl: string }
                     <td className="px-3 py-2">
                       {spec.ok ? <CheckCircle2 size={13} className="text-green-400" /> : <XCircle size={13} className="text-red-400" />}
                     </td>
-                    <td className="px-3 py-2 text-slate-500 max-w-[160px] truncate">{spec.suite}</td>
+                    <td className="px-3 py-2 text-slate-500 max-w-[140px] truncate">{spec.suite}</td>
                     <td className="px-3 py-2 text-slate-300">{spec.title}</td>
                     <td className="px-3 py-2 text-right text-slate-500 font-mono">{msToHuman(spec.duration)}</td>
                   </tr>
@@ -300,15 +388,20 @@ export default function WABlasterPage() {
   const [showOpPw,      setShowOpPw]      = useState(false);
   const [settingsOpen,  setSettingsOpen]  = useState(false);
 
-  // ── Per-flow configs ───────────────────────────────────────────────────────
+  // ── Per-flow configs (enable/disable toggles + flow-level vars) ────────────
   const [flowConfigs, setFlowConfigs] = useState<Record<string, FlowConfig>>(() =>
     Object.fromEntries(FLOWS.map(f => [f.id, defaultConfig(f)]))
   );
 
-  // ── Tabs ───────────────────────────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState("overview");
+  // ── Per-test param values ──────────────────────────────────────────────────
+  const [testParamVals, setTestParamVals] = useState<Record<string, TestParamVals>>(() =>
+    Object.fromEntries(FLOWS.map(f => [f.id, Object.fromEntries(f.tests.map(t => [t.name, {}]))]))
+  );
 
-  // ── Selection for batch run (overview) ────────────────────────────────────
+  // ── Navigation: null = overview, string = flow detail ─────────────────────
+  const [activeFlowId, setActiveFlowId] = useState<string | null>(null);
+
+  // ── Batch selection (overview) ─────────────────────────────────────────────
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   // ── Run state ──────────────────────────────────────────────────────────────
@@ -316,12 +409,12 @@ export default function WABlasterPage() {
   const [stopping,  setStopping]  = useState(false);
   const [runLog,    setRunLog]    = useState("");
   const [result,    setResult]    = useState<RunResult | null>(null);
-  const runningTabRef = useRef<string | null>(null); // tab that launched the current run
-  const [resultTab,   setResultTab]  = useState<string | null>(null);
+  const runningContextRef = useRef<string | null>(null); // "overview" | flowId | null
+  const [resultContext,  setResultContext]  = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logRef  = useRef<HTMLPreElement>(null);
 
-  // ── Restore settings from localStorage ────────────────────────────────────
+  // ── Restore from localStorage ──────────────────────────────────────────────
   useEffect(() => {
     const s = localStorage.getItem("wa_settings");
     if (!s) return;
@@ -355,23 +448,19 @@ export default function WABlasterPage() {
         stopPolling();
         setRunning(false);
         setStopping(false);
-        const parsed = parseReport(data.report);
-        const tab = runningTabRef.current;
-        runningTabRef.current = null;
-        setResultTab(tab);
-        setResult({ exitCode: data.exitCode, log: data.log, startedAt: data.startedAt ?? "", ...parsed });
+        const ctx = runningContextRef.current;
+        runningContextRef.current = null;
+        setResultContext(ctx);
+        setResult({ exitCode: data.exitCode, log: data.log, startedAt: data.startedAt ?? "", ...parseReport(data.report) });
       }
     }, 1500);
   }, [stopPolling]);
 
   useEffect(() => () => stopPolling(), [stopPolling]);
+  useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [runLog]);
 
-  useEffect(() => {
-    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
-  }, [runLog]);
-
-  // ── Start / stop run ───────────────────────────────────────────────────────
-  async function startRun(flowIds: string[], tabId: string) {
+  // ── Start run ──────────────────────────────────────────────────────────────
+  async function startRun(flowIds: string[], ctx: string) {
     const specFiles = flowIds.map(id => FLOWS.find(f => f.id === id)!.file);
     const env: Record<string, string> = {
       E2E_BASE_URL:          baseUrl,
@@ -380,10 +469,23 @@ export default function WABlasterPage() {
       E2E_OPERATOR_EMAIL:    opEmail,
       E2E_OPERATOR_PASSWORD: opPassword,
     };
+
     for (const id of flowIds) {
+      // Flow-level vars
       const cfg = flowConfigs[id];
       if (cfg) Object.assign(env, cfg.vars);
+
+      // Per-test param overrides
+      const flow     = FLOWS.find(f => f.id === id)!;
+      const paramMap = testParamVals[id] ?? {};
+      for (const test of flow.tests) {
+        for (const param of (test.params ?? [])) {
+          const val = (paramMap[test.name]?.[param.key] ?? "").trim();
+          if (val) env[param.key] = val;
+        }
+      }
     }
+
     const allEnabled: string[] = [];
     for (const id of flowIds) {
       const flow = FLOWS.find(f => f.id === id)!;
@@ -394,8 +496,8 @@ export default function WABlasterPage() {
     const grepPattern = allEnabled.length < totalTests ? allEnabled.map(escapeRegex).join("|") : undefined;
 
     setRunning(true);
-    runningTabRef.current = tabId;
-    setResultTab(null);
+    runningContextRef.current = ctx;
+    setResultContext(null);
     setResult(null);
     setRunLog("");
 
@@ -407,23 +509,20 @@ export default function WABlasterPage() {
     if (!res.ok) {
       const data = await res.json();
       setRunning(false);
-      runningTabRef.current = null;
-      setResultTab(tabId);
+      runningContextRef.current = null;
+      setResultContext(ctx);
       setResult({ exitCode: 1, log: data.error ?? "Failed to start.", startedAt: "" });
       return;
     }
     startPolling();
   }
 
-  async function stopRun() {
-    setStopping(true);
-    await fetch("/api/wa-blaster/run", { method: "DELETE" });
-  }
+  async function stopRun() { setStopping(true); await fetch("/api/wa-blaster/run", { method: "DELETE" }); }
 
-  // ── Per-flow config helpers ────────────────────────────────────────────────
+  // ── Config helpers ─────────────────────────────────────────────────────────
   function toggleTest(flowId: string, name: string) {
     setFlowConfigs(prev => {
-      const cfg  = prev[flowId];
+      const cfg = prev[flowId];
       const next = new Set(cfg.enabledTests);
       next.has(name) ? next.delete(name) : next.add(name);
       return { ...prev, [flowId]: { ...cfg, enabledTests: next } };
@@ -438,20 +537,32 @@ export default function WABlasterPage() {
     }));
   }
 
-  function setVar(flowId: string, key: string, value: string) {
+  function setFlowVar(flowId: string, key: string, value: string) {
     setFlowConfigs(prev => ({
       ...prev,
       [flowId]: { ...prev[flowId], vars: { ...prev[flowId].vars, [key]: value } },
     }));
   }
 
-  function resetVars(flowId: string) {
+  function resetFlowVars(flowId: string) {
     const flow = FLOWS.find(f => f.id === flowId)!;
     setFlowConfigs(prev => ({
       ...prev,
       [flowId]: { ...prev[flowId], vars: Object.fromEntries(flow.flowVars.map(v => [v.key, v.defaultValue])) },
     }));
   }
+
+  function setTestParam(flowId: string, testName: string, paramKey: string, value: string) {
+    setTestParamVals(prev => ({
+      ...prev,
+      [flowId]: { ...prev[flowId], [testName]: { ...(prev[flowId]?.[testName] ?? {}), [paramKey]: value } },
+    }));
+  }
+
+  // ── Derived ────────────────────────────────────────────────────────────────
+  const activeFlow = activeFlowId ? FLOWS.find(f => f.id === activeFlowId) ?? null : null;
+  const isRunningIn = (ctx: string) => running && runningContextRef.current === ctx;
+  const hasResultIn = (ctx: string) => resultContext === ctx;
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -466,17 +577,33 @@ export default function WABlasterPage() {
       `}</style>
 
       {/* ── Header ── */}
-      <header className="no-print sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-600">eAuto</span>
-          <span className="text-slate-700">/</span>
-          <MessageSquare size={14} className="text-green-400" />
-          <h1 className="text-sm font-semibold text-slate-200">WA Blaster Tests</h1>
+      <header className="no-print sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center gap-3">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+          {activeFlow ? (
+            <>
+              <button onClick={() => setActiveFlowId(null)}
+                className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors shrink-0">
+                <ChevronLeft size={13} />
+                <MessageSquare size={13} className="text-green-400" />
+                <span>WA Blaster</span>
+              </button>
+              <span className="text-slate-700">/</span>
+              <span className="text-sm font-semibold text-slate-200 truncate">{activeFlow.emoji} {activeFlow.title}</span>
+            </>
+          ) : (
+            <>
+              <MessageSquare size={14} className="text-green-400 shrink-0" />
+              <h1 className="text-sm font-semibold text-slate-200">WA Blaster Tests</h1>
+            </>
+          )}
         </div>
-        <div className="flex items-center gap-2">
+
+        {/* Actions */}
+        <div className="flex items-center gap-2 shrink-0">
           {result && (
             <button onClick={() => window.print()}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
+              className="no-print flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
               <Download size={12} /> PDF
             </button>
           )}
@@ -486,8 +613,13 @@ export default function WABlasterPage() {
               {stopping ? <Loader2 size={12} className="animate-spin" /> : <Square size={12} />}
               {stopping ? "Stopping…" : "Stop"}
             </button>
+          ) : activeFlow ? (
+            <button onClick={() => startRun([activeFlow.id], activeFlow.id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium">
+              <Play size={12} /> Run Flow
+            </button>
           ) : (
-            <button onClick={() => { startRun(FLOWS.map(f => f.id), "overview"); setActiveTab("overview"); }}
+            <button onClick={() => startRun(FLOWS.map(f => f.id), "overview")}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium">
               <Play size={12} /> Run All
             </button>
@@ -495,192 +627,164 @@ export default function WABlasterPage() {
         </div>
       </header>
 
-      {/* ── Tab bar ── */}
-      <div className="no-print flex items-center gap-0 px-4 sm:px-6 border-b border-slate-800 overflow-x-auto">
-        {[{ id: "overview", label: "Overview", emoji: "" }, ...FLOWS.map(f => ({ id: f.id, label: f.title, emoji: f.emoji }))]
-          .map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={clsx(
-                "flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap shrink-0",
-                activeTab === tab.id
-                  ? "border-blue-500 text-blue-400"
-                  : "border-transparent text-slate-500 hover:text-slate-300"
-              )}
-            >
-              {tab.emoji && <span className="text-base leading-none">{tab.emoji}</span>}
-              {tab.label}
-              {running && runningTabRef.current === tab.id && (
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse ml-0.5" />
-              )}
-            </button>
-          ))}
-      </div>
-
       {/* ══════════════════════════════════════════════════════════════════════
-          OVERVIEW TAB
+          OVERVIEW
       ══════════════════════════════════════════════════════════════════════ */}
-      <div className={clsx(activeTab !== "overview" && "hidden", "px-4 sm:px-6 py-5 space-y-5")}>
+      {!activeFlow && (
+        <div className="px-4 sm:px-6 py-5 space-y-5">
 
-        {/* Global settings */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-          <button onClick={() => setSettingsOpen(v => !v)}
-            className="w-full flex items-center gap-2 px-5 py-3.5 text-sm text-slate-400 hover:text-slate-200 transition-colors">
-            <Settings2 size={15} className="text-slate-500" />
-            <span className="flex-1 text-left font-medium">Testing Environment</span>
-            <span className="text-xs font-mono text-slate-600 mr-2">{baseUrl}</span>
-            <ChevronDown size={14} className={clsx("transition-transform", settingsOpen && "rotate-180")} />
-          </button>
-          {settingsOpen && (
-            <div className="px-5 pb-5 border-t border-slate-800 pt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="sm:col-span-2 lg:col-span-3">
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">WA Blaster Base URL</label>
-                <input value={baseUrl} onChange={e => setBaseUrl(e.target.value)}
-                  placeholder="http://localhost:5173"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 font-mono focus:outline-none focus:ring-2 focus:ring-blue-600" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">Admin Email</label>
-                <input value={adminEmail} onChange={e => setAdminEmail(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">Admin Password</label>
-                <div className="relative">
-                  <input value={adminPassword} onChange={e => setAdminPassword(e.target.value)} type={showAdminPw ? "text" : "password"}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-                  <button type="button" onClick={() => setShowAdminPw(v => !v)} tabIndex={-1}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                    {showAdminPw ? <EyeOff size={13} /> : <Eye size={13} />}
+          {/* Global settings */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+            <button onClick={() => setSettingsOpen(v => !v)}
+              className="w-full flex items-center gap-2 px-5 py-3.5 text-sm text-slate-400 hover:text-slate-200 transition-colors">
+              <Settings2 size={15} className="text-slate-500" />
+              <span className="flex-1 text-left font-medium">Testing Environment</span>
+              <span className="text-xs font-mono text-slate-600 mr-2 max-w-[240px] truncate">{baseUrl}</span>
+              <ChevronDown size={14} className={clsx("transition-transform shrink-0", settingsOpen && "rotate-180")} />
+            </button>
+            {settingsOpen && (
+              <div className="px-5 pb-5 border-t border-slate-800 pt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="sm:col-span-2 lg:col-span-3">
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">WA Blaster Base URL</label>
+                  <input value={baseUrl} onChange={e => setBaseUrl(e.target.value)} placeholder="http://localhost:5173"
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 font-mono focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Admin Email</label>
+                  <input value={adminEmail} onChange={e => setAdminEmail(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Admin Password</label>
+                  <div className="relative">
+                    <input value={adminPassword} onChange={e => setAdminPassword(e.target.value)} type={showAdminPw ? "text" : "password"}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                    <button type="button" onClick={() => setShowAdminPw(v => !v)} tabIndex={-1}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                      {showAdminPw ? <EyeOff size={13} /> : <Eye size={13} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="hidden lg:block" />
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Operator Email</label>
+                  <input value={opEmail} onChange={e => setOpEmail(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Operator Password</label>
+                  <div className="relative">
+                    <input value={opPassword} onChange={e => setOpPassword(e.target.value)} type={showOpPw ? "text" : "password"}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                    <button type="button" onClick={() => setShowOpPw(v => !v)} tabIndex={-1}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                      {showOpPw ? <EyeOff size={13} /> : <Eye size={13} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="sm:col-span-2 lg:col-span-3">
+                  <button onClick={saveSettings}
+                    className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors">
+                    Save Settings
                   </button>
                 </div>
               </div>
-              <div className="hidden lg:block" />
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">Operator Email</label>
-                <input value={opEmail} onChange={e => setOpEmail(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5">Operator Password</label>
-                <div className="relative">
-                  <input value={opPassword} onChange={e => setOpPassword(e.target.value)} type={showOpPw ? "text" : "password"}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 pr-10 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-                  <button type="button" onClick={() => setShowOpPw(v => !v)} tabIndex={-1}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                    {showOpPw ? <EyeOff size={13} /> : <Eye size={13} />}
-                  </button>
-                </div>
-              </div>
-              <div className="sm:col-span-2 lg:col-span-3">
-                <button onClick={saveSettings}
-                  className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors">
-                  Save Settings
+            )}
+          </div>
+
+          {/* Flow cards */}
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              {selected.size > 0
+                ? `${selected.size} flow${selected.size > 1 ? "s" : ""} selected — or click any card to configure it.`
+                : "Click a card to configure and run a flow. Tick checkboxes to select multiple for a batch run."}
+            </p>
+            {selected.size > 0 && (
+              <div className="flex items-center gap-2">
+                <button onClick={() => setSelected(new Set())} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Clear</button>
+                <button onClick={() => startRun(Array.from(selected), "overview")} disabled={running}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white rounded-lg transition-colors">
+                  <Play size={11} /> Run Selected ({selected.size})
                 </button>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Flow cards */}
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-slate-500">
-            {selected.size > 0
-              ? `${selected.size} flow${selected.size > 1 ? "s" : ""} selected — click a card to open it, or run the selection below.`
-              : "Click a card to open a flow. Tick the checkbox to queue multiple flows for a batch run."}
-          </p>
-          {selected.size > 0 && (
-            <div className="flex items-center gap-2">
-              <button onClick={() => setSelected(new Set())} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Clear</button>
-              <button
-                onClick={() => { startRun(Array.from(selected), "overview"); }}
-                disabled={running}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white rounded-lg transition-colors">
-                <Play size={11} /> Run Selected ({selected.size})
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {FLOWS.map(flow => {
-            const cfg       = flowConfigs[flow.id];
-            const isChecked = selected.has(flow.id);
-            return (
-              <div
-                key={flow.id}
-                onClick={() => setActiveTab(flow.id)}
-                className={clsx(
-                  "bg-slate-900 border rounded-2xl p-4 flex flex-col gap-3 cursor-pointer transition-colors group",
-                  isChecked ? "border-blue-600/60" : "border-slate-800 hover:border-slate-700"
-                )}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <label onClick={e => e.stopPropagation()}>
-                      <input type="checkbox" checked={isChecked}
-                        onChange={e => { e.stopPropagation(); setSelected(prev => { const n = new Set(prev); e.target.checked ? n.add(flow.id) : n.delete(flow.id); return n; }); }}
-                        className="accent-blue-500 w-3.5 h-3.5 cursor-pointer" />
-                    </label>
-                    <span className="text-lg leading-none">{flow.emoji}</span>
-                    <span className="text-sm font-semibold text-slate-200 group-hover:text-blue-300 transition-colors">{flow.title}</span>
-                  </div>
-                  {flow.metaRisk && (
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-900/50 border border-orange-700/60 text-orange-300 shrink-0">
-                      <AlertTriangle size={9} /> META
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-slate-500 leading-relaxed flex-1">{flow.description}</p>
-                <div className="flex items-center gap-3 text-xs text-slate-600 border-t border-slate-800 pt-2.5">
-                  <span className="flex items-center gap-1"><Clock size={11} />{flow.estimatedDuration}</span>
-                  <span>{cfg.enabledTests.size}/{flow.tests.length} tests</span>
-                  <span className="ml-auto text-[10px] font-medium text-slate-600 group-hover:text-blue-400 transition-colors">Open →</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Overview run output */}
-        {(running && runningTabRef.current === "overview") || resultTab === "overview" ? (
-          <div className="space-y-4">
-            <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-slate-800">
-                {running && runningTabRef.current === "overview"
-                  ? <Loader2 size={13} className="text-blue-400 animate-spin" />
-                  : result?.exitCode === 0
-                    ? <CheckCircle2 size={13} className="text-green-400" />
-                    : <XCircle size={13} className="text-red-400" />}
-                <span className="text-xs font-medium text-slate-400">
-                  {running && runningTabRef.current === "overview"
-                    ? "Test output (live)" : `Run finished — exit code ${result?.exitCode}`}
-                </span>
-              </div>
-              <pre ref={running && runningTabRef.current === "overview" ? logRef : undefined}
-                className="text-[11px] font-mono text-slate-400 px-4 py-3 max-h-48 overflow-y-auto whitespace-pre-wrap leading-relaxed">
-                {runLog || "Starting…"}
-              </pre>
-            </div>
-            {resultTab === "overview" && result && <ReportPanel result={result} baseUrl={baseUrl} />}
+            )}
           </div>
-        ) : null}
-      </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+            {FLOWS.map(flow => {
+              const cfg = flowConfigs[flow.id];
+              const isChecked = selected.has(flow.id);
+              return (
+                <div key={flow.id} onClick={() => setActiveFlowId(flow.id)}
+                  className={clsx(
+                    "bg-slate-900 border rounded-2xl p-4 flex flex-col gap-3 cursor-pointer transition-colors group",
+                    isChecked ? "border-blue-600/60" : "border-slate-800 hover:border-slate-700"
+                  )}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <label onClick={e => e.stopPropagation()}>
+                        <input type="checkbox" checked={isChecked}
+                          onChange={e => { e.stopPropagation(); setSelected(prev => { const n = new Set(prev); e.target.checked ? n.add(flow.id) : n.delete(flow.id); return n; }); }}
+                          className="accent-blue-500 w-3.5 h-3.5 cursor-pointer" />
+                      </label>
+                      <span className="text-lg leading-none">{flow.emoji}</span>
+                      <span className="text-sm font-semibold text-slate-200 group-hover:text-blue-300 transition-colors">{flow.title}</span>
+                    </div>
+                    {flow.metaRisk && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-900/50 border border-orange-700/60 text-orange-300 shrink-0">
+                        <AlertTriangle size={9} /> META
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500 leading-relaxed flex-1">{flow.description}</p>
+                  <div className="flex items-center gap-3 text-xs text-slate-600 border-t border-slate-800 pt-2.5">
+                    <span className="flex items-center gap-1"><Clock size={11} />{flow.estimatedDuration}</span>
+                    <span>{cfg.enabledTests.size}/{flow.tests.length} tests</span>
+                    <span className="ml-auto text-[10px] font-medium text-slate-600 group-hover:text-blue-400 transition-colors">Configure →</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Overview run output */}
+          {(isRunningIn("overview") || hasResultIn("overview")) && (
+            <div className="space-y-4">
+              <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-2.5 border-b border-slate-800">
+                  {isRunningIn("overview") ? <Loader2 size={13} className="text-blue-400 animate-spin" />
+                    : result?.exitCode === 0 ? <CheckCircle2 size={13} className="text-green-400" />
+                    : <XCircle size={13} className="text-red-400" />}
+                  <span className="text-xs font-medium text-slate-400">
+                    {isRunningIn("overview") ? "Test output (live)" : `Run finished — exit code ${result?.exitCode}`}
+                  </span>
+                </div>
+                <pre ref={isRunningIn("overview") ? logRef : undefined}
+                  className="text-[11px] font-mono text-slate-400 px-4 py-3 max-h-48 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+                  {runLog || "Starting…"}
+                </pre>
+              </div>
+              {hasResultIn("overview") && result && <ReportPanel result={result} baseUrl={baseUrl} />}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ══════════════════════════════════════════════════════════════════════
-          FLOW TABS
+          FLOW DETAIL
       ══════════════════════════════════════════════════════════════════════ */}
-      {FLOWS.map(flow => {
+      {activeFlow && (() => {
+        const flow       = activeFlow;
         const cfg        = flowConfigs[flow.id];
-        const isRunning  = running && runningTabRef.current === flow.id;
-        const hasResult  = resultTab === flow.id;
-        const otherRunning = running && runningTabRef.current !== flow.id;
+        const paramMap   = testParamVals[flow.id] ?? {};
+        const isRunning  = isRunningIn(flow.id);
+        const hasResult  = hasResultIn(flow.id);
+        const otherBusy  = running && runningContextRef.current !== flow.id;
 
         return (
-          <div key={flow.id} className={clsx(activeTab !== flow.id && "hidden", "px-4 sm:px-6 py-5 space-y-5")}>
+          <div className="px-4 sm:px-6 py-5 space-y-5">
 
-            {/* Flow info bar */}
+            {/* Flow info */}
             <div className="flex items-start gap-4">
               <span className="text-3xl leading-none mt-0.5">{flow.emoji}</span>
               <div className="flex-1 min-w-0">
@@ -695,75 +799,117 @@ export default function WABlasterPage() {
                 <p className="text-sm text-slate-400 mb-2">{flow.description}</p>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <span className="flex items-center gap-1 text-slate-500"><Clock size={11} />{flow.estimatedDuration}</span>
-                  {flow.tags.map(t => (
-                    <span key={t} className="px-1.5 py-0.5 bg-slate-800 rounded text-slate-500">{t}</span>
-                  ))}
+                  {flow.tags.map(t => <span key={t} className="px-1.5 py-0.5 bg-slate-800 rounded text-slate-500">{t}</span>)}
                 </div>
               </div>
-              <div className="shrink-0 text-right">
+              <div className="shrink-0 text-right hidden sm:block">
                 <p className="text-[10px] text-slate-600">Testing against</p>
                 <p className="text-xs font-mono text-slate-500 max-w-[200px] truncate">{baseUrl}</p>
               </div>
             </div>
 
-            {/* Two-column: tests + (vars + run) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+            {/* Main layout */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 items-start">
 
-              {/* Test toggles */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Tests <span className="text-slate-600 font-normal normal-case ml-1">({cfg.enabledTests.size}/{flow.tests.length} enabled)</span>
+              {/* Test list — takes 2 columns on xl */}
+              <div className="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800">
+                  <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                    Tests
+                    <span className="ml-2 text-slate-600 font-normal normal-case">
+                      {cfg.enabledTests.size} of {flow.tests.length} enabled
+                    </span>
                   </h3>
                   <div className="flex gap-3">
                     <button onClick={() => setAllTests(flow.id, true)} className="text-xs text-blue-400 hover:text-blue-300 transition-colors">All</button>
                     <button onClick={() => setAllTests(flow.id, false)} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">None</button>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  {flow.tests.map(t => (
-                    <label key={t.name} className={clsx(
-                      "flex items-start gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors",
-                      cfg.enabledTests.has(t.name) ? "bg-slate-800" : "bg-slate-800/30 hover:bg-slate-800/60"
-                    )}>
-                      <input type="checkbox" checked={cfg.enabledTests.has(t.name)} onChange={() => toggleTest(flow.id, t.name)}
-                        className="accent-blue-500 mt-0.5 shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className={clsx("text-xs leading-snug", cfg.enabledTests.has(t.name) ? "text-slate-200" : "text-slate-500")}>{t.name}</p>
-                        {t.metaRisk && (
-                          <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-900/40 text-orange-400 border border-orange-800/60">
-                            <AlertTriangle size={8} /> Calls Meta API — use sparingly
-                          </span>
+
+                <div className="divide-y divide-slate-800/60">
+                  {flow.tests.map(t => {
+                    const enabled = cfg.enabledTests.has(t.name);
+                    const hasParams = (t.params ?? []).length > 0;
+                    return (
+                      <div key={t.name} className={clsx("px-5 py-3.5 transition-colors", enabled ? "" : "opacity-50")}>
+                        {/* Test row */}
+                        <div className="flex items-start gap-3">
+                          <input type="checkbox" checked={enabled} onChange={() => toggleTest(flow.id, t.name)}
+                            className="accent-blue-500 mt-0.5 shrink-0 cursor-pointer" />
+                          <div className="flex-1 min-w-0">
+                            <p className={clsx("text-sm leading-snug", enabled ? "text-slate-200" : "text-slate-500")}>{t.name}</p>
+                            {t.metaRisk && (
+                              <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-900/40 text-orange-400 border border-orange-800/60">
+                                <AlertTriangle size={8} /> Calls Meta API — use sparingly
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Per-test param inputs */}
+                        {hasParams && enabled && (
+                          <div className="mt-3 ml-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {(t.params ?? []).map(param => (
+                              <div key={param.key}>
+                                <label className="block text-[11px] font-medium text-slate-400 mb-1">
+                                  {param.label}
+                                  <span className="ml-1.5 text-slate-600 font-normal">default: {param.defaultValue}</span>
+                                </label>
+                                {param.description && (
+                                  <p className="text-[10px] text-slate-600 mb-1">{param.description}</p>
+                                )}
+                                {param.type === "select" && param.options ? (
+                                  <select
+                                    value={paramMap[t.name]?.[param.key] ?? ""}
+                                    onChange={e => setTestParam(flow.id, t.name, param.key, e.target.value)}
+                                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                  >
+                                    <option value="">— use default ({param.defaultValue}) —</option>
+                                    {param.options.map(o => (
+                                      <option key={o.value} value={o.value}>{o.label}</option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <input
+                                    value={paramMap[t.name]?.[param.key] ?? ""}
+                                    onChange={e => setTestParam(flow.id, t.name, param.key, e.target.value)}
+                                    type={param.type === "password" ? "text" : "text"}
+                                    placeholder={`default: ${param.defaultValue}`}
+                                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-600 font-mono focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                  />
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         )}
                       </div>
-                    </label>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Right column: variables + run */}
+              {/* Right column: flow vars + run */}
               <div className="space-y-4">
 
-                {/* Variables */}
+                {/* Flow variables */}
                 {flow.flowVars.length > 0 && (
                   <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Flow Variables</h3>
-                      <button onClick={() => resetVars(flow.id)}
+                      <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Flow Variables</h3>
+                      <button onClick={() => resetFlowVars(flow.id)}
                         className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
                         <RotateCcw size={10} /> Defaults
                       </button>
                     </div>
-                    <p className="text-[11px] text-slate-600">
-                      These override the global credentials above for this flow only.
-                    </p>
+                    <p className="text-[11px] text-slate-600">Override values specific to this flow. Leave blank to use the default.</p>
                     {flow.flowVars.map(v => (
                       <div key={v.key}>
-                        <label className="block text-xs font-medium text-slate-400 mb-1">{v.label}</label>
+                        <label className="block text-xs font-medium text-slate-400 mb-1">
+                          {v.label}
+                          <span className="ml-1.5 text-slate-600 font-normal text-[11px]">default: {v.defaultValue}</span>
+                        </label>
                         {v.description && <p className="text-[11px] text-slate-600 mb-1.5">{v.description}</p>}
-                        <input
-                          value={cfg.vars[v.key] ?? v.defaultValue}
-                          onChange={e => setVar(flow.id, v.key, e.target.value)}
+                        <input value={cfg.vars[v.key] ?? v.defaultValue} onChange={e => setFlowVar(flow.id, v.key, e.target.value)}
                           className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-blue-600" />
                       </div>
                     ))}
@@ -772,16 +918,19 @@ export default function WABlasterPage() {
 
                 {/* Run panel */}
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Run</h3>
-                  {otherRunning ? (
-                    <div className="flex items-center gap-2 text-xs text-slate-500 italic py-1">
-                      <Loader2 size={12} className="animate-spin text-blue-400" />
-                      Another flow is currently running…
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Run</h3>
+                    <span className="text-[11px] text-slate-600">{cfg.enabledTests.size}/{flow.tests.length} tests</span>
+                  </div>
+                  {otherBusy ? (
+                    <div className="flex items-center gap-2 text-xs text-slate-500 italic">
+                      <Loader2 size={12} className="animate-spin text-blue-400 shrink-0" />
+                      Another flow is running…
                     </div>
                   ) : isRunning ? (
                     <>
-                      <div className="flex items-center gap-2 text-xs text-blue-300 animate-pulse">
-                        <Loader2 size={12} className="animate-spin" /> Running tests…
+                      <div className="flex items-center gap-1.5 text-xs text-blue-300 animate-pulse">
+                        <Loader2 size={12} className="animate-spin" /> Running…
                       </div>
                       <button onClick={stopRun} disabled={stopping}
                         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-xl transition-colors">
@@ -803,17 +952,14 @@ export default function WABlasterPage() {
             {(isRunning || hasResult) && (
               <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-2 px-4 py-2.5 border-b border-slate-800">
-                  {isRunning
-                    ? <Loader2 size={13} className="text-blue-400 animate-spin" />
-                    : result?.exitCode === 0
-                      ? <CheckCircle2 size={13} className="text-green-400" />
-                      : <XCircle size={13} className="text-red-400" />}
+                  {isRunning ? <Loader2 size={13} className="text-blue-400 animate-spin" />
+                    : result?.exitCode === 0 ? <CheckCircle2 size={13} className="text-green-400" />
+                    : <XCircle size={13} className="text-red-400" />}
                   <span className="text-xs font-medium text-slate-400">
                     {isRunning ? "Test output (live)" : `Run finished — exit code ${result?.exitCode}`}
                   </span>
                 </div>
-                <pre
-                  ref={isRunning ? logRef : undefined}
+                <pre ref={isRunning ? logRef : undefined}
                   className="text-[11px] font-mono text-slate-400 px-4 py-3 max-h-56 overflow-y-auto whitespace-pre-wrap leading-relaxed">
                   {runLog || "Starting…"}
                 </pre>
@@ -824,7 +970,7 @@ export default function WABlasterPage() {
             {hasResult && result && <ReportPanel result={result} baseUrl={baseUrl} />}
           </div>
         );
-      })}
+      })()}
     </div>
   );
 }

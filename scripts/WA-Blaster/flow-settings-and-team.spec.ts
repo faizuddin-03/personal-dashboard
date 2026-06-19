@@ -11,10 +11,10 @@
 import { test, expect, type Page } from '@playwright/test';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = 'admin@example.com';
-const ADMIN_PASSWORD = 'ChangeMe123!';
-const OPERATOR_EMAIL = 'support@example.com';
-const OPERATOR_PASSWORD = 'ChangeMe123!';
+const ADMIN_EMAIL       = process.env.E2E_ADMIN_EMAIL       ?? 'admin@example.com';
+const ADMIN_PASSWORD    = process.env.E2E_ADMIN_PASSWORD    ?? 'ChangeMe123!';
+const OPERATOR_EMAIL    = process.env.E2E_OPERATOR_EMAIL    ?? 'support@example.com';
+const OPERATOR_PASSWORD = process.env.E2E_OPERATOR_PASSWORD ?? 'ChangeMe123!';
 const FLOW = 'flow-settings-and-team';
 
 async function loginAs(page: Page, email: string, password: string) {

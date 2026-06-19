@@ -12,10 +12,11 @@ import { test, expect, request, type APIRequestContext, type Page } from '@playw
 import { createHmac } from 'crypto';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = 'admin@example.com';
-const ADMIN_PASSWORD = 'ChangeMe123!';
-const OPERATOR_EMAIL = 'support@example.com';
-const OPERATOR_PASSWORD = 'ChangeMe123!';
+const ADMIN_EMAIL       = process.env.E2E_ADMIN_EMAIL       ?? 'admin@example.com';
+const ADMIN_PASSWORD    = process.env.E2E_ADMIN_PASSWORD    ?? 'ChangeMe123!';
+const OPERATOR_EMAIL    = process.env.E2E_OPERATOR_EMAIL    ?? 'support@example.com';
+const OPERATOR_PASSWORD = process.env.E2E_OPERATOR_PASSWORD ?? 'ChangeMe123!';
+const REPLY_MESSAGE     = process.env.E2E_REPLY_MESSAGE     ?? 'I will help you shortly.';
 
 const APP_SECRET =
   process.env.WHATSAPP_APP_SECRET ??
@@ -120,7 +121,7 @@ test.describe('Conversation lifecycle', () => {
     await page.getByText(marker).first().click();
     await snap(page, FLOW, 'conv_02_conversation_open');
 
-    await page.getByTestId('inbox-composer').fill('I will help you shortly.');
+    await page.getByTestId('inbox-composer').fill(REPLY_MESSAGE);
     await page.getByTestId('inbox-send-button').click();
 
     await page.getByTestId('inbox-tab-replied').click();

@@ -10,10 +10,11 @@
 import { test, expect, type Page } from '@playwright/test';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = 'admin@example.com';
-const ADMIN_PASSWORD = 'ChangeMe123!';
-const OPERATOR_EMAIL = 'support@example.com';
-const OPERATOR_PASSWORD = 'ChangeMe123!';
+const ADMIN_EMAIL       = process.env.E2E_ADMIN_EMAIL       ?? 'admin@example.com';
+const ADMIN_PASSWORD    = process.env.E2E_ADMIN_PASSWORD    ?? 'ChangeMe123!';
+const OPERATOR_EMAIL    = process.env.E2E_OPERATOR_EMAIL    ?? 'support@example.com';
+const OPERATOR_PASSWORD = process.env.E2E_OPERATOR_PASSWORD ?? 'ChangeMe123!';
+const WRONG_PASSWORD    = process.env.E2E_WRONG_PASSWORD    ?? 'wrong-password';
 const FLOW = 'flow-auth-and-roles';
 
 async function loginAs(page: Page, email: string, password: string) {
@@ -42,7 +43,7 @@ test.describe('Login page', () => {
   test('wrong password shows error message', async ({ page }) => {
     await page.goto('/login');
     await page.getByTestId('email').fill(ADMIN_EMAIL);
-    await page.getByTestId('password').fill('wrong-password');
+    await page.getByTestId('password').fill(WRONG_PASSWORD);
     await page.getByTestId('submit').click();
     await expect(page.getByTestId('login-error')).toHaveText('Invalid email or password');
     await snap(page, FLOW, 'login_03_wrong_password_error');

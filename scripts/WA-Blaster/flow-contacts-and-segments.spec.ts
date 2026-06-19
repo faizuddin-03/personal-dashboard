@@ -12,9 +12,16 @@ import { test, expect, type Page } from '@playwright/test';
 import path from 'path';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = 'admin@example.com';
-const ADMIN_PASSWORD = 'ChangeMe123!';
-const SEED_TEMPLATE  = 'sample_promo_2026';
+const ADMIN_EMAIL       = process.env.E2E_ADMIN_EMAIL       ?? 'admin@example.com';
+const ADMIN_PASSWORD    = process.env.E2E_ADMIN_PASSWORD    ?? 'ChangeMe123!';
+const SEED_TEMPLATE     = process.env.E2E_SEED_TEMPLATE     ?? 'sample_promo_2026';
+const DEALER_TIER       = process.env.E2E_DEALER_TIER       ?? 'GOLD';
+const DEALER_SPEC       = process.env.E2E_DEALER_SPEC       ?? 'EV_HYBRID';
+const CONTACT_ETHNICITY = process.env.E2E_CONTACT_ETHNICITY ?? 'MALAY';
+const CONTACT_LANGUAGE  = process.env.E2E_CONTACT_LANGUAGE  ?? 'MS';
+const CONTACT_STATE     = process.env.E2E_CONTACT_STATE     ?? 'SELANGOR';
+const DEALER_TIER_LABEL: Record<string,string> = { GOLD: 'Gold', SILVER: 'Silver', BRONZE: 'Bronze' };
+const DEALER_SPEC_LABEL: Record<string,string> = { EV_HYBRID: 'EV/Hybrid', CONVENTIONAL: 'Conventional', COMMERCIAL: 'Commercial', LUXURY: 'Luxury' };
 const FLOW = 'flow-contacts-and-segments';
 
 const VALID_CSV   = path.join(__dirname, 'fixtures', 'valid-contacts.csv');
@@ -119,16 +126,16 @@ test.describe('Dealer management', () => {
     await snap(page, FLOW, 'dealer_04_add_modal');
     await page.getByTestId('add-dealer-name').fill(name);
     await page.getByTestId('add-dealer-phone').fill(phone);
-    await page.getByTestId('add-dealer-tier').selectOption('GOLD');
-    await page.getByTestId('add-dealer-vehicleSpecialization').selectOption('EV_HYBRID');
+    await page.getByTestId('add-dealer-tier').selectOption(DEALER_TIER);
+    await page.getByTestId('add-dealer-vehicleSpecialization').selectOption(DEALER_SPEC);
     await page.getByTestId('add-dealer-submit').click();
 
     await expect(page.getByTestId('add-dealer-submit')).toBeHidden();
 
     await page.getByTestId('contacts-search').fill(name);
     await expect(page.getByTestId('contacts-table')).toContainText(name);
-    await expect(page.getByTestId('contacts-table')).toContainText('Gold');
-    await expect(page.getByTestId('contacts-table')).toContainText('EV/Hybrid');
+    await expect(page.getByTestId('contacts-table')).toContainText(DEALER_TIER_LABEL[DEALER_TIER] ?? DEALER_TIER);
+    await expect(page.getByTestId('contacts-table')).toContainText(DEALER_SPEC_LABEL[DEALER_SPEC] ?? DEALER_SPEC);
     await snap(page, FLOW, 'dealer_05_added_in_table');
 
     await page.getByTestId('add-dealer').click();
@@ -158,9 +165,9 @@ test.describe('Manual contact lifecycle', () => {
 
     await page.getByTestId('contact-phone').fill(localPhone);
     await page.getByTestId('contact-name').fill('E2E Test Contact');
-    await page.getByTestId('contact-ethnicity').selectOption('MALAY');
-    await page.getByTestId('contact-language').selectOption('MS');
-    await page.getByTestId('contact-state').selectOption('SELANGOR');
+    await page.getByTestId('contact-ethnicity').selectOption(CONTACT_ETHNICITY);
+    await page.getByTestId('contact-language').selectOption(CONTACT_LANGUAGE);
+    await page.getByTestId('contact-state').selectOption(CONTACT_STATE);
     await page.getByTestId('contact-optin').selectOption('OPTED_IN');
     await snap(page, FLOW, 'contact_02_form_filled');
     await page.getByTestId('contact-submit').click();

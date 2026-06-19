@@ -12,8 +12,10 @@
 import { test, expect, type Page } from '@playwright/test';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = 'admin@example.com';
-const ADMIN_PASSWORD = 'ChangeMe123!';
+const ADMIN_EMAIL            = process.env.E2E_ADMIN_EMAIL            ?? 'admin@example.com';
+const ADMIN_PASSWORD         = process.env.E2E_ADMIN_PASSWORD         ?? 'ChangeMe123!';
+const TEMPLATE_CATEGORY      = process.env.E2E_TEMPLATE_CATEGORY      ?? 'MARKETING';
+const TEMPLATE_LANG_VARIANT  = process.env.E2E_TEMPLATE_LANG_VARIANT  ?? 'MS';
 const FLOW = 'flow-dashboard-and-analytics';
 
 async function loginAsAdmin(page: Page) {
@@ -84,12 +86,12 @@ test.describe('Templates list and status filter', () => {
     await snap(page, FLOW, 'templates_03_add_form');
 
     await page.getByTestId('template-name').fill(templateName);
-    await page.getByTestId('template-category').selectOption('MARKETING');
+    await page.getByTestId('template-category').selectOption(TEMPLATE_CATEGORY);
     await page.getByTestId('variant-body').fill('Hello {{1}}!');
     await page.getByTestId('variant-footer').fill('Reply STOP to unsubscribe');
     // Add MS language variant
-    await page.getByTestId('add-language-select').selectOption('MS');
-    await page.getByTestId('language-tab-MS').click();
+    await page.getByTestId('add-language-select').selectOption(TEMPLATE_LANG_VARIANT);
+    await page.getByTestId(`language-tab-${TEMPLATE_LANG_VARIANT}`).click();
     await page.getByTestId('variant-body').fill('Salam {{1}}!');
     await snap(page, FLOW, 'templates_04_ms_variant');
 
