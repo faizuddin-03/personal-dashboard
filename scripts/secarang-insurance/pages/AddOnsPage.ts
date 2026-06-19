@@ -37,7 +37,14 @@ export class AddOnsPage extends BasePage {
   async uncheckNamedAddons(targets: string[]): Promise<void> {
     if (!targets.length) return;
 
-    const allCards  = this.page.locator('.addon-card');
+    // Wait for cards to load before attempting to uncheck
+    await this.poll(
+      async () => (await this.page.locator('.addon-card').count()) > 0,
+      15_000,
+    );
+    await this.wait(500);
+
+    const allCards   = this.page.locator('.addon-card');
     const totalCards = await allCards.count();
 
     for (const target of targets) {
