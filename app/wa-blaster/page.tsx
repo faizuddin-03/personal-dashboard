@@ -49,6 +49,16 @@ const MY_STATES = [
 
 const FLOWS: FlowDef[] = [
   {
+    id: "smoke-sidebar", file: "smoke-sidebar.spec.ts",
+    title: "Sidebar Smoke Test", emoji: "🚦",
+    description: "Logs in as admin, clicks through every sidebar page in order, pauses 5 seconds on the last page, then closes. Run this first to confirm the app is reachable and your credentials are correct.",
+    tags: ["smoke", "navigation"], estimatedDuration: "~30 sec", metaRisk: false,
+    tests: [
+      { name: "smoke: login then visit all sidebar pages", defaultEnabled: true },
+    ],
+    flowVars: [],
+  },
+  {
     id: "flow-auth-and-roles", file: "flow-auth-and-roles.spec.ts",
     title: "Auth & Roles", emoji: "🔐",
     description: "Login, session persistence, logout, and role-based access control for admin and operator.",
