@@ -56,16 +56,15 @@ export const test = baseTest.extend<{ _autoSnap: void }>({
       const filename = `${String(snap).padStart(3, '0')}_${urlSlug}.png`;
       const filePath = path.join(dir, filename);
 
-      // Wait for networkidle so the SPA has fetched its data and rendered.
-      // Falls back to screenshotting immediately if it times out (e.g. long polls).
-      const take = () =>
+      // Wait 300 ms for React to render the new route, then guard against the URL
+      // having changed again (prevents stale callbacks from snapping the wrong page).
+      const targetBare = bare;
+      setTimeout(() => {
+        if (page.url().split('#')[0] !== targetBare) return;
         page.screenshot({ fullPage: true, path: filePath })
           .then(() => console.log(`  📸 [${flow}] ${testSlug} → ${filename}`))
           .catch(() => { /* page closed or navigated away before screenshot */ });
-
-      page.waitForLoadState('networkidle', { timeout: 3_000 })
-        .then(take)
-        .catch(take);
+      }, 300);
     };
 
     page.on('framenavigated', onNav);
