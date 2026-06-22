@@ -441,7 +441,6 @@ export default function WABlasterPage() {
   const [stopping,     setStopping]     = useState(false);
   const [runLog,       setRunLog]       = useState("");
   const [result,       setResult]       = useState<RunResult | null>(null);
-  const [downloading,  setDownloading]  = useState(false);
   const [downloadErr,  setDownloadErr]  = useState<string | null>(null);
   const runningContextRef = useRef<string | null>(null); // "overview" | flowId | null
   const [resultContext,  setResultContext]  = useState<string | null>(null);
@@ -558,31 +557,72 @@ export default function WABlasterPage() {
 
   async function stopRun() { setStopping(true); await fetch("/api/wa-blaster/run", { method: "DELETE" }); }
 
-  async function downloadReport() {
-    setDownloading(true);
-    setDownloadErr(null);
-    try {
-      const res = await fetch("/api/wa-blaster/screenshots-report");
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        setDownloadErr((body as { error?: string }).error ?? `Server returned ${res.status}`);
-        return;
-      }
-      const contentDisposition = res.headers.get("Content-Disposition") ?? "";
-      const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-      const filename = filenameMatch?.[1] ?? "wa-blaster-report";
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      setDownloadErr(e instanceof Error ? e.message : "Download failed");
-    } finally {
-      setDownloading(false);
+  function downloadReport() {
+    if (!result) return;
+    const { stats, specs } = result;
+    if (!specs?.length) {
+      setDownloadErr("No test data — run a test suite first.");
+      return;
     }
+    setDownloadErr(null);
+
+    const ts = new Date().toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur", dateStyle: "long", timeStyle: "short" });
+    const allPassed = (stats?.unexpected ?? 0) === 0;
+
+    // Group specs by suite
+    const suiteMap = new Map<string, ReportSpec[]>();
+    for (const s of specs) {
+      const key = s.suite || "Tests";
+      (suiteMap.get(key) ?? suiteMap.set(key, []).get(key))!.push(s);
+    }
+
+    const suiteBlocks = [...suiteMap.entries()].map(([suiteName, suiteSpecs]) => {
+      const rows = suiteSpecs.map(s => {
+        const errBlock = s.error
+          ? `<div style="margin-top:6px;background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #ef4444;border-radius:6px;padding:8px 12px;font-size:11px;color:#7f1d1d"><strong style="display:block;margin-bottom:3px;color:#991b1b">Error:</strong><pre style="white-space:pre-wrap;word-break:break-word;font-size:10.5px;line-height:1.6;margin:0;font-family:monospace">${s.error.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></div>`
+          : "";
+        return `<div style="padding:8px 0;border-bottom:1px solid #f1f5f9">
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <span style="flex-shrink:0;font-size:9px;font-weight:700;letter-spacing:.8px;padding:2px 7px;border-radius:4px;${s.ok ? "background:#dcfce7;color:#15803d" : "background:#fee2e2;color:#b91c1c"}">${s.ok ? "PASS" : "FAIL"}</span>
+            <span style="flex:1;font-size:13px;color:#1e293b">${s.title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+            <span style="flex-shrink:0;font-size:11px;color:#94a3b8;font-variant-numeric:tabular-nums">${msToHuman(s.duration)}</span>
+          </div>${errBlock}
+        </div>`;
+      }).join("");
+      return `<div style="padding:0 24px 8px">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#64748b;padding:14px 0 6px;border-bottom:1px solid #e2e8f0;margin-bottom:6px">${suiteName.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+        ${rows}
+      </div>`;
+    }).join("");
+
+    const html = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>WA Blaster Test Report</title>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;background:#fff;color:#1a1a2e}@media print{.no-print{display:none!important}}</style>
+</head><body>
+<div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);color:white;padding:40px 48px 36px">
+  <div style="font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px">WA Blaster — Test Report</div>
+  <div style="font-size:13px;color:#94a3b8;margin-bottom:28px">Generated ${ts}</div>
+  <div style="display:grid;grid-template-columns:repeat(4,auto);gap:16px;width:fit-content">
+    ${[
+      ["Passed",   stats?.expected   ?? 0, allPassed ? "#4ade80" : "#4ade80"],
+      ["Failed",   stats?.unexpected ?? 0, (stats?.unexpected ?? 0) > 0 ? "#f87171" : "#4ade80"],
+      ["Skipped",  stats?.skipped    ?? 0, "#94a3b8"],
+      ["Duration", msToHuman(stats?.duration ?? 0), "#60a5fa"],
+    ].map(([label, val, color]) => `
+    <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 20px;min-width:110px;text-align:center">
+      <div style="font-size:28px;font-weight:800;line-height:1;margin-bottom:4px;color:${color}">${val}</div>
+      <div style="font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">${label}</div>
+    </div>`).join("")}
+  </div>
+</div>
+${suiteBlocks}
+</body></html>`;
+
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, "_blank");
+    win?.print();
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
   }
 
   // ── Config helpers ─────────────────────────────────────────────────────────
@@ -848,10 +888,10 @@ export default function WABlasterPage() {
               {hasResultIn("overview") && result && !result.setupRequired && (
                 <>
                   <div className="flex items-center gap-2">
-                    <button onClick={downloadReport} disabled={downloading}
+                    <button onClick={downloadReport} 
                       className="flex items-center gap-1.5 px-3 py-2 text-xs bg-slate-800 hover:bg-slate-700 disabled:opacity-50 border border-slate-700 text-slate-300 rounded-lg">
-                      {downloading ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-                      {downloading ? "Downloading…" : "Download Report"}
+                      <Download size={12} />
+                      "Download Report"
                     </button>
                     {downloadErr && <span className="text-xs text-red-400">{downloadErr}</span>}
                   </div>
@@ -1039,10 +1079,10 @@ export default function WABlasterPage() {
                       </button>
                       {hasResult && (
                         <>
-                          <button onClick={downloadReport} disabled={downloading}
+                          <button onClick={downloadReport} 
                             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-slate-800 hover:bg-slate-700 disabled:opacity-50 border border-slate-700 text-slate-300 rounded-xl transition-colors">
-                            {downloading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-                            {downloading ? "Downloading…" : "Download Report"}
+                            <Download size={14} />
+                            "Download Report"
                           </button>
                           {downloadErr && <p className="text-xs text-red-400 text-center">{downloadErr}</p>}
                         </>
