@@ -9,6 +9,7 @@
 import { chromium } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 const SCRIPT_DIR      = path.join(__dirname, '..');
 const SCREENSHOTS_DIR = path.join(SCRIPT_DIR, 'screenshots');
@@ -415,30 +416,43 @@ ${flowSections}
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 export default async function teardown() {
-  if (!fs.existsSync(REPORT_JSON)) return;
+  console.log('\n📋 Generating test report…');
+
+  if (!fs.existsSync(REPORT_JSON)) {
+    console.error('  ⚠️  results/report.json not found — JSON reporter may not have run.');
+    return;
+  }
 
   let raw: unknown;
   try { raw = JSON.parse(fs.readFileSync(REPORT_JSON, 'utf8')); }
-  catch { return; }
+  catch (e) { console.error('  ⚠️  Failed to parse report.json:', e); return; }
 
   const { stats, specs } = parseReport(raw);
-  if (specs.length === 0) return;
+  if (specs.length === 0) { console.error('  ⚠️  No specs found in report.json.'); return; }
 
   fs.mkdirSync(RESULTS_DIR, { recursive: true });
 
   const html = buildHtml(stats, specs);
   fs.writeFileSync(REPORT_HTML, html, 'utf8');
+  console.log(`  ✓ HTML written (${specs.length} tests, ${specs.filter(s => !s.ok).length} failed)`);
+
+  // pathToFileURL produces a valid file:/// URL on both Windows and Unix
+  const fileUrl = pathToFileURL(REPORT_HTML).href;
+  console.log(`  ⏳ Printing PDF via Chromium…`);
 
   const browser = await chromium.launch();
   try {
     const pg = await browser.newPage();
-    await pg.goto(`file://${REPORT_HTML}`, { waitUntil: 'load', timeout: 120_000 });
+    await pg.goto(fileUrl, { waitUntil: 'load', timeout: 120_000 });
     await pg.pdf({
       path:            REPORT_PDF,
       format:          'A4',
       printBackground: true,
       margin:          { top: '0', bottom: '0', left: '0', right: '0' },
     });
+    console.log('  ✓ PDF saved → results/report.pdf\n');
+  } catch (e) {
+    console.error('  ❌ PDF generation failed:', e);
   } finally {
     await browser.close();
   }
