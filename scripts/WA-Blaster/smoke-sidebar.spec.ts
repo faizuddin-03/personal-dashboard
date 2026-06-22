@@ -26,21 +26,28 @@ test('smoke: login then visit all sidebar pages', async ({ page }) => {
   // Give plenty of time for 7 navigations + 5 s pause
   test.setTimeout(120_000);
 
-  // Login
+  // ── Login ──────────────────────────────────────────────────────────────────
   await page.goto('/login');
-  await page.getByTestId('email').fill(ADMIN_EMAIL);
-  await page.getByTestId('password').fill(ADMIN_PASSWORD);
-  await page.getByTestId('submit').click();
 
-  // Just confirm we left the login page (app may redirect to /dashboard or /)
+  // Use generic selectors so this works regardless of whether the app uses
+  // data-testid, name, type, or placeholder attributes on the login form.
+  const emailInput    = page.locator('input[type="email"], input[name="email"], input[id="email"], [data-testid="email"]').first();
+  const passwordInput = page.locator('input[type="password"], input[name="password"], input[id="password"], [data-testid="password"]').first();
+  const submitButton  = page.locator('button[type="submit"], input[type="submit"], [data-testid="submit"]').first();
+
+  await emailInput.waitFor({ state: 'visible', timeout: 15_000 });
+  await emailInput.fill(ADMIN_EMAIL);
+  await passwordInput.fill(ADMIN_PASSWORD);
+  await submitButton.click();
+
+  // Confirm we left the login page — the app may redirect to / or /dashboard
   await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
 
-  // Visit each sidebar page in order
+  // ── Navigate through every sidebar page ───────────────────────────────────
   for (const name of NAV_LINKS) {
     const link = page.getByRole('link', { name, exact: false }).first();
     await link.waitFor({ state: 'visible', timeout: 10_000 });
     await link.click();
-    // domcontentloaded is reliable; networkidle can hang on apps with websockets/polling
     await page.waitForLoadState('domcontentloaded');
     console.log(`✓ ${name}`);
   }
