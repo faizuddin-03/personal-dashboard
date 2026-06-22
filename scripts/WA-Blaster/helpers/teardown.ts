@@ -11,9 +11,9 @@ import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
 
-// process.cwd() is the WA-Blaster dir because playwright runs from there.
-// __dirname points to Playwright's temp compile cache, not the source tree.
-const SCRIPT_DIR      = process.cwd();
+// __dirname here is scripts/WA-Blaster/helpers — Playwright preserves the
+// source file path, so resolving '..' gives the WA-Blaster root reliably.
+const SCRIPT_DIR      = path.resolve(__dirname, '..');
 const SCREENSHOTS_DIR = path.join(SCRIPT_DIR, 'screenshots');
 const RESULTS_DIR     = path.join(SCRIPT_DIR, 'results');
 const REPORT_JSON     = path.join(RESULTS_DIR, 'report.json');
@@ -419,6 +419,9 @@ ${flowSections}
 
 export default async function teardown() {
   console.log('\n📋 Generating test report…');
+  console.log(`  📁 SCRIPT_DIR : ${SCRIPT_DIR}`);
+  console.log(`  📄 REPORT_JSON: ${REPORT_JSON}`);
+  console.log(`  exists: ${fs.existsSync(REPORT_JSON)}`);
 
   if (!fs.existsSync(REPORT_JSON)) {
     console.error('  ⚠️  results/report.json not found — JSON reporter may not have run.');

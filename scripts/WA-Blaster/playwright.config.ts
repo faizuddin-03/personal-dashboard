@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import path from 'path';
 
 export default defineConfig({
   testDir: '.',
@@ -9,7 +10,9 @@ export default defineConfig({
   globalTeardown: './helpers/teardown',
   reporter: [
     ['list'],
-    ['json', { outputFile: 'results/report.json' }],
+    // Absolute path so the reporter always writes to the right place
+    // regardless of what cwd the runner inherits.
+    ['json', { outputFile: path.resolve(__dirname, 'results', 'report.json') }],
   ],
   use: {
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:5173',
