@@ -348,16 +348,10 @@ function ReportPanel({ result, baseUrl }: { result: RunResult; baseUrl: string }
 
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-slate-200">Results</h3>
-        <div className="no-print flex items-center gap-2">
-          <a href="/api/wa-blaster/screenshots-report" download="wa-blaster-screenshots.pdf"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
-            <Download size={12} /> Screenshots PDF
-          </a>
-          <button onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
-            <Download size={12} /> Results PDF
-          </button>
-        </div>
+        <a href="/api/wa-blaster/screenshots-report" download="wa-blaster-report.pdf"
+          className="no-print flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
+          <Download size={12} /> Download Report
+        </a>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
