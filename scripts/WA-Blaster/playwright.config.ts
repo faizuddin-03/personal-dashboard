@@ -7,6 +7,7 @@ export default defineConfig({
   timeout: 40_000,
   expect: { timeout: 8_000 },
   retries: 0,
+  globalSetup: './helpers/setup',
   globalTeardown: './helpers/teardown',
   reporter: [
     ['list'],
