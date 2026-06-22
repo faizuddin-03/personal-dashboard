@@ -162,6 +162,44 @@ const FLOWS: FlowDef[] = [
     ],
   },
   {
+    id: "flow-send-campaign", file: "flow-send-campaign.spec.ts",
+    title: "Send Campaign (Live)", emoji: "📲",
+    description: "Picks a specific dealer by name in the campaign wizard and fires a real WhatsApp message immediately. Skipped by default — set E2E_SEND_CAMPAIGN to true below to enable.",
+    tags: ["campaigns", "send", "live"], estimatedDuration: "~2 min", metaRisk: true,
+    tests: [
+      {
+        name: "send campaign to Muhammad Faizuddin",
+        defaultEnabled: true, metaRisk: true,
+      },
+    ],
+    flowVars: [
+      {
+        key: "E2E_SEND_CAMPAIGN",
+        label: "Enable Real Send",
+        defaultValue: "false",
+        description: "⚠️ Must be 'true' to actually run. Sends a real WhatsApp message to the contact below.",
+      },
+      {
+        key: "E2E_CAMPAIGN_CONTACT",
+        label: "Contact Name",
+        defaultValue: "Muhammad Faizuddin",
+        description: "Dealer name to search in the picker. Default targets Muhammad Faizuddin's phone.",
+      },
+      {
+        key: "E2E_CAMPAIGN_TEMPLATE",
+        label: "Template Name",
+        defaultValue: "",
+        description: "Approved template name to use. Leave blank to pick the first available template.",
+      },
+      {
+        key: "E2E_CAMPAIGN_LANGUAGE",
+        label: "Language Code",
+        defaultValue: "EN",
+        description: "Language variant to select, e.g. EN, MS, ZH.",
+      },
+    ],
+  },
+  {
     id: "flow-inbox-complete", file: "flow-inbox-complete.spec.ts",
     title: "Inbox", emoji: "💬",
     description: "Inbound messages, conversation lifecycle, search, keyboard shortcuts, AI tabs, and canned replies.",
