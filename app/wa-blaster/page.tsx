@@ -722,7 +722,7 @@ export default function WABlasterPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {FLOWS.map(flow => {
-              const cfg = flowConfigs[flow.id];
+              const cfg = flowConfigs[flow.id] ?? defaultConfig(flow);
               const isChecked = selected.has(flow.id);
               return (
                 <div key={flow.id} onClick={() => setActiveFlowId(flow.id)}
