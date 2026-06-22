@@ -12,14 +12,16 @@ import { test, expect } from './helpers/fixtures';
 const ADMIN_EMAIL    = process.env.E2E_ADMIN_EMAIL    ?? 'admin@example.com';
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'ChangeMe123!';
 
+// Order matches the actual sidebar top-to-bottom
 const NAV_LINKS = [
   'Dashboard',
-  'Dealers',
-  'Inbox',
-  'Templates',
   'Campaigns',
-  'Settings',
+  'Inbox',
+  'Dealers',
+  'Templates',
+  'Performance',
   'Knowledge',
+  'Settings',
 ];
 
 test('smoke: login then visit all sidebar pages', async ({ page }) => {

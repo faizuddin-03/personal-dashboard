@@ -119,10 +119,11 @@ test.describe('Operator role restrictions', () => {
     await snap(page, FLOW, 'op_01_dashboard_nav_items');
 
     await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Dealers' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Inbox' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Templates' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Campaigns' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Inbox' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Dealers' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Templates' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Performance' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Settings' })).toHaveCount(0);
     await expect(page.getByRole('link', { name: 'Knowledge' })).toHaveCount(0);
 
