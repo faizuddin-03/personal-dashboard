@@ -341,17 +341,8 @@ function ReportPanel({ result, baseUrl }: { result: RunResult; baseUrl: string }
   if (!result.stats) return null;
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
-      <div className="hidden print-show" style={{ display: "none" }}>
-        <h1 className="text-xl font-bold mb-1">WA Blaster — Test Report</h1>
-        <p className="text-sm text-gray-600">Generated: {new Date().toLocaleString()} · {baseUrl}</p>
-      </div>
-
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-slate-200">Results</h3>
-        <a href="/api/wa-blaster/screenshots-report" download="wa-blaster-report.pdf"
-          className="no-print flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
-          <Download size={12} /> Download Report
-        </a>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -648,10 +639,10 @@ export default function WABlasterPage() {
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
           {result && (
-            <button onClick={() => window.print()}
+            <a href="/api/wa-blaster/screenshots-report" download="wa-blaster-report.pdf"
               className="no-print flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
-              <Download size={12} /> PDF
-            </button>
+              <Download size={12} /> Download Report
+            </a>
           )}
           {running ? (
             <button onClick={stopRun} disabled={stopping}
