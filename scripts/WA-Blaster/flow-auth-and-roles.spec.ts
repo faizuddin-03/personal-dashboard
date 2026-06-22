@@ -7,7 +7,7 @@
  * logout behaviour, keyboard shortcuts, and role-based UI restrictions for the
  * operator (support) role vs the admin role.
  */
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
 const ADMIN_EMAIL       = process.env.E2E_ADMIN_EMAIL       ?? 'admin@example.com';

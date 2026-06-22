@@ -9,7 +9,7 @@
  * is missing, and the happy path creates a STATE-mode blast end-to-end.
  * Also covers PREFERENCE-mode regression and operator access guard.
  */
-import { test, expect, request, type APIRequestContext, type Page } from '@playwright/test';
+import { test, expect, request, type APIRequestContext, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
 const ADMIN_EMAIL    = 'admin@example.com';

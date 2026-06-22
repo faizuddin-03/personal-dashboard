@@ -9,7 +9,7 @@
  * before it fires; validate the past-date guard; and verify the campaigns list
  * status filter stays functional.
  */
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
 const ADMIN_EMAIL    = 'admin@example.com';

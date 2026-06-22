@@ -8,7 +8,7 @@
  * specialization filtering, edit, delete — and then segment creation from a
  * dealer selection, finishing with using that segment inside the blast wizard.
  */
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './helpers/fixtures';
 import path from 'path';
 import { snap } from './helpers/screenshot';
 

@@ -8,7 +8,7 @@
  * search, keyboard navigation, window-closed handling, sidebar badge, AI-assist
  * controls, and the canned replies that support agents in the inbox.
  */
-import { test, expect, request, type APIRequestContext, type Page } from '@playwright/test';
+import { test, expect, request, type APIRequestContext, type Page } from './helpers/fixtures';
 import { createHmac } from 'crypto';
 import { snap } from './helpers/screenshot';
 

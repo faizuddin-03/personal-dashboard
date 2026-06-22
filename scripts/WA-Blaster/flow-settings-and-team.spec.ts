@@ -8,7 +8,7 @@
  * emails, changing roles, resetting passwords, deleting members, and the full
  * CRUD cycle for canned replies. Also verifies operator cannot access settings.
  */
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
 const ADMIN_EMAIL       = process.env.E2E_ADMIN_EMAIL       ?? 'admin@example.com';

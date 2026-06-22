@@ -73,9 +73,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No spec files specified.' }, { status: 400 });
   }
 
-  // Clean up previous report
+  // Clean up previous run artifacts
   fs.mkdirSync(path.join(SCRIPT_DIR, 'results'), { recursive: true });
   if (fs.existsSync(REPORT_FILE)) fs.unlinkSync(REPORT_FILE);
+  const screenshotsDir = path.join(SCRIPT_DIR, 'screenshots');
+  if (fs.existsSync(screenshotsDir)) fs.rmSync(screenshotsDir, { recursive: true, force: true });
+  const pdfPath = path.join(SCRIPT_DIR, 'results', 'screenshots-report.pdf');
+  if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
 
   runState = { running: true, log: '', exitCode: null, report: null, startedAt: new Date().toISOString() };
 

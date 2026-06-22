@@ -7,7 +7,7 @@
  * Use this to confirm the app is reachable and credentials are correct
  * before running the full test suites.
  */
-import { test, expect } from '@playwright/test';
+import { test, expect } from './helpers/fixtures';
 
 const ADMIN_EMAIL    = process.env.E2E_ADMIN_EMAIL    ?? 'admin@example.com';
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'ChangeMe123!';
