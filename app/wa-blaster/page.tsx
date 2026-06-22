@@ -1028,7 +1028,7 @@ ${suiteBlocks}
       ══════════════════════════════════════════════════════════════════════ */}
       {activeFlow && (() => {
         const flow       = activeFlow;
-        const cfg        = flowConfigs[flow.id];
+        const cfg        = flowConfigs[flow.id] ?? defaultConfig(flow);
         const paramMap   = testParamVals[flow.id] ?? {};
         const isRunning  = isRunningIn(flow.id);
         const hasResult  = hasResultIn(flow.id);
