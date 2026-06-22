@@ -7,6 +7,10 @@ export default defineConfig({
   expect: { timeout: 8_000 },
   retries: 0,
   globalTeardown: './helpers/teardown',
+  reporter: [
+    ['list'],
+    ['json', { outputFile: 'results/report.json' }],
+  ],
   use: {
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:5173',
     trace: 'retain-on-failure',
