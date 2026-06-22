@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Fragment } from "react";
 import {
   MessageSquare, Play, Square, Settings2, ChevronDown, Download,
   Loader2, Eye, EyeOff, CheckCircle2, XCircle, Clock, AlertTriangle,
@@ -372,8 +372,8 @@ function ReportPanel({ result, baseUrl }: { result: RunResult; baseUrl: string }
             </thead>
             <tbody>
               {result.specs.map((spec, i) => (
-                <>
-                  <tr key={i} className={clsx("border-b border-slate-800/60", !spec.ok && "bg-red-950/20")}>
+                <Fragment key={i}>
+                  <tr className={clsx("border-b border-slate-800/60", !spec.ok && "bg-red-950/20")}>
                     <td className="px-3 py-2">
                       {spec.ok ? <CheckCircle2 size={13} className="text-green-400" /> : <XCircle size={13} className="text-red-400" />}
                     </td>
@@ -382,13 +382,13 @@ function ReportPanel({ result, baseUrl }: { result: RunResult; baseUrl: string }
                     <td className="px-3 py-2 text-right text-slate-500 font-mono">{msToHuman(spec.duration)}</td>
                   </tr>
                   {spec.error && (
-                    <tr key={`${i}-err`} className="bg-red-950/10 border-b border-red-900/20">
+                    <tr className="bg-red-950/10 border-b border-red-900/20">
                       <td colSpan={4} className="px-3 py-2">
                         <pre className="text-[10px] text-red-400 whitespace-pre-wrap font-mono max-h-28 overflow-y-auto">{spec.error}</pre>
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
