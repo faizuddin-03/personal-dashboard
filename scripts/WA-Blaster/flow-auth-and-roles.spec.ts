@@ -114,6 +114,13 @@ test.describe('Admin session lifecycle', () => {
 // ─── Operator role restrictions ───────────────────────────────────────────────
 
 test.describe('Operator role restrictions', () => {
+  test.beforeEach(({ skip }) => {
+    skip(
+      !process.env.E2E_OPERATOR_EMAIL,
+      'Skipped — set E2E_OPERATOR_EMAIL and E2E_OPERATOR_PASSWORD to enable operator role tests',
+    );
+  });
+
   test('operator sees the correct nav items and is blocked from admin-only pages', async ({ page }) => {
     await loginAs(page, OPERATOR_EMAIL, OPERATOR_PASSWORD);
     await snap(page, FLOW, 'op_01_dashboard_nav_items');
