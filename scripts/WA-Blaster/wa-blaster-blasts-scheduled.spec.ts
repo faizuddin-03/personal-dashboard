@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './helpers/fixtures';
 
 const ADMIN_EMAIL    = 'admin@example.com';
 const ADMIN_PASSWORD = 'ChangeMe123!';
