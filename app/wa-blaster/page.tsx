@@ -667,18 +667,6 @@ export default function WABlasterPage() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
-          {result && (
-            <div className="flex flex-col items-end gap-1">
-              <button onClick={downloadReport} disabled={downloading}
-                className="no-print flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 disabled:opacity-50 border border-slate-700 text-slate-300 rounded-lg">
-                {downloading ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-                {downloading ? "Downloading…" : "Download Report"}
-              </button>
-              {downloadErr && (
-                <span className="text-[10px] text-red-400 max-w-[220px] text-right leading-tight">{downloadErr}</span>
-              )}
-            </div>
-          )}
           {running ? (
             <button onClick={stopRun} disabled={stopping}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg font-medium">
@@ -857,7 +845,19 @@ export default function WABlasterPage() {
                 </pre>
               </div>
               {hasResultIn("overview") && result?.setupRequired && <SetupBanner />}
-              {hasResultIn("overview") && result && !result.setupRequired && <ReportPanel result={result} baseUrl={baseUrl} />}
+              {hasResultIn("overview") && result && !result.setupRequired && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <button onClick={downloadReport} disabled={downloading}
+                      className="flex items-center gap-1.5 px-3 py-2 text-xs bg-slate-800 hover:bg-slate-700 disabled:opacity-50 border border-slate-700 text-slate-300 rounded-lg">
+                      {downloading ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
+                      {downloading ? "Downloading…" : "Download Report"}
+                    </button>
+                    {downloadErr && <span className="text-xs text-red-400">{downloadErr}</span>}
+                  </div>
+                  <ReportPanel result={result} baseUrl={baseUrl} />
+                </>
+              )}
             </div>
           )}
         </div>
@@ -1032,10 +1032,22 @@ export default function WABlasterPage() {
                       </button>
                     </>
                   ) : (
-                    <button onClick={() => startRun([flow.id], flow.id)}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-green-700 hover:bg-green-600 text-white rounded-xl transition-colors">
-                      <Play size={14} /> Run Flow
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button onClick={() => startRun([flow.id], flow.id)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-green-700 hover:bg-green-600 text-white rounded-xl transition-colors">
+                        <Play size={14} /> Run Flow
+                      </button>
+                      {hasResult && (
+                        <>
+                          <button onClick={downloadReport} disabled={downloading}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-slate-800 hover:bg-slate-700 disabled:opacity-50 border border-slate-700 text-slate-300 rounded-xl transition-colors">
+                            {downloading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                            {downloading ? "Downloading…" : "Download Report"}
+                          </button>
+                          {downloadErr && <p className="text-xs text-red-400 text-center">{downloadErr}</p>}
+                        </>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -1062,6 +1074,7 @@ export default function WABlasterPage() {
             {/* Report */}
             {hasResult && result?.setupRequired && <SetupBanner />}
             {hasResult && result && !result.setupRequired && <ReportPanel result={result} baseUrl={baseUrl} />}
+
           </div>
         );
       })()}

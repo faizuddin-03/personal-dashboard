@@ -11,7 +11,9 @@ import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
 
-const SCRIPT_DIR      = path.join(__dirname, '..');
+// process.cwd() is the WA-Blaster dir because playwright runs from there.
+// __dirname points to Playwright's temp compile cache, not the source tree.
+const SCRIPT_DIR      = process.cwd();
 const SCREENSHOTS_DIR = path.join(SCRIPT_DIR, 'screenshots');
 const RESULTS_DIR     = path.join(SCRIPT_DIR, 'results');
 const REPORT_JSON     = path.join(RESULTS_DIR, 'report.json');
