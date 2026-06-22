@@ -6,7 +6,8 @@
     "test": "npx playwright test",
     "test:headed": "npx playwright test --headed",
     "test:debug": "npx playwright test --debug",
-    "install-browsers": "npx playwright install chromium"
+    "install-browsers": "npx playwright install chromium",
+    "postinstall": "npx playwright install chromium"
   },
   "dependencies": {
     "@playwright/test": "^1.48.0",

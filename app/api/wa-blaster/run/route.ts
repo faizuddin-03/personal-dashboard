@@ -55,7 +55,8 @@ export async function POST(req: NextRequest) {
 
   if (!fs.existsSync(path.join(SCRIPT_DIR, 'node_modules'))) {
     return NextResponse.json({
-      error: 'Playwright is not installed.\n\nRun: cd scripts/WA-Blaster && npm install',
+      error: 'Playwright is not installed.\n\nRun this once in your terminal:\n\n  cd scripts/WA-Blaster && npm install\n\nChromium will be downloaded automatically via postinstall.',
+      setupRequired: true,
     }, { status: 500 });
   }
 
@@ -63,9 +64,10 @@ export async function POST(req: NextRequest) {
     specFiles:    string[];
     grepPattern?: string;
     env?:         Record<string, string>;
+    headed?:      boolean;
   };
 
-  const { specFiles, grepPattern, env = {} } = body;
+  const { specFiles, grepPattern, env = {}, headed = false } = body;
 
   if (!specFiles?.length) {
     return NextResponse.json({ error: 'No spec files specified.' }, { status: 400 });
@@ -79,6 +81,7 @@ export async function POST(req: NextRequest) {
 
   const args = ['playwright', 'test', ...specFiles];
   if (grepPattern) args.push('--grep', grepPattern);
+  if (headed) args.push('--headed');
 
   const child = spawn('npx', args, {
     cwd: SCRIPT_DIR,

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MessageSquare, Play, Square, Settings2, ChevronDown, Download,
   Loader2, Eye, EyeOff, CheckCircle2, XCircle, Clock, AlertTriangle,
-  RotateCcw, ChevronLeft,
+  RotateCcw, ChevronLeft, Terminal, Copy, Check,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -275,6 +275,7 @@ interface TestParamVals { [testName: string]: { [paramKey: string]: string }; }
 interface ReportSpec   { title: string; ok: boolean; duration: number; error?: string; suite: string; }
 interface RunResult    {
   exitCode: number; log: string; startedAt: string;
+  setupRequired?: boolean;
   stats?: { duration: number; expected: number; unexpected: number; skipped: number; };
   specs?: ReportSpec[];
 }
@@ -304,6 +305,34 @@ function defaultConfig(flow: FlowDef): FlowConfig {
     enabledTests: new Set(flow.tests.filter(t => t.defaultEnabled).map(t => t.name)),
     vars: Object.fromEntries(flow.flowVars.map(v => [v.key, v.defaultValue])),
   };
+}
+
+// ── Setup banner ─────────────────────────────────────────────────────────────
+
+function SetupBanner() {
+  const cmd = "cd scripts/WA-Blaster && npm install";
+  const [copied, setCopied] = useState(false);
+  function copy() {
+    navigator.clipboard.writeText(cmd).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+  }
+  return (
+    <div className="bg-amber-950/40 border border-amber-700/50 rounded-2xl p-5 space-y-3">
+      <div className="flex items-center gap-2">
+        <Terminal size={15} className="text-amber-400 shrink-0" />
+        <span className="text-sm font-semibold text-amber-300">One-time setup required</span>
+      </div>
+      <p className="text-xs text-amber-200/70 leading-relaxed">
+        Playwright dependencies are not installed yet. Run this command once in your terminal —
+        Chromium will be downloaded automatically afterwards.
+      </p>
+      <div className="flex items-center gap-2 bg-slate-950/60 border border-slate-700 rounded-xl px-4 py-2.5">
+        <code className="flex-1 text-xs font-mono text-slate-200">{cmd}</code>
+        <button onClick={copy} className="shrink-0 text-slate-400 hover:text-slate-200 transition-colors">
+          {copied ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // ── Report panel ──────────────────────────────────────────────────────────────
@@ -398,6 +427,7 @@ export default function WABlasterPage() {
   const [showOpPw,      setShowOpPw]      = useState(false);
   const [settingsOpen,  setSettingsOpen]  = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
+  const [showBrowser,   setShowBrowser]   = useState(true);
 
   // ── Per-flow configs (enable/disable toggles + flow-level vars) ────────────
   const [flowConfigs, setFlowConfigs] = useState<Record<string, FlowConfig>>(() =>
@@ -435,12 +465,13 @@ export default function WABlasterPage() {
       if (d.adminEmail)    setAdminEmail(d.adminEmail);
       if (d.adminPassword) setAdminPassword(d.adminPassword);
       if (d.opEmail)       setOpEmail(d.opEmail);
-      if (d.opPassword)    setOpPassword(d.opPassword);
+      if (d.opPassword)              setOpPassword(d.opPassword);
+      if (d.showBrowser !== undefined) setShowBrowser(d.showBrowser);
     } catch { /* ignore */ }
   }, []);
 
   function saveSettings() {
-    localStorage.setItem("wa_settings", JSON.stringify({ baseUrl, adminEmail, adminPassword, opEmail, opPassword }));
+    localStorage.setItem("wa_settings", JSON.stringify({ baseUrl, adminEmail, adminPassword, opEmail, opPassword, showBrowser }));
     setSettingsSaved(true);
     setTimeout(() => setSettingsSaved(false), 2000);
   }
@@ -517,7 +548,7 @@ export default function WABlasterPage() {
     const res = await fetch("/api/wa-blaster/run", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ specFiles, grepPattern, env }),
+      body: JSON.stringify({ specFiles, grepPattern, env, headed: showBrowser }),
     });
     if (!res.ok) {
       const data = await res.json();
@@ -526,7 +557,7 @@ export default function WABlasterPage() {
       runningContextRef.current = null;
       setResultContext(ctx);
       setRunLog(errMsg);
-      setResult({ exitCode: 1, log: errMsg, startedAt: "" });
+      setResult({ exitCode: 1, log: errMsg, startedAt: "", setupRequired: data.setupRequired ?? false });
       return;
     }
     startPolling();
@@ -697,7 +728,22 @@ export default function WABlasterPage() {
                     </button>
                   </div>
                 </div>
-                <div className="sm:col-span-2 lg:col-span-3">
+                <div className="sm:col-span-2 lg:col-span-3 flex items-center justify-between flex-wrap gap-3">
+                  <label className="flex items-center gap-3 cursor-pointer select-none group">
+                    <button type="button" role="switch" aria-checked={showBrowser}
+                      onClick={() => setShowBrowser(v => !v)}
+                      className={clsx(
+                        "relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200",
+                        showBrowser ? "bg-green-600" : "bg-slate-600"
+                      )}>
+                      <span className={clsx(
+                        "pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform duration-200",
+                        showBrowser ? "translate-x-4" : "translate-x-0"
+                      )} />
+                    </button>
+                    <span className="text-xs text-slate-300 font-medium">Show Browser</span>
+                    <span className="text-[10px] text-slate-500">{showBrowser ? "Visible — browser window opens during tests" : "Headless — runs in background, no window"}</span>
+                  </label>
                   <button onClick={saveSettings}
                     className={clsx(
                       "px-4 py-2 text-xs font-medium rounded-lg transition-colors",
@@ -784,7 +830,8 @@ export default function WABlasterPage() {
                   {runLog || "Starting…"}
                 </pre>
               </div>
-              {hasResultIn("overview") && result && <ReportPanel result={result} baseUrl={baseUrl} />}
+              {hasResultIn("overview") && result?.setupRequired && <SetupBanner />}
+              {hasResultIn("overview") && result && !result.setupRequired && <ReportPanel result={result} baseUrl={baseUrl} />}
             </div>
           )}
         </div>
@@ -987,7 +1034,8 @@ export default function WABlasterPage() {
             )}
 
             {/* Report */}
-            {hasResult && result && <ReportPanel result={result} baseUrl={baseUrl} />}
+            {hasResult && result?.setupRequired && <SetupBanner />}
+            {hasResult && result && !result.setupRequired && <ReportPanel result={result} baseUrl={baseUrl} />}
           </div>
         );
       })()}
