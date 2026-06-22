@@ -40,8 +40,8 @@ async function loginAsAdmin(page: Page) {
 // ─── Send campaign to a specific dealer ───────────────────────────────────────
 
 test.describe('Send campaign to specific dealer', () => {
-  test.beforeEach(({ skip }) => {
-    skip(
+  test.beforeEach(async ({}, testInfo) => {
+    testInfo.skip(
       process.env.E2E_SEND_CAMPAIGN !== 'true',
       '⚠️  Skipped — this test sends a real WhatsApp message. Set E2E_SEND_CAMPAIGN=true to enable.',
     );
