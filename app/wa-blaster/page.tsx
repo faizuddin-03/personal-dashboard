@@ -437,10 +437,12 @@ export default function WABlasterPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   // ── Run state ──────────────────────────────────────────────────────────────
-  const [running,   setRunning]   = useState(false);
-  const [stopping,  setStopping]  = useState(false);
-  const [runLog,    setRunLog]    = useState("");
-  const [result,    setResult]    = useState<RunResult | null>(null);
+  const [running,      setRunning]      = useState(false);
+  const [stopping,     setStopping]     = useState(false);
+  const [runLog,       setRunLog]       = useState("");
+  const [result,       setResult]       = useState<RunResult | null>(null);
+  const [downloading,  setDownloading]  = useState(false);
+  const [downloadErr,  setDownloadErr]  = useState<string | null>(null);
   const runningContextRef = useRef<string | null>(null); // "overview" | flowId | null
   const [resultContext,  setResultContext]  = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -556,6 +558,33 @@ export default function WABlasterPage() {
 
   async function stopRun() { setStopping(true); await fetch("/api/wa-blaster/run", { method: "DELETE" }); }
 
+  async function downloadReport() {
+    setDownloading(true);
+    setDownloadErr(null);
+    try {
+      const res = await fetch("/api/wa-blaster/screenshots-report");
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setDownloadErr((body as { error?: string }).error ?? `Server returned ${res.status}`);
+        return;
+      }
+      const contentDisposition = res.headers.get("Content-Disposition") ?? "";
+      const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+      const filename = filenameMatch?.[1] ?? "wa-blaster-report";
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setDownloadErr(e instanceof Error ? e.message : "Download failed");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   // ── Config helpers ─────────────────────────────────────────────────────────
   function toggleTest(flowId: string, name: string) {
     setFlowConfigs(prev => {
@@ -639,10 +668,16 @@ export default function WABlasterPage() {
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
           {result && (
-            <a href="/api/wa-blaster/screenshots-report" download="wa-blaster-report.pdf"
-              className="no-print flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg">
-              <Download size={12} /> Download Report
-            </a>
+            <div className="flex flex-col items-end gap-1">
+              <button onClick={downloadReport} disabled={downloading}
+                className="no-print flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 disabled:opacity-50 border border-slate-700 text-slate-300 rounded-lg">
+                {downloading ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
+                {downloading ? "Downloading…" : "Download Report"}
+              </button>
+              {downloadErr && (
+                <span className="text-[10px] text-red-400 max-w-[220px] text-right leading-tight">{downloadErr}</span>
+              )}
+            </div>
           )}
           {running ? (
             <button onClick={stopRun} disabled={stopping}
