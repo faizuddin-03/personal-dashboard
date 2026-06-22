@@ -82,6 +82,12 @@ export class DecisionEngine {
     if (!input.csWindowOpen)
       return this.finalize({ kind: 'ESCALATE', subKind: 'safety_escalate', reason: 'cs_window_expired' }, acc, t0);
 
+    // ── HUMAN-HANDLING GUARD ───────────────────────────────────────────
+    // Once a human owns the conversation (assigned to an operator, or already in an operator-driven
+    // state), the autopilot stands down entirely — never reply over a human who has taken the thread.
+    if (await this.conversations.isHumanHandling(input.conversationId))
+      return this.finalize({ kind: 'IGNORE', subKind: 'ignore_human_handling', reason: 'human_handling' }, acc, t0);
+
     // ── PENDING ESCALATION GUARD ───────────────────────────────────────
     // If this conversation already has a PENDING BotDraft, do NOT create a second escalation.
     // Try to answer from the KB; if it can't, tell the customer the prior enquiry is in progress.

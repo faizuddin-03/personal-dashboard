@@ -329,6 +329,60 @@ describe('ConversationService escalation/offer queries', () => {
   });
 });
 
+describe('ConversationService.isHumanHandling', () => {
+  it('is true once an operator has replied (REPLIED)', async () => {
+    const contactId = await makeContact();
+    const { conversation } = await svc.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'q' });
+    await svc.recordOperatorReply(conversation.id, 'on it', randomUUID()); // → REPLIED
+
+    expect(await svc.isHumanHandling(conversation.id)).toBe(true);
+  });
+
+  it('is true while AWAITING_REPLY', async () => {
+    const contactId = await makeContact();
+    const { conversation } = await svc.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'q' });
+    await prisma.conversation.update({ where: { id: conversation.id }, data: { state: 'AWAITING_REPLY' } });
+
+    expect(await svc.isHumanHandling(conversation.id)).toBe(true);
+  });
+
+  it('is true when assigned to an operator regardless of state (still NEW)', async () => {
+    const contactId = await makeContact();
+    const { conversation } = await svc.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'q' });
+    await prisma.conversation.update({ where: { id: conversation.id }, data: { assignedToId: randomUUID() } });
+
+    expect(conversation.state).toBe('NEW');
+    expect(await svc.isHumanHandling(conversation.id)).toBe(true);
+  });
+
+  it('is false for a fresh NEW conversation', async () => {
+    const contactId = await makeContact();
+    const { conversation } = await svc.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'q' });
+
+    expect(await svc.isHumanHandling(conversation.id)).toBe(false);
+  });
+
+  it('is false after an autopilot reply (AUTO_REPLIED)', async () => {
+    const contactId = await makeContact();
+    const { conversation } = await svc.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'q' });
+    await svc.recordAutoReply({ conversationId: conversation.id, body: 'auto answer', subKind: 'rag_answer' }); // → AUTO_REPLIED
+
+    expect(await svc.isHumanHandling(conversation.id)).toBe(false);
+  });
+
+  it('is false for an unassigned ESCALATED conversation (bot escalated, no human yet)', async () => {
+    const contactId = await makeContact();
+    const { conversation, inboundMessage } = await svc.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'q' });
+    await svc.recordEscalation({ conversationId: conversation.id, inboundMessageId: inboundMessage.id, draftData, citations: [] }); // → ESCALATED
+
+    expect(await svc.isHumanHandling(conversation.id)).toBe(false);
+  });
+
+  it('is false when the conversation does not exist', async () => {
+    expect(await svc.isHumanHandling(randomUUID())).toBe(false);
+  });
+});
+
 describe('ConversationService.recordOperatorReply', () => {
   it('records an OPERATOR_REPLY outbound with the user id and moves state to REPLIED', async () => {
     const contactId = await makeContact();

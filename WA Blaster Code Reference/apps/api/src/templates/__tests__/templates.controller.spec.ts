@@ -13,6 +13,7 @@ describe('TemplatesController', () => {
     submitGroup: jest.Mock;
     remove: jest.Mock;
     generateDrafts: jest.Mock;
+    syncFromMeta: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -25,6 +26,7 @@ describe('TemplatesController', () => {
       submitGroup: jest.fn(),
       remove: jest.fn(),
       generateDrafts: jest.fn(),
+      syncFromMeta: jest.fn(),
     };
     const module = await Test.createTestingModule({
       controllers: [TemplatesController],
@@ -81,5 +83,13 @@ describe('TemplatesController', () => {
     const result = await controller.generate(dto as any);
     expect(service.generateDrafts).toHaveBeenCalledWith(dto);
     expect(result).toEqual(drafts);
+  });
+
+  it('POST /templates/sync triggers a full Meta sync as the acting user', async () => {
+    service.syncFromMeta.mockResolvedValue({ checked: 3, imported: 1, updated: 2, categoryChanged: 1, skipped: 0 });
+    const req = { user: { id: 'u1' } } as any;
+    const result = await controller.sync(req);
+    expect(service.syncFromMeta).toHaveBeenCalledWith('u1');
+    expect(result.imported).toBe(1);
   });
 });

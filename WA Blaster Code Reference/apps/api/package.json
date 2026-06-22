@@ -12,6 +12,7 @@
     "test:watch": "jest --watch",
     "chatbot:sim": "ts-node src/chatbot/sim/sim.cli.ts",
     "chatbot:soak": "ts-node scripts/chatbot-soak.ts",
+    "chatbot:scenarios": "ts-node scripts/sim-scenarios.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "db:migrate": "prisma migrate dev",
     "db:seed": "ts-node prisma/seed.ts",

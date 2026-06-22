@@ -43,6 +43,7 @@ function buildEngine() {
   const conversations = {
     hasPendingEscalation: jest.fn(async () => false),
     isOfferingEscalation: jest.fn(async () => false),
+    isHumanHandling: jest.fn(async () => false),
   };
   const settings = {
     get: jest.fn(async (key: string, def?: unknown) => {

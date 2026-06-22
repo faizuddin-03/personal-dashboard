@@ -5,6 +5,7 @@ import { TicketsService } from './tickets.service';
 import { ListTicketsDto } from './dto/list-tickets.dto';
 import { AssignTicketDto } from './dto/assign-ticket.dto';
 import { CreateKnowledgeCandidateDto } from './dto/create-knowledge-candidate.dto';
+import { ResolveTicketDto } from './dto/resolve-ticket.dto';
 
 @Controller('tickets')
 @UseGuards(JwtAuthGuard)
@@ -38,13 +39,13 @@ export class TicketsController {
   }
 
   @Post(':id/resolve')
-  resolve(@Param('id') id: string) {
-    return this.tickets.resolve(id);
+  resolve(@Param('id') id: string, @Body() dto: ResolveTicketDto, @Req() req: Request) {
+    return this.tickets.resolve(id, (req.user as { id: string }).id, dto);
   }
 
   @Post(':id/close')
-  close(@Param('id') id: string) {
-    return this.tickets.close(id);
+  close(@Param('id') id: string, @Body() dto: ResolveTicketDto, @Req() req: Request) {
+    return this.tickets.close(id, (req.user as { id: string }).id, dto);
   }
 
   @Post(':id/reopen')

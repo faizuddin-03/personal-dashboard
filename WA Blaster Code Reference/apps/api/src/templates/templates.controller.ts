@@ -46,8 +46,9 @@ export class TemplatesController {
   }
 
   @Post('sync')
-  sync() {
-    return this.templates.syncPending(false);
+  sync(@Req() req: Request) {
+    const userId = (req.user as { id: string }).id;
+    return this.templates.syncFromMeta(userId);
   }
 
   @Post()

@@ -23,6 +23,7 @@ import { KnowledgeModule as ChatbotKnowledgeModule } from './chatbot/knowledge/k
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ChatbotApiModule } from './chatbot/api/chatbot-api.module';
 import { AssistantModule } from './assistant/assistant.module';
+import { SimulatorModule } from './simulator/simulator.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { AssistantModule } from './assistant/assistant.module';
     ChatbotModule,
     ChatbotApiModule,
     AssistantModule,
+    SimulatorModule,
   ],
   controllers: [HealthController],
 })

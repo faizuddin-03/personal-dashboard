@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { InboxService } from './inbox.service';
 import { ListConversationsQuery } from './dto/list-conversations.query';
@@ -25,8 +26,9 @@ export class InboxController {
   }
 
   @Post('conversations/:contactId/messages')
-  send(@Param('contactId') contactId: string, @Body() dto: SendReplyDto) {
-    return this.inbox.sendReply(contactId, dto.body);
+  send(@Param('contactId') contactId: string, @Body() dto: SendReplyDto, @Req() req: Request) {
+    const userId = (req.user as { id: string }).id;
+    return this.inbox.sendReply(contactId, dto.body, userId);
   }
 
   @Post('conversations/:contactId/resolve')

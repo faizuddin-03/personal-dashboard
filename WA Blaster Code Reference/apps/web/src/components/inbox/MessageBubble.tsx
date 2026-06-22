@@ -153,18 +153,17 @@ export function MessageBubble({ message, auditEvent, agentName }: MessageBubbleP
                 </Badge>
               </div>
             )}
-            {auditEvent.matchedKbSlug && (
+            {auditEvent.matchedKbSlug ? (
               <div>
                 <span style={{ color: 'var(--text-muted)' }}>Matched </span>
-                <span
-                  style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    color: '#7C5CFC',
-                    fontSize: 11,
-                  }}
-                >
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#7C5CFC', fontSize: 11 }}>
                   {auditEvent.matchedKbSlug}
                 </span>
+              </div>
+            ) : (
+              <div>
+                <span style={{ color: 'var(--text-muted)' }}>Source </span>
+                <span style={{ color: '#7C5CFC', fontSize: 11, fontWeight: 600 }}>RAG knowledge base</span>
               </div>
             )}
             <div style={{ display: 'flex', gap: 10, color: 'var(--text-muted)', flexWrap: 'wrap' }}>

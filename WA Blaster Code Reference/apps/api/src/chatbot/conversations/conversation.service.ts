@@ -43,6 +43,12 @@ export interface RecordEscalationInput {
     latencyMs: number;
   };
   citations: Array<{ chunkId: string; similarityScore: number; rank: number }>;
+  /**
+   * An operator-facing AI suggestion that is safe to send as-is — set ONLY when a confident RAG
+   * reply failed to deliver (dispatch-failure fallback). Omitted for safety/consent escalations,
+   * where `draftData.body` is the customer's own question kept as operator context.
+   */
+  suggestedReply?: string;
 }
 
 export interface CloseInput {
@@ -182,6 +188,7 @@ export class ConversationService {
           conversationId: input.conversationId,
           inboundMessageId: input.inboundMessageId,
           ...input.draftData,
+          suggestedReply: input.suggestedReply ?? null,
           state: 'PENDING',
         },
       });
@@ -255,6 +262,20 @@ export class ConversationService {
   async hasPendingEscalation(conversationId: string): Promise<boolean> {
     const count = await this.prisma.botDraft.count({ where: { conversationId, state: 'PENDING' } });
     return count > 0;
+  }
+
+  /**
+   * True when a human owns this conversation — either explicitly assigned to an operator, or already
+   * in an operator-driven state (REPLIED / AWAITING_REPLY). The decision engine consults this to
+   * stand the autopilot down so the bot never replies over a human who has taken the thread.
+   */
+  async isHumanHandling(conversationId: string): Promise<boolean> {
+    const conv = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
+      select: { state: true, assignedToId: true },
+    });
+    if (!conv) return false;
+    return conv.assignedToId !== null || conv.state === 'REPLIED' || conv.state === 'AWAITING_REPLY';
   }
 
   async isOfferingEscalation(conversationId: string): Promise<boolean> {

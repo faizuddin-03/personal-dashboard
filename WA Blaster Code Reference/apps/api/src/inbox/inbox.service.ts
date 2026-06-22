@@ -1,14 +1,21 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { BadGatewayException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { WhatsappCloudApiService } from '../whatsapp/whatsapp-cloud-api.service';
+import { ConversationService } from '../chatbot/conversations/conversation.service';
+import { ChatbotWhatsappService } from '../chatbot/whatsapp/chatbot-whatsapp.service';
+import { ChatbotInboxBridge } from '../chatbot/bridge/chatbot-inbox-bridge.service';
+import { ChatbotWhatsappError } from '../chatbot/whatsapp/chatbot-whatsapp.error';
 
 const WINDOW_MS = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class InboxService {
+  private readonly logger = new Logger(InboxService.name);
+
   constructor(
     private readonly prisma: PrismaService,
-    private readonly whatsapp: WhatsappCloudApiService,
+    private readonly conversations: ConversationService,
+    private readonly whatsapp: ChatbotWhatsappService,
+    private readonly bridge: ChatbotInboxBridge,
   ) {}
 
   async handleInbound(contactId: string, receivedAt: Date): Promise<void> {
@@ -167,47 +174,60 @@ export class InboxService {
     };
   }
 
-  async sendReply(contactId: string, body: string) {
-    const state = await this.prisma.inboxConversationState.findUnique({ where: { contactId } });
-    if (!state) throw new NotFoundException('Inbox conversation not found for this contact');
-
-    const windowExpiresAt = state.lastInboundAt
-      ? new Date(new Date(state.lastInboundAt).getTime() + WINDOW_MS)
-      : null;
-    if (!windowExpiresAt || windowExpiresAt.getTime() <= Date.now()) {
+  async sendReply(contactId: string, body: string, userId: string) {
+    // Requires the RAG chatbot to be enabled — an open chatbot Conversation must exist (no legacy blast-client fallback). See spec §8.
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { contactId, closedAt: null },
+      orderBy: { createdAt: 'desc' },
+      include: { contact: true },
+    });
+    if (!conversation) {
+      throw new ConflictException({ error: 'no_active_conversation', message: 'No open conversation for this contact.' });
+    }
+    const windowOpen = conversation.lastInboundAt
+      ? Date.now() - conversation.lastInboundAt.getTime() < WINDOW_MS
+      : false;
+    if (!windowOpen) {
+      const windowExpiresAt = conversation.lastInboundAt
+        ? new Date(conversation.lastInboundAt.getTime() + WINDOW_MS)
+        : null;
       throw new ConflictException({
         error: 'window_closed',
-        message:
-          '24h customer-service window has expired. Use a template via Campaigns to re-engage.',
+        message: '24h customer-service window has expired. Use a template via Campaigns to re-engage.',
         windowExpiredAt: windowExpiresAt?.toISOString() ?? null,
       });
     }
-
-    const contact = await this.prisma.contact.findUnique({ where: { id: contactId } });
-    if (!contact) throw new NotFoundException('Contact not found');
-
-    const { metaMessageId } = await this.whatsapp.sendFreeFormText(contact.phoneE164, body);
-    const now = new Date();
-
-    const [message] = await this.prisma.$transaction([
-      this.prisma.message.create({
-        data: {
-          contactId,
-          blastId: null,
-          body,
-          source: 'INBOX',
-          status: 'SENT',
-          metaMessageId,
-          sentAt: now,
-        },
-      }),
-      this.prisma.inboxConversationState.update({
+    let metaMessageId: string;
+    try {
+      ({ metaMessageId } = await this.whatsapp.sendTextMessage(conversation.contact.phoneE164, body));
+    } catch (err) {
+      if (err instanceof ChatbotWhatsappError) throw new BadGatewayException(err.message);
+      throw err;
+    }
+    const out = await this.conversations.recordOperatorReply(conversation.id, body, userId, metaMessageId);
+    await this.bridge.mirrorOperatorReply({ contactId, body, metaMessageId });
+    // Keep the legacy inbox_conversation_state projection in sync (the /inbox thread + list and the
+    // e2e contract read lastOutboundAt/resolvedAt). Best-effort: the reply is already sent + recorded.
+    const sentAt = out.sentAt ?? new Date();
+    try {
+      await this.prisma.inboxConversationState.upsert({
         where: { contactId },
-        data: { lastOutboundAt: now, resolvedAt: now },
-      }),
-    ]);
-
-    return { message };
+        create: { contactId, lastOutboundAt: sentAt, resolvedAt: sentAt },
+        update: { lastOutboundAt: sentAt, resolvedAt: sentAt },
+      });
+    } catch (err) {
+      this.logger.warn(`inbox_conversation_state sync failed contactId=${contactId}: ${(err as Error).message}`);
+    }
+    return {
+      message: {
+        id: out.id,
+        direction: 'outbound' as const,
+        body,
+        timestamp: out.sentAt ?? new Date(), // recordOperatorReply always sets sentAt; ?? new Date() is a defensive fallback for the nullable column
+        status: 'SENT' as const,
+        source: 'INBOX' as const,
+      },
+    };
   }
 
   async markResolved(contactId: string) {

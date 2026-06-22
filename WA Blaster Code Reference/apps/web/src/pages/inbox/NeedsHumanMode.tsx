@@ -5,8 +5,6 @@ import {
   listTickets,
   getTicket,
   assignTicket,
-  resolveTicket,
-  closeTicket,
   reopenTicket,
   getAgentContext,
   suggestReply,
@@ -33,7 +31,7 @@ import {
 import { DealerPanel } from '../../components/inbox/DealerPanel';
 import { MessageBubble, EscalationDivider, type BubbleMessage } from '../../components/inbox/MessageBubble';
 import { StatusTimeline } from './StatusTimeline';
-import { SaveToKnowledgeModal } from './SaveToKnowledgeModal';
+import { SaveToKnowledgeModal, type TicketCloseAction } from './SaveToKnowledgeModal';
 
 // ---- status tone map ----
 const STATUS_TONE: Record<TicketStatus, BadgeTone> = {
@@ -293,7 +291,7 @@ function TicketQueue({ tab, onTabChange, selectedId, onSelect }: TicketQueueProp
 // ---- Ticket detail (center pane) ----
 interface TicketDetailProps {
   ticketId: string;
-  onSaveKbNeeded: (ticketId: string, ticketNum: string) => void;
+  onSaveKbNeeded: (ticketId: string, ticketNum: string, action: TicketCloseAction) => void;
 }
 
 function TicketDetail({ ticketId, onSaveKbNeeded }: TicketDetailProps) {
@@ -342,20 +340,6 @@ function TicketDetail({ ticketId, onSaveKbNeeded }: TicketDetailProps) {
   const assignMut = useMutation({
     mutationFn: () => assignTicket(ticketId),
     onSuccess: invalidate,
-  });
-  const resolveMut = useMutation({
-    mutationFn: () => resolveTicket(ticketId),
-    onSuccess: () => {
-      invalidate();
-      onSaveKbNeeded(ticketId, ticket?.num ?? ticketId);
-    },
-  });
-  const closeMut = useMutation({
-    mutationFn: () => closeTicket(ticketId),
-    onSuccess: () => {
-      invalidate();
-      onSaveKbNeeded(ticketId, ticket?.num ?? ticketId);
-    },
   });
   const reopenMut = useMutation({
     mutationFn: () => reopenTicket(ticketId),
@@ -494,21 +478,21 @@ function TicketDetail({ ticketId, onSaveKbNeeded }: TicketDetailProps) {
             <Button
               variant="secondary"
               size="sm"
+              data-testid="resolve-ticket"
               icon={<IcCheck size={14} />}
-              onClick={() => resolveMut.mutate()}
-              disabled={resolveMut.isPending}
+              onClick={() => onSaveKbNeeded(ticketId, ticket.num, 'resolve')}
             >
-              {resolveMut.isPending ? 'Resolving…' : 'Resolve'}
+              Resolve
             </Button>
           )}
           {!isClosed && (
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => closeMut.mutate()}
-              disabled={closeMut.isPending}
+              data-testid="close-ticket"
+              onClick={() => onSaveKbNeeded(ticketId, ticket.num, 'close')}
             >
-              {closeMut.isPending ? 'Closing…' : 'Close'}
+              Close
             </Button>
           )}
           {isClosed && (
@@ -635,7 +619,9 @@ function TicketDetail({ ticketId, onSaveKbNeeded }: TicketDetailProps) {
               </div>
               {agentCtx.suggestedKnowledge.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)' }}>Suggested knowledge</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)' }}>
+                    Suggested knowledge <span style={{ color: '#7C5CFC', fontWeight: 700 }}>· RAG</span>
+                  </span>
                   {agentCtx.suggestedKnowledge.map((k) => (
                     <div key={k.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -675,7 +661,7 @@ function TicketDetail({ ticketId, onSaveKbNeeded }: TicketDetailProps) {
               </select>
             )}
             {suggestMut.data?.text && (
-              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>draft · {Math.round(suggestMut.data.confidence * 100)}% conf</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>RAG draft · {Math.round(suggestMut.data.confidence * 100)}% conf</span>
             )}
           </div>
 
@@ -717,9 +703,10 @@ function TicketDetail({ ticketId, onSaveKbNeeded }: TicketDetailProps) {
 
 // ---- Main needs-human mode ----
 export function NeedsHumanMode() {
+  const qc = useQueryClient();
   const [tab, setTab] = useState<'active' | 'closed'>('active');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [saveKbState, setSaveKbState] = useState<{ ticketId: string; ticketNum: string } | null>(null);
+  const [saveKbState, setSaveKbState] = useState<{ ticketId: string; ticketNum: string; action: TicketCloseAction } | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const { data: activeTickets = [] } = useQuery({
@@ -765,7 +752,7 @@ export function NeedsHumanMode() {
       {selectedId ? (
         <TicketDetail
           ticketId={selectedId}
-          onSaveKbNeeded={(tid, tnum) => setSaveKbState({ ticketId: tid, ticketNum: tnum })}
+          onSaveKbNeeded={(tid, tnum, action) => setSaveKbState({ ticketId: tid, ticketNum: tnum, action })}
         />
       ) : (
         <div className="flex flex-1 items-center justify-center text-sm text-foreground-muted">
@@ -781,10 +768,14 @@ export function NeedsHumanMode() {
         <SaveToKnowledgeModal
           ticketId={saveKbState.ticketId}
           ticketNum={saveKbState.ticketNum}
+          action={saveKbState.action}
           onClose={() => setSaveKbState(null)}
-          onImported={() => {
+          onDone={() => {
+            const wasResolve = saveKbState.action === 'resolve';
+            qc.invalidateQueries({ queryKey: ['tickets'] });
+            qc.invalidateQueries({ queryKey: ['inbox'] });
             setSaveKbState(null);
-            setToastMsg('Added to the knowledge base');
+            setToastMsg(wasResolve ? 'Ticket resolved' : 'Ticket closed');
           }}
         />
       )}

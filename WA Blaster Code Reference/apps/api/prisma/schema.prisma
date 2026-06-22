@@ -267,6 +267,7 @@ enum MessageStatus {
 enum MessageSource {
   BLAST
   INBOX
+  CHATBOT
 }
 
 model Blast {
@@ -460,6 +461,7 @@ model Ticket {
   intent           String?
   assigneeId       String?          @map("assignee_id") @db.Uuid
   autopilotEventId String?          @map("autopilot_event_id") @db.Uuid
+  conversationId   String?          @map("conversation_id") @db.Uuid
   openedAt         DateTime         @default(now()) @map("opened_at")
   assignedAt       DateTime?        @map("assigned_at")
   resolvedAt       DateTime?        @map("resolved_at")
@@ -469,10 +471,12 @@ model Ticket {
 
   contact          Contact          @relation(fields: [contactId], references: [id], onDelete: Cascade)
   assignee         User?            @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  conversation     Conversation?    @relation(fields: [conversationId], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([contactId])
   @@index([assigneeId])
+  @@index([conversationId])
   @@map("tickets")
 }
 
@@ -528,6 +532,7 @@ model Conversation {
   inboundMessages             ConversationInboundMessage[]
   outboundMessages            ConversationOutboundMessage[]
   botDrafts                   BotDraft[]
+  tickets                     Ticket[]
   decisions                   ChatbotDecision[]
   resolutionCapture           ResolutionCapture?
 
@@ -581,6 +586,10 @@ model BotDraft {
   conversationId      String              @map("conversation_id") @db.Uuid
   inboundMessageId    String              @map("inbound_message_id") @db.Uuid
   body                String
+  // Operator-facing AI suggestion that is safe to send as-is. Set ONLY for a confident RAG reply
+  // that failed to deliver (the dispatch-failure fallback). NULL for safety/consent escalations,
+  // where `body` is the customer's own question kept as operator context — never a sendable reply.
+  suggestedReply      String?             @map("suggested_reply")
   intent              String
   intentConfidence    Float               @map("intent_confidence")
   draftConfidence     Float               @map("draft_confidence")

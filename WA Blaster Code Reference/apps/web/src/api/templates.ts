@@ -123,7 +123,15 @@ export async function generateTemplates(input: {
   return data;
 }
 
-export async function syncTemplates(): Promise<{ checked: number; updated: number }> {
-  const { data } = await api.post<{ checked: number; updated: number }>('/templates/sync');
+export interface SyncFromMetaResult {
+  checked: number;
+  imported: number;
+  updated: number;
+  categoryChanged: number;
+  skipped: number;
+}
+
+export async function syncTemplates(): Promise<SyncFromMetaResult> {
+  const { data } = await api.post<SyncFromMetaResult>('/templates/sync');
   return data;
 }

@@ -17,6 +17,7 @@ export type DecisionSubKind =
   | 'ignore_opted_out'
   | 'ignore_stale' // inbound delivered long after it was sent (late Meta redelivery) — don't auto-reply
   | 'ignore_llm_unavailable' // transient LLM outage — stay silent rather than escalate (avoids poisoning the convo)
+  | 'ignore_human_handling' // a human operator owns this conversation — autopilot stands down
   | 'ignore_embeddings_unavailable'; // transient embeddings outage — stay silent
 
 export interface DecisionInput {

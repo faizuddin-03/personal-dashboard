@@ -95,6 +95,7 @@ function buildService() {
   // CHATBOT_LOG_BODIES defaults off → get() returns the supplied default ('false').
   const config = { get: jest.fn((_key: string, def?: unknown) => def) };
   const campaign = { getActiveCampaign: jest.fn(async () => null) };
+  const inboxBridge = { recordAutoReply: jest.fn().mockResolvedValue(undefined), recordEscalation: jest.fn().mockResolvedValue(undefined) };
 
   const service = new ChatbotService(
     conversations as unknown as ConversationService,
@@ -105,9 +106,10 @@ function buildService() {
     logger as unknown as Logger,
     config as unknown as ConfigService,
     campaign as unknown as CampaignContextService,
+    inboxBridge as never,
   );
 
-  return { service, conversations, decisionEngine, whatsapp, prisma, settings, logger, config, campaign };
+  return { service, conversations, decisionEngine, whatsapp, prisma, settings, logger, config, campaign, inboxBridge };
 }
 
 describe('ChatbotService', () => {
@@ -228,7 +230,7 @@ describe('ChatbotService', () => {
 
   describe('rag_answer (AUTO_SEND)', () => {
     it('sends the draft, records a SENT BotDraft + citations, records the auto-reply, marks read', async () => {
-      const { service, whatsapp, prisma, conversations } = buildService();
+      const { service, whatsapp, prisma, conversations, inboxBridge } = buildService();
 
       await service.handleInbound(payload());
 
@@ -255,6 +257,7 @@ describe('ChatbotService', () => {
           subKind: 'rag_answer',
         }),
       );
+      expect(inboxBridge.recordAutoReply).toHaveBeenCalled();
       expect(whatsapp.markAsRead).toHaveBeenCalledWith('wamid.abc');
       expect(conversations.recordEscalation).not.toHaveBeenCalled();
     });
@@ -406,7 +409,7 @@ describe('ChatbotService', () => {
 
   describe('safety_escalate (ESCALATE)', () => {
     it('sends nothing to the customer; persists a PENDING operator draft from the inbound body', async () => {
-      const { service, whatsapp, conversations, decisionEngine } = buildService();
+      const { service, whatsapp, conversations, decisionEngine, inboxBridge } = buildService();
       decisionEngine.decide.mockResolvedValueOnce(
         decision({
           kind: 'ESCALATE',
@@ -430,6 +433,7 @@ describe('ChatbotService', () => {
           draftData: expect.objectContaining({ body: 'What time do you open?' }),
         }),
       );
+      expect(inboxBridge.recordEscalation).toHaveBeenCalled();
     });
   });
 
@@ -452,7 +456,7 @@ describe('ChatbotService', () => {
 
   describe('send-failure handling', () => {
     it('rag_answer: a failed send is logged and falls back to an operator escalation', async () => {
-      const { service, whatsapp, conversations, logger } = buildService();
+      const { service, whatsapp, conversations, logger, inboxBridge } = buildService();
       whatsapp.sendTextMessage.mockRejectedValueOnce(new Error('meta down'));
 
       await service.handleInbound(payload());
@@ -460,6 +464,9 @@ describe('ChatbotService', () => {
       expect(logger.error).toHaveBeenCalled();
       expect(conversations.recordEscalation).toHaveBeenCalledWith(
         expect.objectContaining({ conversationId: 'conv-1', inboundMessageId: 'inb-1' }),
+      );
+      expect(inboxBridge.recordEscalation).toHaveBeenCalledWith(
+        expect.objectContaining({ reason: 'dispatch_failure' }),
       );
     });
 

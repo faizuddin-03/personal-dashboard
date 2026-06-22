@@ -18,6 +18,7 @@ import CampaignDetail from './pages/CampaignDetail';
 import Inbox from './pages/Inbox';
 import Knowledge from './pages/Knowledge';
 import Performance from './pages/Performance';
+import Simulator from './pages/Simulator';
 import Layout from './components/Layout';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import StyledPlaceholder from './components/StyledPlaceholder';
@@ -137,6 +138,7 @@ export default function App() {
       <Route path="/helpline" element={<ProtectedRoute><Layout><StyledPlaceholder title="Helpline" /></Layout></ProtectedRoute>} />
       <Route path="/status" element={<ProtectedRoute><Layout><StyledPlaceholder title="System status" /></Layout></ProtectedRoute>} />
       <Route path="/knowledge" element={<ProtectedRoute requireRole="ADMIN"><Layout><Knowledge /></Layout></ProtectedRoute>} />
+      <Route path="/simulator" element={<ProtectedRoute requireRole="ADMIN"><Layout><Simulator /></Layout></ProtectedRoute>} />
       <Route path="/users" element={<ProtectedRoute requireRole="ADMIN"><Layout><StyledPlaceholder title="Users & roles" /></Layout></ProtectedRoute>} />
       <Route path="/audit" element={<ProtectedRoute requireRole="ADMIN"><Layout><StyledPlaceholder title="Audit log" /></Layout></ProtectedRoute>} />
     </Routes>

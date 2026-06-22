@@ -58,10 +58,11 @@ describe('InboxController', () => {
     expect(service.getConversation).toHaveBeenCalledWith('c1');
   });
 
-  it('POST /inbox/conversations/:contactId/messages calls sendReply with body', async () => {
+  it('POST /inbox/conversations/:contactId/messages calls sendReply with body and userId', async () => {
     service.sendReply.mockResolvedValue({ message: { id: 'm1' } });
-    await controller.send('c1', { body: 'hi' } as any);
-    expect(service.sendReply).toHaveBeenCalledWith('c1', 'hi');
+    const req = { user: { id: 'user-uuid-1' } } as any;
+    await controller.send('c1', { body: 'hi' } as any, req);
+    expect(service.sendReply).toHaveBeenCalledWith('c1', 'hi', 'user-uuid-1');
   });
 
   it('POST /inbox/conversations/:contactId/resolve calls markResolved', async () => {

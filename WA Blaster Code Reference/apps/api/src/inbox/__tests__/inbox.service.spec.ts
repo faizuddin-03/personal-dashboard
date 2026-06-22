@@ -1,8 +1,70 @@
+import { randomUUID } from 'crypto';
+import { PrismaClient } from '@prisma/client';
+import { BadGatewayException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
 import { InboxService } from '../inbox.service';
+import { ConversationService } from '../../chatbot/conversations/conversation.service';
+import { ChatbotWhatsappService } from '../../chatbot/whatsapp/chatbot-whatsapp.service';
+import { ChatbotWhatsappError } from '../../chatbot/whatsapp/chatbot-whatsapp.error';
+import { ChatbotInboxBridge } from '../../chatbot/bridge/chatbot-inbox-bridge.service';
+import { Queue } from 'bullmq';
+
+// ---------------------------------------------------------------------------
+// Real-DB setup (used only by the sendReply integration describe block)
+// ---------------------------------------------------------------------------
+const prismaReal = new PrismaClient() as unknown as PrismaService;
+const queue = { add: jest.fn().mockResolvedValue(undefined) };
+const conversations = new ConversationService(prismaReal, queue as unknown as Queue);
+const chatbotWa = { sendTextMessage: jest.fn().mockResolvedValue({ metaMessageId: 'wamid.mock' }) };
+const bridge = new ChatbotInboxBridge(prismaReal);
+const svcReal = new InboxService(prismaReal, conversations, chatbotWa as never, bridge);
+
+const createdContactIds = new Set<string>();
+
+async function makeContact(): Promise<string> {
+  const id = randomUUID();
+  const digits = id.replace(/\D/g, '').slice(0, 9).padEnd(9, '0');
+  await prismaReal.$executeRawUnsafe(
+    `INSERT INTO contacts (id, phone_e164, updated_at) VALUES ($1::uuid, $2, NOW())`,
+    id,
+    `+19${digits}`,
+  );
+  createdContactIds.add(id);
+  return id;
+}
+
+beforeAll(async () => {
+  await prismaReal.$connect();
+});
+
+afterAll(async () => {
+  for (const id of createdContactIds) {
+    await prismaReal.$executeRawUnsafe(
+      `DELETE FROM conversation_outbound_messages WHERE conversation_id IN (SELECT id FROM conversations WHERE contact_id = $1::uuid)`,
+      id,
+    );
+    await prismaReal.$executeRawUnsafe(
+      `DELETE FROM conversation_inbound_messages WHERE conversation_id IN (SELECT id FROM conversations WHERE contact_id = $1::uuid)`,
+      id,
+    );
+    await prismaReal.$executeRawUnsafe(`DELETE FROM messages WHERE contact_id = $1::uuid`, id);
+    await prismaReal.$executeRawUnsafe(`DELETE FROM conversations WHERE contact_id = $1::uuid`, id);
+    await prismaReal.$executeRawUnsafe(`DELETE FROM contacts WHERE id = $1::uuid`, id);
+  }
+  await prismaReal.$disconnect();
+});
+
+// ---------------------------------------------------------------------------
+// Mock-DB helpers (used by all other describe blocks)
+// ---------------------------------------------------------------------------
+function makeInboxService(prisma: any): InboxService {
+  return new InboxService(prisma, {} as any, {} as any, {} as any);
+}
+
+// ---------------------------------------------------------------------------
 
 describe('InboxService.handleInbound', () => {
   let prisma: any;
-  let whatsapp: any;
   let service: InboxService;
   const contactId = '00000000-0000-0000-0000-000000000001';
 
@@ -10,8 +72,7 @@ describe('InboxService.handleInbound', () => {
     prisma = {
       inboxConversationState: { upsert: jest.fn() },
     };
-    whatsapp = { sendFreeFormText: jest.fn() };
-    service = new InboxService(prisma, whatsapp);
+    service = makeInboxService(prisma);
   });
 
   it('upserts state with lastInboundAt and clears resolvedAt', async () => {
@@ -34,7 +95,7 @@ describe('InboxService.listConversations', () => {
     prisma = {
       $queryRawUnsafe: jest.fn().mockResolvedValue([]),
     };
-    service = new InboxService(prisma, {} as any);
+    service = makeInboxService(prisma);
   });
 
   it('tab=all filters resolvedAt IS NULL', async () => {
@@ -119,7 +180,7 @@ describe('InboxService.getConversation', () => {
       inboundMessage: { findMany: jest.fn().mockResolvedValue([]) },
       message: { findMany: jest.fn().mockResolvedValue([]) },
     };
-    service = new InboxService(prisma, {} as any);
+    service = makeInboxService(prisma);
   });
 
   it('throws 404 when no inbox state exists', async () => {
@@ -196,102 +257,50 @@ describe('InboxService.getConversation', () => {
 });
 
 describe('InboxService.sendReply', () => {
-  let prisma: any;
-  let whatsapp: any;
-  let service: InboxService;
-  const contactId = '00000000-0000-0000-0000-000000000001';
-  const phone = '+60123456789';
-
   beforeEach(() => {
-    prisma = {
-      inboxConversationState: {
-        findUnique: jest.fn(),
-        update: jest.fn().mockResolvedValue({}),
-      },
-      contact: { findUnique: jest.fn() },
-      message: { create: jest.fn() },
-      $transaction: jest.fn(async (ops: any) => {
-        if (Array.isArray(ops)) {
-          return Promise.all(ops);
-        }
-        return ops(prisma);
-      }),
-    };
-    whatsapp = { sendFreeFormText: jest.fn() };
-    service = new InboxService(prisma, whatsapp);
+    jest.clearAllMocks();
+    chatbotWa.sendTextMessage.mockResolvedValue({ metaMessageId: 'wamid.mock' });
   });
 
-  it('throws 404 when no inbox state', async () => {
-    prisma.inboxConversationState.findUnique.mockResolvedValue(null);
-    await expect(service.sendReply(contactId, 'hi')).rejects.toThrow(/not found/i);
+  it('sends via the chatbot client, records an OPERATOR_REPLY, mirrors a Message, and moves the conversation to REPLIED', async () => {
+    const contactId = await makeContact();
+    const { conversation } = await conversations.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'hi' });
+    const userId = randomUUID();
+    const res = await svcReal.sendReply(contactId, 'Here is your answer', userId);
+    expect(chatbotWa.sendTextMessage).toHaveBeenCalled();
+    const conv = await prismaReal.conversation.findUniqueOrThrow({ where: { id: conversation.id } });
+    expect(conv.state).toBe('REPLIED');
+    const out = await prismaReal.conversationOutboundMessage.findFirst({ where: { conversationId: conversation.id, kind: 'OPERATOR_REPLY' } });
+    expect(out).not.toBeNull();
+    const mirrored = await prismaReal.message.findFirst({ where: { contactId, source: 'INBOX', body: 'Here is your answer' } });
+    expect(mirrored).not.toBeNull();
+    expect(res.message.body).toBe('Here is your answer');
+    // inbox_conversation_state projection must be synced (the /inbox thread + list and e2e contract read these)
+    const prisma = prismaReal as unknown as PrismaClient;
+    const state = await prisma.inboxConversationState.findUnique({ where: { contactId } });
+    expect(state).not.toBeNull();
+    expect(state!.lastOutboundAt).not.toBeNull();
+    expect(state!.resolvedAt).not.toBeNull();
   });
 
-  it('throws 409 when window is closed', async () => {
-    prisma.inboxConversationState.findUnique.mockResolvedValue({
-      contactId,
-      lastInboundAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
-      lastOutboundAt: null,
-      resolvedAt: null,
-    });
-    prisma.contact.findUnique.mockResolvedValue({ id: contactId, phoneE164: phone });
-    await expect(service.sendReply(contactId, 'hi')).rejects.toThrow(/window/i);
+  it('throws window_closed when the CS window has lapsed', async () => {
+    const contactId = await makeContact();
+    const { conversation } = await conversations.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'hi' });
+    await prismaReal.conversation.update({ where: { id: conversation.id }, data: { lastInboundAt: new Date(Date.now() - 25 * 60 * 60 * 1000) } });
+    await expect(svcReal.sendReply(contactId, 'x', randomUUID())).rejects.toMatchObject({ response: { error: 'window_closed' } });
+    expect(chatbotWa.sendTextMessage).not.toHaveBeenCalled();
   });
 
-  it('throws 409 when there is no inbound history at all', async () => {
-    prisma.inboxConversationState.findUnique.mockResolvedValue({
-      contactId,
-      lastInboundAt: null,
-      lastOutboundAt: null,
-      resolvedAt: null,
-    });
-    prisma.contact.findUnique.mockResolvedValue({ id: contactId, phoneE164: phone });
-    await expect(service.sendReply(contactId, 'hi')).rejects.toThrow(/window/i);
+  it('throws when the contact has no open conversation', async () => {
+    const contactId = await makeContact();
+    await expect(svcReal.sendReply(contactId, 'x', randomUUID())).rejects.toMatchObject({ response: { error: 'no_active_conversation' } });
   });
 
-  it('happy path: sends via WhatsApp, inserts message, updates state', async () => {
-    const lastInbound = new Date(Date.now() - 60 * 60 * 1000); // 1h ago
-    prisma.inboxConversationState.findUnique.mockResolvedValue({
-      contactId,
-      lastInboundAt: lastInbound,
-      lastOutboundAt: null,
-      resolvedAt: null,
-    });
-    prisma.contact.findUnique.mockResolvedValue({ id: contactId, phoneE164: phone });
-    whatsapp.sendFreeFormText.mockResolvedValue({ metaMessageId: 'wamid.mock-abc' });
-    prisma.message.create.mockResolvedValue({
-      id: 'm1',
-      body: 'hi',
-      sentAt: new Date(),
-      status: 'SENT',
-      source: 'INBOX',
-      blastId: null,
-    });
-
-    const result = await service.sendReply(contactId, 'hi');
-
-    expect(whatsapp.sendFreeFormText).toHaveBeenCalledWith(phone, 'hi');
-    expect(prisma.message.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          contactId,
-          body: 'hi',
-          source: 'INBOX',
-          blastId: null,
-          metaMessageId: 'wamid.mock-abc',
-          status: 'SENT',
-        }),
-      }),
-    );
-    expect(prisma.inboxConversationState.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { contactId },
-        data: expect.objectContaining({
-          lastOutboundAt: expect.any(Date),
-          resolvedAt: expect.any(Date),
-        }),
-      }),
-    );
-    expect(result.message.id).toBe('m1');
+  it('maps a ChatbotWhatsappError to a BadGatewayException', async () => {
+    const contactId = await makeContact();
+    await conversations.handleInbound({ contactId, metaMessageId: `wamid-${randomUUID()}`, body: 'hi' });
+    (chatbotWa.sendTextMessage as jest.Mock).mockRejectedValueOnce(new ChatbotWhatsappError('meta down'));
+    await expect(svcReal.sendReply(contactId, 'x', randomUUID())).rejects.toBeInstanceOf(BadGatewayException);
   });
 });
 
@@ -303,7 +312,7 @@ describe('InboxService.markResolved / reopen / unreadCount', () => {
     prisma = {
       inboxConversationState: { update: jest.fn(), count: jest.fn() },
     };
-    service = new InboxService(prisma, {} as any);
+    service = makeInboxService(prisma);
   });
 
   it('markResolved sets resolvedAt to now', async () => {

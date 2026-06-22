@@ -256,3 +256,86 @@ describe('TemplatesService.createDraft (per-language variables)', () => {
     expect(ms.variables).toEqual(['name', 'topic']);
   });
 });
+
+describe('TemplatesService.syncFromMeta', () => {
+  let prisma: any; let whatsapp: any; let service: TemplatesService;
+  beforeEach(() => {
+    prisma = {
+      template: {
+        findMany: jest.fn().mockResolvedValue([]),
+        update: jest.fn((a: any) => Promise.resolve(a)),
+        create: jest.fn((a: any) => Promise.resolve(a)),
+      },
+      $transaction: jest.fn((ops: any[]) => Promise.all(ops)),
+    };
+    whatsapp = { listMessageTemplates: jest.fn().mockResolvedValue([]) };
+    service = new TemplatesService(prisma, whatsapp, {} as any);
+  });
+
+  const metaItem = (over: any = {}) => ({
+    id: 'm1',
+    name: 'insurance_renewal',
+    language: 'en',
+    status: 'APPROVED',
+    category: 'UTILITY',
+    components: [{ type: 'BODY', text: 'Hi {{1}}', example: { body_text: [['Ahmad']] } }],
+    ...over,
+  });
+
+  it('imports a Meta-only template as a new row at version 1, attributed to the actor', async () => {
+    whatsapp.listMessageTemplates.mockResolvedValue([metaItem()]);
+    const res = await service.syncFromMeta('admin-1');
+    expect(prisma.template.create).toHaveBeenCalledTimes(1);
+    const data = prisma.template.create.mock.calls[0][0].data;
+    expect(data).toEqual(expect.objectContaining({
+      name: 'insurance_renewal', version: 1, language: 'EN', category: 'UTILITY',
+      bodyText: 'Hi {{1}}', status: 'APPROVED', metaTemplateId: 'm1', createdById: 'admin-1',
+    }));
+    expect(data.variables).toEqual(['Ahmad']);
+    expect(data.approvedAt).toBeInstanceOf(Date);
+    expect(res).toEqual({ checked: 1, imported: 1, updated: 0, categoryChanged: 0, skipped: 0 });
+  });
+
+  it('matches by metaTemplateId and overwrites status + category + content, counting category drift', async () => {
+    prisma.template.findMany.mockResolvedValue([
+      { id: 't1', name: 'insurance_renewal', version: 1, language: 'EN', status: 'PENDING', category: 'UTILITY', metaTemplateId: 'm1', approvedAt: null },
+    ]);
+    whatsapp.listMessageTemplates.mockResolvedValue([metaItem({ category: 'MARKETING' })]);
+    const res = await service.syncFromMeta('admin-1');
+    expect(prisma.template.create).not.toHaveBeenCalled();
+    const data = prisma.template.update.mock.calls[0][0].data;
+    expect(data.category).toBe('MARKETING');
+    expect(data.status).toBe('APPROVED');
+    expect(res).toEqual({ checked: 1, imported: 0, updated: 1, categoryChanged: 1, skipped: 0 });
+  });
+
+  it('falls back to (name, language) for a submitted row missing metaTemplateId and backfills it', async () => {
+    prisma.template.findMany.mockResolvedValue([
+      { id: 't1', name: 'insurance_renewal', version: 1, language: 'EN', status: 'APPROVED', category: 'UTILITY', metaTemplateId: null, approvedAt: new Date() },
+    ]);
+    whatsapp.listMessageTemplates.mockResolvedValue([metaItem({ id: 'm-new' })]);
+    await service.syncFromMeta('admin-1');
+    expect(prisma.template.update).toHaveBeenCalledTimes(1);
+    expect(prisma.template.update.mock.calls[0][0].data.metaTemplateId).toBe('m-new');
+  });
+
+  it('leaves a pristine never-submitted DRAFT untouched and imports the Meta row above it', async () => {
+    prisma.template.findMany.mockResolvedValue([
+      { id: 'd1', name: 'insurance_renewal', version: 1, language: 'EN', status: 'DRAFT', category: 'UTILITY', metaTemplateId: null, approvedAt: null },
+    ]);
+    whatsapp.listMessageTemplates.mockResolvedValue([metaItem()]);
+    const res = await service.syncFromMeta('admin-1');
+    expect(prisma.template.update).not.toHaveBeenCalled();
+    expect(prisma.template.create).toHaveBeenCalledTimes(1);
+    expect(prisma.template.create.mock.calls[0][0].data.version).toBe(2);
+    expect(res.imported).toBe(1);
+  });
+
+  it('skips templates whose Meta status is unknown', async () => {
+    whatsapp.listMessageTemplates.mockResolvedValue([metaItem({ status: 'WEIRD_STATUS' })]);
+    const res = await service.syncFromMeta('admin-1');
+    expect(prisma.template.create).not.toHaveBeenCalled();
+    expect(prisma.template.update).not.toHaveBeenCalled();
+    expect(res).toEqual({ checked: 1, imported: 0, updated: 0, categoryChanged: 0, skipped: 1 });
+  });
+});

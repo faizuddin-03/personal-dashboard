@@ -15,13 +15,22 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import { INBOX_TABS, InboxTab } from '../api/inbox.constants';
 
 /** Close dispositions, shared with the captures flow. */
 export const CLOSE_DISPOSITIONS = ['IMPORT_LIVE', 'SAVE_DRAFT', 'SKIP'];
 export type CloseDisposition = 'IMPORT_LIVE' | 'SAVE_DRAFT' | 'SKIP';
 
 export class ListConversationsDto {
-  @ApiPropertyOptional({ enum: ConversationState, description: 'Filter by conversation state.' })
+  @ApiPropertyOptional({
+    enum: Object.keys(INBOX_TABS),
+    description: 'Named inbox tab; maps to a set of conversation states. Takes precedence over `state`.',
+  })
+  @IsOptional()
+  @IsIn(Object.keys(INBOX_TABS))
+  tab?: InboxTab;
+
+  @ApiPropertyOptional({ enum: ConversationState, description: 'Filter by conversation state (legacy; superseded by `tab`).' })
   @IsOptional()
   @IsEnum(ConversationState)
   state?: ConversationState;

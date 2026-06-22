@@ -587,9 +587,14 @@ export default function Templates() {
     mutationFn: syncTemplates,
     onSuccess: (r) => {
       qc.invalidateQueries({ queryKey: ['templates'] });
-      showToast(r.checked === 0
-        ? 'No pending templates to sync'
-        : `Synced with Meta — checked ${r.checked}, ${r.updated} updated`);
+      showToast(
+        r.checked === 0
+          ? 'No templates found on Meta to sync'
+          : `Synced ${r.checked} from Meta — ${r.imported} imported, ${r.updated} updated` +
+              (r.categoryChanged > 0
+                ? `, ${r.categoryChanged} category change${r.categoryChanged > 1 ? 's' : ''}`
+                : ''),
+      );
     },
     onError: () => showToast('Sync with Meta failed', 'error'),
   });

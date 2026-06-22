@@ -81,13 +81,15 @@ export class WebhookController {
           for (const status of value.statuses ?? []) {
             await this.blasts.applyMetaMessageEvent(status);
           }
+          const chatbotEnabled = this.config.get<string>('CHATBOT_ENABLED', 'false') === 'true';
           for (const inbound of value.messages ?? []) {
             const stored = await this.blasts.applyInboundMessage(inbound);
-            if (stored) {
+            // When the RAG chatbot is enabled it is the single brain (it feeds Autopilot/Tickets via
+            // ChatbotInboxBridge), so skip the legacy autopilot to avoid double-handling each inbound.
+            if (stored && !chatbotEnabled) {
               try {
                 await this.autopilot.handleInbound(stored);
               } catch (err) {
-                // Bot failure must never fail the webhook; the inbound is already persisted.
                 this.logger.error('Autopilot handleInbound failed', err as Error);
               }
             }
@@ -101,7 +103,6 @@ export class WebhookController {
           // and return immediately. The persist is a single indexed insert (no LLM), so the ack stays
           // fast. jobId=wamid + the idempotent handleInbound + the receivedAt staleness guard keep
           // redeliveries safe.
-          const chatbotEnabled = this.config.get<string>('CHATBOT_ENABLED', 'false') === 'true';
           if (chatbotEnabled && value.messages?.length) {
             for (const msg of value.messages) {
               try {

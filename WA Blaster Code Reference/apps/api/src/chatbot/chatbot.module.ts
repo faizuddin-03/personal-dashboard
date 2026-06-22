@@ -5,6 +5,7 @@ import { ChatbotWhatsappModule } from './whatsapp/chatbot-whatsapp.module';
 import { ChatbotSettingsModule } from './settings/chatbot-settings.module';
 import { CampaignModule } from './campaign/campaign.module';
 import { ChatbotService } from './chatbot.service';
+import { ChatbotInboxBridge } from './bridge/chatbot-inbox-bridge.service';
 
 /** A Logger bound to the ChatbotService context so every orchestrator line is tagged [ChatbotService]. */
 const chatbotLogger = { provide: Logger, useValue: new Logger(ChatbotService.name) };
@@ -24,7 +25,7 @@ const chatbotLogger = { provide: Logger, useValue: new Logger(ChatbotService.nam
  */
 @Module({
   imports: [ConversationsModule, DecisionModule, ChatbotWhatsappModule, ChatbotSettingsModule, CampaignModule],
-  providers: [ChatbotService, chatbotLogger],
-  exports: [ChatbotService],
+  providers: [ChatbotService, chatbotLogger, ChatbotInboxBridge],
+  exports: [ChatbotService, ChatbotInboxBridge],
 })
 export class ChatbotModule {}

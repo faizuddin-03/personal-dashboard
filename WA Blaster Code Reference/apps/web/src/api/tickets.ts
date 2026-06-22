@@ -42,6 +42,14 @@ export interface CreateKnowledgeCandidateDto {
   category: string;
 }
 
+export type CloseDisposition = 'IMPORT_LIVE' | 'SAVE_DRAFT' | 'SKIP';
+
+export interface ResolveTicketOptions {
+  disposition?: CloseDisposition;
+  resolutionNotes?: string;
+  editedAnswer?: string;
+}
+
 export async function listTickets(params: {
   tab?: 'active' | 'closed';
   status?: string[];
@@ -69,13 +77,13 @@ export async function assignTicket(id: string, assigneeId?: string): Promise<Tic
   return data;
 }
 
-export async function resolveTicket(id: string): Promise<Ticket> {
-  const { data } = await api.post<Ticket>(`/tickets/${id}/resolve`);
+export async function resolveTicket(id: string, opts: ResolveTicketOptions = {}): Promise<Ticket> {
+  const { data } = await api.post<Ticket>(`/tickets/${id}/resolve`, opts);
   return data;
 }
 
-export async function closeTicket(id: string): Promise<Ticket> {
-  const { data } = await api.post<Ticket>(`/tickets/${id}/close`);
+export async function closeTicket(id: string, opts: ResolveTicketOptions = {}): Promise<Ticket> {
+  const { data } = await api.post<Ticket>(`/tickets/${id}/close`, opts);
   return data;
 }
 

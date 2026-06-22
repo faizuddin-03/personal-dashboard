@@ -30,6 +30,15 @@ export interface MetaTemplateResponse {
   category: string;
 }
 
+export interface MetaTemplateListItem {
+  id: string;
+  name: string;
+  language: string;   // Meta locale, e.g. "en", "ms", "zh_CN"
+  status: string;     // APPROVED | PENDING | REJECTED | PAUSED | DISABLED | ...
+  category: string;   // MARKETING | UTILITY | AUTHENTICATION
+  components: MetaComponent[];
+}
+
 export interface SendTemplateMessageInput {
   toPhoneE164: string;             // recipient, e.g. "+60123456789"
   templateName: string;
@@ -49,6 +58,40 @@ export interface SendMessageResponse {
 }
 
 const BASE_URL = 'https://graph.facebook.com';
+
+const MOCK_TEMPLATE_LIST: MetaTemplateListItem[] = [
+  {
+    id: 'mock-meta-1',
+    name: 'insurance_renewal',
+    language: 'en',
+    status: 'APPROVED',
+    category: 'UTILITY',
+    components: [
+      { type: 'BODY', text: 'Hi {{1}}, your policy {{2}} expires soon.', example: { body_text: [['Ahmad', 'POL123']] } },
+      { type: 'FOOTER', text: 'eAuto' },
+    ],
+  },
+  {
+    id: 'mock-meta-2',
+    name: 'raya_promo_2026',
+    language: 'ms',
+    status: 'APPROVED',
+    category: 'MARKETING',
+    components: [
+      { type: 'HEADER', format: 'TEXT', text: 'Promosi Raya' },
+      { type: 'BODY', text: 'Salam {{1}}!' },
+      { type: 'BUTTONS', buttons: [{ type: 'URL', text: 'Lihat', url: 'https://eauto.my' }] },
+    ],
+  },
+  {
+    id: 'mock-meta-3',
+    name: 'old_announcement',
+    language: 'zh_CN',
+    status: 'REJECTED',
+    category: 'MARKETING',
+    components: [{ type: 'BODY', text: '通知' }],
+  },
+];
 
 @Injectable()
 export class WhatsappCloudApiService {
@@ -99,6 +142,45 @@ export class WhatsappCloudApiService {
         { headers: this.authHeader() },
       );
       return { id: data.id, status: data.status, category: data.category };
+    } catch (err) {
+      throw this.transformError(err);
+    }
+  }
+
+  /** List every message template on the WABA (paginated). Mock mode returns a fixture. */
+  async listMessageTemplates(): Promise<MetaTemplateListItem[]> {
+    if (this.mockMode) {
+      return MOCK_TEMPLATE_LIST;
+    }
+    const wabaId = this.config.getOrThrow<string>('WHATSAPP_WABA_ID');
+    const collected: MetaTemplateListItem[] = [];
+    let after: string | undefined;
+    let pages = 0;
+    try {
+      do {
+        const { data } = await this.http.get(`/${this.apiVersion}/${wabaId}/message_templates`, {
+          headers: this.authHeader(),
+          params: {
+            fields: 'id,name,language,status,category,components',
+            limit: 100,
+            ...(after ? { after } : {}),
+          },
+        });
+        for (const t of data?.data ?? []) {
+          collected.push({
+            id: String(t.id),
+            name: String(t.name),
+            language: String(t.language),
+            status: String(t.status),
+            category: String(t.category),
+            components: Array.isArray(t.components) ? t.components : [],
+          });
+        }
+        // Continue only while Meta reports another page; cap pages as a runaway guard.
+        after = data?.paging?.next ? data?.paging?.cursors?.after : undefined;
+        pages += 1;
+      } while (after && pages < 50);
+      return collected;
     } catch (err) {
       throw this.transformError(err);
     }

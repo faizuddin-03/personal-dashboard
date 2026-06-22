@@ -29,7 +29,7 @@ describe('TicketsService', () => {
   beforeEach(() => {
     prisma = makePrisma();
     knowledge = { create: jest.fn().mockResolvedValue({ id: 'k1' }) };
-    service = new TicketsService(prisma as any, knowledge as any, {} as any);
+    service = new TicketsService(prisma as any, knowledge as any, {} as any, { close: jest.fn().mockResolvedValue(undefined) } as any);
   });
 
   it('createFromEscalation creates an OPEN ticket with reason + intent + event link', async () => {
@@ -68,10 +68,10 @@ describe('TicketsService', () => {
 
   it('resolve sets RESOLVED + resolvedAt; close sets CLOSED + closedAt', async () => {
     prisma.ticket.findUnique.mockResolvedValue({ id: 't1' });
-    prisma.ticket.update.mockResolvedValue({ id: 't1', seq: 1, status: 'RESOLVED', contact: {}, assignee: null });
-    await service.resolve('t1');
+    prisma.ticket.update.mockResolvedValue({ id: 't1', seq: 1, status: 'RESOLVED', contact: {}, assignee: null, conversationId: null });
+    await service.resolve('t1', 'user-1');
     expect(prisma.ticket.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ status: 'RESOLVED', resolvedAt: expect.any(Date) }) }));
-    await service.close('t1');
+    await service.close('t1', 'user-1');
     expect(prisma.ticket.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ status: 'CLOSED', closedAt: expect.any(Date) }) }));
   });
 
@@ -121,7 +121,7 @@ describe('TicketsService.agentContext', () => {
     };
     knowledge = { retrieve: jest.fn().mockResolvedValue([]) };
     llm = { generateReply: jest.fn() };
-    service = new TicketsService(prisma, knowledge, llm);
+    service = new TicketsService(prisma, knowledge, llm, { close: jest.fn().mockResolvedValue(undefined) } as any);
   });
 
   it('throws NotFound when the ticket is missing', async () => {
@@ -169,7 +169,7 @@ describe('TicketsService.suggestReply', () => {
     };
     knowledge = { retrieve: jest.fn().mockResolvedValue([]) };
     llm = { generateReply: jest.fn() };
-    service = new TicketsService(prisma, knowledge, llm);
+    service = new TicketsService(prisma, knowledge, llm, { close: jest.fn().mockResolvedValue(undefined) } as any);
   });
 
   it('throws NotFound when the ticket is missing', async () => {

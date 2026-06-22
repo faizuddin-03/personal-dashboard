@@ -10,6 +10,7 @@ import { UpdateTemplateDto } from './dto/update-template.dto';
 import { GenerateTemplateDto } from './dto/generate-template.dto';
 import { ListTemplatesDto } from './dto/list-templates.dto';
 import { TemplateLanguageVariantDto } from './dto/template-component.dto';
+import { fromMetaLocale, fromMetaStatus, fromMetaCategory, parseMetaComponents } from './meta-template-mapping';
 
 const ACTIVE_STATUSES: TemplateStatus[] = ['DRAFT', 'PENDING', 'APPROVED'];
 
@@ -56,6 +57,14 @@ function buildMetaComponents(variant: TemplateLanguageVariantDto, variableNames:
     });
   }
   return components;
+}
+
+export interface SyncFromMetaResult {
+  checked: number;
+  imported: number;
+  updated: number;
+  categoryChanged: number;
+  skipped: number;
 }
 
 @Injectable()
@@ -266,6 +275,122 @@ export class TemplatesService {
       }
     }
     return { checked: pending.length, updated };
+  }
+
+  /**
+   * Pull EVERY template from the WABA into the app. Imports Meta-only templates
+   * fully (usable in blasts) and overwrites status + category + content for rows
+   * the app already has. Pristine never-submitted DRAFTs are left untouched.
+   * Triggered by the manual Sync button; the hourly cron stays pending-only.
+   */
+  async syncFromMeta(actorUserId: string): Promise<SyncFromMetaResult> {
+    const items = await this.whatsapp.listMessageTemplates();
+    const locals = await this.prisma.template.findMany();
+
+    type LocalRow = (typeof locals)[number];
+    const byMetaId = new Map<string, LocalRow>();
+    const submittedByNameLang = new Map<string, LocalRow>();
+    const submittedVersionByName = new Map<string, number>();
+    const maxVersionByName = new Map<string, number>();
+
+    for (const row of locals) {
+      if (row.metaTemplateId) byMetaId.set(row.metaTemplateId, row);
+      maxVersionByName.set(row.name, Math.max(maxVersionByName.get(row.name) ?? 0, row.version));
+      const submitted = row.metaTemplateId != null || row.status !== 'DRAFT';
+      if (submitted) {
+        submittedVersionByName.set(row.name, Math.max(submittedVersionByName.get(row.name) ?? 0, row.version));
+        const key = `${row.name}::${row.language}`;
+        const prev = submittedByNameLang.get(key);
+        if (!prev || row.version > prev.version) submittedByNameLang.set(key, row);
+      }
+    }
+
+    let imported = 0;
+    let updated = 0;
+    let categoryChanged = 0;
+    let skipped = 0;
+    const plannedInsertKeys = new Set<string>();
+    const ops: Prisma.PrismaPromise<unknown>[] = [];
+
+    for (const item of items) {
+      const status = fromMetaStatus(item.status);
+      if (!status) {
+        skipped++;
+        this.logger.warn(`Skipping ${item.name}/${item.language}: unknown Meta status "${item.status}"`);
+        continue;
+      }
+      const language = fromMetaLocale(item.language);
+      const category = fromMetaCategory(item.category);
+      const content = parseMetaComponents(item.components);
+      const headerJson = content.headerJson
+        ? (content.headerJson as unknown as Prisma.InputJsonValue)
+        : Prisma.DbNull;
+      const buttonsJson = content.buttonsJson
+        ? (content.buttonsJson as unknown as Prisma.InputJsonValue)
+        : Prisma.DbNull;
+
+      const match = byMetaId.get(item.id) ?? submittedByNameLang.get(`${item.name}::${language}`);
+
+      if (match) {
+        if (match.category !== category) categoryChanged++;
+        ops.push(
+          this.prisma.template.update({
+            where: { id: match.id },
+            data: {
+              status,
+              category,
+              bodyText: content.bodyText,
+              headerJson,
+              footerText: content.footerText,
+              buttonsJson,
+              variables: content.variables,
+              metaTemplateId: item.id,
+              approvedAt: status === 'APPROVED' && match.status !== 'APPROVED' ? new Date() : match.approvedAt,
+            },
+          }),
+        );
+        updated++;
+        continue;
+      }
+
+      // No match → insert. Join an existing submitted family for this name if one
+      // exists; otherwise sit above any pristine drafts (max+1), else start at 1.
+      const version =
+        submittedVersionByName.get(item.name) ??
+        (maxVersionByName.has(item.name) ? maxVersionByName.get(item.name)! + 1 : 1);
+      const insertKey = `${item.name}::${version}::${language}`;
+      if (plannedInsertKeys.has(insertKey)) {
+        // Two Meta locales collapsed to the same local language this run — keep the first.
+        skipped++;
+        this.logger.warn(`Skipping duplicate ${item.name}/${language} (Meta locale ${item.language})`);
+        continue;
+      }
+      plannedInsertKeys.add(insertKey);
+      ops.push(
+        this.prisma.template.create({
+          data: {
+            name: item.name,
+            version,
+            language,
+            category,
+            bodyText: content.bodyText,
+            headerJson,
+            footerText: content.footerText,
+            buttonsJson,
+            variables: content.variables,
+            status,
+            metaTemplateId: item.id,
+            submittedAt: status === 'DRAFT' ? null : new Date(),
+            approvedAt: status === 'APPROVED' ? new Date() : null,
+            createdById: actorUserId,
+          },
+        }),
+      );
+      imported++;
+    }
+
+    await this.prisma.$transaction(ops);
+    return { checked: items.length, imported, updated, categoryChanged, skipped };
   }
 
   /** Webhook handler entry point — preserved from the Task 5 stub. */

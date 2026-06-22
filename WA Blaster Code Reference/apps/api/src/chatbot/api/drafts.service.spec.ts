@@ -1,7 +1,9 @@
 import { randomUUID } from 'crypto';
 import { BadGatewayException, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { Queue } from 'bullmq';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ConversationService } from '../conversations/conversation.service';
 import { ChatbotWhatsappError } from '../whatsapp/chatbot-whatsapp.error';
 import { ChatbotWhatsappService } from '../whatsapp/chatbot-whatsapp.service';
 import { DraftsService } from './drafts.service';
@@ -12,8 +14,10 @@ import { DraftsService } from './drafts.service';
  * collaborator is the chatbot WhatsApp client (no real Meta call in the operator-approval path).
  */
 const prisma = new PrismaClient() as unknown as PrismaService;
+const queue = { add: jest.fn().mockResolvedValue(undefined) };
+const conversations = new ConversationService(prisma, queue as unknown as Queue);
 const whatsapp = { sendTextMessage: jest.fn() };
-const svc = new DraftsService(prisma, whatsapp as unknown as ChatbotWhatsappService);
+const svc = new DraftsService(prisma, whatsapp as unknown as ChatbotWhatsappService, conversations);
 
 const contactIds = new Set<string>();
 
@@ -35,7 +39,7 @@ async function makeContact(): Promise<{ id: string; phone: string }> {
 }
 
 const draftScalars = {
-  body: 'Here is your shipping ETA.',
+  body: 'When does my order ship?', // operator context = the customer's own question, NOT a reply
   intent: 'q',
   intentConfidence: 0.9,
   draftConfidence: 0.9,
@@ -44,8 +48,15 @@ const draftScalars = {
   latencyMs: 5,
 };
 
-/** Seed a contact + ESCALATED conversation + inbound + PENDING BotDraft; returns their ids. */
-async function seedPendingDraft() {
+/** The vetted AI suggestion stored on a send-failure-fallback draft (what Approve should send). */
+const SUGGESTED_REPLY = 'Your order ships within 3 business days.';
+
+/**
+ * Seed a contact + ESCALATED conversation + inbound + PENDING BotDraft; returns their ids.
+ * By default the draft carries a sendable `suggestedReply` (the send-failure-fallback shape); pass
+ * `{ suggestedReply: null }` for a safety/consent escalation that has no AI suggestion to approve.
+ */
+async function seedPendingDraft(opts: { suggestedReply?: string | null } = {}) {
   const contact = await makeContact();
   const conversation = await prisma.conversation.create({
     data: { contactId: contact.id, state: 'ESCALATED', lastInboundAt: new Date() },
@@ -64,6 +75,7 @@ async function seedPendingDraft() {
       conversationId: conversation.id,
       inboundMessageId: inbound.id,
       ...draftScalars,
+      suggestedReply: opts.suggestedReply === undefined ? SUGGESTED_REPLY : opts.suggestedReply,
       state: 'PENDING',
     },
   });
@@ -100,6 +112,8 @@ describe('DraftsService.list', () => {
     expect(item.state).toBe('PENDING');
     expect(item.conversation.contact).toBeDefined();
     expect(Array.isArray(item.citations)).toBe(true);
+    // The list payload exposes the AI suggestion so the UI can show it next to the operator context.
+    expect(item.suggestedReply).toBe(SUGGESTED_REPLY);
   });
 
   it('excludes non-PENDING drafts when no explicit state filter is given', async () => {
@@ -111,16 +125,38 @@ describe('DraftsService.list', () => {
     expect(res.total).toBe(0);
     expect(res.items).toHaveLength(0);
   });
+
+  it('hides a PENDING draft once its conversation is no longer ESCALATED (a human took over → REPLIED)', async () => {
+    const { conversation, draft } = await seedPendingDraft();
+    await prisma.conversation.update({ where: { id: conversation.id }, data: { state: 'REPLIED' } });
+
+    const res = await svc.list({ conversationId: conversation.id });
+
+    expect(res.total).toBe(0);
+    expect(res.items.some((d) => d.id === draft.id)).toBe(false);
+  });
+
+  it('hides a PENDING draft once its conversation is assigned to an operator', async () => {
+    const { conversation, draft } = await seedPendingDraft();
+    await prisma.conversation.update({ where: { id: conversation.id }, data: { assignedToId: randomUUID() } });
+
+    const res = await svc.list({ conversationId: conversation.id });
+
+    expect(res.total).toBe(0);
+    expect(res.items.some((d) => d.id === draft.id)).toBe(false);
+  });
 });
 
 describe('DraftsService.approve', () => {
-  it('sends via WhatsApp, marks the draft SENT, creates an OPERATOR_REPLY outbound, and moves the conversation to REPLIED', async () => {
+  it('sends the AI suggestion (not the body), marks the draft SENT, records an OPERATOR_REPLY, and moves to REPLIED', async () => {
     const { contact, conversation, draft } = await seedPendingDraft();
     const userId = randomUUID();
 
     const result = await svc.approve(draft.id, userId);
 
-    expect(whatsapp.sendTextMessage).toHaveBeenCalledWith(contact.phone, draftScalars.body);
+    // Sends suggestedReply verbatim — never draft.body (the customer's own question / operator context).
+    expect(whatsapp.sendTextMessage).toHaveBeenCalledWith(contact.phone, SUGGESTED_REPLY);
+    expect(whatsapp.sendTextMessage).not.toHaveBeenCalledWith(contact.phone, draftScalars.body);
 
     const after = await prisma.botDraft.findUniqueOrThrow({ where: { id: draft.id } });
     expect(after.state).toBe('SENT');
@@ -129,7 +165,7 @@ describe('DraftsService.approve', () => {
     const { metaMessageId } = await whatsapp.sendTextMessage.mock.results[0].value;
     const outbound = await prisma.conversationOutboundMessage.findUniqueOrThrow({ where: { botDraftId: draft.id } });
     expect(outbound.kind).toBe('OPERATOR_REPLY');
-    expect(outbound.body).toBe(draftScalars.body);
+    expect(outbound.body).toBe(SUGGESTED_REPLY);
     expect(outbound.sentByUserId).toBe(userId);
     expect(outbound.metaMessageId).toBe(metaMessageId);
 
@@ -138,6 +174,17 @@ describe('DraftsService.approve', () => {
     expect(conv.lastOutboundAt).not.toBeNull();
 
     expect(result.draft.state).toBe('SENT');
+  });
+
+  it('throws ConflictException(NO_SUGGESTION) and never sends when the draft has no AI suggestion (safety escalation)', async () => {
+    const { draft } = await seedPendingDraft({ suggestedReply: null });
+
+    await expect(svc.approve(draft.id, randomUUID())).rejects.toBeInstanceOf(ConflictException);
+    await expect(svc.approve(draft.id, randomUUID())).rejects.toMatchObject({ response: { code: 'NO_SUGGESTION' } });
+    expect(whatsapp.sendTextMessage).not.toHaveBeenCalled();
+
+    const after = await prisma.botDraft.findUniqueOrThrow({ where: { id: draft.id } });
+    expect(after.state).toBe('PENDING'); // unchanged — operator must compose a reply instead
   });
 
   it('throws ConflictException(INVALID_DRAFT_STATE) when the draft is not PENDING and never sends', async () => {
@@ -165,6 +212,21 @@ describe('DraftsService.approve', () => {
     expect(after.state).toBe('PENDING');
     const conv = await prisma.conversation.findUniqueOrThrow({ where: { id: conversation.id } });
     expect(conv.state).toBe('ESCALATED');
+  });
+
+  it('throws ConflictException(CS_WINDOW_CLOSED) and never sends when the CS window has closed', async () => {
+    const { conversation, draft } = await seedPendingDraft();
+    await prisma.conversation.update({
+      where: { id: conversation.id },
+      data: { lastInboundAt: new Date(Date.now() - 25 * 60 * 60 * 1000) },
+    });
+
+    await expect(svc.approve(draft.id, randomUUID())).rejects.toBeInstanceOf(ConflictException);
+    await expect(svc.approve(draft.id, randomUUID())).rejects.toMatchObject({ response: { code: 'CS_WINDOW_CLOSED' } });
+    expect(whatsapp.sendTextMessage).not.toHaveBeenCalled();
+
+    const after = await prisma.botDraft.findUniqueOrThrow({ where: { id: draft.id } });
+    expect(after.state).toBe('PENDING');
   });
 });
 

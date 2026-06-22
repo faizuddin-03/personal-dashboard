@@ -7,6 +7,7 @@ import {
 import { BotDraft, ConversationOutboundMessage, Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ListDraftsDto } from '../dto/drafts.dto';
+import { ConversationService } from '../conversations/conversation.service';
 import { ChatbotWhatsappError } from '../whatsapp/chatbot-whatsapp.error';
 import { ChatbotWhatsappService } from '../whatsapp/chatbot-whatsapp.service';
 
@@ -16,6 +17,16 @@ const MAX_LIMIT = 100;
 const INVALID_DRAFT_STATE = {
   code: 'INVALID_DRAFT_STATE',
   message: 'Draft is not pending and can no longer be actioned',
+} as const;
+
+const CS_WINDOW_CLOSED_ERROR = {
+  code: 'CS_WINDOW_CLOSED',
+  message: 'The 24h customer-service window has closed. Start a new template conversation to re-engage.',
+} as const;
+
+const NO_SUGGESTION_ERROR = {
+  code: 'NO_SUGGESTION',
+  message: 'No AI suggestion to approve — compose a reply.',
 } as const;
 
 /** A PENDING draft loaded with the contact phone we need to send to. */
@@ -34,6 +45,7 @@ export class DraftsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly whatsapp: ChatbotWhatsappService,
+    private readonly conversations: ConversationService,
   ) {}
 
   async list(filter: ListDraftsDto): Promise<{
@@ -44,9 +56,14 @@ export class DraftsService {
   }> {
     const page = filter.page ?? 1;
     const limit = Math.min(filter.limit ?? 20, MAX_LIMIT);
+    const state = filter.state ?? 'PENDING';
     const where: Prisma.BotDraftWhereInput = {
-      state: filter.state ?? 'PENDING',
+      state,
       ...(filter.conversationId ? { conversationId: filter.conversationId } : {}),
+      // The default PENDING queue is the operator's action list: only show drafts whose conversation
+      // is still ESCALATED and unowned. Once a human takes over (assigned, or REPLIED/AWAITING_REPLY),
+      // the draft is stale and must drop out so the operator isn't prompted to send over themselves.
+      ...(state === 'PENDING' ? { conversation: { is: { state: 'ESCALATED', assignedToId: null } } } : {}),
     };
 
     const [items, total] = await this.prisma.$transaction([
@@ -91,7 +108,21 @@ export class DraftsService {
     action: { kind: 'APPROVE' } | { kind: 'EDIT'; editedBody: string },
   ): Promise<{ draft: BotDraft; outbound: ConversationOutboundMessage }> {
     const draft = await this.loadPending(draftId);
-    const body = action.kind === 'EDIT' ? action.editedBody : draft.body;
+    // Approve sends the AI suggestion — NOT draft.body, which for safety/consent escalations is the
+    // customer's own question kept as operator context (echoing it back would reply with their words).
+    // Edit always uses the operator-supplied body, so it needs no suggestion.
+    let body: string;
+    if (action.kind === 'EDIT') {
+      body = action.editedBody;
+    } else {
+      if (draft.suggestedReply == null) throw new ConflictException(NO_SUGGESTION_ERROR);
+      body = draft.suggestedReply;
+    }
+
+    // Sending into a lapsed 24h CS window fails at Meta with an opaque 502 — reject it up front so
+    // the operator gets an actionable error instead and the draft stays PENDING for later re-engagement.
+    if (!(await this.conversations.getCsWindowOpen(draft.conversation.id)))
+      throw new ConflictException(CS_WINDOW_CLOSED_ERROR);
 
     let metaMessageId: string;
     try {

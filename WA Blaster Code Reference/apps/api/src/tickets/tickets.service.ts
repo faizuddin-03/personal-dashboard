@@ -1,13 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EscalationReason, Prisma, Ticket, TicketStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { KnowledgeService } from '../knowledge/knowledge.service';
 import { LlmService } from '../llm/llm.service';
+import { ConversationService } from '../chatbot/conversations/conversation.service';
+import type { CloseDisposition } from '../chatbot/dto/conversations.dto';
 import { suggestSlug } from './tickets.suggest';
 
 /** Display id for a ticket, e.g. seq 48 -> "TCK-1048". */
 export function formatTicketNum(seq: number): string {
   return `TCK-${1000 + seq}`;
+}
+
+export interface ResolveOptions {
+  disposition?: CloseDisposition;
+  resolutionNotes?: string;
+  editedAnswer?: string;
 }
 
 const TICKET_INCLUDE = {
@@ -19,10 +27,13 @@ const ACTIVE_STATUSES: TicketStatus[] = ['OPEN', 'IN_PROGRESS', 'RESOLVED'];
 
 @Injectable()
 export class TicketsService {
+  private readonly logger = new Logger(TicketsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly knowledge: KnowledgeService,
     private readonly llm: LlmService,
+    private readonly conversations: ConversationService,
   ) {}
 
   /** Called by the Autopilot bot when it escalates an inbound message. */
@@ -66,6 +77,28 @@ export class TicketsService {
 
   async agentContext(id: string) {
     const ticket = await this.getOrThrow(id);
+    if (ticket.conversationId) {
+      const draft = await this.prisma.botDraft.findFirst({
+        where: { conversationId: ticket.conversationId },
+        orderBy: { createdAt: 'desc' },
+        include: { citations: { include: { chunk: { include: { document: true } } }, orderBy: { rank: 'asc' } } },
+      });
+      if (draft) {
+        return {
+          intent: ticket.intent,
+          reason: ticket.reason,
+          confidence: draft.draftConfidence,
+          escalatedAt: ticket.openedAt,
+          suggestedKnowledge: draft.citations.map((c) => ({
+            id: c.chunk.document.id,
+            slug: c.chunk.document.name, // KnowledgeDocument has no slug field; name (filename) fills the slug key
+            question: c.chunk.document.title,
+            answer: c.chunk.text,
+            category: c.chunk.document.category,
+          })),
+        };
+      }
+    }
     const event = ticket.autopilotEventId
       ? await this.prisma.autopilotEvent.findUnique({ where: { id: ticket.autopilotEventId } })
       : null;
@@ -94,11 +127,23 @@ export class TicketsService {
       data: { status: 'IN_PROGRESS', assigneeId, assignedAt: new Date() },
       include: TICKET_INCLUDE,
     });
+    if (ticket.conversationId) {
+      // Take over the linked chatbot conversation so the decision engine's human-handling guard
+      // stands the bot down (it never replies over an assigned operator).
+      await this.prisma.conversation.update({
+        where: { id: ticket.conversationId },
+        data: { assignedToId: assigneeId },
+      });
+    }
     return this.enrich(ticket);
   }
 
-  async resolve(id: string) {
-    await this.getOrThrow(id);
+  async resolve(id: string, userId: string, opts: ResolveOptions = {}) {
+    const existing = await this.getOrThrow(id);
+    // Close-first: for a non-SKIP disposition the capture must succeed (or surface) BEFORE we mark the
+    // ticket resolved, so a NO_OPERATOR_REPLY/INVALID_STATE error never leaves a resolved ticket with no
+    // capture. SKIP stays best-effort (swallows a non-closeable conversation; see closeLinkedConversation).
+    await this.closeLinkedConversation(existing.conversationId, userId, opts);
     const ticket = await this.prisma.ticket.update({
       where: { id },
       data: { status: 'RESOLVED', resolvedAt: new Date() },
@@ -107,8 +152,9 @@ export class TicketsService {
     return this.enrich(ticket);
   }
 
-  async close(id: string) {
-    await this.getOrThrow(id);
+  async close(id: string, userId: string, opts: ResolveOptions = {}) {
+    const existing = await this.getOrThrow(id);
+    await this.closeLinkedConversation(existing.conversationId, userId, opts);
     const ticket = await this.prisma.ticket.update({
       where: { id },
       data: { status: 'CLOSED', closedAt: new Date() },
@@ -129,6 +175,15 @@ export class TicketsService {
 
   async suggestReply(id: string): Promise<{ text: string; confidence: number }> {
     const ticket = await this.getOrThrow(id);
+    if (ticket.conversationId) {
+      const draft = await this.prisma.botDraft.findFirst({
+        where: { conversationId: ticket.conversationId, suggestedReply: { not: null } },
+        orderBy: { createdAt: 'desc' },
+      });
+      if (draft?.suggestedReply) {
+        return { text: draft.suggestedReply, confidence: draft.draftConfidence };
+      }
+    }
     const inbound = await this.prisma.inboundMessage.findFirst({
       where: { contactId: ticket.contactId },
       orderBy: { receivedAt: 'desc' },
@@ -178,6 +233,35 @@ export class TicketsService {
       status: 'CANDIDATE',
       ticketId: id,
     });
+  }
+
+  private async closeLinkedConversation(
+    conversationId: string | null,
+    userId: string,
+    opts: ResolveOptions,
+  ): Promise<void> {
+    if (!conversationId) return;
+    const disposition = opts.disposition ?? 'SKIP';
+    try {
+      await this.conversations.close({
+        conversationId,
+        userId,
+        disposition,
+        resolutionNotes: opts.resolutionNotes,
+        editedAnswer: opts.editedAnswer,
+      });
+    } catch (err) {
+      // SKIP: a non-closeable conversation (ConflictException) is expected and swallow-worthy — the
+      // ticket is the operator's primary object and take-over already stood the bot down. Re-throw
+      // anything else (DB/Redis down, programming error).
+      // Non-SKIP: the operator explicitly asked to capture, so surface the conflict
+      // (NO_OPERATOR_REPLY / INVALID_STATE) rather than silently dropping the capture.
+      if (err instanceof ConflictException && disposition === 'SKIP') {
+        this.logger.warn(`closeLinkedConversation skipped conv=${conversationId}: ${err.message}`);
+        return;
+      }
+      throw err;
+    }
   }
 
   private enrich<T extends { seq: number }>(ticket: T): T & { num: string } {

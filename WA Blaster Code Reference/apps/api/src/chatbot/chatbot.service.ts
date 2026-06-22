@@ -7,6 +7,7 @@ import { ChatbotSettingsService } from './settings/chatbot-settings.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { Decision } from './decision/decision.types';
 import { CampaignContextService } from './campaign/campaign-context.service';
+import { ChatbotInboxBridge } from './bridge/chatbot-inbox-bridge.service';
 
 export interface ChatbotInboundPayload {
   contacts: Array<{ wa_id: string; profile?: { name?: string } }>;
@@ -50,6 +51,7 @@ export class ChatbotService {
     private readonly logger: Logger,
     private readonly config: ConfigService,
     private readonly campaign: CampaignContextService,
+    private readonly inboxBridge: ChatbotInboxBridge,
   ) {
     this.logBodies = this.config.get<string>('CHATBOT_LOG_BODIES', 'false') === 'true';
   }
@@ -181,6 +183,14 @@ export class ChatbotService {
             botDraftId: botDraft.id,
             subKind: 'rag_answer',
           });
+          await this.inboxBridge.recordAutoReply({
+            contactId: contact.id,
+            intent: decision.intent,
+            confidence: decision.draftConfidence,
+            replyText: decision.draftBody!,
+            metaMessageId,
+            model: decision.modelUsed,
+          });
           // Read receipt is best-effort; never block or fail the turn on it.
           void this.whatsapp.markAsRead(message.id).catch(() => undefined);
           break;
@@ -216,6 +226,14 @@ export class ChatbotService {
             draftData: this.buildDraftData(decision, originalInbound.body),
             citations,
           });
+          // decision.reason here ('escalation_accepted') maps to the SENSITIVE catch-all in the bridge.
+          await this.inboxBridge.recordEscalation({
+            contactId: contact.id,
+            conversationId,
+            reason: decision.reason,
+            intent: decision.intent,
+            confidence: decision.intentConfidence,
+          });
           break;
         }
 
@@ -249,12 +267,20 @@ export class ChatbotService {
             draftData: this.buildDraftData(decision, body),
             citations,
           });
+          await this.inboxBridge.recordEscalation({
+            contactId: contact.id,
+            conversationId,
+            reason: decision.reason,
+            intent: decision.intent,
+            confidence: decision.intentConfidence,
+          });
           break;
         }
 
         case 'ignore_disabled':
         case 'ignore_opted_out':
         case 'ignore_stale':
+        case 'ignore_human_handling':
         case 'ignore_llm_unavailable':
         case 'ignore_embeddings_unavailable':
           // Intentional no-op: recorded in chatbot_decisions for audit; no send, no draft, no state
@@ -273,8 +299,18 @@ export class ChatbotService {
         await this.conversations.recordEscalation({
           conversationId,
           inboundMessageId,
-          draftData: this.buildDraftData(decision, decision.draftBody || body),
+          // body = the customer's question (operator context); suggestedReply = the vetted reply that
+          // failed to send, so Approve has something genuinely sendable (unlike safety/consent drafts).
+          draftData: this.buildDraftData(decision, body),
           citations,
+          suggestedReply: decision.draftBody,
+        });
+        await this.inboxBridge.recordEscalation({
+          contactId: contact.id,
+          conversationId,
+          reason: 'dispatch_failure',
+          intent: decision.intent,
+          confidence: decision.draftConfidence,
         });
       }
     }

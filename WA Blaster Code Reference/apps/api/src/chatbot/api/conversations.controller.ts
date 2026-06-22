@@ -23,6 +23,13 @@ export class ConversationsController {
     return this.inbox.listConversations(q);
   }
 
+  // NOTE: 'summary' must be declared before the ':id' route, or Nest matches "summary" as an :id.
+  @Get('summary')
+  @ApiOperation({ summary: 'Inbox tab badge counts: per-tab conversation totals plus the unassigned queue.' })
+  summary() {
+    return this.inbox.summary();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a single conversation with its contact, messages and bot drafts.' })
   get(@Param('id') id: string) {
@@ -40,6 +47,13 @@ export class ConversationsController {
   manualReply(@Param('id') id: string, @Body() dto: ManualReplyDto, @Req() req: Request) {
     const userId = (req.user as { id: string }).id;
     return this.inbox.manualReply(id, dto.body, userId);
+  }
+
+  @Post(':id/take-over')
+  @ApiOperation({ summary: 'Take over a conversation: assign it to the current operator and stand the bot down.' })
+  takeOver(@Param('id') id: string, @Req() req: Request) {
+    const userId = (req.user as { id: string }).id;
+    return this.inbox.takeOver(id, userId);
   }
 
   @Post(':id/close')

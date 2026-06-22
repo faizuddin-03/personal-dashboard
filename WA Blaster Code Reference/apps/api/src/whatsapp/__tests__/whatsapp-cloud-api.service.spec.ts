@@ -172,4 +172,53 @@ describe('WhatsappCloudApiService', () => {
       ).rejects.toThrow(/more than 24 hours have passed/);
     });
   });
+
+  describe('listMessageTemplates', () => {
+    it('returns a canned fixture in mock mode without hitting network', async () => {
+      const service = new WhatsappCloudApiService(makeConfig({ WHATSAPP_MOCK_MODE: 'true' }));
+      const result = await service.listMessageTemplates();
+      expect(result.length).toBeGreaterThan(0);
+      expect(result[0]).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          name: expect.any(String),
+          language: expect.any(String),
+          status: expect.any(String),
+          category: expect.any(String),
+        }),
+      );
+      expect(Array.isArray(result[0].components)).toBe(true);
+    });
+
+    it('GETs the WABA message_templates endpoint and follows pagination', async () => {
+      const service = new WhatsappCloudApiService(makeConfig());
+      const scope = nock('https://graph.facebook.com')
+        .get('/v20.0/999000111/message_templates')
+        .query((q) => q.limit === '100' && !q.after)
+        .matchHeader('authorization', 'Bearer test-token')
+        .reply(200, {
+          data: [{ id: 'a1', name: 'one', language: 'en', status: 'APPROVED', category: 'UTILITY', components: [] }],
+          paging: { cursors: { after: 'CUR2' }, next: 'https://graph.facebook.com/more' },
+        })
+        .get('/v20.0/999000111/message_templates')
+        .query((q) => q.after === 'CUR2')
+        .reply(200, {
+          data: [{ id: 'b2', name: 'two', language: 'ms', status: 'REJECTED', category: 'MARKETING', components: [] }],
+          paging: { cursors: { after: 'CUR3' } }, // no `next` → stop
+        });
+
+      const result = await service.listMessageTemplates();
+      expect(result.map((t) => t.id)).toEqual(['a1', 'b2']);
+      expect(scope.isDone()).toBe(true);
+    });
+
+    it('throws a helpful error on 4xx from Meta', async () => {
+      const service = new WhatsappCloudApiService(makeConfig());
+      nock('https://graph.facebook.com')
+        .get('/v20.0/999000111/message_templates')
+        .query(true)
+        .reply(400, { error: { message: 'Invalid WABA', code: 100 } });
+      await expect(service.listMessageTemplates()).rejects.toThrow(/Invalid WABA/);
+    });
+  });
 });

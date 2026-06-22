@@ -32,4 +32,29 @@ test.describe('Inbox agent-assist', () => {
     await expect(page.getByTestId('suggest-draft')).toBeVisible();
     await expect(page.getByTestId('agent-context-card')).toBeVisible();
   });
+
+  // Skipped until Phase 3: requires the API+worker+web stack (CHATBOT_ENABLED=true) and at least
+  // one seeded active ticket. Remove `.skip` in Phase 3.
+  test.skip('Resolve opens the disposition chooser with a RAG-backed save option', async ({ page }) => {
+    await loginAsAdmin(page);
+    await page.goto('/inbox');
+    // Switch to needs-human view if the toggle is present (mirrors existing test above).
+    const needsHuman = page.getByRole('button', { name: /needs[ -]?human/i });
+    if (await needsHuman.count()) await needsHuman.first().click();
+
+    // Click the Resolve button on the first ticket (data-testid added in Task 3).
+    await page.getByTestId('resolve-ticket').first().click();
+
+    // The SaveToKnowledgeModal (data-testid="save-kb-modal") must appear with all three options.
+    const modal = page.getByTestId('save-kb-modal');
+    await expect(modal).toBeVisible();
+    await expect(page.getByTestId('disposition-IMPORT_LIVE')).toBeVisible();
+    await expect(page.getByTestId('disposition-SAVE_DRAFT')).toBeVisible();
+    await expect(page.getByTestId('disposition-SKIP')).toBeVisible();
+
+    // Choose SKIP (no operator reply required) and confirm; modal must close.
+    await page.getByTestId('disposition-SKIP').click();
+    await page.getByTestId('kb-confirm').click();
+    await expect(modal).toBeHidden();
+  });
 });

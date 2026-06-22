@@ -84,6 +84,7 @@ function buildEngine() {
   const conversations = {
     hasPendingEscalation: jest.fn(async () => false),
     isOfferingEscalation: jest.fn(async () => false),
+    isHumanHandling: jest.fn(async () => false),
     getEscalationOfferOriginalInboundId: jest.fn(async () => 'orig-1'),
     clearOfferState: jest.fn(async () => undefined),
   };
@@ -175,6 +176,26 @@ describe('DecisionEngine', () => {
       expect(d.kind).toBe('ESCALATE');
       expect(d.subKind).toBe('safety_escalate');
       expect(d.reason).toBe('cs_window_expired');
+    });
+  });
+
+  describe('human-handling guard', () => {
+    it('IGNOREs (ignore_human_handling) when a human owns the conversation — no classify/retrieve/draft', async () => {
+      const { engine, conversations, classifier, retrieval, drafter } = buildEngine();
+      conversations.isHumanHandling.mockResolvedValue(true);
+
+      const d = await engine.decide(input());
+
+      expect(d.kind).toBe('IGNORE');
+      expect(d.subKind).toBe('ignore_human_handling');
+      expect(d.reason).toBe('human_handling');
+      expect(d.draftBody).toBeUndefined();
+      expect(classifier.classify).not.toHaveBeenCalled();
+      expect(retrieval.retrieve).not.toHaveBeenCalled();
+      expect(drafter.draft).not.toHaveBeenCalled();
+      // The guard sits ahead of the pending-escalation/offer branches, so neither is consulted.
+      expect(conversations.hasPendingEscalation).not.toHaveBeenCalled();
+      expect(conversations.isOfferingEscalation).not.toHaveBeenCalled();
     });
   });
 

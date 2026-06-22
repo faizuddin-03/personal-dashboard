@@ -393,5 +393,37 @@ describe('WebhookController', () => {
       expect(result).toEqual({ received: true });
       expect(cbChatbotQueue.add).not.toHaveBeenCalled();
     });
+
+    it('does NOT call the legacy autopilot when CHATBOT_ENABLED=true — chatbot is the single brain', async () => {
+      // Use a controller where applyInboundMessage returns a stored object (non-null),
+      // so we can confirm the autopilot gate suppresses the call even when stored exists.
+      const cbAutopilot = { handleInbound: jest.fn() };
+      const cbBlastsWithStored = {
+        applyMetaMessageEvent: jest.fn(),
+        applyInboundMessage: jest.fn().mockResolvedValue({ contactId: 'c1', inboundMessageId: 'in1', body: 'hello' }),
+      };
+      const module = await Test.createTestingModule({
+        controllers: [WebhookController],
+        providers: [
+          { provide: ConfigService, useValue: makeConfig({ CHATBOT_ENABLED: 'true' }) },
+          { provide: TemplatesService, useValue: { applyMetaTemplateUpdate: jest.fn() } },
+          { provide: BlastsService, useValue: cbBlastsWithStored },
+          { provide: AutopilotService, useValue: cbAutopilot },
+          { provide: getQueueToken(CHATBOT_INBOUND_QUEUE), useValue: { add: jest.fn() } },
+          { provide: ConversationService, useValue: { handleInbound: jest.fn().mockResolvedValue({ conversation: { id: 'conv1' }, inboundMessage: { id: 'in1' } }) } },
+          { provide: PrismaService, useValue: { contact: { findUnique: jest.fn().mockResolvedValue({ id: 'c1', phoneE164: '+60198765432' }) } } },
+        ],
+      }).compile();
+      const gatedController = module.get(WebhookController);
+
+      const body = inboundBody();
+      const raw = Buffer.from(JSON.stringify(body));
+      await gatedController.receive(sign(raw.toString('utf8')), body as any, { rawBody: raw } as any);
+
+      // applyInboundMessage must still run (blast analytics) even when chatbot is enabled.
+      expect(cbBlastsWithStored.applyInboundMessage).toHaveBeenCalled();
+      // Legacy autopilot must NOT be invoked — chatbot is the single brain.
+      expect(cbAutopilot.handleInbound).not.toHaveBeenCalled();
+    });
   });
 });

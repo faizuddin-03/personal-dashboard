@@ -23,6 +23,9 @@ export const NAV: NavItem[] = [
   { label: 'Performance', path: '/reports',   icon: 'IcActivity' },
   { label: 'Knowledge',   path: '/knowledge', icon: 'IcBook', adminOnly: true },
   { label: 'Settings',    path: '/settings',  icon: 'IcSettings', adminOnly: true },
+  ...(import.meta.env.VITE_SIMULATOR_ENABLED === 'true'
+    ? [{ label: 'Simulator', path: '/simulator', icon: 'IcMessage', adminOnly: true } as NavItem]
+    : []),
 ];
 
 export const isAdmin = (role: Role | undefined): boolean => role === 'ADMIN';
