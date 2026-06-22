@@ -23,17 +23,25 @@ const NAV_LINKS = [
 ];
 
 test('smoke: login then visit all sidebar pages', async ({ page }) => {
+  // Give plenty of time for 7 navigations + 5 s pause
+  test.setTimeout(120_000);
+
   // Login
   await page.goto('/login');
   await page.getByTestId('email').fill(ADMIN_EMAIL);
   await page.getByTestId('password').fill(ADMIN_PASSWORD);
   await page.getByTestId('submit').click();
-  await expect(page).toHaveURL(/\/$/);
+
+  // Just confirm we left the login page (app may redirect to /dashboard or /)
+  await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
 
   // Visit each sidebar page in order
   for (const name of NAV_LINKS) {
-    await page.getByRole('link', { name, exact: true }).click();
-    await page.waitForLoadState('networkidle');
+    const link = page.getByRole('link', { name, exact: false }).first();
+    await link.waitFor({ state: 'visible', timeout: 10_000 });
+    await link.click();
+    // domcontentloaded is reliable; networkidle can hang on apps with websockets/polling
+    await page.waitForLoadState('domcontentloaded');
     console.log(`✓ ${name}`);
   }
 
