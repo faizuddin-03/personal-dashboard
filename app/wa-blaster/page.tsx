@@ -397,6 +397,7 @@ export default function WABlasterPage() {
   const [showAdminPw,   setShowAdminPw]   = useState(false);
   const [showOpPw,      setShowOpPw]      = useState(false);
   const [settingsOpen,  setSettingsOpen]  = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   // ── Per-flow configs (enable/disable toggles + flow-level vars) ────────────
   const [flowConfigs, setFlowConfigs] = useState<Record<string, FlowConfig>>(() =>
@@ -440,6 +441,8 @@ export default function WABlasterPage() {
 
   function saveSettings() {
     localStorage.setItem("wa_settings", JSON.stringify({ baseUrl, adminEmail, adminPassword, opEmail, opPassword }));
+    setSettingsSaved(true);
+    setTimeout(() => setSettingsSaved(false), 2000);
   }
 
   // ── Polling ────────────────────────────────────────────────────────────────
@@ -694,8 +697,13 @@ export default function WABlasterPage() {
                 </div>
                 <div className="sm:col-span-2 lg:col-span-3">
                   <button onClick={saveSettings}
-                    className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors">
-                    Save Settings
+                    className={clsx(
+                      "px-4 py-2 text-xs font-medium rounded-lg transition-colors",
+                      settingsSaved
+                        ? "bg-green-700 text-green-100 cursor-default"
+                        : "bg-blue-600 hover:bg-blue-500 text-white"
+                    )}>
+                    {settingsSaved ? "✓ Saved" : "Save Settings"}
                   </button>
                 </div>
               </div>
