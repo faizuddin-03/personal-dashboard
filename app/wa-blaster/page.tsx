@@ -521,10 +521,12 @@ export default function WABlasterPage() {
     });
     if (!res.ok) {
       const data = await res.json();
+      const errMsg = data.error ?? "Failed to start.";
       setRunning(false);
       runningContextRef.current = null;
       setResultContext(ctx);
-      setResult({ exitCode: 1, log: data.error ?? "Failed to start.", startedAt: "" });
+      setRunLog(errMsg);
+      setResult({ exitCode: 1, log: errMsg, startedAt: "" });
       return;
     }
     startPolling();
