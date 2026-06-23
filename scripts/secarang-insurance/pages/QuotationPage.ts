@@ -48,6 +48,89 @@ export class QuotationPage extends BasePage {
     if (!ok) throw new Error('Quotation cards did not appear within 25 s');
   }
 
+  // Selects a sum insured option on the target insurer's card (before clicking Buy).
+  // mode:
+  //   "default" — leave the dropdown alone, proceed as-is
+  //   "min"     — select index 0 (first / lowest option)
+  //   "medium"  — select index 1 (second option); falls back to default if only 2 options
+  //   "max"     — select the last option
+  // Returns the selected value and how many options were available, or applied=false if skipped.
+  async selectSumInsured(
+    insurerName: string,
+    mode: 'default' | 'min' | 'medium' | 'max',
+  ): Promise<{ applied: boolean; selectedValue: string; optionCount: number }> {
+    if (mode === 'default') {
+      console.log('   ℹ️  Sum insured mode is "default" — leaving as-is');
+      return { applied: false, selectedValue: '', optionCount: 0 };
+    }
+
+    const cards     = this.page.locator(CARD_SEL);
+    const total     = await cards.count();
+    const nameLower = insurerName.toLowerCase();
+
+    for (let i = 0; i < total; i++) {
+      const card = cards.nth(i);
+      if (!(await card.isVisible().catch(() => false))) continue;
+
+      const alts: string[] = await card.locator('img').evaluateAll(
+        (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.alt.toLowerCase())
+      ).catch(() => []);
+
+      if (!alts.some(a => a.includes(nameLower))) continue;
+
+      const select = card.locator('.sum-insured select').first();
+      if ((await select.count()) === 0 || !(await select.isVisible().catch(() => false))) {
+        console.log(`   ℹ️  No sum insured dropdown on "${insurerName}" card — skipping`);
+        return { applied: false, selectedValue: '', optionCount: 0 };
+      }
+
+      if (await select.isDisabled().catch(() => true)) {
+        const locked = await select.evaluate((el: HTMLSelectElement) => el.options[0]?.text ?? '').catch(() => '');
+        console.log(`   ℹ️  Sum insured dropdown on "${insurerName}" is disabled (${locked}) — skipping`);
+        return { applied: false, selectedValue: locked, optionCount: 1 };
+      }
+
+      const options: string[] = await select.evaluate(
+        (el: HTMLSelectElement) => Array.from(el.options).map(o => o.value)
+      );
+      const count = options.length;
+
+      if (count <= 1) {
+        console.log(`   ℹ️  Sum insured dropdown has only ${count} option(s) — skipping`);
+        return { applied: false, selectedValue: options[0] ?? '', optionCount: count };
+      }
+
+      let targetIndex: number;
+      if (mode === 'min') {
+        targetIndex = 0;
+      } else if (mode === 'max') {
+        targetIndex = count - 1;
+      } else {
+        // medium: always index 1 (deterministic, not first or last)
+        if (count === 2) {
+          console.log(`   ℹ️  Only 2 sum insured options — "medium" falls back to default (no change)`);
+          return { applied: false, selectedValue: options[0], optionCount: count };
+        }
+        targetIndex = 1;
+      }
+
+      const targetValue = options[targetIndex];
+      console.log(`   💰 Sum insured "${mode}" → index ${targetIndex} of ${count} (value: ${targetValue})`);
+      await select.selectOption({ index: targetIndex });
+
+      // Wait for price to update — may trigger an API recalculation
+      await this.page.waitForLoadState('networkidle', { timeout: 8_000 }).catch(() => {
+        console.log('   ⚠️  Network idle timeout after sum insured change — proceeding');
+      });
+      await this.wait(300);
+
+      return { applied: true, selectedValue: targetValue, optionCount: count };
+    }
+
+    console.log(`   ℹ️  "${insurerName}" card not found for sum insured selection — skipping`);
+    return { applied: false, selectedValue: '', optionCount: 0 };
+  }
+
   // Extracts all RM price values visible on a specific insurer's card.
   // Returns a comma-joined string of all RM amounts found (e.g. "RM 1,234.56").
   // Returns '' if the card is not found or has no RM values.

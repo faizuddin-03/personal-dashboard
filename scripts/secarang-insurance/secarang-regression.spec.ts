@@ -28,6 +28,7 @@ const CONFIG = {
   postcode:       process.env.REGRESSION_POSTCODE    || '55000',
   targetInsurer:  process.env.REGRESSION_INSURER        || 'Zurich',
   coverageType:   (process.env.REGRESSION_COVERAGE_TYPE || 'comprehensive') as 'comprehensive' | 'tpft',
+  sumInsuredMode: (process.env.REGRESSION_SUM_INSURED   || 'default') as 'default' | 'min' | 'medium' | 'max',
   vehicleType:    process.env.REGRESSION_VEHICLE_TYPE   || 'car',
   ownerType:      process.env.REGRESSION_OWNER_TYPE   || 'private',
   // Comma-separated add-on names to select (e.g. "Windshield,CART")
@@ -295,6 +296,26 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       // No step recorded when the postcode field isn't on the page — that's normal.
     } catch (e) {
       recordStep('Postcode on quotation page', 'FAIL', String(e));
+    }
+
+    // ── 7c. Select sum insured (non-stopping) ───────────────
+    // Happens on the quotation page BEFORE clicking Buy.
+    // If the dropdown is absent, disabled, or has ≤1 option, the step is silently skipped.
+    if (CONFIG.sumInsuredMode !== 'default') {
+      try {
+        const quotationPage = new QuotationPage(page);
+        const { applied, selectedValue, optionCount } = await quotationPage.selectSumInsured(
+          CONFIG.targetInsurer, CONFIG.sumInsuredMode,
+        );
+        if (applied) {
+          await captureScreenshot(page, `Quotation — Sum Insured (${CONFIG.sumInsuredMode}: ${selectedValue})`);
+          recordStep('Select sum insured', 'PASS',
+            `${CONFIG.sumInsuredMode} → ${selectedValue} (${optionCount} options)`);
+        }
+        // Silently skipped when dropdown not available — no FAIL recorded.
+      } catch (e) {
+        recordStep('Select sum insured', 'FAIL', String(e));
+      }
     }
 
     // ── 8. Select insurer ────────────────────────────────────

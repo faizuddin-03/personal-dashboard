@@ -367,15 +367,16 @@ export default function InsurancePage() {
 
   const [activeTab, setActiveTab] = useState<"check" | "tab2" | "tab3">("check");
 
-  // Blocking overlay until 2026-06-19T15:15:00 local time
-  const BLOCK_UNTIL = new Date("2026-06-19T15:15:00");
-  const [blocked, setBlocked] = useState(() => new Date() < BLOCK_UNTIL);
+  // Daily maintenance window: 10:50 – 13:00 MYT (UTC+8), repeated every day
+  function inMaintenanceWindow(): boolean {
+    const myt = new Date(Date.now() + 8 * 60 * 60 * 1000); // shift to UTC+8
+    const total = myt.getUTCHours() * 60 + myt.getUTCMinutes();
+    return total >= 10 * 60 + 50 && total < 13 * 60;       // 10:50–13:00
+  }
+  const [blocked, setBlocked] = useState(() => inMaintenanceWindow());
   useEffect(() => {
-    if (!blocked) return;
-    const ms = BLOCK_UNTIL.getTime() - Date.now();
-    if (ms <= 0) { setBlocked(false); return; }
-    const t = setTimeout(() => setBlocked(false), ms);
-    return () => clearTimeout(t);
+    const t = setInterval(() => setBlocked(inMaintenanceWindow()), 30_000);
+    return () => clearInterval(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -388,10 +389,10 @@ export default function InsurancePage() {
             <div className="text-red-400 text-5xl mb-4">⛔</div>
             <h2 className="text-xl font-black text-red-300 uppercase tracking-wide mb-3">Access Restricted</h2>
             <p className="text-red-200 text-base font-medium leading-relaxed">
-              messagebird is currently ongoing testing.<br />
+              The environment is under maintenance.<br />
               <span className="font-black">DO NOT proceed with any insurance transaction.</span>
             </p>
-            <p className="mt-5 text-xs text-red-400/70">This page will unlock automatically at 3:15 PM.</p>
+            <p className="mt-5 text-xs text-red-400/70">Maintenance window: 10:50 AM – 1:00 PM (MYT) daily. Page will unlock automatically.</p>
           </div>
         </div>
       )}
@@ -2141,6 +2142,7 @@ interface RegressionWizardConfig {
   postcode:           string;
   targetInsurer:      string;
   coverageType:       "comprehensive" | "tpft";
+  sumInsuredMode:     "default" | "min" | "medium" | "max";
   vehicleType:        "car" | "motorcycle";
   ownerType:          "private" | "company";
   selectedAddons:     string[];
@@ -2174,6 +2176,7 @@ function loadWizardConfig(): RegressionWizardConfig {
     postcode:           "55000",
     targetInsurer:      "Zurich",
     coverageType:       "comprehensive" as const,
+    sumInsuredMode:     "default" as const,
     vehicleType:        "car" as const,
     ownerType:          "private" as const,
     selectedAddons:     ["All Drivers"],
@@ -2342,8 +2345,9 @@ function RegressionTab() {
         icNumber:      normalizeIdNumber(cfg.icNumber) || undefined,
         postcode:      cfg.postcode      || undefined,
         targetInsurer: cfg.targetInsurer || undefined,
-        coverageType:  cfg.coverageType  || undefined,
-        vehicleType:   cfg.vehicleType   || undefined,
+        coverageType:    cfg.coverageType    || undefined,
+        sumInsuredMode:  cfg.sumInsuredMode  !== "default" ? cfg.sumInsuredMode : undefined,
+        vehicleType:     cfg.vehicleType     || undefined,
         ownerType:     cfg.ownerType     || undefined,
         addons: cfg.selectedAddons.length > 0 ? cfg.selectedAddons : undefined,
         ownerName:     cfg.ownerName     || undefined,
@@ -2946,6 +2950,40 @@ function RegressionTab() {
                   )}
                 />
               )}
+            </div>
+
+            {/* Sum Insured quick-select — sub-section of Choose Quotation */}
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-2">Sum Insured</p>
+              <div className="flex gap-1.5">
+                {(["default", "min", "medium", "max"] as const).map(mode => (
+                  <button key={mode} type="button"
+                    onClick={() => patch({ sumInsuredMode: mode })}
+                    disabled={loading}
+                    title={{
+                      default: "Leave as-is — use whatever the system shows",
+                      min:     "Select the first (lowest) option in the dropdown",
+                      medium:  "Select the second option (not first, not last)",
+                      max:     "Select the last (highest) option in the dropdown",
+                    }[mode]}
+                    className={clsx(
+                      "flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize",
+                      cfg.sumInsuredMode === mode
+                        ? "bg-blue-600/20 border-blue-500 text-blue-200"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
+                      loading && "opacity-50 cursor-not-allowed pointer-events-none"
+                    )}>
+                    {mode}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[10px] text-slate-600 mt-1.5 leading-tight">
+                {cfg.sumInsuredMode === "default" && "System default — dropdown is not touched."}
+                {cfg.sumInsuredMode === "min"     && "Selects the first (lowest) sum insured option."}
+                {cfg.sumInsuredMode === "medium"  && "Selects the 2nd option — skipped if only 2 options exist."}
+                {cfg.sumInsuredMode === "max"     && "Selects the last (highest) sum insured option."}
+                {" "}If the dropdown is not shown or disabled, this setting is skipped automatically.
+              </p>
             </div>
 
             <div className="h-px bg-slate-800" />

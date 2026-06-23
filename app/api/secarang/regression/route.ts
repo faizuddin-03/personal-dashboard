@@ -45,9 +45,10 @@ export async function POST(req: NextRequest) {
     vehicleNumber?: string;
     icNumber?:     string;
     postcode?:     string;
-    targetInsurer?: string;
-    coverageType?:  string;
-    vehicleType?:   string;
+    targetInsurer?:  string;
+    coverageType?:   string;
+    sumInsuredMode?: string;
+    vehicleType?:    string;
     ownerType?:     string;
     addons?:       string[];
     ownerName?:    string;
@@ -99,6 +100,7 @@ export async function POST(req: NextRequest) {
           ...(body.postcode       && { REGRESSION_POSTCODE:     body.postcode }),
           ...(body.targetInsurer  && { REGRESSION_INSURER:        body.targetInsurer }),
           ...(body.coverageType   && { REGRESSION_COVERAGE_TYPE: body.coverageType }),
+          ...(body.sumInsuredMode && { REGRESSION_SUM_INSURED:   body.sumInsuredMode }),
           ...(body.vehicleType    && { REGRESSION_VEHICLE_TYPE:  body.vehicleType }),
           ...(body.ownerType      && { REGRESSION_OWNER_TYPE:   body.ownerType }),
           ...(body.addons?.length && { REGRESSION_ADDONS:       body.addons.join(',') }),
