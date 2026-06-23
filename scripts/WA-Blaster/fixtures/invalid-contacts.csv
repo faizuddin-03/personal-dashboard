@@ -1,4 +1,4 @@
-phone,name,state
-0123456801,E2E Valid Row,SELANGOR
-,E2E Missing Phone,JOHOR
-not-a-number,E2E Bad Phone,PENANG
+phone,name,state,languagePreference
+0123456801,E2E Valid Row,SELANGOR,EN
+,E2E Missing Phone,JOHOR,MS
+not-a-number,E2E Bad Phone,PENANG,EN

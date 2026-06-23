@@ -22,7 +22,7 @@ const FLOW = 'flow-blast-state-language';
 
 // Seed data facts (apps/api/prisma/seed.ts):
 //  - Template "sample_promo_2026" has APPROVED variants in EN + MS only.
-//  - Opted-in PHONE dealers: SELANGOR (3), KL (2), PENANG (1), JOHOR (1), N.SEMBILAN (1)
+//  - Opted-in PHONE dealers: SELANGOR (3), KL (2), PENANG (1), JOHOR (1), NEGERI_SEMBILAN (1)
 
 async function loginAs(page: Page, email: string, password: string) {
   await page.goto('/login');

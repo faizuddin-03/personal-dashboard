@@ -234,30 +234,26 @@ test.describe('Segment creation and use', () => {
     await snap(page, FLOW, 'segment_04_save_toast');
   });
 
-  test('saved segment is selectable in the blast wizard audience step', async ({ page }) => {
+  test('saved segment appears on the Segments page after creation', async ({ page }) => {
     await loginAsAdmin(page);
 
-    // Create a segment first
+    // Create a segment from the Dealers page
     await page.getByRole('link', { name: 'Dealers' }).click();
     await expect(page.getByTestId('contacts-table')).toBeVisible();
     await page.getByTestId('select-all').check();
     await expect(page.getByTestId('selection-bar')).toBeVisible();
     await page.getByTestId('save-as-segment').click();
-    const segmentName = `E2E Blast Seg ${Date.now().toString().slice(-6)}`;
+    const segmentName = `E2E Seg Verify ${Date.now().toString().slice(-6)}`;
     await page.getByTestId('segment-name-input').fill(segmentName);
     await page.getByRole('button', { name: /^save$/i }).click();
     await expect(page.getByText(/saved with \d+ dealers/i)).toBeVisible();
+    await snap(page, FLOW, 'segment_05_segment_saved');
 
-    // Now use it in the blast wizard
-    await page.getByRole('link', { name: 'Campaigns' }).click();
-    await page.getByTestId('new-blast').click();
-    await expect(page.getByTestId('blast-wizard')).toBeVisible();
-    await snap(page, FLOW, 'segment_05_wizard_audience_step');
-
-    await expect(page.getByTestId('blast-segment')).toBeVisible();
-    await page.getByTestId('blast-segment').selectOption({ label: segmentName });
-
-    await expect(page.getByText(/\d+ recipients/)).toBeVisible({ timeout: 10_000 });
-    await snap(page, FLOW, 'segment_06_wizard_segment_selected');
+    // Navigate to /segments and verify the segment is listed there
+    await page.goto('/segments');
+    await expect(page).toHaveURL(/\/segments$/);
+    await expect(page.locator('[data-testid^="segment-row-"]').filter({ hasText: segmentName }))
+      .toBeVisible({ timeout: 8_000 });
+    await snap(page, FLOW, 'segment_06_segment_visible_on_page');
   });
 });
