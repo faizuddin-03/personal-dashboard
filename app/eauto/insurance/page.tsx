@@ -2919,7 +2919,7 @@ function RegressionTab() {
                   title="Leave quotation page postcode unchanged"
                   className={clsx(
                     "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
-                    cfg.quotationPostcode === ""
+                    !cfg.quotationPostcode
                       ? "bg-blue-600/20 border-blue-500 text-blue-200"
                       : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
                     loading && "opacity-50 cursor-not-allowed pointer-events-none"
@@ -2943,13 +2943,13 @@ function RegressionTab() {
                 ))}
                 <button type="button"
                   onClick={() => {
-                    if (cfg.quotationPostcode === "" || PRESET_POSTCODES.has(cfg.quotationPostcode))
+                    if (!cfg.quotationPostcode || PRESET_POSTCODES.has(cfg.quotationPostcode))
                       patch({ quotationPostcode: " " }); // open custom input
                   }}
                   disabled={loading}
                   className={clsx(
                     "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
-                    cfg.quotationPostcode !== "" && !PRESET_POSTCODES.has(cfg.quotationPostcode)
+                    !!cfg.quotationPostcode && !PRESET_POSTCODES.has(cfg.quotationPostcode)
                       ? "bg-blue-600/20 border-blue-500 text-blue-200"
                       : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
                     loading && "opacity-50 cursor-not-allowed pointer-events-none"
@@ -2957,9 +2957,9 @@ function RegressionTab() {
                   Custom
                 </button>
               </div>
-              {cfg.quotationPostcode !== "" && !PRESET_POSTCODES.has(cfg.quotationPostcode) && (
+              {!!cfg.quotationPostcode && !PRESET_POSTCODES.has(cfg.quotationPostcode) && (
                 <input
-                  value={cfg.quotationPostcode.trim()}
+                  value={(cfg.quotationPostcode ?? '').trim()}
                   onChange={e => patch({ quotationPostcode: e.target.value })}
                   placeholder="e.g. 55000"
                   maxLength={5}
