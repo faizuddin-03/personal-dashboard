@@ -1873,6 +1873,14 @@ const INSURER_DEFAULT_ADDONS: Record<string, string[]> = {
   "Zurich": ["All Drivers"],
 };
 
+const POSTCODE_PRESETS = [
+  { label: "KL",       value: "50000", hint: "Kuala Lumpur" },
+  { label: "Kelantan", value: "15000", hint: "Kota Bharu" },
+  { label: "Labuan",   value: "87000", hint: "Labuan Town" },
+  { label: "Sabah",    value: "88000", hint: "Kota Kinabalu" },
+] as const;
+const PRESET_POSTCODES: Set<string> = new Set(POSTCODE_PRESETS.map(p => p.value));
+
 // ── Verification Report UI ────────────────────────────────────────────────────
 function VerifTable({ title, rows }: { title: string; rows: VerificationRow[] }) {
   return (
@@ -2844,6 +2852,55 @@ function RegressionTab() {
                 </div>
               </div>
             )}
+
+            {/* Postcode quick-select — sub-section of Choose Quotation */}
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-2">Postcode</p>
+              <div className="flex gap-1.5 flex-wrap">
+                {POSTCODE_PRESETS.map(({ label, value, hint }) => (
+                  <button key={label} type="button"
+                    onClick={() => patch({ postcode: value })}
+                    disabled={loading}
+                    title={`${hint} — ${value}`}
+                    className={clsx(
+                      "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
+                      cfg.postcode === value
+                        ? "bg-blue-600/20 border-blue-500 text-blue-200"
+                        : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
+                      loading && "opacity-50 cursor-not-allowed pointer-events-none"
+                    )}>
+                    {label}
+                  </button>
+                ))}
+                <button type="button"
+                  onClick={() => {
+                    if (PRESET_POSTCODES.has(cfg.postcode)) patch({ postcode: "" });
+                  }}
+                  disabled={loading}
+                  className={clsx(
+                    "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
+                    !PRESET_POSTCODES.has(cfg.postcode)
+                      ? "bg-blue-600/20 border-blue-500 text-blue-200"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
+                    loading && "opacity-50 cursor-not-allowed pointer-events-none"
+                  )}>
+                  Custom
+                </button>
+              </div>
+              {!PRESET_POSTCODES.has(cfg.postcode) && (
+                <input
+                  value={cfg.postcode}
+                  onChange={e => patch({ postcode: e.target.value })}
+                  placeholder="e.g. 55000"
+                  maxLength={5}
+                  disabled={loading}
+                  className={clsx(
+                    "mt-2 w-full px-3 py-1.5 rounded-lg text-xs bg-slate-800 border border-slate-600 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30",
+                    loading && "opacity-50 cursor-not-allowed"
+                  )}
+                />
+              )}
+            </div>
 
             <div className="h-px bg-slate-800" />
 

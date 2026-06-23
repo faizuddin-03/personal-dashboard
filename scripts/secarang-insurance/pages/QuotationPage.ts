@@ -48,6 +48,77 @@ export class QuotationPage extends BasePage {
     if (!ok) throw new Error('Quotation cards did not appear within 25 s');
   }
 
+  // Looks for a postcode field on the quotation page, updates it, and waits for
+  // the quote cards to refresh. Uses network-idle detection instead of a fixed
+  // timer so it adapts to the variable 10-20 s insurance API response time.
+  // Returns true if the postcode was successfully changed, false if no field found.
+  async changePostcodeAndWait(postcode: string): Promise<boolean> {
+    const inputSels = [
+      'input[placeholder*="postcode" i]',
+      'input[placeholder*="poskod" i]',
+      'input[name*="postcode" i]',
+      'input[id*="postcode" i]',
+      'input[data-testid*="postcode" i]',
+    ];
+
+    let postcodeInput = null;
+    for (const sel of inputSels) {
+      const el = this.page.locator(sel).first();
+      if ((await el.count()) > 0 && await el.isVisible().catch(() => false)) {
+        postcodeInput = el;
+        break;
+      }
+    }
+
+    if (!postcodeInput) {
+      console.log('   ℹ️  No postcode field found on quotation page — skipping');
+      return false;
+    }
+
+    console.log(`   📍 Changing postcode to "${postcode}"`);
+    await postcodeInput.clear();
+    await postcodeInput.fill(postcode);
+
+    const btnSels = [
+      'button:has-text("Apply")',
+      'button:has-text("Update")',
+      'button:has-text("Kemaskini")',
+      'button:has-text("Refresh")',
+      'button:has-text("Get Quote")',
+      'button:has-text("Cari")',
+    ];
+
+    let clicked = false;
+    for (const sel of btnSels) {
+      const btn = this.page.locator(sel).first();
+      if ((await btn.count()) > 0 && await btn.isVisible().catch(() => false)) {
+        console.log(`   🖱️  Clicking "${sel.match(/"([^"]+)"/)?.[1]}" to apply postcode`);
+        await btn.click();
+        clicked = true;
+        break;
+      }
+    }
+    if (!clicked) {
+      await postcodeInput.press('Enter');
+      console.log('   ⌨️  Pressed Enter to apply postcode');
+    }
+
+    // Network-idle detection: waits until the insurance API response settles.
+    // Falls back gracefully if the page never hits networkidle within 35 s.
+    console.log('   ⏳ Waiting for quotation to refresh (network idle)…');
+    await this.page.waitForLoadState('networkidle', { timeout: 35_000 }).catch(() => {
+      console.log('   ⚠️  Network idle timeout — checking for cards anyway');
+    });
+
+    // Final confirmation: cards visible
+    const ok = await this.poll(
+      async () => (await this.page.locator(CARD_SEL).count()) > 0,
+      10_000,
+    );
+    console.log(ok ? '   ✅ Quotation refreshed' : '   ⚠️  Cards did not reappear after postcode change');
+    return ok;
+  }
+
   // Returns:
   //   foundTarget=false            → insurer card not on page at all
   //   foundTarget=true, unavailable=true  → card present but "Quotation unavailable"

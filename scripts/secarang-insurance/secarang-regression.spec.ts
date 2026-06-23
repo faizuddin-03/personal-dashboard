@@ -248,6 +248,22 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
+    // ── 7b. Change postcode on quotation page (non-stopping) ────
+    // Some Secarang builds show a postcode field on the quotation page.
+    // If found, update it and wait for the cards to refresh before picking an insurer.
+    try {
+      const quotationPage = new QuotationPage(page);
+      const changed = await quotationPage.changePostcodeAndWait(CONFIG.postcode);
+      if (changed) {
+        await captureScreenshot(page, 'Quotation Page — After Postcode Change');
+        recordStep('Change postcode on quotation page', 'PASS', `Postcode set to ${CONFIG.postcode}`);
+      }
+      // No FAIL entry when the field simply isn't there — that's normal.
+    } catch (e) {
+      recordStep('Change postcode on quotation page', 'FAIL', String(e));
+      // Non-stopping: carry on to insurer selection.
+    }
+
     // ── 8. Select insurer ────────────────────────────────────
     try {
       const quotationPage = new QuotationPage(page);
