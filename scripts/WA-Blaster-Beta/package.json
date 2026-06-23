@@ -1,0 +1,16 @@
+{
+  "name": "wa-blaster-beta-e2e",
+  "version": "1.0.0",
+  "description": "BETA — Extended Playwright E2E test suite for WA Blaster",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "install-browsers": "npx playwright install chromium",
+    "postinstall": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.0",
+    "typescript": "^5.3.0"
+  }
+}
