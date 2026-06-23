@@ -27,6 +27,18 @@ export class PaymentSuccessPage extends BasePage {
     super(page);
   }
 
+  /** Returns true if the page already shows a payment success indicator (non-blocking, short timeout). */
+  async isSuccessPage(sitePassword: string): Promise<boolean> {
+    try {
+      const siteGate = new SiteGatePage(this.page);
+      await siteGate.passSiteGate(sitePassword);
+      const t = (await this.page.locator('body').innerText({ timeout: 5_000 }).catch(() => '')).toLowerCase();
+      return /payment successful|thank you for your purchase/i.test(t);
+    } catch {
+      return false;
+    }
+  }
+
   async waitForPage(sitePassword: string): Promise<void> {
     const siteGate = new SiteGatePage(this.page);
     await siteGate.passSiteGate(sitePassword);
