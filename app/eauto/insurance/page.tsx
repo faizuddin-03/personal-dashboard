@@ -371,7 +371,7 @@ export default function InsurancePage() {
   function inMaintenanceWindow(): boolean {
     const myt = new Date(Date.now() + 8 * 60 * 60 * 1000); // shift to UTC+8
     const total = myt.getUTCHours() * 60 + myt.getUTCMinutes();
-    return total >= 10 * 60 + 50 && total < 13 * 60;       // 10:50–13:00
+    return total >= 10 * 60 + 50 && total < 13 * 60 + 30;   // 10:50–13:30
   }
   const [blocked, setBlocked] = useState(() => inMaintenanceWindow());
   useEffect(() => {
@@ -392,7 +392,7 @@ export default function InsurancePage() {
               The environment is under maintenance.<br />
               <span className="font-black">DO NOT proceed with any insurance transaction.</span>
             </p>
-            <p className="mt-5 text-xs text-red-400/70">Maintenance window: 10:50 AM – 1:00 PM (MYT) daily. Page will unlock automatically.</p>
+            <p className="mt-5 text-xs text-red-400/70">Maintenance window: 10:50 AM – 1:30 PM (MYT) daily. Page will unlock automatically.</p>
           </div>
         </div>
       )}
