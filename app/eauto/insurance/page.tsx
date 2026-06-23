@@ -367,11 +367,12 @@ export default function InsurancePage() {
 
   const [activeTab, setActiveTab] = useState<"check" | "tab2" | "tab3">("check");
 
-  // Daily maintenance window: 10:50 – 13:00 MYT (UTC+8), repeated every day
+  // One-time maintenance window: 2026-06-23, 10:50 AM – 1:30 PM MYT (UTC+8)
+  const MAINT_START = new Date("2026-06-23T02:50:00Z"); // 10:50 MYT = 02:50 UTC
+  const MAINT_END   = new Date("2026-06-23T05:30:00Z"); // 13:30 MYT = 05:30 UTC
   function inMaintenanceWindow(): boolean {
-    const myt = new Date(Date.now() + 8 * 60 * 60 * 1000); // shift to UTC+8
-    const total = myt.getUTCHours() * 60 + myt.getUTCMinutes();
-    return total >= 10 * 60 + 50 && total < 13 * 60 + 30;   // 10:50–13:30
+    const now = new Date();
+    return now >= MAINT_START && now < MAINT_END;
   }
   const [blocked, setBlocked] = useState(() => inMaintenanceWindow());
   useEffect(() => {
@@ -392,7 +393,7 @@ export default function InsurancePage() {
               The environment is under maintenance.<br />
               <span className="font-black">DO NOT proceed with any insurance transaction.</span>
             </p>
-            <p className="mt-5 text-xs text-red-400/70">Maintenance window: 10:50 AM – 1:30 PM (MYT) daily. Page will unlock automatically.</p>
+            <p className="mt-5 text-xs text-red-400/70">Maintenance window: 23 Jun 2026, 10:50 AM – 1:30 PM (MYT). Page will unlock automatically.</p>
           </div>
         </div>
       )}
