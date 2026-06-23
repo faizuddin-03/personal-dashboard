@@ -2132,6 +2132,7 @@ interface RegressionWizardConfig {
   icNumber:           string;
   postcode:           string;
   targetInsurer:      string;
+  coverageType:       "comprehensive" | "tpft";
   vehicleType:        "car" | "motorcycle";
   ownerType:          "private" | "company";
   selectedAddons:     string[];
@@ -2164,6 +2165,7 @@ function loadWizardConfig(): RegressionWizardConfig {
     icNumber:           "730620065847",
     postcode:           "55000",
     targetInsurer:      "Zurich",
+    coverageType:       "comprehensive" as const,
     vehicleType:        "car" as const,
     ownerType:          "private" as const,
     selectedAddons:     ["All Drivers"],
@@ -2332,6 +2334,7 @@ function RegressionTab() {
         icNumber:      normalizeIdNumber(cfg.icNumber) || undefined,
         postcode:      cfg.postcode      || undefined,
         targetInsurer: cfg.targetInsurer || undefined,
+        coverageType:  cfg.coverageType  || undefined,
         vehicleType:   cfg.vehicleType   || undefined,
         ownerType:     cfg.ownerType     || undefined,
         addons: cfg.selectedAddons.length > 0 ? cfg.selectedAddons : undefined,
@@ -2813,6 +2816,34 @@ function RegressionTab() {
                 </button>
               ))}
             </div>
+
+            {/* Coverage type — only shown for Zurich */}
+            {cfg.targetInsurer === "Zurich" && (
+              <div className="flex gap-2 mt-2">
+                <button type="button"
+                  onClick={() => patch({ coverageType: "comprehensive" })}
+                  disabled={loading}
+                  className={clsx(
+                    "flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all",
+                    cfg.coverageType === "comprehensive"
+                      ? "bg-blue-600/20 border-blue-500 text-blue-200"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
+                    loading && "opacity-50 cursor-not-allowed pointer-events-none"
+                  )}>
+                  Comprehensive
+                </button>
+                <div className="flex-1 flex flex-col items-stretch gap-1">
+                  <button type="button"
+                    disabled
+                    className="w-full py-2.5 rounded-xl text-sm font-semibold border-2 bg-slate-900 border-slate-800 text-slate-600 cursor-not-allowed opacity-60">
+                    TPFT
+                  </button>
+                  <p className="text-[10px] text-red-500/80 text-center leading-tight">
+                    (pending to be deployed by dev. enable once changes has been pushed)
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="h-px bg-slate-800" />
 

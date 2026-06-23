@@ -26,8 +26,9 @@ const CONFIG = {
   vehicleNumber:  process.env.REGRESSION_VN          || 'WYN3837',
   icNumber:       process.env.REGRESSION_IC          || '730620065847',
   postcode:       process.env.REGRESSION_POSTCODE    || '55000',
-  targetInsurer:  process.env.REGRESSION_INSURER     || 'Zurich',
-  vehicleType:    process.env.REGRESSION_VEHICLE_TYPE || 'car',
+  targetInsurer:  process.env.REGRESSION_INSURER        || 'Zurich',
+  coverageType:   (process.env.REGRESSION_COVERAGE_TYPE || 'comprehensive') as 'comprehensive' | 'tpft',
+  vehicleType:    process.env.REGRESSION_VEHICLE_TYPE   || 'car',
   ownerType:      process.env.REGRESSION_OWNER_TYPE   || 'private',
   // Comma-separated add-on names to select (e.g. "Windshield,CART")
   // Empty = select first 2 simple add-ons as before
@@ -250,7 +251,7 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     // ── 8. Select insurer ────────────────────────────────────
     try {
       const quotationPage = new QuotationPage(page);
-      const { foundTarget, unavailable } = await quotationPage.selectInsurer(CONFIG.targetInsurer);
+      const { foundTarget, unavailable } = await quotationPage.selectInsurer(CONFIG.targetInsurer, CONFIG.coverageType);
       await page.waitForTimeout(1000);
       if (!foundTarget) {
         recordStep(`Select ${CONFIG.targetInsurer}`, 'FAIL', `${CONFIG.targetInsurer} card not found on quotation page`);

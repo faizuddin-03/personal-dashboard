@@ -52,7 +52,7 @@ export class QuotationPage extends BasePage {
   //   foundTarget=false            → insurer card not on page at all
   //   foundTarget=true, unavailable=true  → card present but "Quotation unavailable"
   //   foundTarget=true, unavailable=false → card present and Buy button clicked
-  async selectInsurer(insurerName: string): Promise<{ foundTarget: boolean; unavailable: boolean }> {
+  async selectInsurer(insurerName: string, coverageType?: 'comprehensive' | 'tpft'): Promise<{ foundTarget: boolean; unavailable: boolean }> {
     const cards     = this.page.locator(CARD_SEL);
     const total     = await cards.count();
     const nameLower = insurerName.toLowerCase();
@@ -93,16 +93,44 @@ export class QuotationPage extends BasePage {
         console.log(`   🖱️  Clicking "Buy" on "${insurerName}" card`);
         await buyBtn.scrollIntoViewIfNeeded().catch(() => {});
         await buyBtn.click();
+        await this._selectCoverageType(coverageType);
         return { foundTarget: true, unavailable: false };
       }
 
       // Fallback: click the card itself
       console.log(`   🖱️  No Buy button — clicking card directly`);
       await card.click();
+      await this._selectCoverageType(coverageType);
       return { foundTarget: true, unavailable: false };
     }
 
     console.log(`   ⚠️  No visible card matched "${insurerName}" among ${total} elements`);
     return { foundTarget: false, unavailable: false };
+  }
+
+  // Selects a coverage type tab/button (Comprehensive / TPFT) if the UI exposes one.
+  // No-ops silently when the selector doesn't exist — safe to call before dev deploys.
+  private async _selectCoverageType(coverageType?: 'comprehensive' | 'tpft'): Promise<void> {
+    if (!coverageType) return;
+
+    const label = coverageType === 'tpft' ? 'TPFT' : 'Comprehensive';
+    const selectors = [
+      `button:has-text("${label}")`,
+      `[data-coverage="${coverageType}"]`,
+      `label:has-text("${label}")`,
+      `input[value="${coverageType}"]`,
+    ];
+
+    await this.wait(500);
+    for (const sel of selectors) {
+      const el = this.page.locator(sel).first();
+      if ((await el.count()) > 0 && await el.isVisible().catch(() => false)) {
+        console.log(`   🎯 Selecting coverage type "${label}" via "${sel}"`);
+        await el.scrollIntoViewIfNeeded().catch(() => {});
+        await el.click();
+        return;
+      }
+    }
+    console.log(`   ℹ️  Coverage type selector for "${label}" not found — skipping (pending dev deploy)`);
   }
 }
