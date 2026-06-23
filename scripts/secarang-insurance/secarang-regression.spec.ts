@@ -27,8 +27,9 @@ const CONFIG = {
   icNumber:       process.env.REGRESSION_IC          || '730620065847',
   postcode:       process.env.REGRESSION_POSTCODE    || '55000',
   targetInsurer:  process.env.REGRESSION_INSURER        || 'Zurich',
-  coverageType:   (process.env.REGRESSION_COVERAGE_TYPE || 'comprehensive') as 'comprehensive' | 'tpft',
-  sumInsuredMode: (process.env.REGRESSION_SUM_INSURED   || 'default') as 'default' | 'min' | 'medium' | 'max',
+  coverageType:      (process.env.REGRESSION_COVERAGE_TYPE || 'comprehensive') as 'comprehensive' | 'tpft',
+  quotationPostcode: process.env.REGRESSION_QUOTATION_POSTCODE || '',
+  sumInsuredMode:    (process.env.REGRESSION_SUM_INSURED || 'default') as 'default' | 'min' | 'medium' | 'max',
   vehicleType:    process.env.REGRESSION_VEHICLE_TYPE   || 'car',
   ownerType:      process.env.REGRESSION_OWNER_TYPE   || 'private',
   // Comma-separated add-on names to select (e.g. "Windshield,CART")
@@ -260,21 +261,20 @@ test.describe('Secarang Regression – Zurich E2E', () => {
     }
 
     // ── 7b. Postcode change on quotation page (non-stopping) ───
-    // If the quotation page exposes a postcode field, update it and compare
-    // prices before and after. Screenshots are taken either way so a human
-    // can review regional price differences in the report.
-    try {
+    // Only runs when quotationPostcode is set (not empty).
+    // The initial form postcode (CONFIG.postcode) is left untouched.
+    if (CONFIG.quotationPostcode) try {
       const quotationPage = new QuotationPage(page);
 
       // Capture price and screenshot BEFORE applying postcode on the quotation page
       const priceBefore = await quotationPage.extractInsurerPrice(CONFIG.targetInsurer);
-      await captureScreenshot(page, `Quotation — Before Postcode (${CONFIG.postcode})`);
+      await captureScreenshot(page, `Quotation — Before Postcode (${CONFIG.quotationPostcode})`);
 
-      const changed = await quotationPage.changePostcodeAndWait(CONFIG.postcode);
+      const changed = await quotationPage.changePostcodeAndWait(CONFIG.quotationPostcode);
 
       if (changed) {
         const priceAfter   = await quotationPage.extractInsurerPrice(CONFIG.targetInsurer);
-        await captureScreenshot(page, `Quotation — After Postcode (${CONFIG.postcode})`);
+        await captureScreenshot(page, `Quotation — After Postcode (${CONFIG.quotationPostcode})`);
 
         const priceChanged = !!(priceBefore && priceAfter && priceBefore !== priceAfter);
         const priceNote    = priceBefore && priceAfter
@@ -283,17 +283,17 @@ test.describe('Secarang Regression – Zurich E2E', () => {
               : `Price unchanged (${priceAfter || 'not extracted'})`)
           : `Postcode applied (prices not extracted)`;
 
-        console.log(`\n   💰 Postcode ${CONFIG.postcode} | ${priceNote}`);
-        recordStep('Postcode on quotation page', 'PASS', `${CONFIG.postcode} | ${priceNote}`);
+        console.log(`\n   💰 Postcode ${CONFIG.quotationPostcode} | ${priceNote}`);
+        recordStep('Postcode on quotation page', 'PASS', `${CONFIG.quotationPostcode} | ${priceNote}`);
 
         postcodeChangeInfo = {
-          postcode:    CONFIG.postcode,
+          postcode:    CONFIG.quotationPostcode,
           priceBefore: priceBefore || '',
           priceAfter:  priceAfter  || '',
           priceChanged,
         };
       }
-      // No step recorded when the postcode field isn't on the page — that's normal.
+      // No step recorded when the postcode field isn't found on the page — that's normal.
     } catch (e) {
       recordStep('Postcode on quotation page', 'FAIL', String(e));
     }

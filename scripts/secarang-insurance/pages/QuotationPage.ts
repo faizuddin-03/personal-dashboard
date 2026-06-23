@@ -180,12 +180,13 @@ export class QuotationPage extends BasePage {
   // timer so it adapts to the variable 10-20 s insurance API response time.
   // Returns true if the postcode was successfully changed, false if no field found.
   async changePostcodeAndWait(postcode: string): Promise<boolean> {
+    // Selectors derived from the live quotation page HTML
     const inputSels = [
+      'input.postcode-field',             // primary — confirmed in page source
       'input[placeholder*="postcode" i]',
       'input[placeholder*="poskod" i]',
       'input[name*="postcode" i]',
       'input[id*="postcode" i]',
-      'input[data-testid*="postcode" i]',
     ];
 
     let postcodeInput = null;
@@ -202,17 +203,16 @@ export class QuotationPage extends BasePage {
       return false;
     }
 
-    console.log(`   📍 Changing postcode to "${postcode}"`);
-    await postcodeInput.clear();
+    console.log(`   📍 Changing quotation page postcode to "${postcode}"`);
+    await postcodeInput.click();
     await postcodeInput.fill(postcode);
 
+    // "Edit" is the actual button text on the quotation page
     const btnSels = [
+      'button:has-text("Edit")',
       'button:has-text("Apply")',
       'button:has-text("Update")',
       'button:has-text("Kemaskini")',
-      'button:has-text("Refresh")',
-      'button:has-text("Get Quote")',
-      'button:has-text("Cari")',
     ];
 
     let clicked = false;

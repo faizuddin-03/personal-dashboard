@@ -2143,6 +2143,7 @@ interface RegressionWizardConfig {
   postcode:           string;
   targetInsurer:      string;
   coverageType:       "comprehensive" | "tpft";
+  quotationPostcode:  string;
   sumInsuredMode:     "default" | "min" | "medium" | "max";
   vehicleType:        "car" | "motorcycle";
   ownerType:          "private" | "company";
@@ -2177,6 +2178,7 @@ function loadWizardConfig(): RegressionWizardConfig {
     postcode:           "55000",
     targetInsurer:      "Zurich",
     coverageType:       "comprehensive" as const,
+    quotationPostcode:  "",
     sumInsuredMode:     "default" as const,
     vehicleType:        "car" as const,
     ownerType:          "private" as const,
@@ -2346,8 +2348,9 @@ function RegressionTab() {
         icNumber:      normalizeIdNumber(cfg.icNumber) || undefined,
         postcode:      cfg.postcode      || undefined,
         targetInsurer: cfg.targetInsurer || undefined,
-        coverageType:    cfg.coverageType    || undefined,
-        sumInsuredMode:  cfg.sumInsuredMode  !== "default" ? cfg.sumInsuredMode : undefined,
+        coverageType:       cfg.coverageType                                  || undefined,
+        quotationPostcode:  cfg.quotationPostcode?.trim()                     || undefined,
+        sumInsuredMode:     cfg.sumInsuredMode !== "default" ? cfg.sumInsuredMode : undefined,
         vehicleType:     cfg.vehicleType     || undefined,
         ownerType:     cfg.ownerType     || undefined,
         addons: cfg.selectedAddons.length > 0 ? cfg.selectedAddons : undefined,
@@ -2904,18 +2907,33 @@ function RegressionTab() {
               </div>
             )}
 
-            {/* Postcode quick-select — sub-section of Choose Quotation */}
+            {/* Postcode — applied on the Select Quotation page, NOT the home page form */}
             <div>
-              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-2">Postcode</p>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Postcode <span className="text-slate-600 normal-case font-normal">(Quotation page only)</span></p>
+              <p className="text-[10px] text-slate-600 mb-2 leading-tight">Changes the postcode on the quotation page. The initial form postcode in Additional Settings is unchanged.</p>
               <div className="flex gap-1.5 flex-wrap">
+                {/* None = don't touch the quotation page postcode */}
+                <button type="button"
+                  onClick={() => patch({ quotationPostcode: "" })}
+                  disabled={loading}
+                  title="Leave quotation page postcode unchanged"
+                  className={clsx(
+                    "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
+                    cfg.quotationPostcode === ""
+                      ? "bg-blue-600/20 border-blue-500 text-blue-200"
+                      : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
+                    loading && "opacity-50 cursor-not-allowed pointer-events-none"
+                  )}>
+                  None
+                </button>
                 {POSTCODE_PRESETS.map(({ label, value, hint }) => (
                   <button key={label} type="button"
-                    onClick={() => patch({ postcode: value })}
+                    onClick={() => patch({ quotationPostcode: value })}
                     disabled={loading}
                     title={`${hint} — ${value}`}
                     className={clsx(
                       "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
-                      cfg.postcode === value
+                      cfg.quotationPostcode === value
                         ? "bg-blue-600/20 border-blue-500 text-blue-200"
                         : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
                       loading && "opacity-50 cursor-not-allowed pointer-events-none"
@@ -2925,12 +2943,13 @@ function RegressionTab() {
                 ))}
                 <button type="button"
                   onClick={() => {
-                    if (PRESET_POSTCODES.has(cfg.postcode)) patch({ postcode: "" });
+                    if (cfg.quotationPostcode === "" || PRESET_POSTCODES.has(cfg.quotationPostcode))
+                      patch({ quotationPostcode: " " }); // open custom input
                   }}
                   disabled={loading}
                   className={clsx(
                     "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
-                    !PRESET_POSTCODES.has(cfg.postcode)
+                    cfg.quotationPostcode !== "" && !PRESET_POSTCODES.has(cfg.quotationPostcode)
                       ? "bg-blue-600/20 border-blue-500 text-blue-200"
                       : "bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300",
                     loading && "opacity-50 cursor-not-allowed pointer-events-none"
@@ -2938,10 +2957,10 @@ function RegressionTab() {
                   Custom
                 </button>
               </div>
-              {!PRESET_POSTCODES.has(cfg.postcode) && (
+              {cfg.quotationPostcode !== "" && !PRESET_POSTCODES.has(cfg.quotationPostcode) && (
                 <input
-                  value={cfg.postcode}
-                  onChange={e => patch({ postcode: e.target.value })}
+                  value={cfg.quotationPostcode.trim()}
+                  onChange={e => patch({ quotationPostcode: e.target.value })}
                   placeholder="e.g. 55000"
                   maxLength={5}
                   disabled={loading}
