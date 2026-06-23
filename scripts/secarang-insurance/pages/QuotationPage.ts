@@ -115,14 +115,34 @@ export class QuotationPage extends BasePage {
       }
 
       const targetValue = options[targetIndex];
+
+      // Snapshot the current displayed price so we can detect when it updates
+      const priceEl     = card.locator('h6.mb-0').filter({ hasText: /RM/ }).first();
+      const priceBefore = (await priceEl.innerText().catch(() => '')).trim();
+
       console.log(`   💰 Sum insured "${mode}" → index ${targetIndex} of ${count} (value: ${targetValue})`);
       await select.selectOption({ index: targetIndex });
 
-      // Wait for price to update — may trigger an API recalculation
-      await this.page.waitForLoadState('networkidle', { timeout: 8_000 }).catch(() => {
-        console.log('   ⚠️  Network idle timeout after sum insured change — proceeding');
-      });
-      await this.wait(300);
+      // Wait for the price element to reflect the new value rather than using a fixed delay
+      if (priceBefore) {
+        console.log(`   ⏳ Waiting for price to update from "${priceBefore}"…`);
+        const updated = await this.poll(async () => {
+          const cur = (await priceEl.innerText().catch(() => priceBefore)).trim();
+          return cur !== priceBefore;
+        }, 15_000);
+        const priceAfter = (await priceEl.innerText().catch(() => '')).trim();
+        if (updated) {
+          console.log(`   ✅ Price updated: ${priceBefore} → ${priceAfter}`);
+        } else {
+          console.log(`   ⚠️  Price did not change within 15s — proceeding anyway (still showing ${priceAfter})`);
+        }
+      } else {
+        // Could not read price element — fall back to network idle
+        await this.page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {
+          console.log('   ⚠️  Network idle timeout after sum insured change — proceeding');
+        });
+      }
+      await this.wait(300); // brief settle before screenshot
 
       return { applied: true, selectedValue: targetValue, optionCount: count };
     }
