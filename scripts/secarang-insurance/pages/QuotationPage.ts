@@ -48,6 +48,30 @@ export class QuotationPage extends BasePage {
     if (!ok) throw new Error('Quotation cards did not appear within 25 s');
   }
 
+  // Extracts all RM price values visible on a specific insurer's card.
+  // Returns a comma-joined string of all RM amounts found (e.g. "RM 1,234.56").
+  // Returns '' if the card is not found or has no RM values.
+  async extractInsurerPrice(insurerName: string): Promise<string> {
+    const cards     = this.page.locator(CARD_SEL);
+    const total     = await cards.count();
+    const nameLower = insurerName.toLowerCase();
+
+    for (let i = 0; i < total; i++) {
+      const card = cards.nth(i);
+      if (!(await card.isVisible().catch(() => false))) continue;
+      const alts: string[] = await card.locator('img').evaluateAll(
+        (imgs: Element[]) => (imgs as HTMLImageElement[]).map(img => img.alt.toLowerCase())
+      ).catch(() => []);
+      if (!alts.some(a => a.includes(nameLower))) continue;
+
+      const text = await card.innerText().catch(() => '');
+      const matches = text.match(/RM\s*[\d,]+(?:\.\d{1,2})?/g) ?? [];
+      const prices  = [...new Set(matches.map(m => m.replace(/\s+/, ' ')))];
+      return prices.join(', ');
+    }
+    return '';
+  }
+
   // Looks for a postcode field on the quotation page, updates it, and waits for
   // the quote cards to refresh. Uses network-idle detection instead of a fixed
   // timer so it adapts to the variable 10-20 s insurance API response time.

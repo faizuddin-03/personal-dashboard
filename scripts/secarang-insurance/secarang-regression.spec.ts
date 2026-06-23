@@ -66,6 +66,13 @@ interface Screenshot {
   dataUrl: string;
 }
 
+interface PostcodeChangeInfo {
+  postcode:     string;
+  priceBefore:  string;
+  priceAfter:   string;
+  priceChanged: boolean;
+}
+
 interface RegressionResult {
   vehicleNumber:       string;
   icNumber:            string;
@@ -78,13 +85,15 @@ interface RegressionResult {
   durationMs:          number;
   verificationReport?: string;
   verificationData?:   VerificationData;
+  postcodeChangeInfo?: PostcodeChangeInfo;
   screenshots?:        Screenshot[];
 }
 
 const steps: StepResult[] = [];
-let startedAt          = new Date().toISOString();
-let verificationReport = '';
-let verificationData: VerificationData | undefined;
+let startedAt            = new Date().toISOString();
+let verificationReport   = '';
+let verificationData:       VerificationData     | undefined;
+let postcodeChangeInfo:     PostcodeChangeInfo   | undefined;
 const screenshots: Screenshot[] = [];
 
 async function captureScreenshot(page: import('@playwright/test').Page, label: string): Promise<void> {
@@ -118,6 +127,7 @@ function writeResult(overallStatus: 'PASS' | 'FAIL', errorMessage?: string) {
     durationMs:          new Date(completedAt).getTime() - new Date(startedAt).getTime(),
     verificationReport:  verificationReport  || undefined,
     verificationData:    verificationData    || undefined,
+    postcodeChangeInfo:  postcodeChangeInfo  || undefined,
     screenshots:         screenshots.length ? screenshots : undefined,
   };
   const outPath = path.resolve(CONFIG.outputFile);
@@ -248,20 +258,43 @@ test.describe('Secarang Regression – Zurich E2E', () => {
       return;
     }
 
-    // ── 7b. Change postcode on quotation page (non-stopping) ────
-    // Some Secarang builds show a postcode field on the quotation page.
-    // If found, update it and wait for the cards to refresh before picking an insurer.
+    // ── 7b. Postcode change on quotation page (non-stopping) ───
+    // If the quotation page exposes a postcode field, update it and compare
+    // prices before and after. Screenshots are taken either way so a human
+    // can review regional price differences in the report.
     try {
       const quotationPage = new QuotationPage(page);
+
+      // Capture price and screenshot BEFORE applying postcode on the quotation page
+      const priceBefore = await quotationPage.extractInsurerPrice(CONFIG.targetInsurer);
+      await captureScreenshot(page, `Quotation — Before Postcode (${CONFIG.postcode})`);
+
       const changed = await quotationPage.changePostcodeAndWait(CONFIG.postcode);
+
       if (changed) {
-        await captureScreenshot(page, 'Quotation Page — After Postcode Change');
-        recordStep('Change postcode on quotation page', 'PASS', `Postcode set to ${CONFIG.postcode}`);
+        const priceAfter   = await quotationPage.extractInsurerPrice(CONFIG.targetInsurer);
+        await captureScreenshot(page, `Quotation — After Postcode (${CONFIG.postcode})`);
+
+        const priceChanged = !!(priceBefore && priceAfter && priceBefore !== priceAfter);
+        const priceNote    = priceBefore && priceAfter
+          ? (priceChanged
+              ? `Price changed: ${priceBefore} → ${priceAfter}`
+              : `Price unchanged (${priceAfter || 'not extracted'})`)
+          : `Postcode applied (prices not extracted)`;
+
+        console.log(`\n   💰 Postcode ${CONFIG.postcode} | ${priceNote}`);
+        recordStep('Postcode on quotation page', 'PASS', `${CONFIG.postcode} | ${priceNote}`);
+
+        postcodeChangeInfo = {
+          postcode:    CONFIG.postcode,
+          priceBefore: priceBefore || '',
+          priceAfter:  priceAfter  || '',
+          priceChanged,
+        };
       }
-      // No FAIL entry when the field simply isn't there — that's normal.
+      // No step recorded when the postcode field isn't on the page — that's normal.
     } catch (e) {
-      recordStep('Change postcode on quotation page', 'FAIL', String(e));
-      // Non-stopping: carry on to insurer selection.
+      recordStep('Postcode on quotation page', 'FAIL', String(e));
     }
 
     // ── 8. Select insurer ────────────────────────────────────

@@ -130,6 +130,13 @@ export interface RegressionScreenshot {
   dataUrl: string; // data:image/jpeg;base64,...
 }
 
+export interface PostcodeChangeInfo {
+  postcode:     string;  // postcode that was applied on the quotation page
+  priceBefore:  string;  // price(s) extracted before applying postcode
+  priceAfter:   string;  // price(s) extracted after applying postcode
+  priceChanged: boolean;
+}
+
 export interface RegressionResult {
   vehicleNumber:       string;
   icNumber:            string;
@@ -144,6 +151,7 @@ export interface RegressionResult {
   stopped?:            boolean;
   verificationReport?: string;
   verificationData?:   VerificationData;
+  postcodeChangeInfo?: PostcodeChangeInfo;
   screenshots?:        RegressionScreenshot[];
 }
 

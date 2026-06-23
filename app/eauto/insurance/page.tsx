@@ -15,7 +15,7 @@ import {
   loadSecarangSaved, clearSecarangSaved,
   loadRegressionSecarangSaved, clearRegressionSecarangSaved,
   RegressionResult, RegressionStepResult, RegressionScreenshot,
-  VerificationData, VerificationRow, PdfVerificationRow,
+  VerificationData, VerificationRow, PdfVerificationRow, PostcodeChangeInfo,
   loadRegressionTestResult, saveRegressionTestResult, clearRegressionTestResult,
   buildVehicles,
 } from "@/lib/secarang";
@@ -2496,6 +2496,26 @@ function RegressionTab() {
 
   ${verifSection}
 
+  ${result.postcodeChangeInfo ? (() => {
+    const pc = result.postcodeChangeInfo as PostcodeChangeInfo;
+    const priceColor  = pc.priceChanged ? "#f59e0b" : "#22c55e";
+    const priceSymbol = pc.priceChanged ? "⚠ Price Changed" : "✓ Price Unchanged";
+    return `<div style="margin-top:14px;background:#0f172a;border:1px solid #1e293b;border-radius:10px;overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:1px solid #1e293b;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em">Postcode Change — Quotation Page</div>
+      <div style="padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;color:#e2e8f0">
+        <div>
+          <div style="color:#64748b;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Before</div>
+          <div style="font-family:monospace;color:#94a3b8">${pc.priceBefore || "—"}</div>
+        </div>
+        <div>
+          <div style="color:#64748b;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">After (postcode ${pc.postcode})</div>
+          <div style="font-family:monospace;color:#94a3b8">${pc.priceAfter || "—"}</div>
+        </div>
+      </div>
+      <div style="padding:8px 14px;border-top:1px solid #1e293b;font-size:11px;font-weight:700;color:${priceColor}">${priceSymbol}</div>
+    </div>`;
+  })() : ""}
+
   ${(result.screenshots ?? []).length > 0 ? `
   <div style="margin-top:20px">
     <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #1e293b">Screenshots</div>
@@ -2591,6 +2611,32 @@ function RegressionTab() {
 
             </div>
           )}
+
+          {/* Postcode change info — shown when postcode was applied on quotation page */}
+          {result?.postcodeChangeInfo && (() => {
+            const pc = result.postcodeChangeInfo as PostcodeChangeInfo;
+            return (
+              <div className="border-t border-slate-800 px-4 py-3">
+                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-2">Postcode Change — Quotation Page</p>
+                <div className="grid grid-cols-2 gap-3 mb-2">
+                  <div>
+                    <p className="text-[10px] text-slate-600 mb-0.5">Before</p>
+                    <p className="text-xs font-mono text-slate-400">{pc.priceBefore || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-600 mb-0.5">After (postcode {pc.postcode})</p>
+                    <p className="text-xs font-mono text-slate-400">{pc.priceAfter || "—"}</p>
+                  </div>
+                </div>
+                <p className={clsx(
+                  "text-xs font-semibold",
+                  pc.priceChanged ? "text-amber-400" : "text-green-400"
+                )}>
+                  {pc.priceChanged ? "⚠ Price changed" : "✓ Price unchanged"}
+                </p>
+              </div>
+            );
+          })()}
 
           {/* Verification + error — below the 2-col grid */}
           {result && (result.verificationData || result.verificationReport || result.errorMessage) && (
