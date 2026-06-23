@@ -367,19 +367,6 @@ export default function InsurancePage() {
 
   const [activeTab, setActiveTab] = useState<"check" | "tab2" | "tab3">("check");
 
-  // One-time maintenance window: 2026-06-23, 10:50 AM – 1:30 PM MYT (UTC+8)
-  const MAINT_START = new Date("2026-06-23T02:50:00Z"); // 10:50 MYT = 02:50 UTC
-  const MAINT_END   = new Date("2026-06-23T05:30:00Z"); // 13:30 MYT = 05:30 UTC
-  function inMaintenanceWindow(): boolean {
-    const now = new Date();
-    return now >= MAINT_START && now < MAINT_END;
-  }
-  const [blocked, setBlocked] = useState(() => inMaintenanceWindow());
-  useEffect(() => {
-    const t = setInterval(() => setBlocked(inMaintenanceWindow()), 30_000);
-    return () => clearInterval(t);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <div className="relative flex flex-col min-h-full">
 
@@ -2243,6 +2230,19 @@ function RegressionTab() {
   const [log,      setLog]      = useState("");
   const [liveLog,  setLiveLog]  = useState("");
   const liveLogRef = useRef<HTMLPreElement>(null);
+
+  // One-time maintenance window: 2026-06-23, 10:50 AM – 1:30 PM MYT (UTC+8)
+  const MAINT_START = new Date("2026-06-23T02:50:00Z");
+  const MAINT_END   = new Date("2026-06-23T05:30:00Z");
+  function inMaintenanceWindow(): boolean {
+    const now = new Date();
+    return now >= MAINT_START && now < MAINT_END;
+  }
+  const [blocked, setBlocked] = useState(() => inMaintenanceWindow());
+  useEffect(() => {
+    const t = setInterval(() => setBlocked(inMaintenanceWindow()), 30_000);
+    return () => clearInterval(t);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const RUNNING_KEY = "regression_e2e_running";
 
