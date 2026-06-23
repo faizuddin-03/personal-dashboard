@@ -2231,9 +2231,9 @@ function RegressionTab() {
   const [liveLog,  setLiveLog]  = useState("");
   const liveLogRef = useRef<HTMLPreElement>(null);
 
-  // One-time maintenance window: 2026-06-23, 10:50 AM – 1:30 PM MYT (UTC+8)
+  // One-time maintenance window: 2026-06-23, 10:50 AM – 4:20 PM MYT (UTC+8)
   const MAINT_START = new Date("2026-06-23T02:50:00Z");
-  const MAINT_END   = new Date("2026-06-23T05:30:00Z");
+  const MAINT_END   = new Date("2026-06-23T08:20:00Z"); // 16:20 MYT
   function inMaintenanceWindow(): boolean {
     const now = new Date();
     return now >= MAINT_START && now < MAINT_END;
@@ -3228,7 +3228,7 @@ function RegressionTab() {
               </button>
               {blocked && (
                 <span className="text-xs text-red-400">
-                  ⛔ Disabled — maintenance window 10:50 AM – 1:30 PM MYT
+                  ⛔ Disabled — maintenance window 10:50 AM – 4:20 PM MYT
                 </span>
               )}
             </>
