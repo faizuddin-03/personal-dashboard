@@ -620,12 +620,12 @@ export default function WABlasterBetaPage() {
             </button>
           ) : activeSuite ? (
             <button onClick={() => startRun([activeSuite.id], activeSuite.id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-violet-700 hover:bg-violet-600 text-white rounded-lg font-medium">
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-violet-500 hover:bg-violet-400 active:scale-95 text-white rounded-lg font-semibold shadow-md shadow-violet-500/30 border border-violet-400/30 cursor-pointer transition-all">
               <Play size={12} /> Run Suite
             </button>
           ) : (
             <button onClick={() => startRun(SUITES.map(s => s.id), "overview")}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-violet-600 hover:bg-violet-500 text-white rounded-lg font-medium">
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-violet-500 hover:bg-violet-400 active:scale-95 text-white rounded-lg font-semibold shadow-md shadow-violet-500/30 border border-violet-400/30 cursor-pointer transition-all">
               <Play size={12} /> Run All
             </button>
           )}
@@ -910,7 +910,7 @@ export default function WABlasterBetaPage() {
                   ) : (
                     <div className="flex flex-col gap-2">
                       <button onClick={() => startRun([suite.id], suite.id)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium bg-violet-700 hover:bg-violet-600 text-white rounded-xl transition-colors">
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-violet-500 hover:bg-violet-400 active:scale-[0.98] text-white rounded-xl shadow-lg shadow-violet-500/25 border border-violet-400/30 cursor-pointer transition-all">
                         <Play size={14} /> Run Suite
                       </button>
                       {hasResult && (
