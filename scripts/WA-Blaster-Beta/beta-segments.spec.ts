@@ -7,8 +7,9 @@
 import { test, expect, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = process.env.E2E_ADMIN_EMAIL    ?? 'admin@example.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'ChangeMe123!';
+const ADMIN_EMAIL         = process.env.E2E_ADMIN_EMAIL         ?? 'admin@example.com';
+const ADMIN_PASSWORD      = process.env.E2E_ADMIN_PASSWORD      ?? 'ChangeMe123!';
+const SEGMENT_NAME_PREFIX = process.env.E2E_SEGMENT_NAME_PREFIX ?? 'BETA Seg';
 const FLOW = 'beta-segments';
 
 async function loginAsAdmin(page: Page) {
@@ -52,7 +53,7 @@ test.describe('Create segment from dealers', () => {
     await snap(page, FLOW, 'create_01_dealers_selected');
     await page.getByTestId('save-as-segment').click();
 
-    const segmentName = `BETA Seg ${Date.now().toString().slice(-6)}`;
+    const segmentName = `${SEGMENT_NAME_PREFIX} ${Date.now().toString().slice(-6)}`;
     await page.getByTestId('segment-name-input').fill(segmentName);
     await page.getByRole('button', { name: /^save$/i }).click();
     await expect(page.getByText(/saved with \d+ dealers/i)).toBeVisible();
@@ -66,7 +67,7 @@ test.describe('Create segment from dealers', () => {
     await page.getByTestId('select-all').check();
     await expect(page.getByTestId('selection-bar')).toBeVisible();
     await page.getByTestId('save-as-segment').click();
-    const segmentName = `BETA Seg Verify ${Date.now().toString().slice(-6)}`;
+    const segmentName = `${SEGMENT_NAME_PREFIX} Verify ${Date.now().toString().slice(-6)}`;
     await page.getByTestId('segment-name-input').fill(segmentName);
     await page.getByRole('button', { name: /^save$/i }).click();
     await expect(page.getByText(/saved with \d+ dealers/i)).toBeVisible();
@@ -85,7 +86,7 @@ test.describe('Create segment from dealers', () => {
     await page.getByTestId('select-all').check();
     await expect(page.getByTestId('selection-bar')).toBeVisible();
     await page.getByTestId('save-as-segment').click();
-    const segmentName = `BETA Seg Count ${Date.now().toString().slice(-6)}`;
+    const segmentName = `${SEGMENT_NAME_PREFIX} Count ${Date.now().toString().slice(-6)}`;
     await page.getByTestId('segment-name-input').fill(segmentName);
     await page.getByRole('button', { name: /^save$/i }).click();
     await expect(page.getByText(/saved with \d+ dealers/i)).toBeVisible();

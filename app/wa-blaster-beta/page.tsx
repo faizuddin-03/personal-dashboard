@@ -20,6 +20,9 @@ interface SuiteVar {
   label: string;
   defaultValue: string;
   description?: string;
+  type?: "password";
+  counter?: boolean;
+  hint?: string;
 }
 
 interface SuiteDef {
@@ -55,7 +58,9 @@ const SUITES: SuiteDef[] = [
       { name: "keyboard shortcut g→i navigates to Inbox", defaultEnabled: true },
       { name: "help overlay opens on help-button and closes on Escape", defaultEnabled: true },
     ],
-    vars: [],
+    vars: [
+      { key: "E2E_WRONG_PASSWORD", label: "Wrong Password", defaultValue: "wrong-password", type: "password", hint: "Used in the 'wrong credentials show inline error' test" },
+    ],
   },
   {
     id: "beta-dashboard", file: "beta-dashboard.spec.ts",
@@ -94,7 +99,9 @@ const SUITES: SuiteDef[] = [
       { name: "newly scheduled blast appears in the campaigns list", defaultEnabled: true },
     ],
     vars: [
-      { key: "E2E_SEED_TEMPLATE", label: "Seed Template Name", defaultValue: "sample_promo_2026" },
+      { key: "E2E_SEED_TEMPLATE",     label: "Seed Template Slug",  defaultValue: "sample_promo_2026", hint: "Template slug used in wizard (must exist in your app)" },
+      { key: "E2E_AUDIENCE_STATE",    label: "Audience State Chip", defaultValue: "Selangor",          hint: "State chip to click on the audience step" },
+      { key: "E2E_BLAST_NAME_PREFIX", label: "Blast Name Prefix",   defaultValue: "BETA",              counter: true, hint: "Generated blast names: e.g. BETA Send Now 1234567" },
     ],
   },
   {
@@ -116,7 +123,10 @@ const SUITES: SuiteDef[] = [
       { name: "Add button disabled until both title and body are filled", defaultEnabled: true },
     ],
     vars: [
-      { key: "API_BASE", label: "API Base URL", defaultValue: "http://localhost:3000", description: "Backend URL for simulator calls" },
+      { key: "API_BASE",              label: "API Base URL",         defaultValue: "http://localhost:3000", hint: "Backend URL for simulator & auth calls" },
+      { key: "E2E_INBOX_PHONE_PREFIX", label: "Phone Prefix (6 test slots)", defaultValue: "+6011110040",  hint: "Suffix 1–6 appended: e.g. +6011110040 → +60111100401 … +60111100406. Phone numbers can only be used once — change prefix if re-running." },
+      { key: "E2E_CANNED_REPLY_TITLE", label: "Canned Reply Title",  defaultValue: "BETA Saved Reply",     hint: "Pre-seeded canned reply for the saved-replies test" },
+      { key: "E2E_CANNED_REPLY_BODY",  label: "Canned Reply Body",   defaultValue: "This is a BETA canned reply." },
     ],
   },
   {
@@ -137,7 +147,15 @@ const SUITES: SuiteDef[] = [
       { name: "create contact → verify in list", defaultEnabled: true },
       { name: "edit contact name then delete", defaultEnabled: true },
     ],
-    vars: [],
+    vars: [
+      { key: "E2E_CONTACTS_SEARCH_TERM",  label: "Dealer Search Term",    defaultValue: "Auto Bestari",  hint: "Must match a dealer already in your database" },
+      { key: "E2E_DEALER_NAME_PREFIX",    label: "Dealer Name Prefix",    defaultValue: "BETA Dealer",   counter: true, hint: "e.g. BETA Dealer 1234567 (timestamp suffix added)" },
+      { key: "E2E_DEALER_PHONE_PREFIX",   label: "Dealer Phone Prefix",   defaultValue: "+6013",         hint: "7-digit suffix appended — phone numbers must be unique" },
+      { key: "E2E_DEALER_TIER",           label: "Dealer Tier",           defaultValue: "GOLD",          hint: "GOLD / SILVER / BRONZE" },
+      { key: "E2E_DEALER_SPEC",           label: "Dealer Specialization", defaultValue: "EV_HYBRID",     hint: "e.g. EV_HYBRID, SEDAN, SUV" },
+      { key: "E2E_CONTACT_NAME_PREFIX",   label: "Contact Name Prefix",   defaultValue: "Automation Test", counter: true, hint: "e.g. Automation Test 1 — used when creating manual contacts" },
+      { key: "E2E_CONTACT_STATE",         label: "Contact State",         defaultValue: "SELANGOR",      hint: "State code for the manual contact form" },
+    ],
   },
   {
     id: "beta-segments", file: "beta-segments.spec.ts",
@@ -151,7 +169,9 @@ const SUITES: SuiteDef[] = [
       { name: "saved segment appears on the Segments page", defaultEnabled: true },
       { name: "segment row shows the segment name and dealer count", defaultEnabled: true },
     ],
-    vars: [],
+    vars: [
+      { key: "E2E_SEGMENT_NAME_PREFIX", label: "Segment Name Prefix", defaultValue: "BETA Seg", counter: true, hint: "e.g. BETA Seg 123456 (short timestamp suffix added)" },
+    ],
   },
   {
     id: "beta-templates", file: "beta-templates.spec.ts",
@@ -167,8 +187,12 @@ const SUITES: SuiteDef[] = [
       { name: "closing wizard at review step warns before discarding", defaultEnabled: true },
     ],
     vars: [
-      { key: "E2E_TEMPLATE_CATEGORY",     label: "Template Category",        defaultValue: "MARKETING" },
-      { key: "E2E_TEMPLATE_LANG_VARIANT",  label: "Second Language Variant",  defaultValue: "MS" },
+      { key: "E2E_TEMPLATE_CATEGORY",     label: "Template Category",      defaultValue: "MARKETING",                    hint: "e.g. MARKETING / UTILITY / AUTHENTICATION" },
+      { key: "E2E_TEMPLATE_LANG_VARIANT", label: "Second Language",         defaultValue: "MS",                           hint: "Language code for the second variant tab" },
+      { key: "E2E_TEMPLATE_NAME_PREFIX",  label: "Template Name Prefix",    defaultValue: "beta_tpl",  counter: true,     hint: "e.g. beta_tpl_12345678 (lowercase, underscores)" },
+      { key: "E2E_TEMPLATE_BODY_EN",      label: "Template Body (EN)",      defaultValue: "Hello {{1}}!",                 hint: "Body text for the English variant" },
+      { key: "E2E_TEMPLATE_BODY_MS",      label: "Template Body (MS / 2nd)", defaultValue: "Salam {{1}}!",               hint: "Body text for the second language variant" },
+      { key: "E2E_WIZARD_BRIEF",          label: "AI Wizard Brief",         defaultValue: "Service reminder for BETA testing", hint: "Prompt sent to the AI template generator" },
     ],
   },
   {
@@ -185,7 +209,16 @@ const SUITES: SuiteDef[] = [
       { name: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload", defaultEnabled: true },
     ],
     vars: [
-      { key: "API_BASE", label: "API Base URL", defaultValue: "http://localhost:3000" },
+      { key: "API_BASE",                label: "API Base URL",          defaultValue: "http://localhost:3000" },
+      { key: "E2E_INVITE_EMAIL_PREFIX", label: "Invite Email Prefix",   defaultValue: "beta.invite",   hint: "e.g. beta.invite → beta.invite.{suffix}@example.com" },
+      { key: "E2E_INVITE_NAME_PREFIX",  label: "Invite Name Prefix",    defaultValue: "BETA User",     counter: true, hint: "e.g. BETA User 12345678" },
+      { key: "E2E_INVITE_PASSWORD",     label: "New Member Password",   defaultValue: "Password123!",  type: "password" },
+      { key: "E2E_RESET_PASSWORD",      label: "Reset-to Password",     defaultValue: "BetaNew456!",   type: "password", hint: "Password used in the 'reset password' test" },
+      { key: "E2E_MAPPING_STATE_1",     label: "Mapping State 1",       defaultValue: "PENANG",        hint: "State code for first language mapping test" },
+      { key: "E2E_MAPPING_LANG_1_1",    label: "State 1 Language A",    defaultValue: "ZH",            hint: "First language for State 1 (e.g. ZH)" },
+      { key: "E2E_MAPPING_LANG_1_2",    label: "State 1 Language B",    defaultValue: "EN",            hint: "Second language for State 1 (e.g. EN)" },
+      { key: "E2E_MAPPING_STATE_2",     label: "Mapping State 2",       defaultValue: "KELANTAN",      hint: "State code for second language mapping test" },
+      { key: "E2E_MAPPING_LANG_2",      label: "State 2 Language",      defaultValue: "MS",            hint: "Language for State 2 (e.g. MS)" },
     ],
   },
   {
@@ -217,7 +250,8 @@ const SUITES: SuiteDef[] = [
       { name: "kb-confirm button is disabled until a disposition is selected", defaultEnabled: true },
     ],
     vars: [
-      { key: "API_BASE", label: "API Base URL", defaultValue: "http://localhost:3000" },
+      { key: "API_BASE",            label: "API Base URL",    defaultValue: "http://localhost:3000" },
+      { key: "E2E_KB_PHONE_PREFIX", label: "KB Phone Prefix", defaultValue: "+6011120040", hint: "Suffix 1–5 appended. Must be unused phone numbers — change prefix if re-running." },
     ],
   },
   {
@@ -385,6 +419,7 @@ export default function WABlasterBetaPage() {
   const [adminEmail,    setAdminEmail]    = useState("admin@example.com");
   const [adminPassword, setAdminPassword] = useState("ChangeMe123!");
   const [showAdminPw,   setShowAdminPw]   = useState(false);
+  const [showVarPw,     setShowVarPw]     = useState<Record<string, boolean>>({});
   const [settingsOpen,  setSettingsOpen]  = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [showBrowser,   setShowBrowser]   = useState(true);
@@ -871,17 +906,53 @@ export default function WABlasterBetaPage() {
                         <RotateCcw size={10} /> Defaults
                       </button>
                     </div>
-                    {suite.vars.map(v => (
-                      <div key={v.key}>
-                        <label className="block text-xs font-medium text-slate-400 mb-1">
-                          {v.label}
-                          <span className="ml-1.5 text-slate-600 font-normal text-[11px]">default: {v.defaultValue}</span>
-                        </label>
-                        {v.description && <p className="text-[11px] text-slate-600 mb-1.5">{v.description}</p>}
-                        <input value={cfg.vars[v.key] ?? v.defaultValue} onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
-                          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-violet-600" />
-                      </div>
-                    ))}
+                    {suite.vars.map(v => {
+                      const val = cfg.vars[v.key] ?? v.defaultValue;
+                      const isDefault = val === v.defaultValue;
+                      const isPw = v.type === "password";
+                      const pwVisible = showVarPw[v.key] ?? false;
+                      return (
+                        <div key={v.key} className="space-y-1.5">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <label className="text-xs font-medium text-slate-300">{v.label}</label>
+                            {v.counter && (
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-violet-900/40 text-violet-400 border border-violet-800/50">auto-suffix</span>
+                            )}
+                            {!isDefault && (
+                              <button onClick={() => setSuiteVar(suite.id, v.key, v.defaultValue)}
+                                className="ml-auto text-[10px] text-slate-600 hover:text-violet-400 transition-colors flex items-center gap-0.5">
+                                <RotateCcw size={9} /> reset
+                              </button>
+                            )}
+                          </div>
+                          {v.description && <p className="text-[11px] text-slate-500 leading-relaxed">{v.description}</p>}
+                          <div className="relative">
+                            <input
+                              type={isPw && !pwVisible ? "password" : "text"}
+                              value={val}
+                              onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
+                              className={clsx(
+                                "w-full bg-slate-800/80 border rounded-lg px-3 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors",
+                                isDefault ? "border-slate-700" : "border-violet-600/50",
+                                isPw && "pr-9"
+                              )}
+                            />
+                            {isPw && (
+                              <button onClick={() => setShowVarPw(p => ({ ...p, [v.key]: !pwVisible }))}
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
+                                {pwVisible ? <EyeOff size={13} /> : <Eye size={13} />}
+                              </button>
+                            )}
+                          </div>
+                          {v.counter && (
+                            <p className="text-[10px] text-slate-600 font-mono">
+                              ↳ e.g. <span className="text-slate-500">{val} 1</span>, <span className="text-slate-500">{val} 2</span>, …
+                            </p>
+                          )}
+                          {v.hint && <p className="text-[10px] text-slate-600 leading-relaxed">{v.hint}</p>}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 

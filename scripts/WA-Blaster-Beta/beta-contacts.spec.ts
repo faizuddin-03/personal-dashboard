@@ -9,10 +9,15 @@ import { test, expect, type Page } from './helpers/fixtures';
 import path from 'path';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = process.env.E2E_ADMIN_EMAIL    ?? 'admin@example.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'ChangeMe123!';
-const DEALER_TIER    = process.env.E2E_DEALER_TIER    ?? 'GOLD';
-const DEALER_SPEC    = process.env.E2E_DEALER_SPEC    ?? 'EV_HYBRID';
+const ADMIN_EMAIL           = process.env.E2E_ADMIN_EMAIL           ?? 'admin@example.com';
+const ADMIN_PASSWORD        = process.env.E2E_ADMIN_PASSWORD        ?? 'ChangeMe123!';
+const DEALER_TIER           = process.env.E2E_DEALER_TIER           ?? 'GOLD';
+const DEALER_SPEC           = process.env.E2E_DEALER_SPEC           ?? 'EV_HYBRID';
+const DEALER_NAME_PREFIX    = process.env.E2E_DEALER_NAME_PREFIX    ?? 'BETA Dealer';
+const DEALER_PHONE_PREFIX   = process.env.E2E_DEALER_PHONE_PREFIX   ?? '+6013';
+const CONTACTS_SEARCH_TERM  = process.env.E2E_CONTACTS_SEARCH_TERM  ?? 'Auto Bestari';
+const CONTACT_NAME_PREFIX   = process.env.E2E_CONTACT_NAME_PREFIX   ?? 'Automation Test';
+const CONTACT_STATE         = process.env.E2E_CONTACT_STATE         ?? 'SELANGOR';
 const FLOW = 'beta-contacts';
 
 const VALID_CSV   = path.join(__dirname, 'fixtures', 'valid-contacts.csv');
@@ -89,8 +94,8 @@ test.describe('Dealers table', () => {
     await loginAsAdmin(page);
     await page.getByRole('link', { name: 'Dealers' }).click();
     await expect(page.getByTestId('contacts-table')).toBeVisible();
-    await page.getByTestId('contacts-search').fill('Auto Bestari');
-    await expect(page.getByText('Auto Bestari Sdn Bhd')).toBeVisible();
+    await page.getByTestId('contacts-search').fill(CONTACTS_SEARCH_TERM);
+    await expect(page.getByTestId('contacts-table')).toContainText(CONTACTS_SEARCH_TERM);
     await snap(page, FLOW, 'dealer_02_search');
   });
 
@@ -110,8 +115,8 @@ test.describe('Dealers table', () => {
     await expect(page.getByTestId('add-dealer')).toBeVisible();
 
     const suffix = Date.now().toString().slice(-7);
-    const name   = `BETA Dealer ${suffix}`;
-    const phone  = `+6013${suffix}`;
+    const name   = `${DEALER_NAME_PREFIX} ${suffix}`;
+    const phone  = `${DEALER_PHONE_PREFIX}${suffix}`;
 
     await page.getByTestId('add-dealer').click();
     await page.getByTestId('add-dealer-name').fill(name);
@@ -131,11 +136,11 @@ test.describe('Dealers table', () => {
     await page.getByRole('link', { name: 'Dealers' }).click();
 
     const suffix = Date.now().toString().slice(-7);
-    const phone  = `+6014${suffix}`;
+    const phone  = `${DEALER_PHONE_PREFIX}4${suffix}`;
 
     // First add
     await page.getByTestId('add-dealer').click();
-    await page.getByTestId('add-dealer-name').fill(`BETA Dup First ${suffix}`);
+    await page.getByTestId('add-dealer-name').fill(`${DEALER_NAME_PREFIX} Dup A ${suffix}`);
     await page.getByTestId('add-dealer-phone').fill(phone);
     await page.getByTestId('add-dealer-tier').selectOption(DEALER_TIER);
     await page.getByTestId('add-dealer-vehicleSpecialization').selectOption(DEALER_SPEC);
@@ -144,7 +149,7 @@ test.describe('Dealers table', () => {
 
     // Duplicate attempt
     await page.getByTestId('add-dealer').click();
-    await page.getByTestId('add-dealer-name').fill(`BETA Dup Second ${suffix}`);
+    await page.getByTestId('add-dealer-name').fill(`${DEALER_NAME_PREFIX} Dup B ${suffix}`);
     await page.getByTestId('add-dealer-phone').fill(phone);
     await page.getByTestId('add-dealer-submit').click();
     await expect(page.getByTestId('add-dealer-error')).toBeVisible();
@@ -164,17 +169,18 @@ test.describe('Manual contact lifecycle', () => {
     const suffix     = Date.now().toString().slice(-8);
     const localPhone = `01${suffix}`;
 
+    const contactName = `${CONTACT_NAME_PREFIX} ${suffix.slice(-4)}`;
     await page.getByTestId('contact-phone').fill(localPhone);
-    await page.getByTestId('contact-name').fill('BETA Contact');
+    await page.getByTestId('contact-name').fill(contactName);
     await page.getByTestId('contact-ethnicity').selectOption('MALAY');
     await page.getByTestId('contact-language').selectOption('MS');
-    await page.getByTestId('contact-state').selectOption('SELANGOR');
+    await page.getByTestId('contact-state').selectOption(CONTACT_STATE);
     await page.getByTestId('contact-optin').selectOption('OPTED_IN');
     await page.getByTestId('contact-submit').click();
 
     await expect(page).toHaveURL(/\/contacts$/);
-    await page.getByTestId('contacts-search').fill('BETA Contact');
-    await expect(page.getByText('BETA Contact')).toBeVisible();
+    await page.getByTestId('contacts-search').fill(contactName);
+    await expect(page.getByText(contactName)).toBeVisible();
     await snap(page, FLOW, 'contact_01_created');
   });
 
@@ -184,8 +190,10 @@ test.describe('Manual contact lifecycle', () => {
     const suffix     = Date.now().toString().slice(-8);
     const localPhone = `02${suffix}`;
 
+    const editName    = `${CONTACT_NAME_PREFIX} Edit ${suffix.slice(-4)}`;
+    const renamedName = `${CONTACT_NAME_PREFIX} Renamed ${suffix.slice(-4)}`;
     await page.getByTestId('contact-phone').fill(localPhone);
-    await page.getByTestId('contact-name').fill('BETA Edit Me');
+    await page.getByTestId('contact-name').fill(editName);
     await page.getByTestId('contact-ethnicity').selectOption('MALAY');
     await page.getByTestId('contact-language').selectOption('EN');
     await page.getByTestId('contact-state').selectOption('KL');
@@ -193,25 +201,25 @@ test.describe('Manual contact lifecycle', () => {
     await page.getByTestId('contact-submit').click();
     await expect(page).toHaveURL(/\/contacts$/);
 
-    const row = page.locator('[data-testid^="contact-row-"]').filter({ hasText: 'BETA Edit Me' }).first();
+    const row = page.locator('[data-testid^="contact-row-"]').filter({ hasText: editName }).first();
     const testId    = await row.getAttribute('data-testid');
     const contactId = testId!.replace('contact-row-', '');
     await page.goto(`/contacts/${contactId}`);
-    await page.getByTestId('contact-name').fill('BETA Renamed');
+    await page.getByTestId('contact-name').fill(renamedName);
     await page.getByTestId('contact-submit').click();
     await expect(page).toHaveURL(/\/contacts$/);
-    await page.getByTestId('contacts-search').fill('BETA Renamed');
-    await expect(page.getByText('BETA Renamed')).toBeVisible();
+    await page.getByTestId('contacts-search').fill(renamedName);
+    await expect(page.getByText(renamedName)).toBeVisible();
     await snap(page, FLOW, 'contact_02_renamed');
 
-    const renamedRow = page.locator('[data-testid^="contact-row-"]').filter({ hasText: 'BETA Renamed' }).first();
+    const renamedRow = page.locator('[data-testid^="contact-row-"]').filter({ hasText: renamedName }).first();
     const renamedId  = (await renamedRow.getAttribute('data-testid'))!.replace('contact-row-', '');
     page.once('dialog', (d) => d.accept());
     await page.goto(`/contacts/${renamedId}`);
     await page.getByTestId('contact-delete').click();
     await expect(page).toHaveURL(/\/contacts$/);
-    await page.getByTestId('contacts-search').fill('BETA Renamed');
-    await expect(page.getByText('BETA Renamed')).toHaveCount(0);
+    await page.getByTestId('contacts-search').fill(renamedName);
+    await expect(page.getByText(renamedName)).toHaveCount(0);
     await snap(page, FLOW, 'contact_03_deleted');
   });
 });

@@ -8,9 +8,11 @@
 import { test, expect, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = process.env.E2E_ADMIN_EMAIL    ?? 'admin@example.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'ChangeMe123!';
-const SEED_TEMPLATE  = process.env.E2E_SEED_TEMPLATE  ?? 'sample_promo_2026';
+const ADMIN_EMAIL       = process.env.E2E_ADMIN_EMAIL       ?? 'admin@example.com';
+const ADMIN_PASSWORD    = process.env.E2E_ADMIN_PASSWORD    ?? 'ChangeMe123!';
+const SEED_TEMPLATE     = process.env.E2E_SEED_TEMPLATE     ?? 'sample_promo_2026';
+const AUDIENCE_STATE    = process.env.E2E_AUDIENCE_STATE    ?? 'Selangor';
+const BLAST_NAME_PREFIX = process.env.E2E_BLAST_NAME_PREFIX ?? 'BETA';
 const FLOW = 'beta-campaigns';
 
 async function loginAsAdmin(page: Page) {
@@ -91,7 +93,7 @@ test.describe('Wizard audience step', () => {
     await page.goto('/blasts/new');
     await expect(page.getByTestId('blast-wizard')).toBeVisible();
     const beforeText = await page.getByText(/\d+ recipients/).textContent();
-    await page.getByRole('button', { name: 'Selangor' }).click();
+    await page.getByRole('button', { name: AUDIENCE_STATE }).click();
     // Count may change (or stay) — just verify it still renders
     await expect(page.getByText(/\d+ recipients/)).toBeVisible({ timeout: 10_000 });
     const afterText = await page.getByText(/\d+ recipients/).textContent();
@@ -119,7 +121,7 @@ test.describe('Send-now blast', () => {
     await loginAsAdmin(page);
     await wizardToReview(page);
 
-    const blastName = `BETA Send Now ${Date.now()}`;
+    const blastName = `${BLAST_NAME_PREFIX} Send Now ${Date.now()}`;
     await page.getByTestId('blast-name').fill(blastName);
     await page.getByTestId('blast-create').click();
 
@@ -174,7 +176,7 @@ test.describe('Scheduled blast', () => {
     await loginAsAdmin(page);
     await wizardToReview(page);
 
-    const blastName = `BETA Sched ${Date.now()}`;
+    const blastName = `${BLAST_NAME_PREFIX} Sched ${Date.now()}`;
     await page.getByTestId('blast-name').fill(blastName);
     await page.getByRole('button', { name: 'Schedule' }).click();
     await page.getByTestId('blast-scheduled-at').fill(futureDateTime(10));
@@ -189,7 +191,7 @@ test.describe('Scheduled blast', () => {
     await loginAsAdmin(page);
     await wizardToReview(page);
 
-    await page.getByTestId('blast-name').fill(`BETA Cancel ${Date.now()}`);
+    await page.getByTestId('blast-name').fill(`${BLAST_NAME_PREFIX} Cancel ${Date.now()}`);
     await page.getByRole('button', { name: 'Schedule' }).click();
     await page.getByTestId('blast-scheduled-at').fill(futureDateTime(15));
     await page.getByTestId('blast-create').click();
@@ -206,7 +208,7 @@ test.describe('Scheduled blast', () => {
     await loginAsAdmin(page);
     await wizardToReview(page);
 
-    await page.getByTestId('blast-name').fill(`BETA Past ${Date.now()}`);
+    await page.getByTestId('blast-name').fill(`${BLAST_NAME_PREFIX} Past ${Date.now()}`);
     await page.getByRole('button', { name: 'Schedule' }).click();
     const past = new Date(Date.now() - 5 * 60_000);
     const pad  = (n: number) => String(n).padStart(2, '0');
@@ -224,7 +226,7 @@ test.describe('Scheduled blast', () => {
     await loginAsAdmin(page);
     await wizardToReview(page);
 
-    const blastName = `BETA List ${Date.now()}`;
+    const blastName = `${BLAST_NAME_PREFIX} List ${Date.now()}`;
     await page.getByTestId('blast-name').fill(blastName);
     await page.getByRole('button', { name: 'Schedule' }).click();
     await page.getByTestId('blast-scheduled-at').fill(futureDateTime(20));

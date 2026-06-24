@@ -7,9 +7,18 @@
 import { test, expect, request, type APIRequestContext, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = process.env.E2E_ADMIN_EMAIL    ?? 'admin@example.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'ChangeMe123!';
-const API_BASE       = process.env.API_BASE            ?? 'http://localhost:3000';
+const ADMIN_EMAIL         = process.env.E2E_ADMIN_EMAIL         ?? 'admin@example.com';
+const ADMIN_PASSWORD      = process.env.E2E_ADMIN_PASSWORD      ?? 'ChangeMe123!';
+const API_BASE            = process.env.API_BASE                ?? 'http://localhost:3000';
+const INVITE_EMAIL_PREFIX = process.env.E2E_INVITE_EMAIL_PREFIX ?? 'beta.invite';
+const INVITE_NAME_PREFIX  = process.env.E2E_INVITE_NAME_PREFIX  ?? 'BETA User';
+const INVITE_PASSWORD     = process.env.E2E_INVITE_PASSWORD     ?? 'Password123!';
+const RESET_PASSWORD      = process.env.E2E_RESET_PASSWORD      ?? 'BetaNew456!';
+const MAPPING_STATE_1     = process.env.E2E_MAPPING_STATE_1     ?? 'PENANG';
+const MAPPING_LANG_1_1    = process.env.E2E_MAPPING_LANG_1_1    ?? 'ZH';
+const MAPPING_LANG_1_2    = process.env.E2E_MAPPING_LANG_1_2    ?? 'EN';
+const MAPPING_STATE_2     = process.env.E2E_MAPPING_STATE_2     ?? 'KELANTAN';
+const MAPPING_LANG_2      = process.env.E2E_MAPPING_LANG_2      ?? 'MS';
 const FLOW = 'beta-settings';
 
 async function loginAs(page: Page, email: string, password: string) {
@@ -26,7 +35,7 @@ async function gotoTeam(page: Page) {
   await expect(page.getByTestId('users-table')).toBeVisible();
 }
 
-async function inviteUser(page: Page, email: string, name: string, password = 'Password123!') {
+async function inviteUser(page: Page, email: string, name: string, password = INVITE_PASSWORD) {
   await page.getByTestId('invite-member-btn').click();
   await expect(page.getByTestId('add-user-form')).toBeVisible();
   await page.getByTestId('new-user-email').fill(email);
@@ -54,8 +63,8 @@ test.describe('Team management', () => {
     await snap(page, FLOW, 'team_01_users_table');
 
     const suffix = Date.now().toString().slice(-8);
-    const email  = `beta.invite.${suffix}@example.com`;
-    const name   = `BETA User ${suffix}`;
+    const email  = `${INVITE_EMAIL_PREFIX}.${suffix}@example.com`;
+    const name   = `${INVITE_NAME_PREFIX} ${suffix}`;
 
     await inviteUser(page, email, name);
     await expect(page.getByTestId('add-user-form')).toBeHidden({ timeout: 8_000 });
@@ -69,12 +78,12 @@ test.describe('Team management', () => {
     await gotoTeam(page);
 
     const suffix = Date.now().toString().slice(-8);
-    const email  = `beta.dup.${suffix}@example.com`;
+    const email  = `${INVITE_EMAIL_PREFIX}.dup.${suffix}@example.com`;
 
-    await inviteUser(page, email, `BETA Dup A ${suffix}`);
+    await inviteUser(page, email, `${INVITE_NAME_PREFIX} Dup A ${suffix}`);
     await expect(page.getByTestId('add-user-form')).toBeHidden({ timeout: 8_000 });
 
-    await inviteUser(page, email, `BETA Dup B ${suffix}`);
+    await inviteUser(page, email, `${INVITE_NAME_PREFIX} Dup B ${suffix}`);
     await expect(page.getByTestId('add-user-error')).toBeVisible();
     await expect(page.getByTestId('add-user-error')).toContainText(/already|exist/i);
     await snap(page, FLOW, 'team_03_dup_error');
@@ -85,15 +94,15 @@ test.describe('Team management', () => {
     await gotoTeam(page);
 
     const suffix = Date.now().toString().slice(-8);
-    const email  = `beta.reset.${suffix}@example.com`;
+    const email  = `${INVITE_EMAIL_PREFIX}.reset.${suffix}@example.com`;
 
-    await inviteUser(page, email, `BETA Reset ${suffix}`);
+    await inviteUser(page, email, `${INVITE_NAME_PREFIX} Reset ${suffix}`);
     await expect(page.getByTestId('add-user-form')).toBeHidden({ timeout: 8_000 });
 
     const row = page.getByTestId('users-table').locator('tr').filter({ hasText: email });
     await row.getByRole('button', { name: 'Reset password' }).click();
     await expect(page.getByTestId('reset-password-form')).toBeVisible();
-    await page.getByTestId('reset-password-input').fill('BetaNew456!');
+    await page.getByTestId('reset-password-input').fill(RESET_PASSWORD);
     await page.getByTestId('reset-password-submit').click();
     await expect(page.getByTestId('reset-password-form')).toBeHidden({ timeout: 8_000 });
     await snap(page, FLOW, 'team_04_password_reset');
@@ -104,9 +113,9 @@ test.describe('Team management', () => {
     await gotoTeam(page);
 
     const suffix = Date.now().toString().slice(-8);
-    const email  = `beta.del.${suffix}@example.com`;
+    const email  = `${INVITE_EMAIL_PREFIX}.del.${suffix}@example.com`;
 
-    await inviteUser(page, email, `BETA Del ${suffix}`);
+    await inviteUser(page, email, `${INVITE_NAME_PREFIX} Del ${suffix}`);
     await expect(page.getByTestId('add-user-form')).toBeHidden({ timeout: 8_000 });
     await expect(page.getByTestId('users-table')).toContainText(email);
 
@@ -158,31 +167,31 @@ test.describe('State → language mapping', () => {
     await page.getByRole('tab', { name: 'Languages' }).click();
     await expect(page.getByTestId('state-lang-table')).toBeVisible();
 
-    // Penang → ZH + EN
-    const penangRow = page.getByTestId('state-lang-row-PENANG');
-    await penangRow.getByRole('button', { name: 'Edit' }).click();
-    const picker = penangRow.getByTestId('state-lang-multiselect');
-    await picker.getByTestId('state-lang-opt-ZH').check();
-    await picker.getByTestId('state-lang-opt-EN').check();
-    await penangRow.getByTestId('state-lang-save').click();
-    await expect(penangRow.getByTestId('state-lang-multiselect')).toHaveCount(0);
+    // State 1 → Lang 1 + Lang 2
+    const state1Row = page.getByTestId(`state-lang-row-${MAPPING_STATE_1}`);
+    await state1Row.getByRole('button', { name: 'Edit' }).click();
+    const picker = state1Row.getByTestId('state-lang-multiselect');
+    await picker.getByTestId(`state-lang-opt-${MAPPING_LANG_1_1}`).check();
+    await picker.getByTestId(`state-lang-opt-${MAPPING_LANG_1_2}`).check();
+    await state1Row.getByTestId('state-lang-save').click();
+    await expect(state1Row.getByTestId('state-lang-multiselect')).toHaveCount(0);
 
-    // Kelantan → MS
-    const kelantanRow = page.getByTestId('state-lang-row-KELANTAN');
-    await kelantanRow.getByRole('button', { name: 'Edit' }).click();
-    await kelantanRow.getByTestId('state-lang-multiselect').getByTestId('state-lang-opt-MS').check();
-    await kelantanRow.getByTestId('state-lang-save').click();
+    // State 2 → Lang 2_1
+    const state2Row = page.getByTestId(`state-lang-row-${MAPPING_STATE_2}`);
+    await state2Row.getByRole('button', { name: 'Edit' }).click();
+    await state2Row.getByTestId('state-lang-multiselect').getByTestId(`state-lang-opt-${MAPPING_LANG_2}`).check();
+    await state2Row.getByTestId('state-lang-save').click();
     await snap(page, FLOW, 'lang_02_both_saved');
 
     await page.reload();
     await page.getByRole('tab', { name: 'Languages' }).click();
-    await expect(page.getByTestId('state-lang-row-PENANG').getByText('ZH', { exact: true })).toBeVisible();
-    await expect(page.getByTestId('state-lang-row-PENANG').getByText('EN', { exact: true })).toBeVisible();
-    await expect(page.getByTestId('state-lang-row-KELANTAN').getByText('MS', { exact: true })).toBeVisible();
+    await expect(page.getByTestId(`state-lang-row-${MAPPING_STATE_1}`).getByText(MAPPING_LANG_1_1, { exact: true })).toBeVisible();
+    await expect(page.getByTestId(`state-lang-row-${MAPPING_STATE_1}`).getByText(MAPPING_LANG_1_2, { exact: true })).toBeVisible();
+    await expect(page.getByTestId(`state-lang-row-${MAPPING_STATE_2}`).getByText(MAPPING_LANG_2, { exact: true })).toBeVisible();
     await snap(page, FLOW, 'lang_03_persisted');
 
     // Cleanup
-    await setMapping(token, 'PENANG', []);
-    await setMapping(token, 'KELANTAN', []);
+    await setMapping(token, MAPPING_STATE_1, []);
+    await setMapping(token, MAPPING_STATE_2, []);
   });
 });

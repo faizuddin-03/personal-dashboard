@@ -10,9 +10,10 @@
 import { test, expect, request, type APIRequestContext, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = process.env.E2E_ADMIN_EMAIL    ?? 'admin@example.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'ChangeMe123!';
-const API_BASE       = process.env.API_BASE            ?? 'http://localhost:3000';
+const ADMIN_EMAIL     = process.env.E2E_ADMIN_EMAIL     ?? 'admin@example.com';
+const ADMIN_PASSWORD  = process.env.E2E_ADMIN_PASSWORD  ?? 'ChangeMe123!';
+const API_BASE        = process.env.API_BASE             ?? 'http://localhost:3000';
+const KB_PHONE_PREFIX = process.env.E2E_KB_PHONE_PREFIX ?? '+6011120040';
 const FLOW = 'beta-knowledge-base';
 
 async function loginAs(page: Page, email: string, password: string) {
@@ -55,7 +56,7 @@ async function seedEscalation(token: string, phone: string, text: string): Promi
 test.describe('Knowledge Base disposition modal', () => {
   test('SaveToKnowledgeModal offers SKIP, IMPORT_LIVE, and SAVE_DRAFT options', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111200401',
+    await seedEscalation(token, `${KB_PHONE_PREFIX}1`,
       `BETA KB modal ${Date.now()} — unusual refund outside policy`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -72,7 +73,7 @@ test.describe('Knowledge Base disposition modal', () => {
 
   test('SKIP disposition closes modal and shows resolved toast', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111200402',
+    await seedEscalation(token, `${KB_PHONE_PREFIX}2`,
       `BETA KB skip ${Date.now()} — account access question`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -91,7 +92,7 @@ test.describe('Knowledge Base disposition modal', () => {
 
   test('SAVE_DRAFT disposition closes modal and shows resolved toast', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111200403',
+    await seedEscalation(token, `${KB_PHONE_PREFIX}3`,
       `BETA KB draft ${Date.now()} — portal login issue`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -110,7 +111,7 @@ test.describe('Knowledge Base disposition modal', () => {
 
   test('IMPORT_LIVE disposition closes modal and shows resolved toast', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111200404',
+    await seedEscalation(token, `${KB_PHONE_PREFIX}4`,
       `BETA KB import ${Date.now()} — credit pricing query`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -129,7 +130,7 @@ test.describe('Knowledge Base disposition modal', () => {
 
   test('kb-confirm button is disabled until a disposition is selected', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111200405',
+    await seedEscalation(token, `${KB_PHONE_PREFIX}5`,
       `BETA KB confirm ${Date.now()} — vehicle registration help`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);

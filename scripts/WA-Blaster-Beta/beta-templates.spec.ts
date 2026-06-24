@@ -14,6 +14,10 @@ const ADMIN_EMAIL           = process.env.E2E_ADMIN_EMAIL           ?? 'admin@ex
 const ADMIN_PASSWORD        = process.env.E2E_ADMIN_PASSWORD        ?? 'ChangeMe123!';
 const TEMPLATE_CATEGORY     = process.env.E2E_TEMPLATE_CATEGORY     ?? 'MARKETING';
 const TEMPLATE_LANG_VARIANT = process.env.E2E_TEMPLATE_LANG_VARIANT ?? 'MS';
+const TEMPLATE_NAME_PREFIX  = process.env.E2E_TEMPLATE_NAME_PREFIX  ?? 'beta_tpl';
+const TEMPLATE_BODY_EN      = process.env.E2E_TEMPLATE_BODY_EN      ?? 'Hello {{1}}!';
+const TEMPLATE_BODY_MS      = process.env.E2E_TEMPLATE_BODY_MS      ?? 'Salam {{1}}!';
+const WIZARD_BRIEF          = process.env.E2E_WIZARD_BRIEF          ?? 'Service reminder for BETA testing';
 const FLOW = 'beta-templates';
 
 async function loginAsAdmin(page: Page) {
@@ -63,18 +67,18 @@ test.describe('Draft template creation', () => {
     await loginAsAdmin(page);
     await gotoTemplates(page);
 
-    const uniqueName = `beta_tpl_${Date.now().toString().slice(-8)}`;
+    const uniqueName = `${TEMPLATE_NAME_PREFIX}_${Date.now().toString().slice(-8)}`;
 
     await page.getByTestId('add-template').click();
     await snap(page, FLOW, 'draft_01_add_form');
 
     await page.getByTestId('template-name').fill(uniqueName);
     await page.getByTestId('template-category').selectOption(TEMPLATE_CATEGORY);
-    await page.getByTestId('variant-body').fill('Hello {{1}}!');
+    await page.getByTestId('variant-body').fill(TEMPLATE_BODY_EN);
     await page.getByTestId('variant-footer').fill('Reply STOP to unsubscribe');
     await page.getByTestId('add-language-select').selectOption(TEMPLATE_LANG_VARIANT);
     await page.getByTestId(`language-tab-${TEMPLATE_LANG_VARIANT}`).click();
-    await page.getByTestId('variant-body').fill('Salam {{1}}!');
+    await page.getByTestId('variant-body').fill(TEMPLATE_BODY_MS);
     await snap(page, FLOW, 'draft_02_ms_variant');
 
     await page.getByTestId('template-submit-draft').click();
@@ -111,7 +115,7 @@ async function openWizardToReview(page: Page) {
 
   await page.getByRole('link', { name: 'Templates' }).click();
   await page.getByTestId('add-template').click();
-  await page.getByTestId('wizard-brief').fill('Service reminder for BETA testing');
+  await page.getByTestId('wizard-brief').fill(WIZARD_BRIEF);
   await page.getByRole('button', { name: 'Generate suggestions' }).click();
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByTestId('wizard-name')).toBeVisible();
@@ -123,7 +127,7 @@ test.describe('AI wizard', () => {
     await openWizardToReview(page);
     await snap(page, FLOW, 'wizard_01_review');
 
-    const tplName = `beta_wizard_${Date.now().toString().slice(-8)}`;
+    const tplName = `${TEMPLATE_NAME_PREFIX}_wizard_${Date.now().toString().slice(-8)}`;
     await page.getByTestId('wizard-name').fill(tplName);
     await page.getByTestId('wizard-edit-content').click();
     await page.getByTestId('wizard-edit-body-EN').fill('Hi {{1}}, BETA service on {{2}}. Book via eAuto.');

@@ -10,9 +10,12 @@
 import { test, expect, request, type APIRequestContext, type Page } from './helpers/fixtures';
 import { snap } from './helpers/screenshot';
 
-const ADMIN_EMAIL    = process.env.E2E_ADMIN_EMAIL    ?? 'admin@example.com';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'ChangeMe123!';
-const API_BASE       = process.env.API_BASE            ?? 'http://localhost:3000';
+const ADMIN_EMAIL         = process.env.E2E_ADMIN_EMAIL         ?? 'admin@example.com';
+const ADMIN_PASSWORD      = process.env.E2E_ADMIN_PASSWORD      ?? 'ChangeMe123!';
+const API_BASE            = process.env.API_BASE                ?? 'http://localhost:3000';
+const INBOX_PHONE_PREFIX  = process.env.E2E_INBOX_PHONE_PREFIX  ?? '+6011110040';
+const CANNED_REPLY_TITLE  = process.env.E2E_CANNED_REPLY_TITLE  ?? 'BETA Saved Reply';
+const CANNED_REPLY_BODY   = process.env.E2E_CANNED_REPLY_BODY   ?? 'This is a BETA canned reply.';
 const FLOW = 'beta-inbox';
 
 async function loginAs(page: Page, email: string, password: string) {
@@ -86,7 +89,7 @@ test.describe('Inbox mode toggle', () => {
 test.describe('Ticket queue', () => {
   test('escalation creates a ticket — Resolve and Close buttons appear', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111100401',
+    await seedEscalation(token, `${INBOX_PHONE_PREFIX}1`,
       `BETA escalation ${Date.now()} — unusual ownership dispute and refund request`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -99,7 +102,7 @@ test.describe('Ticket queue', () => {
 
   test('resolve → SKIP disposition → modal closes → toast shown', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111100402',
+    await seedEscalation(token, `${INBOX_PHONE_PREFIX}2`,
       `BETA resolve ${Date.now()} — complaint about portal access`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -120,7 +123,7 @@ test.describe('Ticket queue', () => {
 
   test('resolved ticket moves to the Closed tab', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111100403',
+    await seedEscalation(token, `${INBOX_PHONE_PREFIX}3`,
       `BETA closed-tab ${Date.now()} — sensitive account deletion inquiry`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -146,7 +149,7 @@ test.describe('Ticket queue', () => {
 test.describe('Agent assist panel', () => {
   test('active ticket shows suggest-draft and agent-context-card', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111100404',
+    await seedEscalation(token, `${INBOX_PHONE_PREFIX}4`,
       `BETA agent-assist ${Date.now()} — complex credit pricing dispute`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
@@ -165,14 +168,14 @@ test.describe('Agent assist panel', () => {
     const listText = await page.getByTestId('canned-replies-list').textContent();
     if (!listText || listText.trim() === '') {
       await page.getByTestId('add-canned-reply').click();
-      await page.getByPlaceholder('Title').fill('BETA Saved Reply');
-      await page.getByPlaceholder('Reply body').fill('This is a BETA canned reply.');
+      await page.getByPlaceholder('Title').fill(CANNED_REPLY_TITLE);
+      await page.getByPlaceholder('Reply body').fill(CANNED_REPLY_BODY);
       await page.getByRole('button', { name: 'Add' }).click();
       await expect(page.getByPlaceholder('Title')).toBeHidden({ timeout: 8_000 });
     }
 
     const token = await adminToken();
-    await seedEscalation(token, '+60111100405',
+    await seedEscalation(token, `${INBOX_PHONE_PREFIX}5`,
       `BETA saved-replies ${Date.now()} — low confidence JPJ query`);
 
     await page.goto('/inbox');
@@ -187,7 +190,7 @@ test.describe('Agent assist panel', () => {
 test.describe('Sidebar badge', () => {
   test('sidebar inbox badge is visible when active tickets exist', async ({ page }) => {
     const token = await adminToken();
-    await seedEscalation(token, '+60111100406',
+    await seedEscalation(token, `${INBOX_PHONE_PREFIX}6`,
       `BETA badge ${Date.now()} — unusual refund outside policy`);
 
     await loginAs(page, ADMIN_EMAIL, ADMIN_PASSWORD);
