@@ -74,7 +74,7 @@ test.describe('Dashboard metrics', () => {
   test('KPI strip is visible on the dashboard', async ({ page }) => {
     await loginAsAdmin(page);
     await expect(page.getByTestId('dashboard-title')).toBeVisible();
-    await expect(page.getByText('auto-handled')).toBeVisible();
+    await expect(page.getByText('Auto-handled today').first()).toBeVisible();
     await snap(page, FLOW, 'kpi_01_auto_handled');
   });
 });
