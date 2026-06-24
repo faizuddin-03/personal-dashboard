@@ -861,7 +861,7 @@ export default function WABlasterBetaPage() {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 items-start">
-              {/* Test list */}
+              {/* Test list + vars */}
               <div className="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800">
                   <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
@@ -892,70 +892,74 @@ export default function WABlasterBetaPage() {
                     );
                   })}
                 </div>
-              </div>
 
-              {/* Right column */}
-              <div className="space-y-4">
-                {/* Suite variables */}
+                {/* Variables — below the checklist, inside the same card */}
                 {suite.vars.length > 0 && (
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                  <div className="border-t border-slate-800 px-5 py-4 space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Suite Variables</h3>
+                      <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <Settings2 size={11} /> Test Variables
+                      </h3>
                       <button onClick={() => resetSuiteVars(suite.id)}
-                        className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
-                        <RotateCcw size={10} /> Defaults
+                        className="flex items-center gap-1 text-[11px] text-slate-600 hover:text-violet-400 transition-colors">
+                        <RotateCcw size={10} /> Reset all
                       </button>
                     </div>
-                    {suite.vars.map(v => {
-                      const val = cfg.vars[v.key] ?? v.defaultValue;
-                      const isDefault = val === v.defaultValue;
-                      const isPw = v.type === "password";
-                      const pwVisible = showVarPw[v.key] ?? false;
-                      return (
-                        <div key={v.key} className="space-y-1.5">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <label className="text-xs font-medium text-slate-300">{v.label}</label>
-                            {v.counter && (
-                              <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-violet-900/40 text-violet-400 border border-violet-800/50">auto-suffix</span>
-                            )}
-                            {!isDefault && (
-                              <button onClick={() => setSuiteVar(suite.id, v.key, v.defaultValue)}
-                                className="ml-auto text-[10px] text-slate-600 hover:text-violet-400 transition-colors flex items-center gap-0.5">
-                                <RotateCcw size={9} /> reset
-                              </button>
-                            )}
-                          </div>
-                          {v.description && <p className="text-[11px] text-slate-500 leading-relaxed">{v.description}</p>}
-                          <div className="relative">
-                            <input
-                              type={isPw && !pwVisible ? "password" : "text"}
-                              value={val}
-                              onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
-                              className={clsx(
-                                "w-full bg-slate-800/80 border rounded-lg px-3 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors",
-                                isDefault ? "border-slate-700" : "border-violet-600/50",
-                                isPw && "pr-9"
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
+                      {suite.vars.map(v => {
+                        const val = cfg.vars[v.key] ?? v.defaultValue;
+                        const isDefault = val === v.defaultValue;
+                        const isPw = v.type === "password";
+                        const pwVisible = showVarPw[v.key] ?? false;
+                        return (
+                          <div key={v.key} className="space-y-1.5">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <label className="text-xs font-medium text-slate-300">{v.label}</label>
+                              {v.counter && (
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-violet-900/40 text-violet-400 border border-violet-800/50">auto-suffix</span>
                               )}
-                            />
-                            {isPw && (
-                              <button onClick={() => setShowVarPw(p => ({ ...p, [v.key]: !pwVisible }))}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
-                                {pwVisible ? <EyeOff size={13} /> : <Eye size={13} />}
-                              </button>
+                              {!isDefault && (
+                                <button onClick={() => setSuiteVar(suite.id, v.key, v.defaultValue)}
+                                  className="ml-auto text-[10px] text-slate-600 hover:text-violet-400 transition-colors flex items-center gap-0.5">
+                                  <RotateCcw size={9} /> reset
+                                </button>
+                              )}
+                            </div>
+                            {v.description && <p className="text-[11px] text-slate-500 leading-relaxed">{v.description}</p>}
+                            <div className="relative">
+                              <input
+                                type={isPw && !pwVisible ? "password" : "text"}
+                                value={val}
+                                onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
+                                className={clsx(
+                                  "w-full bg-slate-800/80 border rounded-lg px-3 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors",
+                                  isDefault ? "border-slate-700" : "border-violet-600/50",
+                                  isPw && "pr-9"
+                                )}
+                              />
+                              {isPw && (
+                                <button onClick={() => setShowVarPw(p => ({ ...p, [v.key]: !pwVisible }))}
+                                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
+                                  {pwVisible ? <EyeOff size={13} /> : <Eye size={13} />}
+                                </button>
+                              )}
+                            </div>
+                            {v.counter && (
+                              <p className="text-[10px] text-slate-600 font-mono">
+                                ↳ e.g. <span className="text-slate-500">{val} 1</span>, <span className="text-slate-500">{val} 2</span>, …
+                              </p>
                             )}
+                            {v.hint && <p className="text-[10px] text-slate-600 leading-relaxed">{v.hint}</p>}
                           </div>
-                          {v.counter && (
-                            <p className="text-[10px] text-slate-600 font-mono">
-                              ↳ e.g. <span className="text-slate-500">{val} 1</span>, <span className="text-slate-500">{val} 2</span>, …
-                            </p>
-                          )}
-                          {v.hint && <p className="text-[10px] text-slate-600 leading-relaxed">{v.hint}</p>}
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
+              </div>
 
+              {/* Right column — run panel only */}
+              <div className="space-y-4">
                 {/* Run panel */}
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
