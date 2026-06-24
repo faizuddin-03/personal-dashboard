@@ -885,7 +885,7 @@ export default function WABlasterBetaPage() {
                           <input type="checkbox" checked={enabled} onChange={() => toggleTest(suite.id, t.name)}
                             className="accent-violet-500 mt-0.5 shrink-0 cursor-pointer" />
                           <div className="flex-1 min-w-0">
-                            <p className={clsx("text-sm leading-snug", enabled ? "text-slate-200" : "text-slate-500")}>{t.name}</p>
+                            <p className={clsx("text-sm leading-snug", enabled ? "text-slate-200" : "text-slate-500")}>{t.name.charAt(0).toUpperCase() + t.name.slice(1)}</p>
                             {t.metaRisk && (
                               <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-900/40 text-orange-400 border border-orange-800/60">
                                 <AlertTriangle size={8} /> Calls Meta API — use sparingly
