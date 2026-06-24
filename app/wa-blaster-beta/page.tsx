@@ -536,6 +536,35 @@ export default function WABlasterBetaPage() {
   const [expandedSuiteDocs, setExpandedSuiteDocs] = useState<Set<string>>(new Set());
   const [expandedTestDocs,  setExpandedTestDocs]  = useState<Set<string>>(new Set());
   const [settingsOpen,      setSettingsOpen]      = useState(false);
+
+  // ── Template picker ────────────────────────────────────────────────────────
+  interface TemplateMeta { name: string; category: string; status: string; }
+  const [templateList,       setTemplateList]       = useState<TemplateMeta[] | null>(null);
+  const [templateFetchState, setTemplateFetchState] = useState<"idle" | "loading" | "error">("idle");
+  const [templateFetchErr,   setTemplateFetchErr]   = useState<string | null>(null);
+
+  async function fetchTemplates() {
+    setTemplateFetchState("loading");
+    setTemplateFetchErr(null);
+    try {
+      const res = await fetch("/api/wa-blaster-beta/templates-proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ baseUrl, adminEmail, adminPassword }),
+      });
+      const data = await res.json() as { templates?: TemplateMeta[]; error?: string };
+      if (!res.ok || data.error) {
+        setTemplateFetchState("error");
+        setTemplateFetchErr(data.error ?? "Unknown error");
+        return;
+      }
+      setTemplateList(data.templates ?? []);
+      setTemplateFetchState("idle");
+    } catch {
+      setTemplateFetchState("error");
+      setTemplateFetchErr("Network error — is the dashboard server running?");
+    }
+  }
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [showBrowser,   setShowBrowser]   = useState(true);
 
@@ -1067,6 +1096,94 @@ export default function WABlasterBetaPage() {
                               const isDefault = val === v.defaultValue;
                               const isPw      = v.type === "password";
                               const pwVisible = showVarPw[v.key] ?? false;
+
+                              // ── Template picker ──────────────────────────
+                              if (v.key === "E2E_SEED_TEMPLATE") {
+                                const statusColor = (s: string) =>
+                                  s === "APPROVED" ? "text-green-400 bg-green-900/30 border-green-800/60" :
+                                  s === "DRAFT"    ? "text-slate-400 bg-slate-800 border-slate-700" :
+                                  s === "PENDING"  ? "text-amber-400 bg-amber-900/30 border-amber-800/60" :
+                                                     "text-red-400 bg-red-900/30 border-red-800/60";
+                                return (
+                                  <div key={v.key} className="space-y-1 sm:col-span-2">
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <label className="text-[11px] font-medium text-slate-400">{v.label}</label>
+                                      <button
+                                        onClick={fetchTemplates}
+                                        disabled={templateFetchState === "loading"}
+                                        className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-800 border border-slate-700 text-slate-400 hover:text-violet-300 hover:border-violet-700 disabled:opacity-50 transition-colors"
+                                      >
+                                        {templateFetchState === "loading"
+                                          ? <><Loader2 size={9} className="animate-spin" /> Loading…</>
+                                          : <><RotateCcw size={9} /> Load from app</>}
+                                      </button>
+                                      {templateList && (
+                                        <span className="text-[10px] text-slate-600">{templateList.length} template{templateList.length !== 1 ? "s" : ""} found</span>
+                                      )}
+                                      {!isDefault && (
+                                        <button onClick={() => setSuiteVar(suite.id, v.key, v.defaultValue)}
+                                          className="ml-auto text-[10px] text-slate-600 hover:text-violet-400 transition-colors flex items-center gap-0.5">
+                                          <RotateCcw size={8} /> reset
+                                        </button>
+                                      )}
+                                    </div>
+                                    {templateFetchErr && (
+                                      <p className="text-[10px] text-red-400 bg-red-950/30 border border-red-900/40 rounded-lg px-2.5 py-1.5 leading-relaxed">
+                                        {templateFetchErr}
+                                      </p>
+                                    )}
+                                    {templateList && templateList.length > 0 ? (
+                                      <select
+                                        value={val}
+                                        onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
+                                        className={clsx(
+                                          "w-full bg-slate-900 border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors appearance-none cursor-pointer",
+                                          isDefault ? "border-slate-700" : "border-violet-600/50"
+                                        )}
+                                      >
+                                        {["APPROVED", "DRAFT", "PENDING"].map(status => {
+                                          const group = templateList.filter(t => t.status === status);
+                                          if (!group.length) return null;
+                                          return (
+                                            <optgroup key={status} label={`── ${status} ──`} className="bg-slate-900">
+                                              {group.map(t => (
+                                                <option key={t.name} value={t.name} className="bg-slate-900">
+                                                  {t.name}  [{t.category}]
+                                                </option>
+                                              ))}
+                                            </optgroup>
+                                          );
+                                        })}
+                                        {templateList.filter(t => !["APPROVED","DRAFT","PENDING"].includes(t.status)).map(t => (
+                                          <option key={t.name} value={t.name} className="bg-slate-900">{t.name}  [{t.status}]</option>
+                                        ))}
+                                      </select>
+                                    ) : (
+                                      <input
+                                        type="text"
+                                        value={val}
+                                        onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
+                                        placeholder="e.g. sample_promo_2026"
+                                        className={clsx(
+                                          "w-full bg-slate-900 border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors",
+                                          isDefault ? "border-slate-700" : "border-violet-600/50"
+                                        )}
+                                      />
+                                    )}
+                                    {templateList && templateList.length > 0 && val && (() => {
+                                      const t = templateList.find(x => x.name === val);
+                                      return t ? (
+                                        <span className={clsx("inline-flex items-center px-1.5 py-px rounded text-[9px] font-semibold border", statusColor(t.status))}>
+                                          {t.status}
+                                        </span>
+                                      ) : null;
+                                    })()}
+                                    {v.hint && <p className="text-[9px] text-slate-600 leading-relaxed">{v.hint}</p>}
+                                  </div>
+                                );
+                              }
+                              // ── End template picker ──────────────────────
+
                               return (
                                 <div key={v.key} className="space-y-1">
                                   <div className="flex items-center gap-1.5 flex-wrap">
