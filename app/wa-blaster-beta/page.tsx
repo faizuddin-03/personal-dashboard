@@ -24,6 +24,7 @@ interface SuiteVar {
   counter?: boolean;
   hint?: string;
   forTest?: string;
+  options?: string[];
 }
 
 interface SuiteDef {
@@ -101,7 +102,7 @@ const SUITES: SuiteDef[] = [
     ],
     vars: [
       { key: "E2E_SEED_TEMPLATE",     label: "Seed Template Slug",  defaultValue: "sample_promo_2026", hint: "Must exist in your app", forTest: "wizard shows recipient count on audience step" },
-      { key: "E2E_AUDIENCE_STATE",    label: "Audience State Chip", defaultValue: "Selangor",          forTest: "selecting a state chip updates the recipient count" },
+      { key: "E2E_AUDIENCE_STATE",    label: "Audience State Chip", defaultValue: "Selangor",          options: ["Selangor","Kuala Lumpur","Penang","Johor","Kelantan","Sabah","Sarawak","Perak","Terengganu","Pahang","Negeri Sembilan","Kedah","Perlis","Melaka"], forTest: "selecting a state chip updates the recipient count" },
       { key: "E2E_BLAST_NAME_PREFIX", label: "Blast Name Prefix",   defaultValue: "BETA",              counter: true, forTest: "create blast → detail page shows all four counters" },
     ],
   },
@@ -152,10 +153,10 @@ const SUITES: SuiteDef[] = [
       { key: "E2E_CONTACTS_SEARCH_TERM",  label: "Search Term",           defaultValue: "Auto Bestari",  hint: "Must match a dealer already in your database", forTest: "search filters the dealer list" },
       { key: "E2E_DEALER_NAME_PREFIX",    label: "Dealer Name Prefix",    defaultValue: "BETA Dealer",   counter: true, forTest: "admin adds dealer via modal — appears in table" },
       { key: "E2E_DEALER_PHONE_PREFIX",   label: "Dealer Phone Prefix",   defaultValue: "+6013",         hint: "7-digit suffix appended — must be unique", forTest: "admin adds dealer via modal — appears in table" },
-      { key: "E2E_DEALER_TIER",           label: "Dealer Tier",           defaultValue: "GOLD",          hint: "GOLD / SILVER / BRONZE", forTest: "admin adds dealer via modal — appears in table" },
-      { key: "E2E_DEALER_SPEC",           label: "Dealer Specialization", defaultValue: "EV_HYBRID",     hint: "e.g. EV_HYBRID, SEDAN, SUV", forTest: "admin adds dealer via modal — appears in table" },
+      { key: "E2E_DEALER_TIER",           label: "Dealer Tier",           defaultValue: "GOLD",          options: ["GOLD","SILVER","BRONZE"], forTest: "admin adds dealer via modal — appears in table" },
+      { key: "E2E_DEALER_SPEC",           label: "Dealer Specialization", defaultValue: "EV_HYBRID",     options: ["EV_HYBRID","SEDAN","SUV","MPV","HATCHBACK","PICKUP"], forTest: "admin adds dealer via modal — appears in table" },
       { key: "E2E_CONTACT_NAME_PREFIX",   label: "Contact Name Prefix",   defaultValue: "Automation Test", counter: true, forTest: "create contact → verify in list" },
-      { key: "E2E_CONTACT_STATE",         label: "Contact State",         defaultValue: "SELANGOR",      hint: "State code for the contact form", forTest: "create contact → verify in list" },
+      { key: "E2E_CONTACT_STATE",         label: "Contact State",         defaultValue: "SELANGOR",      options: ["SELANGOR","KL","PENANG","JOHOR","KELANTAN","SABAH","SARAWAK","PERAK","TERENGGANU","PAHANG","NEGERI_SEMBILAN","KEDAH","PERLIS","MELAKA"], forTest: "create contact → verify in list" },
     ],
   },
   {
@@ -189,8 +190,8 @@ const SUITES: SuiteDef[] = [
     ],
     vars: [
       { key: "E2E_TEMPLATE_NAME_PREFIX",  label: "Template Name Prefix",    defaultValue: "beta_tpl",  counter: true,    hint: "e.g. beta_tpl_12345678",              forTest: "create multi-language draft — appears in list with DRAFT status" },
-      { key: "E2E_TEMPLATE_CATEGORY",     label: "Template Category",      defaultValue: "MARKETING",                    hint: "MARKETING / UTILITY / AUTHENTICATION", forTest: "create multi-language draft — appears in list with DRAFT status" },
-      { key: "E2E_TEMPLATE_LANG_VARIANT", label: "Second Language",        defaultValue: "MS",                           hint: "Language code for second variant tab",  forTest: "create multi-language draft — appears in list with DRAFT status" },
+      { key: "E2E_TEMPLATE_CATEGORY",     label: "Template Category",      defaultValue: "MARKETING",                    options: ["MARKETING","UTILITY","AUTHENTICATION"], forTest: "create multi-language draft — appears in list with DRAFT status" },
+      { key: "E2E_TEMPLATE_LANG_VARIANT", label: "Second Language",        defaultValue: "MS",                           options: ["EN","MS","ZH","TA"], forTest: "create multi-language draft — appears in list with DRAFT status" },
       { key: "E2E_TEMPLATE_BODY_EN",      label: "Body (EN)",              defaultValue: "Hello {{1}}!",                                                               forTest: "create multi-language draft — appears in list with DRAFT status" },
       { key: "E2E_TEMPLATE_BODY_MS",      label: "Body (2nd language)",    defaultValue: "Salam {{1}}!",                                                               forTest: "create multi-language draft — appears in list with DRAFT status" },
       { key: "E2E_WIZARD_BRIEF",          label: "AI Wizard Brief",        defaultValue: "Service reminder for BETA testing",                                          forTest: "edit content, save as draft, draft appears in list with edits" },
@@ -215,11 +216,11 @@ const SUITES: SuiteDef[] = [
       { key: "E2E_INVITE_NAME_PREFIX",  label: "Name Prefix",         defaultValue: "BETA User",     counter: true,                              forTest: "invite member → appears in users table" },
       { key: "E2E_INVITE_PASSWORD",     label: "Initial Password",    defaultValue: "Password123!",  type: "password",                           forTest: "invite member → appears in users table" },
       { key: "E2E_RESET_PASSWORD",      label: "Reset-to Password",   defaultValue: "BetaNew456!",   type: "password",                           forTest: "admin resets a team member password" },
-      { key: "E2E_MAPPING_STATE_1",     label: "State 1",             defaultValue: "PENANG",        hint: "State code (e.g. PENANG)",            forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
-      { key: "E2E_MAPPING_LANG_1_1",    label: "State 1 — Language A", defaultValue: "ZH",           hint: "e.g. ZH",                            forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
-      { key: "E2E_MAPPING_LANG_1_2",    label: "State 1 — Language B", defaultValue: "EN",           hint: "e.g. EN",                            forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
-      { key: "E2E_MAPPING_STATE_2",     label: "State 2",             defaultValue: "KELANTAN",      hint: "State code (e.g. KELANTAN)",          forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
-      { key: "E2E_MAPPING_LANG_2",      label: "State 2 — Language",  defaultValue: "MS",            hint: "e.g. MS",                            forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
+      { key: "E2E_MAPPING_STATE_1",     label: "State 1",             defaultValue: "PENANG",        options: ["SELANGOR","KL","PENANG","JOHOR","KELANTAN","SABAH","SARAWAK","PERAK","TERENGGANU","PAHANG","NEGERI_SEMBILAN","KEDAH","PERLIS","MELAKA"], forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
+      { key: "E2E_MAPPING_LANG_1_1",    label: "State 1 — Language A", defaultValue: "ZH",           options: ["EN","MS","ZH","TA"],              forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
+      { key: "E2E_MAPPING_LANG_1_2",    label: "State 1 — Language B", defaultValue: "EN",           options: ["EN","MS","ZH","TA"],              forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
+      { key: "E2E_MAPPING_STATE_2",     label: "State 2",             defaultValue: "KELANTAN",      options: ["SELANGOR","KL","PENANG","JOHOR","KELANTAN","SABAH","SARAWAK","PERAK","TERENGGANU","PAHANG","NEGERI_SEMBILAN","KEDAH","PERLIS","MELAKA"], forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
+      { key: "E2E_MAPPING_LANG_2",      label: "State 2 — Language",  defaultValue: "MS",            options: ["EN","MS","ZH","TA"],              forTest: "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload" },
     ],
   },
   {
@@ -271,6 +272,117 @@ const SUITES: SuiteDef[] = [
     ],
   },
 ];
+
+// ── Test documentation ────────────────────────────────────────────────────────
+
+const SUITE_DOCS: Record<string, Record<string, string>> = {
+  "beta-auth": {
+    "remember-me checkbox is checked by default": "Verifies the Remember Me checkbox is pre-checked on the login page so users aren't logged out between sessions.",
+    "unauthenticated visit to / redirects to /login": "Confirms that accessing the dashboard root without a session immediately redirects to the login page.",
+    "wrong credentials show inline error": "Checks that submitting incorrect credentials displays an inline error message rather than a silent failure.",
+    "admin login lands on dashboard with greeting": "Logs in as admin and confirms the post-login landing page shows the expected dashboard greeting.",
+    "session persists after page reload": "Reloads the page while authenticated and confirms the session stays active without prompting for login again.",
+    "after logout, reload stays on /login": "Logs out and reloads to confirm the session is fully cleared and the user remains on the login page.",
+    "admin can open Settings and see the users table": "Navigates to Settings as admin and verifies the users table is rendered and accessible.",
+    "keyboard shortcut g→i navigates to Inbox": "Triggers the g-then-i keyboard shortcut and confirms the browser navigates to the Inbox page.",
+    "help overlay opens on help-button and closes on Escape": "Clicks the help button to open the overlay, then presses Escape to confirm it dismisses correctly.",
+  },
+  "beta-dashboard": {
+    "dashboard title visible and no demo badge shown": "Checks the main dashboard heading is visible and that no 'demo data' badge appears, confirming live data mode.",
+    "reply-handling donut chart text \"auto-handled\" is visible": "Confirms the reply-handling donut chart on the dashboard shows its 'Auto-handled today' label.",
+    "dashboard loads without errors on page reload": "Reloads the dashboard page and confirms no error banners or blank screens appear.",
+    "reports page renders delivery funnel and range chips": "Navigates to the Reports page and checks both the delivery funnel section and the date range chips are rendered.",
+    "7-day range chip is clickable and updates the chart": "Clicks the 7-day chip on the Reports page and verifies the chart updates without crashing.",
+    "reports page shows no \"demo data\" notice": "Confirms the Reports page does not display a demo-data warning banner.",
+  },
+  "beta-campaigns": {
+    "list shows heading, new-campaign button, and status filter": "Opens the Campaigns list and confirms the page heading, New Campaign button, and status filter chips are all present.",
+    "clicking the Sending status chip filters without crashing": "Clicks the Sending status filter chip and confirms the page does not throw an error.",
+    "clicking a blast row navigates to its detail page": "Clicks on a campaign row and verifies the browser navigates to the campaign detail page.",
+    "wizard shows recipient count on audience step": "Opens the blast wizard, selects a template, and confirms the audience step displays a non-zero recipient count.",
+    "selecting a state chip updates the recipient count": "Clicks a state chip in the wizard audience step and verifies the displayed recipient count changes.",
+    "specialization chips are clickable and do not crash": "Clicks the EV/Hybrid and other specialization filter chips in the wizard and confirms no error occurs.",
+    "create blast → detail page shows all four counters": "Completes the Send Now blast wizard and verifies the detail page shows all four counters: Total, Delivered, Failed, and Pending.",
+    "recipients table is visible with status filter": "Opens a blast detail page and confirms the recipients table and its status filter dropdown are visible.",
+    "filtering to Failed surfaces Retry buttons and Retry All": "Filters the recipients table to Failed status and checks that individual Retry buttons and a Retry All button appear.",
+    "blast name is required — empty name keeps Create button disabled": "Opens the blast wizard review step with no blast name entered and confirms the Create button stays disabled.",
+    "schedule blast → detail shows Cancel button in SCHEDULED state": "Schedules a blast for the future and verifies the detail page shows a Cancel button and the SCHEDULED status badge.",
+    "cancel a SCHEDULED blast — Cancel button disappears": "Cancels a scheduled blast and confirms the Cancel button is removed from the detail page.",
+    "past scheduled date shows validation error": "Enters a past date in the schedule picker and confirms an inline validation error is shown.",
+    "newly scheduled blast appears in the campaigns list": "Schedules a blast and navigates back to the list to confirm the new blast row is visible.",
+  },
+  "beta-inbox": {
+    "inbox shows Auto-replied and Needs Human mode buttons": "Opens the Inbox page and confirms both mode toggle buttons (Auto-replied and Needs Human) are rendered.",
+    "switching to Auto-replied mode shows AI conversations or empty state": "Clicks the Auto-replied mode button and confirms the panel shows either AI conversation rows or an empty state message.",
+    "Needs Human mode shows Active and Closed tab buttons": "In Needs Human mode, confirms both the Active and Closed tab buttons are present.",
+    "escalation creates a ticket — Resolve and Close buttons appear": "Simulates an inbound message that triggers escalation and confirms Resolve and Close buttons appear on the ticket.",
+    "resolve → SKIP disposition → modal closes → toast shown": "Resolves a ticket, selects SKIP in the Knowledge Base modal, confirms, and verifies the modal closes with a success toast.",
+    "resolved ticket moves to the Closed tab": "Resolves a ticket and switches to the Closed tab to confirm the ticket appears there.",
+    "active ticket shows suggest-draft and agent-context-card": "Opens an active ticket and confirms the AI suggest-draft panel and agent context card are both visible.",
+    "saved-replies dropdown visible when canned replies exist": "Ensures at least one canned reply exists, opens an active ticket, and confirms the saved-replies dropdown is visible.",
+    "sidebar inbox badge is visible when active tickets exist": "Seeds an escalation and confirms the Inbox sidebar link shows a notification badge.",
+    "create → edit → delete via Settings": "Goes through the full canned reply lifecycle: creates one, edits its body, then deletes it, verifying each step in the list.",
+    "Add button disabled until both title and body are filled": "Opens the add-canned-reply form and confirms the Add button is disabled until both the title and body fields have content.",
+  },
+  "beta-contacts": {
+    "Import button disabled until file selected": "Opens the CSV import page and confirms the Import button is disabled before a file is chosen.",
+    "valid CSV imports successfully — shows Imported count": "Uploads a valid CSV file and confirms the import success message shows a non-zero imported count.",
+    "CSV with invalid rows surfaces the error list": "Uploads a CSV with intentionally invalid rows and confirms the UI shows an error list with the offending entries.",
+    "Cancel on import page returns to contacts list": "Clicks Cancel on the CSV import page and confirms the browser navigates back to the contacts list.",
+    "dealers table renders with rows": "Navigates to the Dealers tab and confirms the table is visible with at least one row.",
+    "search filters the dealer list": "Types the configured search term into the dealer search box and confirms the results are filtered to matching dealers.",
+    "EV/Hybrid specialization chip filters without crashing": "Clicks the EV/Hybrid chip and confirms the dealer list updates without throwing an error.",
+    "admin adds dealer via modal — appears in table": "Opens the add-dealer modal, fills in all fields, submits, and confirms the new dealer appears in the table.",
+    "duplicate phone number shows error in add-dealer modal": "Attempts to add a dealer with a phone number already in use and confirms an inline error is shown in the modal.",
+    "create contact → verify in list": "Creates a new contact and then searches the contacts list to confirm the new entry is visible.",
+    "edit contact name then delete": "Opens a contact, edits its name, saves, then deletes it, confirming the contact is removed from the list.",
+  },
+  "beta-segments": {
+    "segment builder page loads and shows tier filter chips": "Opens the segment builder and confirms the page renders with Gold, Silver, and Bronze tier filter chips visible.",
+    "Gold, Silver, and Bronze tier chips are all visible": "Asserts each of the three tier chips (Gold, Silver, Bronze) is individually present on the segment builder page.",
+    "select all dealers → save as segment → success toast": "Selects all dealers in the builder, saves with a unique segment name, and confirms a success toast appears.",
+    "saved segment appears on the Segments page": "After saving, navigates to the Segments page and confirms the newly created segment row is visible.",
+    "segment row shows the segment name and dealer count": "Checks that the segment list row displays both the segment name and the number of dealers it contains.",
+  },
+  "beta-templates": {
+    "template list loads with rows visible": "Opens the Templates page and confirms at least one template group row is rendered.",
+    "PENDING status filter chip marks itself as active": "Clicks the PENDING filter chip and confirms it becomes visually active (aria-pressed = true).",
+    "APPROVED status filter chip marks itself as active": "Clicks the APPROVED filter chip and confirms it becomes visually active (aria-pressed = true).",
+    "create multi-language draft — appears in list with DRAFT status": "Fills the template form with EN and a second-language variant, saves as draft, and confirms it appears with a DRAFT badge.",
+    "edit content, save as draft, draft appears in list with edits": "Uses the AI wizard (with mocked generation), edits the body, saves as draft, and confirms the edits are visible on the detail page.",
+    "closing wizard at review step warns before discarding": "Tries to close the wizard mid-flow: dismissing the browser dialog keeps the wizard open, while accepting it closes it.",
+  },
+  "beta-settings": {
+    "invite member → appears in users table": "Invites a new team member via the Settings form and confirms the new user appears in the users table.",
+    "duplicate email shows inline error and keeps modal open": "Attempts to invite the same email address twice and confirms an inline error is shown while the modal stays open.",
+    "admin resets a team member password": "Uses the Reset Password button on a team member row and confirms the form submits and the dialog closes successfully.",
+    "admin deletes a team member — removed from table": "Deletes a team member and confirms their row is no longer visible in the users table.",
+    "state-language table is visible on the Languages tab": "Navigates to the Languages settings tab and confirms the state-language mapping table is rendered.",
+    "Penang (ZH+EN) and Kelantan (MS) mappings persist after reload": "Sets language mappings for two states, reloads the page, and confirms both mappings are still shown correctly.",
+  },
+  "beta-analytics": {
+    "reports page renders delivery funnel heading": "Navigates to the Reports page and confirms the delivery funnel section heading is visible.",
+    "delivery rate metric is shown": "Checks that a delivery rate percentage or metric is displayed on the Reports page.",
+    "7-day range chip switches the view without error": "Clicks the 7-day range chip and confirms the chart updates without throwing an error.",
+    "30-day range chip switches the view without error": "Clicks the 30-day range chip and confirms the chart updates without throwing an error.",
+    "90-day range chip switches the view without error": "Clicks the 90-day range chip and confirms the chart updates without throwing an error.",
+    "no demo-data notice is displayed": "Confirms the Reports page does not show a demo-data warning banner.",
+    "KPI strip is visible on the dashboard": "Navigates to the dashboard and confirms the KPI strip (Auto-handled today metric) is visible.",
+  },
+  "beta-knowledge-base": {
+    "SaveToKnowledgeModal offers SKIP, IMPORT_LIVE, and SAVE_DRAFT options": "Opens the Knowledge Base modal after resolving a ticket and confirms all three disposition buttons (SKIP, IMPORT_LIVE, SAVE_DRAFT) are visible.",
+    "SKIP disposition closes modal and shows resolved toast": "Selects SKIP in the modal, confirms, and verifies the modal closes with a 'Ticket resolved' toast.",
+    "SAVE_DRAFT disposition closes modal and shows resolved toast": "Selects SAVE_DRAFT in the modal, confirms, and verifies the modal closes with a success toast.",
+    "IMPORT_LIVE disposition closes modal and shows resolved toast": "Selects IMPORT_LIVE in the modal, confirms, and verifies the modal closes with a success toast.",
+    "kb-confirm button is disabled until a disposition is selected": "Opens the modal and checks the Confirm button is disabled, then selects a disposition and confirms the button becomes enabled.",
+  },
+  "beta-cross-cutting": {
+    "all primary nav links load without a blank screen": "Clicks each sidebar navigation link in sequence and confirms none results in a blank or error page.",
+    "sidebar Dealers link navigates to /contacts": "Clicks the Dealers sidebar link and confirms the browser URL changes to /contacts.",
+    "sidebar Templates link navigates to /templates": "Clicks the Templates sidebar link and confirms the browser URL changes to /templates.",
+    "two consecutive blast wizard openings show independent blast-name inputs": "Opens the blast wizard, closes it, opens it again, and confirms the blast name field is empty and not carried over from the previous session.",
+  },
+};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -420,8 +532,10 @@ export default function WABlasterBetaPage() {
   const [adminEmail,    setAdminEmail]    = useState("admin@example.com");
   const [adminPassword, setAdminPassword] = useState("ChangeMe123!");
   const [showAdminPw,   setShowAdminPw]   = useState(false);
-  const [showVarPw,     setShowVarPw]     = useState<Record<string, boolean>>({});
-  const [settingsOpen,  setSettingsOpen]  = useState(false);
+  const [showVarPw,         setShowVarPw]         = useState<Record<string, boolean>>({});
+  const [expandedSuiteDocs, setExpandedSuiteDocs] = useState<Set<string>>(new Set());
+  const [expandedTestDocs,  setExpandedTestDocs]  = useState<Set<string>>(new Set());
+  const [settingsOpen,      setSettingsOpen]      = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [showBrowser,   setShowBrowser]   = useState(true);
 
@@ -783,7 +897,39 @@ export default function WABlasterBetaPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-500 leading-relaxed flex-1">{suite.description}</p>
+                        <p className="text-xs text-slate-500 leading-relaxed">{suite.description}</p>
+
+                        {/* "What's tested" expandable */}
+                        <div onClick={e => e.stopPropagation()}>
+                          <button
+                            onClick={() => setExpandedSuiteDocs(prev => {
+                              const n = new Set(prev);
+                              n.has(suite.id) ? n.delete(suite.id) : n.add(suite.id);
+                              return n;
+                            })}
+                            className="flex items-center gap-1 text-[11px] font-medium text-slate-600 hover:text-violet-400 transition-colors"
+                          >
+                            <Info size={11} />
+                            What&apos;s tested
+                            <ChevronDown size={10} className={clsx("transition-transform", expandedSuiteDocs.has(suite.id) && "rotate-180")} />
+                          </button>
+                          {expandedSuiteDocs.has(suite.id) && (
+                            <ul className="mt-2 space-y-1.5">
+                              {suite.tests.map(t => (
+                                <li key={t.name} className="flex items-start gap-2">
+                                  <span className="shrink-0 mt-1 w-1 h-1 rounded-full bg-slate-600" />
+                                  <div>
+                                    <p className="text-[11px] font-medium text-slate-400 leading-snug">{t.name.charAt(0).toUpperCase() + t.name.slice(1)}</p>
+                                    {SUITE_DOCS[suite.id]?.[t.name] && (
+                                      <p className="text-[10px] text-slate-600 leading-relaxed mt-0.5">{SUITE_DOCS[suite.id][t.name]}</p>
+                                    )}
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+
                         <div className="flex items-center gap-3 text-xs text-slate-600 border-t border-slate-800 pt-2.5">
                           <span className="flex items-center gap-1"><Clock size={11} />{suite.estimatedDuration}</span>
                           <span>{cfg.enabledTests.size}/{suite.tests.length} tests</span>
@@ -885,7 +1031,27 @@ export default function WABlasterBetaPage() {
                           <input type="checkbox" checked={enabled} onChange={() => toggleTest(suite.id, t.name)}
                             className="accent-violet-500 mt-0.5 shrink-0 cursor-pointer" />
                           <div className="flex-1 min-w-0">
-                            <p className={clsx("text-sm leading-snug", enabled ? "text-slate-200" : "text-slate-500")}>{t.name.charAt(0).toUpperCase() + t.name.slice(1)}</p>
+                            <div className="flex items-start gap-1.5">
+                              <p className={clsx("flex-1 text-sm leading-snug", enabled ? "text-slate-200" : "text-slate-500")}>{t.name.charAt(0).toUpperCase() + t.name.slice(1)}</p>
+                              {SUITE_DOCS[suite.id]?.[t.name] && (
+                                <button
+                                  onClick={() => setExpandedTestDocs(prev => {
+                                    const n = new Set(prev);
+                                    n.has(t.name) ? n.delete(t.name) : n.add(t.name);
+                                    return n;
+                                  })}
+                                  className={clsx("shrink-0 mt-0.5 transition-colors", expandedTestDocs.has(t.name) ? "text-violet-400" : "text-slate-600 hover:text-slate-400")}
+                                  title="What does this test do?"
+                                >
+                                  <Info size={12} />
+                                </button>
+                              )}
+                            </div>
+                            {expandedTestDocs.has(t.name) && SUITE_DOCS[suite.id]?.[t.name] && (
+                              <p className="mt-1.5 text-[11px] text-slate-500 leading-relaxed bg-slate-800/50 rounded-lg px-2.5 py-1.5 border border-slate-700/50">
+                                {SUITE_DOCS[suite.id][t.name]}
+                              </p>
+                            )}
                             {t.metaRisk && (
                               <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-900/40 text-orange-400 border border-orange-800/60">
                                 <AlertTriangle size={8} /> Calls Meta API — use sparingly
@@ -916,21 +1082,36 @@ export default function WABlasterBetaPage() {
                                     )}
                                   </div>
                                   <div className="relative">
-                                    <input
-                                      type={isPw && !pwVisible ? "password" : "text"}
-                                      value={val}
-                                      onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
-                                      className={clsx(
-                                        "w-full bg-slate-900 border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors",
-                                        isDefault ? "border-slate-700" : "border-violet-600/50",
-                                        isPw && "pr-8"
-                                      )}
-                                    />
-                                    {isPw && (
-                                      <button onClick={() => setShowVarPw(p => ({ ...p, [v.key]: !pwVisible }))}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
-                                        {pwVisible ? <EyeOff size={11} /> : <Eye size={11} />}
-                                      </button>
+                                    {v.options ? (
+                                      <select
+                                        value={val}
+                                        onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
+                                        className={clsx(
+                                          "w-full bg-slate-900 border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors appearance-none cursor-pointer",
+                                          isDefault ? "border-slate-700" : "border-violet-600/50"
+                                        )}
+                                      >
+                                        {v.options.map(opt => <option key={opt} value={opt} className="bg-slate-900">{opt}</option>)}
+                                      </select>
+                                    ) : (
+                                      <>
+                                        <input
+                                          type={isPw && !pwVisible ? "password" : "text"}
+                                          value={val}
+                                          onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
+                                          className={clsx(
+                                            "w-full bg-slate-900 border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors",
+                                            isDefault ? "border-slate-700" : "border-violet-600/50",
+                                            isPw && "pr-8"
+                                          )}
+                                        />
+                                        {isPw && (
+                                          <button onClick={() => setShowVarPw(p => ({ ...p, [v.key]: !pwVisible }))}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
+                                            {pwVisible ? <EyeOff size={11} /> : <Eye size={11} />}
+                                          </button>
+                                        )}
+                                      </>
                                     )}
                                   </div>
                                   {v.counter && (
@@ -974,21 +1155,36 @@ export default function WABlasterBetaPage() {
                               )}
                             </div>
                             <div className="relative">
-                              <input
-                                type={isPw && !pwVisible ? "password" : "text"}
-                                value={val}
-                                onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
-                                className={clsx(
-                                  "w-full bg-slate-800/80 border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors",
-                                  isDefault ? "border-slate-700" : "border-violet-600/50",
-                                  isPw && "pr-8"
-                                )}
-                              />
-                              {isPw && (
-                                <button onClick={() => setShowVarPw(p => ({ ...p, [v.key]: !pwVisible }))}
-                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
-                                  {pwVisible ? <EyeOff size={11} /> : <Eye size={11} />}
-                                </button>
+                              {v.options ? (
+                                <select
+                                  value={val}
+                                  onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
+                                  className={clsx(
+                                    "w-full bg-slate-800/80 border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors appearance-none cursor-pointer",
+                                    isDefault ? "border-slate-700" : "border-violet-600/50"
+                                  )}
+                                >
+                                  {v.options.map(opt => <option key={opt} value={opt} className="bg-slate-800">{opt}</option>)}
+                                </select>
+                              ) : (
+                                <>
+                                  <input
+                                    type={isPw && !pwVisible ? "password" : "text"}
+                                    value={val}
+                                    onChange={e => setSuiteVar(suite.id, v.key, e.target.value)}
+                                    className={clsx(
+                                      "w-full bg-slate-800/80 border rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-1 focus:ring-violet-500 transition-colors",
+                                      isDefault ? "border-slate-700" : "border-violet-600/50",
+                                      isPw && "pr-8"
+                                    )}
+                                  />
+                                  {isPw && (
+                                    <button onClick={() => setShowVarPw(p => ({ ...p, [v.key]: !pwVisible }))}
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
+                                      {pwVisible ? <EyeOff size={11} /> : <Eye size={11} />}
+                                    </button>
+                                  )}
+                                </>
                               )}
                             </div>
                             {v.hint && <p className="text-[9px] text-slate-600 leading-relaxed">{v.hint}</p>}
