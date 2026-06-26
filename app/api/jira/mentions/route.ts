@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
   }
 
   // 2. JQL: issues where the current user is mentioned
-  const searchRes = await fetch(`${base}/rest/api/3/search`, {
+  const searchRes = await fetch(`${base}/rest/api/3/search/jql`, {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify({
