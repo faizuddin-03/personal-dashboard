@@ -4,7 +4,7 @@ Running 1 test using 1 worker
 
 🌐 Navigating to https://staging.secarang.com/preprod/car-insurance
    🔒 Password gate — entering…
-   📷 Screenshot: "Home Page" (62 KB)
+   📷 Screenshot: "Home Page" (90 KB)
 ✅ [PASS] Navigate to site: https://staging.secarang.com/preprod/car-insurance
    🚗 Selecting vehicle type: "Car"
    👤 Selecting owner type: "Private Car"
@@ -12,30 +12,35 @@ Running 1 test using 1 worker
    🔢 3 visible text input(s)
    ✏️  input[0] = "WYN3837"
    ✏️  input[1] = "730620065847"
-   ✏️  input[2] = "55000"
+   ✏️  input[2] = "15000"
 ✅ [PASS] Fill form: VN=WYN3837 IC=730620065847
 ✅ [PASS] Submit form: Form submitted
-   📷 Screenshot: "Vehicle Details Page" (36 KB)
+   📷 Screenshot: "Vehicle Details Page" (63 KB)
    📋 Waiting for vehicle details page to load…
    ⏳ Vehicle details page loaded — waiting 5 seconds…
    🖱️  Clicking "Get quotation"
 ✅ [PASS] Vehicle details page: Variant selected and proceeded
-   📷 Screenshot: "Quotation Page" (42 KB)
+   📷 Screenshot: "Quotation Page" (81 KB)
 ✅ [PASS] Quotation results loaded: 9 card element(s) loaded
+   📷 Screenshot: "Quotation — Before Postcode (15000)" (81 KB)
+   ℹ️  No postcode field found on quotation page — skipping
+   💰 Sum insured "max" → index 4 of 5 (value: 21000)
+   📷 Screenshot: "Quotation — Sum Insured (max: 21000)" (80 KB)
+✅ [PASS] Select sum insured: max → 21000 (5 options)
    🃏 9 card element(s) in DOM, searching visible card for "Zurich"
    🎯 Found "Zurich" card (img alts: [zurich logo, cover all drivers icon, free towing icon, road assistance icon])
    🖱️  Clicking "Buy" on "Zurich" card
+   ℹ️  Coverage type selector for "Comprehensive" not found — skipping (pending dev deploy)
 ✅ [PASS] Select Zurich: Selected "Zurich"
-   📷 Screenshot: "Add-ons Page" (51 KB)
-   🔲 Unchecking site-default add-ons: All Drivers
-   ➖ Unchecking "All Drivers" (clicking "REMOVE")
-   📦 5 visible add-on card(s) — targeting first 2 simple ones
-   ➕ ADD on card 1
-   ➕ ADD on card 2
-   ✅ Added 2 add-on(s)
+   📷 Screenshot: "Add-ons Page" (80 KB)
+   📦 10 add-on card(s) visible
+   ℹ️  "All Drivers" card found but no ADD button — may already be selected
+   ✅ Add-ons: 1 found, 0 not listed
    🖱️  Add-ons: clicking "Continue"
-✅ [PASS] Add-ons page: Selected first 2 simple add-ons | Unchecked: All Drivers
-   ℹ️  No popup detected — continuing
+✅ [PASS] Add-ons page: Selected: All Drivers
+   💬 Popup found via "app-info-modal"
+   💬 Popup text: "Reminder Please be advised that if a customer does not wish to include All Drivers in their policy, it is essential to untick the All Drivers. CancelProceed"
+   🖱️  Popup: clicking "Proceed"
 ✅ [PASS] Post add-ons popup: Popup dismissed (or not shown)
    💳 Payment confirmation snippet:
 About Us
@@ -45,13 +50,13 @@ About Us
 FAQs
 Support
 WYN3837 KIA RIO 
-RM951.75
+RM742.09
 Vehicle Details
 All Quotation
 Add-On
 Confirmation
 Payment
-Your total payable is RM951.75
+Your total payable is RM742.09
 Vehicle Owner Details
 IC No
 
@@ -73,17 +78,19 @@ State
 Insurance Details
 Plan Details
 
-   📷 Screenshot: "Confirmation Page" (32 KB)
+   📷 Screenshot: "Confirmation Page" (142 KB)
    ✏️  name = "MUHAMMAD FAIZUDDIN BIN BIDI"
    ✏️  email = "faizuddin@modefair.com"
    ✏️  phoneNo = "189812839"
    ✏️  addr1 = "2505, Arctic Monkeys Road"
    ✏️  addr2 = "Taman Monyet Kutub"
    ✏️  addr3 = "Shah Alam, Selangor"
-   📝 Captured 27 field(s) from confirmation page
+   🏷️  Discount code entered: "MF10"
+   🏷️  Discount applied
+   📝 Captured 26 field(s) from confirmation page
    🖱️  Clicking "Confirm and Pay"
 ✅ [PASS] Payment confirmation: Filled details and clicked Confirm and Pay
-   📷 Screenshot: "Payment Method Page" (26 KB)
+   📷 Screenshot: "Payment Method Page" (53 KB)
    🖱️  Selecting "FPX Online banking"
    🏦 10 bank option(s) available:
       [1] value="fpx_mb2u" name="Maybank2u"
@@ -106,102 +113,26 @@ Plan Details
    🖱️  Clicking "Login"
 ✅ [PASS] Bank login: Logged in as Gaara
    📋 Post-login page content:
-Channel HSBC0223 Order ID 31498101 Description 26061921300006 Total Amount MYR 951.75 Payment Please set payment status below Approved Invalid Merchant Seller Account Closed Invalid Transaction Invalid Amount Invalid Buyer Amount Invalid Response Pending Response From Bank Transaction Not Supported For Model Or Format Error Invalid Bank No Credit Account Duplicate Seller Order Number Invalid Seller Exchange or Seller Invalid Currency Transaction Limit Exceeded Insufficient Funds No Savings Account Transaction Not Permitted Withdrawal Limit Exceeded Withdrawal Frequency Exceeded Invalid Serial Number Duplicate Exchange Order Number Transaction Not Found Invalid Buyer Name Or Buyer ID Decryption Failed Host Decline When Down Buyer Cancel Transaction Invalid Transaction Model Invalid Transact
+Channel HSBC0223 Order ID 31499993 Description 26062321300002 Total Amount MYR 674.30 Payment Please set payment status below Approved Invalid Merchant Seller Account Closed Invalid Transaction Invalid Amount Invalid Buyer Amount Invalid Response Pending Response From Bank Transaction Not Supported For Model Or Format Error Invalid Bank No Credit Account Duplicate Seller Order Number Invalid Seller Exchange or Seller Invalid Currency Transaction Limit Exceeded Insufficient Funds No Savings Account Transaction Not Permitted Withdrawal Limit Exceeded Withdrawal Frequency Exceeded Invalid Serial Number Duplicate Exchange Order Number Transaction Not Found Invalid Buyer Name Or Buyer ID Decryption Failed Host Decline When Down Buyer Cancel Transaction Invalid Transaction Model Invalid Transact
    🔘 2 button(s) on page:
       [1] "Request TAC"
       [2] "Cancel"
-   💳 Payment status set to: 00
+   💳 Payment status set to: 1L
    🖱️  Clicking "TAC"
 ✅ [PASS] Request TAC: TAC requested
-   🔢 OTP element text: "OTP/TAC: 248186"
-   🔢 Extracted OTP: 248186
-   ✏️  OTP entered: 248186
+   🔢 OTP element text: "OTP/TAC: 189623"
+   🔢 Extracted OTP: 189623
+   ✏️  OTP entered: 189623
    🖱️  Clicking "Pay Now"
    ⏳ Waiting for popup to close after Pay Now…
    ✅ Popup closed — processing continues on main window
 ✅ [PASS] OTP and Pay Now: OTP entered, Pay Now clicked, popup closed
-   📷 Screenshot: "Payment Success Page" (37 KB)
-
-   🧾 Receipt: 26061921300006  |  Date: 19 Jun 2026 - 10:30 AM  |  Method: Online Banking - HSBC Bank
-   📊 Success page fields: While payment is successful, policy generation may not be immediate. Upon receiving the policy email, rest assured that you insurance coverage is valid and this vehicle is eligible to proceed with road tax renewal., Receipt No, Purchase Date, Total Price, Payment Method, Excess, Full Name, IC No, Email, Mobile Phone No., Gender, Correspondence Address, Plate No, Make, Model, Year, Seat, cc, Variant, Transmission, Basic Premium, NCD 25%, Premium After NCD, Assessment Period 7 days Daily Compensation RM50.00, Inclusion of Special Perils, Gross Premium, Service Tax 8%, Stamp Duty, Total Premium
-   📥 Downloading receipt PDF…
-   💾 PDF saved to: C:\Users\Faizuddin\Documents\GitHub\personal-dashboard\scripts\secarang-insurance\receipt-1781836308052.pdf
-   📄 PDF text (962 chars):
-Thank you for your purchase! Official Receipt Basic PremiumRM 1,070.12 - RM 267.53NCD 25.0% Premium after NCDRM 802.59 Add-ons Service Tax 8% Stamp Duty Gross PremiumRM 871.99 RM 69.76 RM 10.00 Total PremiumRM 951.75 Compensation For Assessed Repair Time (CART) Assessment Period 7 days Daily Compensation RM50.00 RM 35.00 Inclusion of Special PerilsRM 34.40 PIAM ID: MTA-J55282 Exclusively by agent Pemaju Eksklusif Sdn Bhd Receipt Summary Purchase Details Receipt No. 26061921300006 Purchase Date 19 JUN 2026 10:30 AM Payment Method Online Banking - HSBC Bank For MUHAMMAD FAIZUDDIN BIN BIDI Vehicle Plate No. WYN3837 Ownership Type Private Car Insurer Zurich General Takaful Malaysia Berhad (1260157- U) Coverage Type Coverage Period COMPREHENSIVE 19 JUN 2026 - 18 JUN 2027 www.secarang.com Level 
-
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  PAYMENT VERIFICATION REPORT
-  Receipt : 26061921300006
-  Date    : 19 Jun 2026 - 10:30 AM
-  Method  : Online Banking - HSBC Bank
-  Vehicle : WYN3837  |  Insurer : Zurich
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  VEHICLE DETAILS
-  ┌────────────────────────┬──────────────────────────────┬──────────────────────────────┬──────┐
-  │ Field                  │ Confirmation Page            │ Success Page                 │ OK   │
-  ├────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────┤
-  │ Plate No               │ WYN3837                      │ WYN3837                      │ ✅   │
-  │ Model                  │ KIA RIO                      │ KIA RIO                      │ ✅   │
-  │ Year                   │ 2013                         │ 2013                         │ ✅   │
-  │ Variant                │ EX                           │ EX                           │ ✅   │
-  │ Transmission           │ 4 SP AUTOMATIC               │ 4 SP AUTOMATIC               │ ✅   │
-  │ Seat                   │ 5                            │ 5                            │ ✅   │
-  │ cc                     │ 1396                         │ 1396                         │ ✅   │
-  └────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────┘
-
-  OWNER DETAILS
-  ┌────────────────────────┬──────────────────────────────┬──────────────────────────────┬──────┐
-  │ Field                  │ Confirmation Page            │ Success Page                 │ OK   │
-  ├────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────┤
-  │ Full Name              │ MUHAMMAD FAIZUDDIN BIN BIDI  │ MUHAMMAD FAIZUDDIN BIN BIDI  │ ✅   │
-  │ IC No                  │ 730620-06-5847               │ 730620-06-5847               │ ✅   │
-  │ Email                  │ faizuddin@modefair.com       │ faizuddin@modefair.com       │ ✅   │
-  │ Mobile Phone No.       │ 189812839                    │ +60189812839                 │ ✅   │
-  └────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────┘
-
-  PRICING
-  ┌────────────────────────┬──────────────────────────────┬──────────────────────────────┬──────┐
-  │ Field                  │ Confirmation Page            │ Success Page                 │ OK   │
-  ├────────────────────────┼──────────────────────────────┼──────────────────────────────┼──────┤
-  │ Basic Premium          │ RM1,070.12                   │ RM1,070.12                   │ ✅   │
-  │ Premium After NCD      │ RM802.59                     │ RM871.99                     │ ❌   │
-  │ Gross Premium          │ RM871.99                     │ RM871.99                     │ ✅   │
-  │ Service Tax 8%         │ RM69.76                      │ RM69.76                      │ ✅   │
-  │ Stamp Duty             │ RM10.00                      │ RM10.00                      │ ✅   │
-  │ Total Premium          │ RM951.75                     │ RM951.75                     │ ✅   │
-  └────────────────────────┴──────────────────────────────┴──────────────────────────────┴──────┘
-
-  RESULT  : ❌  1 MISMATCH(ES) FOUND  (16 / 17)
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  PDF RECEIPT VERIFICATION
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ┌────────────────────────┬────────────────────────────────┬──────┐
-  │ Field                  │ Expected Value                 │ In PDF │
-  ├────────────────────────┼────────────────────────────────┼──────┤
-  │ Receipt No             │ 26061921300006                 │ ✅     │
-  │ Plate No               │ WYN3837                        │ ✅     │
-  │ Model                  │ KIA RIO                        │ ❌     │
-  │ Full Name              │ MUHAMMAD FAIZUDDIN BIN BIDI    │ ✅     │
-  │ IC No                  │ 730620-06-5847                 │ ❌     │
-  │ Email                  │ faizuddin@modefair.com         │ ❌     │
-  │ Total Premium          │ RM951.75                       │ ❌     │
-  │ Basic Premium          │ RM1,070.12                     │ ❌     │
-  │ Gross Premium          │ RM871.99                       │ ❌     │
-  │ Stamp Duty             │ RM10.00                        │ ❌     │
-  └────────────────────────┴────────────────────────────────┴──────┘
-
-  RESULT  : ❌  7 FIELD(S) NOT FOUND  (3 / 10)
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-❌ [FAIL] Payment verification: 1 mismatch(es) — see verification report
+   📷 Screenshot: "Payment Decline Page" (11 KB)
+✅ [PASS] Payment outcome (negative scenario): Payment correctly declined for status 1L — negative scenario passed
 
 📁 Result written to: C:\Users\Faizuddin\Documents\GitHub\personal-dashboard\scripts\secarang-insurance\regression-result.json
 
 🎉 Regression PASSED
-  ✓  1 [secarang-regression] › secarang-regression.spec.ts:131:7 › Secarang Regression – Zurich E2E › WYN3837 → Zurich → Add-ons → Confirm → Payment method page (2.1m)
+  ✓  1 [secarang-regression] › secarang-regression.spec.ts:143:7 › Secarang Regression – Zurich E2E › WYN3837 → Zurich → Add-ons → Confirm → Payment method page (2.1m)
 
   1 passed (2.1m)
