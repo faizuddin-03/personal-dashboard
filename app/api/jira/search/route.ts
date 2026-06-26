@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   }
 
   const token = Buffer.from(`${email}:${apiToken}`).toString("base64");
-  const url = `${baseUrl.replace(/\/$/, "")}/rest/api/3/search/jql`;
+  const url = `${baseUrl.replace(/\/$/, "")}/rest/api/3/search`;
 
   const body = {
     jql,
@@ -30,9 +30,22 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify(body),
   });
 
-  const data = await res.json();
+  let data: unknown;
+  const contentType = res.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) {
+    data = await res.json();
+  } else {
+    const text = await res.text();
+    return NextResponse.json(
+      { error: `Jira returned non-JSON response (${res.status}). Check your base URL and credentials.`, detail: text.slice(0, 500) },
+      { status: res.status === 200 ? 502 : res.status }
+    );
+  }
+
   if (!res.ok) {
-    return NextResponse.json({ error: data.errorMessages?.[0] ?? "Jira API error", detail: data }, { status: res.status });
+    const d = data as Record<string, unknown>;
+    const msg = (Array.isArray(d?.errorMessages) && d.errorMessages[0]) ? String(d.errorMessages[0]) : "Jira API error";
+    return NextResponse.json({ error: msg, detail: data }, { status: res.status });
   }
   return NextResponse.json(data);
 }

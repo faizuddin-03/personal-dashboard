@@ -34,14 +34,17 @@ export async function GET(req: NextRequest) {
 
   // 1. Get current user's accountId
   const meRes  = await fetch(`${base}/rest/api/3/myself`, { headers });
-  const meData = await meRes.json();
-  const accountId: string = meData.accountId;
+  const meData = await meRes.json().catch(() => ({})) as Record<string, unknown>;
+  if (!meRes.ok) {
+    return NextResponse.json({ error: "Auth failed — check your base URL and API token" }, { status: meRes.status });
+  }
+  const accountId = meData.accountId as string | undefined;
   if (!accountId) {
     return NextResponse.json({ error: "Could not resolve current user" }, { status: 401 });
   }
 
   // 2. JQL: issues where the current user is mentioned
-  const searchRes = await fetch(`${base}/rest/api/3/search/jql`, {
+  const searchRes = await fetch(`${base}/rest/api/3/search`, {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -50,13 +53,14 @@ export async function GET(req: NextRequest) {
       fields: ["summary", "updated"],
     }),
   });
-  const searchData = await searchRes.json();
+  const searchData = await searchRes.json().catch(() => ({})) as Record<string, unknown>;
   if (!searchRes.ok) {
-    return NextResponse.json({ error: searchData.errorMessages?.[0] ?? "JQL failed" }, { status: searchRes.status });
+    const msgs = searchData.errorMessages as string[] | undefined;
+    return NextResponse.json({ error: msgs?.[0] ?? "JQL failed" }, { status: searchRes.status });
   }
 
   type RawIssue = { key: string; fields: { summary: string } };
-  const issues: RawIssue[] = searchData.issues ?? [];
+  const issues: RawIssue[] = (searchData.issues as RawIssue[] | undefined) ?? [];
   if (issues.length === 0) return NextResponse.json({ mentions: [], accountId });
 
   // 3. Fetch comments for each issue in parallel, filter for user mentions
