@@ -434,8 +434,8 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                       <p className="text-sm text-slate-400 leading-relaxed">{adfToText(c.body)}</p>
                     </div>
                   ))}
-                  {(issue.fields.comment?.total ?? 0) > 8 && (
-                    <p className="text-xs text-slate-600 text-center">Showing last 8 of {issue.fields.comment?.total} comments</p>
+                  {(issue.fields.comment?.total ?? 0) > (issue.fields.comment?.comments?.length ?? 0) && (
+                    <p className="text-xs text-slate-600 text-center">Showing last {issue.fields.comment?.comments?.length ?? 0} of {issue.fields.comment?.total} comments</p>
                   )}
                 </div>
               </div>

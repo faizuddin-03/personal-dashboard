@@ -126,7 +126,7 @@ function readOutputExcel(): InsuranceRow[] {
 
 // ── Route handler ─────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const body = await req.json() as {
+  let body: {
     vehicles: VehicleEntry[];
     icNumber?: string;
     postcode?: string;
@@ -136,6 +136,9 @@ export async function POST(req: NextRequest) {
     baseUrl?: string;
     concurrency?: number;
   };
+  try { body = await req.json(); } catch {
+    return NextResponse.json({ error: "Invalid JSON in request body." }, { status: 400 });
+  }
 
   const { vehicles = [], icNumber = "", postcode = "", vehicleCategory = "individual", username = "", password = "", baseUrl = "", concurrency } = body;
 
@@ -170,7 +173,6 @@ export async function POST(req: NextRequest) {
     forceResolveRun = resolve;
     const child = spawn("npx", ["playwright", "test", "--project=insurance-checker"], {
       cwd: SCRIPT_DIR,
-      shell: true,
       detached: process.platform !== "win32",
       env: {
         ...process.env,

@@ -12,8 +12,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'baseUrl, adminEmail, and adminPassword are required.' }, { status: 400 });
     }
 
-    // Strip trailing slash
-    const base = baseUrl.replace(/\/$/, '');
+    let parsed: URL;
+    try { parsed = new URL(baseUrl); } catch {
+      return NextResponse.json({ error: 'Invalid baseUrl.' }, { status: 400 });
+    }
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return NextResponse.json({ error: 'baseUrl must be http or https.' }, { status: 400 });
+    }
+    const ip = parsed.hostname;
+    if (/^(127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|0\.|169\.254\.|localhost$)/i.test(ip)) {
+      return NextResponse.json({ error: 'baseUrl cannot point to a private/local address.' }, { status: 400 });
+    }
+
+    const base = parsed.origin;
 
     // 1. Authenticate
     const loginRes = await fetch(`${base}/api/auth/login`, {

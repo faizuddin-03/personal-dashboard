@@ -8,7 +8,7 @@ import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, Quote, Heading1, Heading2, Heading3,
@@ -117,6 +117,12 @@ export default function RichTextEditor({
       attributes: { class: "focus:outline-none px-4 py-3", style: `min-height:${minHeight}` },
     },
   });
+
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content, false);
+    }
+  }, [content, editor]);
 
   const closeDropdowns = useCallback(() => {
     setShowColors(false);

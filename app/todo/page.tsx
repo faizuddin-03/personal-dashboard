@@ -23,6 +23,15 @@ import {
 
 function newId() { return crypto.randomUUID(); }
 
+function sanitizeHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
+    .replace(/\bon\w+\s*=\s*"[^"]*"/gi, "")
+    .replace(/\bon\w+\s*=\s*'[^']*'/gi, "")
+    .replace(/javascript\s*:/gi, "");
+}
+
 type FilterTab = "all" | "active" | "done";
 type SortBy    = "manual" | "priority" | "due" | "created";
 
@@ -428,7 +437,7 @@ function TaskRow({ item, onToggle, onEdit, onDelete, onSkip, onSubtaskToggle,
 
       {/* Note expansion (when no subtasks) */}
       {expanded && subtasks.length === 0 && hasNote && (
-        <div className="px-10 pb-3 text-sm text-slate-400 border-t border-slate-800 pt-3" dangerouslySetInnerHTML={{ __html: item.note }} />
+        <div className="px-10 pb-3 text-sm text-slate-400 border-t border-slate-800 pt-3" dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.note ?? "") }} />
       )}
     </div>
   );
@@ -808,7 +817,7 @@ export default function TodoPage() {
         </div>
       </header>
 
-      <div className="flex-1 px-4 py-4 sm:px-6 sm:py-5 max-w-3xl">
+      <div className="flex-1 px-4 py-4 sm:px-6 sm:py-5 max-w-3xl w-full mx-auto">
         {todos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4">

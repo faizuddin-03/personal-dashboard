@@ -623,7 +623,7 @@ export default function NotesPage() {
         )}
 
         {/* Gallery grid */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 pb-20">
           {filteredNotes.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4">

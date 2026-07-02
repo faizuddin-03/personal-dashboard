@@ -274,20 +274,22 @@ export default function JiraPage() {
               : isId        ? `id = ${escaped} ORDER BY updated DESC`
               : isKey       ? `key = "${escaped}" ORDER BY updated DESC`
               : `text ~ "${escaped}" ORDER BY updated DESC`;
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
         const res = await fetch("/api/jira/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...creds, jql, maxResults: 50 }),
+          signal: controller.signal,
         });
         const data: JiraSearchResult = await res.json();
         setJiraSearchResults(data.issues ?? []);
-      } catch {
-        setJiraSearchResults([]);
+      } catch (e) {
+        if ((e as Error).name !== "AbortError") setJiraSearchResults([]);
       } finally { setJiraSearchLoading(false); }
     }, 600);
-    return () => clearTimeout(timer);
+    return () => { clearTimeout(timer); controller.abort(); };
   }, [search, creds]);
 
   const activeIssues = activeTab === "assigned" ? assigned : reported;
@@ -466,12 +468,12 @@ export default function JiraPage() {
                 </div>
 
                 {/* CR selector panel */}
-                {showSelectBugCr && SearchPanel({
-                  query: selectBugCrQuery, setQuery: setSelectBugCrQuery,
-                  results: selectBugCrResults, searching: selectBugCrSearching,
-                  onPick: selectBugCr, inputRef: selectBugInputRef,
-                  placeholder: "Search CR by key or text…",
-                })}
+                {showSelectBugCr && <SearchPanel
+                  query={selectBugCrQuery} setQuery={setSelectBugCrQuery}
+                  results={selectBugCrResults} searching={selectBugCrSearching}
+                  onPick={selectBugCr} inputRef={selectBugInputRef}
+                  placeholder="Search CR by key or text…"
+                />}
 
                 {!showSelectBugCr && !bugCrKey && (
                   <div className="flex flex-col items-center py-8 text-slate-600 text-sm">

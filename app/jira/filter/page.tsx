@@ -74,6 +74,10 @@ interface SavedPreset {
   savedAt: string;
 }
 
+const PRIORITY_RANK: Record<string, number> = {
+  Highest: 0, Critical: 1, High: 2, Medium: 3, Low: 4, Lowest: 5,
+};
+
 const TABS_KEY    = "jira_filter_tabs_v5";
 const ACTIVE_KEY  = "jira_filter_active_tab";
 const PRESETS_KEY = "jira_filter_presets";
@@ -261,7 +265,7 @@ export default function IssueFilterPage() {
     if (activeTab.crKey && activeTab.issues.length === 0 && !activeTab.loading && !activeTab.error) {
       fetchForTab(activeTab.id, activeTab.crKey);
     }
-  }, [activeTabId, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeTabId, hydrated, fetchForTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── CR search (debounced) ──────────────────────────────────
   useEffect(() => {
@@ -392,10 +396,6 @@ export default function IssueFilterPage() {
   const issues  = activeTab?.issues ?? [];
   const filters = activeTab?.filters ?? emptyFilters();
 
-  const PRIORITY_RANK: Record<string, number> = {
-    Highest: 0, Critical: 1, High: 2, Medium: 3, Low: 4, Lowest: 5,
-  };
-
   const uniqueStatuses    = useMemo(() => [...new Set(issues.map(i => i.fields.status.name))].sort(), [issues]);
   const uniquePriorities  = useMemo(() => {
     const seen = [...new Set(issues.map(i => i.fields.priority?.name).filter(Boolean) as string[])];
@@ -482,7 +482,7 @@ export default function IssueFilterPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />
+      {creds.tokenExpiry && <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />}
 
       {/* Page header + tab bar */}
       <div className="px-6 pt-5 pb-0 border-b border-slate-800">

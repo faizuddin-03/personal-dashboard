@@ -137,7 +137,7 @@ function readOutputExcel(): SecarangRow[] {
 
 // ── POST — run the checker ────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const body = await req.json() as {
+  let body: {
     vehicles:      VehicleEntry[];
     icNumber?:     string;
     postcode?:     string;
@@ -148,6 +148,9 @@ export async function POST(req: NextRequest) {
     concurrency?:  number;
     checkVehicleDetails?: boolean;
   };
+  try { body = await req.json(); } catch {
+    return NextResponse.json({ error: "Invalid JSON in request body." }, { status: 400 });
+  }
 
   const {
     vehicles = [], icNumber = "", postcode = "55000",
@@ -182,7 +185,6 @@ export async function POST(req: NextRequest) {
     forceResolveRun = resolve;
     const child = spawn("npx", ["playwright", "test", "--project=secarang-checker"], {
       cwd: SCRIPT_DIR,
-      shell: true,
       detached: process.platform !== "win32",
       env: {
         ...process.env,

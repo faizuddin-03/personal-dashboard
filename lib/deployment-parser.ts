@@ -30,7 +30,9 @@ function ordinalToISO(day: string, month: string, year: number): string | null {
 }
 
 /** "06", "05", "2026" → "2026-05-06" */
-function dotToISO(dd: string, mm: string, yyyy: string): string {
+function dotToISO(dd: string, mm: string, yyyy: string): string | null {
+  const d = parseInt(dd), m = parseInt(mm);
+  if (isNaN(d) || isNaN(m) || d < 1 || d > 31 || m < 1 || m > 12) return null;
   return `${yyyy}-${mm}-${dd}`;
 }
 
@@ -117,6 +119,7 @@ export function parseDeploymentText(rawText: string, existing: Deployment[]): Pa
       if (!m) continue;
       const [, prefix, dd, mm, yyyy, session] = m;
       const date = dotToISO(dd, mm, yyyy);
+      if (!date) continue;
       const status = prefix ? parsedStatus(prefix.trim()) : "planned";
 
       // Grab URL on next line if present

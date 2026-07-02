@@ -365,7 +365,7 @@ export default function MusicPage() {
               >
                 {/* Thumbnail */}
                 <div className="relative shrink-0 w-14 h-10 rounded-lg overflow-hidden bg-slate-800">
-                  <img src={video.thumbnail} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" loading="lazy" />
                   {nowPlaying?.id === video.id && isPlaying && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                       <div className="flex gap-0.5 items-end h-3.5">
@@ -411,7 +411,7 @@ export default function MusicPage() {
               <div className="flex flex-col items-center text-center gap-5 max-w-xs mx-auto">
                 {/* Thumbnail */}
                 <div className="w-40 h-28 rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl shadow-black/50">
-                  <img src={nowPlaying.thumbnail} alt="" className="w-full h-full object-cover" />
+                  <img src={nowPlaying.thumbnail} alt={nowPlaying.title} className="w-full h-full object-cover" />
                 </div>
 
                 {/* Title / channel */}
@@ -423,6 +423,12 @@ export default function MusicPage() {
                 {/* Progress bar */}
                 <div className="w-full space-y-1.5">
                   <div
+                    role="slider"
+                    aria-label="Seek"
+                    aria-valuenow={Math.round(currentTime)}
+                    aria-valuemin={0}
+                    aria-valuemax={Math.round(duration)}
+                    tabIndex={0}
                     className="w-full h-1.5 bg-slate-800 rounded-full cursor-pointer group/prog relative"
                     onClick={seekTo}
                   >
@@ -522,7 +528,7 @@ export default function MusicPage() {
                     {idx + 1}
                   </span>
                   <div className="w-9 h-7 rounded overflow-hidden bg-slate-800 shrink-0">
-                    <img src={video.thumbnail} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={clsx("text-xs truncate", idx === nowIdx ? "text-blue-300 font-medium" : "text-slate-300")}>

@@ -298,7 +298,7 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
             {rows.map((r, i) => (
               <div key={r.id} className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
                 <div className="flex items-start gap-2">
-                  <div className="flex-1 grid grid-cols-[140px_1fr] gap-2">
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-2">
                     <input
                       value={r.key}
                       onChange={e => updateRow(r.id, { key: e.target.value })}

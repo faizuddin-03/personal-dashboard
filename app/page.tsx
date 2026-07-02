@@ -132,11 +132,19 @@ export default function Dashboard() {
   useEffect(() => { setWidgets(getWidgetConfig()); }, []);
 
   useEffect(() => {
-    function handler(e: MouseEvent) {
+    if (!showCustomize) return;
+    function handleClick(e: MouseEvent) {
       if (customizeRef.current && !customizeRef.current.contains(e.target as Node)) setShowCustomize(false);
     }
-    if (showCustomize) document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowCustomize(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [showCustomize]);
 
   function persistWidgets(next: WidgetConfig[]) { setWidgets(next); saveWidgetConfig(next); }

@@ -236,6 +236,8 @@ export default function SettingsPage() {
                 <p className="text-xs text-slate-500 mt-0.5">Downloads a JSON file while your laptop is running</p>
               </div>
               <button
+                role="switch"
+                aria-checked={backup.enabled}
                 onClick={() => handleSaveBackup({ ...backup, enabled: !backup.enabled })}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${backup.enabled ? "bg-blue-600" : "bg-slate-700"}`}
               >

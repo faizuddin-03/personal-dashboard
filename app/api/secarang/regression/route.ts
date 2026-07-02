@@ -90,7 +90,6 @@ export async function POST(req: NextRequest) {
       "npx", ["playwright", "test", "--project=secarang-regression"],
       {
         cwd: SCRIPT_DIR,
-        shell: true,
         detached: process.platform !== "win32",
         env: {
           ...process.env,

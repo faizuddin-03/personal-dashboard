@@ -137,7 +137,7 @@ export function exportLocalStorage(): void {
   a.href = url;
   a.download = `qa-dashboard-backup-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export function importLocalStorage(file: File): Promise<void> {
