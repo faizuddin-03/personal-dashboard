@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
   if (!fs.existsSync(SCRIPT_DIR)) {
     return NextResponse.json({
-      error: `Script directory not found: ${SCRIPT_DIR}`,
+      error: `Script directory not found. Run "cd scripts/secarang-insurance && npm install"`,
     }, { status: 500 });
   }
 

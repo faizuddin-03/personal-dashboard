@@ -883,6 +883,7 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
   onDeleteEvent: (id: string) => void;
   fmt: (t?: string) => string;
 }) {
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [d, m, y] = [new Date(date + "T12:00:00").getDate(), new Date(date + "T12:00:00").getMonth(), new Date(date + "T12:00:00").getFullYear()];
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={onClose}>
@@ -915,7 +916,14 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <button onClick={() => onEditDeployment(d)} aria-label="Edit deployment" className="p-1 text-slate-600 hover:text-slate-300"><Pencil size={12} /></button>
-                      <button onClick={() => onDeleteDeployment(d.id)} aria-label="Delete deployment" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
+                      {confirmDeleteId === d.id ? (
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => { onDeleteDeployment(d.id); setConfirmDeleteId(null); }} className="px-1.5 py-0.5 text-xs bg-red-700 text-white rounded hover:bg-red-600">Delete</button>
+                          <button onClick={() => setConfirmDeleteId(null)} className="px-1.5 py-0.5 text-xs border border-slate-700 text-slate-400 rounded hover:bg-slate-800">Cancel</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setConfirmDeleteId(d.id)} aria-label="Delete deployment" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
@@ -949,7 +957,14 @@ function DayDetail({ date, items, onClose, onEditDeployment, onDeleteDeployment,
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <button onClick={() => onEditEvent(e)} aria-label="Edit event" className="p-1 text-slate-600 hover:text-slate-300"><Pencil size={12} /></button>
-                      <button onClick={() => onDeleteEvent(e.id)} aria-label="Delete event" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
+                      {confirmDeleteId === e.id ? (
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => { onDeleteEvent(e.id); setConfirmDeleteId(null); }} className="px-1.5 py-0.5 text-xs bg-red-700 text-white rounded hover:bg-red-600">Delete</button>
+                          <button onClick={() => setConfirmDeleteId(null)} className="px-1.5 py-0.5 text-xs border border-slate-700 text-slate-400 rounded hover:bg-slate-800">Cancel</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setConfirmDeleteId(e.id)} aria-label="Delete event" className="p-1 text-slate-600 hover:text-red-400"><Trash2 size={12} /></button>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -7,7 +7,12 @@ interface Props {
 }
 
 export default function StatsBar({ assigned, reported }: Props) {
-  const all = [...assigned, ...reported];
+  const seen = new Set<string>();
+  const all = [...assigned, ...reported].filter(i => {
+    if (seen.has(i.key)) return false;
+    seen.add(i.key);
+    return true;
+  });
   const byStatus = all.reduce<Record<string, number>>((acc, i) => {
     const name = i.fields.status.name;
     acc[name] = (acc[name] ?? 0) + 1;

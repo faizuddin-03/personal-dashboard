@@ -18,9 +18,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ key:
     headers: { Authorization: `Basic ${token}`, Accept: "application/json" },
   });
 
-  const data = await res.json();
+  const data = await res.json().catch(() => ({})) as Record<string, unknown>;
   if (!res.ok) {
-    return NextResponse.json({ error: data.errorMessages?.[0] ?? "Jira API error" }, { status: res.status });
+    const msgs = data.errorMessages as string[] | undefined;
+    return NextResponse.json({ error: msgs?.[0] ?? "Jira API error" }, { status: res.status });
   }
   return NextResponse.json(data);
 }

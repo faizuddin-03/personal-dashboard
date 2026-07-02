@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!fs.existsSync(SCRIPT_DIR)) {
-    return NextResponse.json({ error: `Script directory not found: ${SCRIPT_DIR}` }, { status: 500 });
+    return NextResponse.json({ error: 'Script directory not found. Check WA_BLASTER_BETA_SCRIPT_DIR configuration.' }, { status: 500 });
   }
 
   if (!fs.existsSync(path.join(SCRIPT_DIR, 'node_modules'))) {
@@ -71,6 +71,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No spec files specified.' }, { status: 400 });
   }
 
+  const SPEC_RE = /^[a-zA-Z0-9._/-]+\.spec\.ts$/;
+  if (!specFiles.every(f => SPEC_RE.test(f))) {
+    return NextResponse.json({ error: 'Invalid spec file name.' }, { status: 400 });
+  }
+
+  const safeEnv: Record<string, string> = {};
+  for (const [k, v] of Object.entries(env)) {
+    if (/^E2E_/.test(k) || k === 'API_BASE') safeEnv[k] = v;
+  }
+
   fs.mkdirSync(path.join(SCRIPT_DIR, 'results'), { recursive: true });
   if (fs.existsSync(REPORT_FILE)) fs.unlinkSync(REPORT_FILE);
   const screenshotsDir = path.join(SCRIPT_DIR, 'screenshots');
@@ -86,9 +96,8 @@ export async function POST(req: NextRequest) {
 
   const child = spawn('npx', args, {
     cwd: SCRIPT_DIR,
-    shell: true,
     detached: process.platform !== 'win32',
-    env: { ...process.env, ...env },
+    env: { ...process.env, ...safeEnv },
   });
   currentChild = child;
 
@@ -97,10 +106,10 @@ export async function POST(req: NextRequest) {
     runState = { ...runState, running: false, exitCode: 1, log: runState.log + '\n[Timed out after 1 hour]' };
   }, TIMEOUT_MS);
 
-  child.stdout.on('data', (d: Buffer) => {
+  child.stdout?.on('data', (d: Buffer) => {
     runState = { ...runState, log: runState.log + d.toString() };
   });
-  child.stderr.on('data', (d: Buffer) => {
+  child.stderr?.on('data', (d: Buffer) => {
     runState = { ...runState, log: runState.log + d.toString() };
   });
 

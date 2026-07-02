@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
 
   if (!fs.existsSync(SCRIPT_DIR)) {
     return NextResponse.json({
-      error: `Script directory not found: ${SCRIPT_DIR}\n\nEither run "npm install" inside scripts/eauto-insurance/, or set INSURANCE_SCRIPT_DIR in .env.local to point to your script folder.`,
+      error: `Script directory not found. Either run "npm install" inside scripts/eauto-insurance/, or set INSURANCE_SCRIPT_DIR in .env.local to point to your script folder.`,
     }, { status: 500 });
   }
 

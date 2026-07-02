@@ -97,7 +97,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         concurrency:     params.concurrency,
       }),
     })
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Server error: ${r.status}`);
+        return r.json();
+      })
       .then(data => {
         const now = new Date().toISOString();
         const rows = data.rows ?? [];
@@ -152,7 +155,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         checkVehicleDetails: params.checkVehicleDetails,
       }),
     })
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Server error: ${r.status}`);
+        return r.json();
+      })
       .then(data => {
         const now  = new Date().toISOString();
         const rows: SecarangRow[] = data.rows ?? [];
@@ -200,7 +206,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         checkVehicleDetails: params.checkVehicleDetails,
       }),
     })
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`Server error: ${r.status}`);
+        return r.json();
+      })
       .then(data => {
         const now  = new Date().toISOString();
         const rows: SecarangRow[] = data.rows ?? [];

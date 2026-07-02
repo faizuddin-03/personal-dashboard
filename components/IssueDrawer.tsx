@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { X, ExternalLink, Loader2, RefreshCw, ChevronLeft, Plus, Rocket } from "lucide-react";
 import { JiraCredentials, JiraIssue, JiraComment, statusColor } from "@/lib/jira";
 import { getKanbanState, saveKanbanState, KanbanCard, ColumnId, Priority, COLUMN_META } from "@/lib/kanban";
@@ -39,6 +39,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
   const [kanbanCol, setKanbanCol]       = useState<ColumnId>("todo");
   const [kanbanPriority, setKanbanPriority] = useState<Priority>("medium");
   const [kanbanSuccess, setKanbanSuccess] = useState(false);
+  const [kanbanAlreadyExists, setKanbanAlreadyExists] = useState(false);
 
   // Deployment form state
   const [depDate, setDepDate]         = useState(new Date().toISOString().slice(0, 10));
@@ -49,11 +50,26 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
   const [depNotes, setDepNotes]       = useState("");
   const [depSuccess, setDepSuccess]   = useState(false);
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   async function fetchIssue(key: string) {
     setLoading(true);
     setError("");
     setActionPanel(null);
     setKanbanSuccess(false);
+    setKanbanAlreadyExists(false);
     setDepSuccess(false);
     const params = new URLSearchParams({ baseUrl: creds.baseUrl, email: creds.email, apiToken: creds.apiToken });
     const res  = await fetch(`/api/jira/issue/${key}?${params}`);
@@ -87,26 +103,28 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
     const alreadyExists = COLUMN_OPTIONS.some(col =>
       state[col].some(c => c.jiraKey === currentKey)
     );
-    if (!alreadyExists) {
-      const card: KanbanCard = {
-        id: `jira-${currentKey}-${Date.now()}`,
-        columnId: kanbanCol,
-        type: "jira",
-        boardType: "task",
-        title: issue.fields.summary,
-        priority: kanbanPriority,
-        labels: issue.fields.labels,
-        checklist: [],
-        jiraKey: currentKey,
-        jiraStatus: issue.fields.status.name,
-        jiraType: issue.fields.issuetype.name,
-        jiraProject: issue.fields.project.name,
-        createdAt: new Date().toISOString(),
-        columnEnteredAt: new Date().toISOString(),
-      };
-      state[kanbanCol] = [...state[kanbanCol], card];
-      saveKanbanState(state);
+    if (alreadyExists) {
+      setKanbanAlreadyExists(true);
+      return;
     }
+    const card: KanbanCard = {
+      id: `jira-${currentKey}-${Date.now()}`,
+      columnId: kanbanCol,
+      type: "jira",
+      boardType: "task",
+      title: issue.fields.summary,
+      priority: kanbanPriority,
+      labels: issue.fields.labels,
+      checklist: [],
+      jiraKey: currentKey,
+      jiraStatus: issue.fields.status.name,
+      jiraType: issue.fields.issuetype.name,
+      jiraProject: issue.fields.project.name,
+      createdAt: new Date().toISOString(),
+      columnEnteredAt: new Date().toISOString(),
+    };
+    state[kanbanCol] = [...state[kanbanCol], card];
+    saveKanbanState(state);
     setKanbanSuccess(true);
   }
 
@@ -237,6 +255,11 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-green-400">Added to Kanban!</span>
                     <button onClick={() => { setKanbanSuccess(false); setActionPanel(null); }} className="text-xs text-slate-500 hover:text-slate-300">Dismiss</button>
+                  </div>
+                ) : kanbanAlreadyExists ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-amber-400">Already on the Kanban board</span>
+                    <button onClick={() => { setKanbanAlreadyExists(false); setActionPanel(null); }} className="text-xs text-slate-500 hover:text-slate-300">Dismiss</button>
                   </div>
                 ) : (
                   <>

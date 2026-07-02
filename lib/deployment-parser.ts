@@ -142,12 +142,16 @@ export function parseDeploymentText(rawText: string, existing: Deployment[]): Pa
   // "18th May Deployment" / "18 May Deployment"
   const f1Re = /^(\d{1,2})(?:st|nd|rd|th)?\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+deployment$/i;
   const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
 
   for (let i = 0; i < nLines.length; i++) {
     const m = nLines[i].match(f1Re);
     if (!m) continue;
 
-    const date = ordinalToISO(m[1], m[2], currentYear);
+    const MONTH_NAMES: Record<string, number> = { january: 0, february: 1, march: 2, april: 3, may: 4, june: 5, july: 6, august: 7, september: 8, october: 9, november: 10, december: 11 };
+    const parsedMonth = MONTH_NAMES[m[2].toLowerCase()];
+    const year = parsedMonth !== undefined && parsedMonth < currentMonth ? currentYear + 1 : currentYear;
+    const date = ordinalToISO(m[1], m[2], year);
     if (!date) continue;
 
     const summary    = nLines[i + 1] ?? "";

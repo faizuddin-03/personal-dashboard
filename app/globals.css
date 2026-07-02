@@ -23,6 +23,10 @@ body {
   scrollbar-color: #334155 transparent;
 }
 
+@media (hover: none) {
+  .group-hover\:opacity-100 { opacity: 1 !important; }
+}
+
 /* ── Tiptap / ProseMirror editor ── */
 .ProseMirror { outline: none; }
 .ProseMirror > * + * { margin-top: 0.35em; }

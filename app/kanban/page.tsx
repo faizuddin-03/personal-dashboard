@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   DndContext, DragOverlay, closestCenter,
   useDroppable,
@@ -733,6 +733,20 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   tsData: _TSCREntry[];
   allCards: KanbanCard[];
 }) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   const [editing, setEditing] = useState(false);
   const [title, setTitle]     = useState(card.title);
   const [description, setDesc] = useState(card.description ?? "");
@@ -748,6 +762,7 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [accentColor, setAccentColor] = useState(card.accentColor ?? "");
   const [cardBoardType, setCardBoardType] = useState<"task" | "cr">(card.boardType ?? "task");
   const [confirmArchive, setConfirmArchive] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   // TS Suite link
   const [linkedTSSuiteId, setLinkedTSSuiteId] = useState<string>(card.linkedTSSuiteId ?? "");
@@ -835,7 +850,15 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
                 <button onClick={() => setConfirmArchive(false)} className="px-2 py-0.5 text-xs border border-slate-700 text-slate-400 rounded hover:bg-slate-800">No</button>
               </div>
             )}
-            <button onClick={() => { onDelete(card.id); onClose(); }} className="px-2.5 py-1 text-xs text-red-400 hover:bg-slate-800 rounded-lg" aria-label="Delete card">Delete</button>
+            {!confirmDelete ? (
+              <button onClick={() => setConfirmDelete(true)} className="px-2.5 py-1 text-xs text-red-400 hover:bg-slate-800 rounded-lg" aria-label="Delete card">Delete</button>
+            ) : (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-red-400">Delete?</span>
+                <button onClick={() => { onDelete(card.id); onClose(); }} className="px-2 py-0.5 text-xs bg-red-700 text-white rounded hover:bg-red-600">Yes</button>
+                <button onClick={() => setConfirmDelete(false)} className="px-2 py-0.5 text-xs border border-slate-700 text-slate-400 rounded hover:bg-slate-800">No</button>
+              </div>
+            )}
             <button onClick={onClose} aria-label="Close" className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
           </div>
         </div>

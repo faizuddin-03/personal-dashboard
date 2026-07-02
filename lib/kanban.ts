@@ -100,15 +100,15 @@ function emptyState(): KanbanState {
 
 export function isOverdue(card: KanbanCard): boolean {
   if (!card.dueDate || card.columnId === "finished") return false;
-  const dateStr = card.dueTime ? `${card.dueDate}T${card.dueTime}` : card.dueDate;
+  const dateStr = card.dueTime ? `${card.dueDate}T${card.dueTime}` : `${card.dueDate}T23:59:59`;
   return new Date(dateStr) < new Date();
 }
 
 export function isDueToday(card: KanbanCard): boolean {
   if (!card.dueDate || card.columnId === "finished") return false;
-  const d = new Date(card.dueDate);
+  const [y, m, d] = card.dueDate.split("-").map(Number);
   const now = new Date();
-  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  return y === now.getFullYear() && m - 1 === now.getMonth() && d === now.getDate();
 }
 
 export function timeInColumn(card: KanbanCard): string {

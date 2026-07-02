@@ -30,7 +30,7 @@ export function advanceRecurring(item: TodoItem): TodoItem {
   } else if (item.recurring === "weekly") {
     next.setDate(next.getDate() + 7);
   } else if (item.recurring === "monthly") {
-    next.setDate(next.getDate() + 30);
+    next.setMonth(next.getMonth() + 1);
   }
   nextDue = next.toISOString().slice(0, 10);
   return {
@@ -61,14 +61,16 @@ export function saveTodos(items: TodoItem[]) {
 }
 
 export function isTodoOverdue(item: TodoItem): boolean {
-  return !item.done && !!item.dueDate && new Date(item.dueDate) < new Date();
+  if (!item.done && !!item.dueDate) {
+    const due = new Date(item.dueDate + "T23:59:59");
+    return due < new Date();
+  }
+  return false;
 }
 
 export function isDueToday(item: TodoItem): boolean {
   if (!item.dueDate || item.done) return false;
-  const d = new Date(item.dueDate);
+  const [y, m, d] = item.dueDate.split("-").map(Number);
   const now = new Date();
-  return d.getFullYear() === now.getFullYear() &&
-    d.getMonth() === now.getMonth() &&
-    d.getDate() === now.getDate();
+  return y === now.getFullYear() && m - 1 === now.getMonth() && d === now.getDate();
 }
