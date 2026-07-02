@@ -33,7 +33,7 @@ const nav = [
       { label: "To-Do List",    href: "/todo",           icon: CheckSquare },
       { label: "Notes",         href: "/notes",          icon: FileText },
       { label: "Daily Update",  href: "/daily-update",   icon: Send },
-      { label: "Music",         href: "/music",          icon: Music2 },
+      // { label: "Music",         href: "/music",          icon: Music2 },
     ],
   },
   {
