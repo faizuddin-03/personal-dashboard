@@ -4,6 +4,7 @@ import { X, ExternalLink, Loader2, RefreshCw, ChevronLeft, Plus, Rocket } from "
 import { JiraCredentials, JiraIssue, JiraComment, statusColor } from "@/lib/jira";
 import { getKanbanState, saveKanbanState, KanbanCard, ColumnId, Priority, COLUMN_META } from "@/lib/kanban";
 import { getDeployments, saveDeployments, Deployment, DEPLOYMENT_ENVIRONMENTS } from "@/lib/deployments";
+import AdfRenderer from "@/components/AdfRenderer";
 import clsx from "clsx";
 
 interface Props {
@@ -400,9 +401,9 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
             {issue.fields.description && (
               <div>
                 <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Description</h3>
-                <p className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed bg-slate-800/60 rounded-lg p-3 border border-slate-700">
-                  {adfToText(issue.fields.description) || "No description"}
-                </p>
+                <div className="bg-slate-800/60 rounded-lg p-3 border border-slate-700">
+                  <AdfRenderer node={issue.fields.description as Record<string, unknown>} />
+                </div>
               </div>
             )}
 
@@ -431,7 +432,7 @@ export default function IssueDrawer({ issueKey, creds, onClose }: Props) {
                         <span className="text-xs font-semibold text-slate-300">{c.author.displayName}</span>
                         <span className="text-xs text-slate-600">{new Date(c.created).toLocaleDateString()}</span>
                       </div>
-                      <p className="text-sm text-slate-400 leading-relaxed">{adfToText(c.body)}</p>
+                      <AdfRenderer node={c.body as Record<string, unknown>} />
                     </div>
                   ))}
                   {(issue.fields.comment?.total ?? 0) > (issue.fields.comment?.comments?.length ?? 0) && (
