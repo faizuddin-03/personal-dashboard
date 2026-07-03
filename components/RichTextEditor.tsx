@@ -152,7 +152,7 @@ export default function RichTextEditor({
             title="Font family"
             className={clsx(
               "flex items-center gap-1 px-2 py-1.5 rounded text-xs transition-colors",
-              showFonts ? "bg-blue-600/40 text-blue-300" : "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
+              showFonts ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
             )}
           >
             <span className="text-[11px] font-medium w-14 truncate text-left">{activeFontLabel}</span>
@@ -332,7 +332,7 @@ function TBtn({ active, onClick, title, children }: {
       title={title}
       className={clsx(
         "p-1.5 rounded text-xs transition-colors",
-        active ? "bg-blue-600/40 text-blue-300" : "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
+        active ? "bg-blue-600 text-white" : "text-slate-400 hover:text-slate-200 hover:bg-slate-700"
       )}
     >
       {children}
