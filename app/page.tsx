@@ -16,6 +16,7 @@ import {
   getKanbanState, KanbanCard, PRIORITY_META,
   isOverdue as isKanbanOverdue, isDueToday, accentBorderClass,
 } from "@/lib/kanban";
+import { syncCrTickets } from "@/lib/crSync";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META, DEPLOYMENT_STATUS_META } from "@/lib/deployments";
 import { todayLocal, daysFromToday, jqlCreatedRange } from "@/lib/date";
 import { getWidgetConfig, saveWidgetConfig, WidgetConfig } from "@/lib/dashboard-widgets";
@@ -159,14 +160,17 @@ export default function Dashboard() {
     persistWidgets(next);
   }
 
-  // Load local data once on mount
-  useEffect(() => {
-    const todayStr = todayLocal();
-    const kanban   = getKanbanState();
-
+  function refreshKanbanWidgets() {
+    const kanban = getKanbanState();
     const allCards = ["urgent","todo","ongoing","on-hold","finished"].flatMap(col => kanban[col as keyof typeof kanban] as KanbanCard[]);
     setOngoingCards(kanban.ongoing);
     setDueSoonCards(allCards.filter(c => isKanbanOverdue(c) || isDueToday(c)));
+  }
+
+  // Load local data once on mount
+  useEffect(() => {
+    const todayStr = todayLocal();
+    refreshKanbanWidgets();
 
     const in30Str = daysFromToday(30);
     setUpcomingDeps(
@@ -181,6 +185,20 @@ export default function Dashboard() {
       setTsCRs(raw ? (JSON.parse(raw) as TSCR[]) : []);
     } catch { setTsCRs([]); }
   }, []);
+
+  // Auto-sync CR tickets (QA field / assignee) so the board and widgets stay current
+  useEffect(() => {
+    if (!creds) return;
+    let cancelled = false;
+    const run = () => {
+      syncCrTickets(creds)
+        .then(() => { if (!cancelled) refreshKanbanWidgets(); })
+        .catch(() => {});
+    };
+    run();
+    const t = setInterval(run, 5 * 60 * 1000);
+    return () => { cancelled = true; clearInterval(t); };
+  }, [creds]);
 
   // Assigned tickets widget
   useEffect(() => {

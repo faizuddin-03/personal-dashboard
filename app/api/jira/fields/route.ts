@@ -1,34 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/** Proxies Jira's field list so the client can discover custom field ids (e.g. the "QA" user picker) by name. */
 export async function POST(req: NextRequest) {
-  const { baseUrl, email, apiToken, jql, fields, maxResults = 50, nextPageToken } = await req.json();
+  const { baseUrl, email, apiToken } = await req.json();
 
-  if (!baseUrl || !email || !apiToken || !jql) {
+  if (!baseUrl || !email || !apiToken) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
   const token = Buffer.from(`${email}:${apiToken}`).toString("base64");
-  const url = `${baseUrl.replace(/\/$/, "")}/rest/api/3/search/jql`;
-
-  const body = {
-    jql,
-    maxResults,
-    ...(nextPageToken ? { nextPageToken } : {}),
-    fields: fields ?? [
-      "summary", "status", "priority", "issuetype", "assignee",
-      "reporter", "created", "updated", "labels", "fixVersions",
-      "project", "duedate", "parent",
-    ],
-  };
+  const url = `${baseUrl.replace(/\/$/, "")}/rest/api/3/field`;
 
   const res = await fetch(url, {
-    method: "POST",
     headers: {
       Authorization: `Basic ${token}`,
-      "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify(body),
   });
 
   let data: unknown;

@@ -27,6 +27,8 @@ export interface KanbanCard {
   jiraStatus?: string;
   jiraType?: string;
   jiraProject?: string;
+  /** Card was created by the CR auto-sync (QA field / assignee match) and is moved/removed by it. Manual cards are never touched. */
+  autoSynced?: boolean;
   // TS Tracker link
   linkedTSSuiteId?: string;
   createdAt: string;

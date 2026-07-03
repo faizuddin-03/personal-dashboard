@@ -9,7 +9,7 @@ import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } 
 import { CSS } from "@dnd-kit/utilities";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
-  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight,
+  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight, RefreshCw,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -21,6 +21,7 @@ import {
   ChecklistItem, getKanbanState, saveKanbanState, isOverdue, checklistProgress,
   timeInColumn, getArchivedCards, saveArchivedCards,
 } from "@/lib/kanban";
+import { syncCrTickets } from "@/lib/crSync";
 
 function newId() { return crypto.randomUUID(); }
 
@@ -566,6 +567,9 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards }: {
               ? <span className="text-xs bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">CR</span>
               : <span className="text-xs bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium">Task</span>
             }
+            {card.autoSynced && (
+              <span title="Auto-synced from Jira (QA field / assignee)" className="text-xs bg-emerald-900/60 text-emerald-300 border border-emerald-700/50 px-1.5 py-0.5 rounded-full font-medium">Auto</span>
+            )}
             {card.jiraKey && (
               <>
                 <span className="text-xs font-mono text-blue-400 font-bold">{card.jiraKey}</span>
@@ -1275,6 +1279,8 @@ export default function KanbanPage() {
   const [collapsedCols, setCollapsedCols] = useState<Partial<Record<ColumnId, boolean>>>({ finished: false });
   const [activeBoardType, setActiveBoardType] = useState<"task" | "cr">("task");
   const [tsData, setTsData] = useState<_TSCREntry[]>([]);
+  const [crSyncing, setCrSyncing]   = useState(false);
+  const [crSyncMsg, setCrSyncMsg]   = useState("");
 
   function toggleCollapse(col: ColumnId) {
     setCollapsedCols(prev => ({ ...prev, [col]: !prev[col] }));
@@ -1285,6 +1291,33 @@ export default function KanbanPage() {
     setArchivedCards(getArchivedCards());
     setTsData(loadTSData());
   }, []);
+
+  // Auto-sync CR tickets (QA field / assignee) on load + every 5 minutes
+  const runCrSync = useCallback(async () => {
+    if (!creds) return;
+    setCrSyncing(true);
+    try {
+      const r = await syncCrTickets(creds);
+      setBoardState(getKanbanState());
+      const parts = [`${r.total} CRs`];
+      if (r.added) parts.push(`+${r.added} new`);
+      if (r.moved) parts.push(`${r.moved} moved`);
+      if (r.removed) parts.push(`${r.removed} removed`);
+      if (r.warning) parts.push(r.warning);
+      setCrSyncMsg(`Last sync ${new Date(r.syncedAt).toLocaleTimeString()}: ${parts.join(" · ")}`);
+    } catch (e) {
+      setCrSyncMsg(e instanceof Error ? `CR sync failed: ${e.message}` : "CR sync failed");
+    } finally {
+      setCrSyncing(false);
+    }
+  }, [creds]);
+
+  useEffect(() => {
+    if (!creds) return;
+    runCrSync();
+    const t = setInterval(runCrSync, 5 * 60 * 1000);
+    return () => clearInterval(t);
+  }, [creds, runCrSync]);
 
   function persist(state: KanbanState) { setBoardState(state); saveKanbanState(state); }
 
@@ -1386,6 +1419,17 @@ export default function KanbanPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {creds && (
+            <button
+              onClick={runCrSync}
+              disabled={crSyncing}
+              title={crSyncMsg || "Sync CR tickets where you are in the QA field or assignee"}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <RefreshCw size={13} className={crSyncing ? "animate-spin" : undefined} />
+              {crSyncing ? "Syncing…" : "Sync CRs"}
+            </button>
+          )}
           <button onClick={() => setShowArchive(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors">
             <Archive size={13} />Archive{archivedCards.length > 0 && <span className="bg-slate-700 text-slate-400 text-xs px-1 rounded-full">{archivedCards.length}</span>}
           </button>
