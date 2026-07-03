@@ -279,6 +279,7 @@ export default function IssueFilterPage() {
               : isId     ? `id = ${escaped} ORDER BY updated DESC`
               : isKey    ? `key = "${escaped}" ORDER BY updated DESC`
               : `text ~ "${escaped}" ORDER BY updated DESC`;
+    const controller = new AbortController();
     const t = setTimeout(async () => {
       setCrSearching(true);
       try {
@@ -286,13 +287,14 @@ export default function IssueFilterPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...creds, jql, maxResults: 10 }),
+          signal: controller.signal,
         });
         const data: JiraSearchResult = await res.json();
         setCrResults(data.issues ?? []);
-      } catch { setCrResults([]); }
-      finally { setCrSearching(false); }
-    }, isKey || isId ? 0 : 500);
-    return () => clearTimeout(t);
+      } catch (e) { if ((e as Error).name !== "AbortError") setCrResults([]); }
+      finally { if (!controller.signal.aborted) setCrSearching(false); }
+    }, 500);
+    return () => { clearTimeout(t); controller.abort(); };
   }, [creds, crQuery]);
 
   // ── CR actions ─────────────────────────────────────────────

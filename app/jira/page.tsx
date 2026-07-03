@@ -240,15 +240,16 @@ export default function JiraPage() {
           : pk       ? `project = "${pk}" AND issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`
           : `issuetype = Task AND text ~ "${q}" ORDER BY updated DESC`;
     }
+    const controller = new AbortController();
     const t = setTimeout(() => {
       setSelectBugCrSearching(true);
       fetch("/api/jira/search", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...creds, jql, maxResults: 20 }) })
+        body: JSON.stringify({ ...creds, jql, maxResults: 20 }), signal: controller.signal })
         .then(r => r.json()).then(d => setSelectBugCrResults(d.issues ?? []))
-        .catch(() => setSelectBugCrResults([]))
-        .finally(() => setSelectBugCrSearching(false));
+        .catch(e => { if ((e as Error).name !== "AbortError") setSelectBugCrResults([]); })
+        .finally(() => { if (!controller.signal.aborted) setSelectBugCrSearching(false); });
     }, q ? 400 : 0);
-    return () => clearTimeout(t);
+    return () => { clearTimeout(t); controller.abort(); };
   }, [selectBugCrQuery, showSelectBugCr, creds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function selectBugCr(issue: JiraIssue) {
