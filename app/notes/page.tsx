@@ -142,14 +142,20 @@ function PiPNoteEditor({ note, onChange }: {
 }) {
   const meta = noteColorMeta(note.color);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noteRef = useRef(note);
+  noteRef.current = note;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   function update(partial: Partial<Note>) {
-    onChange({ ...note, ...partial, updatedAt: new Date().toISOString() });
+    onChangeRef.current({ ...noteRef.current, ...partial, updatedAt: new Date().toISOString() });
   }
 
   function handleContentChange(html: string) {
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => update({ content: html }), 400);
+    saveTimer.current = setTimeout(() => {
+      onChangeRef.current({ ...noteRef.current, content: html, updatedAt: new Date().toISOString() });
+    }, 400);
   }
 
   return (
@@ -178,6 +184,10 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
   const [showPalette, setShowPalette] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noteRef = useRef(note);
+  noteRef.current = note;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
   const [pipContainer, setPipContainer] = useState<Element | null>(null);
   const pipWinRef = useRef<Window | null>(null);
   const originalTitleRef = useRef<string>("");
@@ -282,7 +292,10 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
 
   function handleContentChange(html: string) {
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => update({ content: html }), 400);
+    saveTimer.current = setTimeout(() => {
+      const latest = noteRef.current;
+      onChangeRef.current({ ...latest, content: html, updatedAt: new Date().toISOString() });
+    }, 400);
   }
 
   const meta = noteColorMeta(note.color);
