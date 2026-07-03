@@ -139,9 +139,9 @@ export default function RichTextEditor({
   const activeFontSize = (activeFontAttrs.fontSize as string | null) ?? "";
 
   return (
-    <div className={clsx("border border-slate-700 rounded-xl overflow-hidden bg-slate-800", className)} onClick={closeDropdowns}>
+    <div className={clsx("border border-slate-700 rounded-xl bg-slate-800", className)} onClick={closeDropdowns}>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-slate-700 bg-slate-900/60">
+      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-slate-700 bg-slate-900 sticky top-0 z-20 rounded-t-xl">
 
         {/* Font family */}
         <div className="relative">
