@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   RefreshCw, Loader2, SearchX, Layers, UserCheck, Bug,
   ChevronDown, ChevronRight, X, Ticket,
@@ -11,7 +12,6 @@ import {
 import { getKanbanState } from "@/lib/kanban";
 import { useApp } from "@/components/AppShell";
 import IssueCard from "@/components/IssueCard";
-import IssueDrawer from "@/components/IssueDrawer";
 import StatsBar from "@/components/StatsBar";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import clsx from "clsx";
@@ -55,8 +55,8 @@ export default function JiraPage() {
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState("");
   const [activeTab, setActiveTab] = useState<Tab>("assigned");
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [search, setSearch]       = useState("");
+  const router = useRouter();
   const [sort, setSort]           = useState<SortKey>("updated");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -417,7 +417,7 @@ export default function JiraPage() {
               <div className="space-y-1.5 max-h-64 overflow-y-auto pr-0.5">
                 {assigned.map(issue => (
                   <div key={issue.id}
-                    onClick={() => setSelectedKey(issue.key)}
+                    onClick={() => router.push(`/jira/${issue.key}`)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors cursor-pointer">
                     <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
                     <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
@@ -508,7 +508,7 @@ export default function JiraPage() {
                                          pName === "Medium" ? "text-yellow-400" : "text-slate-500";
                           const typeName = child.fields.issuetype?.name ?? "";
                           return (
-                            <button key={child.id} onClick={() => setSelectedKey(child.key)}
+                            <button key={child.id} onClick={() => router.push(`/jira/${child.key}`)}
                               className="w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-800 transition-colors group">
                               <span className={clsx("text-[9px] shrink-0 font-bold", pColor)}>●</span>
                               <span className="text-xs font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
@@ -547,7 +547,7 @@ export default function JiraPage() {
                 ) : (
                   <div className="space-y-1.5 max-h-64 overflow-y-auto pr-0.5">
                     {waitingOnMe.map(issue => (
-                      <button key={issue.id} onClick={() => setSelectedKey(issue.key)}
+                      <button key={issue.id} onClick={() => router.push(`/jira/${issue.key}`)}
                         className="w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-slate-800 transition-colors group">
                         <span className="text-xs font-mono text-sky-400 font-bold shrink-0 mt-0.5">{issue.key}</span>
                         <span className="text-xs text-slate-300 flex-1 line-clamp-1 group-hover:text-slate-100">{issue.fields.summary}</span>
@@ -595,7 +595,7 @@ export default function JiraPage() {
                                    pName === "High" ? "text-orange-400" :
                                    pName === "Medium" ? "text-yellow-400" : "text-slate-400";
                     return (
-                      <button key={issue.id} onClick={() => setSelectedKey(issue.key)}
+                      <button key={issue.id} onClick={() => router.push(`/jira/${issue.key}`)}
                         className="w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg hover:bg-slate-800 transition-colors group">
                         <span className={clsx("text-xs shrink-0 mt-0.5 font-bold", pColor)}>●</span>
                         <div className="flex-1 min-w-0">
@@ -692,7 +692,7 @@ export default function JiraPage() {
                           {/* Actions */}
                           <div className="flex items-center gap-1 shrink-0 ml-1">
                             <button
-                              onClick={e => { e.stopPropagation(); setSelectedKey(crKey); }}
+                              onClick={e => { e.stopPropagation(); router.push(`/jira/${crKey}`); }}
                               className="text-xs text-indigo-400 hover:text-indigo-200 px-1.5 py-0.5 rounded hover:bg-indigo-950/40 transition-colors"
                             >
                               View
@@ -717,7 +717,7 @@ export default function JiraPage() {
                                              pName === "High" ? "text-orange-400" :
                                              pName === "Medium" ? "text-yellow-400" : "text-slate-500";
                               return (
-                                <button key={child.id} onClick={() => setSelectedKey(child.key)}
+                                <button key={child.id} onClick={() => router.push(`/jira/${child.key}`)}
                                   className="w-full text-left flex items-center gap-2.5 px-3 py-2 hover:bg-slate-800/50 transition-colors group">
                                   <span className={clsx("text-[9px] shrink-0 font-bold", pColor)}>●</span>
                                   <span className="text-xs font-mono text-slate-400 shrink-0 group-hover:text-slate-300">{child.key}</span>
@@ -783,7 +783,7 @@ export default function JiraPage() {
                 ) : (
                   <div className="grid gap-2 pb-6">
                     {jiraSearchResults.map(issue => (
-                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
+                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => router.push(`/jira/${issue.key}`)} onParentClick={k => router.push(`/jira/${k}`)} />
                     ))}
                   </div>
                 )}
@@ -822,7 +822,7 @@ export default function JiraPage() {
                 ) : (
                   <div className="grid gap-2 pb-6">
                     {filtered.map(issue => (
-                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
+                      <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => router.push(`/jira/${issue.key}`)} onParentClick={k => router.push(`/jira/${k}`)} />
                     ))}
                   </div>
                 )}
@@ -833,9 +833,6 @@ export default function JiraPage() {
 
       </div>
 
-      {selectedKey && creds && (
-        <IssueDrawer issueKey={selectedKey} creds={creds} onClose={() => setSelectedKey(null)} />
-      )}
     </div>
   );
 }

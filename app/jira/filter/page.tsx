@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   Search, RefreshCw, Loader2, X, Filter, ChevronDown, ChevronUp, Plus,
   BookmarkPlus,
@@ -7,7 +8,6 @@ import {
 import { JiraIssue, JiraSearchResult } from "@/lib/jira";
 import { useApp } from "@/components/AppShell";
 import IssueCard from "@/components/IssueCard";
-import IssueDrawer from "@/components/IssueDrawer";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import clsx from "clsx";
 
@@ -184,7 +184,7 @@ export default function IssueFilterPage() {
   const [crSearching, setCrSearching] = useState(false);
   const [showCrSearch, setShowCrSearch] = useState(false);
 
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const router = useRouter();
 
   const [savedPresets, setSavedPresets]     = useState<SavedPreset[]>([]);
   const [savePresetOpen, setSavePresetOpen] = useState(false);
@@ -837,7 +837,7 @@ export default function IssueFilterPage() {
                         key={issue.key}
                         issue={issue}
                         baseUrl={creds.baseUrl}
-                        onClick={() => setSelectedKey(issue.key)}
+                        onClick={() => router.push(`/jira/${issue.key}`)}
                         onParentClick={drillToParent}
                       />
                     ))}
@@ -849,13 +849,6 @@ export default function IssueFilterPage() {
         </div>
       )}
 
-      {selectedKey && (
-        <IssueDrawer
-          issueKey={selectedKey}
-          creds={creds}
-          onClose={() => setSelectedKey(null)}
-        />
-      )}
     </div>
   );
 }

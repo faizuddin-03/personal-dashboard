@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
   Clock, Rocket, FileText, Ticket, Settings2, GripVertical,
@@ -10,7 +11,6 @@ import { JiraIssue } from "@/lib/jira";
 import { useApp } from "@/components/AppShell";
 import { reporterIs } from "@/lib/jira";
 import IssueCard from "@/components/IssueCard";
-import IssueDrawer from "@/components/IssueDrawer";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import {
   getKanbanState, KanbanCard, PRIORITY_META,
@@ -106,7 +106,7 @@ export default function Dashboard() {
   const [todayRaised, setTodayRaised]               = useState<JiraIssue[]>([]);
   const [todayRaisedLoading, setTodayRaisedLoading] = useState(false);
   const [todayRaisedError, setTodayRaisedError]     = useState("");
-  const [selectedKey, setSelectedKey]               = useState<string | null>(null);
+  const router = useRouter();
 
   // Completed today widget
   const [completedToday, setCompletedToday]               = useState<JiraIssue[]>([]);
@@ -547,7 +547,7 @@ export default function Dashboard() {
                   ) : (
                     <div className="grid gap-2">
                       {todayRaised.map(issue => (
-                        <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
+                        <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => router.push(`/jira/${issue.key}`)} onParentClick={k => router.push(`/jira/${k}`)} />
                       ))}
                     </div>
                   )}
@@ -586,7 +586,7 @@ export default function Dashboard() {
                   ) : (
                     <div className="grid gap-2">
                       {completedToday.map(issue => (
-                        <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => setSelectedKey(issue.key)} onParentClick={key => setSelectedKey(key)} />
+                        <IssueCard key={issue.id} issue={issue} baseUrl={creds.baseUrl} onClick={() => router.push(`/jira/${issue.key}`)} onParentClick={k => router.push(`/jira/${k}`)} />
                       ))}
                     </div>
                   )}
@@ -615,9 +615,6 @@ export default function Dashboard() {
         })}
       </div>
 
-      {selectedKey && creds && (
-        <IssueDrawer issueKey={selectedKey} creds={creds} onClose={() => setSelectedKey(null)} />
-      )}
     </div>
   );
 }
