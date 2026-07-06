@@ -25,6 +25,7 @@ const nav = [
     ],
   },
   { label: "Kanban",     href: "/kanban",   icon: Kanban },
+  { label: "QA Flow",    href: "/qa-flow",  icon: Sparkles },
   { label: "Calendar",   href: "/calendar", icon: CalendarDays },
   {
     label: "Productivity",

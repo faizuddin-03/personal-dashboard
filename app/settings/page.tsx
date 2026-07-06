@@ -13,6 +13,7 @@ import {
 } from "@/lib/kanban";
 import { THEMES, DEFAULT_THEME, getTheme, applyTheme } from "@/lib/themes";
 import { GEMINI_KEY_STORE } from "@/components/SettingsModal";
+import { AiProvider, AI_PROVIDER_META, MODEL_OPTIONS, DEFAULT_MODELS, getAiSettings, saveAiSettings } from "@/lib/aiSettings";
 
 export default function SettingsPage() {
   const { creds, setCreds } = useApp();
@@ -29,10 +30,14 @@ export default function SettingsPage() {
   const [jiraSaved, setJiraSaved] = useState(false);
   const [disconnectStep, setDisconnectStep] = useState<0 | 1 | 2>(0);
 
-  // Gemini
-  const [geminiKey, setGeminiKey] = useState("");
+  // AI provider settings
+  const [aiProvider, setAiProvider] = useState<AiProvider>("gemini");
+  const [aiKeys, setAiKeys] = useState<Partial<Record<AiProvider, string>>>({});
+  const [aiModels, setAiModels] = useState<Partial<Record<AiProvider, string>>>({});
   const [showGeminiKey, setShowGeminiKey] = useState(false);
   const [geminiSaved, setGeminiSaved] = useState(false);
+  const [orModels, setOrModels] = useState<string[]>([]);
+  const [orModelsStatus, setOrModelsStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
 
   // Theme
   const [themeId, setThemeId] = useState(DEFAULT_THEME);
@@ -45,8 +50,28 @@ export default function SettingsPage() {
   useEffect(() => {
     setBackup(getBackupSettings());
     setThemeId(localStorage.getItem("qa-theme") ?? DEFAULT_THEME);
-    setGeminiKey(localStorage.getItem(GEMINI_KEY_STORE) ?? "");
+    const ai = getAiSettings();
+    setAiProvider(ai.provider);
+    setAiKeys(ai.keys);
+    setAiModels(ai.models);
   }, []);
+
+  // Live list of OpenRouter free models, so the user can pick without typing slugs
+  async function loadOpenRouterModels() {
+    setOrModelsStatus("loading");
+    try {
+      const res = await fetch("https://openrouter.ai/api/v1/models");
+      const data = await res.json();
+      const free = ((data.data ?? []) as { id: string }[])
+        .map(m => m.id)
+        .filter(id => id.endsWith(":free"))
+        .sort();
+      setOrModels(free);
+      setOrModelsStatus("done");
+    } catch {
+      setOrModelsStatus("error");
+    }
+  }
 
   function handleThemeChange(id: string) {
     const theme = getTheme(id);
@@ -104,7 +129,13 @@ export default function SettingsPage() {
   }
 
   function handleSaveGemini() {
-    if (geminiKey.trim()) localStorage.setItem(GEMINI_KEY_STORE, geminiKey.trim());
+    const cleaned: Partial<Record<AiProvider, string>> = {};
+    for (const [p, k] of Object.entries(aiKeys)) if (k?.trim()) cleaned[p as AiProvider] = k.trim();
+    const cleanedModels: Partial<Record<AiProvider, string>> = {};
+    for (const [p, m] of Object.entries(aiModels)) if (m?.trim()) cleanedModels[p as AiProvider] = m.trim();
+    saveAiSettings({ provider: aiProvider, keys: cleaned, models: cleanedModels });
+    // Keep the legacy Gemini slot in sync (Daily Update / Calendar read it directly)
+    if (cleaned.gemini) localStorage.setItem(GEMINI_KEY_STORE, cleaned.gemini);
     else localStorage.removeItem(GEMINI_KEY_STORE);
     setGeminiSaved(true);
     setTimeout(() => setGeminiSaved(false), 2500);
@@ -300,29 +331,91 @@ export default function SettingsPage() {
         </Section>
 
         {/* ── AI Settings ── */}
-        <Section title="AI Settings" description="Connect AI services to unlock smart features like drafting your daily standup.">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={<>Gemini API Key <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-blue-400 text-xs hover:underline ml-1">Get one free →</a></>} hint="Free tier — no credit card needed. Used for AI drafting on the Daily Update page." className="sm:col-span-2">
-              <div className="relative">
-                <input
-                  type={showGeminiKey ? "text" : "password"}
-                  value={geminiKey}
-                  onChange={e => setGeminiKey(e.target.value)}
-                  onCopy={e => e.preventDefault()}
-                  onCut={e => e.preventDefault()}
-                  placeholder="AIza..."
-                  className={input + " pr-9"}
-                />
-                <button type="button" onClick={() => setShowGeminiKey(v => !v)} className="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-300">
-                  {showGeminiKey ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
-              </div>
+        <Section title="AI Settings" description="Save a key once per provider, then switch the active provider and model anytime — no re-entering keys.">
+          <div className="grid gap-4 sm:grid-cols-2 mb-4">
+            <Field label="Active provider" hint={AI_PROVIDER_META[aiProvider].note} className="sm:col-span-2">
+              <select
+                value={aiProvider}
+                onChange={e => setAiProvider(e.target.value as AiProvider)}
+                className={input}
+              >
+                {(Object.keys(AI_PROVIDER_META) as AiProvider[]).map(p => (
+                  <option key={p} value={p}>{AI_PROVIDER_META[p].label}{aiKeys[p]?.trim() ? " ✓ key saved" : ""}</option>
+                ))}
+              </select>
             </Field>
           </div>
+
+          <div className="space-y-3">
+            {(Object.keys(AI_PROVIDER_META) as AiProvider[]).map(p => (
+              <div key={p} className={`rounded-xl border p-4 ${aiProvider === p ? "border-blue-700/60 bg-blue-950/20" : "border-slate-800 bg-slate-900/50"}`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <p className="text-xs font-semibold text-slate-300">{AI_PROVIDER_META[p].label}</p>
+                  {aiProvider === p && <span className="text-xs bg-blue-900/60 text-blue-300 px-1.5 py-0.5 rounded-full font-medium">active</span>}
+                  {aiKeys[p]?.trim() && <span className="text-xs text-green-500">✓ key saved</span>}
+                  <a href={AI_PROVIDER_META[p].getKeyUrl} target="_blank" rel="noreferrer" className="ml-auto text-blue-400 text-xs hover:underline">Get a key →</a>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 mb-1.5">API Key</label>
+                    <div className="relative">
+                      <input
+                        type={showGeminiKey ? "text" : "password"}
+                        value={aiKeys[p] ?? ""}
+                        onChange={e => setAiKeys(prev => ({ ...prev, [p]: e.target.value }))}
+                        onCopy={e => e.preventDefault()}
+                        onCut={e => e.preventDefault()}
+                        placeholder={AI_PROVIDER_META[p].keyHint}
+                        className={input + " pr-9"}
+                      />
+                      <button type="button" onClick={() => setShowGeminiKey(v => !v)} className="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-300">
+                        {showGeminiKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-500 mb-1.5">Model</label>
+                    {p === "openrouter" ? (
+                      <div>
+                        <input
+                          list="openrouter-free-models"
+                          value={aiModels.openrouter ?? DEFAULT_MODELS.openrouter}
+                          onChange={e => setAiModels(prev => ({ ...prev, openrouter: e.target.value }))}
+                          onFocus={() => { if (orModelsStatus === "idle") loadOpenRouterModels(); }}
+                          placeholder="openrouter/free"
+                          className={input}
+                        />
+                        <datalist id="openrouter-free-models">
+                          <option value="openrouter/free">Random free model per request</option>
+                          {orModels.map(m => <option key={m} value={m} />)}
+                        </datalist>
+                        <p className="text-xs text-slate-600 mt-1">
+                          {orModelsStatus === "loading" && "Loading free models…"}
+                          {orModelsStatus === "done" && `${orModels.length} free models available — click the field to pick one, or keep openrouter/free.`}
+                          {orModelsStatus === "error" && "Couldn't load the model list — you can still type any model slug."}
+                          {orModelsStatus === "idle" && "Click the field to load the live list of free models."}
+                        </p>
+                      </div>
+                    ) : (
+                      <select
+                        value={aiModels[p] ?? DEFAULT_MODELS[p]}
+                        onChange={e => setAiModels(prev => ({ ...prev, [p]: e.target.value }))}
+                        className={input}
+                      >
+                        {MODEL_OPTIONS[p].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                    )}
+                  </div>
+                </div>
+                {p === "gemini" && <p className="text-xs text-slate-600 mt-2">Also used for AI drafting on the Daily Update and Calendar pages.</p>}
+              </div>
+            ))}
+          </div>
+
           <div className="flex gap-3 mt-4">
             <button onClick={handleSaveGemini} className={primaryBtn}>
               {geminiSaved ? <CheckCircle size={13} /> : <Save size={13} />}
-              {geminiSaved ? "Saved!" : "Save"}
+              {geminiSaved ? "Saved!" : "Save AI Settings"}
             </button>
           </div>
         </Section>
