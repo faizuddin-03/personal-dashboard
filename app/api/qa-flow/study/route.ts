@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import mammoth from "mammoth";
+import { AiProvider, FilePart, callAiJson, isAnthropicAuthError } from "@/lib/server/aiProviders";
 
 // Studying a big ticket with PDF attachments can take a few minutes.
 export const maxDuration = 300;
-
-type AiProvider = "gemini" | "anthropic" | "openrouter";
 
 interface StudyRequestBody {
   baseUrl: string;
@@ -21,10 +19,6 @@ interface StudyRequestBody {
 
 const MAX_ATTACHMENT_BYTES = 20 * 1024 * 1024; // per file
 const MAX_TOTAL_BYTES = 28 * 1024 * 1024; // across all files
-
-const GEMINI_MODEL = "gemini-2.5-flash";
-const OPENROUTER_MODEL = "openrouter/free";
-const ANTHROPIC_MODEL = "claude-opus-4-8";
 
 const STUDY_SCHEMA = {
   type: "object",
@@ -97,15 +91,6 @@ function adfToText(node: unknown): string {
   return "";
 }
 
-/** Pull the first JSON object out of a model response that may have fences or prose around it. */
-function extractJson(text: string): Record<string, unknown> {
-  const cleaned = text.replace(/```(?:json)?/gi, "").trim();
-  const start = cleaned.indexOf("{");
-  const end = cleaned.lastIndexOf("}");
-  if (start === -1 || end === -1 || end <= start) throw new Error("Model did not return JSON.");
-  return JSON.parse(cleaned.slice(start, end + 1));
-}
-
 /** Make sure every expected field exists even if a weaker model omitted some. */
 function normalizeStudy(raw: Record<string, unknown>) {
   const arr = (v: unknown) => (Array.isArray(v) ? v : []);
@@ -128,95 +113,6 @@ function normalizeStudy(raw: Record<string, unknown>) {
     confidenceNote: str(raw.confidenceNote),
   };
 }
-
-interface FilePart { kind: "pdf" | "image"; mime: string; data: string; name: string; }
-
-// ── Provider adapters ─────────────────────────────────────
-
-async function studyWithAnthropic(key: string | undefined, texts: string[], files: FilePart[], model = ANTHROPIC_MODEL) {
-  const anthropic = new Anthropic(key ? { apiKey: key } : {});
-  const content: Anthropic.ContentBlockParam[] = [{ type: "text", text: texts[0] }];
-  for (const f of files) {
-    if (f.kind === "pdf") content.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: f.data } });
-    else content.push({ type: "image", source: { type: "base64", media_type: f.mime as "image/png" | "image/jpeg" | "image/gif" | "image/webp", data: f.data } });
-  }
-  for (const t of texts.slice(1)) content.push({ type: "text", text: t });
-
-  const stream = anthropic.messages.stream({
-    model,
-    max_tokens: 16000,
-    thinking: { type: "adaptive" },
-    system: SYSTEM_PROMPT,
-    output_config: { format: { type: "json_schema", schema: STUDY_SCHEMA as unknown as Record<string, unknown> } },
-    messages: [{ role: "user", content }],
-  });
-  const msg = await stream.finalMessage();
-  if (msg.stop_reason === "refusal") throw new Error("The model declined to analyze this content.");
-  if (msg.stop_reason === "max_tokens") throw new Error("Analysis was cut off (too long). Try again or reduce attachments.");
-  const text = msg.content.find((b): b is Anthropic.TextBlock => b.type === "text")?.text ?? "";
-  return { raw: extractJson(text), model: msg.model };
-}
-
-async function studyWithGemini(key: string, texts: string[], files: FilePart[], model = GEMINI_MODEL) {
-  const parts: Record<string, unknown>[] = [{ text: texts[0] }];
-  for (const f of files) parts.push({ inlineData: { mimeType: f.kind === "pdf" ? "application/pdf" : f.mime, data: f.data } });
-  for (const t of texts.slice(1)) parts.push({ text: t });
-  parts.push({ text: `Respond with ONLY a single JSON object matching this JSON schema (no markdown fences, no commentary):\n${JSON.stringify(STUDY_SCHEMA)}` });
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: [{ role: "user", parts }],
-        generationConfig: { responseMimeType: "application/json", maxOutputTokens: 16000 },
-      }),
-    }
-  );
-  const data = await res.json();
-  if (!res.ok) throw new Error(`Gemini error: ${data?.error?.message ?? res.status}`);
-  if (data.promptFeedback?.blockReason) throw new Error(`Blocked by Gemini safety filter: ${data.promptFeedback.blockReason}`);
-  const text = (data.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("");
-  if (!text) throw new Error(`Gemini returned no text (finishReason: ${data.candidates?.[0]?.finishReason ?? "unknown"}).`);
-  return { raw: extractJson(text), model };
-}
-
-async function studyWithOpenRouter(key: string, texts: string[], files: FilePart[], model = OPENROUTER_MODEL) {
-  const content: Record<string, unknown>[] = [{ type: "text", text: texts[0] }];
-  let hasPdf = false;
-  for (const f of files) {
-    if (f.kind === "pdf") {
-      hasPdf = true;
-      content.push({ type: "file", file: { filename: f.name, file_data: `data:application/pdf;base64,${f.data}` } });
-    } else {
-      content.push({ type: "image_url", image_url: { url: `data:${f.mime};base64,${f.data}` } });
-    }
-  }
-  for (const t of texts.slice(1)) content.push({ type: "text", text: t });
-  content.push({ type: "text", text: `Respond with ONLY a single JSON object matching this JSON schema (no markdown fences, no commentary):\n${JSON.stringify(STUDY_SCHEMA)}` });
-
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content },
-      ],
-      ...(hasPdf ? { plugins: [{ id: "file-parser", pdf: { engine: "pdf-text" } }] } : {}),
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(`OpenRouter error: ${data?.error?.message ?? res.status}`);
-  const text: string = data.choices?.[0]?.message?.content ?? "";
-  if (!text) throw new Error("OpenRouter returned an empty response. The selected model may not handle this content — try again or pick another model.");
-  return { raw: extractJson(text), model: data.model ?? model };
-}
-
-// ── Route ─────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as StudyRequestBody;
@@ -337,11 +233,10 @@ export async function POST(req: NextRequest) {
 
   // 5. Call the selected provider
   try {
-    let result: { raw: Record<string, unknown>; model: string };
-    const model = body.ai?.model?.trim() || undefined;
-    if (provider === "gemini") result = await studyWithGemini(body.ai!.key, texts, files, model);
-    else if (provider === "openrouter") result = await studyWithOpenRouter(body.ai!.key, texts, files, model);
-    else result = await studyWithAnthropic(body.ai?.key, texts, files, model);
+    const result = await callAiJson({
+      provider, key: body.ai?.key, model: body.ai?.model,
+      system: SYSTEM_PROMPT, texts, files, schema: STUDY_SCHEMA,
+    });
 
     return NextResponse.json({
       study: normalizeStudy(result.raw),
@@ -354,7 +249,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (e) {
-    if (e instanceof Anthropic.AuthenticationError) {
+    if (isAnthropicAuthError(e)) {
       return NextResponse.json({ error: "Anthropic API key missing or invalid. Set it under Settings → AI Settings." }, { status: 401 });
     }
     if (e instanceof SyntaxError) {
