@@ -2,6 +2,7 @@ export type WidgetId =
   | "deployments"
   | "assigned-tickets"
   | "ongoing"
+  | "cr-tickets"
   | "ts-tracker"
   | "raised"
   | "jira-overview";
@@ -16,6 +17,7 @@ const DEFAULTS: WidgetConfig[] = [
   { id: "deployments",      label: "Upcoming Deployments", visible: true  },
   { id: "assigned-tickets", label: "Assigned to Me",       visible: true  },
   { id: "ongoing",          label: "On-Going Cards",       visible: true  },
+  { id: "cr-tickets",       label: "My CR Tickets",        visible: true  },
   { id: "ts-tracker",       label: "TS Tracker",           visible: true  },
   { id: "raised",           label: "Raised Tickets",       visible: true  },
   { id: "jira-overview",    label: "Jira Overview Link",   visible: false },

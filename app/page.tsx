@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import {
   Loader2, ArrowRight, CheckSquare, LayoutDashboard, Bell, AlertTriangle,
   Clock, Rocket, FileText, Ticket, Settings2, GripVertical,
-  Eye, EyeOff, ClipboardList, CheckCheck, Copy, Check,
+  Eye, EyeOff, ClipboardList, CheckCheck, Copy, Check, Layers, Bug,
 } from "lucide-react";
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
@@ -16,7 +16,7 @@ import {
   getKanbanState, KanbanCard, PRIORITY_META,
   isOverdue as isKanbanOverdue, isDueToday, accentBorderClass,
 } from "@/lib/kanban";
-import { syncCrTickets } from "@/lib/crSync";
+import { syncCrTickets, getChildBugs, ChildBugMap, bugStats } from "@/lib/crSync";
 import { getDeployments, Deployment, DEPLOYMENT_TYPE_META, DEPLOYMENT_STATUS_META } from "@/lib/deployments";
 import { todayLocal, daysFromToday, jqlCreatedRange } from "@/lib/date";
 import { getWidgetConfig, saveWidgetConfig, WidgetConfig } from "@/lib/dashboard-widgets";
@@ -118,6 +118,9 @@ export default function Dashboard() {
   // Local data
   const [ongoingCards, setOngoingCards]   = useState<KanbanCard[]>([]);
   const [dueSoonCards, setDueSoonCards]   = useState<KanbanCard[]>([]);
+  const [crTodoCards, setCrTodoCards]     = useState<KanbanCard[]>([]);
+  const [crOngoingCards, setCrOngoingCards] = useState<KanbanCard[]>([]);
+  const [crChildBugs, setCrChildBugs]     = useState<ChildBugMap>({});
   const [upcomingDeps, setUpcomingDeps]   = useState<Deployment[]>([]);
   const [tsCRs, setTsCRs]                 = useState<TSCR[]>([]);
 
@@ -165,6 +168,9 @@ export default function Dashboard() {
     const allCards = ["urgent","todo","ongoing","on-hold","finished"].flatMap(col => kanban[col as keyof typeof kanban] as KanbanCard[]);
     setOngoingCards(kanban.ongoing);
     setDueSoonCards(allCards.filter(c => isKanbanOverdue(c) || isDueToday(c)));
+    setCrTodoCards([...kanban.urgent, ...kanban.todo].filter(c => c.boardType === "cr"));
+    setCrOngoingCards(kanban.ongoing.filter(c => c.boardType === "cr"));
+    setCrChildBugs(getChildBugs());
   }
 
   // Load local data once on mount
@@ -464,6 +470,63 @@ export default function Dashboard() {
                   {taskCards.map(card => <MiniKanbanCard key={card.id} card={card} />)}
                 </div>
               </div>
+            );
+          }
+
+          // ── My CR Tickets (To-Do & On-Going) ──────────────
+          if (w.id === "cr-tickets") {
+            if (crTodoCards.length === 0 && crOngoingCards.length === 0) return null;
+            const renderCrRow = (card: KanbanCard) => {
+              const bugs = card.jiraKey ? bugStats(crChildBugs[card.jiraKey]) : null;
+              return (
+                <Link key={card.id} href="/kanban" className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
+                  {card.jiraKey && <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{card.jiraKey}</span>}
+                  <span className="text-xs text-slate-200 flex-1 truncate">{card.title}</span>
+                  {bugs && bugs.recentlyFixed > 0 && (
+                    <span className="flex items-center gap-1 text-xs bg-amber-900/50 text-amber-300 border border-amber-700/50 px-1.5 py-0.5 rounded-full font-medium shrink-0" title={`${bugs.recentlyFixed} bug(s) recently fixed — retest?`}>
+                      <Bug size={9} />{bugs.recentlyFixed}
+                    </span>
+                  )}
+                  {bugs && bugs.open > 0 && (
+                    <span className="flex items-center gap-1 text-xs bg-red-950/50 text-red-400 border border-red-800/50 px-1.5 py-0.5 rounded-full shrink-0" title={`${bugs.open} open bug(s)`}>
+                      <Bug size={9} />{bugs.open}
+                    </span>
+                  )}
+                  {card.jiraStatus && (
+                    <span className="text-xs px-1.5 py-0.5 rounded border font-medium shrink-0 bg-slate-800 text-slate-400 border-slate-700">
+                      {card.jiraStatus}
+                    </span>
+                  )}
+                </Link>
+              );
+            };
+            return (
+              <WidgetCard key="cr-tickets" icon={<Layers size={15} className="text-indigo-400" />} title="My CR Tickets" href="/kanban">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">To-Do</p>
+                      <span className="text-xs bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded-full">{crTodoCards.length}</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {crTodoCards.length === 0
+                        ? <p className="text-xs text-slate-600 py-3 text-center border border-dashed border-slate-800 rounded-lg">Nothing waiting</p>
+                        : crTodoCards.map(renderCrRow)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">On-Going</p>
+                      <span className="text-xs bg-blue-900/40 text-blue-400 px-1.5 py-0.5 rounded-full">{crOngoingCards.length}</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {crOngoingCards.length === 0
+                        ? <p className="text-xs text-slate-600 py-3 text-center border border-dashed border-slate-800 rounded-lg">Nothing in progress</p>
+                        : crOngoingCards.map(renderCrRow)}
+                    </div>
+                  </div>
+                </div>
+              </WidgetCard>
             );
           }
 

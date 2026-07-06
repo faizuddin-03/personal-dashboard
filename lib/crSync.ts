@@ -31,8 +31,48 @@ export interface CrSyncResult {
   moved: number;
   removed: number;
   updated: number;
+  bugs: number;
   warning?: string;
   syncedAt: string;
+}
+
+// ── Child QA-Issue bugs ───────────────────────────────────
+// For every CR card on the board, the sync also pulls its child QA-Issue
+// subtasks (the bugs QA raised under the CR) so cards can show bug progress
+// and flag recently fixed bugs that may need a retest.
+
+export interface ChildBug {
+  key: string;
+  summary: string;
+  status: string;
+  statusCategory: string; // "new" | "indeterminate" | "done"
+  updated: string;
+}
+
+/** Maps parent CR key → its child QA-Issue bugs. */
+export type ChildBugMap = Record<string, ChildBug[]>;
+
+const CHILD_BUGS_KEY = "cr_child_bugs";
+
+export function getChildBugs(): ChildBugMap {
+  if (typeof window === "undefined") return {};
+  try { return JSON.parse(localStorage.getItem(CHILD_BUGS_KEY) ?? "{}"); } catch { return {}; }
+}
+
+/** A bug fixed (done) within the last 48h — likely waiting for the QA to retest/verify. */
+export function isRecentlyFixed(bug: ChildBug): boolean {
+  return bug.statusCategory === "done" && Date.now() - new Date(bug.updated).getTime() < 48 * 3600 * 1000;
+}
+
+export function bugStats(bugs: ChildBug[] | undefined): { total: number; open: number; fixed: number; recentlyFixed: number } {
+  const list = bugs ?? [];
+  const fixed = list.filter(b => b.statusCategory === "done").length;
+  return {
+    total: list.length,
+    open: list.length - fixed,
+    fixed,
+    recentlyFixed: list.filter(isRecentlyFixed).length,
+  };
 }
 
 const QA_FIELD_CACHE_KEY = "jira_qa_field_id";
@@ -79,8 +119,8 @@ function jiraPriorityToCardPriority(name?: string): Priority {
   }
 }
 
-async function fetchAllIssues(creds: JiraCredentials, jql: string): Promise<SyncIssue[]> {
-  const all: SyncIssue[] = [];
+async function fetchAllIssues<T>(creds: JiraCredentials, jql: string, fields: string[]): Promise<T[]> {
+  const all: T[] = [];
   let nextPageToken: string | undefined;
   let pages = 0;
   do {
@@ -89,17 +129,47 @@ async function fetchAllIssues(creds: JiraCredentials, jql: string): Promise<Sync
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         baseUrl: creds.baseUrl, email: creds.email, apiToken: creds.apiToken,
-        jql, maxResults: 100, nextPageToken,
-        fields: ["summary", "status", "priority", "issuetype", "project"],
+        jql, maxResults: 100, nextPageToken, fields,
       }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(typeof data?.error === "string" ? data.error : "Jira search failed");
-    all.push(...((data.issues ?? []) as SyncIssue[]));
+    all.push(...((data.issues ?? []) as T[]));
     nextPageToken = data.nextPageToken;
     pages++;
   } while (nextPageToken && pages < 30);
   return all;
+}
+
+interface ChildIssue {
+  key: string;
+  fields: {
+    summary: string;
+    status: { name: string; statusCategory: { key: string } };
+    updated: string;
+    parent?: { key: string } | null;
+  };
+}
+
+async function fetchChildBugs(creds: JiraCredentials, crKeys: string[]): Promise<ChildBugMap> {
+  const map: ChildBugMap = {};
+  for (let i = 0; i < crKeys.length; i += 50) {
+    const chunk = crKeys.slice(i, i + 50);
+    const jql = `issuetype = "QA-Issue" AND parent in (${chunk.join(", ")}) ORDER BY updated DESC`;
+    const issues = await fetchAllIssues<ChildIssue>(creds, jql, ["summary", "status", "updated", "parent"]);
+    for (const b of issues) {
+      const parentKey = b.fields.parent?.key;
+      if (!parentKey) continue;
+      (map[parentKey] ??= []).push({
+        key: b.key,
+        summary: b.fields.summary,
+        status: b.fields.status.name,
+        statusCategory: b.fields.status.statusCategory.key,
+        updated: b.fields.updated,
+      });
+    }
+  }
+  return map;
 }
 
 export async function syncCrTickets(creds: JiraCredentials): Promise<CrSyncResult> {
@@ -110,7 +180,7 @@ export async function syncCrTickets(creds: JiraCredentials): Promise<CrSyncResul
     : `assignee = ${me}`;
   const jql = `${matchClause} AND issuetype = Task ORDER BY updated DESC`;
 
-  const issues = await fetchAllIssues(creds, jql);
+  const issues = await fetchAllIssues<SyncIssue>(creds, jql, ["summary", "status", "priority", "issuetype", "project"]);
   const byKey = new Map(issues.map(i => [i.key, i]));
 
   // Cards the user archived stay archived — don't resurrect them on the board.
@@ -193,10 +263,32 @@ export async function syncCrTickets(creds: JiraCredentials): Promise<CrSyncResul
 
   saveKanbanState(next);
 
+  // Pull child QA-Issue bugs for every CR card on the board (auto + manual).
+  let bugCount = 0;
+  let bugWarning: string | undefined;
+  try {
+    const crKeys = [...new Set(
+      COLUMN_IDS.flatMap(col => next[col])
+        .filter(c => c.boardType === "cr" && c.jiraKey)
+        .map(c => c.jiraKey!)
+    )];
+    const bugMap = crKeys.length ? await fetchChildBugs(creds, crKeys) : {};
+    localStorage.setItem(CHILD_BUGS_KEY, JSON.stringify(bugMap));
+    bugCount = Object.values(bugMap).reduce((s, b) => s + b.length, 0);
+  } catch {
+    bugWarning = "bug fetch failed — counts may be stale";
+  }
+
+  const warning = [
+    qaFieldNum ? undefined : `"QA" field not found — matched by assignee only`,
+    bugWarning,
+  ].filter(Boolean).join("; ") || undefined;
+
   return {
     total: issues.length,
     added, moved, removed, updated,
-    warning: qaFieldNum ? undefined : `"QA" field not found — matched by assignee only`,
+    bugs: bugCount,
+    warning,
     syncedAt: now,
   };
 }

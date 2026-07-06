@@ -9,11 +9,11 @@ import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } 
 import { CSS } from "@dnd-kit/utilities";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
-  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight, RefreshCw,
+  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight, RefreshCw, Bug,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
-import { reporterIs } from "@/lib/jira";
+import { reporterIs, statusColor } from "@/lib/jira";
 import Linkified from "@/components/Linkified";
 import {
   KanbanCard, KanbanState, ColumnId, Priority,
@@ -21,7 +21,7 @@ import {
   ChecklistItem, getKanbanState, saveKanbanState, isOverdue, checklistProgress,
   timeInColumn, getArchivedCards, saveArchivedCards,
 } from "@/lib/kanban";
-import { syncCrTickets } from "@/lib/crSync";
+import { syncCrTickets, getChildBugs, ChildBugMap, bugStats, isRecentlyFixed } from "@/lib/crSync";
 
 function newId() { return crypto.randomUUID(); }
 
@@ -507,9 +507,9 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
 }
 
 // ── Card view ─────────────────────────────────────────────
-function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards }: {
+function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards, childBugs }: {
   card: KanbanCard; baseUrl?: string; onClick?: () => void; dragHandle?: React.ReactNode;
-  tsData?: _TSCREntry[]; allCards?: KanbanCard[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const { done, total } = checklistProgress(card);
   const over = isOverdue(card);
@@ -523,6 +523,9 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards }: {
     : [];
   const tasksTotal = linkedTasks.length;
   const tasksDone = linkedTasks.filter(c => c.columnId === "finished").length;
+
+  // Child QA-Issue bug progress for CR cards
+  const bugs = isCR && card.jiraKey ? bugStats(childBugs?.[card.jiraKey]) : null;
 
   // TS Suite progress
   const isAllSuites = card.linkedTSSuiteId?.startsWith("__all__:") ?? false;
@@ -613,6 +616,23 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards }: {
           </div>
         </div>
       )}
+      {bugs && bugs.total > 0 && (
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="flex items-center gap-1 text-xs text-slate-500"><Bug size={10} />Bugs</span>
+            <span className="text-xs text-slate-500">{bugs.open > 0 ? `${bugs.open} open · ` : ""}{bugs.fixed}/{bugs.total} fixed</span>
+          </div>
+          <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden flex">
+            {bugs.fixed > 0 && <div className="bg-green-500" style={{ width: `${(bugs.fixed / bugs.total) * 100}%` }} />}
+            {bugs.open > 0 && <div className="bg-red-500/70" style={{ width: `${(bugs.open / bugs.total) * 100}%` }} />}
+          </div>
+          {bugs.recentlyFixed > 0 && (
+            <span className="inline-flex items-center gap-1 mt-1.5 text-xs bg-amber-900/50 text-amber-300 border border-amber-700/50 px-1.5 py-0.5 rounded-full font-medium animate-pulse">
+              <Bug size={9} />{bugs.recentlyFixed} recently fixed — retest?
+            </span>
+          )}
+        </div>
+      )}
       {tsStats && tsStats.tsTotal > 0 && (
         <div className="mb-2">
           <p className="text-xs text-slate-500 mb-1">TS Progress</p>
@@ -652,9 +672,9 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards }: {
 }
 
 // ── Draggable card ────────────────────────────────────────
-function DraggableCard({ card, baseUrl, onCardClick, tsData, allCards }: {
+function DraggableCard({ card, baseUrl, onCardClick, tsData, allCards, childBugs }: {
   card: KanbanCard; baseUrl?: string; onCardClick: (c: KanbanCard) => void;
-  tsData?: _TSCREntry[]; allCards?: KanbanCard[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
@@ -665,6 +685,7 @@ function DraggableCard({ card, baseUrl, onCardClick, tsData, allCards }: {
         baseUrl={baseUrl}
         tsData={tsData}
         allCards={allCards}
+        childBugs={childBugs}
         onClick={() => onCardClick(card)}
         dragHandle={
           <button {...attributes} {...listeners} aria-label="Drag to reorder" className="mt-0.5 p-1 -ml-1 text-slate-600 hover:text-slate-300 cursor-grab active:cursor-grabbing shrink-0" onClick={e => e.stopPropagation()}>
@@ -677,11 +698,11 @@ function DraggableCard({ card, baseUrl, onCardClick, tsData, allCards }: {
 }
 
 // ── Column ────────────────────────────────────────────────
-function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, tsData, allCards }: {
+function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, tsData, allCards, childBugs }: {
   id: ColumnId; cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
   collapsed?: boolean; onToggleCollapse?: () => void;
-  tsData?: _TSCREntry[]; allCards?: KanbanCard[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const meta = COLUMN_META[id];
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -717,7 +738,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
           ref={setNodeRef}
           className={clsx("flex-1 space-y-2 rounded-xl p-2 overflow-y-auto transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
         >
-          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} allCards={allCards} />)}
+          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} allCards={allCards} childBugs={childBugs} />)}
           {cards.length === 0 && (
             <div className="flex items-center justify-center h-20 text-xs text-slate-700 border border-dashed border-slate-800 rounded-xl">Drop here</div>
           )}
@@ -729,13 +750,14 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
 }
 
 // ── Card detail drawer ────────────────────────────────────
-function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds, tsData, allCards }: {
+function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds, tsData, allCards, childBugs }: {
   card: KanbanCard; onClose: () => void;
   onUpdate: (c: KanbanCard) => void; onDelete: (id: string) => void;
   onArchive?: (c: KanbanCard) => void; baseUrl?: string;
   creds: ReturnType<typeof useApp>["creds"];
   tsData: _TSCREntry[];
   allCards: KanbanCard[];
+  childBugs?: ChildBugMap;
 }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -1140,6 +1162,38 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
               }
           </div>
 
+          {card.boardType === "cr" && card.jiraKey && (childBugs?.[card.jiraKey]?.length ?? 0) > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-slate-600 flex items-center gap-1"><Bug size={11} />Bugs raised (QA-Issues)</p>
+                <span className="text-xs text-slate-500">
+                  {childBugs![card.jiraKey!].filter(b => b.statusCategory !== "done").length} open / {childBugs![card.jiraKey!].length}
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {childBugs![card.jiraKey!].map(bug => (
+                  <div key={bug.key} className={clsx("flex items-start gap-2 p-2 rounded-lg border", isRecentlyFixed(bug) ? "bg-amber-950/30 border-amber-800/50" : "bg-slate-800/60 border-slate-800")}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-xs font-mono text-blue-400 font-bold">{bug.key}</span>
+                        <span className={clsx("text-xs px-1.5 py-0.5 rounded-full", statusColor(bug.statusCategory))}>{bug.status}</span>
+                        {isRecentlyFixed(bug) && (
+                          <span className="text-xs bg-amber-900/50 text-amber-300 border border-amber-700/50 px-1.5 py-0.5 rounded-full font-medium">retest?</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 leading-snug line-clamp-2">{bug.summary}</p>
+                    </div>
+                    {baseUrl && (
+                      <a href={`${baseUrl}/browse/${bug.key}`} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-blue-400 shrink-0 mt-0.5">
+                        <ExternalLink size={12} />
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs text-slate-600">Checklist</p>
@@ -1229,10 +1283,10 @@ function ArchiveDrawer({ cards, onClose, onUnarchive }: {
 }
 
 // ── Urgent droppable section ──────────────────────────────
-function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData, allCards }: {
+function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData, allCards, childBugs }: {
   cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
-  tsData?: _TSCREntry[]; allCards?: KanbanCard[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: "urgent" });
 
@@ -1254,7 +1308,7 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData, allCard
         >
           {cards.map(card => (
             <div key={card.id} className="w-64 shrink-0">
-              <DraggableCard card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} allCards={allCards} />
+              <DraggableCard card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} allCards={allCards} childBugs={childBugs} />
             </div>
           ))}
           {cards.length === 0 && (
@@ -1281,6 +1335,7 @@ export default function KanbanPage() {
   const [tsData, setTsData] = useState<_TSCREntry[]>([]);
   const [crSyncing, setCrSyncing]   = useState(false);
   const [crSyncMsg, setCrSyncMsg]   = useState("");
+  const [childBugs, setChildBugs]   = useState<ChildBugMap>({});
 
   function toggleCollapse(col: ColumnId) {
     setCollapsedCols(prev => ({ ...prev, [col]: !prev[col] }));
@@ -1290,6 +1345,7 @@ export default function KanbanPage() {
     setBoardState(getKanbanState());
     setArchivedCards(getArchivedCards());
     setTsData(loadTSData());
+    setChildBugs(getChildBugs());
   }, []);
 
   // Auto-sync CR tickets (QA field / assignee) on load + every 5 minutes
@@ -1299,7 +1355,8 @@ export default function KanbanPage() {
     try {
       const r = await syncCrTickets(creds);
       setBoardState(getKanbanState());
-      const parts = [`${r.total} CRs`];
+      setChildBugs(getChildBugs());
+      const parts = [`${r.total} CRs`, `${r.bugs} bugs`];
       if (r.added) parts.push(`+${r.added} new`);
       if (r.moved) parts.push(`${r.moved} moved`);
       if (r.removed) parts.push(`${r.removed} removed`);
@@ -1448,6 +1505,7 @@ export default function KanbanPage() {
           onCardClick={setSelectedCard}
           tsData={tsData}
           allCards={allCards}
+          childBugs={childBugs}
         />
 
         <div className="flex-1 flex flex-col px-6 py-5 overflow-x-auto overflow-y-hidden">
@@ -1460,13 +1518,14 @@ export default function KanbanPage() {
                 onToggleCollapse={() => toggleCollapse(col)}
                 tsData={tsData}
                 allCards={allCards}
+                childBugs={childBugs}
               />
             ))}
           </div>
         </div>
 
         <DragOverlay>
-          {activeCard && <div className="rotate-1 opacity-90 w-72"><CardView card={activeCard} tsData={tsData} allCards={allCards} /></div>}
+          {activeCard && <div className="rotate-1 opacity-90 w-72"><CardView card={activeCard} tsData={tsData} allCards={allCards} childBugs={childBugs} /></div>}
         </DragOverlay>
       </DndContext>
 
@@ -1474,7 +1533,7 @@ export default function KanbanPage() {
         <AddCardModal targetColumn={addTarget} onClose={() => setAddTarget(null)} onAdd={handleAddCard} creds={creds} />
       )}
       {selectedCard && (
-        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} tsData={tsData} allCards={allCards} />
+        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} tsData={tsData} allCards={allCards} childBugs={childBugs} />
       )}
       {showArchive && (
         <ArchiveDrawer cards={archivedCards} onClose={() => setShowArchive(false)} onUnarchive={handleUnarchiveCard} />
