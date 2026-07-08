@@ -28,6 +28,10 @@ import {
   Code2, Table as TableIcon, ImagePlus,
   Subscript as SubscriptIcon, Superscript as SuperscriptIcon,
   Minus, IndentIncrease, IndentDecrease,
+  Plus, Trash2, Merge, Split,
+  BetweenHorizontalStart, BetweenHorizontalEnd,
+  BetweenVerticalStart, BetweenVerticalEnd,
+  Columns3, Rows3,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -191,6 +195,9 @@ export default function RichTextEditor({
   const [showFonts, setShowFonts] = useState(false);
   const [showSizes, setShowSizes] = useState(false);
   const [sizeInput, setSizeInput] = useState("");
+  const [showTablePicker, setShowTablePicker] = useState(false);
+  const [tablePickerHover, setTablePickerHover] = useState<[number, number]>([0, 0]);
+  const [showTableMenu, setShowTableMenu] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -235,6 +242,8 @@ export default function RichTextEditor({
     setShowHighlights(false);
     setShowFonts(false);
     setShowSizes(false);
+    setShowTablePicker(false);
+    setShowTableMenu(false);
   }, []);
 
   if (!editor) return null;
@@ -260,8 +269,9 @@ export default function RichTextEditor({
     if (url) editor!.chain().focus().setImage({ src: url }).run();
   }
 
-  function insertTable() {
-    editor!.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+  function insertTable(rows: number, cols: number) {
+    editor!.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
+    setShowTablePicker(false);
   }
 
   return (
@@ -469,7 +479,75 @@ export default function RichTextEditor({
         <TBtn onClick={insertImage} title="Insert image"><ImagePlus size={14} /></TBtn>
 
         {/* Table */}
-        <TBtn onClick={insertTable} title="Insert table"><TableIcon size={14} /></TBtn>
+        <div className="relative">
+          {editor.isActive("table") ? (
+            <TBtn active onClick={e => { e.stopPropagation(); closeDropdowns(); setShowTableMenu(v => !v); }} title="Table options">
+              <TableIcon size={14} />
+            </TBtn>
+          ) : (
+            <TBtn onClick={e => { e.stopPropagation(); closeDropdowns(); setShowTablePicker(v => !v); }} title="Insert table">
+              <TableIcon size={14} />
+            </TBtn>
+          )}
+
+          {/* Grid picker for inserting new table */}
+          {showTablePicker && (
+            <div className="absolute top-full left-0 mt-1 p-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30" onClick={e => e.stopPropagation()}>
+              <p className="text-[10px] text-slate-400 mb-1.5 text-center">
+                {tablePickerHover[0] > 0 ? `${tablePickerHover[0]} × ${tablePickerHover[1]}` : "Select size"}
+              </p>
+              <div className="grid grid-cols-6 gap-0.5">
+                {Array.from({ length: 36 }, (_, i) => {
+                  const r = Math.floor(i / 6) + 1;
+                  const c = (i % 6) + 1;
+                  const active = r <= tablePickerHover[0] && c <= tablePickerHover[1];
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onMouseEnter={() => setTablePickerHover([r, c])}
+                      onClick={() => insertTable(r, c)}
+                      className={clsx(
+                        "w-5 h-5 rounded-sm border transition-colors",
+                        active ? "bg-blue-500 border-blue-400" : "bg-slate-700/50 border-slate-600 hover:border-slate-500"
+                      )}
+                    />
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => insertTable(3, 3)}
+                className="w-full mt-2 px-2 py-1 text-[10px] text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors"
+              >
+                Default 3×3
+              </button>
+            </div>
+          )}
+
+          {/* Table editing menu */}
+          {showTableMenu && editor.isActive("table") && (
+            <div className="absolute top-full left-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 py-1 min-w-[180px]" onClick={e => e.stopPropagation()}>
+              <p className="text-[10px] text-slate-500 px-3 py-1 uppercase tracking-wider">Rows</p>
+              <TableMenuItem icon={<BetweenVerticalStart size={13} />} label="Insert row above" onClick={() => { editor.chain().focus().addRowBefore().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<BetweenVerticalEnd size={13} />} label="Insert row below" onClick={() => { editor.chain().focus().addRowAfter().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Trash2 size={13} />} label="Delete row" onClick={() => { editor.chain().focus().deleteRow().run(); setShowTableMenu(false); }} destructive />
+              <div className="border-t border-slate-700 my-1" />
+              <p className="text-[10px] text-slate-500 px-3 py-1 uppercase tracking-wider">Columns</p>
+              <TableMenuItem icon={<BetweenHorizontalStart size={13} />} label="Insert column left" onClick={() => { editor.chain().focus().addColumnBefore().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<BetweenHorizontalEnd size={13} />} label="Insert column right" onClick={() => { editor.chain().focus().addColumnAfter().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Trash2 size={13} />} label="Delete column" onClick={() => { editor.chain().focus().deleteColumn().run(); setShowTableMenu(false); }} destructive />
+              <div className="border-t border-slate-700 my-1" />
+              <p className="text-[10px] text-slate-500 px-3 py-1 uppercase tracking-wider">Cells</p>
+              <TableMenuItem icon={<Merge size={13} />} label="Merge cells" onClick={() => { editor.chain().focus().mergeCells().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Split size={13} />} label="Split cell" onClick={() => { editor.chain().focus().splitCell().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Rows3 size={13} />} label="Toggle header row" onClick={() => { editor.chain().focus().toggleHeaderRow().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Columns3 size={13} />} label="Toggle header column" onClick={() => { editor.chain().focus().toggleHeaderColumn().run(); setShowTableMenu(false); }} />
+              <div className="border-t border-slate-700 my-1" />
+              <TableMenuItem icon={<Trash2 size={13} />} label="Delete table" onClick={() => { editor.chain().focus().deleteTable().run(); setShowTableMenu(false); }} destructive />
+            </div>
+          )}
+        </div>
         <Sep />
 
         {/* Clear formatting */}
@@ -481,19 +559,6 @@ export default function RichTextEditor({
       {/* Editor content */}
       <EditorContent editor={editor} />
 
-      {/* Table floating controls */}
-      {editor.isActive("table") && (
-        <div className="flex items-center gap-1 px-2 py-1 border-t border-slate-700 bg-slate-900/80 text-xs">
-          <span className="text-slate-500 mr-1">Table:</span>
-          <button type="button" onClick={() => editor.chain().focus().addColumnAfter().run()} className="px-2 py-0.5 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors">+ Col</button>
-          <button type="button" onClick={() => editor.chain().focus().addRowAfter().run()} className="px-2 py-0.5 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors">+ Row</button>
-          <button type="button" onClick={() => editor.chain().focus().deleteColumn().run()} className="px-2 py-0.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors">- Col</button>
-          <button type="button" onClick={() => editor.chain().focus().deleteRow().run()} className="px-2 py-0.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors">- Row</button>
-          <button type="button" onClick={() => editor.chain().focus().deleteTable().run()} className="px-2 py-0.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors">Delete table</button>
-          <button type="button" onClick={() => editor.chain().focus().mergeCells().run()} className="px-2 py-0.5 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors">Merge</button>
-          <button type="button" onClick={() => editor.chain().focus().splitCell().run()} className="px-2 py-0.5 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors">Split</button>
-        </div>
-      )}
     </div>
   );
 }
@@ -525,4 +590,28 @@ function TBtn({ active, onClick, title, disabled, children }: {
 
 function Sep() {
   return <span className="w-px h-4 bg-slate-700 mx-0.5" />;
+}
+
+function TableMenuItem({ icon, label, onClick, destructive }: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  destructive?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onMouseDown={e => e.preventDefault()}
+      onClick={onClick}
+      className={clsx(
+        "w-full flex items-center gap-2.5 px-3 py-1.5 text-xs transition-colors",
+        destructive
+          ? "text-slate-400 hover:text-red-400 hover:bg-red-950/30"
+          : "text-slate-300 hover:text-slate-100 hover:bg-slate-700"
+      )}
+    >
+      <span className="shrink-0 opacity-70">{icon}</span>
+      {label}
+    </button>
+  );
 }
