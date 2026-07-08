@@ -16,7 +16,7 @@ export class SiteGatePage extends BasePage {
 
     console.log('   🔒 Password gate — entering…');
     await pwField.fill(sitePassword);
-    const submit = this.page.locator('button[type="submit"], input[type="submit"], button:has-text("Submit"), button:has-text("Enter")').first();
+    const submit = this.page.locator('button[type="submit"], input[type="submit"], button:has-text("Submit"), button:has-text("Enter"), button:has-text("Login"), button:has-text("Access")').first();
     if ((await submit.count()) > 0) await submit.click();
     else await pwField.press('Enter');
     await this.page.waitForLoadState('networkidle', { timeout: 90_000 }).catch(() => {});

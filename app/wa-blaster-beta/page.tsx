@@ -45,7 +45,7 @@ interface SuiteDef {
 
 const SUITES: SuiteDef[] = [
   {
-    id: "beta-auth", file: "beta-auth.spec.ts",
+    id: "beta-auth", file: "tests/beta-auth.spec.ts",
     title: "Auth & Access Control", emoji: "🔐", group: "Foundation",
     description: "Login, session persistence, logout, credential validation, keyboard shortcuts, and role-based page restrictions.",
     tags: ["auth", "roles"], estimatedDuration: "~3 min", metaRisk: false,
@@ -65,7 +65,7 @@ const SUITES: SuiteDef[] = [
     ],
   },
   {
-    id: "beta-dashboard", file: "beta-dashboard.spec.ts",
+    id: "beta-dashboard", file: "tests/beta-dashboard.spec.ts",
     title: "Dashboard & KPIs", emoji: "📊", group: "Foundation",
     description: "Dashboard title, no-demo-badge check, reply-handling donut, Reports page delivery funnel, and range chips.",
     tags: ["dashboard", "analytics"], estimatedDuration: "~2 min", metaRisk: false,
@@ -80,7 +80,7 @@ const SUITES: SuiteDef[] = [
     vars: [],
   },
   {
-    id: "beta-campaigns", file: "beta-campaigns.spec.ts",
+    id: "beta-campaigns", file: "tests/beta-campaigns.spec.ts",
     title: "Campaigns / Blasts", emoji: "📣", group: "Campaigns",
     description: "Wizard audience/template/review steps, send-now blast detail counters, recipient table, scheduled blast lifecycle (schedule → cancel), past-date validation.",
     tags: ["campaigns", "blasts", "wizard"], estimatedDuration: "~7 min", metaRisk: false,
@@ -107,7 +107,7 @@ const SUITES: SuiteDef[] = [
     ],
   },
   {
-    id: "beta-inbox", file: "beta-inbox.spec.ts",
+    id: "beta-inbox", file: "tests/beta-inbox.spec.ts",
     title: "Inbox", emoji: "💬", group: "Inbox",
     description: "Dual-mode toggle, ticket queue (escalation via simulator, resolve with SaveToKnowledgeModal), agent-assist panel, sidebar badge, canned replies CRUD.",
     tags: ["inbox", "tickets", "canned-replies"], estimatedDuration: "~8 min", metaRisk: false,
@@ -132,7 +132,7 @@ const SUITES: SuiteDef[] = [
     ],
   },
   {
-    id: "beta-contacts", file: "beta-contacts.spec.ts",
+    id: "beta-contacts", file: "tests/beta-contacts.spec.ts",
     title: "Dealers / Contacts", emoji: "👥", group: "Data",
     description: "CSV bulk import (valid + invalid rows), dealer table search & specialization chip, add dealer with duplicate-phone guard, full manual contact lifecycle.",
     tags: ["contacts", "dealers", "csv"], estimatedDuration: "~5 min", metaRisk: false,
@@ -160,7 +160,7 @@ const SUITES: SuiteDef[] = [
     ],
   },
   {
-    id: "beta-segments", file: "beta-segments.spec.ts",
+    id: "beta-segments", file: "tests/beta-segments.spec.ts",
     title: "Segments", emoji: "🎯", group: "Data",
     description: "Segment builder page, tier filter chips, create segment from dealer selection, verify segment persists on the Segments page.",
     tags: ["segments", "filters"], estimatedDuration: "~3 min", metaRisk: false,
@@ -176,7 +176,7 @@ const SUITES: SuiteDef[] = [
     ],
   },
   {
-    id: "beta-templates", file: "beta-templates.spec.ts",
+    id: "beta-templates", file: "tests/beta-templates.spec.ts",
     title: "Templates", emoji: "📄", group: "Campaigns",
     description: "Template list, status filter chips, create multi-language DRAFT, AI wizard (mock generate → edit → save as draft), and discard-warning gate.",
     tags: ["templates", "wizard"], estimatedDuration: "~5 min", metaRisk: false,
@@ -198,7 +198,7 @@ const SUITES: SuiteDef[] = [
     ],
   },
   {
-    id: "beta-settings", file: "beta-settings.spec.ts",
+    id: "beta-settings", file: "tests/beta-settings.spec.ts",
     title: "Settings & Team", emoji: "⚙️", group: "Foundation",
     description: "Invite team member, duplicate email guard, reset and delete member, state-to-language mapping configuration (Penang ZH+EN, Kelantan MS) with persistence.",
     tags: ["settings", "team", "languages"], estimatedDuration: "~5 min", metaRisk: false,
@@ -224,7 +224,7 @@ const SUITES: SuiteDef[] = [
     ],
   },
   {
-    id: "beta-analytics", file: "beta-analytics.spec.ts",
+    id: "beta-analytics", file: "tests/beta-analytics.spec.ts",
     title: "Analytics / Reports", emoji: "📈", group: "Foundation",
     description: "Delivery funnel, all three date-range chips (7d / 30d / 90d), no-demo notice, and dashboard KPI auto-handled text.",
     tags: ["analytics", "reports"], estimatedDuration: "~2 min", metaRisk: false,
@@ -240,7 +240,7 @@ const SUITES: SuiteDef[] = [
     vars: [],
   },
   {
-    id: "beta-knowledge-base", file: "beta-knowledge-base.spec.ts",
+    id: "beta-knowledge-base", file: "tests/beta-knowledge-base.spec.ts",
     title: "Knowledge Base", emoji: "🧠", group: "Inbox",
     description: "SaveToKnowledgeModal disposition options (SKIP / IMPORT_LIVE / SAVE_DRAFT), confirm-button disabled guard. Uses admin simulator to seed escalations.",
     tags: ["knowledge-base", "inbox"], estimatedDuration: "~5 min", metaRisk: false,
@@ -257,7 +257,7 @@ const SUITES: SuiteDef[] = [
     ],
   },
   {
-    id: "beta-cross-cutting", file: "beta-cross-cutting.spec.ts",
+    id: "beta-cross-cutting", file: "tests/beta-cross-cutting.spec.ts",
     title: "Cross-Cutting", emoji: "🔗", group: "Foundation",
     description: "Navigation smoke (all primary routes load without blank screen), sidebar link targets, and data isolation (wizard does not carry state between runs).",
     tags: ["smoke", "navigation", "isolation"], estimatedDuration: "~2 min", metaRisk: false,

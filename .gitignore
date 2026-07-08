@@ -40,19 +40,21 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Playwright automation output
-scripts/eauto-insurance/playwright-report/
-scripts/eauto-insurance/test-results/
+# Playwright automation output (all script projects)
+scripts/**/node_modules/
+scripts/**/playwright-report/
+scripts/**/test-results/
 scripts/eauto-insurance/input-vehicles.xlsx
 scripts/eauto-insurance/output-results.xlsx
-scripts/eauto-insurance/node_modules/
-scripts/secarang-insurance/playwright-report/
-scripts/secarang-insurance/test-results/
 scripts/secarang-insurance/input-vehicles.xlsx
 scripts/secarang-insurance/output-results.xlsx
-scripts/secarang-insurance/node_modules/
-scripts/WA-Blaster/node_modules/
-scripts/WA-Blaster/playwright-report/
-scripts/WA-Blaster/test-results/
-scripts/WA-Blaster/results/*.json
-scripts/WA-Blaster/screenshots/
+scripts/secarang-insurance/receipt-*.pdf
+scripts/secarang-insurance/regression-log.txt
+scripts/secarang-insurance/regression-result.json
+scripts/_archive/WA-Blaster/results/*.json
+scripts/_archive/WA-Blaster/screenshots/
+scripts/WA-Blaster-Beta/results/*.json
+scripts/WA-Blaster-Beta/screenshots/
+
+# .env.example files are documentation — keep them tracked despite .env* above
+!**/.env.example

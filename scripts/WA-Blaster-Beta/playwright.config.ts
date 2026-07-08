@@ -2,13 +2,13 @@ import { defineConfig } from '@playwright/test';
 import path from 'path';
 
 export default defineConfig({
-  testDir: '.',
+  testDir: './tests',
   testMatch: '*.spec.ts',
   timeout: 40_000,
   expect: { timeout: 8_000 },
   retries: 0,
-  globalSetup: './helpers/setup',
-  globalTeardown: './helpers/teardown',
+  globalSetup: './utils/setup',
+  globalTeardown: './utils/teardown',
   reporter: [
     ['list'],
     ['json', { outputFile: path.resolve(__dirname, 'results', 'report.json') }],

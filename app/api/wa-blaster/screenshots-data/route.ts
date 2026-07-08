@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 const SCRIPT_DIR       = process.env.WA_BLASTER_SCRIPT_DIR
-  ?? path.join(process.cwd(), 'scripts', 'WA-Blaster');
+  ?? path.join(process.cwd(), 'scripts', '_archive', 'WA-Blaster');
 const SCREENSHOTS_DIR  = path.join(SCRIPT_DIR, 'screenshots');
 
 // Returns all screenshots as base64, organised by flow → testSlug → [{filename, caption, data}]

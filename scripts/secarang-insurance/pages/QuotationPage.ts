@@ -1,7 +1,27 @@
 import { Page } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { InsurerResult } from '../data/types';
 
 const CARD_SEL = '.insurance-card';
+
+// Candidate selectors for an insurer/quotation card on the results page.
+// Exact class tokens (not [class*=...]) so we don't also match child elements
+// like `insurance-card-header-lg`.
+export const CARD_SELECTORS = [
+  '.insurance-card',
+  '.quotation-card',
+  '.quote-card',
+  '.insurer-card',
+  '.plan-card',
+];
+
+/** True when any known quotation-card selector matches (shared with other pages). */
+export async function hasAnyQuotationCard(page: Page): Promise<boolean> {
+  for (const sel of CARD_SELECTORS) {
+    if ((await page.locator(sel).count()) > 0) return true;
+  }
+  return false;
+}
 
 export class QuotationPage extends BasePage {
   constructor(page: Page) {
@@ -46,6 +66,108 @@ export class QuotationPage extends BasePage {
       25_000,
     );
     if (!ok) throw new Error('Quotation cards did not appear within 25 s');
+  }
+
+  /** Number of card elements currently in the DOM (incl. hidden responsive duplicates). */
+  async visibleCardCount(): Promise<number> {
+    return this.page.locator(CARD_SEL).count();
+  }
+
+  /** Returns the first matching card selector, or '' if none. */
+  async findCardSelector(): Promise<string> {
+    for (const sel of CARD_SELECTORS) {
+      if ((await this.page.locator(sel).count()) > 0) return sel;
+    }
+    return '';
+  }
+
+  /** Wait (early-exit) until quotation cards render or a "no quote" message shows. */
+  async waitForCardsOrNoQuote(timeout: number, pollInterval = 150): Promise<boolean> {
+    return this.poll(async () => {
+      if (await this.findCardSelector()) return true;
+      const t = await this.bodyText();
+      return /no quotation|quotation unavailable|not available|unable to provide/i.test(t);
+    }, timeout, pollInterval);
+  }
+
+  /**
+   * Checker flow: read every visible card and report each insurer's
+   * availability. Returns plain data — no assertions here.
+   */
+  async extractAvailability(quotationTimeout: number, pollInterval = 150): Promise<{
+    insurers: InsurerResult[];
+    totalDisplayed: number;
+    totalAvailable: number;
+  }> {
+    // Give cards a moment to render before reading
+    await this.poll(async () => !!(await this.findCardSelector()), quotationTimeout, pollInterval);
+
+    // Log page structure for debugging
+    const classes = await this.page.evaluate(() =>
+      [...new Set([...document.querySelectorAll('[class]')].map(el => (el as HTMLElement).className.split(' ').filter(c => c.length > 2 && c.length < 40)).flat())].slice(0, 50).join(', ')
+    );
+    console.log(`   🔍 Page classes (sample): ${classes}`);
+
+    const cardSel = await this.findCardSelector();
+    if (cardSel) console.log(`   ✅ Found cards via "${cardSel}"`);
+
+    if (!cardSel) {
+      const bodyText = await this.bodyText();
+      console.log(`   ⚠️  No card selector matched. Body snippet:\n${bodyText.slice(0, 600)}`);
+      return { insurers: [], totalDisplayed: 0, totalAvailable: 0 };
+    }
+
+    // Only the visible cards — the page renders hidden responsive duplicates.
+    const all = this.page.locator(cardSel);
+    const total = await all.count();
+    const cards = [];
+    for (let i = 0; i < total; i++) {
+      const c = all.nth(i);
+      if (await c.isVisible().catch(() => false)) cards.push(c);
+    }
+    console.log(`   📦 ${cards.length} visible card(s) (${total} total incl. hidden)`);
+    const insurers: InsurerResult[] = [];
+
+    for (let i = 0; i < cards.length; i++) {
+      try {
+        const card = cards[i];
+        const cardText = this.clean(await card.innerText().catch(() => ''));
+
+        // Insurer name from the logo's alt text (e.g. "Lonpac logo" → "Lonpac"),
+        // falling back to a heading / first line.
+        const logo = card.locator('img[alt]').first();
+        let name = this.clean(await logo.getAttribute('alt').catch(() => '') || '');
+        name = name.replace(/\s*logo\s*$/i, '').trim();
+        if (!name) {
+          const nameEl = card.locator('[class*="name" i], [class*="title" i], h3, h4, h2').first();
+          name = this.clean(await nameEl.textContent().catch(() => '') || cardText.split('\n')[0]);
+        }
+
+        // Available unless the card says the quotation is unavailable
+        const unavailableReason = /quotation unavailable|not available|unable to provide|currently unavailable|unavailable|no quote/i.test(cardText)
+          ? this.clean(cardText.match(/[^\n]*(?:unavailable|not available|unable to provide|no quote)[^\n]*/i)?.[0] || 'Unavailable')
+          : '';
+
+        const available = !unavailableReason;
+        console.log(`   ${available ? '✅' : '❌'} ${name}: ${available ? 'available' : unavailableReason}`);
+        insurers.push({ name, available, unavailableReason });
+      } catch (err) {
+        console.log(`   ⚠️  Card #${i} extraction error (continuing): ${err}`);
+      }
+    }
+
+    const totalAvailable = insurers.filter(i => i.available).length;
+    return { insurers, totalDisplayed: cards.length, totalAvailable };
+  }
+
+  /** Best-effort make/model/year extraction from the quotation page text. */
+  async extractVehicleTextInfo(): Promise<{ make: string; model: string; year: string }> {
+    const pageText = await this.bodyText();
+    return {
+      make:  this.clean(pageText.match(/(?:make|brand)[:\s]+([A-Z][A-Z\s]+)/i)?.[1] || ''),
+      model: this.clean(pageText.match(/(?:model)[:\s]+([A-Z0-9][A-Z0-9\s\-]+)/i)?.[1] || ''),
+      year:  this.clean(pageText.match(/(?:year|manufactured)[:\s]+(\d{4})/i)?.[1] || ''),
+    };
   }
 
   // Selects a sum insured option on the target insurer's card (before clicking Buy).

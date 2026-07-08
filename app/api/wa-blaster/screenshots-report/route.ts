@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 const SCRIPT_DIR  = process.env.WA_BLASTER_SCRIPT_DIR
-  ?? path.join(process.cwd(), 'scripts', 'WA-Blaster');
+  ?? path.join(process.cwd(), 'scripts', '_archive', 'WA-Blaster');
 const PDF_PATH    = path.join(SCRIPT_DIR, 'results', 'report.pdf');
 const HTML_PATH   = path.join(SCRIPT_DIR, 'results', 'report.html');
 

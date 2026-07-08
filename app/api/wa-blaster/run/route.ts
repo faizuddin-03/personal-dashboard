@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 
 const SCRIPT_DIR  = process.env.WA_BLASTER_SCRIPT_DIR
-  ?? path.join(process.cwd(), 'scripts', 'WA-Blaster');
+  ?? path.join(process.cwd(), 'scripts', '_archive', 'WA-Blaster');
 const REPORT_FILE = path.join(SCRIPT_DIR, 'results', 'report.json');
 const TIMEOUT_MS  = 60 * 60 * 1000; // 1 hour
 
