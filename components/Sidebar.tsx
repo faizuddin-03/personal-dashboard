@@ -6,7 +6,7 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send, Filter, Music2, AtSign, MessageSquare,
+  Briefcase, Send, Filter, Music2, AtSign,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -42,8 +42,9 @@ const nav = [
     icon: Car,
     children: [
       { label: "Insurance",       href: "/eauto/insurance", icon: Shield },
-      // Old WA Blaster suite archived (scripts/_archive/WA-Blaster) — page still reachable at /wa-blaster if ever needed
-      { label: "WA Blaster",      href: "/wa-blaster-beta", icon: MessageSquare },
+      // WA Blaster (old: scripts/_archive/WA-Blaster, still at /wa-blaster) and
+      // WA Blaster Beta (still at /wa-blaster-beta) are hidden from the sidebar
+      // but not deleted — reachable by direct URL if ever needed again.
     ],
   },
 ];
