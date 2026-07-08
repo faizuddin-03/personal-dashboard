@@ -20,7 +20,7 @@ import { getKanbanState, KanbanCard } from "@/lib/kanban";
 import { getTodos, TodoItem } from "@/lib/todo";
 import { todayLocal, daysFromToday, APP_TIMEZONE } from "@/lib/date";
 import { parseDeploymentText, ParsedDeploymentItem } from "@/lib/deployment-parser";
-import { getGeminiKey } from "@/components/SettingsModal";
+import { getActiveAi } from "@/lib/aiSettings";
 
 // ── Helpers ───────────────────────────────────────────────
 const _dateFmt = new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIMEZONE });
@@ -151,63 +151,27 @@ function PasteDeploymentModal({ existing, onClose, onApply }: {
   }
 
   async function handleAIParse() {
-    const key = getGeminiKey();
-    if (!key) { setAiError("Add your Gemini API key in Settings first."); return; }
+    const ai = getActiveAi();
+    if (!ai) { setAiError("No AI provider configured. Go to Settings → AI Settings, pick a provider and save its API key."); return; }
     setAiLoading(true);
     setAiError("");
     try {
-      const todayStr = todayLocal();
       const existingSummary = existing.map(d => ({ id: d.id, date: d.date, type: d.type, summary: d.ticketSummary }));
-      const prompt = `You are parsing a deployment schedule message from Microsoft Teams.
 
-Today: ${todayStr}
-Existing deployments: ${JSON.stringify(existingSummary)}
+      const res = await fetch("/api/calendar/parse-deployment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text,
+          todayStr: todayLocal(),
+          existing: existingSummary,
+          ai,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? `Parse failed (${res.status})`);
 
-Extract ALL deployment entries from the text below. Return ONLY a valid JSON array, no explanation, no markdown.
-
-Each item must have:
-- "date": "YYYY-MM-DD" (use current year ${todayStr.slice(0, 4)} if year not mentioned)
-- "summary": short description of what's being deployed (e.g. ticket name, fix name, or session label)
-- "type": "night" if Night Session, otherwise "day"
-- "status": "completed" if Completed/Done, "cancelled" if Postponed/Cancelled, otherwise "planned"
-- "environment": "Production", "Staging", "UAT", or "Development" (default "Staging")
-- "notes": any URLs or extra context (empty string if none)
-
-Rules:
-- Night session default time: 21:00. Day/Morning session default: 09:00
-- If a message covers Morning AND Night on same date, create TWO items
-- Strikethrough or "~~text~~" means cancelled/old — skip it
-- If date+type matches an existing deployment, mark action "update", else "add"
-
-Text:
-${text}`;
-
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${key}`,
-        { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
-      );
-      const data = await res.json() as {
-        candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[];
-        promptFeedback?: { blockReason?: string };
-        error?: { message?: string };
-      };
-
-      if (data.error?.message) throw new Error(`API error: ${data.error.message}`);
-      if (data.promptFeedback?.blockReason) throw new Error(`Blocked by Gemini safety filter: ${data.promptFeedback.blockReason}`);
-
-      const candidate = data.candidates?.[0];
-      const finishReason = candidate?.finishReason;
-      const raw = candidate?.content?.parts?.[0]?.text?.trim() ?? "";
-
-      if (!raw) throw new Error(`Gemini returned no text (finishReason: ${finishReason ?? "unknown"}). Try simplifying the pasted message.`);
-
-      // Extract the JSON array — find first [ and last ] to handle any surrounding text
-      const start = raw.indexOf("[");
-      const end   = raw.lastIndexOf("]");
-      if (start === -1 || end === -1) throw new Error(`No JSON array found in response. Got: ${raw.slice(0, 200)}`);
-      const jsonStr = raw.slice(start, end + 1);
-      const aiItems = JSON.parse(jsonStr) as {
+      const aiItems = data.deployments as {
         date: string; summary: string; type: string; status: string; environment: string; notes: string;
       }[];
 
