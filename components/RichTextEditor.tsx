@@ -129,6 +129,14 @@ const Indent = Extension.create({
         }
         return this.editor.commands.outdent();
       },
+      Enter: ({ editor }) => {
+        const { $from } = editor.state.selection;
+        const node = $from.parent;
+        if (node.isTextblock && node.content.size === 0 && node.attrs.indent > 0) {
+          return editor.commands.outdent();
+        }
+        return false;
+      },
     };
   },
 });

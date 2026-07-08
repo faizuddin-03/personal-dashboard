@@ -34,7 +34,7 @@ body {
 .ProseMirror h1 { font-size: 1.5rem; font-weight: 700; color: #f1f5f9; margin-top: 0.75em; }
 .ProseMirror h2 { font-size: 1.25rem; font-weight: 600; color: #f1f5f9; margin-top: 0.6em; }
 .ProseMirror h3 { font-size: 1.05rem; font-weight: 600; color: #e2e8f0; margin-top: 0.5em; }
-.ProseMirror strong { font-weight: 700; color: #f1f5f9; }
+.ProseMirror strong { font-weight: 700; }
 .ProseMirror em { font-style: italic; }
 .ProseMirror s { text-decoration: line-through; opacity: 0.55; }
 .ProseMirror u { text-decoration: underline; }
@@ -142,8 +142,7 @@ body {
 :root .ProseMirror ul,
 :root .ProseMirror ol { color: var(--text-secondary, #cbd5e1); }
 :root .ProseMirror h1,
-:root .ProseMirror h2,
-:root .ProseMirror strong { color: var(--text-primary, #f1f5f9); }
+:root .ProseMirror h2 { color: var(--text-primary, #f1f5f9); }
 :root .ProseMirror h3 { color: var(--text-secondary, #e2e8f0); }
 :root .ProseMirror blockquote { color: var(--text-label, #94a3b8); }
 :root .ProseMirror p.is-editor-empty:first-child::before { color: var(--text-faint, #475569); }
