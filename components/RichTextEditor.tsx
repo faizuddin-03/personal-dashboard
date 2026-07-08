@@ -556,6 +556,30 @@ export default function RichTextEditor({
         </TBtn>
       </div>
 
+      {/* Floating table context bar */}
+      {editor.isActive("table") && (
+        <div className="flex flex-wrap items-center gap-0.5 px-2 py-1 border-b border-slate-700 bg-slate-850 bg-slate-900/80">
+          <span className="text-[10px] text-slate-500 uppercase tracking-wider mr-1.5 select-none">Table</span>
+          <TBtn onClick={() => editor.chain().focus().addRowBefore().run()} title="Insert row above"><BetweenVerticalStart size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().addRowAfter().run()} title="Insert row below"><BetweenVerticalEnd size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().deleteRow().run()} title="Delete row"><span className="flex items-center gap-0.5"><Rows3 size={13} /><Trash2 size={10} /></span></TBtn>
+          <Sep />
+          <TBtn onClick={() => editor.chain().focus().addColumnBefore().run()} title="Insert column left"><BetweenHorizontalStart size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().addColumnAfter().run()} title="Insert column right"><BetweenHorizontalEnd size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().deleteColumn().run()} title="Delete column"><span className="flex items-center gap-0.5"><Columns3 size={13} /><Trash2 size={10} /></span></TBtn>
+          <Sep />
+          <TBtn onClick={() => editor.chain().focus().mergeCells().run()} title="Merge cells"><Merge size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().splitCell().run()} title="Split cell"><Split size={13} /></TBtn>
+          <Sep />
+          <TBtn onClick={() => editor.chain().focus().toggleHeaderRow().run()} title="Toggle header row"><Rows3 size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().toggleHeaderColumn().run()} title="Toggle header column"><Columns3 size={13} /></TBtn>
+          <Sep />
+          <TBtn onClick={() => editor.chain().focus().deleteTable().run()} title="Delete table">
+            <span className="flex items-center gap-0.5 text-red-400"><TableIcon size={13} /><Trash2 size={10} /></span>
+          </TBtn>
+        </div>
+      )}
+
       {/* Editor content */}
       <EditorContent editor={editor} />
 
