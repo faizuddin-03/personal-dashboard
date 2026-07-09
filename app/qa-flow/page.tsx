@@ -5,6 +5,7 @@ import {
   Sparkles, Loader2, FileText, Upload, X, CheckCircle2, AlertTriangle,
   HelpCircle, RefreshCw, ShieldCheck, History, ChevronRight,
   ClipboardList, Plus, Trash2, ChevronUp, ChevronDown, ArrowRight,
+  BookOpen, Brain,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -15,6 +16,10 @@ import {
   getQaFlowState, saveQaFlowState, emptyTicketState, addAudit,
 } from "@/lib/qaFlow";
 import { TestPlanTemplate, getTemplates, addTemplate, removeTemplate } from "@/lib/testTemplates";
+import {
+  KnowledgeEntry, getKnowledge, addKnowledgeEntries, removeKnowledgeEntry,
+  buildKnowledgeContext,
+} from "@/lib/knowledgeBase";
 import {
   TestPlanState, TestPlanTicketState, DraftTestPlan, DraftScenario, ScenarioPriority,
   getTestPlanState, saveTestPlanState, emptyPlanState, addPlanAudit, newScenario, syncPlanToTracker,
@@ -42,10 +47,19 @@ export default function QaFlowPage() {
   const [drafting, setDrafting] = useState(false);
   const [planError, setPlanError] = useState("");
 
+  // Knowledge base (learning across tickets)
+  const [knowledge, setKnowledge] = useState<KnowledgeEntry[]>([]);
+  const [kbOpen, setKbOpen] = useState(false);
+  const [extracting, setExtracting] = useState(false);
+  const [kbError, setKbError] = useState("");
+  const [suggestions, setSuggestions] = useState<{ area: string; fact: string }[] | null>(null);
+  const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
+
   useEffect(() => {
     setFlowState(getQaFlowState());
     setPlanState(getTestPlanState());
     setTemplates(getTemplates());
+    setKnowledge(getKnowledge());
     const kanban = getKanbanState();
     // Only active work: To-Do and On-Going CR tickets (finished/on-hold can still be studied by key)
     const cards = (["todo", "ongoing"] as ColumnId[])
@@ -127,6 +141,7 @@ export default function QaFlowPage() {
           summary: ticket.summary ?? selectedCard?.title ?? "",
           study: ticket.study,
           templates: templates.map(t => ({ name: t.name, text: t.text })),
+          knowledge: buildKnowledgeContext(),
           ai,
         }),
       });
@@ -194,6 +209,7 @@ export default function QaFlowPage() {
           extraNotes: ticket.extraNotes || undefined,
           answers: answers.length ? answers : undefined,
           userDocs: uploadedDocs.length ? uploadedDocs : undefined,
+          knowledge: buildKnowledgeContext(),
         }),
       });
       const data = await res.json();
@@ -226,6 +242,55 @@ export default function QaFlowPage() {
     persistTicket(next);
   }
 
+  // ── Knowledge base: extract learnings from an approved study ──
+  async function extractLearnings() {
+    if (!ticket.study) return;
+    const ai = getActiveAi();
+    if (!ai) {
+      setKbError("No AI provider configured. Go to Settings → AI Settings first.");
+      return;
+    }
+    setExtracting(true);
+    setKbError("");
+    setSuggestions(null);
+    try {
+      const answers = ticket.study.openQuestions
+        .filter(q => (ticket.answers[q.question] ?? "").trim())
+        .map(q => ({ question: q.question, answer: ticket.answers[q.question].trim() }));
+      const res = await fetch("/api/qa-flow/extract-knowledge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          issueKey: selectedKey,
+          summary: ticket.summary ?? selectedCard?.title ?? "",
+          study: ticket.study,
+          answers: answers.length ? answers : undefined,
+          existingKnowledge: buildKnowledgeContext(),
+          ai,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? `Extraction failed (${res.status})`);
+      const entries = (data.entries ?? []) as { area: string; fact: string }[];
+      setSuggestions(entries);
+      setSelectedSuggestions(new Set(entries.map((_, i) => i))); // all pre-ticked, user un-ticks
+    } catch (e) {
+      setKbError(e instanceof Error ? e.message : "Extraction failed");
+    } finally {
+      setExtracting(false);
+    }
+  }
+
+  function saveSelectedSuggestions() {
+    if (!suggestions) return;
+    const picked = suggestions.filter((_, i) => selectedSuggestions.has(i));
+    if (picked.length) {
+      setKnowledge(addKnowledgeEntries(picked.map(p => ({ ...p, source: selectedKey }))));
+      persistTicket(addAudit(ticket, `Added ${picked.length} entr${picked.length === 1 ? "y" : "ies"} to the knowledge base`));
+    }
+    setSuggestions(null);
+  }
+
   function handleUpload(files: FileList | null) {
     if (!files) return;
     Array.from(files).forEach(file => {
@@ -250,6 +315,14 @@ export default function QaFlowPage() {
         <Sparkles size={16} className="text-indigo-400" />
         <h1 className="text-sm font-semibold text-slate-200">QA Flow — Ticket Study</h1>
         <span className="text-xs text-slate-600 hidden sm:block">Auto-study a CR: full picture, affected pages, and the questions to answer before testing</span>
+        <button
+          onClick={() => setKbOpen(true)}
+          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
+          title="Verified facts from past tickets — fed into every study and test-plan draft"
+        >
+          <BookOpen size={13} />Knowledge Base
+          {knowledge.length > 0 && <span className="bg-slate-700 text-slate-400 text-xs px-1 rounded-full">{knowledge.length}</span>}
+        </button>
       </header>
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-0">
@@ -263,7 +336,7 @@ export default function QaFlowPage() {
               return (
                 <button
                   key={c.id}
-                  onClick={() => { setSelectedKey(c.jiraKey!); setError(""); setUploadedDocs([]); }}
+                  onClick={() => { setSelectedKey(c.jiraKey!); setError(""); setUploadedDocs([]); setSuggestions(null); setKbError(""); }}
                   className={clsx(
                     "w-full text-left px-3 py-2 rounded-lg border transition-colors",
                     selectedKey === c.jiraKey ? "bg-indigo-950/50 border-indigo-700" : "bg-slate-900 border-slate-800 hover:border-slate-600"
@@ -364,7 +437,51 @@ export default function QaFlowPage() {
                 <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
                   <p className={sectionTitle}>Approval</p>
                   {ticket.approved ? (
-                    <p className="flex items-center gap-2 text-sm text-green-400"><ShieldCheck size={15} />Study approved — draft the test plan below.</p>
+                    <div className="space-y-3">
+                      <p className="flex items-center gap-2 text-sm text-green-400"><ShieldCheck size={15} />Study approved — draft the test plan below.</p>
+
+                      {/* Learn from this ticket → knowledge base (with approval) */}
+                      {suggestions === null ? (
+                        <button
+                          onClick={extractLearnings}
+                          disabled={extracting}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-indigo-300 bg-indigo-950/50 border border-indigo-800/60 rounded-lg hover:bg-indigo-900/40 disabled:opacity-50 transition-colors"
+                        >
+                          {extracting ? <Loader2 size={12} className="animate-spin" /> : <Brain size={12} />}
+                          {extracting ? "Extracting learnings…" : "Extract learnings for future tickets"}
+                        </button>
+                      ) : suggestions.length === 0 ? (
+                        <p className="text-xs text-slate-500">No durable learnings found in this ticket — nothing added. <button onClick={() => setSuggestions(null)} className="text-indigo-400 hover:underline">Dismiss</button></p>
+                      ) : (
+                        <div className="bg-slate-800/60 border border-slate-700/60 rounded-lg p-3 space-y-2">
+                          <p className="text-xs text-slate-400">Suggested knowledge — untick anything wrong, then save. Only what you approve is remembered:</p>
+                          {suggestions.map((s, i) => (
+                            <label key={i} className="flex items-start gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedSuggestions.has(i)}
+                                onChange={e => setSelectedSuggestions(prev => {
+                                  const next = new Set(prev);
+                                  if (e.target.checked) next.add(i); else next.delete(i);
+                                  return next;
+                                })}
+                                className="mt-0.5 accent-indigo-600"
+                              />
+                              <span className="text-xs text-slate-300">
+                                <span className="text-indigo-400 font-medium">[{s.area}]</span> {s.fact}
+                              </span>
+                            </label>
+                          ))}
+                          <div className="flex gap-2 pt-1">
+                            <button onClick={saveSelectedSuggestions} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                              <CheckCircle2 size={12} />Save {selectedSuggestions.size} to Knowledge Base
+                            </button>
+                            <button onClick={() => setSuggestions(null)} className="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-300">Cancel</button>
+                          </div>
+                        </div>
+                      )}
+                      {kbError && <p className="text-xs text-red-400">{kbError}</p>}
+                    </div>
                   ) : blockingUnanswered.length > 0 ? (
                     <p className="flex items-center gap-2 text-sm text-amber-400"><AlertTriangle size={15} />{blockingUnanswered.length} blocking question(s) need answers before you can approve. Answer them above, then re-study.</p>
                   ) : (
@@ -407,6 +524,101 @@ export default function QaFlowPage() {
             </>
           )}
         </main>
+      </div>
+
+      {kbOpen && (
+        <KnowledgeDrawer
+          entries={knowledge}
+          onClose={() => setKbOpen(false)}
+          onAdd={(area, fact) => setKnowledge(addKnowledgeEntries([{ area, fact }]))}
+          onRemove={id => setKnowledge(removeKnowledgeEntry(id))}
+        />
+      )}
+    </div>
+  );
+}
+
+// ── Knowledge base drawer ─────────────────────────────────
+function KnowledgeDrawer({ entries, onClose, onAdd, onRemove }: {
+  entries: KnowledgeEntry[];
+  onClose: () => void;
+  onAdd: (area: string, fact: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  const [newArea, setNewArea] = useState("");
+  const [newFact, setNewFact] = useState("");
+
+  function submit() {
+    if (!newFact.trim()) return;
+    onAdd(newArea.trim() || "General", newFact.trim());
+    setNewArea("");
+    setNewFact("");
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex">
+      <div className="flex-1 bg-black/50" onClick={onClose} />
+      <div className="w-full max-w-md bg-slate-900 border-l border-slate-800 flex flex-col h-full overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-slate-800 shrink-0">
+          <div className="flex items-center gap-2">
+            <BookOpen size={16} className="text-indigo-400" />
+            <h2 className="text-sm font-semibold text-slate-200">Knowledge Base</h2>
+            <span className="text-xs bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded-full">{entries.length}</span>
+          </div>
+          <button onClick={onClose} aria-label="Close knowledge base" className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
+        </div>
+
+        <p className="px-4 pt-3 text-xs text-slate-600">
+          Verified facts about your systems, learned from past tickets. Every study and test-plan draft
+          reads these — so drafts get more accurate the more you approve. Delete anything that goes stale.
+        </p>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          {entries.length === 0 && (
+            <p className="text-xs text-slate-600 text-center py-10">
+              Nothing here yet.<br />Approve a study, then hit &quot;Extract learnings&quot; — or add facts manually below.
+            </p>
+          )}
+          {[...entries].reverse().map(e => (
+            <div key={e.id} className="bg-slate-800/60 border border-slate-700/60 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">{e.area}</span>
+                  <p className="text-sm text-slate-300 mt-1.5 leading-snug">{e.fact}</p>
+                  <p className="text-xs text-slate-600 mt-1">
+                    {e.source ? <>from <span className="font-mono text-slate-500">{e.source}</span> · </> : "manual entry · "}
+                    {new Date(e.addedAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <button onClick={() => onRemove(e.id)} aria-label="Delete entry" className="text-slate-700 hover:text-red-400 shrink-0"><Trash2 size={13} /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="p-4 border-t border-slate-800 shrink-0 space-y-2">
+          <p className="text-xs text-slate-500 font-medium">Add a fact manually</p>
+          <input
+            value={newArea}
+            onChange={e => setNewArea(e.target.value)}
+            placeholder="Area (e.g. eAuto Insurance, Secarang)"
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+          />
+          <textarea
+            value={newFact}
+            onChange={e => setNewFact(e.target.value)}
+            rows={2}
+            placeholder="The fact — e.g. 'Zurich pre-ticks the All Drivers add-on by default'"
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-600 resize-none focus:outline-none focus:ring-1 focus:ring-indigo-600"
+          />
+          <button
+            onClick={submit}
+            disabled={!newFact.trim()}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+          >
+            <Plus size={12} />Add to Knowledge Base
+          </button>
+        </div>
       </div>
     </div>
   );

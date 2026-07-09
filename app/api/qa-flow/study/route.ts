@@ -15,6 +15,81 @@ interface StudyRequestBody {
   answers?: { question: string; answer: string }[];
   /** Extra documents the user uploaded in the UI, base64-encoded. */
   userDocs?: { name: string; mediaType: string; data: string }[];
+  /** Pre-formatted team knowledge-base block (verified facts from past tickets). */
+  knowledge?: string;
+}
+
+interface JiraAttachment {
+  id: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  content: string;
+  created: string;
+}
+
+// ── Latest-revision document selection ─────────────────────
+// Teams keep every SRD revision on the ticket (v0.1 → v0.2 → v1.0), and the
+// current revision is often uploaded as an identical docx + pdf pair. Only
+// the newest revision of each document family should reach the AI — older
+// revisions contain superseded requirements and poison the study.
+//
+// Grouping heuristic: filenames of the same document differ only in
+// version/date digits (e.g. "EAINT-9618_FI ... 15.01.26.docx" vs
+// "... 16.01.26.pdf"), so stripping digits + extension yields a family key.
+// Distinct documents (SRD vs API spec vs test scenarios) keep different keys
+// and are all retained.
+const SAME_REVISION_WINDOW_MS = 15 * 60 * 1000;
+
+function docFamilyKey(filename: string): string {
+  const key = filename
+    .toLowerCase()
+    .replace(/\.[a-z0-9]+$/, "") // extension
+    .replace(/[0-9]+/g, "")       // version numbers, dates
+    .replace(/[^a-z]+/g, " ")
+    .trim();
+  // All-digit names produce an empty key — don't group those at all.
+  return key || `__ungrouped__${filename}`;
+}
+
+function selectLatestRevisions(docs: JiraAttachment[]): {
+  keepIds: Set<string>;
+  skipped: { name: string; reason: string }[];
+} {
+  const groups = new Map<string, JiraAttachment[]>();
+  for (const d of docs) {
+    const key = docFamilyKey(d.filename);
+    const list = groups.get(key) ?? [];
+    list.push(d);
+    groups.set(key, list);
+  }
+
+  const keepIds = new Set<string>();
+  const skipped: { name: string; reason: string }[] = [];
+
+  for (const files of groups.values()) {
+    if (files.length === 1) { keepIds.add(files[0].id); continue; }
+
+    const newestTs = Math.max(...files.map(fl => Date.parse(fl.created) || 0));
+    const latestBatch = files.filter(fl => newestTs - (Date.parse(fl.created) || 0) <= SAME_REVISION_WINDOW_MS);
+    const older = files.filter(fl => !latestBatch.includes(fl));
+
+    // Same revision uploaded as pdf + docx → identical content; keep the pdf.
+    let keep = latestBatch;
+    const pdf = latestBatch.find(fl => fl.filename.toLowerCase().endsWith(".pdf"));
+    if (pdf && latestBatch.length > 1) {
+      keep = [pdf];
+      for (const dup of latestBatch) {
+        if (dup !== pdf) skipped.push({ name: dup.filename, reason: `same revision as ${pdf.filename} — duplicate format` });
+      }
+    }
+
+    for (const k of keep) keepIds.add(k.id);
+    const keptName = keep[0]?.filename ?? "latest revision";
+    for (const o of older) skipped.push({ name: o.filename, reason: `older revision — superseded by ${keptName}` });
+  }
+
+  return { keepIds, skipped };
 }
 
 const MAX_ATTACHMENT_BYTES = 20 * 1024 * 1024; // per file
@@ -70,6 +145,8 @@ Hard rules:
 - NO ASSUMPTIONS. If the requirement is ambiguous, contradictory, incomplete, or something looks weird, raise it in openQuestions instead of guessing. Mark it blocking if testing cannot safely start without the answer.
 - Ground every statement in the provided material. If you cite a behavior, it must come from the ticket or its documents.
 - If user-provided answers to earlier questions are included, treat them as authoritative and incorporate them; do not re-ask what they already answered.
+- The attached documents are already filtered to the CURRENT revision of each document; the ticket description may reference older superseded versions - ignore those references.
+- A TEAM KNOWLEDGE BASE block may be included: verified facts about the systems under test, accumulated from previously completed tickets. Treat them as reliable background - use them to sharpen affected areas and test focus, and do not raise openQuestions for things the knowledge base already answers. If this ticket's material CONTRADICTS a knowledge-base fact, call that out in openQuestions instead of silently picking one.
 - Write for a manual QA tester: concrete pages, flows, roles, and data - not abstract summaries.`;
 
 /** Minimal Atlassian Document Format -> plain text extractor. */
@@ -145,7 +222,16 @@ export async function POST(req: NextRequest) {
   const docTexts: string[] = [];
   let totalBytes = 0;
 
-  const attachments: { filename: string; mimeType: string; size: number; content: string }[] = f.attachment ?? [];
+  const attachments: JiraAttachment[] = f.attachment ?? [];
+
+  // Keep only the latest revision of each versioned document (SRDs etc.).
+  // Images and other non-document files are never filtered by this.
+  const versionedDocs = attachments.filter(a =>
+    /\.(pdf|docx)$/i.test(a.filename ?? "") || (a.mimeType ?? "").toLowerCase() === "application/pdf"
+  );
+  const { keepIds: latestDocIds, skipped: supersededDocs } = selectLatestRevisions(versionedDocs);
+  for (const s of supersededDocs) attachmentsSkipped.push(`${s.name} (${s.reason})`);
+
   for (const att of attachments) {
     const name = att.filename ?? "unnamed";
     const mime = (att.mimeType ?? "").toLowerCase();
@@ -154,6 +240,7 @@ export async function POST(req: NextRequest) {
     const isImage = ["image/png", "image/jpeg", "image/gif", "image/webp"].includes(mime);
     const isText = mime.startsWith("text/") || /\.(txt|md|csv)$/i.test(name);
 
+    if ((isPdf || isDocx) && !latestDocIds.has(att.id)) continue; // superseded revision (already reported)
     if (!isPdf && !isDocx && !isImage && !isText) { attachmentsSkipped.push(`${name} (unsupported type)`); continue; }
     if (att.size > MAX_ATTACHMENT_BYTES) { attachmentsSkipped.push(`${name} (too large)`); continue; }
     if (totalBytes + att.size > MAX_TOTAL_BYTES) { attachmentsSkipped.push(`${name} (total size budget reached)`); continue; }
@@ -222,6 +309,9 @@ export async function POST(req: NextRequest) {
   ].filter(Boolean).join("\n");
 
   const texts: string[] = [ticketText, ...docTexts];
+  if (body.knowledge?.trim()) {
+    texts.push(`=== TEAM KNOWLEDGE BASE (verified facts from past tickets) ===\n${body.knowledge.trim()}`);
+  }
   if (body.answers?.length) {
     texts.push(`=== ANSWERS FROM THE QA (authoritative — incorporate, do not re-ask) ===\n` +
       body.answers.map(a => `Q: ${a.question}\nA: ${a.answer}`).join("\n\n"));

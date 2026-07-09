@@ -20,7 +20,11 @@ Running on the QA's local machine for now; no assumptions — the AI must ask wh
 - Approval gate + per-ticket audit trail
 - Multi-provider AI settings (Gemini / Anthropic / OpenRouter), each with its own saved key and a model picker — switch anytime without re-entering keys
 
-## Phase 2 — Test Plan / Scenario / Script Drafting 🔧 IN PROGRESS
+## Phase 2.5 — Smarter inputs ✅ DONE
+- Latest-SRD-only reading: when a ticket carries multiple SRD revisions (v0.1 → v1.0, docx+pdf pairs), only the newest revision of each document family is fed to the AI; superseded versions are skipped and reported. Distinct documents (API specs, test scenarios) are never dropped.
+- Knowledge Base (cross-ticket learning): after a study is approved, the AI suggests durable system facts ("Extract learnings"); the user approves which enter the knowledge base. Every future study and test-plan draft reads the knowledge base, so output gets more detailed and accurate over time. Manual add/edit/delete via the drawer on the QA Flow page. Nothing is learned without explicit approval.
+
+## Phase 2 — Test Plan / Scenario / Script Drafting ✅ DONE
 - Users upload their own past test plan / scenario / script documents as style templates (per-user, since different QAs format differently); templates are stored and can be replaced over time
 - "Draft test plan" on an approved study — AI drafts a full test plan (scenarios + step-by-step scripts) in the uploaded style, grounded in the approved study and the user's answers
 - Editable draft: reorder, add, edit, delete test cases before approving

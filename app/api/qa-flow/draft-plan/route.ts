@@ -10,6 +10,8 @@ interface DraftPlanRequestBody {
   study: StudyResult;
   templates: { name: string; text: string }[];
   extraNotes?: string;
+  /** Pre-formatted team knowledge-base block (verified facts from past tickets). */
+  knowledge?: string;
   ai: { provider: AiProvider; key: string; model?: string };
 }
 
@@ -60,6 +62,7 @@ Hard rules:
 - Write concrete, executable steps a manual tester can follow with no extra context: exact actions, exact expected results. Avoid vague language like "verify it works correctly".
 - Cover both happy-path and the edge cases implied by the study's risks and open questions that were answered.
 ${hasTemplates ? `- CRITICAL: One or more of this QA's own past test plan documents are provided as style references below. Match their structure, section naming, level of detail, wording style, and formatting conventions as closely as possible. Do not invent a different structure — mimic what they already do.` : `- No style template was provided; use a clean, standard structure: numbered scenarios, each with preconditions, numbered steps, and expected results.`}
+- A TEAM KNOWLEDGE BASE block may be included: verified facts about these systems from previously completed tickets. Use them to make steps more concrete and accurate — real page names, known flows, roles, environment quirks, and known regression traps.
 - Do not pad with filler scenarios just to hit a count. Quality and coverage over quantity.`;
 }
 
@@ -87,6 +90,9 @@ export async function POST(req: NextRequest) {
   const templateTexts = (body.templates ?? []).map(t => `=== STYLE TEMPLATE: "${t.name}" (mimic this format) ===\n${t.text}`);
 
   const texts: string[] = [studyText, ...templateTexts];
+  if (body.knowledge?.trim()) {
+    texts.push(`=== TEAM KNOWLEDGE BASE (verified facts from past tickets) ===\n${body.knowledge.trim()}`);
+  }
   if (body.extraNotes?.trim()) texts.push(`=== ADDITIONAL INSTRUCTIONS FROM THE QA ===\n${body.extraNotes.trim()}`);
   texts.push("Draft the full test plan now.");
 
