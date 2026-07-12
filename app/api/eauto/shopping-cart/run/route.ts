@@ -46,16 +46,7 @@ export async function POST(req: NextRequest) {
 
     const jsonReportPath = path.join(recordDir, "report.json");
 
-    const grepPattern = scenarios.map(s => {
-      const escaped = s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      return `^${escaped}$`;
-    }).join("|");
-
-    const args = [
-      "playwright", "test",
-      "--config", configPath,
-      "--grep", grepPattern,
-    ];
+    const grepPattern = scenarios.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
 
     const env: Record<string, string> = {
       ...process.env as Record<string, string>,
@@ -70,8 +61,16 @@ export async function POST(req: NextRequest) {
       PW_JSON_REPORT: jsonReportPath,
     };
 
+    const isWin = process.platform === "win32";
+    const cmd = isWin ? "npx.cmd" : "npx";
+    const args = [
+      "playwright", "test",
+      "--config", configPath,
+      "--grep", grepPattern,
+    ];
+
     return new Promise<NextResponse>((resolve) => {
-      const proc = spawn("npx", args, { cwd: projectRoot, env, shell: true });
+      const proc = spawn(cmd, args, { cwd: projectRoot, env });
 
       let stderr = "";
       proc.stderr.on("data", (d: Buffer) => { stderr += d.toString(); });
