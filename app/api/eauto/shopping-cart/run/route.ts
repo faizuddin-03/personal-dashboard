@@ -46,7 +46,10 @@ export async function POST(req: NextRequest) {
 
     const jsonReportPath = path.join(recordDir, "report.json");
 
-    const grepPattern = scenarios.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+    const grepPattern = scenarios.map(s => {
+      const escaped = s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return `^${escaped}$`;
+    }).join("|");
 
     const args = [
       "playwright", "test",
@@ -61,7 +64,6 @@ export async function POST(req: NextRequest) {
       EAUTO_UCD_PASS: ucdPass,
       EAUTO_BO_USER: boUser,
       EAUTO_BO_PASS: boPass,
-      PLAYWRIGHT_BROWSERS_PATH: "/opt/pw-browsers",
       PW_HEADED: headless ? "0" : "1",
       PW_VIDEO: "1",
       PW_OUTPUT_DIR: recordDir,
