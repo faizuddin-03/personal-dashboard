@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { spawn } from "child_process";
+import { execFile } from "child_process";
 import path from "path";
 import fs from "fs";
 
@@ -61,8 +61,6 @@ export async function POST(req: NextRequest) {
       PW_JSON_REPORT: jsonReportPath,
     };
 
-    const isWin = process.platform === "win32";
-    const cmd = isWin ? "npx.cmd" : "npx";
     const args = [
       "playwright", "test",
       "--config", configPath,
@@ -70,13 +68,15 @@ export async function POST(req: NextRequest) {
     ];
 
     return new Promise<NextResponse>((resolve) => {
-      const proc = spawn(cmd, args, { cwd: projectRoot, env });
+      execFile("npx", args, {
+        cwd: projectRoot,
+        env,
+        shell: true,
+        maxBuffer: 10 * 1024 * 1024,
+      }, (error, _stdout, stderrOut) => {
+        const stderr = stderrOut || (error?.message ?? "");
 
-      let stderr = "";
-      proc.stderr.on("data", (d: Buffer) => { stderr += d.toString(); });
-      proc.stdout.on("data", () => {});
-
-      proc.on("close", (code) => {
+        const code = error ? ((error as any).status ?? 1) : 0;
         let results: TestResultItem[] = [];
 
         // Read the JSON report file
