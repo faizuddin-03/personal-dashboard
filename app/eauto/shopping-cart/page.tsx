@@ -2,7 +2,8 @@
 import { useState } from "react";
 import {
   Play, Loader2, CheckCircle2, XCircle, Monitor, MonitorOff,
-  ChevronDown, ShoppingCart, Video, Clock,
+  ChevronDown, ShoppingCart, Video, Clock, SkipForward,
+  AlertTriangle, ChevronRight,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -73,11 +74,20 @@ interface TestResult {
   title: string;
   status: string;
   duration: number;
+  error: string;
+}
+
+interface RunSummary {
+  total: number;
+  passed: number;
+  failed: number;
+  skipped: number;
 }
 
 interface RunResult {
   exitCode: number;
   results: TestResult[];
+  summary: RunSummary;
   recordDir: string;
   recordings: string[];
   stderr: string;
@@ -98,6 +108,13 @@ function saveCreds(c: { ucdUser: string; ucdPass: string; boUser: string; boPass
   localStorage.setItem(CREDS_KEY, JSON.stringify(c));
 }
 
+function StatusIcon({ status }: { status: string }) {
+  if (status === "passed") return <CheckCircle2 size={14} className="text-green-400 shrink-0" />;
+  if (status === "failed") return <XCircle size={14} className="text-red-400 shrink-0" />;
+  if (status === "skipped") return <SkipForward size={14} className="text-yellow-400 shrink-0" />;
+  return <Clock size={14} className="text-slate-500 shrink-0" />;
+}
+
 export default function ShoppingCartPage() {
   useApp();
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -109,6 +126,8 @@ export default function ShoppingCartPage() {
   const [running, setRunning] = useState(false);
   const [runResult, setRunResult] = useState<RunResult | null>(null);
   const [error, setError] = useState("");
+  const [expandedErrors, setExpandedErrors] = useState<Set<number>>(new Set());
+  const [showStderr, setShowStderr] = useState(false);
 
   const saved = typeof window !== "undefined" ? loadCreds() : { ucdUser: "", ucdPass: "", boUser: "", boPass: "" };
   const [ucdUser, setUcdUser] = useState(saved.ucdUser);
@@ -147,12 +166,22 @@ export default function ShoppingCartPage() {
     setSelected(allSelected ? new Set() : new Set(allIds));
   }
 
+  function toggleError(idx: number) {
+    setExpandedErrors(prev => {
+      const next = new Set(prev);
+      next.has(idx) ? next.delete(idx) : next.add(idx);
+      return next;
+    });
+  }
+
   async function runTests() {
     if (!selected.size) return;
     saveCreds({ ucdUser, ucdPass, boUser, boPass });
     setRunning(true);
     setError("");
     setRunResult(null);
+    setExpandedErrors(new Set());
+    setShowStderr(false);
 
     const scenarioTitles = TEST_GROUPS
       .flatMap(g => g.scenarios)
@@ -176,6 +205,12 @@ export default function ShoppingCartPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? `Run failed (${res.status})`);
       setRunResult(data);
+      // Auto-expand all failed errors
+      const failedIndices = new Set<number>();
+      (data.results as TestResult[]).forEach((r, i) => {
+        if (r.status === "failed" && r.error) failedIndices.add(i);
+      });
+      setExpandedErrors(failedIndices);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Run failed");
     } finally {
@@ -204,7 +239,6 @@ export default function ShoppingCartPage() {
       {/* Config bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-3">
-          {/* Environment */}
           <div className="flex items-center gap-2">
             <label className="text-xs text-slate-500">Environment</label>
             <select
@@ -218,7 +252,6 @@ export default function ShoppingCartPage() {
             </select>
           </div>
 
-          {/* Headless toggle */}
           <button
             onClick={() => setHeadless(v => !v)}
             className={clsx(
@@ -229,12 +262,11 @@ export default function ShoppingCartPage() {
             )}
           >
             {headless ? <MonitorOff size={13} /> : <Monitor size={13} />}
-            {headless ? "Headless" : "Headed"}
+            {headless ? "Headless" : "Headed (visible browser)"}
           </button>
 
           <div className="flex-1" />
 
-          {/* Run button */}
           <button
             onClick={runTests}
             disabled={running || !selected.size}
@@ -250,43 +282,45 @@ export default function ShoppingCartPage() {
           </button>
         </div>
 
-        {/* Credentials */}
-        <div className="grid grid-cols-2 gap-3">
-          {needsUCD && (
-            <div className="space-y-1.5">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider">UCD Login</p>
-              <div className="flex gap-2">
-                <input
-                  type="text" placeholder="Username" value={ucdUser}
-                  onChange={e => setUcdUser(e.target.value)}
-                  className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
-                />
-                <input
-                  type="password" placeholder="Password" value={ucdPass}
-                  onChange={e => setUcdPass(e.target.value)}
-                  className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
-                />
+        {/* Credentials — always show when any scenario is selected */}
+        {(needsUCD || needsBO) && (
+          <div className="grid grid-cols-2 gap-3">
+            {needsUCD && (
+              <div className="space-y-1.5">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider">UCD Login</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text" placeholder="Username" value={ucdUser}
+                    onChange={e => setUcdUser(e.target.value)}
+                    className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+                  />
+                  <input
+                    type="password" placeholder="Password" value={ucdPass}
+                    onChange={e => setUcdPass(e.target.value)}
+                    className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
               </div>
-            </div>
-          )}
-          {needsBO && (
-            <div className="space-y-1.5">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider">BO Login</p>
-              <div className="flex gap-2">
-                <input
-                  type="text" placeholder="Username" value={boUser}
-                  onChange={e => setBoUser(e.target.value)}
-                  className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
-                />
-                <input
-                  type="password" placeholder="Password" value={boPass}
-                  onChange={e => setBoPass(e.target.value)}
-                  className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
-                />
+            )}
+            {needsBO && (
+              <div className="space-y-1.5">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider">BO Login</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text" placeholder="Username" value={boUser}
+                    onChange={e => setBoUser(e.target.value)}
+                    className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+                  />
+                  <input
+                    type="password" placeholder="Password" value={boPass}
+                    onChange={e => setBoPass(e.target.value)}
+                    className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Scenario selection */}
@@ -308,10 +342,9 @@ export default function ShoppingCartPage() {
 
           return (
             <div key={group.label} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-              {/* Group header */}
-              <button
+              <div
                 onClick={() => toggleGroup(group.label)}
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-slate-800/50 transition-colors"
+                className="w-full flex items-center gap-2 px-4 py-2.5 cursor-pointer hover:bg-slate-800/50 transition-colors"
               >
                 <ChevronDown size={14} className={clsx("text-slate-500 transition-transform", isOpen && "rotate-180")} />
                 <span className="text-sm font-medium text-slate-200 flex-1">{group.label}</span>
@@ -330,9 +363,8 @@ export default function ShoppingCartPage() {
                 >
                   {allSelected ? "Deselect" : "Select all"}
                 </span>
-              </button>
+              </div>
 
-              {/* Scenarios */}
               {isOpen && (
                 <div className="border-t border-slate-800">
                   {group.scenarios.map(scenario => (
@@ -372,55 +404,84 @@ export default function ShoppingCartPage() {
         })}
       </div>
 
-      {/* Error */}
+      {/* Error from fetch */}
       {error && (
-        <div className="bg-red-950/30 border border-red-800/50 rounded-xl p-3 text-xs text-red-300">
-          {error}
+        <div className="bg-red-950/30 border border-red-800/50 rounded-xl p-3 flex items-start gap-2">
+          <AlertTriangle size={14} className="text-red-400 shrink-0 mt-0.5" />
+          <span className="text-xs text-red-300">{error}</span>
         </div>
       )}
 
       {/* Results */}
       {runResult && (
         <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+          {/* Summary header */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
             <h3 className="text-sm font-medium text-slate-200 flex-1">Results</h3>
-            <span className={clsx(
-              "text-[10px] px-2 py-0.5 rounded-md font-medium",
-              runResult.exitCode === 0
-                ? "bg-green-900/40 text-green-300"
-                : "bg-red-900/40 text-red-300"
-            )}>
-              {runResult.exitCode === 0 ? "ALL PASSED" : "HAS FAILURES"}
-            </span>
+            {runResult.summary.passed > 0 && (
+              <span className="text-[10px] px-2 py-0.5 rounded-md bg-green-900/40 text-green-300 font-medium">
+                {runResult.summary.passed} passed
+              </span>
+            )}
+            {runResult.summary.failed > 0 && (
+              <span className="text-[10px] px-2 py-0.5 rounded-md bg-red-900/40 text-red-300 font-medium">
+                {runResult.summary.failed} failed
+              </span>
+            )}
+            {runResult.summary.skipped > 0 && (
+              <span className="text-[10px] px-2 py-0.5 rounded-md bg-yellow-900/40 text-yellow-300 font-medium">
+                {runResult.summary.skipped} skipped
+              </span>
+            )}
             <span className="text-[10px] text-slate-600">{runResult.timestamp}</span>
           </div>
 
           {/* Individual results */}
           <div>
             {runResult.results.map((r, i) => (
-              <div key={i} className="flex items-center gap-2 px-4 py-2 border-b border-slate-800/50 last:border-0">
-                {r.status === "passed" ? (
-                  <CheckCircle2 size={14} className="text-green-400 shrink-0" />
-                ) : r.status === "failed" ? (
-                  <XCircle size={14} className="text-red-400 shrink-0" />
-                ) : (
-                  <Clock size={14} className="text-slate-500 shrink-0" />
+              <div key={i} className="border-b border-slate-800/50 last:border-0">
+                <div
+                  className={clsx(
+                    "flex items-center gap-2 px-4 py-2",
+                    r.status === "failed" && r.error && "cursor-pointer hover:bg-slate-800/30"
+                  )}
+                  onClick={() => r.status === "failed" && r.error && toggleError(i)}
+                >
+                  <StatusIcon status={r.status} />
+                  <span className={clsx(
+                    "text-xs flex-1",
+                    r.status === "passed" ? "text-slate-300"
+                      : r.status === "failed" ? "text-red-300"
+                      : r.status === "skipped" ? "text-yellow-300"
+                      : "text-slate-500"
+                  )}>
+                    {r.title}
+                  </span>
+                  <span className="text-[10px] text-slate-600">
+                    {(r.duration / 1000).toFixed(1)}s
+                  </span>
+                  {r.status === "failed" && r.error && (
+                    <ChevronRight size={12} className={clsx(
+                      "text-slate-600 transition-transform",
+                      expandedErrors.has(i) && "rotate-90"
+                    )} />
+                  )}
+                </div>
+
+                {/* Error details */}
+                {r.status === "failed" && r.error && expandedErrors.has(i) && (
+                  <div className="px-4 pb-3 pt-0">
+                    <pre className="text-[11px] text-red-300/80 bg-red-950/20 border border-red-900/30 rounded-lg p-3 whitespace-pre-wrap overflow-x-auto max-h-60 overflow-y-auto font-mono leading-relaxed">
+                      {r.error}
+                    </pre>
+                  </div>
                 )}
-                <span className={clsx(
-                  "text-xs flex-1",
-                  r.status === "passed" ? "text-slate-300" : r.status === "failed" ? "text-red-300" : "text-slate-500"
-                )}>
-                  {r.title}
-                </span>
-                <span className="text-[10px] text-slate-600">
-                  {(r.duration / 1000).toFixed(1)}s
-                </span>
               </div>
             ))}
 
             {runResult.results.length === 0 && (
               <div className="px-4 py-3 text-xs text-slate-500">
-                No structured results. Check stderr below.
+                No test results captured. The test runner may have failed to start.
               </div>
             )}
           </div>
@@ -429,28 +490,38 @@ export default function ShoppingCartPage() {
           {runResult.recordings.length > 0 && (
             <div className="border-t border-slate-800 px-4 py-3">
               <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-                <Video size={11} /> Recordings
+                <Video size={11} /> Recordings ({runResult.recordings.length})
               </p>
               <div className="space-y-1">
                 {runResult.recordings.map((rec, i) => (
-                  <div key={i} className="text-xs text-slate-400 font-mono truncate">
+                  <div key={i} className="text-[11px] text-slate-400 font-mono truncate">
                     {rec}
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] text-slate-600 mt-1">
-                Saved to: {runResult.recordDir}
+              <p className="text-[10px] text-slate-600 mt-2">
+                Saved to: <span className="font-mono">{runResult.recordDir}/</span>
               </p>
             </div>
           )}
 
-          {/* Stderr */}
-          {runResult.stderr && runResult.results.length === 0 && (
-            <div className="border-t border-slate-800 px-4 py-3">
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Output</p>
-              <pre className="text-[11px] text-slate-500 whitespace-pre-wrap max-h-40 overflow-y-auto font-mono">
-                {runResult.stderr}
-              </pre>
+          {/* Stderr / raw output — show when there are failures or no results */}
+          {runResult.stderr && (runResult.summary.failed > 0 || runResult.results.length === 0) && (
+            <div className="border-t border-slate-800">
+              <button
+                onClick={() => setShowStderr(v => !v)}
+                className="w-full flex items-center gap-2 px-4 py-2 text-left hover:bg-slate-800/30 transition-colors"
+              >
+                <ChevronRight size={12} className={clsx("text-slate-600 transition-transform", showStderr && "rotate-90")} />
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider">Raw Output</span>
+              </button>
+              {showStderr && (
+                <div className="px-4 pb-3">
+                  <pre className="text-[11px] text-slate-500 whitespace-pre-wrap max-h-48 overflow-y-auto font-mono bg-slate-950 rounded-lg p-3">
+                    {runResult.stderr}
+                  </pre>
+                </div>
+              )}
             </div>
           )}
         </div>
