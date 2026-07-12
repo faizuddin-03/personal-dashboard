@@ -63,8 +63,8 @@ export async function POST(req: NextRequest) {
 
     const args = [
       "playwright", "test",
-      "--config", configPath,
-      "--grep", grepPattern,
+      "--config", `"${configPath}"`,
+      "--grep", `"${grepPattern}"`,
     ];
 
     return new Promise<NextResponse>((resolve) => {
