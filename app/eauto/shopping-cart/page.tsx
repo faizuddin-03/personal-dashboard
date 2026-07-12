@@ -318,17 +318,18 @@ export default function ShoppingCartPage() {
                 <span className="text-[10px] text-slate-500">
                   {groupSelected}/{group.scenarios.length}
                 </span>
-                <button
+                <span
+                  role="button"
                   onClick={e => { e.stopPropagation(); selectAll(group); }}
                   className={clsx(
-                    "text-[10px] px-2 py-0.5 rounded border transition-colors",
+                    "text-[10px] px-2 py-0.5 rounded border transition-colors cursor-pointer",
                     allSelected
                       ? "bg-blue-600/20 border-blue-500/30 text-blue-300"
                       : "border-slate-700 text-slate-500 hover:text-slate-300"
                   )}
                 >
                   {allSelected ? "Deselect" : "Select all"}
-                </button>
+                </span>
               </button>
 
               {/* Scenarios */}
