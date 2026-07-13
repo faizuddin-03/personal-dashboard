@@ -281,6 +281,20 @@ export class SlotPickerComponent extends BasePage {
     return text.toLowerCase().includes("fully booked");
   }
 
+  /**
+   * Raw value of the slot's stepper input (#si-cnt0/#si-cnt1) — how many
+   * units are locally staged for this slot in the current modal session.
+   * Unlike the capacity text (which only reflects committed/saved
+   * bookings), this updates instantly on every +/- click, so it can
+   * verify the stepper refuses to exceed capacity WITHOUT ever saving —
+   * meaning no real booking is made and the shared calendar's day totals
+   * are never touched.
+   */
+  async getStepperValue(slotIndex: number): Promise<number> {
+    const el = slotIndex === 0 ? this.morningCount : this.afternoonCount;
+    return Number(await el.inputValue()) || 0;
+  }
+
   /** Increment a slot's stepper via the JS function siStep(slot, +1) */
   async incrementSlot(slotIndex: number, times: number = 1) {
     for (let i = 0; i < times; i++) {

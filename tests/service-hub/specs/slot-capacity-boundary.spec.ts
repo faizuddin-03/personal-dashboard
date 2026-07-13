@@ -27,9 +27,14 @@ test.describe("Slot Capacity Boundary", () => {
       softwareInstallationPage,
       slotPicker,
     }) => {
-      // Single purchase of 4 installations — enough to fill however much
-      // room is left in the morning slot (max 3) plus at least 1 spare
-      // to prove overbooking is rejected, regardless of prior bookings.
+      // We never save or confirm this booking — the goal is purely to
+      // prove the "+" stepper refuses to exceed the morning slot's
+      // remaining capacity. Since nothing is committed, the shared
+      // calendar's day totals are never touched, so there's no risk of
+      // this test itself pushing a date to 6/6 and locking it for
+      // everyone else. Buy more than a slot could ever hold (perSlot + 1)
+      // so our own purchase total is never the limiting factor — only
+      // the slot's own capacity should be.
       await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);
       // A date can be generally "bookable" while morning specifically is
       // already full, so find one where morning itself has room.
@@ -41,46 +46,24 @@ test.describe("Slot Capacity Boundary", () => {
       const roomLeft = initial.max - initial.booked;
       expect(roomLeft).toBeGreaterThan(0);
 
-      // The modal's capacity indicator (#si-cap0/#si-cap1) reflects
-      // committed (saved) bookings, not in-progress stepper clicks — so
-      // book and save one unit at a time rather than incrementing
-      // roomLeft times and checking before any save.
-      for (let i = 0; i < roomLeft; i++) {
-        await slotPicker.openSlotModal(targetDate!);
-        await slotPicker.incrementSlot(MORNING, 1);
-        await slotPicker.saveSlotChanges();
-      }
+      // Fill the slot to capacity via the stepper only — no save
+      await slotPicker.incrementSlot(MORNING, roomLeft);
+      const filled = await slotPicker.getStepperValue(MORNING);
+      expect(filled).toBe(roomLeft);
 
-      await slotPicker.openSlotModal(targetDate!);
-      // "Fully booked" text only appears when the slot was already at
-      // capacity before we touched it — filling it ourselves in this
-      // session doesn't re-render that label, it just stops incrementing.
-      // Verify fullness numerically instead.
-      const morningState = await slotPicker.getModalSlotBooked(MORNING);
-      expect(morningState.booked).toBe(morningState.max);
-
-      // Try to add one more unit to the now-full morning slot — must be rejected
-      const before = morningState;
+      // Try to add one more — the stepper must refuse to go past capacity
       await slotPicker.incrementSlot(MORNING, 1);
-      const after = await slotPicker.getModalSlotBooked(MORNING);
-      expect(after.booked).toBe(before.booked);
-
-      // Allocate the remaining purchased units elsewhere to complete the
-      // mandatory booking (afternoon of this date, or another date if
-      // this one doesn't have enough room). Re-scans for a fresh date if
-      // a candidate turns out to have filled up since we last checked it.
-      const leftover = ENV.slotCapacity.perSlot + 1 - roomLeft;
-      await slotPicker.allocateUnitsAnywhere(leftover, targetDate!);
-      await slotPicker.confirmAppointment();
+      const afterOverbook = await slotPicker.getStepperValue(MORNING);
+      expect(afterOverbook).toBe(roomLeft);
     });
 
     test("Afternoon Slot - Book until full", async ({
       softwareInstallationPage,
       slotPicker,
     }) => {
-      // Single purchase of 4 installations — enough to fill however much
-      // room is left in the afternoon slot (max 3) plus at least 1 spare
-      // to prove overbooking is rejected, regardless of prior bookings.
+      // Same approach as the morning test — verify the stepper's own
+      // limit without ever saving/confirming, so no real booking is made
+      // and the shared calendar is left untouched.
       await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);
       // A date can be generally "bookable" while afternoon specifically is
       // already full, so find one where afternoon itself has room.
@@ -92,35 +75,15 @@ test.describe("Slot Capacity Boundary", () => {
       const roomLeft = initial.max - initial.booked;
       expect(roomLeft).toBeGreaterThan(0);
 
-      // Book and save one unit at a time — the modal's capacity indicator
-      // reflects committed bookings, not in-progress stepper clicks.
-      for (let i = 0; i < roomLeft; i++) {
-        await slotPicker.openSlotModal(targetDate!);
-        await slotPicker.incrementSlot(AFTERNOON, 1);
-        await slotPicker.saveSlotChanges();
-      }
+      // Fill the slot to capacity via the stepper only — no save
+      await slotPicker.incrementSlot(AFTERNOON, roomLeft);
+      const filled = await slotPicker.getStepperValue(AFTERNOON);
+      expect(filled).toBe(roomLeft);
 
-      await slotPicker.openSlotModal(targetDate!);
-      // "Fully booked" text only appears when the slot was already at
-      // capacity before we touched it — filling it ourselves in this
-      // session doesn't re-render that label, it just stops incrementing.
-      // Verify fullness numerically instead.
-      const afternoonState = await slotPicker.getModalSlotBooked(AFTERNOON);
-      expect(afternoonState.booked).toBe(afternoonState.max);
-
-      // Try to add one more unit to the now-full afternoon slot — must be rejected
-      const before = afternoonState;
+      // Try to add one more — the stepper must refuse to go past capacity
       await slotPicker.incrementSlot(AFTERNOON, 1);
-      const after = await slotPicker.getModalSlotBooked(AFTERNOON);
-      expect(after.booked).toBe(before.booked);
-
-      // Allocate the remaining purchased units elsewhere to complete the
-      // mandatory booking (morning of this date, or another date if this
-      // one doesn't have enough room). Re-scans for a fresh date if a
-      // candidate turns out to have filled up since we last checked it.
-      const leftover = ENV.slotCapacity.perSlot + 1 - roomLeft;
-      await slotPicker.allocateUnitsAnywhere(leftover, targetDate!);
-      await slotPicker.confirmAppointment();
+      const afterOverbook = await slotPicker.getStepperValue(AFTERNOON);
+      expect(afterOverbook).toBe(roomLeft);
     });
 
     test("Day capacity reach 6/6", async ({
