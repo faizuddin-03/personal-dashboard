@@ -8,6 +8,7 @@ import {
 import ExcelJS from "exceljs";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
+import InsuranceE2ETab from "./InsuranceE2ETab";
 import { InsuranceRow, VehicleEntry, loadInsuranceSaved, clearInsuranceSaved } from "@/lib/insurance";
 import {
   SecarangRow, SecarangJob, SecarangVehicle, SecarangRunParams,
@@ -365,7 +366,7 @@ export default function InsurancePage() {
   }
   const foundInsurers  = Array.from(new Set(rows.map(r => r.insurer).filter(Boolean)));
 
-  const [activeTab, setActiveTab] = useState<"check" | "tab2" | "tab3">("check");
+  const [activeTab, setActiveTab] = useState<"check" | "tab2" | "tab3" | "e2e">("check");
 
   return (
     <div className="relative flex flex-col min-h-full">
@@ -421,10 +422,22 @@ export default function InsurancePage() {
         >
           Regression - Secarang
         </button>
+        <button
+          onClick={() => setActiveTab("e2e")}
+          className={clsx(
+            "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
+            activeTab === "e2e"
+              ? "border-blue-500 text-blue-400"
+              : "border-transparent text-slate-500 hover:text-slate-300"
+          )}
+        >
+          Purchase E2E - eAuto
+        </button>
       </div>
 
       <div className={clsx(activeTab !== "tab2" && "hidden")}><SecarangTab mode="standard" /></div>
       <div className={clsx(activeTab !== "tab3" && "hidden")}><RegressionTab /></div>
+      <div className={clsx(activeTab !== "e2e" && "hidden")}><InsuranceE2ETab /></div>
 
       <div className={clsx(activeTab !== "check" && "hidden", "px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5")}>
 

@@ -56,5 +56,9 @@ scripts/_archive/WA-Blaster/screenshots/
 scripts/WA-Blaster-Beta/results/*.json
 scripts/WA-Blaster-Beta/screenshots/
 
+scripts/eauto-e2e/artifacts/
+scripts/eauto-estm/artifacts/
+public/qa-artifacts/
+
 # .env.example files are documentation — keep them tracked despite .env* above
 !**/.env.example
