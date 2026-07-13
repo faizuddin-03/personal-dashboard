@@ -67,14 +67,10 @@ test.describe("Slot Capacity Boundary", () => {
 
       // Allocate the remaining purchased units elsewhere to complete the
       // mandatory booking (afternoon of this date, or another date if
-      // this one doesn't have enough room)
-      let leftover = ENV.slotCapacity.perSlot + 1 - roomLeft;
-      leftover -= await slotPicker.allocateUnitsAcrossSlots(targetDate!, leftover);
-      while (leftover > 0) {
-        const overflowDate = await slotPicker.findDateWithRoom(1);
-        expect(overflowDate).not.toBeNull();
-        leftover -= await slotPicker.allocateUnitsAcrossSlots(overflowDate!, leftover);
-      }
+      // this one doesn't have enough room). Re-scans for a fresh date if
+      // a candidate turns out to have filled up since we last checked it.
+      const leftover = ENV.slotCapacity.perSlot + 1 - roomLeft;
+      await slotPicker.allocateUnitsAnywhere(leftover, targetDate!);
       await slotPicker.confirmAppointment();
     });
 
@@ -120,14 +116,10 @@ test.describe("Slot Capacity Boundary", () => {
 
       // Allocate the remaining purchased units elsewhere to complete the
       // mandatory booking (morning of this date, or another date if this
-      // one doesn't have enough room)
-      let leftover = ENV.slotCapacity.perSlot + 1 - roomLeft;
-      leftover -= await slotPicker.allocateUnitsAcrossSlots(targetDate!, leftover);
-      while (leftover > 0) {
-        const overflowDate = await slotPicker.findDateWithRoom(1);
-        expect(overflowDate).not.toBeNull();
-        leftover -= await slotPicker.allocateUnitsAcrossSlots(overflowDate!, leftover);
-      }
+      // one doesn't have enough room). Re-scans for a fresh date if a
+      // candidate turns out to have filled up since we last checked it.
+      const leftover = ENV.slotCapacity.perSlot + 1 - roomLeft;
+      await slotPicker.allocateUnitsAnywhere(leftover, targetDate!);
       await slotPicker.confirmAppointment();
     });
 
@@ -200,7 +192,7 @@ test.describe("Slot Capacity Boundary", () => {
       expect(targetDate).not.toBeNull();
 
       // Book only 1 of the 2 units
-      await slotPicker.allocateUnitsAcrossSlots(targetDate!, 1);
+      await slotPicker.allocateUnitsAnywhere(1, targetDate!);
 
       const remainingAfter = await slotPicker.getRemainingToAllocate();
       expect(remainingAfter).toBe(1);
@@ -211,7 +203,7 @@ test.describe("Slot Capacity Boundary", () => {
       await expect(clientErr).toBeVisible();
 
       // Book the remaining unit — should now be allowed to proceed
-      await slotPicker.allocateUnitsAcrossSlots(targetDate!, 1);
+      await slotPicker.allocateUnitsAnywhere(1);
 
       const allocated = await slotPicker.getAllocatedCount();
       expect(allocated).toBe(2);
@@ -240,7 +232,7 @@ test.describe("Slot Capacity Boundary", () => {
       expect(targetDate).not.toBeNull();
 
       // Book only 1 of the 2 free installations
-      await slotPicker.allocateUnitsAcrossSlots(targetDate!, 1);
+      await slotPicker.allocateUnitsAnywhere(1, targetDate!);
 
       const remaining = await slotPicker.getRemainingToAllocate();
       expect(remaining).toBe(1);
@@ -281,7 +273,7 @@ test.describe("Slot Capacity Boundary", () => {
       expect(slotPicker.page.url()).not.toMatch(/submitted\.do/);
 
       // Book exactly 1 unit (the mandatory paid one) — the 2 free ones stay unbooked
-      await slotPicker.allocateUnitsAcrossSlots(targetDate!, 1);
+      await slotPicker.allocateUnitsAnywhere(1, targetDate!);
 
       const allocated = await slotPicker.getAllocatedCount();
       expect(allocated).toBe(1);

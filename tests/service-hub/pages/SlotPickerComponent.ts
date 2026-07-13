@@ -203,6 +203,44 @@ export class SlotPickerComponent extends BasePage {
   }
 
   /**
+   * Allocates `count` units to whatever room is available anywhere,
+   * optionally trying `preferredDate` first. This is a shared, persistent
+   * staging environment — a date's capacity can shift between when we
+   * scan for room and when we actually act on it (another test run,
+   * another user, a cancellation). If the chosen date turns out to have
+   * become unbookable in the meantime, drop it and re-scan for a fresh
+   * one instead of failing outright.
+   */
+  async allocateUnitsAnywhere(count: number, preferredDate?: string, maxAttempts: number = 10): Promise<void> {
+    let remaining = count;
+    let candidate: string | null = preferredDate ?? null;
+    let attempts = 0;
+
+    while (remaining > 0) {
+      attempts++;
+      if (attempts > maxAttempts) {
+        throw new Error(
+          `Could not allocate the remaining ${remaining} unit(s) after ${maxAttempts} attempts — ran out of bookable dates with room (or they kept becoming unbookable before we could use them).`
+        );
+      }
+
+      if (!candidate) {
+        candidate = await this.findDateWithRoom(1);
+        if (!candidate) {
+          throw new Error(`No bookable date found with room to allocate the remaining ${remaining} unit(s).`);
+        }
+      }
+
+      try {
+        remaining -= await this.allocateUnitsAcrossSlots(candidate, remaining);
+      } catch {
+        // Date became unbookable between scan and click — try a fresh one.
+      }
+      candidate = null;
+    }
+  }
+
+  /**
    * Click a date cell to open the slot dialog. Defensively closes any
    * modal left open by a previous action first — its full-page overlay
    * physically blocks clicks on the calendar underneath, which otherwise
