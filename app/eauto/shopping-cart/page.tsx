@@ -75,6 +75,7 @@ interface TestResult {
   status: string;
   duration: number;
   error: string;
+  friendlyError: string;
 }
 
 interface RunSummary {
@@ -470,9 +471,21 @@ export default function ShoppingCartPage() {
                   )}
                 </div>
 
-                {/* Error details */}
+                {/* Plain-English summary — always visible, no click needed */}
+                {r.status === "failed" && r.friendlyError && (
+                  <div className="px-4 pb-2 -mt-1">
+                    <p className="text-[11px] text-amber-300/90 pl-[22px] leading-relaxed">
+                      {r.friendlyError}
+                    </p>
+                  </div>
+                )}
+
+                {/* Technical details (raw Playwright error) */}
                 {r.status === "failed" && r.error && expandedErrors.has(i) && (
                   <div className="px-4 pb-3 pt-0">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1.5 pl-[22px]">
+                      Technical details
+                    </p>
                     <pre className="text-[11px] text-red-300/80 bg-red-950/20 border border-red-900/30 rounded-lg p-3 whitespace-pre-wrap overflow-x-auto max-h-60 overflow-y-auto font-mono leading-relaxed">
                       {r.error}
                     </pre>

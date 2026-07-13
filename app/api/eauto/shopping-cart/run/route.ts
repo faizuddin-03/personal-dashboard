@@ -20,6 +20,84 @@ interface TestResultItem {
   status: string;
   duration: number;
   error: string;
+  friendlyError: string;
+}
+
+/** Strip ANSI color/escape codes so raw terminal output reads cleanly as plain text. */
+function stripAnsi(text: string): string {
+  return text.replace(/\x1b\[[0-9;]*m/g, "");
+}
+
+/**
+ * Turn a raw Playwright error message into a one-line, plain-English
+ * summary. Falls back to the first meaningful line of the original
+ * message if none of the known shapes match.
+ */
+function toPlainEnglish(rawMessage: string): string {
+  const text = stripAnsi(rawMessage);
+
+  // "waiting for locator('...')" — pull out what it was looking for
+  const locatorMatch = text.match(/waiting for locator\('([^']+)'\)/);
+  const locatorDesc = locatorMatch ? locatorMatch[1] : null;
+
+  if (/strict mode violation[\s\S]*resolved to (\d+) elements/.test(text)) {
+    const count = text.match(/resolved to (\d+) elements/)?.[1] ?? "multiple";
+    return `The test found ${count} matching elements on the page instead of 1, and couldn't tell which one to use${locatorDesc ? ` (${locatorDesc})` : ""}.`;
+  }
+
+  if (/toBeVisible\(\)/.test(text) && /Expected: visible/.test(text)) {
+    return `Expected an element to appear on the page, but it never showed up in time${locatorDesc ? ` (${locatorDesc})` : ""}.`;
+  }
+
+  if (/toBeHidden\(\)/.test(text)) {
+    return `Expected an element to disappear from the page, but it was still showing${locatorDesc ? ` (${locatorDesc})` : ""}.`;
+  }
+
+  if (/TimeoutError[\s\S]*locator\.click/.test(text)) {
+    return `The test tried to click something, but the click never went through in time (likely blocked or the page didn't respond)${locatorDesc ? ` — target: ${locatorDesc}` : ""}.`;
+  }
+
+  if (/TimeoutError[\s\S]*locator\.(fill|type)/.test(text)) {
+    return `The test tried to type into a field, but it never became ready in time${locatorDesc ? ` (${locatorDesc})` : ""}.`;
+  }
+
+  if (/TimeoutError[\s\S]*waitForURL/.test(text)) {
+    return `The test expected the page to navigate to a new URL, but it never did within the time limit.`;
+  }
+
+  if (/^TimeoutError/m.test(text)) {
+    return `The test waited too long for something to happen and gave up${locatorDesc ? ` (waiting on: ${locatorDesc})` : ""}.`;
+  }
+
+  // expect(received).toBe(expected) / toBeGreaterThan / etc, with Expected/Received values
+  const expectMatch = text.match(/expect\(received\)\.(\w+)\(([^)]*)\)/);
+  const expectedVal = text.match(/Expected:\s*(.+)/)?.[1]?.trim();
+  const receivedVal = text.match(/Received:\s*(.+)/)?.[1]?.trim();
+  if (expectMatch) {
+    const matcher = expectMatch[1];
+    if (matcher === "toBeNull" && text.includes(".not.")) {
+      return `The test expected to find a value, but got nothing (null) instead.`;
+    }
+    if (matcher === "toBe" || matcher === "toEqual") {
+      if (expectedVal !== undefined && receivedVal !== undefined) {
+        return `The test expected the value to be "${expectedVal}", but it was actually "${receivedVal}".`;
+      }
+    }
+    if (matcher === "toBeGreaterThan" && expectedVal !== undefined && receivedVal !== undefined) {
+      return `The test expected a number greater than ${expectedVal}, but got ${receivedVal}.`;
+    }
+    if (matcher === "toBeLessThan" && expectedVal !== undefined && receivedVal !== undefined) {
+      return `The test expected a number less than ${expectedVal}, but got ${receivedVal}.`;
+    }
+    if (expectedVal !== undefined && receivedVal !== undefined) {
+      return `The test's "${matcher}" check failed — expected "${expectedVal}", got "${receivedVal}".`;
+    }
+    return `A test assertion ("${matcher}") failed.`;
+  }
+
+  // Fall back: first non-empty line, cleaned up
+  const firstLine = text.split("\n").map(l => l.trim()).find(l => l.length > 0);
+  return firstLine ? firstLine.slice(0, 200) : "The test failed for an unknown reason — see technical details below.";
 }
 
 export async function POST(req: NextRequest) {
@@ -154,11 +232,13 @@ export async function POST(req: NextRequest) {
                   }
                 }
 
+                const cleanedError = stripAnsi(errorMsg).slice(0, 2000);
                 out.push({
                   title: spec.title ?? "",
                   status: status === "timedOut" ? "failed" : status,
                   duration: testResult?.duration ?? 0,
-                  error: errorMsg.slice(0, 2000),
+                  error: cleanedError,
+                  friendlyError: errorMsg ? toPlainEnglish(errorMsg) : "",
                 });
               }
               if (s.suites) out.push(...extractSpecs(s.suites, groupTitle));
