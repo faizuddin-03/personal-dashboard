@@ -3,7 +3,7 @@ import { BasePage } from "../BasePage";
 import { PATHS } from "../../utils/config";
 
 export type InstallationStatus =
-  | "ALL"
+  | ""
   | "NEW"
   | "PENDING"
   | "COMPLETED"
@@ -12,17 +12,21 @@ export type InstallationStatus =
 
 /**
  * eAuto Back Office Portal > Biometric Device Purchase & Software
- * Installation Listing (SRD 2.3.2.5).
+ * Installation Listing.
  *
- * NOTE: BO selectors are inferred from the SRD structure and must be
- * verified against the actual BO portal HTML, then tightened.
- *
- * Listing columns (0-indexed) per SRD 2.3.2.5 #2:
- *   0 #  | 1 Reference No | 2 Date Requested | 3 Company Name |
- *   4 Company ROC | 5 Device | 6 Delivery Date | 7 Installation Request |
- *   8 Appointment Date | 9 Time Slot | 10 Payment Status |
- *   11 LHDN Response Status | 12 Delivery Status | 13 Installation Status |
- *   14 Date Completed | 15 Remarks | 16 Special Remarks | 17 Action
+ * Selectors confirmed against the real BO portal HTML:
+ *  - Filter form #sc-filter-form (GET → /api/admin/service-hub/listing/list.get).
+ *    Field names: referenceNo, companyName, requestedFrom, requestedTo, roc,
+ *    deliveryDateFrom, deliveryDateTo, deliveryStatus, appointmentDateFrom,
+ *    appointmentDateTo, status (Installation Status), timeSlot (two
+ *    checkboxes: 1000_1200 / 1400_1600), paymentStatus, lhdnStatus. All date
+ *    inputs are readonly datepickers.
+ *  - Buttons: #sc-search, #sc-export (hidden until a search runs), #sc-reset,
+ *    #sc-appt-cal.
+ *  - Results table #sc-combined-tbl (18 columns). Action cell has
+ *    <a href="detail.do?txnId=X&apptId=Y">View</a> and
+ *    <a onclick="scCancel(apptId)">Cancel</a>; Cancel opens the
+ *    #sc-cancel-dialog ("Sure to cancel?").
  */
 export class SoftwareInstallationListingPage extends BasePage {
   static readonly COL = {
@@ -46,29 +50,26 @@ export class SoftwareInstallationListingPage extends BasePage {
     action: 17,
   } as const;
 
-  // Filter panel (SRD 2.3.2.5 #1)
-  readonly referenceNoInput = this.page.locator('input[name="referenceNo"]').first();
-  readonly companyNameInput = this.page.locator('input[name="companyName"]').first();
-  readonly dateRequestedFromInput = this.page.locator('input[name="dateRequestedFrom"]').first();
-  readonly dateRequestedToInput = this.page.locator('input[name="dateRequestedTo"]').first();
-  readonly companyRocInput = this.page.locator('input[name="companyRoc"]').first();
-  readonly deliveryDateFromInput = this.page.locator('input[name="deliveryDateFrom"]').first();
-  readonly deliveryDateToInput = this.page.locator('input[name="deliveryDateTo"]').first();
-  readonly deliveryStatusSelect = this.page.locator('select[name="deliveryStatus"]').first();
-  readonly appointmentDateFromInput = this.page.locator('input[name="appointmentDateFrom"]').first();
-  readonly appointmentDateToInput = this.page.locator('input[name="appointmentDateTo"]').first();
-  readonly installationStatusSelect = this.page.locator('select[name="installationStatus"]').first();
-  readonly timeSlotMorningCheckbox = this.page.locator('input[type="checkbox"][value*="10"]').first();
-  readonly timeSlotAfternoonCheckbox = this.page.locator('input[type="checkbox"][value*="2"]').first();
-  readonly paymentStatusSelect = this.page.locator('select[name="paymentStatus"]').first();
-  readonly lhdnResponseStatusSelect = this.page.locator('select[name="lhdnResponseStatus"]').first();
+  // Filter panel
+  readonly referenceNoInput = this.page.locator('input[name="referenceNo"]');
+  readonly companyNameInput = this.page.locator('input[name="companyName"]');
+  readonly requestedFromInput = this.page.locator('input[name="requestedFrom"]');
+  readonly requestedToInput = this.page.locator('input[name="requestedTo"]');
+  readonly rocInput = this.page.locator('input[name="roc"]');
+  readonly appointmentDateFromInput = this.page.locator('input[name="appointmentDateFrom"]');
+  readonly appointmentDateToInput = this.page.locator('input[name="appointmentDateTo"]');
+  readonly installationStatusSelect = this.page.locator('select[name="status"]');
+  readonly paymentStatusSelect = this.page.locator('select[name="paymentStatus"]');
+  readonly lhdnStatusSelect = this.page.locator('select[name="lhdnStatus"]');
+  readonly timeSlotMorningCheckbox = this.page.locator('input[name="timeSlot"][value="1000_1200"]');
+  readonly timeSlotAfternoonCheckbox = this.page.locator('input[name="timeSlot"][value="1400_1600"]');
 
-  readonly searchBtn = this.page.getByText("Search", { exact: false }).first();
-  readonly exportBtn = this.page.getByText("Export", { exact: false }).first();
-  readonly resetBtn = this.page.getByText("Reset", { exact: false }).first();
-  readonly appointmentCalendarBtn = this.page.getByText("Appointment Calendar", { exact: false }).first();
+  readonly searchBtn = this.page.locator("#sc-search");
+  readonly exportBtn = this.page.locator("#sc-export");
+  readonly resetBtn = this.page.locator("#sc-reset");
+  readonly appointmentCalendarBtn = this.page.locator("#sc-appt-cal");
 
-  readonly resultsTable = this.page.locator("table").first();
+  readonly resultsTable = this.page.locator("#sc-combined-tbl");
 
   constructor(page: Page) {
     super(page);
@@ -78,30 +79,43 @@ export class SoftwareInstallationListingPage extends BasePage {
     await this.goto(PATHS.boSoftwareInstallationListing);
   }
 
+  /** Set a readonly datepicker input's value directly (bypasses the widget). */
+  private async setDateInput(input: Locator, value: string) {
+    await input.evaluate((el, v) => {
+      (el as HTMLInputElement).value = v as string;
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }, value);
+  }
+
+  /**
+   * Search. Date values are in the datepicker's display format (DD-MM-YYYY).
+   * Date Requested From/To are mandatory per the SRD.
+   */
   async searchWithFilters(opts: {
     referenceNo?: string;
     companyName?: string;
-    companyRoc?: string;
-    dateRequestedFrom?: string;
-    dateRequestedTo?: string;
+    roc?: string;
+    requestedFrom?: string;
+    requestedTo?: string;
     appointmentDateFrom?: string;
     appointmentDateTo?: string;
     installationStatus?: InstallationStatus;
     paymentStatus?: string;
-    lhdnResponseStatus?: string;
+    lhdnStatus?: string;
   }) {
     if (opts.referenceNo) await this.referenceNoInput.fill(opts.referenceNo);
     if (opts.companyName) await this.companyNameInput.fill(opts.companyName);
-    if (opts.companyRoc) await this.companyRocInput.fill(opts.companyRoc);
-    if (opts.dateRequestedFrom) await this.dateRequestedFromInput.fill(opts.dateRequestedFrom);
-    if (opts.dateRequestedTo) await this.dateRequestedToInput.fill(opts.dateRequestedTo);
-    if (opts.appointmentDateFrom) await this.appointmentDateFromInput.fill(opts.appointmentDateFrom);
-    if (opts.appointmentDateTo) await this.appointmentDateToInput.fill(opts.appointmentDateTo);
-    if (opts.installationStatus) await this.installationStatusSelect.selectOption(opts.installationStatus);
+    if (opts.roc) await this.rocInput.fill(opts.roc);
+    if (opts.requestedFrom) await this.setDateInput(this.requestedFromInput, opts.requestedFrom);
+    if (opts.requestedTo) await this.setDateInput(this.requestedToInput, opts.requestedTo);
+    if (opts.appointmentDateFrom) await this.setDateInput(this.appointmentDateFromInput, opts.appointmentDateFrom);
+    if (opts.appointmentDateTo) await this.setDateInput(this.appointmentDateToInput, opts.appointmentDateTo);
+    if (opts.installationStatus !== undefined) await this.installationStatusSelect.selectOption(opts.installationStatus);
     if (opts.paymentStatus) await this.paymentStatusSelect.selectOption(opts.paymentStatus);
-    if (opts.lhdnResponseStatus) await this.lhdnResponseStatusSelect.selectOption(opts.lhdnResponseStatus);
+    if (opts.lhdnStatus) await this.lhdnStatusSelect.selectOption(opts.lhdnStatus);
     await this.searchBtn.click();
     await this.waitForNav();
+    await this.resultsTable.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
   }
 
   async resetFilters() {
@@ -119,7 +133,7 @@ export class SoftwareInstallationListingPage extends BasePage {
   }
 
   private async cellText(row: Locator, colIndex: number): Promise<string> {
-    return (await row.locator("td").nth(colIndex).textContent())?.trim() ?? "";
+    return (await row.locator("td").nth(colIndex).textContent())?.trim().replace(/\s+/g, " ") ?? "";
   }
 
   async getRowReferenceNo(row: Locator): Promise<string> {
@@ -142,23 +156,32 @@ export class SoftwareInstallationListingPage extends BasePage {
     return this.cellText(row, SoftwareInstallationListingPage.COL.remarks);
   }
 
-  /** Click "View" on a row → BO Software Installation Details Page */
+  /** The View link's detail URL for a row (detail.do?txnId=X&apptId=Y). */
+  async getRowDetailHref(row: Locator): Promise<string | null> {
+    return await row.locator('a[href*="detail.do"]').first().getAttribute("href");
+  }
+
+  /** Click "View" → BO Software Installation Details Page. */
   async clickView(row: Locator) {
-    await row.getByText("View", { exact: false }).click();
+    await row.locator('a[href*="detail.do"]').first().click();
     await this.waitForNav();
   }
 
   /**
-   * Click "Cancel" on a row and confirm the "Sure to cancel?" popup
-   * (SRD 2.3.2.5 #2 action ii).
+   * Click "Cancel" (a[onclick*="scCancel"]) and confirm the "Sure to cancel?"
+   * popup (#sc-cancel-dialog, opened as a jQuery UI dialog).
    */
   async cancelRequest(row: Locator, confirm: boolean = true) {
-    await row.getByText("Cancel", { exact: false }).click();
-    await this.waitForDialog();
-    if (confirm) {
-      await this.acceptConfirmDialog();
+    await row.locator('a[onclick*="scCancel"]').first().click();
+    const dialog = this.page.locator(".ui-dialog", { has: this.page.locator("#sc-cancel-dialog") });
+    await dialog.waitFor({ state: "visible", timeout: 8000 });
+    const label = confirm ? /yes|ok|confirm/i : /no|cancel/i;
+    const btn = dialog.locator(".ui-dialog-buttonpane button").filter({ hasText: label }).first();
+    if (await btn.count()) {
+      await btn.click();
     } else {
-      await this.dismissConfirmDialog();
+      // Fallback: first button is typically the affirmative action.
+      await dialog.locator(".ui-dialog-buttonpane button").first().click();
     }
     await this.waitForNav();
   }
@@ -174,7 +197,7 @@ export class SoftwareInstallationListingPage extends BasePage {
     return `Biometric_Device_Installation_List_${y}${m}${d}.xlsx`;
   }
 
-  /** Click Export and return the resulting download's suggested filename. */
+  /** Click Export (visible only after a search) and return the filename. */
   async exportAndGetFilename(): Promise<string> {
     const [download] = await Promise.all([
       this.page.waitForEvent("download"),

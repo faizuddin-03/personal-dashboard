@@ -33,8 +33,8 @@ export class SoftwareInstallationDetailsPage extends BasePage {
     super(page);
   }
 
-  async navigate(txnId: string) {
-    await this.goto(PATHS.boSoftwareInstallationDetails(txnId));
+  async navigate(txnId: string, apptId: string) {
+    await this.goto(PATHS.boSoftwareInstallationDetails(txnId, apptId));
   }
 
   async goBack() {

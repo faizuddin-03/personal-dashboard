@@ -396,11 +396,12 @@ test.describe("Reschedule & Handling", () => {
         return;
       }
 
-      const newDate = boCalendarPage.daysFromToday(7);
-      await boCalendarPage.rescheduleFirstListed({ newDate, slot: MORNING });
+      // The Reschedule dialog picks the new date from its own datepicker
+      // (any non-past selectable date); CSE has no +2 blackout.
+      await boCalendarPage.rescheduleFirstListed({ slot: MORNING });
     });
 
-    test("BO reschedule to next day — no +2 blackout", async ({ boCalendarPage }) => {
+    test("BO reschedule to afternoon slot", async ({ boCalendarPage }) => {
       await boCalendarPage.navigate();
 
       if (!(await boCalendarPage.isRescheduleAvailable())) {
@@ -408,9 +409,7 @@ test.describe("Reschedule & Handling", () => {
         return;
       }
 
-      // CSE has no +2 day restriction; tomorrow is a valid target.
-      const nextDay = boCalendarPage.daysFromToday(1);
-      await boCalendarPage.rescheduleFirstListed({ newDate: nextDay, slot: AFTERNOON });
+      await boCalendarPage.rescheduleFirstListed({ slot: AFTERNOON });
     });
   });
 });

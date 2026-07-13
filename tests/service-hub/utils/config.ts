@@ -78,10 +78,15 @@ export const PATHS = {
   requestDetails: (txnId: string) => `/view/ucd/service-hub/details.do?txnId=${txnId}`,
   receipt: (txnId: string) => `/view/ucd/service-hub/receipt.do?txnId=${txnId}`,
   reschedule: (txnId: string) => `/view/ucd/service-hub/installation/reschedule.do?txnId=${txnId}`,
-  // BO paths — verify against actual BO portal
-  boSoftwareInstallationListing: "/view/bo/service-hub/software-installation/listing.do",
-  boSoftwareInstallationDetails: (txnId: string) =>
-    `/view/bo/service-hub/software-installation/details.do?txnId=${txnId}`,
-  boAppointmentCalendar: "/view/bo/service-hub/appointment-calendar.do",
-  boListing: "/view/bo/service-hub/listing.do",
+  // BO paths — confirmed against the real BO portal HTML.
+  // The BO "Biometric Device Purchase & Software Installation Listing" is
+  // the single entry point; the Appointment Calendar is reached from it
+  // via the "Appointment Calendar" button (no stable direct URL), so the
+  // calendar page object navigates through the listing.
+  boListing: "/view/bo/service-hub/listing/main.do",
+  boSoftwareInstallationListing: "/view/bo/service-hub/listing/main.do",
+  // Detail page needs BOTH txnId and apptId (one row per appointment).
+  boSoftwareInstallationDetails: (txnId: string, apptId: string) =>
+    `/view/bo/service-hub/detail.do?txnId=${txnId}&apptId=${apptId}`,
+  boAppointmentCalendar: "/view/bo/service-hub/listing/main.do",
 };
