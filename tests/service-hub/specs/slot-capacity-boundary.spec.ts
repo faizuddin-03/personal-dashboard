@@ -52,11 +52,15 @@ test.describe("Slot Capacity Boundary", () => {
       }
 
       await slotPicker.openSlotModal(targetDate!);
-      const isMorningFull = await slotPicker.isSlotFullyBooked(MORNING);
-      expect(isMorningFull).toBe(true);
+      // "Fully booked" text only appears when the slot was already at
+      // capacity before we touched it — filling it ourselves in this
+      // session doesn't re-render that label, it just stops incrementing.
+      // Verify fullness numerically instead.
+      const morningState = await slotPicker.getModalSlotBooked(MORNING);
+      expect(morningState.booked).toBe(morningState.max);
 
       // Try to add one more unit to the now-full morning slot — must be rejected
-      const before = await slotPicker.getModalSlotBooked(MORNING);
+      const before = morningState;
       await slotPicker.incrementSlot(MORNING, 1);
       const after = await slotPicker.getModalSlotBooked(MORNING);
       expect(after.booked).toBe(before.booked);
@@ -101,11 +105,15 @@ test.describe("Slot Capacity Boundary", () => {
       }
 
       await slotPicker.openSlotModal(targetDate!);
-      const isAfternoonFull = await slotPicker.isSlotFullyBooked(AFTERNOON);
-      expect(isAfternoonFull).toBe(true);
+      // "Fully booked" text only appears when the slot was already at
+      // capacity before we touched it — filling it ourselves in this
+      // session doesn't re-render that label, it just stops incrementing.
+      // Verify fullness numerically instead.
+      const afternoonState = await slotPicker.getModalSlotBooked(AFTERNOON);
+      expect(afternoonState.booked).toBe(afternoonState.max);
 
       // Try to add one more unit to the now-full afternoon slot — must be rejected
-      const before = await slotPicker.getModalSlotBooked(AFTERNOON);
+      const before = afternoonState;
       await slotPicker.incrementSlot(AFTERNOON, 1);
       const after = await slotPicker.getModalSlotBooked(AFTERNOON);
       expect(after.booked).toBe(before.booked);
