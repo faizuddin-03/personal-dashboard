@@ -3,9 +3,6 @@ import { SlotPickerComponent } from "./SlotPickerComponent";
 import { PATHS } from "../utils/config";
 
 export class ReschedulePage extends SlotPickerComponent {
-  readonly instructionText = this.page.getByText("Click a booked (orange) date to remove", { exact: false });
-  readonly doneBtn = this.page.getByText("Done", { exact: false });
-
   constructor(page: Page) {
     super(page);
   }
@@ -16,28 +13,29 @@ export class ReschedulePage extends SlotPickerComponent {
 
   /**
    * Full reschedule: remove from old date → allocate to new date/slot → confirm.
-   * @param oldDate - current booked date (YYYY-MM-DD) to remove
-   * @param newDate - target date (YYYY-MM-DD) to book
-   * @param slot - "morning" | "afternoon"
-   * @param units - number of units to allocate (default 1)
+   * @param slot - 0 = morning (10:00am-12:00pm), 1 = afternoon (2:00pm-4:00pm)
    */
   async rescheduleAppointment(opts: {
     oldDate: string;
     newDate: string;
-    slot: "morning" | "afternoon";
+    slot: number;
     units?: number;
   }) {
     const { oldDate, newDate, slot, units = 1 } = opts;
 
-    // Step 1: Remove from the old date
+    // Step 1: Open old date and remove booking
     await this.openSlotModal(oldDate);
-    await this.removeBooking();
+    // Remove from whichever slot has the original booking
+    for (let s = 0; s < 2; s++) {
+      const countEl = s === 0 ? this.morningCount : this.afternoonCount;
+      const val = Number(await countEl.inputValue()) || 0;
+      if (val > 0) await this.removeSlot(s);
+    }
     await this.saveSlotChanges();
 
-    // Step 2: Allocate to the new date
+    // Step 2: Open new date and allocate
     await this.openSlotModal(newDate);
-    const slotLocator = slot === "morning" ? this.morningSlot : this.afternoonSlot;
-    await this.incrementSlot(slotLocator, units);
+    await this.incrementSlot(slot, units);
     await this.saveSlotChanges();
 
     // Step 3: Confirm
@@ -52,7 +50,6 @@ export class ReschedulePage extends SlotPickerComponent {
     expect(await this.isDayBookable(tomorrow)).toBe(false);
   }
 
-  /** Check that the earliest bookable date is today + 2 */
   async verifyEarliestDate() {
     const earliest = this.earliestRescheduleDate();
     expect(await this.isDayBookable(earliest)).toBe(true);

@@ -18,35 +18,36 @@ export class BasePage {
     await this.page.waitForLoadState("networkidle");
   }
 
-  /** Extract txnId from current URL query param */
   getTxnIdFromUrl(): string {
     const url = new URL(this.page.url());
     return url.searchParams.get("txnId") ?? "";
   }
 
-  /** Accept the JS confirm dialog ("Sure to submit this payment?") */
+  /** Accept the jQuery UI confirmation dialog (clicks the "Yes" button) */
   async acceptConfirmDialog() {
-    this.page.once("dialog", (dialog) => dialog.accept());
+    await this.page.locator(".confirm-dialog-btn").click();
   }
 
-  /** Dismiss the JS confirm dialog */
+  /** Dismiss the jQuery UI confirmation dialog (clicks the "No" button) */
   async dismissConfirmDialog() {
-    this.page.once("dialog", (dialog) => dialog.dismiss());
+    await this.page.locator(".cancel-dialog-btn").click();
   }
 
-  /** Get today's date string as YYYY-MM-DD */
+  /** Wait for the jQuery UI dialog to appear */
+  async waitForDialog() {
+    await this.page.locator(".ui-dialog").waitFor({ state: "visible", timeout: 5000 });
+  }
+
   today(): string {
     return new Date().toISOString().split("T")[0];
   }
 
-  /** Get a date N days from today as YYYY-MM-DD */
   daysFromToday(n: number): string {
     const d = new Date();
     d.setDate(d.getDate() + n);
     return d.toISOString().split("T")[0];
   }
 
-  /** Earliest bookable date for UCD reschedule (+2 days blackout) */
   earliestRescheduleDate(): string {
     return this.daysFromToday(ENV.reschedule.blackoutDays);
   }

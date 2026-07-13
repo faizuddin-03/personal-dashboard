@@ -34,10 +34,12 @@ export class SoftwareInstallationPage extends BasePage {
     }
   }
 
+  /** Click Make Payment → wait for jQuery UI dialog → click Yes → wait for redirect to slot.do */
   async makePayment(): Promise<string> {
-    await this.acceptConfirmDialog();
     await this.makePaymentBtn.click();
-    await this.waitForNav();
+    await this.waitForDialog();
+    await this.acceptConfirmDialog();
+    await this.page.waitForURL(/slot\.do\?txnId=/, { timeout: 15000 });
     return this.getTxnIdFromUrl();
   }
 
