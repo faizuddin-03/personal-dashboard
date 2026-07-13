@@ -21,79 +21,64 @@ test.describe("Slot Capacity Boundary", () => {
       softwareInstallationPage,
       slotPicker,
     }) => {
-      // Buy the 1st installation and find a date with 0 bookings so the
-      // 3/3 boundary is clean.
-      await softwareInstallationPage.purchaseInstallation(1);
+      // Single purchase of 4 installations — try to allocate all 4 into
+      // the morning slot of one date, whose capacity is 3.
+      await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);
       const targetDate = await slotPicker.findEmptyBookableDate();
       expect(targetDate).not.toBeNull();
 
       await slotPicker.openSlotModal(targetDate!);
-      await slotPicker.incrementSlot(MORNING, 1);
-      await slotPicker.saveSlotChanges();
-      await slotPicker.confirmAppointment();
 
-      // Buy 2 more installations (3 total) into the morning slot of the same date
-      for (let i = 1; i < ENV.slotCapacity.perSlot; i++) {
-        await softwareInstallationPage.purchaseInstallation(1);
-        await slotPicker.openSlotModal(targetDate!);
-        await slotPicker.incrementSlot(MORNING, 1);
-        await slotPicker.saveSlotChanges();
-        await slotPicker.confirmAppointment();
-      }
-
-      // 4th installation — try to book a 4th unit into the now-full morning slot
-      await softwareInstallationPage.purchaseInstallation(1);
-      await slotPicker.openSlotModal(targetDate!);
-
+      // Book 3 into morning — fills the slot to capacity
+      await slotPicker.incrementSlot(MORNING, ENV.slotCapacity.perSlot);
       const isMorningFull = await slotPicker.isSlotFullyBooked(MORNING);
       expect(isMorningFull).toBe(true);
 
       const isAfternoonFull = await slotPicker.isSlotFullyBooked(AFTERNOON);
       expect(isAfternoonFull).toBe(false);
 
-      // Attempting to add another unit to the full morning slot must not
-      // increase the booked count
+      // Try to add the 4th unit to the now-full morning slot — must be rejected
       const before = await slotPicker.getModalSlotBooked(MORNING);
       await slotPicker.incrementSlot(MORNING, 1);
       const after = await slotPicker.getModalSlotBooked(MORNING);
       expect(after.booked).toBe(before.booked);
+
+      // Allocate the remaining unit to the afternoon slot to complete the booking
+      await slotPicker.incrementSlot(AFTERNOON, 1);
+      await slotPicker.saveSlotChanges();
+      await slotPicker.confirmAppointment();
     });
 
     test("Afternoon Slot - Book until full", async ({
       softwareInstallationPage,
       slotPicker,
     }) => {
-      await softwareInstallationPage.purchaseInstallation(1);
+      // Single purchase of 4 installations — try to allocate all 4 into
+      // the afternoon slot of one date, whose capacity is 3.
+      await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);
       const targetDate = await slotPicker.findEmptyBookableDate();
       expect(targetDate).not.toBeNull();
 
       await slotPicker.openSlotModal(targetDate!);
-      await slotPicker.incrementSlot(AFTERNOON, 1);
-      await slotPicker.saveSlotChanges();
-      await slotPicker.confirmAppointment();
 
-      for (let i = 1; i < ENV.slotCapacity.perSlot; i++) {
-        await softwareInstallationPage.purchaseInstallation(1);
-        await slotPicker.openSlotModal(targetDate!);
-        await slotPicker.incrementSlot(AFTERNOON, 1);
-        await slotPicker.saveSlotChanges();
-        await slotPicker.confirmAppointment();
-      }
-
-      // 4th installation — try to book a 4th unit into the now-full afternoon slot
-      await softwareInstallationPage.purchaseInstallation(1);
-      await slotPicker.openSlotModal(targetDate!);
-
+      // Book 3 into afternoon — fills the slot to capacity
+      await slotPicker.incrementSlot(AFTERNOON, ENV.slotCapacity.perSlot);
       const isAfternoonFull = await slotPicker.isSlotFullyBooked(AFTERNOON);
       expect(isAfternoonFull).toBe(true);
 
       const isMorningFull = await slotPicker.isSlotFullyBooked(MORNING);
       expect(isMorningFull).toBe(false);
 
+      // Try to add the 4th unit to the now-full afternoon slot — must be rejected
       const before = await slotPicker.getModalSlotBooked(AFTERNOON);
       await slotPicker.incrementSlot(AFTERNOON, 1);
       const after = await slotPicker.getModalSlotBooked(AFTERNOON);
       expect(after.booked).toBe(before.booked);
+
+      // Allocate the remaining unit to the morning slot to complete the booking
+      await slotPicker.incrementSlot(MORNING, 1);
+      await slotPicker.saveSlotChanges();
+      await slotPicker.confirmAppointment();
     });
 
     test("Day capacity reach 6/6", async ({

@@ -205,9 +205,18 @@ export class SlotPickerComponent extends BasePage {
     return Math.max(0, total - allocated);
   }
 
-  /** Click "Confirm Appointment" / "Confirm booking" via siConfirmBooking() */
+  /**
+   * Click "Confirm Appointment" / "Confirm booking" via siConfirmBooking().
+   * siConfirmBooking() fires an async request before redirecting to
+   * submitted.do — waiting on networkidle alone can return before that
+   * request even starts, letting the next action interrupt it mid-flight.
+   * Wait for the redirect explicitly first; if confirmation is blocked
+   * (e.g. mandatory booking not satisfied) there's no redirect, so fall
+   * through to the networkidle wait instead.
+   */
   async confirmAppointment() {
     await this.page.evaluate(() => (window as any).siConfirmBooking());
+    await this.page.waitForURL(/submitted\.do\?txnId=/, { timeout: 15000 }).catch(() => {});
     await this.waitForNav();
   }
 
