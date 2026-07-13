@@ -9,9 +9,9 @@ import { test, expect } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
 
-const BASE = process.env.EAUTO_BASE_URL || "https://staging.eauto.my/uat1";
-const USER = process.env.EAUTO_UCD_USER || "";
-const PASS = process.env.EAUTO_UCD_PASS || "";
+const BASE = "https://staging.eauto.my/uat1";
+const USER = "faizuddin";
+const PASS = "password";
 const SCREENSHOT_DIR = path.join(__dirname, "..", "debug-screenshots");
 
 let stepNum = 0;
