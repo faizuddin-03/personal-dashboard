@@ -24,9 +24,10 @@ export class SlotPickerComponent extends BasePage {
   readonly morningRemoveBtn = this.page.locator("#si-rowx0");
   readonly afternoonRemoveBtn = this.page.locator("#si-rowx1");
 
-  // Footer
+  // Footer — confirmed from real HTML: <div class="si-tally">Booked
+  // <span id="si-alloc-count">1</span> of <span id="si-alloc-total">1</span></div>
   readonly allocCount = this.page.locator("#si-alloc-count");
-  readonly remainingCount = this.page.locator("#si-remain-n");
+  readonly allocTotal = this.page.locator("#si-alloc-total");
 
   // Confirm button — used after all slots are allocated
   readonly confirmBookingBtn = this.page.locator("button:has-text('Confirm'), .si-abtn:has-text('Confirm')").first();
@@ -54,10 +55,12 @@ export class SlotPickerComponent extends BasePage {
     return classes.includes("si-fullday");
   }
 
+  /** Returns "" if the date has no badge at all (e.g. weekends/out-of-range days) */
   async getSlotBadge(dateStr: string): Promise<string> {
     const cell = this.getDayCell(dateStr);
     const badge = cell.locator(".si-badge").first();
-    return (await badge.textContent()) ?? "";
+    if ((await badge.count()) === 0) return "";
+    return (await badge.textContent().catch(() => "")) ?? "";
   }
 
   async getSlotCount(dateStr: string): Promise<{ used: number; total: number }> {
@@ -77,9 +80,35 @@ export class SlotPickerComponent extends BasePage {
     return await cell.locator(".si-selbadge").count() > 0;
   }
 
+  /** All currently bookable dates on the visible calendar month (td.si-book) */
+  async findBookableDates(): Promise<string[]> {
+    const cells = await this.page.locator("td.si-book[data-date]").all();
+    const dates: string[] = [];
+    for (const cell of cells) {
+      const date = await cell.getAttribute("data-date");
+      if (date) dates.push(date);
+    }
+    return dates;
+  }
+
+  /** First bookable date that currently has zero units booked (clean slate for capacity tests) */
+  async findEmptyBookableDate(): Promise<string | null> {
+    for (const date of await this.findBookableDates()) {
+      const { used } = await this.getSlotCount(date);
+      if (used === 0) return date;
+    }
+    return null;
+  }
+
   /** Click a date cell to open the slot dialog */
   async openSlotModal(dateStr: string) {
     const cell = this.getDayCell(dateStr);
+    const classes = (await cell.getAttribute("class")) ?? "";
+    if (!classes.includes("si-book") || classes.includes("si-muted")) {
+      throw new Error(
+        `Date ${dateStr} is not bookable (class="${classes}") — pick a date from findBookableDates()/findEmptyBookableDate() instead of a hardcoded offset.`
+      );
+    }
     await cell.click();
     await this.modalOverlay.waitFor({ state: "visible", timeout: 5000 });
   }
@@ -130,14 +159,22 @@ export class SlotPickerComponent extends BasePage {
     await this.page.evaluate(() => (window as any).siCloseModal());
   }
 
-  async getRemainingToAllocate(): Promise<number> {
-    const text = (await this.remainingCount.textContent()) ?? "0";
+  /** Total units to allocate for this transaction (#si-alloc-total) */
+  async getAllocationTotal(): Promise<number> {
+    const text = (await this.allocTotal.textContent()) ?? "0";
     return Number(text) || 0;
   }
 
+  /** Units allocated so far across all picked dates (#si-alloc-count) */
   async getAllocatedCount(): Promise<number> {
     const text = (await this.allocCount.textContent()) ?? "0";
     return Number(text) || 0;
+  }
+
+  async getRemainingToAllocate(): Promise<number> {
+    const total = await this.getAllocationTotal();
+    const allocated = await this.getAllocatedCount();
+    return Math.max(0, total - allocated);
   }
 
   /** Click "Confirm Appointment" / "Confirm booking" via siConfirmBooking() */

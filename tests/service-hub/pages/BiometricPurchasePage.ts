@@ -2,20 +2,29 @@ import { type Page, expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { PATHS } from "../utils/config";
 
+/**
+ * Biometric Device Purchase — two-step flow:
+ *  Step 1 (purchase.do): device qty, recipient, contact, delivery address → Next
+ *  Step 2 (make-payment.do): free/paid install options → Make Payment → jQuery UI
+ *  confirm dialog → redirect to slot.do?txnId= (same slot picker as Software Installation)
+ */
 export class BiometricPurchasePage extends BasePage {
   // Step 1 — Device details
-  readonly deviceQtyIncrement = this.page.locator("button:has-text('+')").first();
-  readonly deviceQtyDecrement = this.page.locator("button:has-text('−'), button:has-text('-')").first();
-  readonly recipientNameInput = this.page.locator('input[name="authorizedReceiver"], input[placeholder*="Recipient"]').first();
-  readonly contactNoInput = this.page.locator('input[name="contactNo"], input[placeholder*="Contact"]').first();
-  readonly shipToShowroomCheckbox = this.page.locator('input[name="shipToShowroom"], input[type="checkbox"]').first();
-  readonly deliveryAddressTextarea = this.page.locator('textarea[name="deliveryAddress"], textarea').first();
-  readonly nextBtn = this.page.getByText("Next", { exact: false });
+  readonly qtyInput = this.page.locator("#qty");
+  readonly qtyIncrementBtn = this.page.locator('button[onclick="bioStep(1)"]');
+  readonly qtyDecrementBtn = this.page.locator('button[onclick="bioStep(-1)"]');
+  readonly recipientNameInput = this.page.locator("#authorizedReceiver");
+  readonly contactNoInput = this.page.locator("#contactNo");
+  readonly shipToShowroomCheckbox = this.page.locator("#shipToShowroom");
+  readonly deliveryAddressTextarea = this.page.locator("#deliveryAddress");
+  readonly nextBtn = this.page.locator("button.bio-btn.next");
 
-  // Step 2 — Schedule & payment
-  readonly skipInstallCheckbox = this.page.getByText("I don't need software Installation", { exact: false });
-  readonly additionalInstallIncrement = this.page.locator("button:has-text('+')").nth(1);
-  readonly makePaymentBtn = this.page.getByText("Make Payment", { exact: false });
+  // Step 2 — Install options & payment
+  readonly installOptOutCheckbox = this.page.locator("#installOptOut");
+  readonly extraInstallsInput = this.page.locator("#extraInstalls");
+  readonly extraInstallIncrementBtn = this.page.locator("#bio-extra-plus");
+  readonly extraInstallDecrementBtn = this.page.locator("#bio-extra-minus");
+  readonly makePaymentBtn = this.page.locator("#si-pay-btn");
 
   constructor(page: Page) {
     super(page);
@@ -25,8 +34,17 @@ export class BiometricPurchasePage extends BasePage {
     await this.goto(PATHS.biometricPurchase);
   }
 
+  async getDeviceQuantity(): Promise<number> {
+    return Number(await this.qtyInput.inputValue()) || 1;
+  }
+
   async setDeviceQuantity(qty: number) {
-    for (let i = 1; i < qty; i++) await this.deviceQtyIncrement.click();
+    const current = await this.getDeviceQuantity();
+    if (qty > current) {
+      for (let i = 0; i < qty - current; i++) await this.qtyIncrementBtn.click();
+    } else if (qty < current) {
+      for (let i = 0; i < current - qty; i++) await this.qtyDecrementBtn.click();
+    }
   }
 
   async fillDeliveryDetails(opts: {
@@ -37,11 +55,13 @@ export class BiometricPurchasePage extends BasePage {
   }) {
     await this.recipientNameInput.fill(opts.recipientName);
     await this.contactNoInput.fill(opts.contactNo);
+
+    const isChecked = await this.shipToShowroomCheckbox.isChecked();
     if (opts.shipToShowroom) {
-      await this.shipToShowroomCheckbox.check();
-    } else if (opts.deliveryAddress) {
-      await this.shipToShowroomCheckbox.uncheck();
-      await this.deliveryAddressTextarea.fill(opts.deliveryAddress);
+      if (!isChecked) await this.shipToShowroomCheckbox.check();
+    } else {
+      if (isChecked) await this.shipToShowroomCheckbox.uncheck();
+      if (opts.deliveryAddress) await this.deliveryAddressTextarea.fill(opts.deliveryAddress);
     }
   }
 
@@ -51,21 +71,32 @@ export class BiometricPurchasePage extends BasePage {
   }
 
   async skipInstallation() {
-    await this.skipInstallCheckbox.check();
+    await this.installOptOutCheckbox.check();
+  }
+
+  async getExtraInstalls(): Promise<number> {
+    return Number(await this.extraInstallsInput.inputValue()) || 0;
   }
 
   async setAdditionalInstallations(qty: number) {
-    for (let i = 0; i < qty; i++) await this.additionalInstallIncrement.click();
+    const current = await this.getExtraInstalls();
+    if (qty > current) {
+      for (let i = 0; i < qty - current; i++) await this.extraInstallIncrementBtn.click();
+    } else if (qty < current) {
+      for (let i = 0; i < current - qty; i++) await this.extraInstallDecrementBtn.click();
+    }
   }
 
+  /** Click Make Payment → wait for jQuery UI dialog → click Yes → wait for redirect to slot.do */
   async makePayment(): Promise<string> {
-    await this.acceptConfirmDialog();
     await this.makePaymentBtn.click();
-    await this.waitForNav();
+    await this.waitForDialog();
+    await this.acceptConfirmDialog();
+    await this.page.waitForURL(/slot\.do\?txnId=/, { timeout: 15000 });
     return this.getTxnIdFromUrl();
   }
 
-  /** Full purchase: qty devices → fill delivery → step2 → pay → return txnId */
+  /** Full purchase: qty devices → fill delivery → step2 → optional install opts → pay → return txnId */
   async purchaseDevice(opts: {
     deviceQty?: number;
     recipientName: string;
