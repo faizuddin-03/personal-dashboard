@@ -128,6 +128,58 @@ export class SlotPickerComponent extends BasePage {
     return null;
   }
 
+  /**
+   * First bookable date regardless of existing bookings. Use this (plus
+   * per-slot/per-day room checks) instead of findEmptyBookableDate() once
+   * the shared staging calendar no longer has any completely untouched
+   * dates left in the navigable window.
+   */
+  async findAnyBookableDate(maxMonthsAhead: number = 6): Promise<string | null> {
+    for (let m = 0; m <= maxMonthsAhead; m++) {
+      const dates = await this.findBookableDates();
+      if (dates.length > 0) return dates[0];
+      if (m >= maxMonthsAhead) break;
+      if (!(await this.goNextMonth())) break;
+    }
+    return null;
+  }
+
+  /** First bookable date whose combined day capacity (both slots) has at least minRoom free */
+  async findDateWithRoom(minRoom: number, maxMonthsAhead: number = 6): Promise<string | null> {
+    for (let m = 0; m <= maxMonthsAhead; m++) {
+      for (const date of await this.findBookableDates()) {
+        const { used, total } = await this.getSlotCount(date);
+        if (total - used >= minRoom) return date;
+      }
+      if (m >= maxMonthsAhead) break;
+      if (!(await this.goNextMonth())) break;
+    }
+    return null;
+  }
+
+  /**
+   * Allocates `count` units into a date's morning slot first, overflowing
+   * into afternoon if morning doesn't have enough room, and saves.
+   * Returns the number actually allocated (may be less than requested if
+   * the date doesn't have enough combined room across both slots).
+   */
+  async allocateUnitsAcrossSlots(dateStr: string, count: number): Promise<number> {
+    await this.openSlotModal(dateStr);
+    let remaining = count;
+    for (const slot of [0, 1]) {
+      if (remaining <= 0) break;
+      const { booked, max } = await this.getModalSlotBooked(slot);
+      const room = max - booked;
+      const take = Math.min(room, remaining);
+      if (take > 0) {
+        await this.incrementSlot(slot, take);
+        remaining -= take;
+      }
+    }
+    await this.saveSlotChanges();
+    return count - remaining;
+  }
+
   /** Click a date cell to open the slot dialog */
   async openSlotModal(dateStr: string) {
     await this.ensureMonthVisible(dateStr);
