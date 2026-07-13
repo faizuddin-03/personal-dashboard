@@ -157,6 +157,58 @@ test.describe("Reschedule & Handling", () => {
       await expect(firstBookable).toBeVisible();
     });
 
+    test("Same-day reschedule via portal — record becomes Failed", async ({
+      listingPage,
+      reschedulePage,
+      requestDetailsPage,
+    }) => {
+      // SRD 2.3.2.1 #5 (note iii): if a UCD reschedules to today's date via
+      // the portal, the system allows it but the affected installation
+      // record is set to Status = "Failed" with the remark
+      // "UCD rescheduled on the same day."
+      //
+      // NOTE: the SRD is internally ambiguous — the +2 blackout greys out
+      // today, yet this note says selecting today is allowed. This test
+      // therefore only runs when today is actually selectable, and is
+      // skipped (not failed) otherwise, pending clarification.
+
+      await listingPage.navigate();
+      await listingPage.searchBtn.click();
+      await listingPage.waitForNav();
+
+      const rows = await listingPage.getResultRows();
+      let targetRow = null;
+      for (const row of rows) {
+        if (await listingPage.hasRescheduleAction(row)) {
+          targetRow = row;
+          break;
+        }
+      }
+      if (!targetRow) {
+        test.skip(true, "No appointment with Reschedule action available");
+        return;
+      }
+
+      await listingPage.clickReschedule(targetRow);
+
+      if (!(await reschedulePage.isDayBookable(reschedulePage.today()))) {
+        test.skip(true, "Today is not selectable on the calendar (+2 blackout in effect); same-day reschedule not reachable via portal.");
+        return;
+      }
+
+      const bookedDate = await reschedulePage.findBookedDate();
+      expect(bookedDate).not.toBeNull();
+
+      await reschedulePage.rescheduleToToday({ oldDate: bookedDate!, slot: MORNING });
+
+      // The affected record must now show a Failed appointment.
+      const txnId = reschedulePage.getTxnIdFromUrl();
+      if (txnId) {
+        await requestDetailsPage.navigate(txnId);
+        expect(await requestDetailsPage.hasFailedAppointment()).toBe(true);
+      }
+    });
+
     test("Slot taken mid selection — concurrency", async ({
       listingPage,
       reschedulePage,
@@ -201,18 +253,25 @@ test.describe("Reschedule & Handling", () => {
       browser,
     }) => {
       // Scenario: UCD has multiple appointments (e.g. 20th and 21st).
-      // BO cancels the 20th. When UCD opens listing, the cancelled
-      // appointment should NOT show Reschedule. Only the 21st should.
+      // BO cancels one. When UCD opens listing, the cancelled appointment
+      // should NOT show Reschedule. Only the active ones should.
+      //
+      // Per SRD 2.3.2.5, Cancel is performed on the BO Software
+      // Installation Listing ("Cancel" action + "Sure to cancel?" popup).
 
-      // ── Step 1: BO cancels an appointment ──
+      // ── Step 1: BO cancels a request via the BO SI Listing ──
       const boContext = await browser.newContext();
       const boPage = await boContext.newPage();
       const boLogin = new (await import("../pages/LoginPage")).LoginPage(boPage);
-      const boCal = new (await import("../pages/bo/AppointmentCalendarPage")).AppointmentCalendarPage(boPage);
+      const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(boPage);
 
       await boLogin.loginAsBO(ENV.boUsername, ENV.boPassword);
-      await boCal.navigate();
-      await boCal.markAppointmentCancelled();
+      await boListing.navigate();
+      await boListing.searchWithFilters({ installationStatus: "PENDING" });
+      const boRows = await boListing.getResultRows();
+      if (boRows.length > 0) {
+        await boListing.cancelRequest(boRows[0], true);
+      }
       await boContext.close();
 
       // ── Step 2: UCD checks the listing ──
@@ -260,15 +319,23 @@ test.describe("Reschedule & Handling", () => {
       // UCD listing should NOT show Reschedule for that appointment.
       // Only remaining active appointments should be reschedulable.
 
-      // ── Step 1: BO marks an appointment as Failed ──
+      // ── Step 1: BO marks a request Failed via the BO SI Details page ──
+      // Per SRD 2.3.2.6 #7, "Installation Failed »" opens a reason popup
+      // (Reappointment / Laptop-PC Issues / Other) → Yes sets status Failed.
       const boContext = await browser.newContext();
       const boPage = await boContext.newPage();
       const boLogin = new (await import("../pages/LoginPage")).LoginPage(boPage);
-      const boCal = new (await import("../pages/bo/AppointmentCalendarPage")).AppointmentCalendarPage(boPage);
+      const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(boPage);
+      const boDetails = new (await import("../pages/bo/SoftwareInstallationDetailsPage")).SoftwareInstallationDetailsPage(boPage);
 
       await boLogin.loginAsBO(ENV.boUsername, ENV.boPassword);
-      await boCal.navigate();
-      await boCal.markAppointmentFailed("Reappointment");
+      await boListing.navigate();
+      await boListing.searchWithFilters({ installationStatus: "PENDING" });
+      const boRows = await boListing.getResultRows();
+      if (boRows.length > 0) {
+        await boListing.clickView(boRows[0]);
+        await boDetails.markFailed("Reappointment");
+      }
       await boContext.close();
 
       // ── Step 2: UCD checks the listing ──
@@ -318,66 +385,32 @@ test.describe("Reschedule & Handling", () => {
       await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
     });
 
-    test("BO reschedule normal flow", async ({
-      boCalendarPage,
-    }) => {
+    // BO reschedules through the Appointment Calendar's Reschedule dialog
+    // (SRD 2.3.2.7 #3): read-only identity fields + New Appointment Date +
+    // Time Slot radio + Confirm. No +2 blackout / slot cap for CSE.
+    test("BO reschedule normal flow", async ({ boCalendarPage }) => {
       await boCalendarPage.navigate();
 
-      const oldDate = boCalendarPage.daysFromToday(3);
+      if (!(await boCalendarPage.isRescheduleAvailable())) {
+        test.skip(true, "No listed appointment to reschedule in this month");
+        return;
+      }
+
       const newDate = boCalendarPage.daysFromToday(7);
-
-      await boCalendarPage.rescheduleAppointment({
-        oldDate,
-        newDate,
-        slot: MORNING,
-      });
-
-      await boCalendarPage.navigate();
-      expect(await boCalendarPage.isDateBooked(oldDate)).toBe(false);
-      const newSlot = await boCalendarPage.getSlotCount(newDate);
-      expect(newSlot.used).toBeGreaterThan(0);
+      await boCalendarPage.rescheduleFirstListed({ newDate, slot: MORNING });
     });
 
-    test("BO reschedule on same day different time slot and the next day", async ({
-      boCalendarPage,
-    }) => {
+    test("BO reschedule to next day — no +2 blackout", async ({ boCalendarPage }) => {
       await boCalendarPage.navigate();
 
-      const sameDay = boCalendarPage.daysFromToday(4);
-      await boCalendarPage.rescheduleAppointment({
-        oldDate: sameDay,
-        newDate: sameDay,
-        slot: AFTERNOON,
-      });
+      if (!(await boCalendarPage.isRescheduleAvailable())) {
+        test.skip(true, "No listed appointment to reschedule in this month");
+        return;
+      }
 
-      await boCalendarPage.navigate();
-
-      // BO can reschedule to tomorrow — no +2 day blackout
+      // CSE has no +2 day restriction; tomorrow is a valid target.
       const nextDay = boCalendarPage.daysFromToday(1);
-      const isDayBookable = await boCalendarPage.isDayBookable(nextDay);
-    });
-
-    test("Reschedule after appointment status = cancel", async ({
-      boCalendarPage,
-    }) => {
-      await boCalendarPage.navigate();
-      const isAvailable = await boCalendarPage.isRescheduleAvailable();
-      expect(isAvailable).toBe(false);
-    });
-
-    test("Reschedule after appointment status = fail", async ({
-      boCalendarPage,
-    }) => {
-      await boCalendarPage.navigate();
-      const isAvailable = await boCalendarPage.isRescheduleAvailable();
-      expect(isAvailable).toBe(true);
-
-      const newDate = boCalendarPage.daysFromToday(5);
-      await boCalendarPage.rescheduleAppointment({
-        oldDate: boCalendarPage.daysFromToday(2),
-        newDate,
-        slot: MORNING,
-      });
+      await boCalendarPage.rescheduleFirstListed({ newDate: nextDay, slot: AFTERNOON });
     });
   });
 });

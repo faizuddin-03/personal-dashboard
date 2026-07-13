@@ -5,13 +5,35 @@ import { PATHS } from "../utils/config";
 export type ServiceType = "ALL" | "BIOMETRIC_PURCHASE" | "SOFTWARE_INSTALLATION" | "CHANGE_MAIN_USER";
 export type TxStatus = "ALL" | "NEW" | "PENDING" | "APPROVED" | "COMPLETED" | "FAILED" | "CANCELLED";
 
+/**
+ * eAuto UCD Portal > Service Hub > Service Request Listing (SRD 2.3.2.2).
+ *
+ * Listing columns (0-indexed):
+ *   0 #  | 1 Reference No | 2 Service Type | 3 Date Requested |
+ *   4 Payment | 5 Tx Status | 6 e-Invoice Status | 7 Remarks | 8 Action
+ */
 export class ServiceRequestListingPage extends BasePage {
-  // Filter panel
+  // Column index map — kept as a single source of truth for the getters.
+  static readonly COL = {
+    num: 0,
+    referenceNo: 1,
+    serviceType: 2,
+    dateRequested: 3,
+    payment: 4,
+    txStatus: 5,
+    eInvoiceStatus: 6,
+    remarks: 7,
+    action: 8,
+  } as const;
+
+  // Filter panel (SRD 2.3.2.2 #1)
   readonly referenceNoInput = this.page.locator('input[name="referenceNo"], input[placeholder*="Reference"]').first();
   readonly serviceTypeSelect = this.page.locator('select[name="serviceType"]').first();
   readonly statusSelect = this.page.locator('select[name="status"]').first();
-  readonly dateFromInput = this.page.locator('input[name="dateRequestedFrom"]').first();
-  readonly dateToInput = this.page.locator('input[name="dateRequestedTo"]').first();
+  readonly dateRequestedFromInput = this.page.locator('input[name="dateRequestedFrom"]').first();
+  readonly dateRequestedToInput = this.page.locator('input[name="dateRequestedTo"]').first();
+  readonly paymentDateFromInput = this.page.locator('input[name="paymentDateFrom"]').first();
+  readonly paymentDateToInput = this.page.locator('input[name="paymentDateTo"]').first();
   readonly searchBtn = this.page.getByText("Search Now", { exact: false });
   readonly resetBtn = this.page.getByText("Reset", { exact: false });
 
@@ -36,15 +58,24 @@ export class ServiceRequestListingPage extends BasePage {
     referenceNo?: string;
     serviceType?: ServiceType;
     status?: TxStatus;
-    dateFrom?: string;
-    dateTo?: string;
+    dateRequestedFrom?: string;
+    dateRequestedTo?: string;
+    paymentDateFrom?: string;
+    paymentDateTo?: string;
   }) {
     if (opts.referenceNo) await this.referenceNoInput.fill(opts.referenceNo);
     if (opts.serviceType) await this.serviceTypeSelect.selectOption(opts.serviceType);
     if (opts.status) await this.statusSelect.selectOption(opts.status);
-    if (opts.dateFrom) await this.dateFromInput.fill(opts.dateFrom);
-    if (opts.dateTo) await this.dateToInput.fill(opts.dateTo);
+    if (opts.dateRequestedFrom) await this.dateRequestedFromInput.fill(opts.dateRequestedFrom);
+    if (opts.dateRequestedTo) await this.dateRequestedToInput.fill(opts.dateRequestedTo);
+    if (opts.paymentDateFrom) await this.paymentDateFromInput.fill(opts.paymentDateFrom);
+    if (opts.paymentDateTo) await this.paymentDateToInput.fill(opts.paymentDateTo);
     await this.searchBtn.click();
+    await this.waitForNav();
+  }
+
+  async resetFilters() {
+    await this.resetBtn.click();
     await this.waitForNav();
   }
 
@@ -53,17 +84,40 @@ export class ServiceRequestListingPage extends BasePage {
     return await this.resultsTable.locator("tbody tr").all();
   }
 
-  /** Get the status text from a specific row */
+  private async cellText(row: Locator, colIndex: number): Promise<string> {
+    return (await row.locator("td").nth(colIndex).textContent())?.trim() ?? "";
+  }
+
+  async getRowReferenceNo(row: Locator): Promise<string> {
+    return this.cellText(row, ServiceRequestListingPage.COL.referenceNo);
+  }
+
+  async getRowServiceType(row: Locator): Promise<string> {
+    return this.cellText(row, ServiceRequestListingPage.COL.serviceType);
+  }
+
+  async getRowDateRequested(row: Locator): Promise<string> {
+    return this.cellText(row, ServiceRequestListingPage.COL.dateRequested);
+  }
+
+  async getRowPayment(row: Locator): Promise<string> {
+    return this.cellText(row, ServiceRequestListingPage.COL.payment);
+  }
+
+  /** Tx Status — "Pending" (blue) / "Completed" (green) etc. */
   async getRowStatus(row: Locator): Promise<string> {
-    return (await row.locator("td").nth(5).textContent())?.trim() ?? "";
+    return this.cellText(row, ServiceRequestListingPage.COL.txStatus);
   }
 
-  /** Get the remarks text from a specific row */
+  async getRowEInvoiceStatus(row: Locator): Promise<string> {
+    return this.cellText(row, ServiceRequestListingPage.COL.eInvoiceStatus);
+  }
+
   async getRowRemarks(row: Locator): Promise<string> {
-    return (await row.locator("td").nth(7).textContent())?.trim() ?? "";
+    return this.cellText(row, ServiceRequestListingPage.COL.remarks);
   }
 
-  /** Click "View" action on a row */
+  /** Click "View" action on a row → Service Request Details Page */
   async clickView(row: Locator) {
     await row.getByText("View", { exact: false }).click();
     await this.waitForNav();
@@ -75,9 +129,25 @@ export class ServiceRequestListingPage extends BasePage {
     await this.waitForNav();
   }
 
-  /** Check if "Reschedule" action link exists on a row */
+  /**
+   * SRD 2.3.2.2 #3: "Reschedule" is shown only for Software Installation
+   * requests whose Tx Status = "PENDING". A row qualifies when the action
+   * link is present.
+   */
   async hasRescheduleAction(row: Locator): Promise<boolean> {
-    return await row.locator("a.sc-resubmit").count() > 0;
+    return (await row.locator("a.sc-resubmit").count()) > 0;
+  }
+
+  /**
+   * Verify the SRD rule that Reschedule is only offered when Tx Status is
+   * Pending — a row with a non-pending status must not expose the action.
+   */
+  async assertRescheduleOnlyWhenPending(row: Locator) {
+    const status = (await this.getRowStatus(row)).toLowerCase();
+    const hasReschedule = await this.hasRescheduleAction(row);
+    if (!status.includes("pending")) {
+      expect(hasReschedule).toBe(false);
+    }
   }
 
   /** Navigate to reschedule page for a specific txnId */

@@ -50,7 +50,7 @@ export class SlotPickerComponent extends BasePage {
    * until we page forward to it again. Call this before touching any
    * specific date.
    */
-  async ensureMonthVisible(dateStr: string, maxMonthsAhead: number = 6): Promise<void> {
+  async ensureMonthVisible(dateStr: string, maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<void> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       if ((await this.getDayCell(dateStr).count()) > 0) return;
       if (!(await this.goNextMonth())) return;
@@ -116,7 +116,7 @@ export class SlotPickerComponent extends BasePage {
    * current month, so this pages forward through future months until it
    * finds one, up to maxMonthsAhead.
    */
-  async findEmptyBookableDate(maxMonthsAhead: number = 6): Promise<string | null> {
+  async findEmptyBookableDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       for (const date of await this.findBookableDates()) {
         const { used } = await this.getSlotCount(date);
@@ -134,7 +134,7 @@ export class SlotPickerComponent extends BasePage {
    * the shared staging calendar no longer has any completely untouched
    * dates left in the navigable window.
    */
-  async findAnyBookableDate(maxMonthsAhead: number = 6): Promise<string | null> {
+  async findAnyBookableDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       const dates = await this.findBookableDates();
       if (dates.length > 0) return dates[0];
@@ -145,7 +145,7 @@ export class SlotPickerComponent extends BasePage {
   }
 
   /** First bookable date whose combined day capacity (both slots) has at least minRoom free */
-  async findDateWithRoom(minRoom: number, maxMonthsAhead: number = 6): Promise<string | null> {
+  async findDateWithRoom(minRoom: number, maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       for (const date of await this.findBookableDates()) {
         const { used, total } = await this.getSlotCount(date);
@@ -158,7 +158,7 @@ export class SlotPickerComponent extends BasePage {
   }
 
   /** First date on the calendar that's already fully booked (td.si-fullday) */
-  async findFullyBookedDate(maxMonthsAhead: number = 6): Promise<string | null> {
+  async findFullyBookedDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       const cells = await this.page.locator("td.si-fullday[data-date]").all();
       for (const cell of cells) {
@@ -178,7 +178,7 @@ export class SlotPickerComponent extends BasePage {
    * modal to check that slot directly rather than relying on the day
    * badge (which only reflects combined capacity across both slots).
    */
-  async findDateWithSlotRoom(slotIndex: number, minRoom: number, maxMonthsAhead: number = 6): Promise<string | null> {
+  async findDateWithSlotRoom(slotIndex: number, minRoom: number, maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       for (const date of await this.findBookableDates()) {
         await this.openSlotModal(date);

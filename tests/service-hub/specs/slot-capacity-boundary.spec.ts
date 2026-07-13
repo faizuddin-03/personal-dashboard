@@ -288,49 +288,46 @@ test.describe("Slot Capacity Boundary", () => {
       await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
     });
 
-    test("BO add beyond 6 days limit", async ({
-      boCalendarPage,
-    }) => {
+    // SRD 2.3.2.7 #2 rule 3: the 3-per-slot (6/day) cap applies to UCD
+    // Portal bookings only; for CSE it is informational, so BO can add
+    // beyond it.
+    test("BO add beyond 6/day cap", async ({ boCalendarPage }) => {
       const fullDate = boCalendarPage.daysFromToday(3);
 
       await boCalendarPage.addAppointment({
-        date: fullDate,
-        slot: MORNING,
         companyName: "Test Company Beyond6",
-        units: 1,
-      });
-
-      await boCalendarPage.navigate();
-    });
-
-    test("Add beyond morning slot limit", async ({
-      boCalendarPage,
-    }) => {
-      const fullDate = boCalendarPage.daysFromToday(4);
-
-      await boCalendarPage.addAppointment({
-        date: fullDate,
+        appointmentDate: fullDate,
         slot: MORNING,
-        companyName: "Test Company BeyondMorning",
-        units: 1,
       });
 
       await boCalendarPage.navigate();
+      expect(await boCalendarPage.getSlotCount(fullDate, MORNING)).toBeGreaterThan(0);
     });
 
-    test("Add beyond afternoon slot limit", async ({
-      boCalendarPage,
-    }) => {
+    test("BO add beyond morning slot limit", async ({ boCalendarPage }) => {
       const fullDate = boCalendarPage.daysFromToday(4);
 
       await boCalendarPage.addAppointment({
-        date: fullDate,
-        slot: AFTERNOON,
-        companyName: "Test Company BeyondAfternoon",
-        units: 1,
+        companyName: "Test Company BeyondMorning",
+        appointmentDate: fullDate,
+        slot: MORNING,
       });
 
       await boCalendarPage.navigate();
+      expect(await boCalendarPage.getSlotCount(fullDate, MORNING)).toBeGreaterThan(0);
+    });
+
+    test("BO add beyond afternoon slot limit", async ({ boCalendarPage }) => {
+      const fullDate = boCalendarPage.daysFromToday(4);
+
+      await boCalendarPage.addAppointment({
+        companyName: "Test Company BeyondAfternoon",
+        appointmentDate: fullDate,
+        slot: AFTERNOON,
+      });
+
+      await boCalendarPage.navigate();
+      expect(await boCalendarPage.getSlotCount(fullDate, AFTERNOON)).toBeGreaterThan(0);
     });
   });
 });
