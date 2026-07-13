@@ -31,7 +31,9 @@ test.describe("Slot Capacity Boundary", () => {
       // room is left in the morning slot (max 3) plus at least 1 spare
       // to prove overbooking is rejected, regardless of prior bookings.
       await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);
-      const targetDate = await slotPicker.findAnyBookableDate();
+      // A date can be generally "bookable" while morning specifically is
+      // already full, so find one where morning itself has room.
+      const targetDate = await slotPicker.findDateWithSlotRoom(MORNING, 1);
       expect(targetDate).not.toBeNull();
 
       await slotPicker.openSlotModal(targetDate!);
@@ -80,7 +82,9 @@ test.describe("Slot Capacity Boundary", () => {
       // room is left in the afternoon slot (max 3) plus at least 1 spare
       // to prove overbooking is rejected, regardless of prior bookings.
       await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);
-      const targetDate = await slotPicker.findAnyBookableDate();
+      // A date can be generally "bookable" while afternoon specifically is
+      // already full, so find one where afternoon itself has room.
+      const targetDate = await slotPicker.findDateWithSlotRoom(AFTERNOON, 1);
       expect(targetDate).not.toBeNull();
 
       await slotPicker.openSlotModal(targetDate!);
@@ -283,9 +287,9 @@ test.describe("Slot Capacity Boundary", () => {
       slotPicker,
       browser,
     }) => {
-      // Scout: find a bookable date and see how much morning room is left
+      // Scout: find a date where morning specifically has room
       await softwareInstallationPage.purchaseInstallation(1);
-      const targetDate = await slotPicker.findAnyBookableDate();
+      const targetDate = await slotPicker.findDateWithSlotRoom(MORNING, 1);
       expect(targetDate).not.toBeNull();
 
       await slotPicker.openSlotModal(targetDate!);

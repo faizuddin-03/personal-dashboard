@@ -158,6 +158,28 @@ export class SlotPickerComponent extends BasePage {
   }
 
   /**
+   * First bookable date where a SPECIFIC slot (morning or afternoon) has
+   * at least minRoom free. A date can be generally "bookable" while one
+   * particular slot is already at capacity, so this opens each candidate's
+   * modal to check that slot directly rather than relying on the day
+   * badge (which only reflects combined capacity across both slots).
+   */
+  async findDateWithSlotRoom(slotIndex: number, minRoom: number, maxMonthsAhead: number = 6): Promise<string | null> {
+    for (let m = 0; m <= maxMonthsAhead; m++) {
+      for (const date of await this.findBookableDates()) {
+        await this.openSlotModal(date);
+        const { booked, max } = await this.getModalSlotBooked(slotIndex);
+        await this.closeSlotModal();
+        await this.modalOverlay.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+        if (max - booked >= minRoom) return date;
+      }
+      if (m >= maxMonthsAhead) break;
+      if (!(await this.goNextMonth())) break;
+    }
+    return null;
+  }
+
+  /**
    * Allocates `count` units into a date's morning slot first, overflowing
    * into afternoon if morning doesn't have enough room, and saves.
    * Returns the number actually allocated (may be less than requested if
@@ -180,8 +202,19 @@ export class SlotPickerComponent extends BasePage {
     return count - remaining;
   }
 
-  /** Click a date cell to open the slot dialog */
+  /**
+   * Click a date cell to open the slot dialog. Defensively closes any
+   * modal left open by a previous action first — its full-page overlay
+   * physically blocks clicks on the calendar underneath, which otherwise
+   * surfaces as a confusing "element intercepts pointer events" timeout
+   * (and can just as easily swallow a goNextMonth() click, making month
+   * navigation silently fail).
+   */
   async openSlotModal(dateStr: string) {
+    if (await this.modalOverlay.isVisible().catch(() => false)) {
+      await this.closeSlotModal();
+      await this.modalOverlay.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+    }
     await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
     const classes = (await cell.getAttribute("class")) ?? "";
@@ -281,6 +314,12 @@ export class SlotPickerComponent extends BasePage {
    * so callers know to stop paging forward.
    */
   async goNextMonth(): Promise<boolean> {
+    // A stray open modal's overlay covers the whole page and would
+    // silently swallow this click too.
+    if (await this.modalOverlay.isVisible().catch(() => false)) {
+      await this.closeSlotModal();
+      await this.modalOverlay.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+    }
     const style = (await this.nextMonthArrow.getAttribute("style")) ?? "";
     if (style.includes("hidden")) return false;
     await this.nextMonthArrow.click();
