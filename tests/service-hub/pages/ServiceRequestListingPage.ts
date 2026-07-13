@@ -69,15 +69,15 @@ export class ServiceRequestListingPage extends BasePage {
     await this.waitForNav();
   }
 
-  /** Click "Reschedule" action on a row */
+  /** Click "Reschedule" action link on a row (a.sc-resubmit) */
   async clickReschedule(row: Locator) {
-    await row.getByText("Reschedule", { exact: false }).click();
+    await row.locator("a.sc-resubmit").click();
     await this.waitForNav();
   }
 
-  /** Check if "Reschedule" link exists on a row */
+  /** Check if "Reschedule" action link exists on a row */
   async hasRescheduleAction(row: Locator): Promise<boolean> {
-    return await row.getByText("Reschedule", { exact: false }).count() > 0;
+    return await row.locator("a.sc-resubmit").count() > 0;
   }
 
   /** Navigate to reschedule page for a specific txnId */
