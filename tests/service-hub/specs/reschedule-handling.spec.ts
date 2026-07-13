@@ -201,43 +201,118 @@ test.describe("Reschedule & Handling", () => {
     });
 
     test("Reschedule cancelled appointment — should be blocked", async ({
-      listingPage,
+      browser,
     }) => {
-      await listingPage.navigate();
-      await listingPage.searchWithFilters({
-        serviceType: "SOFTWARE_INSTALLATION",
-        status: "CANCELLED",
-      });
+      // Scenario: UCD has appointments on 20th and 21st.
+      // BO cancels the 20th. When UCD opens listing, the cancelled
+      // appointment should no longer show Reschedule action.
+      // UCD should only be able to reschedule the 21st.
 
-      const rows = await listingPage.getResultRows();
-      if (rows.length === 0) {
-        test.skip(true, "No cancelled appointment available — BO must cancel one first");
-        return;
+      // ── Step 1: BO cancels an appointment ──
+      const boContext = await browser.newContext();
+      const boPage = await boContext.newPage();
+      const boLogin = new (await import("../pages/LoginPage")).LoginPage(boPage);
+      const boCal = new (await import("../pages/bo/AppointmentCalendarPage")).AppointmentCalendarPage(boPage);
+
+      await boLogin.loginAsBO(ENV.boUsername, ENV.boPassword);
+      await boCal.navigate();
+      await boCal.markAppointmentCancelled();
+      await boContext.close();
+
+      // ── Step 2: UCD checks the listing ──
+      const ucdContext = await browser.newContext();
+      const ucdPage = await ucdContext.newPage();
+      const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
+      const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
+
+      await ucdLogin.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
+      await ucdListing.navigate();
+      await ucdListing.searchBtn.click();
+      await ucdListing.waitForNav();
+
+      const rows = await ucdListing.getResultRows();
+
+      // Verify: cancelled appointment does NOT have Reschedule action
+      for (const row of rows) {
+        const status = await ucdListing.getRowStatus(row);
+        if (status.toLowerCase().includes("cancel")) {
+          const hasReschedule = await ucdListing.hasRescheduleAction(row);
+          expect(hasReschedule).toBe(false);
+        }
       }
 
-      // UCD cannot reschedule cancelled appointments
-      const hasReschedule = await listingPage.hasRescheduleAction(rows[0]);
-      expect(hasReschedule).toBe(false);
+      // Verify: remaining non-cancelled appointments still have Reschedule
+      let hasReschedulable = false;
+      for (const row of rows) {
+        const status = await ucdListing.getRowStatus(row);
+        if (!status.toLowerCase().includes("cancel") && !status.toLowerCase().includes("complete") && !status.toLowerCase().includes("fail")) {
+          if (await ucdListing.hasRescheduleAction(row)) {
+            hasReschedulable = true;
+            break;
+          }
+        }
+      }
+      // At least the remaining appointment(s) should be reschedulable
+      expect(hasReschedulable).toBe(true);
+
+      await ucdContext.close();
     });
 
     test("Reschedule failed appointment — should be blocked for UCD", async ({
-      listingPage,
+      browser,
     }) => {
-      await listingPage.navigate();
-      await listingPage.searchWithFilters({
-        serviceType: "SOFTWARE_INSTALLATION",
-        status: "FAILED",
-      });
+      // Scenario: BO marks an appointment as Failed.
+      // When UCD opens listing, the failed appointment should NOT
+      // have a Reschedule action. Only remaining active appointments
+      // should be reschedulable.
 
-      const rows = await listingPage.getResultRows();
-      if (rows.length === 0) {
-        test.skip(true, "No failed appointment available — BO must mark one Failed first");
-        return;
+      // ── Step 1: BO marks an appointment as Failed ──
+      const boContext = await browser.newContext();
+      const boPage = await boContext.newPage();
+      const boLogin = new (await import("../pages/LoginPage")).LoginPage(boPage);
+      const boCal = new (await import("../pages/bo/AppointmentCalendarPage")).AppointmentCalendarPage(boPage);
+
+      await boLogin.loginAsBO(ENV.boUsername, ENV.boPassword);
+      await boCal.navigate();
+      await boCal.markAppointmentFailed("Reappointment");
+      await boContext.close();
+
+      // ── Step 2: UCD checks the listing ──
+      const ucdContext = await browser.newContext();
+      const ucdPage = await ucdContext.newPage();
+      const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
+      const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
+
+      await ucdLogin.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
+      await ucdListing.navigate();
+      await ucdListing.searchBtn.click();
+      await ucdListing.waitForNav();
+
+      const rows = await ucdListing.getResultRows();
+
+      // Verify: failed appointment does NOT have Reschedule action
+      for (const row of rows) {
+        const status = await ucdListing.getRowStatus(row);
+        if (status.toLowerCase().includes("fail")) {
+          const hasReschedule = await ucdListing.hasRescheduleAction(row);
+          expect(hasReschedule).toBe(false);
+        }
       }
 
-      // UCD cannot reschedule failed appointments — only BO can
-      const hasReschedule = await listingPage.hasRescheduleAction(rows[0]);
-      expect(hasReschedule).toBe(false);
+      // Verify: remaining active appointments still have Reschedule
+      let hasReschedulable = false;
+      for (const row of rows) {
+        const status = await ucdListing.getRowStatus(row);
+        if (!status.toLowerCase().includes("cancel") && !status.toLowerCase().includes("complete") && !status.toLowerCase().includes("fail")) {
+          if (await ucdListing.hasRescheduleAction(row)) {
+            hasReschedulable = true;
+            break;
+          }
+        }
+      }
+      expect(hasReschedulable).toBe(true);
+
+      await ucdContext.close();
     });
   });
 
