@@ -43,13 +43,29 @@ export class SlotPickerComponent extends BasePage {
     return this.page.locator(`td[data-date="${dateStr}"]`);
   }
 
+  /**
+   * The calendar only renders the currently-displayed month's cells.
+   * A fresh page load always starts back on the current month, so a date
+   * found in a later month (after paging forward) won't exist in the DOM
+   * until we page forward to it again. Call this before touching any
+   * specific date.
+   */
+  async ensureMonthVisible(dateStr: string, maxMonthsAhead: number = 6): Promise<void> {
+    for (let m = 0; m <= maxMonthsAhead; m++) {
+      if ((await this.getDayCell(dateStr).count()) > 0) return;
+      await this.goNextMonth();
+    }
+  }
+
   async isDayBookable(dateStr: string): Promise<boolean> {
+    await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
     const classes = await cell.getAttribute("class") ?? "";
     return classes.includes("si-book") && !classes.includes("si-muted");
   }
 
   async isDayFullyBooked(dateStr: string): Promise<boolean> {
+    await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
     const classes = await cell.getAttribute("class") ?? "";
     return classes.includes("si-fullday");
@@ -57,6 +73,7 @@ export class SlotPickerComponent extends BasePage {
 
   /** Returns "" if the date has no badge at all (e.g. weekends/out-of-range days) */
   async getSlotBadge(dateStr: string): Promise<string> {
+    await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
     const badge = cell.locator(".si-badge").first();
     if ((await badge.count()) === 0) return "";
@@ -71,16 +88,18 @@ export class SlotPickerComponent extends BasePage {
   }
 
   async isDateBooked(dateStr: string): Promise<boolean> {
+    await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
     return await cell.locator(".si-bookbadge").count() > 0;
   }
 
   async isDateSelected(dateStr: string): Promise<boolean> {
+    await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
     return await cell.locator(".si-selbadge").count() > 0;
   }
 
-  /** All currently bookable dates on the visible calendar month (td.si-book) */
+  /** All bookable dates on the currently-visible calendar month (td.si-book) */
   async findBookableDates(): Promise<string[]> {
     const cells = await this.page.locator("td.si-book[data-date]").all();
     const dates: string[] = [];
@@ -91,17 +110,26 @@ export class SlotPickerComponent extends BasePage {
     return dates;
   }
 
-  /** First bookable date that currently has zero units booked (clean slate for capacity tests) */
-  async findEmptyBookableDate(): Promise<string | null> {
-    for (const date of await this.findBookableDates()) {
-      const { used } = await this.getSlotCount(date);
-      if (used === 0) return date;
+  /**
+   * First bookable date with zero units booked (clean slate for capacity
+   * tests). Repeated test runs consume the pool of empty dates in the
+   * current month, so this pages forward through future months until it
+   * finds one, up to maxMonthsAhead.
+   */
+  async findEmptyBookableDate(maxMonthsAhead: number = 6): Promise<string | null> {
+    for (let m = 0; m <= maxMonthsAhead; m++) {
+      for (const date of await this.findBookableDates()) {
+        const { used } = await this.getSlotCount(date);
+        if (used === 0) return date;
+      }
+      if (m < maxMonthsAhead) await this.goNextMonth();
     }
     return null;
   }
 
   /** Click a date cell to open the slot dialog */
   async openSlotModal(dateStr: string) {
+    await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
     const classes = (await cell.getAttribute("class")) ?? "";
     if (!classes.includes("si-book") || classes.includes("si-muted")) {
