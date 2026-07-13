@@ -27,10 +27,17 @@ test.describe("Slot Capacity Boundary", () => {
       const targetDate = await slotPicker.findEmptyBookableDate();
       expect(targetDate).not.toBeNull();
 
-      await slotPicker.openSlotModal(targetDate!);
+      // The modal's capacity indicator (#si-cap0/#si-cap1) reflects
+      // committed (saved) bookings, not in-progress stepper clicks — so
+      // book and save one unit at a time rather than incrementing 3x
+      // and checking before any save.
+      for (let i = 0; i < ENV.slotCapacity.perSlot; i++) {
+        await slotPicker.openSlotModal(targetDate!);
+        await slotPicker.incrementSlot(MORNING, 1);
+        await slotPicker.saveSlotChanges();
+      }
 
-      // Book 3 into morning — fills the slot to capacity
-      await slotPicker.incrementSlot(MORNING, ENV.slotCapacity.perSlot);
+      await slotPicker.openSlotModal(targetDate!);
       const isMorningFull = await slotPicker.isSlotFullyBooked(MORNING);
       expect(isMorningFull).toBe(true);
 
@@ -59,10 +66,15 @@ test.describe("Slot Capacity Boundary", () => {
       const targetDate = await slotPicker.findEmptyBookableDate();
       expect(targetDate).not.toBeNull();
 
-      await slotPicker.openSlotModal(targetDate!);
+      // Book and save one unit at a time — the modal's capacity indicator
+      // reflects committed bookings, not in-progress stepper clicks.
+      for (let i = 0; i < ENV.slotCapacity.perSlot; i++) {
+        await slotPicker.openSlotModal(targetDate!);
+        await slotPicker.incrementSlot(AFTERNOON, 1);
+        await slotPicker.saveSlotChanges();
+      }
 
-      // Book 3 into afternoon — fills the slot to capacity
-      await slotPicker.incrementSlot(AFTERNOON, ENV.slotCapacity.perSlot);
+      await slotPicker.openSlotModal(targetDate!);
       const isAfternoonFull = await slotPicker.isSlotFullyBooked(AFTERNOON);
       expect(isAfternoonFull).toBe(true);
 

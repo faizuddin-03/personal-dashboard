@@ -53,7 +53,7 @@ export class SlotPickerComponent extends BasePage {
   async ensureMonthVisible(dateStr: string, maxMonthsAhead: number = 6): Promise<void> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       if ((await this.getDayCell(dateStr).count()) > 0) return;
-      await this.goNextMonth();
+      if (!(await this.goNextMonth())) return;
     }
   }
 
@@ -122,7 +122,8 @@ export class SlotPickerComponent extends BasePage {
         const { used } = await this.getSlotCount(date);
         if (used === 0) return date;
       }
-      if (m < maxMonthsAhead) await this.goNextMonth();
+      if (m >= maxMonthsAhead) break;
+      if (!(await this.goNextMonth())) break;
     }
     return null;
   }
@@ -220,10 +221,19 @@ export class SlotPickerComponent extends BasePage {
     await this.waitForNav();
   }
 
-  /** Navigate calendar to next/prev month */
-  async goNextMonth() {
+  /**
+   * Navigate calendar to next month. The arrow is kept in the DOM but set
+   * to `visibility: hidden` (not removed/disabled) once the booking
+   * window's forward limit is reached — clicking it then would hang
+   * waiting for "visible". Returns false instead of clicking in that case
+   * so callers know to stop paging forward.
+   */
+  async goNextMonth(): Promise<boolean> {
+    const style = (await this.nextMonthArrow.getAttribute("style")) ?? "";
+    if (style.includes("hidden")) return false;
     await this.nextMonthArrow.click();
     await this.page.waitForTimeout(300);
+    return true;
   }
 
   async goPrevMonth() {
