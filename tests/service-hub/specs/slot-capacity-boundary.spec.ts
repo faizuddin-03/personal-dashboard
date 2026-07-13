@@ -210,35 +210,31 @@ test.describe("Slot Capacity Boundary", () => {
         additionalInstalls: 1,
       });
 
+      // Paid/extra installations are allocated FIRST and are mandatory;
+      // the free ones just have a booking deadline — they don't block
+      // confirmation. So with 1 paid unit, booking 0 must be blocked,
+      // and booking 1 (the paid unit) must be enough to proceed even
+      // though the 2 free units remain unbooked.
       const total = await slotPicker.getAllocationTotal();
       expect(total).toBe(3);
 
       const targetDate = await slotPicker.findEmptyBookableDate();
       expect(targetDate).not.toBeNull();
 
-      // Book only the 2 free installations, leave the paid one unbooked
-      await slotPicker.openSlotModal(targetDate!);
-      await slotPicker.incrementSlot(MORNING, 2);
-      await slotPicker.saveSlotChanges();
-
-      const remainingAfter = await slotPicker.getRemainingToAllocate();
-      expect(remainingAfter).toBe(1);
-
-      // The paid installation is mandatory — confirming should be blocked
+      // Confirm with nothing booked — the mandatory paid unit is missing
       await slotPicker.confirmAppointment();
-      const clientErr = slotPicker.page.locator("#si-clienterr");
-      await expect(clientErr).toBeVisible();
+      expect(slotPicker.page.url()).not.toMatch(/submitted\.do/);
 
-      // Book the remaining (paid) unit — should now be allowed to proceed
+      // Book exactly 1 unit (the mandatory paid one) — the 2 free ones stay unbooked
       await slotPicker.openSlotModal(targetDate!);
       await slotPicker.incrementSlot(MORNING, 1);
       await slotPicker.saveSlotChanges();
 
       const allocated = await slotPicker.getAllocatedCount();
-      expect(allocated).toBe(3);
+      expect(allocated).toBe(1);
 
       await slotPicker.confirmAppointment();
-      await expect(clientErr).toBeHidden();
+      expect(slotPicker.page.url()).toMatch(/submitted\.do/);
     });
 
     test("Two UCD - Select same last available slot", async ({
