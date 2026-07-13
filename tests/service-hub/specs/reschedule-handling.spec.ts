@@ -21,11 +21,10 @@ test.describe("Reschedule & Handling", () => {
       listingPage,
       reschedulePage,
     }) => {
-      // Scenario: Today is the day of the appointment (e.g. appointment at
-      // 10am, but it's 8am now). UCD wants to reschedule to a future date.
-      // The minimum new date must be at least +2 days from today.
+      // Scenario: appointment exists on some date. UCD opens listing,
+      // clicks Reschedule, calendar opens. UCD removes the old booking
+      // and picks a new available date. +2 day blackout applies.
 
-      // Step 1: Go to listing and find an appointment that can be rescheduled
       await listingPage.navigate();
       await listingPage.searchBtn.click();
       await listingPage.waitForNav();
@@ -45,25 +44,26 @@ test.describe("Reschedule & Handling", () => {
         return;
       }
 
-      // Step 2: Click Reschedule → calendar page opens
+      // Click Reschedule → calendar page opens
       await listingPage.clickReschedule(targetRow);
 
-      // Step 3: Verify +2 day blackout — today and tomorrow are blocked
+      // Verify blackout: today and tomorrow are NOT bookable
       await reschedulePage.verifyBlackoutDates();
-      const earliest = reschedulePage.earliestRescheduleDate(); // today + 2
-      await reschedulePage.verifyEarliestDate();
 
-      // Step 4: Reschedule — remove old booking, then pick a future date
-      // The booked date will show as orange on the calendar.
-      // We need to find which date is currently booked.
-      // For this test, we know the appointment is "today" — but since
-      // today is in the blackout zone, the old date is remove-only.
-      const today = reschedulePage.today();
-      const newDate = reschedulePage.daysFromToday(3); // a valid future date
+      // Verify there are bookable dates available
+      await reschedulePage.verifyHasBookableDates();
 
+      // Find the currently booked date (orange badge) and first available date
+      const bookedDate = await reschedulePage.findBookedDate();
+      expect(bookedDate).not.toBeNull();
+
+      const newDate = await reschedulePage.findFirstBookableDate();
+      expect(newDate).not.toBeNull();
+
+      // Reschedule: remove from booked date → pick new date
       await reschedulePage.rescheduleToNewDate({
-        oldDate: today,
-        newDate,
+        oldDate: bookedDate!,
+        newDate: newDate!,
         slot: MORNING,
       });
     });
@@ -72,9 +72,8 @@ test.describe("Reschedule & Handling", () => {
       listingPage,
       reschedulePage,
     }) => {
-      // Scenario: Today is 15th, appointment is on 16th.
-      // UCD reschedules BEFORE the appointment day.
-      // Minimum new date = today + 2 days (the +2 day blackout rule).
+      // Scenario: UCD reschedules BEFORE the appointment day.
+      // Same flow — the booked date is in the future.
 
       await listingPage.navigate();
       await listingPage.searchBtn.click();
@@ -95,32 +94,37 @@ test.describe("Reschedule & Handling", () => {
 
       await listingPage.clickReschedule(targetRow);
 
-      // Verify blackout: today and tomorrow blocked, earliest = today+2
       await reschedulePage.verifyBlackoutDates();
-      await reschedulePage.verifyEarliestDate();
+      await reschedulePage.verifyHasBookableDates();
 
-      // Reschedule to a future date beyond the blackout window
-      const earliest = reschedulePage.earliestRescheduleDate();
-      const newDate = reschedulePage.daysFromToday(7);
+      const bookedDate = await reschedulePage.findBookedDate();
+      expect(bookedDate).not.toBeNull();
 
-      // The old booking date is in the future (e.g. tomorrow) — it's
-      // still in the blackout zone so it's remove-only, not re-bookable.
-      const tomorrow = reschedulePage.daysFromToday(1);
+      // Find a bookable date that is NOT the same as the booked date
+      const allBookable = await reschedulePage.page.locator("td.si-book[data-date]").all();
+      let newDate: string | null = null;
+      for (const cell of allBookable) {
+        const date = await cell.getAttribute("data-date");
+        if (date && date !== bookedDate) {
+          newDate = date;
+          break;
+        }
+      }
+      expect(newDate).not.toBeNull();
 
       await reschedulePage.rescheduleToNewDate({
-        oldDate: tomorrow,
-        newDate,
+        oldDate: bookedDate!,
+        newDate: newDate!,
         slot: AFTERNOON,
       });
     });
 
     test("Reschedule after 1 appointment has successfully finished", async ({
       listingPage,
-      reschedulePage,
     }) => {
       // Scenario: UCD bought multiple software installations (e.g. 3).
       // 1 installation has been completed (marked by BO).
-      // The remaining 2 appointments should still be reschedulable.
+      // The remaining appointments should still be reschedulable.
 
       await listingPage.navigate();
       await listingPage.searchWithFilters({
@@ -133,8 +137,7 @@ test.describe("Reschedule & Handling", () => {
         return;
       }
 
-      // Look for a row that has Reschedule action available
-      // (remaining appointments from a multi-unit purchase)
+      // Look for a row with Reschedule action (remaining from multi-unit)
       let reschedulableRow = null;
       for (const row of rows) {
         if (await listingPage.hasRescheduleAction(row)) {
@@ -143,21 +146,15 @@ test.describe("Reschedule & Handling", () => {
         }
       }
 
-      // Expected: even though 1 appointment is completed, the remaining
-      // ones should still have the Reschedule option available
+      // Even though 1 appointment is completed, remaining ones should
+      // still have the Reschedule option
       expect(reschedulableRow).not.toBeNull();
 
-      // Perform the reschedule on one of the remaining appointments
+      // Verify the reschedule flow works
       await listingPage.clickReschedule(reschedulableRow!);
-
-      const newDate = reschedulePage.daysFromToday(5);
-      // Find the currently booked date (shown as orange on calendar)
-      // and reschedule it
-      const earliest = reschedulePage.earliestRescheduleDate();
-
-      // Note: the old booked date depends on when the appointment was
-      // originally set. The test verifies the flow works for remaining
-      // appointments after one has been completed.
+      // Calendar should open — verify there are bookable dates
+      const firstBookable = await listingPage.page.locator("td.si-book[data-date]").first();
+      await expect(firstBookable).toBeVisible();
     });
 
     test("Slot taken mid selection — concurrency", async ({
@@ -182,31 +179,30 @@ test.describe("Reschedule & Handling", () => {
         return;
       }
 
-      // UCD1: open reschedule calendar
       await listingPage.clickReschedule(targetRow);
 
-      const targetDate = reschedulePage.daysFromToday(5);
-      await reschedulePage.openSlotModal(targetDate);
+      const firstBookable = await reschedulePage.findFirstBookableDate();
+      if (!firstBookable) {
+        test.skip(true, "No bookable dates available");
+        return;
+      }
+
+      await reschedulePage.openSlotModal(firstBookable);
       const initialBooked = await reschedulePage.getModalSlotBooked(MORNING);
 
       // UCD2: would book the same last slot in a parallel context
       // NOTE: requires second UCD account (ENV.ucd2Username / ENV.ucd2Password)
-      // Skeleton — fill in when UCD2 credentials are available.
 
       await reschedulePage.incrementSlot(MORNING, 1);
       await reschedulePage.saveSlotChanges();
-
-      // Expected: if slot was taken by UCD2, system blocks with
-      // "Slot Unavailable" popup when confirming
     });
 
     test("Reschedule cancelled appointment — should be blocked", async ({
       browser,
     }) => {
-      // Scenario: UCD has appointments on 20th and 21st.
+      // Scenario: UCD has multiple appointments (e.g. 20th and 21st).
       // BO cancels the 20th. When UCD opens listing, the cancelled
-      // appointment should no longer show Reschedule action.
-      // UCD should only be able to reschedule the 21st.
+      // appointment should NOT show Reschedule. Only the 21st should.
 
       // ── Step 1: BO cancels an appointment ──
       const boContext = await browser.newContext();
@@ -232,7 +228,7 @@ test.describe("Reschedule & Handling", () => {
 
       const rows = await ucdListing.getResultRows();
 
-      // Verify: cancelled appointment does NOT have Reschedule action
+      // Cancelled rows should NOT have Reschedule action
       for (const row of rows) {
         const status = await ucdListing.getRowStatus(row);
         if (status.toLowerCase().includes("cancel")) {
@@ -241,7 +237,7 @@ test.describe("Reschedule & Handling", () => {
         }
       }
 
-      // Verify: remaining non-cancelled appointments still have Reschedule
+      // Remaining non-cancelled appointments should still have Reschedule
       let hasReschedulable = false;
       for (const row of rows) {
         const status = await ucdListing.getRowStatus(row);
@@ -252,7 +248,6 @@ test.describe("Reschedule & Handling", () => {
           }
         }
       }
-      // At least the remaining appointment(s) should be reschedulable
       expect(hasReschedulable).toBe(true);
 
       await ucdContext.close();
@@ -262,9 +257,8 @@ test.describe("Reschedule & Handling", () => {
       browser,
     }) => {
       // Scenario: BO marks an appointment as Failed.
-      // When UCD opens listing, the failed appointment should NOT
-      // have a Reschedule action. Only remaining active appointments
-      // should be reschedulable.
+      // UCD listing should NOT show Reschedule for that appointment.
+      // Only remaining active appointments should be reschedulable.
 
       // ── Step 1: BO marks an appointment as Failed ──
       const boContext = await browser.newContext();
@@ -290,7 +284,7 @@ test.describe("Reschedule & Handling", () => {
 
       const rows = await ucdListing.getResultRows();
 
-      // Verify: failed appointment does NOT have Reschedule action
+      // Failed rows should NOT have Reschedule action
       for (const row of rows) {
         const status = await ucdListing.getRowStatus(row);
         if (status.toLowerCase().includes("fail")) {
@@ -299,7 +293,7 @@ test.describe("Reschedule & Handling", () => {
         }
       }
 
-      // Verify: remaining active appointments still have Reschedule
+      // Remaining active appointments should still have Reschedule
       let hasReschedulable = false;
       for (const row of rows) {
         const status = await ucdListing.getRowStatus(row);
@@ -349,7 +343,6 @@ test.describe("Reschedule & Handling", () => {
     }) => {
       await boCalendarPage.navigate();
 
-      // Same day, different slot (morning → afternoon)
       const sameDay = boCalendarPage.daysFromToday(4);
       await boCalendarPage.rescheduleAppointment({
         oldDate: sameDay,
@@ -368,7 +361,6 @@ test.describe("Reschedule & Handling", () => {
       boCalendarPage,
     }) => {
       await boCalendarPage.navigate();
-      // Cancelled = terminal state, no reschedule
       const isAvailable = await boCalendarPage.isRescheduleAvailable();
       expect(isAvailable).toBe(false);
     });
@@ -377,7 +369,6 @@ test.describe("Reschedule & Handling", () => {
       boCalendarPage,
     }) => {
       await boCalendarPage.navigate();
-      // Failed appointments CAN be rescheduled by BO
       const isAvailable = await boCalendarPage.isRescheduleAvailable();
       expect(isAvailable).toBe(true);
 

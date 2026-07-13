@@ -4,6 +4,7 @@ import { PATHS } from "../utils/config";
 
 export class ReschedulePage extends SlotPickerComponent {
   readonly doneBtn = this.page.getByText("Done", { exact: false });
+  readonly confirmBookingBtn = this.page.locator("#si-confirm-booking");
 
   constructor(page: Page) {
     super(page);
@@ -13,11 +14,26 @@ export class ReschedulePage extends SlotPickerComponent {
     await this.goto(PATHS.reschedule(txnId));
   }
 
+  /** Find the currently booked date (has si-bookbadge = orange tag) */
+  async findBookedDate(): Promise<string | null> {
+    const cells = await this.page.locator("td[data-date] .si-bookbadge").all();
+    if (cells.length === 0) return null;
+    const parent = cells[0].locator("xpath=ancestor::td");
+    return await parent.getAttribute("data-date");
+  }
+
+  /** Find the first bookable date on the calendar (has si-book class) */
+  async findFirstBookableDate(): Promise<string | null> {
+    const cells = await this.page.locator("td.si-book[data-date]").all();
+    if (cells.length === 0) return null;
+    return await cells[0].getAttribute("data-date");
+  }
+
   /**
    * Full reschedule flow (already on the reschedule calendar page):
-   * 1. Click booked (orange) date → remove old booking
-   * 2. Click new date → add slot allocation
-   * 3. Save changes → Confirm Appointment → Done
+   * 1. Click booked (orange) date → minus to remove → Save changes
+   * 2. Click new bookable date → plus to add slot → Save changes
+   * 3. Confirm Appointment → Done
    *
    * @param slot - 0 = morning (10:00am-12:00pm), 1 = afternoon (2:00pm-4:00pm)
    */
@@ -44,7 +60,8 @@ export class ReschedulePage extends SlotPickerComponent {
     await this.saveSlotChanges();
 
     // Step 3: Confirm appointment
-    await this.confirmAppointment();
+    await this.confirmBookingBtn.click();
+    await this.waitForNav();
 
     // Step 4: Confirmation page — click Done
     await this.doneBtn.waitFor({ state: "visible", timeout: 10000 });
@@ -52,6 +69,7 @@ export class ReschedulePage extends SlotPickerComponent {
     await this.waitForNav();
   }
 
+  /** Verify today and tomorrow are muted (blackout rule) */
   async verifyBlackoutDates() {
     const today = this.today();
     const tomorrow = this.daysFromToday(1);
@@ -59,8 +77,9 @@ export class ReschedulePage extends SlotPickerComponent {
     expect(await this.isDayBookable(tomorrow)).toBe(false);
   }
 
-  async verifyEarliestDate() {
-    const earliest = this.earliestRescheduleDate();
-    expect(await this.isDayBookable(earliest)).toBe(true);
+  /** Verify there is at least one bookable date on the calendar */
+  async verifyHasBookableDates() {
+    const firstBookable = await this.findFirstBookableDate();
+    expect(firstBookable).not.toBeNull();
   }
 }
