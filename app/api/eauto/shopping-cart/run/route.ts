@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { execFile } from "child_process";
+import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
 
@@ -61,28 +61,59 @@ export async function POST(req: NextRequest) {
       PW_JSON_REPORT: jsonReportPath,
     };
 
-    const args = [
-      "playwright", "test",
-      "--config", `"${configPath}"`,
-      "--grep", `"${grepPattern}"`,
-    ];
+    const fullCmd = `npx playwright test --config "${configPath}" --grep "${grepPattern}"`;
+
+    const logs: string[] = [];
+    logs.push(`[CMD] ${fullCmd}`);
+    logs.push(`[CWD] ${projectRoot}`);
+    logs.push(`[CONFIG EXISTS] ${fs.existsSync(configPath)}`);
+    logs.push(`[GREP] ${grepPattern}`);
+    logs.push(`[HEADLESS] ${headless}`);
+    logs.push(`[PW_HEADED] ${env.PW_HEADED}`);
+    logs.push(`[RECORD DIR] ${recordDir}`);
+    logs.push(`[JSON REPORT] ${jsonReportPath}`);
 
     return new Promise<NextResponse>((resolve) => {
-      execFile("npx", args, {
+      const proc = spawn(fullCmd, {
         cwd: projectRoot,
         env,
         shell: true,
-        maxBuffer: 10 * 1024 * 1024,
-      }, (error, _stdout, stderrOut) => {
-        const stderr = stderrOut || (error?.message ?? "");
+      });
 
-        const code = error ? ((error as any).status ?? 1) : 0;
+      let stdout = "";
+      let stderr = "";
+
+      proc.stdout.on("data", (d: Buffer) => { stdout += d.toString(); });
+      proc.stderr.on("data", (d: Buffer) => { stderr += d.toString(); });
+
+      proc.on("error", (err) => {
+        logs.push(`[SPAWN ERROR] ${err.message}`);
+        resolve(NextResponse.json({
+          exitCode: -1,
+          results: [],
+          summary: { total: 0, passed: 0, failed: 0, skipped: 0 },
+          recordDir: path.relative(projectRoot, recordDir),
+          recordings: [],
+          stderr: err.message,
+          stdout: "",
+          logs,
+          timestamp: ts,
+        }));
+      });
+
+      proc.on("close", (code) => {
+        logs.push(`[EXIT CODE] ${code}`);
+        logs.push(`[STDOUT LENGTH] ${stdout.length}`);
+        logs.push(`[STDERR LENGTH] ${stderr.length}`);
+        logs.push(`[REPORT EXISTS] ${fs.existsSync(jsonReportPath)}`);
+
         let results: TestResultItem[] = [];
 
-        // Read the JSON report file
         try {
           const reportRaw = fs.readFileSync(jsonReportPath, "utf-8");
+          logs.push(`[REPORT SIZE] ${reportRaw.length} bytes`);
           const report = JSON.parse(reportRaw);
+          logs.push(`[SUITES] ${(report.suites ?? []).length}`);
 
           type JsonSuite = {
             title?: string;
@@ -136,11 +167,11 @@ export async function POST(req: NextRequest) {
           };
 
           results = extractSpecs(report.suites ?? []);
-        } catch {
-          // Report file didn't exist or wasn't valid JSON
+          logs.push(`[RESULTS PARSED] ${results.length} tests`);
+        } catch (e) {
+          logs.push(`[REPORT ERROR] ${e instanceof Error ? e.message : String(e)}`);
         }
 
-        // Collect recordings
         const recordings: string[] = [];
         if (fs.existsSync(recordDir)) {
           const walk = (dir: string) => {
@@ -165,7 +196,9 @@ export async function POST(req: NextRequest) {
           summary: { total: results.length, passed, failed, skipped },
           recordDir: path.relative(projectRoot, recordDir),
           recordings,
-          stderr: stderr.slice(-3000),
+          stderr: stderr.slice(-5000),
+          stdout: stdout.slice(-5000),
+          logs,
           timestamp: ts,
         }));
       });

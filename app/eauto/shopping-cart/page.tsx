@@ -91,6 +91,8 @@ interface RunResult {
   recordDir: string;
   recordings: string[];
   stderr: string;
+  stdout: string;
+  logs: string[];
   timestamp: string;
 }
 
@@ -505,21 +507,37 @@ export default function ShoppingCartPage() {
             </div>
           )}
 
-          {/* Stderr / raw output — show when there are failures or no results */}
-          {runResult.stderr && (runResult.summary.failed > 0 || runResult.results.length === 0) && (
+          {/* Debug logs — always show */}
+          {runResult.logs?.length > 0 && (
             <div className="border-t border-slate-800">
               <button
                 onClick={() => setShowStderr(v => !v)}
                 className="w-full flex items-center gap-2 px-4 py-2 text-left hover:bg-slate-800/30 transition-colors"
               >
                 <ChevronRight size={12} className={clsx("text-slate-600 transition-transform", showStderr && "rotate-90")} />
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider">Raw Output</span>
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider">Debug Logs</span>
               </button>
               {showStderr && (
-                <div className="px-4 pb-3">
-                  <pre className="text-[11px] text-slate-500 whitespace-pre-wrap max-h-48 overflow-y-auto font-mono bg-slate-950 rounded-lg p-3">
-                    {runResult.stderr}
+                <div className="px-4 pb-3 space-y-2">
+                  <pre className="text-[11px] text-blue-400 whitespace-pre-wrap max-h-48 overflow-y-auto font-mono bg-slate-950 rounded-lg p-3">
+                    {runResult.logs.join("\n")}
                   </pre>
+                  {runResult.stdout && (
+                    <>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider px-1">Stdout</p>
+                      <pre className="text-[11px] text-slate-400 whitespace-pre-wrap max-h-48 overflow-y-auto font-mono bg-slate-950 rounded-lg p-3">
+                        {runResult.stdout}
+                      </pre>
+                    </>
+                  )}
+                  {runResult.stderr && (
+                    <>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider px-1">Stderr</p>
+                      <pre className="text-[11px] text-red-400/80 whitespace-pre-wrap max-h-48 overflow-y-auto font-mono bg-slate-950 rounded-lg p-3">
+                        {runResult.stderr}
+                      </pre>
+                    </>
+                  )}
                 </div>
               )}
             </div>
