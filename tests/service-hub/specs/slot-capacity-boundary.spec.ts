@@ -90,55 +90,50 @@ test.describe("Slot Capacity Boundary", () => {
       softwareInstallationPage,
       slotPicker,
     }) => {
-      // Find any bookable date and figure out how much combined room
-      // (morning + afternoon) it has left, then buy+book exactly that
-      // much, one unit at a time, to prove the day caps out at 6/6.
       await softwareInstallationPage.purchaseInstallation(1);
-      const targetDate = await slotPicker.findAnyBookableDate();
+
+      // Part 1: a date that's already fully booked (6/6) must not open
+      // at all when clicked — no popup, no way in.
+      const fullDate = await slotPicker.findFullyBookedDate();
+      expect(fullDate).not.toBeNull();
+
+      let popupOpened = false;
+      try {
+        await slotPicker.openSlotModal(fullDate!);
+        popupOpened = true;
+      } catch {
+        // Expected — a fully-booked date must refuse to open.
+      }
+      // If it somehow DID open, that's a real bug and this test must fail.
+      expect(popupOpened).toBe(false);
+
+      // Part 2: on a date with some room, neither slot can be pushed past
+      // its own 3-unit cap. Stepper only — never saved/confirmed, so no
+      // real booking is made and the shared calendar stays untouched.
+      const targetDate = await slotPicker.findDateWithRoom(1);
       expect(targetDate).not.toBeNull();
 
       await slotPicker.openSlotModal(targetDate!);
-      const morningInit = await slotPicker.getModalSlotBooked(MORNING);
-      const afternoonInit = await slotPicker.getModalSlotBooked(AFTERNOON);
-      let remainingMorning = morningInit.max - morningInit.booked;
-      let remainingAfternoon = afternoonInit.max - afternoonInit.booked;
-      expect(remainingMorning + remainingAfternoon).toBeGreaterThan(0);
 
-      const bookOneUnit = async () => {
-        await slotPicker.openSlotModal(targetDate!);
-        if (remainingMorning > 0) {
-          await slotPicker.incrementSlot(MORNING, 1);
-          remainingMorning--;
-        } else {
-          await slotPicker.incrementSlot(AFTERNOON, 1);
-          remainingAfternoon--;
-        }
-        await slotPicker.saveSlotChanges();
-        await slotPicker.confirmAppointment();
-      };
+      const morningInitial = await slotPicker.getModalSlotBooked(MORNING);
+      const afternoonInitial = await slotPicker.getModalSlotBooked(AFTERNOON);
+      const morningRoom = morningInitial.max - morningInitial.booked;
+      const afternoonRoom = afternoonInitial.max - afternoonInitial.booked;
+      expect(morningRoom + afternoonRoom).toBeGreaterThan(0);
 
-      // 1st unit already purchased above
-      await bookOneUnit();
-
-      // Buy + book the rest of the day's remaining room
-      while (remainingMorning > 0 || remainingAfternoon > 0) {
-        await softwareInstallationPage.purchaseInstallation(1);
-        await bookOneUnit();
+      if (morningRoom > 0) {
+        await slotPicker.incrementSlot(MORNING, morningRoom);
+        expect(await slotPicker.getStepperValue(MORNING)).toBe(morningRoom);
+        await slotPicker.incrementSlot(MORNING, 1);
+        expect(await slotPicker.getStepperValue(MORNING)).toBe(morningRoom);
       }
 
-      // One more purchase — the day should now read 6/6 and no longer be
-      // clickable/bookable at all (fully booked for the day)
-      await softwareInstallationPage.purchaseInstallation(1);
-
-      const slotCount = await slotPicker.getSlotCount(targetDate!);
-      expect(slotCount.used).toBe(ENV.slotCapacity.perDay);
-      expect(slotCount.total).toBe(ENV.slotCapacity.perDay);
-
-      const isFullyBookedDay = await slotPicker.isDayFullyBooked(targetDate!);
-      expect(isFullyBookedDay).toBe(true);
-
-      const isBookable = await slotPicker.isDayBookable(targetDate!);
-      expect(isBookable).toBe(false);
+      if (afternoonRoom > 0) {
+        await slotPicker.incrementSlot(AFTERNOON, afternoonRoom);
+        expect(await slotPicker.getStepperValue(AFTERNOON)).toBe(afternoonRoom);
+        await slotPicker.incrementSlot(AFTERNOON, 1);
+        expect(await slotPicker.getStepperValue(AFTERNOON)).toBe(afternoonRoom);
+      }
     });
 
     test("Software Installation - Mandatory Booking", async ({

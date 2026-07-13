@@ -157,6 +157,20 @@ export class SlotPickerComponent extends BasePage {
     return null;
   }
 
+  /** First date on the calendar that's already fully booked (td.si-fullday) */
+  async findFullyBookedDate(maxMonthsAhead: number = 6): Promise<string | null> {
+    for (let m = 0; m <= maxMonthsAhead; m++) {
+      const cells = await this.page.locator("td.si-fullday[data-date]").all();
+      for (const cell of cells) {
+        const date = await cell.getAttribute("data-date");
+        if (date) return date;
+      }
+      if (m >= maxMonthsAhead) break;
+      if (!(await this.goNextMonth())) break;
+    }
+    return null;
+  }
+
   /**
    * First bookable date where a SPECIFIC slot (morning or afternoon) has
    * at least minRoom free. A date can be generally "bookable" while one
