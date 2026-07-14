@@ -1,4 +1,4 @@
-import { type Page, expect } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 import { SlotPickerComponent } from "./SlotPickerComponent";
 import { PATHS, ENV } from "../utils/config";
 
@@ -37,14 +37,18 @@ export class ReschedulePage extends SlotPickerComponent {
    * Yes proceeds; No returns to the calendar to pick another date.
    */
   async confirmReschedule(accept: boolean = true) {
+    await this.demoHighlight(this.confirmBookingBtn, { color: "green" });
     await this.confirmBookingBtn.click();
     await this.waitForDialog();
+    // Let the reviewer read the "Are you sure you want to reschedule?" popup.
+    await this.demoHighlight(accept ? ".confirm-dialog-btn" : ".cancel-dialog-btn", { color: accept ? "green" : "red" });
     if (accept) {
       await this.acceptConfirmDialog();
     } else {
       await this.dismissConfirmDialog();
     }
     await this.waitForNav();
+    await this.demoPause();
   }
 
   /**
@@ -63,28 +67,40 @@ export class ReschedulePage extends SlotPickerComponent {
     units?: number;
   }) {
     const { oldDate, newDate, slot, units = 1 } = opts;
+    const slotName = slot === 0 ? "morning" : "afternoon";
 
-    // Step 1: Click the booked (orange) date and remove
-    await this.openSlotModal(oldDate);
-    for (let s = 0; s < 2; s++) {
-      const countEl = s === 0 ? this.morningCount : this.afternoonCount;
-      const val = Number(await countEl.inputValue()) || 0;
-      if (val > 0) await this.removeSlot(s);
-    }
-    await this.saveSlotChanges();
+    // Step 1: If the currently-booked date is still openable, clear it first.
+    // When the booked date sits inside the +2-day blackout (si-muted) — e.g.
+    // the appointment is today/tomorrow — it can't be opened, and that's fine:
+    // confirming the reschedule discards the current appointment anyway
+    // ("you will lose your current appointment"), so we simply skip removal.
+    await test.step(`Clear the existing booking on ${oldDate}`, async () => {
+      if (await this.isDayBookable(oldDate)) {
+        await this.openSlotModal(oldDate);
+        for (let s = 0; s < 2; s++) {
+          const countEl = s === 0 ? this.morningCount : this.afternoonCount;
+          const val = Number(await countEl.inputValue()) || 0;
+          if (val > 0) await this.removeSlot(s);
+        }
+        await this.saveSlotChanges();
+      }
+    });
 
-    // Step 2: Click the new date and allocate slot
-    await this.openSlotModal(newDate);
-    await this.incrementSlot(slot, units);
-    await this.saveSlotChanges();
+    await test.step(`Pick new date ${newDate} and allocate the ${slotName} session`, async () => {
+      await this.openSlotModal(newDate);
+      await this.incrementSlot(slot, units);
+      await this.saveSlotChanges();
+    });
 
-    // Step 3: Confirm appointment + accept the reschedule confirmation popup
-    await this.confirmReschedule(true);
+    await test.step('Confirm reschedule (accept "you will lose your current appointment")', async () => {
+      await this.confirmReschedule(true);
+    });
 
-    // Step 4: Confirmation page — click Done
-    await this.doneBtn.waitFor({ state: "visible", timeout: 10000 });
-    await this.doneBtn.click();
-    await this.waitForNav();
+    await test.step("Land on the confirmation page and click Done", async () => {
+      await this.doneBtn.waitFor({ state: "visible", timeout: 10000 });
+      await this.doneBtn.click();
+      await this.waitForNav();
+    });
   }
 
   /**
@@ -94,16 +110,18 @@ export class ReschedulePage extends SlotPickerComponent {
    *     later than +2 if the +2 date is full — availability fallback).
    */
   async verifyBlackoutDates() {
-    const today = this.today();
-    const tomorrow = this.daysFromToday(1);
-    expect(await this.isDayBookable(today)).toBe(false);
-    expect(await this.isDayBookable(tomorrow)).toBe(false);
+    await test.step("Expected: +2-day blackout — today & tomorrow not bookable", async () => {
+      const today = this.today();
+      const tomorrow = this.daysFromToday(1);
+      expect(await this.isDayBookable(today)).toBe(false);
+      expect(await this.isDayBookable(tomorrow)).toBe(false);
 
-    const earliest = await this.findFirstBookableDate();
-    expect(earliest).not.toBeNull();
-    // Earliest bookable must be on or after today+2 (availability fallback
-    // means it can be later, never earlier).
-    expect(earliest! >= this.earliestRescheduleDate()).toBe(true);
+      const earliest = await this.findFirstBookableDate();
+      expect(earliest).not.toBeNull();
+      // Earliest bookable must be on or after today+2 (availability fallback
+      // means it can be later, never earlier).
+      expect(earliest! >= this.earliestRescheduleDate()).toBe(true);
+    });
   }
 
   /** Verify there is at least one bookable date on the calendar */
@@ -129,13 +147,17 @@ export class ReschedulePage extends SlotPickerComponent {
     const { oldDate, slot, units = 1 } = opts;
     const today = this.today();
 
-    await this.openSlotModal(oldDate);
-    for (let s = 0; s < 2; s++) {
-      const countEl = s === 0 ? this.morningCount : this.afternoonCount;
-      const val = Number(await countEl.inputValue()) || 0;
-      if (val > 0) await this.removeSlot(s);
+    // Clear the old booking only if that date is still openable (see
+    // rescheduleToNewDate) — otherwise the confirm discards it for us.
+    if (await this.isDayBookable(oldDate)) {
+      await this.openSlotModal(oldDate);
+      for (let s = 0; s < 2; s++) {
+        const countEl = s === 0 ? this.morningCount : this.afternoonCount;
+        const val = Number(await countEl.inputValue()) || 0;
+        if (val > 0) await this.removeSlot(s);
+      }
+      await this.saveSlotChanges();
     }
-    await this.saveSlotChanges();
 
     await this.openSlotModal(today);
     await this.incrementSlot(slot, units);

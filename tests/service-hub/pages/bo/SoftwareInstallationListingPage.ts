@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page, type Locator, expect, test } from "@playwright/test";
 import { BasePage } from "../BasePage";
 import { PATHS } from "../../utils/config";
 
@@ -77,6 +77,12 @@ export class SoftwareInstallationListingPage extends BasePage {
 
   async navigate() {
     await this.goto(PATHS.boSoftwareInstallationListing);
+    // Guard against a redirect race landing us on the portal home instead of
+    // the listing (the filter's Search button won't be there) — retry once.
+    if ((await this.searchBtn.count()) === 0) {
+      await this.goto(PATHS.boSoftwareInstallationListing);
+    }
+    await this.searchBtn.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
   }
 
   /** Set a readonly datepicker input's value directly (bypasses the widget). */
@@ -129,11 +135,31 @@ export class SoftwareInstallationListingPage extends BasePage {
   }
 
   async getResultRows(): Promise<Locator[]> {
-    return await this.resultsTable.locator("tbody tr").all();
+    // Data rows only — the header renders as a <th> row inside <tbody>.
+    return await this.resultsTable.locator("tbody tr:has(td)").all();
   }
 
   private async cellText(row: Locator, colIndex: number): Promise<string> {
-    return (await row.locator("td").nth(colIndex).textContent())?.trim().replace(/\s+/g, " ") ?? "";
+    const cell = row.locator("td").nth(colIndex);
+    if ((await cell.count()) === 0) return "";
+    return (await cell.textContent())?.trim().replace(/\s+/g, " ") ?? "";
+  }
+
+  /**
+   * Search by company name and return the newest request's Reference No.
+   * (the listing is sorted latest-first). This is how a CSE looks up the
+   * reference to feed into Add Appointment › Existing Record — e.g. after a
+   * UCD biometric purchase, the freshly-created request is the top row.
+   * Returns null if the company has no requests.
+   */
+  async getLatestReferenceForCompany(company: string): Promise<string | null> {
+    await this.searchWithFilters({ companyName: company });
+    const rows = await this.getResultRows();
+    for (const row of rows) {
+      const ref = await this.getRowReferenceNo(row);
+      if (/^SR\d+/.test(ref)) return ref;
+    }
+    return null;
   }
 
   async getRowReferenceNo(row: Locator): Promise<string> {
@@ -172,18 +198,20 @@ export class SoftwareInstallationListingPage extends BasePage {
    * popup (#sc-cancel-dialog, opened as a jQuery UI dialog).
    */
   async cancelRequest(row: Locator, confirm: boolean = true) {
-    await row.locator('a[onclick*="scCancel"]').first().click();
-    const dialog = this.page.locator(".ui-dialog", { has: this.page.locator("#sc-cancel-dialog") });
-    await dialog.waitFor({ state: "visible", timeout: 8000 });
-    const label = confirm ? /yes|ok|confirm/i : /no|cancel/i;
-    const btn = dialog.locator(".ui-dialog-buttonpane button").filter({ hasText: label }).first();
-    if (await btn.count()) {
-      await btn.click();
-    } else {
-      // Fallback: first button is typically the affirmative action.
-      await dialog.locator(".ui-dialog-buttonpane button").first().click();
-    }
-    await this.waitForNav();
+    await test.step('Cancel the request (confirm "Sure to cancel?")', async () => {
+      await row.locator('a[onclick*="scCancel"]').first().click();
+      const dialog = this.page.locator(".ui-dialog", { has: this.page.locator("#sc-cancel-dialog") });
+      await dialog.waitFor({ state: "visible", timeout: 8000 });
+      const label = confirm ? /yes|ok|confirm/i : /no|cancel/i;
+      const btn = dialog.locator(".ui-dialog-buttonpane button").filter({ hasText: label }).first();
+      if (await btn.count()) {
+        await btn.click();
+      } else {
+        // Fallback: first button is typically the affirmative action.
+        await dialog.locator(".ui-dialog-buttonpane button").first().click();
+      }
+      await this.waitForNav();
+    });
   }
 
   /**

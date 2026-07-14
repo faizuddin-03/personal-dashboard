@@ -79,13 +79,19 @@ export class ServiceRequestListingPage extends BasePage {
     await this.waitForNav();
   }
 
-  /** Get all result rows */
+  /**
+   * Data rows only. The results table renders its header inside <tbody> as a
+   * <th> row (no <td>), so `tbody tr:has(td)` skips it — otherwise per-cell
+   * getters would wait out their timeout on a non-existent <td>.
+   */
   async getResultRows(): Promise<Locator[]> {
-    return await this.resultsTable.locator("tbody tr").all();
+    return await this.resultsTable.locator("tbody tr:has(td)").all();
   }
 
   private async cellText(row: Locator, colIndex: number): Promise<string> {
-    return (await row.locator("td").nth(colIndex).textContent())?.trim() ?? "";
+    const cell = row.locator("td").nth(colIndex);
+    if ((await cell.count()) === 0) return ""; // row has no such cell — don't hang
+    return (await cell.textContent())?.trim() ?? "";
   }
 
   async getRowReferenceNo(row: Locator): Promise<string> {

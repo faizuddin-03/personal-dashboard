@@ -9,7 +9,12 @@ export default defineConfig({
   timeout: 60_000,
   retries: 0,
   workers: 1,
-  reporter: [["json", { outputFile: process.env.PW_JSON_REPORT || "" }]],
+  reporter: [
+    ["json", { outputFile: process.env.PW_JSON_REPORT || "" }],
+    // Emits the per-test step tree to PW_STEP_REPORT for the runner UI's
+    // step-by-step pass/fail checklist (the json reporter omits steps).
+    ["./reporters/step-reporter.ts", {}],
+  ],
   outputDir,
 
   use: {

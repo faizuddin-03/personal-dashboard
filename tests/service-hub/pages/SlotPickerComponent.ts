@@ -3,6 +3,22 @@ import { BasePage } from "./BasePage";
 import { ENV } from "../utils/config";
 
 /**
+ * A single bookable date's capacity snapshot, at both the day level
+ * (combined 6/day badge) and the per-session level (morning/afternoon,
+ * read from the slot modal). `room` is the free capacity (max - booked).
+ * Consumed by findDateMatching() so scenarios can express date conditions
+ * declaratively.
+ */
+export interface DateSlotInfo {
+  date: string; // ISO yyyy-mm-dd (the cell's data-date)
+  dayUsed: number;
+  dayTotal: number;
+  dayRoom: number;
+  morning: { booked: number; max: number; room: number };
+  afternoon: { booked: number; max: number; room: number };
+}
+
+/**
  * Shared calendar + slot modal component (si-calendar grid).
  * Selectors derived from the actual eAuto slot.do / reschedule.do HTML+JS.
  */
@@ -69,6 +85,26 @@ export class SlotPickerComponent extends BasePage {
     const cell = this.getDayCell(dateStr);
     const classes = await cell.getAttribute("class") ?? "";
     return classes.includes("si-fullday");
+  }
+
+  /**
+   * A date is "blocked" for the UCD portal when it is NOT selectable — either
+   * greyed out (si-muted) or not rendered on the calendar at all (e.g. beyond
+   * the current+next-month window). The inverse of isDayBookable().
+   */
+  async isDayBlocked(dateStr: string): Promise<boolean> {
+    return !(await this.isDayBookable(dateStr));
+  }
+
+  /** Whether the date cell is rendered at all in the (navigable) calendar. */
+  async isDayRendered(dateStr: string): Promise<boolean> {
+    await this.ensureMonthVisible(dateStr);
+    return (await this.getDayCell(dateStr).count()) > 0;
+  }
+
+  /** Whether the date shows a slot-availability badge ("Slot n/6"). */
+  async hasSlotBadge(dateStr: string): Promise<boolean> {
+    return (await this.getSlotBadge(dateStr)).trim().length > 0;
   }
 
   /** Returns "" if the date has no badge at all (e.g. weekends/out-of-range days) */
@@ -179,18 +215,91 @@ export class SlotPickerComponent extends BasePage {
    * badge (which only reflects combined capacity across both slots).
    */
   async findDateWithSlotRoom(slotIndex: number, minRoom: number, maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
-    for (let m = 0; m <= maxMonthsAhead; m++) {
-      for (const date of await this.findBookableDates()) {
-        await this.openSlotModal(date);
-        const { booked, max } = await this.getModalSlotBooked(slotIndex);
-        await this.closeSlotModal();
-        await this.modalOverlay.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
-        if (max - booked >= minRoom) return date;
+    // Scanning opens/closes many modals just to inspect — suppress demo
+    // highlighting/pauses so the recording only slows down for the date the
+    // test actually acts on.
+    return this.suppressDemo(async () => {
+      for (let m = 0; m <= maxMonthsAhead; m++) {
+        for (const date of await this.findBookableDates()) {
+          await this.openSlotModal(date);
+          const { booked, max } = await this.getModalSlotBooked(slotIndex);
+          await this.closeSlotModal();
+          await this.modalOverlay.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+          if (max - booked >= minRoom) return date;
+        }
+        if (m >= maxMonthsAhead) break;
+        if (!(await this.goNextMonth())) break;
       }
-      if (m >= maxMonthsAhead) break;
-      if (!(await this.goNextMonth())) break;
-    }
-    return null;
+      return null;
+    });
+  }
+
+  /**
+   * The most general date finder: pages forward month by month and returns
+   * the first BOOKABLE date (td.si-book) whose capacity snapshot satisfies
+   * `predicate`. Any scenario-specific condition — "morning full, afternoon
+   * has room", "day exactly half booked", "afternoon empty" — is expressed
+   * declaratively through the DateSlotInfo passed to the predicate, instead
+   * of hand-rolling modal scans in each spec.
+   *
+   * Per-session (morning/afternoon) counts only exist inside the slot modal,
+   * so each candidate's modal is opened and immediately closed again —
+   * nothing is ever booked. A candidate that turns unbookable between the
+   * grid scan and the modal open (shared staging shifts under us) is skipped.
+   * Fully-booked (6/6) days are td.si-fullday, never td.si-book, so they do
+   * not appear here — use findFullyBookedDate() for those.
+   */
+  async findDateMatching(
+    predicate: (info: DateSlotInfo) => boolean,
+    maxMonthsAhead: number = ENV.calendar.monthsVisible - 1,
+  ): Promise<string | null> {
+    // Inspecting each candidate opens/closes its modal — suppress demo
+    // highlighting/pauses so the scan stays fast and quiet.
+    return this.suppressDemo(async () => {
+      for (let m = 0; m <= maxMonthsAhead; m++) {
+        for (const date of await this.findBookableDates()) {
+          let info: DateSlotInfo;
+          try {
+            const { used, total } = await this.getSlotCount(date);
+            await this.openSlotModal(date);
+            const morning = await this.getModalSlotBooked(0);
+            const afternoon = await this.getModalSlotBooked(1);
+            await this.closeSlotModal();
+            await this.modalOverlay.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+            info = {
+              date,
+              dayUsed: used,
+              dayTotal: total,
+              dayRoom: total - used,
+              morning: { ...morning, room: morning.max - morning.booked },
+              afternoon: { ...afternoon, room: afternoon.max - afternoon.booked },
+            };
+          } catch {
+            continue; // candidate became unbookable / modal glitched — skip it
+          }
+          if (predicate(info)) return date;
+        }
+        if (m >= maxMonthsAhead) break;
+        if (!(await this.goNextMonth())) break;
+      }
+      return null;
+    });
+  }
+
+  /**
+   * First bookable date where the given session (0 = morning, 1 = afternoon)
+   * is at capacity (0 room) while the date overall is still bookable — i.e.
+   * the OTHER session still has room, so the cell is td.si-book, not
+   * si-fullday. Thin, readable wrapper over findDateMatching().
+   */
+  async findDateWithSlotFull(
+    slotIndex: number,
+    maxMonthsAhead: number = ENV.calendar.monthsVisible - 1,
+  ): Promise<string | null> {
+    return this.findDateMatching(
+      (i) => (slotIndex === 0 ? i.morning : i.afternoon).room === 0,
+      maxMonthsAhead,
+    );
   }
 
   /**
@@ -275,8 +384,10 @@ export class SlotPickerComponent extends BasePage {
         `Date ${dateStr} is not bookable (class="${classes}") — pick a date from findBookableDates()/findEmptyBookableDate() instead of a hardcoded offset.`
       );
     }
+    await this.demoHighlight(cell); // show which date is being opened
     await cell.click();
     await this.modalOverlay.waitFor({ state: "visible", timeout: 5000 });
+    await this.demoPause(); // let the reviewer read the opened dialog
   }
 
   /** Get booked count for a slot from the modal capacity text (e.g. "2 of 3 booked") */
@@ -311,9 +422,11 @@ export class SlotPickerComponent extends BasePage {
 
   /** Increment a slot's stepper via the JS function siStep(slot, +1) */
   async incrementSlot(slotIndex: number, times: number = 1) {
+    await this.demoHighlight(slotIndex === 0 ? this.morningCount : this.afternoonCount);
     for (let i = 0; i < times; i++) {
       await this.page.evaluate((s) => (window as any).siStep(s, 1), slotIndex);
     }
+    await this.demoPause();
   }
 
   /** Decrement a slot's stepper via the JS function siStep(slot, -1) */
@@ -325,7 +438,9 @@ export class SlotPickerComponent extends BasePage {
 
   /** Remove all units from a slot via the JS function siRowRemove(slot) */
   async removeSlot(slotIndex: number) {
+    await this.demoHighlight(slotIndex === 0 ? this.morningRemoveBtn : this.afternoonRemoveBtn, { color: "red" });
     await this.page.evaluate((s) => (window as any).siRowRemove(s), slotIndex);
+    await this.demoPause();
   }
 
   /** Save changes in the slot dialog via siSaveDate() */
@@ -367,9 +482,11 @@ export class SlotPickerComponent extends BasePage {
    * through to the networkidle wait instead.
    */
   async confirmAppointment() {
+    await this.demoHighlight("#si-confirm-booking", { color: "green" });
     await this.page.evaluate(() => (window as any).siConfirmBooking());
     await this.page.waitForURL(/submitted\.do\?txnId=/, { timeout: 15000 }).catch(() => {});
     await this.waitForNav();
+    await this.demoPause();
   }
 
   /**

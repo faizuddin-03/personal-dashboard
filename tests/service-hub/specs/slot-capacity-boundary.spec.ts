@@ -23,67 +23,44 @@ test.describe("Slot Capacity Boundary", () => {
       await serviceHubPage.navigate();
     });
 
+    // Expected: on a session that has NOT been booked yet, only up to 3
+    // appointments can be added. Buy more than a session can hold (perSlot+1)
+    // so our own purchase total is never the limiting factor, start from an
+    // EMPTY session so the limit we hit is the hard 3-per-slot cap, and prove
+    // the "+" stepper refuses to exceed 3. Stepper only, never saved — the
+    // shared calendar is left untouched.
     test("Morning Slot - Book until full", async ({
       softwareInstallationPage,
       slotPicker,
     }) => {
-      // We never save or confirm this booking — the goal is purely to
-      // prove the "+" stepper refuses to exceed the morning slot's
-      // remaining capacity. Since nothing is committed, the shared
-      // calendar's day totals are never touched, so there's no risk of
-      // this test itself pushing a date to 6/6 and locking it for
-      // everyone else. Buy more than a slot could ever hold (perSlot + 1)
-      // so our own purchase total is never the limiting factor — only
-      // the slot's own capacity should be.
       await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);
-      // A date can be generally "bookable" while morning specifically is
-      // already full, so find one where morning itself has room.
-      const targetDate = await slotPicker.findDateWithSlotRoom(MORNING, 1);
-      expect(targetDate).not.toBeNull();
-
-      await slotPicker.openSlotModal(targetDate!);
-      const initial = await slotPicker.getModalSlotBooked(MORNING);
-      const roomLeft = initial.max - initial.booked;
-      expect(roomLeft).toBeGreaterThan(0);
-
-      // Fill the slot to capacity via the stepper only — no save
-      await slotPicker.incrementSlot(MORNING, roomLeft);
-      const filled = await slotPicker.getStepperValue(MORNING);
-      expect(filled).toBe(roomLeft);
-
-      // Try to add one more — the stepper must refuse to go past capacity
-      await slotPicker.incrementSlot(MORNING, 1);
-      const afterOverbook = await slotPicker.getStepperValue(MORNING);
-      expect(afterOverbook).toBe(roomLeft);
+      const date = await slotPicker.findDateMatching((i) => i.morning.booked === 0);
+      if (!date) {
+        test.skip(true, "No date with an empty morning session available.");
+        return;
+      }
+      await test.step(`Expected: morning session accepts at most ${ENV.slotCapacity.perSlot}`, async () => {
+        await slotPicker.openSlotModal(date);
+        await slotPicker.incrementSlot(MORNING, ENV.slotCapacity.perSlot + 1);
+        expect(await slotPicker.getStepperValue(MORNING)).toBe(ENV.slotCapacity.perSlot);
+      });
     });
 
     test("Afternoon Slot - Book until full", async ({
       softwareInstallationPage,
       slotPicker,
     }) => {
-      // Same approach as the morning test — verify the stepper's own
-      // limit without ever saving/confirming, so no real booking is made
-      // and the shared calendar is left untouched.
       await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);
-      // A date can be generally "bookable" while afternoon specifically is
-      // already full, so find one where afternoon itself has room.
-      const targetDate = await slotPicker.findDateWithSlotRoom(AFTERNOON, 1);
-      expect(targetDate).not.toBeNull();
-
-      await slotPicker.openSlotModal(targetDate!);
-      const initial = await slotPicker.getModalSlotBooked(AFTERNOON);
-      const roomLeft = initial.max - initial.booked;
-      expect(roomLeft).toBeGreaterThan(0);
-
-      // Fill the slot to capacity via the stepper only — no save
-      await slotPicker.incrementSlot(AFTERNOON, roomLeft);
-      const filled = await slotPicker.getStepperValue(AFTERNOON);
-      expect(filled).toBe(roomLeft);
-
-      // Try to add one more — the stepper must refuse to go past capacity
-      await slotPicker.incrementSlot(AFTERNOON, 1);
-      const afterOverbook = await slotPicker.getStepperValue(AFTERNOON);
-      expect(afterOverbook).toBe(roomLeft);
+      const date = await slotPicker.findDateMatching((i) => i.afternoon.booked === 0);
+      if (!date) {
+        test.skip(true, "No date with an empty afternoon session available.");
+        return;
+      }
+      await test.step(`Expected: afternoon session accepts at most ${ENV.slotCapacity.perSlot}`, async () => {
+        await slotPicker.openSlotModal(date);
+        await slotPicker.incrementSlot(AFTERNOON, ENV.slotCapacity.perSlot + 1);
+        expect(await slotPicker.getStepperValue(AFTERNOON)).toBe(ENV.slotCapacity.perSlot);
+      });
     });
 
     test("Day capacity reach 6/6", async ({
@@ -170,12 +147,13 @@ test.describe("Slot Capacity Boundary", () => {
       await expect(clientErr).toBeHidden();
     });
 
-    test("Biometric Purchase - Free Install Option", async ({
+    test("Biometric Purchase - Free Install Option (partial booking)", async ({
       biometricPurchasePage,
       slotPicker,
     }) => {
       // 2 devices → 2 free software installations. Do not opt for extra
-      // (paid) installs.
+      // (paid) installs. Expected: UCD may PARTIALLY book — the remaining
+      // free appointment stays valid for 1 month (tied to the SR reference).
       await biometricPurchasePage.purchaseDevice({
         deviceQty: 2,
         recipientName: "Test Receiver",
@@ -199,6 +177,28 @@ test.describe("Slot Capacity Boundary", () => {
       await slotPicker.confirmAppointment();
       const clientErr = slotPicker.page.locator("#si-clienterr");
       await expect(clientErr).toBeHidden();
+    });
+
+    test("Biometric Purchase - Free Install Option (no booking)", async ({
+      biometricPurchasePage,
+      slotPicker,
+    }) => {
+      // 2 devices → 2 free installs, no extra (paid) installs. Expected: UCD
+      // may proceed WITHOUT booking any appointment now — all free installs
+      // remain valid for 1 month (tied to the SR reference).
+      await biometricPurchasePage.purchaseDevice({
+        deviceQty: 2,
+        recipientName: "Test Receiver",
+        contactNo: "0123456789",
+        shipToShowroom: true,
+      });
+
+      expect(await slotPicker.getAllocationTotal()).toBe(2);
+
+      // Confirm with nothing booked — free installs are optional, so this
+      // must be allowed to proceed (no mandatory paid unit to block it).
+      await slotPicker.confirmAppointment();
+      expect(slotPicker.page.url()).toMatch(/submitted\.do/);
     });
 
     test("Biometric Purchase - Paid Install Mandatory", async ({
@@ -280,54 +280,8 @@ test.describe("Slot Capacity Boundary", () => {
     });
   });
 
-  // ────────────────────────────────────────────────────────────
-  // BO — No capacity limit
-  // ────────────────────────────────────────────────────────────
-  test.describe("BO", () => {
-    test.beforeEach(async ({ loginPage }) => {
-      await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
-    });
-
-    // SRD 2.3.2.7 #2 rule 3: the 3-per-slot (6/day) cap applies to UCD
-    // Portal bookings only; for CSE it is informational, so BO can add
-    // beyond it.
-    test("BO add beyond 6/day cap", async ({ boCalendarPage }) => {
-      const fullDate = boCalendarPage.daysFromToday(3);
-
-      await boCalendarPage.addAppointment({
-        companyName: "Test Company Beyond6",
-        appointmentDate: fullDate,
-        slot: MORNING,
-      });
-
-      await boCalendarPage.navigate();
-      expect(await boCalendarPage.getSlotCount(fullDate, MORNING)).toBeGreaterThan(0);
-    });
-
-    test("BO add beyond morning slot limit", async ({ boCalendarPage }) => {
-      const fullDate = boCalendarPage.daysFromToday(4);
-
-      await boCalendarPage.addAppointment({
-        companyName: "Test Company BeyondMorning",
-        appointmentDate: fullDate,
-        slot: MORNING,
-      });
-
-      await boCalendarPage.navigate();
-      expect(await boCalendarPage.getSlotCount(fullDate, MORNING)).toBeGreaterThan(0);
-    });
-
-    test("BO add beyond afternoon slot limit", async ({ boCalendarPage }) => {
-      const fullDate = boCalendarPage.daysFromToday(4);
-
-      await boCalendarPage.addAppointment({
-        companyName: "Test Company BeyondAfternoon",
-        appointmentDate: fullDate,
-        slot: AFTERNOON,
-      });
-
-      await boCalendarPage.navigate();
-      expect(await boCalendarPage.getSlotCount(fullDate, AFTERNOON)).toBeGreaterThan(0);
-    });
-  });
+  // NOTE: BO/CSE capacity is intentionally NOT tested here. Per SRD 2.3.2.7
+  // #2 rule 3 the 3-per-slot (6/day) cap binds UCD Portal bookings only; for
+  // CSE the counter is informational. The "can CSE add past a full slot"
+  // behaviour lives in add-appointment-bo.spec.ts, not as a capacity limit.
 });

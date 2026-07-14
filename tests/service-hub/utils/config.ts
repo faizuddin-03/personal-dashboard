@@ -12,6 +12,15 @@ export const ENV = {
   ucd2Username: process.env.EAUTO_UCD2_USER || "",
   ucd2Password: process.env.EAUTO_UCD2_PASS || "",
 
+  // Per-run parameters keyed in via the runner UI (see the "Test data" panel).
+  //  publicHoliday — a date (YYYY-MM-DD) the Public-Holiday tests try to book;
+  //    they assert it is greyed out / unclickable on the calendar.
+  //  referenceNo   — an existing Service Request reference the biometric
+  //    free-install validity test uses (its remaining free installs are valid
+  //    for 1 month, keyed to this reference).
+  publicHoliday: process.env.EAUTO_PUBLIC_HOLIDAY || "",
+  referenceNo: process.env.EAUTO_REF_NO || "",
+
   slotCapacity: {
     perSlot: Number(process.env.EAUTO_SLOT_PER_SLOT || 3), // 3 bookings per session
     perDay: Number(process.env.EAUTO_SLOT_PER_DAY || 6), // 6 bookings per day (UCD Portal)

@@ -1,8 +1,20 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page, type Locator, expect, test } from "@playwright/test";
 import { BasePage } from "../BasePage";
 import { PATHS } from "../../utils/config";
 
 export type BoTimeSlot = 0 | 1; // 0 = 10am–12pm, 1 = 2pm–4pm
+
+/**
+ * A BO calendar date's per-session snapshot, read straight off the grid
+ * (div.cal-cap) — no modal needed. `full` reflects the "(Full)" indicator,
+ * which on BO is informational (the 6/day cap binds UCD Portal bookings only;
+ * CSE can still add past it). Consumed by findDateMatching().
+ */
+export interface BoDateSlotInfo {
+  date: string; // the calendar's DD-MM-YYYY label
+  morning: { booked: number; full: boolean };
+  afternoon: { booked: number; full: boolean };
+}
 
 /**
  * eAuto Back Office Portal > Appointment Calendar.
@@ -46,6 +58,11 @@ export class AppointmentCalendarPage extends BasePage {
   /** Reach the calendar via the Listing's "Appointment Calendar" button. */
   async navigate() {
     await this.goto(PATHS.boListing);
+    // Guard against a redirect race landing us on the portal home instead of
+    // the listing (the Appointment Calendar button won't be there) — retry once.
+    if ((await this.listingApptCalBtn.count()) === 0) {
+      await this.goto(PATHS.boListing);
+    }
     await this.listingApptCalBtn.click();
     await this.calTable.waitFor({ state: "visible", timeout: 15000 });
   }
@@ -86,6 +103,33 @@ export class AppointmentCalendarPage extends BasePage {
     return /\(Full\)/i.test(text);
   }
 
+  /**
+   * BO counterpart to the UCD SlotPickerComponent.findDateMatching(): returns
+   * the first date in the CURRENTLY DISPLAYED month whose per-session snapshot
+   * satisfies `predicate`. BO shows per-slot counts directly on the grid, so
+   * no modal is opened. Scanning is limited to the visible month — select a
+   * different month via #cal-month-picker + Search first if you need one.
+   */
+  async findDateMatching(predicate: (info: BoDateSlotInfo) => boolean): Promise<string | null> {
+    const labels = await this.calTable.locator("tbody tr span.cal-daynum").allTextContents();
+    for (const raw of labels) {
+      const date = raw.trim();
+      if (!date) continue;
+      const info: BoDateSlotInfo = {
+        date,
+        morning: { booked: await this.getSlotCount(date, 0), full: await this.isSlotFull(date, 0) },
+        afternoon: { booked: await this.getSlotCount(date, 1), full: await this.isSlotFull(date, 1) },
+      };
+      if (predicate(info)) return date;
+    }
+    return null;
+  }
+
+  /** First date in the visible month whose given session shows "(Full)". */
+  async findDateWithSlotFull(slot: BoTimeSlot): Promise<string | null> {
+    return this.findDateMatching((i) => (slot === 0 ? i.morning : i.afternoon).full);
+  }
+
   /** Whether any appointment on the page still offers a Reschedule link. */
   async isRescheduleAvailable(): Promise<boolean> {
     return (await this.page.locator("a.cal-rs").count()) > 0;
@@ -102,18 +146,35 @@ export class AppointmentCalendarPage extends BasePage {
     await this.datepicker.waitFor({ state: "visible", timeout: 5000 });
     const selectable = this.datepicker.locator("td:not(.ui-state-disabled) a.ui-state-default");
 
+    let target: Locator | null = null;
     if (dayOfMonth !== undefined) {
       const exact = selectable.filter({ hasText: new RegExp(`^${dayOfMonth}$`) }).first();
-      if (await exact.count()) {
-        await exact.click();
-        return;
-      }
-      // Requested day isn't selectable this month — fall through to any.
+      if (await exact.count()) target = exact;
+      // else: requested day isn't selectable this month — fall through to any.
     }
+    if (!target) {
+      const n = await selectable.count();
+      if (n === 0) throw new Error("No selectable day in the datepicker");
+      target = selectable.nth(n - 1); // last selectable → later in month
+    }
+    await target.click();
+    // The datepicker overlay sits directly over the time-slot radios below the
+    // date field; if it stays open it intercepts the next click. Force it shut.
+    await this.dismissDatepicker();
+  }
 
-    const n = await selectable.count();
-    if (n === 0) throw new Error("No selectable day in the datepicker");
-    await selectable.nth(n - 1).click(); // last selectable → later in month
+  /** Close the jQuery UI datepicker overlay so it can't intercept clicks. */
+  private async dismissDatepicker() {
+    await this.page.evaluate(() => {
+      const w = window as unknown as { jQuery?: { datepicker?: { _hideDatepicker?: () => void } } };
+      try {
+        w.jQuery?.datepicker?._hideDatepicker?.();
+      } catch {}
+      const dp = document.getElementById("ui-datepicker-div");
+      if (dp) dp.style.display = "none";
+      (document.activeElement as HTMLElement | null)?.blur();
+    });
+    await this.datepicker.waitFor({ state: "hidden", timeout: 3000 }).catch(() => {});
   }
 
   private isoDayOfMonth(iso: string): number | undefined {
@@ -127,7 +188,9 @@ export class AppointmentCalendarPage extends BasePage {
    * native confirm, and waits for the calendar to refresh.
    */
   async rescheduleFirstListed(opts: { slot: BoTimeSlot }) {
-    await this.page.locator("a.cal-rs").first().click();
+    const link = this.page.locator("a.cal-rs").first();
+    await this.demoHighlight(link);
+    await link.click();
     await this.completeRescheduleDialog(opts.slot);
   }
 
@@ -142,60 +205,137 @@ export class AppointmentCalendarPage extends BasePage {
   }
 
   private async completeRescheduleDialog(slot: BoTimeSlot) {
+    const slotName = slot === 0 ? "morning" : "afternoon";
     const dialog = this.page.locator(".ui-dialog", { has: this.page.locator("#ac-rs-dialog") });
     await dialog.waitFor({ state: "visible", timeout: 10000 });
+    // Show the current appointment being changed, so the reviewer sees the
+    // "before" state before the new date is picked.
+    await this.demoHighlight("#ac-rs-cur");
 
-    // New Appointment Date via datepicker (readonly input → click to open).
-    // The user confirmed any non-past selectable date is acceptable here.
-    await this.page.locator("#ac-rs-date").click();
-    await this.pickDatepickerDay();
+    await test.step(`Pick a new date and the ${slotName} slot`, async () => {
+      // New Appointment Date via datepicker (readonly input → click to open).
+      await this.page.locator("#ac-rs-date").click();
+      await this.pickDatepickerDay();
+      await this.demoHighlight(`input[name="ac-rs-slot"][value="${slot}"]`);
+      await this.page.locator(`input[name="ac-rs-slot"][value="${slot}"]`).check();
+    });
 
-    // Time slot radio.
-    await this.page.locator(`input[name="ac-rs-slot"][value="${slot}"]`).check();
-
-    // Confirm raises a NATIVE browser confirm() — accept it.
-    this.page.once("dialog", (d) => d.accept());
-    await dialog.getByRole("button", { name: "Confirm" }).click();
-    await this.waitForNav();
+    await test.step("Confirm the reschedule", async () => {
+      // Confirm raises a NATIVE browser confirm() — accept it.
+      await this.demoHighlight(dialog.getByRole("button", { name: "Confirm" }), { color: "green" });
+      this.page.once("dialog", (d) => d.accept());
+      await dialog.getByRole("button", { name: "Confirm" }).click();
+      await this.waitForNav();
+      await this.demoPause();
+    });
   }
 
   /**
    * Add Appointment (jQuery UI dialog). Default type is "New Record"; pass
    * existingRecordRefNo to use the "Existing Record" path.
    */
+  /**
+   * Returns the date actually booked (DD-MM-YYYY, matching the calendar
+   * label) on success, or `null` when the add couldn't proceed — the company
+   * couldn't be resolved, it has no unallocated units ("No allocation
+   * remaining"), or the confirm was rejected. Callers use null to SKIP
+   * (arrange-else-skip) rather than fail. The chosen date may differ from
+   * `appointmentDate` if that day isn't selectable, which is why we report
+   * back the date the datepicker actually committed.
+   */
   async addAppointment(opts: {
     companyName: string;
     slot: BoTimeSlot;
     appointmentDate?: string; // ISO (YYYY-MM-DD); picks that day if selectable this month
     existingRecordRefNo?: string;
-  }) {
+    /**
+     * Exact company to click from the search results. Defaults to
+     * companyName. Needed because several look-alikes exist (e.g.
+     * "FAIZUDDIN AUTO TEST" vs "FAIZUDDIN AUTO TEST 2"/"3") — we match the
+     * result whose text is EXACTLY this, never a prefix.
+     */
+    companySelect?: string;
+  }): Promise<string | null> {
+    await this.demoHighlight(this.addAppointmentBtn);
     await this.addAppointmentBtn.click();
     const dialog = this.page.locator(".ui-dialog", { has: this.page.locator("#ac-add-dialog") });
     await dialog.waitFor({ state: "visible", timeout: 10000 });
+    await this.demoPause();
 
+    // Appointment type radio (New Record vs Existing Record).
+    await this.page
+      .locator(`input[name="ac-add-type"][value="${opts.existingRecordRefNo ? "EXISTING" : "NEW"}"]`)
+      .check();
+
+    // Company search → results render in .ac_results (<ul><li> list). Select
+    // by EXACT text so "FAIZUDDIN AUTO TEST" never matches "… TEST 2"/"… 3".
+    await this.page.locator("#ac-add-name").fill(opts.companyName);
+    await this.demoHighlight("#ac-add-name");
+    await this.page.locator("#ac-add-search").click();
+    const results = this.page.locator(".ac_results");
+    await results.waitFor({ state: "visible", timeout: 8000 }).catch(() => {});
+    const pick = opts.companySelect ?? opts.companyName;
+    const option = results.getByText(pick, { exact: true }).first();
+    if (!(await option.count())) {
+      await this.closeAddDialog(dialog); // company not in results — precondition unmet
+      return null;
+    }
+    await this.demoHighlight(option);
+    await option.click();
+
+    // Existing Record: after the company is chosen, key in the reference
+    // (captured from the BO SI Listing for this company) and search to bind it.
     if (opts.existingRecordRefNo) {
-      await this.page.locator('input[name="ac-add-type"][value="EXISTING"]').check();
-      await this.page.locator("#ac-add-refno").fill(opts.existingRecordRefNo);
-      await this.page.locator("#ac-add-ref-search").click();
-    } else {
-      await this.page.locator('input[name="ac-add-type"][value="NEW"]').check();
+      const ref = opts.existingRecordRefNo;
+      await test.step(`Enter Existing Record reference ${ref}`, async () => {
+        await this.page.locator("#ac-add-refno").fill(ref);
+        await this.demoHighlight("#ac-add-refno");
+        await this.page.locator("#ac-add-ref-search").click();
+        await this.page.waitForTimeout(500);
+      });
     }
 
-    // Company search → pick from the autocomplete dropdown (#ac-add-dd).
-    await this.page.locator("#ac-add-name").fill(opts.companyName);
-    await this.page.locator("#ac-add-search").click();
-    const option = this.page.locator("#ac-add-dd").getByText(opts.companyName, { exact: false }).first();
-    await option.waitFor({ state: "visible", timeout: 8000 }).catch(() => {});
-    if (await option.count()) await option.click();
+    // A company with no active installation request, or with no unallocated
+    // units left, can't be added — the dialog surfaces one of these errors.
+    if (
+      (await this.page.locator("#ac-add-noreq").isVisible().catch(() => false)) ||
+      (await this.page.locator("#ac-add-alloc-no").isVisible().catch(() => false))
+    ) {
+      await this.closeAddDialog(dialog);
+      return null;
+    }
 
     // Appointment date via datepicker + time slot radio.
-    await this.page.locator("#ac-add-date").click();
-    await this.pickDatepickerDay(opts.appointmentDate ? this.isoDayOfMonth(opts.appointmentDate) : undefined);
-    await this.page.locator(`#ac-add-slot-${opts.slot}`).check();
+    let bookedDate = "";
+    await test.step(`Pick appointment date and the ${opts.slot === 0 ? "morning" : "afternoon"} slot`, async () => {
+      await this.page.locator("#ac-add-date").click();
+      await this.pickDatepickerDay(opts.appointmentDate ? this.isoDayOfMonth(opts.appointmentDate) : undefined);
+      // Capture the date actually chosen (display value = DD-MM-YYYY).
+      bookedDate = (await this.page.locator("#ac-add-date").inputValue().catch(() => "")).trim();
+      await this.demoHighlight(`#ac-add-slot-${opts.slot}`);
+      await this.page.locator(`#ac-add-slot-${opts.slot}`).check();
+    });
 
-    // Confirm raises a NATIVE browser confirm() — accept it.
-    this.page.once("dialog", (d) => d.accept());
-    await dialog.getByRole("button", { name: "Confirm" }).click();
-    await this.waitForNav();
+    await test.step("Confirm the appointment", async () => {
+      // Confirm raises a NATIVE browser confirm() — accept it.
+      await this.demoHighlight(dialog.getByRole("button", { name: "Confirm" }), { color: "green" });
+      this.page.once("dialog", (d) => d.accept());
+      await dialog.getByRole("button", { name: "Confirm" }).click();
+      await this.waitForNav();
+      await this.demoPause();
+    });
+
+    // Success only if the dialog closed; a validation failure leaves it open.
+    if (await dialog.isVisible().catch(() => false)) {
+      await this.closeAddDialog(dialog);
+      return null;
+    }
+    return bookedDate || null;
+  }
+
+  /** Close the Add dialog via its Cancel button (best-effort). */
+  private async closeAddDialog(dialog: Locator) {
+    await dialog.getByRole("button", { name: "Cancel" }).click().catch(() => {});
+    await dialog.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
   }
 }

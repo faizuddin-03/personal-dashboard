@@ -6,11 +6,7 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-<<<<<<< Updated upstream
-  Briefcase, Send, Filter, Music2, AtSign, ShoppingCart,
-=======
-  Briefcase, Send, Filter, Music2, AtSign, ArrowLeftRight,
->>>>>>> Stashed changes
+  Briefcase, Send, Filter, Music2, AtSign, ShoppingCart, ArrowLeftRight,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -48,11 +44,8 @@ const nav = [
       // Insurance page holds tabs: Availability (eAuto), Availability (Secarang),
       // Regression (Secarang), and Purchase E2E (eAuto).
       { label: "Insurance",       href: "/eauto/insurance", icon: Shield },
-<<<<<<< Updated upstream
       { label: "Shopping Cart",   href: "/eauto/shopping-cart", icon: ShoppingCart },
-=======
       { label: "eSTM",            href: "/eauto/estm",      icon: ArrowLeftRight },
->>>>>>> Stashed changes
       // WA Blaster (old: scripts/_archive/WA-Blaster, still at /wa-blaster) and
       // WA Blaster Beta (still at /wa-blaster-beta) are hidden from the sidebar
       // but not deleted — reachable by direct URL if ever needed again.

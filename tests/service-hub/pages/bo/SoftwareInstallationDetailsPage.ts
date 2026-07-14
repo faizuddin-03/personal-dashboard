@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page, type Locator, expect, test } from "@playwright/test";
 import { BasePage } from "../BasePage";
 import { PATHS } from "../../utils/config";
 
@@ -12,11 +12,13 @@ export type FailedReason = "Reappointment" | "Laptop/PC Issues" | "Other";
  * verified against the actual BO portal HTML, then tightened.
  */
 export class SoftwareInstallationDetailsPage extends BasePage {
-  // 1. Page header
+  // 1. Page header — verified against the real BO Details HTML:
+  //   "Installation Failed »"    → button.btn-fail    (onclick opFailOpen())
+  //   "Installation Completed »" → button.btn-success (onclick opSuccess())
   readonly backBtn = this.page.getByText("Back", { exact: false }).first();
   readonly serviceRequestNo = this.page.locator("text=/Service Request #/i").first();
-  readonly installationFailedBtn = this.page.getByText("Installation Failed", { exact: false }).first();
-  readonly installationCompletedBtn = this.page.getByText("Installation Completed", { exact: false }).first();
+  readonly installationFailedBtn = this.page.locator(".btn-fail").first();
+  readonly installationCompletedBtn = this.page.locator(".btn-success").first();
 
   // 2. Request Details
   readonly invoiceBtn = this.page.getByRole("button", { name: /^Invoice$/i }).first();
@@ -60,14 +62,26 @@ export class SoftwareInstallationDetailsPage extends BasePage {
    *   [No] [Yes]  → Appointment Status = "Completed".
    */
   async markCompleted(confirm: boolean = true) {
-    await this.installationCompletedBtn.click();
-    await this.waitForDialog();
-    if (confirm) {
-      await this.acceptConfirmDialog();
-    } else {
-      await this.dismissConfirmDialog();
-    }
-    await this.waitForNav();
+    await test.step("Mark installation Completed", async () => {
+      await this.installationCompletedBtn.click();
+      await this.clickDialogButton("Installation Completed", confirm ? "Yes" : "No");
+      await this.waitForNav();
+    });
+  }
+
+  /**
+   * Click a Yes/No button in a jQuery UI dialog identified by its title.
+   * The Details-page popups render their buttons as plain
+   * .ui-dialog-buttonpane <button> ("Yes"/"No") — they do NOT get the
+   * .confirm-dialog-btn / .cancel-dialog-btn classes that the UCD dialogs
+   * use, so acceptConfirmDialog()/dismissConfirmDialog() don't apply here.
+   */
+  private async clickDialogButton(titleText: string, label: "Yes" | "No") {
+    const dialog = this.page.locator(".ui-dialog", {
+      has: this.page.locator(".ui-dialog-title", { hasText: titleText }),
+    });
+    await dialog.waitFor({ state: "visible", timeout: 8000 });
+    await dialog.locator(".ui-dialog-buttonpane button", { hasText: new RegExp(`^${label}$`) }).first().click();
   }
 
   /**
@@ -78,23 +92,26 @@ export class SoftwareInstallationDetailsPage extends BasePage {
    *   (Other → free-text box) → [No] [Yes] → Appointment Status = "Failed".
    */
   async markFailed(reason: FailedReason, otherText?: string, confirm: boolean = true) {
+    await test.step(`Mark installation Failed — reason: ${reason}`, () =>
+      this.markFailedImpl(reason, otherText, confirm));
+  }
+
+  private async markFailedImpl(reason: FailedReason, otherText?: string, confirm: boolean = true) {
     await this.installationFailedBtn.click();
-    await this.waitForDialog();
+    const dialog = this.page.locator(".ui-dialog", {
+      has: this.page.locator(".ui-dialog-title", { hasText: "Installation Failed" }),
+    });
+    await dialog.waitFor({ state: "visible", timeout: 8000 });
 
-    // Select the reason radio by its visible label.
-    await this.page.getByText(reason, { exact: false }).first().click();
+    // Reason radio: input[name="op-fail-reason"] with values Reappointment /
+    // LaptopIssue / Other (note the value differs from the visible label).
+    const reasonValue = reason === "Laptop/PC Issues" ? "LaptopIssue" : reason;
+    await dialog.locator(`input[name="op-fail-reason"][value="${reasonValue}"]`).check();
     if (reason === "Other" && otherText) {
-      await this.page
-        .locator('.ui-dialog textarea, .ui-dialog input[type="text"]')
-        .first()
-        .fill(otherText);
+      await dialog.locator('textarea, input[type="text"]').first().fill(otherText);
     }
 
-    if (confirm) {
-      await this.acceptConfirmDialog();
-    } else {
-      await this.dismissConfirmDialog();
-    }
+    await dialog.locator(".ui-dialog-buttonpane button", { hasText: new RegExp(`^${confirm ? "Yes" : "No"}$`) }).first().click();
     await this.waitForNav();
   }
 

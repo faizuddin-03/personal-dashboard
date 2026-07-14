@@ -13,6 +13,19 @@ interface RunRequest {
   ucdPass: string;
   boUser: string;
   boPass: string;
+  detailed?: boolean;
+  publicHoliday?: string; // YYYY-MM-DD keyed in by the user (Public-Holiday tests)
+  referenceNo?: string;   // existing SR reference (biometric free-install validity)
+}
+
+interface UiStep {
+  title: string;
+  status: "passed" | "failed";
+  category: string;
+  durationMs: number;
+  depth: number;
+  error: string;
+  friendlyError: string;
 }
 
 interface TestResultItem {
@@ -21,6 +34,51 @@ interface TestResultItem {
   duration: number;
   error: string;
   friendlyError: string;
+  steps: UiStep[];
+}
+
+// Raw step shape as serialized by the custom step-reporter.
+interface RawStep {
+  title: string;
+  category: string;
+  duration: number;
+  error?: string;
+  steps?: RawStep[];
+}
+interface RawStepTest {
+  title: string;
+  titlePath: string[];
+  status: string;
+  duration: number;
+  error?: string;
+  steps: RawStep[];
+}
+
+/**
+ * Flatten the reporter's step tree into an ordered, indented list of the
+ * MEANINGFUL steps for the UI checklist: the named `test.step(...)` entries
+ * and any `expect` assertions. Low-level `pw:api`/`hook`/`fixture` noise is
+ * dropped. A step is "failed" when it carries an error.
+ */
+function flattenSteps(steps: RawStep[] | undefined, depth: number, out: UiStep[]) {
+  for (const s of steps ?? []) {
+    const keep = s.category === "test.step" || s.category === "expect";
+    let childDepth = depth;
+    if (keep) {
+      const error = s.error ? stripAnsi(s.error) : "";
+      out.push({
+        title: s.title,
+        status: error ? "failed" : "passed",
+        category: s.category,
+        durationMs: s.duration ?? 0,
+        depth,
+        error,
+        friendlyError: error ? toPlainEnglish(error) : "",
+      });
+      childDepth = depth + 1;
+    }
+    if (s.steps?.length) flattenSteps(s.steps, childDepth, out);
+  }
 }
 
 /** Strip ANSI color/escape codes so raw terminal output reads cleanly as plain text. */
@@ -103,7 +161,7 @@ function toPlainEnglish(rawMessage: string): string {
 export async function POST(req: NextRequest) {
   try {
     const body: RunRequest = await req.json();
-    const { scenarios, headless, baseUrl, ucdUser, ucdPass, boUser, boPass } = body;
+    const { scenarios, headless, baseUrl, ucdUser, ucdPass, boUser, boPass, detailed, publicHoliday, referenceNo } = body;
 
     if (!scenarios.length) {
       return NextResponse.json({ error: "No scenarios selected." }, { status: 400 });
@@ -123,6 +181,7 @@ export async function POST(req: NextRequest) {
     fs.mkdirSync(recordDir, { recursive: true });
 
     const jsonReportPath = path.join(recordDir, "report.json");
+    const stepReportPath = path.join(recordDir, "steps.json");
 
     const grepPattern = scenarios.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
 
@@ -137,6 +196,13 @@ export async function POST(req: NextRequest) {
       PW_VIDEO: "1",
       PW_OUTPUT_DIR: recordDir,
       PW_JSON_REPORT: jsonReportPath,
+      PW_STEP_REPORT: stepReportPath,
+      // Detailed mode: slow, highlighted playback so the recording is easy
+      // to review step by step (default on unless explicitly disabled).
+      PW_DETAILED: detailed === false ? "0" : "1",
+      // Per-run parameters keyed in via the runner UI.
+      EAUTO_PUBLIC_HOLIDAY: publicHoliday ?? "",
+      EAUTO_REF_NO: referenceNo ?? "",
     };
 
     const fullCmd = `npx playwright test --config "${configPath}" --grep "${grepPattern}"`;
@@ -239,6 +305,7 @@ export async function POST(req: NextRequest) {
                   duration: testResult?.duration ?? 0,
                   error: cleanedError,
                   friendlyError: errorMsg ? toPlainEnglish(errorMsg) : "",
+                  steps: [],
                 });
               }
               if (s.suites) out.push(...extractSpecs(s.suites, groupTitle));
@@ -250,6 +317,29 @@ export async function POST(req: NextRequest) {
           logs.push(`[RESULTS PARSED] ${results.length} tests`);
         } catch (e) {
           logs.push(`[REPORT ERROR] ${e instanceof Error ? e.message : String(e)}`);
+        }
+
+        // Merge the per-test step tree (from the custom step-reporter) into
+        // each result, matched by leaf title, and flatten to the UI checklist.
+        try {
+          if (fs.existsSync(stepReportPath)) {
+            const stepData = JSON.parse(fs.readFileSync(stepReportPath, "utf-8")) as { tests?: RawStepTest[] };
+            const byTitle = new Map<string, RawStepTest>();
+            for (const t of stepData.tests ?? []) byTitle.set(t.title, t);
+            for (const r of results) {
+              const match = byTitle.get(r.title);
+              if (match) {
+                const flat: UiStep[] = [];
+                flattenSteps(match.steps, 0, flat);
+                r.steps = flat;
+              }
+            }
+            logs.push(`[STEPS MERGED] ${stepData.tests?.length ?? 0} step-tests`);
+          } else {
+            logs.push(`[STEPS] no step report at ${stepReportPath}`);
+          }
+        } catch (e) {
+          logs.push(`[STEPS ERROR] ${e instanceof Error ? e.message : String(e)}`);
         }
 
         const recordings: string[] = [];

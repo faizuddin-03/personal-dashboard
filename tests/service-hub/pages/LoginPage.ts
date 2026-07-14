@@ -1,4 +1,4 @@
-import { type Page, expect } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { PATHS } from "../utils/config";
 
@@ -20,17 +20,32 @@ export class LoginPage extends BasePage {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
-    await this.waitForNav();
+    // Submitting login kicks off a redirect chain to the portal home.
+    // Returning before that fully settles lets a later goto() race the
+    // in-flight redirect and land on the home page instead of the target
+    // (which is exactly what made the BO listing/calendar navigations fail).
+    // So wait until we've actually left the login page, then let it settle.
+    await this.page
+      .waitForURL((u) => !/\/public\/login/i.test(u.toString()), { timeout: 20000 })
+      .catch(() => {});
+    await this.page.waitForLoadState("networkidle").catch(() => {});
   }
 
   async loginAsUCD(username: string, password: string) {
-    await this.login(username, password);
-    await expect(this.page).toHaveURL(new RegExp(PATHS.ucdHome));
+    await test.step("Log in as UCD", async () => {
+      await this.login(username, password);
+      await expect(this.page).toHaveURL(new RegExp(PATHS.ucdHome));
+    });
   }
 
   async loginAsBO(username: string, password: string) {
-    await this.login(username, password);
-    // BO may land on a different home — adjust regex once verified
-    await this.waitForNav();
+    await test.step("Log in as BO", async () => {
+      await this.login(username, password);
+      // Fail fast with a clear message if we're still on the login page
+      // (e.g. wrong BO credentials) rather than timing out later on a
+      // listing selector that isn't there.
+      await expect(this.page, "BO login did not leave the login page — check the BO credentials.")
+        .not.toHaveURL(/\/public\/login/i);
+    });
   }
 }
