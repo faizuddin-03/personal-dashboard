@@ -1,0 +1,2288 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Morning Slot - Book until full|Afternoon Slot - Book until full|Day capacity reach 6/6|Software Installation - Mandatory Booking|Biometric Purchase - Free Install Option \\(partial booking\\)|Biometric Purchase - Free Install Option \\(no booking\\)|Biometric Purchase - Paid Install Mandatory|Two UCD - Select same last available slot|Book for current day and the next day|Book for previous dates|Book future dates more than 2 months|Book weekend dates|Book Public Holiday|Reschedule on the day of the initial appointment to a future date|Reschedule before the day of the appointment to a future date|Reschedule after 1 appointment has successfully finished|Same-day reschedule via portal — record becomes Failed|Slot taken mid selection — concurrency|Reschedule cancelled appointment — should be blocked|Reschedule failed appointment — should be blocked for UCD|BO reschedule normal flow|BO reschedule to afternoon slot|Add Appointment - Offline Purchase \\(New Record\\)|Add Appointment - Both slots on one date|Add Appointment - Partial Booking Call-in|CSE not bound by 6/day cap — can add to a full slot|Afternoon Slot Booking|BO add beyond 6 days limit|BO add beyond morning slot limit|BO add beyond afternoon slot limit|BO add for current day and the next day|BO add for previous dates|BO book future date more than 2 months|BO book weekend dates|BO book Public Holiday"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-15T01-53-02",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\report.json"
+        }
+      ],
+      [
+        "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\reporters\\step-reporter.ts",
+        {}
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "add-appointment-bo.spec.ts",
+      "file": "add-appointment-bo.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Add Appointment (BO)",
+          "file": "add-appointment-bo.spec.ts",
+          "line": 25,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Add Appointment - Offline Purchase (New Record)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 23522,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:46:64",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+                          "column": 64,
+                          "line": 46
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 44 |\u001b[39m\n \u001b[90m 45 |\u001b[39m     \u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mnavigate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m     expect(\u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mgetSlotCount(booked\u001b[33m,\u001b[39m \u001b[33mMORNING\u001b[39m))\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m\n \u001b[90m 49 |\u001b[39m   test(\u001b[32m\"Add Appointment - Both slots on one date\"\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ boCalendarPage }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+                            "column": 64,
+                            "line": 46
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  44 |\n  45 |     await boCalendarPage.navigate();\n> 46 |     expect(await boCalendarPage.getSlotCount(booked, MORNING)).toBeGreaterThan(0);\n     |                                                                ^\n  47 |   });\n  48 |\n  49 |   test(\"Add Appointment - Both slots on one date\", async ({ boCalendarPage }) => {\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:46:64"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Pick appointment date and the morning slot",
+                          "duration": 2586
+                        },
+                        {
+                          "title": "Confirm the appointment",
+                          "duration": 3003
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:53:06.128Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-62c5c-ffline-Purchase-New-Record--chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-62c5c-ffline-Purchase-New-Record--chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-62c5c-ffline-Purchase-New-Record--chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-62c5c-ffline-Purchase-New-Record--chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+                        "column": 64,
+                        "line": 46
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "6e13112bcd4d9fd61a7a-78f1786aad1ddc588b17",
+              "file": "add-appointment-bo.spec.ts",
+              "line": 32,
+              "column": 7
+            },
+            {
+              "title": "Add Appointment - Both slots on one date",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 34056,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:69:71",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+                          "column": 71,
+                          "line": 69
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 67 |\u001b[39m\n \u001b[90m 68 |\u001b[39m     \u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mnavigate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 69 |\u001b[39m     expect(\u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mgetSlotCount(bookedMorning\u001b[33m,\u001b[39m \u001b[33mMORNING\u001b[39m))\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 70 |\u001b[39m     \u001b[36mif\u001b[39m (bookedAfternoon) {\n \u001b[90m 71 |\u001b[39m       expect(\u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mgetSlotCount(bookedAfternoon\u001b[33m,\u001b[39m \u001b[33mAFTERNOON\u001b[39m))\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 72 |\u001b[39m     }\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+                            "column": 71,
+                            "line": 69
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  67 |\n  68 |     await boCalendarPage.navigate();\n> 69 |     expect(await boCalendarPage.getSlotCount(bookedMorning, MORNING)).toBeGreaterThan(0);\n     |                                                                       ^\n  70 |     if (bookedAfternoon) {\n  71 |       expect(await boCalendarPage.getSlotCount(bookedAfternoon, AFTERNOON)).toBeGreaterThan(0);\n  72 |     }\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:69:71"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Pick appointment date and the morning slot",
+                          "duration": 2729
+                        },
+                        {
+                          "title": "Confirm the appointment",
+                          "duration": 3052
+                        },
+                        {
+                          "title": "Pick appointment date and the afternoon slot",
+                          "duration": 2750
+                        },
+                        {
+                          "title": "Confirm the appointment",
+                          "duration": 3061
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:53:31.290Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+                        "column": 71,
+                        "line": 69
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "6e13112bcd4d9fd61a7a-6740d9cda0be6498dc79",
+              "file": "add-appointment-bo.spec.ts",
+              "line": 49,
+              "column": 7
+            },
+            {
+              "title": "Add Appointment - Partial Booking Call-in",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "No reference found in the BO listing for \"FAIZUDDIN AUTO TEST\".",
+                      "location": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+                        "line": 141,
+                        "column": 12
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 29055,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Log in as UCD",
+                          "duration": 5341
+                        },
+                        {
+                          "title": "Log in as BO",
+                          "duration": 3241
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:54:07.139Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "No reference found in the BO listing for \"FAIZUDDIN AUTO TEST\".",
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+                            "line": 141,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "6e13112bcd4d9fd61a7a-b874fd8c922860f06f88",
+              "file": "add-appointment-bo.spec.ts",
+              "line": 82,
+              "column": 7
+            },
+            {
+              "title": "CSE not bound by 6/day cap — can add to a full slot",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 21746,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Pick appointment date and the morning slot",
+                          "duration": 2593
+                        },
+                        {
+                          "title": "Confirm the appointment",
+                          "duration": 3043
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:54:36.403Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-App-b7d8c-ap-—-can-add-to-a-full-slot-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6e13112bcd4d9fd61a7a-41e449098ae399799d23",
+              "file": "add-appointment-bo.spec.ts",
+              "line": 147,
+              "column": 7
+            },
+            {
+              "title": "Afternoon Slot Booking",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19768,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Pick appointment date and the afternoon slot",
+                          "duration": 2621
+                        },
+                        {
+                          "title": "Confirm the appointment",
+                          "duration": 3031
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:54:58.183Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\add-appointment-bo-Add-Appointment-BO-Afternoon-Slot-Booking-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6e13112bcd4d9fd61a7a-d3d80e79fa4f000101ed",
+              "file": "add-appointment-bo.spec.ts",
+              "line": 168,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "bo-calendar-limits.spec.ts",
+      "file": "bo-calendar-limits.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "BO Calendar & Limits",
+          "file": "bo-calendar-limits.spec.ts",
+          "line": 30,
+          "column": 6,
+          "specs": [
+            {
+              "title": "BO add beyond morning slot limit",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 20473,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:44:64",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                          "column": 64,
+                          "line": 44
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 42 |\u001b[39m     \u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mnavigate()\u001b[33m;\u001b[39m\n \u001b[90m 43 |\u001b[39m     \u001b[90m// Expected: CSE can proceed — the morning slot count reflects the add.\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 44 |\u001b[39m     expect(\u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mgetSlotCount(booked\u001b[33m,\u001b[39m \u001b[33mMORNING\u001b[39m))\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 45 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 46 |\u001b[39m\n \u001b[90m 47 |\u001b[39m   test(\u001b[32m\"BO add beyond afternoon slot limit\"\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ boCalendarPage }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                            "column": 64,
+                            "line": 44
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  42 |     await boCalendarPage.navigate();\n  43 |     // Expected: CSE can proceed — the morning slot count reflects the add.\n> 44 |     expect(await boCalendarPage.getSlotCount(booked, MORNING)).toBeGreaterThan(0);\n     |                                                                ^\n  45 |   });\n  46 |\n  47 |   test(\"BO add beyond afternoon slot limit\", async ({ boCalendarPage }) => {\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:44:64"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Pick appointment date and the morning slot",
+                          "duration": 2575
+                        },
+                        {
+                          "title": "Confirm the appointment",
+                          "duration": 3035
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:55:17.984Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-c3039-d-beyond-morning-slot-limit-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-c3039-d-beyond-morning-slot-limit-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-c3039-d-beyond-morning-slot-limit-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-c3039-d-beyond-morning-slot-limit-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                        "column": 64,
+                        "line": 44
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-791e0bab571e9e4b326f",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 35,
+              "column": 7
+            },
+            {
+              "title": "BO add beyond afternoon slot limit",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24700,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Pick appointment date and the afternoon slot",
+                          "duration": 2582
+                        },
+                        {
+                          "title": "Confirm the appointment",
+                          "duration": 3009
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:55:40.279Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-0b869-beyond-afternoon-slot-limit-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-056dcaa6af602dc2d415",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 47,
+              "column": 7
+            },
+            {
+              "title": "BO add beyond 6 days limit",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 22767,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:78:67\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:74:5",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                          "column": 67,
+                          "line": 78
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 76 |\u001b[39m       \u001b[90m// A positive count on the booked date/slot shows the numbered list\u001b[39m\n \u001b[90m 77 |\u001b[39m       \u001b[90m// continued past the UCD cap (CSE is uncapped).\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 78 |\u001b[39m       expect(\u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mgetSlotCount(booked\u001b[33m!\u001b[39m\u001b[33m,\u001b[39m \u001b[33mMORNING\u001b[39m))\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 79 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 80 |\u001b[39m\n \u001b[90m 81 |\u001b[39m     \u001b[36mawait\u001b[39m test\u001b[33m.\u001b[39mstep(\u001b[32m\"Observe on BO Biometric/SI Listing — reference present\"\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                            "column": 67,
+                            "line": 78
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  76 |       // A positive count on the booked date/slot shows the numbered list\n  77 |       // continued past the UCD cap (CSE is uncapped).\n> 78 |       expect(await boCalendarPage.getSlotCount(booked!, MORNING)).toBeGreaterThan(0);\n     |                                                                   ^\n  79 |     });\n  80 |\n  81 |     await test.step(\"Observe on BO Biometric/SI Listing — reference present\", async () => {\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:78:67\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:74:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "CSE adds the appointment (beyond the 6/day cap)",
+                          "duration": 17057,
+                          "steps": [
+                            {
+                              "title": "Pick appointment date and the morning slot",
+                              "duration": 5114
+                            },
+                            {
+                              "title": "Confirm the appointment",
+                              "duration": 3072
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Observe on BO Appointment Calendar — numbering continues",
+                          "duration": 1393,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:78:67\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:74:5",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                              "column": 67,
+                              "line": 78
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 76 |\u001b[39m       \u001b[90m// A positive count on the booked date/slot shows the numbered list\u001b[39m\n \u001b[90m 77 |\u001b[39m       \u001b[90m// continued past the UCD cap (CSE is uncapped).\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 78 |\u001b[39m       expect(\u001b[36mawait\u001b[39m boCalendarPage\u001b[33m.\u001b[39mgetSlotCount(booked\u001b[33m!\u001b[39m\u001b[33m,\u001b[39m \u001b[33mMORNING\u001b[39m))\u001b[33m.\u001b[39mtoBeGreaterThan(\u001b[35m0\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 79 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 80 |\u001b[39m\n \u001b[90m 81 |\u001b[39m     \u001b[36mawait\u001b[39m test\u001b[33m.\u001b[39mstep(\u001b[32m\"Observe on BO Biometric/SI Listing — reference present\"\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\u001b[0m"
+                          }
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:56:05.181Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-35c4d--BO-add-beyond-6-days-limit-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-35c4d--BO-add-beyond-6-days-limit-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-35c4d--BO-add-beyond-6-days-limit-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-35c4d--BO-add-beyond-6-days-limit-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                        "column": 67,
+                        "line": 78
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-e3e6e9e6aecc6210aba8",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 58,
+              "column": 7
+            },
+            {
+              "title": "BO add for current day and the next day",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8585,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Expected: able to proceed with booking today and tomorrow",
+                          "duration": 2256
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:56:29.446Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-4b2c6-urrent-day-and-the-next-day-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-bba10e926537e75bbd4d",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 108,
+              "column": 7
+            },
+            {
+              "title": "BO add for previous dates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9090,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Expected: a previous date is not selectable",
+                          "duration": 3530
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:56:38.231Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-f24d2-s-BO-add-for-previous-dates-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-f2150d5345610fee8aa8",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 118,
+              "column": 7
+            },
+            {
+              "title": "BO book future date more than 2 months",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6309,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Expected: 2026-10-15 (>2 months out) CAN be booked by BO",
+                          "duration": 874
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:56:47.337Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Cale-8584f-ure-date-more-than-2-months-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-e8cb479fcbede14318fe",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 127,
+              "column": 7
+            },
+            {
+              "title": "BO book weekend dates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6672,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Expected: weekend 2026-07-18 is greyed out / unclickable",
+                          "duration": 1088
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:56:53.666Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Calendar-Limits-BO-book-weekend-dates-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-85d3c1b8b780789ee945",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 137,
+              "column": 7
+            },
+            {
+              "title": "BO book Public Holiday",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "No Public Holiday date provided — key one into the runner's Test data panel.",
+                      "location": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                        "line": 150,
+                        "column": 12
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 4205,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-15T01:57:00.356Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "No Public Holiday date provided — key one into the runner's Test data panel.",
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts",
+                            "line": 150,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\bo-calendar-limits-BO-Calendar-Limits-BO-book-Public-Holiday-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-874b6a1daa3c8a2c2e15",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 147,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "calendar-rules.spec.ts",
+      "file": "calendar-rules.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Calendar Rules (UCD)",
+          "file": "calendar-rules.spec.ts",
+          "line": 38,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Book for current day and the next day",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8181,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Log in as UCD",
+                          "duration": 5184
+                        },
+                        {
+                          "title": "Expected: today and tomorrow are greyed out / unclickable",
+                          "duration": 53
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:57:04.601Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\calendar-rules-Calendar-Ru-82d78-urrent-day-and-the-next-day-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1dafecb82a963641b800-ad31e0c65edaa17d9c33",
+              "file": "calendar-rules.spec.ts",
+              "line": 39,
+              "column": 7
+            },
+            {
+              "title": "Book for previous dates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8961,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Log in as UCD",
+                          "duration": 6138
+                        },
+                        {
+                          "title": "Expected: a previous date shows no slot count and is not clickable",
+                          "duration": 53
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:57:12.801Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\calendar-rules-Calendar-Rules-UCD-Book-for-previous-dates-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1dafecb82a963641b800-3887d8778679f1bce080",
+              "file": "calendar-rules.spec.ts",
+              "line": 50,
+              "column": 7
+            },
+            {
+              "title": "Book future dates more than 2 months",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 19615,
+                      "error": {
+                        "message": "TimeoutError: locator.getAttribute: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('td[data-date=\"2026-10-15\"]')\u001b[22m\n",
+                        "stack": "TimeoutError: locator.getAttribute: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('td[data-date=\"2026-10-15\"]')\u001b[22m\n\n    at ReschedulePage.isDayBookable (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:79:32)\n    at ReschedulePage.isDayBlocked (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:96:14)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:71:14\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:70:5",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                          "column": 32,
+                          "line": 79
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:79\n\n\u001b[0m \u001b[90m 77 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mensureMonthVisible(dateStr)\u001b[33m;\u001b[39m\n \u001b[90m 78 |\u001b[39m     \u001b[36mconst\u001b[39m cell \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mgetDayCell(dateStr)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 79 |\u001b[39m     \u001b[36mconst\u001b[39m classes \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mgetAttribute(\u001b[32m\"class\"\u001b[39m) \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[32m\"\"\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 80 |\u001b[39m     \u001b[36mreturn\u001b[39m classes\u001b[33m.\u001b[39mincludes(\u001b[32m\"si-book\"\u001b[39m) \u001b[33m&&\u001b[39m \u001b[33m!\u001b[39mclasses\u001b[33m.\u001b[39mincludes(\u001b[32m\"si-muted\"\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 81 |\u001b[39m   }\n \u001b[90m 82 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                            "column": 32,
+                            "line": 79
+                          },
+                          "message": "TimeoutError: locator.getAttribute: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('td[data-date=\"2026-10-15\"]')\u001b[22m\n\n\n   at ..\\pages\\SlotPickerComponent.ts:79\n\n  77 |     await this.ensureMonthVisible(dateStr);\n  78 |     const cell = this.getDayCell(dateStr);\n> 79 |     const classes = await cell.getAttribute(\"class\") ?? \"\";\n     |                                ^\n  80 |     return classes.includes(\"si-book\") && !classes.includes(\"si-muted\");\n  81 |   }\n  82 |\n    at ReschedulePage.isDayBookable (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:79:32)\n    at ReschedulePage.isDayBlocked (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:96:14)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:71:14\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:70:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Log in as UCD",
+                          "duration": 5726
+                        },
+                        {
+                          "title": "Expected: 2026-10-15 (>2 months out) is not selectable",
+                          "duration": 10464,
+                          "error": {
+                            "message": "TimeoutError: locator.getAttribute: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('td[data-date=\"2026-10-15\"]')\u001b[22m\n",
+                            "stack": "TimeoutError: locator.getAttribute: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('td[data-date=\"2026-10-15\"]')\u001b[22m\n\n    at ReschedulePage.isDayBookable (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:79:32)\n    at ReschedulePage.isDayBlocked (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:96:14)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:71:14\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:70:5",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                              "column": 32,
+                              "line": 79
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:79\n\n\u001b[0m \u001b[90m 77 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mensureMonthVisible(dateStr)\u001b[33m;\u001b[39m\n \u001b[90m 78 |\u001b[39m     \u001b[36mconst\u001b[39m cell \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mgetDayCell(dateStr)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 79 |\u001b[39m     \u001b[36mconst\u001b[39m classes \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mgetAttribute(\u001b[32m\"class\"\u001b[39m) \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[32m\"\"\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 80 |\u001b[39m     \u001b[36mreturn\u001b[39m classes\u001b[33m.\u001b[39mincludes(\u001b[32m\"si-book\"\u001b[39m) \u001b[33m&&\u001b[39m \u001b[33m!\u001b[39mclasses\u001b[33m.\u001b[39mincludes(\u001b[32m\"si-muted\"\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 81 |\u001b[39m   }\n \u001b[90m 82 |\u001b[39m\u001b[0m"
+                          }
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:57:21.778Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\calendar-rules-Calendar-Ru-a35bb-re-dates-more-than-2-months-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\calendar-rules-Calendar-Ru-a35bb-re-dates-more-than-2-months-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\calendar-rules-Calendar-Ru-a35bb-re-dates-more-than-2-months-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\calendar-rules-Calendar-Ru-a35bb-re-dates-more-than-2-months-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                        "column": 32,
+                        "line": 79
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1dafecb82a963641b800-948117439a37a1cb7821",
+              "file": "calendar-rules.spec.ts",
+              "line": 62,
+              "column": 7
+            },
+            {
+              "title": "Book weekend dates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9765,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Log in as UCD",
+                          "duration": 6763
+                        },
+                        {
+                          "title": "Expected: weekend 2026-07-18 is greyed out / unclickable",
+                          "duration": 50
+                        }
+                      ],
+                      "startTime": "2026-07-15T01:57:43.268Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\calendar-rules-Calendar-Rules-UCD-Book-weekend-dates-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1dafecb82a963641b800-dd03305f882380b1fa2c",
+              "file": "calendar-rules.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "Book Public Holiday",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "No Public Holiday date provided — key one into the runner's Test data panel.",
+                      "location": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts",
+                        "line": 89,
+                        "column": 12
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 376,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-15T01:57:53.248Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "No Public Holiday date provided — key one into the runner's Test data panel.",
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts",
+                            "line": 89,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\calendar-rules-Calendar-Rules-UCD-Book-Public-Holiday-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "1dafecb82a963641b800-a55a499520b98644a42b",
+              "file": "calendar-rules.spec.ts",
+              "line": 86,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "reschedule-handling.spec.ts",
+      "file": "reschedule-handling.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Reschedule & Handling",
+          "file": "reschedule-handling.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "reschedule-handling.spec.ts",
+              "line": 16,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Reschedule on the day of the initial appointment to a future date",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 28135,
+                          "error": {
+                            "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n",
+                            "stack": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n    at ReschedulePage.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:389:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ReschedulePage.ts:106:7\n    at ReschedulePage.rescheduleToNewDate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ReschedulePage.ts:105:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:67:7",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                              "column": 29,
+                              "line": 389
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:389\n\n\u001b[0m \u001b[90m 387 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mdemoHighlight(cell)\u001b[33m;\u001b[39m \u001b[90m// show which date is being opened\u001b[39m\n \u001b[90m 388 |\u001b[39m     \u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 389 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mmodalOverlay\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m\"visible\"\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 390 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mdemoPause()\u001b[33m;\u001b[39m \u001b[90m// let the reviewer read the opened dialog\u001b[39m\n \u001b[90m 391 |\u001b[39m   }\n \u001b[90m 392 |\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                                "column": 29,
+                                "line": 389
+                              },
+                              "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n\n   at ..\\pages\\SlotPickerComponent.ts:389\n\n  387 |     await this.demoHighlight(cell); // show which date is being opened\n  388 |     await cell.click();\n> 389 |     await this.modalOverlay.waitFor({ state: \"visible\", timeout: 5000 });\n      |                             ^\n  390 |     await this.demoPause(); // let the reviewer read the opened dialog\n  391 |   }\n  392 |\n    at ReschedulePage.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:389:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ReschedulePage.ts:106:7\n    at ReschedulePage.rescheduleToNewDate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ReschedulePage.ts:105:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:67:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Arrange: buy + book a fresh installation",
+                              "duration": 12352
+                            },
+                            {
+                              "title": "Clear the existing booking on 2026-07-20",
+                              "duration": 23
+                            },
+                            {
+                              "title": "Pick new date 2026-07-21 and allocate the morning session",
+                              "duration": 6625,
+                              "error": {
+                                "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n",
+                                "stack": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n    at ReschedulePage.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:389:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ReschedulePage.ts:106:7\n    at ReschedulePage.rescheduleToNewDate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ReschedulePage.ts:105:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:67:7",
+                                "location": {
+                                  "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                                  "column": 29,
+                                  "line": 389
+                                },
+                                "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:389\n\n\u001b[0m \u001b[90m 387 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mdemoHighlight(cell)\u001b[33m;\u001b[39m \u001b[90m// show which date is being opened\u001b[39m\n \u001b[90m 388 |\u001b[39m     \u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 389 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mmodalOverlay\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m\"visible\"\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 390 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mdemoPause()\u001b[33m;\u001b[39m \u001b[90m// let the reviewer read the opened dialog\u001b[39m\n \u001b[90m 391 |\u001b[39m   }\n \u001b[90m 392 |\u001b[39m\u001b[0m"
+                              }
+                            }
+                          ],
+                          "startTime": "2026-07-15T01:57:53.655Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-d130d-ppointment-to-a-future-date-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-d130d-ppointment-to-a-future-date-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-d130d-ppointment-to-a-future-date-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-d130d-ppointment-to-a-future-date-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                            "column": 29,
+                            "line": 389
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-434160537dff32fc2a59",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 41,
+                  "column": 9
+                },
+                {
+                  "title": "Reschedule before the day of the appointment to a future date",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 38810,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Arrange: buy + book a fresh installation",
+                              "duration": 11805
+                            },
+                            {
+                              "title": "Clear the existing booking on 2026-07-21",
+                              "duration": 6212
+                            },
+                            {
+                              "title": "Pick new date 2026-07-22 and allocate the afternoon session",
+                              "duration": 6063
+                            },
+                            {
+                              "title": "Confirm reschedule (accept \"you will lose your current appointment\")",
+                              "duration": 5480
+                            },
+                            {
+                              "title": "Land on the confirmation page and click Done",
+                              "duration": 694
+                            }
+                          ],
+                          "startTime": "2026-07-15T01:58:22.915Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-d91309a7696ca3775919",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 74,
+                  "column": 9
+                },
+                {
+                  "title": "Reschedule after 1 appointment has successfully finished",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 8512,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T01:59:01.891Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-883e7-t-has-successfully-finished-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-d3787df26557a48d53bd",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 112,
+                  "column": 9
+                },
+                {
+                  "title": "Same-day reschedule via portal — record becomes Failed",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Today is not selectable on the calendar (+2 blackout in effect); same-day reschedule not reachable via portal.",
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts",
+                            "line": 185,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "expectedStatus": "skipped",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "skipped",
+                          "duration": 8300,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T01:59:10.426Z",
+                          "annotations": [
+                            {
+                              "type": "skip",
+                              "description": "Today is not selectable on the calendar (+2 blackout in effect); same-day reschedule not reachable via portal.",
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts",
+                                "line": 185,
+                                "column": 14
+                              }
+                            }
+                          ],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-99556-tal-—-record-becomes-Failed-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-8ed9a4904018adb1fe0a",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 150,
+                  "column": 9
+                },
+                {
+                  "title": "Slot taken mid selection — concurrency",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 14382,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T01:59:18.745Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-aa63e-mid-selection-—-concurrency-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-255ec605fc50216001e4",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 202,
+                  "column": 9
+                },
+                {
+                  "title": "Reschedule cancelled appointment — should be blocked",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 20416,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Log in as BO",
+                              "duration": 3423
+                            },
+                            {
+                              "title": "Cancel the request (confirm \"Sure to cancel?\")",
+                              "duration": 250
+                            },
+                            {
+                              "title": "Log in as UCD",
+                              "duration": 5339
+                            }
+                          ],
+                          "startTime": "2026-07-15T01:59:33.148Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-280c67160fbb994f0f3b",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 242,
+                  "column": 9
+                },
+                {
+                  "title": "Reschedule failed appointment — should be blocked for UCD",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 29571,
+                          "error": {
+                            "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.btn-fail').first()\u001b[22m\n",
+                            "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.btn-fail').first()\u001b[22m\n\n    at SoftwareInstallationDetailsPage.markFailedImpl (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:100:38)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:96:12\n    at SoftwareInstallationDetailsPage.markFailed (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:95:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:327:9",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts",
+                              "column": 38,
+                              "line": 100
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\bo\\SoftwareInstallationDetailsPage.ts:100\n\n\u001b[0m \u001b[90m  98 |\u001b[39m\n \u001b[90m  99 |\u001b[39m   \u001b[36mprivate\u001b[39m \u001b[36masync\u001b[39m markFailedImpl(reason\u001b[33m:\u001b[39m \u001b[33mFailedReason\u001b[39m\u001b[33m,\u001b[39m otherText\u001b[33m?\u001b[39m\u001b[33m:\u001b[39m string\u001b[33m,\u001b[39m confirm\u001b[33m:\u001b[39m boolean \u001b[33m=\u001b[39m \u001b[36mtrue\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 100 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39minstallationFailedBtn\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 101 |\u001b[39m     \u001b[36mconst\u001b[39m dialog \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mlocator(\u001b[32m\".ui-dialog\"\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 102 |\u001b[39m       has\u001b[33m:\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mlocator(\u001b[32m\".ui-dialog-title\"\u001b[39m\u001b[33m,\u001b[39m { hasText\u001b[33m:\u001b[39m \u001b[32m\"Installation Failed\"\u001b[39m })\u001b[33m,\u001b[39m\n \u001b[90m 103 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts",
+                                "column": 38,
+                                "line": 100
+                              },
+                              "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.btn-fail').first()\u001b[22m\n\n\n   at ..\\pages\\bo\\SoftwareInstallationDetailsPage.ts:100\n\n   98 |\n   99 |   private async markFailedImpl(reason: FailedReason, otherText?: string, confirm: boolean = true) {\n> 100 |     await this.installationFailedBtn.click();\n      |                                      ^\n  101 |     const dialog = this.page.locator(\".ui-dialog\", {\n  102 |       has: this.page.locator(\".ui-dialog-title\", { hasText: \"Installation Failed\" }),\n  103 |     });\n    at SoftwareInstallationDetailsPage.markFailedImpl (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:100:38)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:96:12\n    at SoftwareInstallationDetailsPage.markFailed (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:95:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:327:9"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Log in as BO",
+                              "duration": 4214
+                            },
+                            {
+                              "title": "Mark installation Failed — reason: Reappointment",
+                              "duration": 10039,
+                              "error": {
+                                "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.btn-fail').first()\u001b[22m\n",
+                                "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.btn-fail').first()\u001b[22m\n\n    at SoftwareInstallationDetailsPage.markFailedImpl (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:100:38)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:96:12\n    at SoftwareInstallationDetailsPage.markFailed (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:95:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:327:9",
+                                "location": {
+                                  "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts",
+                                  "column": 38,
+                                  "line": 100
+                                },
+                                "snippet": "\u001b[90m   at \u001b[39m..\\pages\\bo\\SoftwareInstallationDetailsPage.ts:100\n\n\u001b[0m \u001b[90m  98 |\u001b[39m\n \u001b[90m  99 |\u001b[39m   \u001b[36mprivate\u001b[39m \u001b[36masync\u001b[39m markFailedImpl(reason\u001b[33m:\u001b[39m \u001b[33mFailedReason\u001b[39m\u001b[33m,\u001b[39m otherText\u001b[33m?\u001b[39m\u001b[33m:\u001b[39m string\u001b[33m,\u001b[39m confirm\u001b[33m:\u001b[39m boolean \u001b[33m=\u001b[39m \u001b[36mtrue\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 100 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39minstallationFailedBtn\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 101 |\u001b[39m     \u001b[36mconst\u001b[39m dialog \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mlocator(\u001b[32m\".ui-dialog\"\u001b[39m\u001b[33m,\u001b[39m {\n \u001b[90m 102 |\u001b[39m       has\u001b[33m:\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mlocator(\u001b[32m\".ui-dialog-title\"\u001b[39m\u001b[33m,\u001b[39m { hasText\u001b[33m:\u001b[39m \u001b[32m\"Installation Failed\"\u001b[39m })\u001b[33m,\u001b[39m\n \u001b[90m 103 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m"
+                              }
+                            }
+                          ],
+                          "startTime": "2026-07-15T01:59:53.597Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\test-failed-2.png"
+                            },
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\test-failed-3.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts",
+                            "column": 38,
+                            "line": 100
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-e84aa20cca2771e94dae",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 305,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "BO",
+              "file": "reschedule-handling.spec.ts",
+              "line": 373,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "BO reschedule normal flow",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 15936,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Pick a new date and the morning slot",
+                              "duration": 2740
+                            },
+                            {
+                              "title": "Confirm the reschedule",
+                              "duration": 3163
+                            }
+                          ],
+                          "startTime": "2026-07-15T02:00:25.475Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-ec3a5-O-BO-reschedule-normal-flow-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-fc044bddaba04bab739f",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 381,
+                  "column": 9
+                },
+                {
+                  "title": "BO reschedule to afternoon slot",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 16364,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Pick a new date and the afternoon slot",
+                              "duration": 2720
+                            },
+                            {
+                              "title": "Confirm the reschedule",
+                              "duration": 3058
+                            }
+                          ],
+                          "startTime": "2026-07-15T02:00:41.629Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\reschedule-handling-Resche-7162f-eschedule-to-afternoon-slot-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-6b378faa01051ed11151",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 394,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "slot-capacity-boundary.spec.ts",
+      "file": "slot-capacity-boundary.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Slot Capacity Boundary",
+          "file": "slot-capacity-boundary.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "slot-capacity-boundary.spec.ts",
+              "line": 20,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Morning Slot - Book until full",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 17759,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Expected: morning session accepts at most 3",
+                              "duration": 6108
+                            }
+                          ],
+                          "startTime": "2026-07-15T02:00:58.032Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-00b83de16a34bea4e19c",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 32,
+                  "column": 9
+                },
+                {
+                  "title": "Afternoon Slot - Book until full",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 14625,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Expected: afternoon session accepts at most 3",
+                              "duration": 6042
+                            }
+                          ],
+                          "startTime": "2026-07-15T02:01:15.814Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-25ee8976c9681136e157",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 49,
+                  "column": 9
+                },
+                {
+                  "title": "Day capacity reach 6/6",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 15709,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m2\u001b[39m\nReceived: \u001b[31m1\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m2\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:103:59",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 59,
+                              "line": 103
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 101 |\u001b[39m       \u001b[36mif\u001b[39m (morningRoom \u001b[33m>\u001b[39m \u001b[35m0\u001b[39m) {\n \u001b[90m 102 |\u001b[39m         \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mincrementSlot(\u001b[33mMORNING\u001b[39m\u001b[33m,\u001b[39m morningRoom)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 103 |\u001b[39m         expect(\u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mgetStepperValue(\u001b[33mMORNING\u001b[39m))\u001b[33m.\u001b[39mtoBe(morningRoom)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 104 |\u001b[39m         \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mincrementSlot(\u001b[33mMORNING\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 105 |\u001b[39m         expect(\u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mgetStepperValue(\u001b[33mMORNING\u001b[39m))\u001b[33m.\u001b[39mtoBe(morningRoom)\u001b[33m;\u001b[39m\n \u001b[90m 106 |\u001b[39m       }\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 59,
+                                "line": 103
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m2\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\n  101 |       if (morningRoom > 0) {\n  102 |         await slotPicker.incrementSlot(MORNING, morningRoom);\n> 103 |         expect(await slotPicker.getStepperValue(MORNING)).toBe(morningRoom);\n      |                                                           ^\n  104 |         await slotPicker.incrementSlot(MORNING, 1);\n  105 |         expect(await slotPicker.getStepperValue(MORNING)).toBe(morningRoom);\n  106 |       }\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:103:59"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T02:01:30.462Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 59,
+                            "line": 103
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-2ced81b50ddcbfed25fb",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 66,
+                  "column": 9
+                },
+                {
+                  "title": "Software Installation - Mandatory Booking",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 43303,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T02:01:47.510Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-ebcc7d7051e8212def5b",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 116,
+                  "column": 9
+                },
+                {
+                  "title": "Biometric Purchase - Free Install Option (partial booking)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 18953,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T02:02:31.029Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-6ede2-all-Option-partial-booking--chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-7ca456a25d963e5a1169",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 150,
+                  "column": 9
+                },
+                {
+                  "title": "Biometric Purchase - Free Install Option (no booking)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 13133,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T02:02:50.014Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-4f512--Install-Option-no-booking--chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-aea3b416c97917dd112e",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 182,
+                  "column": 9
+                },
+                {
+                  "title": "Biometric Purchase - Paid Install Mandatory",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 38539,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T02:03:03.180Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-f5d21e54a6d85dbe56d6",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 204,
+                  "column": 9
+                },
+                {
+                  "title": "Two UCD - Select same last available slot",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 25505,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T02:03:41.738Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T01-53-02\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-5a6960d6c40a99819d98",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 243,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-15T01:53:05.488Z",
+    "duration": 661949.429,
+    "expected": 23,
+    "skipped": 4,
+    "unexpected": 8,
+    "flaky": 0
+  }
+}

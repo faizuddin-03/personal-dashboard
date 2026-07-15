@@ -145,6 +145,19 @@ export class ServiceRequestListingPage extends BasePage {
   }
 
   /**
+   * The row's Reschedule link txnId, as a full "key=value" pair (e.g.
+   * "txnId=195" or "transactionId=<uuid>" — see BasePage.getTxnIdFromUrl),
+   * or null if the row has no Reschedule action. Lets callers open a
+   * candidate's reschedule page directly (via ReschedulePage.navigate(txnId))
+   * without re-searching the listing.
+   */
+  async getRescheduleTxnId(row: Locator): Promise<string | null> {
+    const href = await row.locator("a.sc-resubmit").getAttribute("href").catch(() => null);
+    const match = href?.match(/(txnId|transactionId)=([^&]+)/);
+    return match ? `${match[1]}=${match[2]}` : null;
+  }
+
+  /**
    * Verify the SRD rule that Reschedule is only offered when Tx Status is
    * Pending — a row with a non-pending status must not expose the action.
    */

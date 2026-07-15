@@ -1,0 +1,330 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: reschedule-handling.spec.ts >> Reschedule & Handling >> UCD >> Reschedule on the day of the initial appointment to a future date
+- Location: tests\service-hub\specs\reschedule-handling.spec.ts:20:9
+
+# Error details
+
+```
+Error: expect(received).not.toBeNull()
+
+Received: null
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - link "Home" [ref=e4] [cursor=pointer]:
+        - /url: /uat1/view/ucd/
+      - generic [ref=e5]: /
+      - link "Service Hub" [ref=e6] [cursor=pointer]:
+        - /url: /uat1/view/ucd/service-hub/view.do
+      - generic [ref=e7]: /
+      - generic [ref=e8]: Software Installation
+    - generic [ref=e9]:
+      - link "« Back" [ref=e10] [cursor=pointer]:
+        - /url: /uat1/view/ucd/service-hub/view.do
+      - generic: Software Installation
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - img "Software Installation" [ref=e15]
+        - generic [ref=e16]:
+          - generic [ref=e17]: Schedule an Appointment
+          - generic [ref=e18]: Please choose your preferred software installation date and time slot. (up to 3 per slot)
+      - generic [ref=e19]:
+        - generic [ref=e20]: Please select a date to reschedule the software installation
+        - generic [ref=e21]:
+          - generic [ref=e22]: July 2026
+          - generic [ref=e23] [cursor=pointer]: ›
+      - table [ref=e24]:
+        - rowgroup [ref=e25]:
+          - row "MON TUE WED THUR FRI SAT SUN" [ref=e26]:
+            - columnheader "MON" [ref=e27]
+            - columnheader "TUE" [ref=e28]
+            - columnheader "WED" [ref=e29]
+            - columnheader "THUR" [ref=e30]
+            - columnheader "FRI" [ref=e31]
+            - columnheader "SAT" [ref=e32]
+            - columnheader "SUN" [ref=e33]
+        - rowgroup [ref=e34]:
+          - row "29 30 1 2 3 4 5" [ref=e35]:
+            - cell "29" [ref=e36]
+            - cell "30" [ref=e37]
+            - cell "1" [ref=e38]
+            - cell "2" [ref=e39]
+            - cell "3" [ref=e40]
+            - cell "4" [ref=e41]
+            - cell "5" [ref=e42]
+          - row "6 7 8 9 10 11 12" [ref=e43]:
+            - cell "6" [ref=e44]
+            - cell "7" [ref=e45]
+            - cell "8" [ref=e46]
+            - cell "9" [ref=e47]
+            - cell "10" [ref=e48]
+            - cell "11" [ref=e49]
+            - cell "12" [ref=e50]
+          - row "13 14 15 Slot 1/6 16 Slot 4/6 17 Slot 1/6 18 19" [ref=e51]:
+            - cell "13" [ref=e52]
+            - cell "14" [ref=e53]:
+              - generic [ref=e54]: "14"
+            - cell "15 Slot 1/6" [ref=e55] [cursor=pointer]:
+              - text: "15"
+              - generic [ref=e57]: Slot 1/6
+            - cell "16 Slot 4/6" [ref=e58] [cursor=pointer]:
+              - text: "16"
+              - generic [ref=e60]: Slot 4/6
+            - cell "17 Slot 1/6" [ref=e61] [cursor=pointer]:
+              - text: "17"
+              - generic [ref=e63]: Slot 1/6
+            - cell "18" [ref=e64]
+            - cell "19" [ref=e65]
+          - row "20 Slot 1/6 21 Slot 1/6 22 Slot 1/6 23 Slot 1/6 24 Slot 1/6 25 26" [ref=e66]:
+            - cell "20 Slot 1/6" [ref=e67] [cursor=pointer]:
+              - text: "20"
+              - generic [ref=e69]: Slot 1/6
+            - cell "21 Slot 1/6" [ref=e70] [cursor=pointer]:
+              - text: "21"
+              - generic [ref=e72]: Slot 1/6
+            - cell "22 Slot 1/6" [ref=e73] [cursor=pointer]:
+              - text: "22"
+              - generic [ref=e75]: Slot 1/6
+            - cell "23 Slot 1/6" [ref=e76] [cursor=pointer]:
+              - text: "23"
+              - generic [ref=e78]: Slot 1/6
+            - cell "24 Slot 1/6" [ref=e79] [cursor=pointer]:
+              - text: "24"
+              - generic [ref=e81]: Slot 1/6
+            - cell "25" [ref=e82]
+            - cell "26" [ref=e83]
+          - row "27 Slot 1/6 28 Slot 1/6 29 Slot 0/6 30 Slot 0/6 31 Slot 1/6 1 2" [ref=e84]:
+            - cell "27 Slot 1/6" [ref=e85] [cursor=pointer]:
+              - text: "27"
+              - generic [ref=e87]: Slot 1/6
+            - cell "28 Slot 1/6" [ref=e88] [cursor=pointer]:
+              - text: "28"
+              - generic [ref=e90]: Slot 1/6
+            - cell "29 Slot 0/6" [ref=e91] [cursor=pointer]:
+              - text: "29"
+              - generic [ref=e93]: Slot 0/6
+            - cell "30 Slot 0/6" [ref=e94] [cursor=pointer]:
+              - text: "30"
+              - generic [ref=e96]: Slot 0/6
+            - cell "31 Slot 1/6" [ref=e97] [cursor=pointer]:
+              - text: "31"
+              - generic [ref=e99]: Slot 1/6
+            - cell "1" [ref=e100]
+            - cell "2" [ref=e101]
+      - generic [ref=e103]:
+        - generic [ref=e104]: Booked 0 of 1 appointments.
+        - button "Confirm Appointment" [ref=e106] [cursor=pointer]
+  - generic [ref=e107]:
+    - generic [ref=e108]:
+      - button "HOME" [ref=e109] [cursor=pointer]
+      - button "INSURANCE" [ref=e110] [cursor=pointer]
+      - button "REPORTS" [ref=e111] [cursor=pointer]
+      - button "SETTINGS" [ref=e112] [cursor=pointer]
+      - button "USER GUIDE" [ref=e113] [cursor=pointer]
+      - button "DOWNLOAD" [ref=e114] [cursor=pointer]
+      - button "CONTACT US" [ref=e115] [cursor=pointer]
+    - table [ref=e116]:
+      - rowgroup [ref=e117]:
+        - row "Online Services - Service Hub MUHAMMAD FAIZUDDIN BIN BIDI | Logout" [ref=e118]:
+          - cell "Online Services - Service Hub" [ref=e119]
+          - cell "MUHAMMAD FAIZUDDIN BIN BIDI | Logout" [ref=e120]:
+            - list [ref=e121]:
+              - listitem [ref=e122]:
+                - img [ref=e123]
+                - text: MUHAMMAD FAIZUDDIN BIN BIDI
+              - listitem [ref=e124]: "|"
+              - listitem [ref=e125]:
+                - link "Logout" [ref=e126] [cursor=pointer]:
+                  - /url: "#"
+  - img [ref=e128]
+  - generic [ref=e129]:
+    - generic [ref=e131]:
+      - generic [ref=e132]:
+        - link "Contact Us" [ref=e133] [cursor=pointer]:
+          - /url: "#"
+        - generic [ref=e134]: "|"
+        - link "Terms & Conditions" [ref=e135] [cursor=pointer]:
+          - /url: "#"
+        - generic [ref=e136]: "|"
+        - link "Privacy" [ref=e137] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=e138]: Best Compatible With Mozilla Firefox V36.0.4
+      - generic [ref=e139]: Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.
+    - img [ref=e141]
+```
+
+# Test source
+
+```ts
+  1   | import { test, expect } from "../fixtures/test-fixtures";
+  2   | import { ENV } from "../utils/config";
+  3   | 
+  4   | const MORNING = 0;
+  5   | const AFTERNOON = 1;
+  6   | 
+  7   | test.describe("Reschedule & Handling", () => {
+  8   |   // ────────────────────────────────────────────────────────────
+  9   |   // UCD — Self-service reschedule via Service Request Listing
+  10  |   // Flow: Listing → Search Now → click Reschedule in action column
+  11  |   //       → Calendar opens → click booked (orange) date → minus to
+  12  |   //       remove → Save changes → click new date → plus to add slot
+  13  |   //       → Save changes → Confirm Appointment → Done
+  14  |   // ────────────────────────────────────────────────────────────
+  15  |   test.describe("UCD", () => {
+  16  |     test.beforeEach(async ({ loginPage }) => {
+  17  |       await loginPage.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
+  18  |     });
+  19  | 
+  20  |     test("Reschedule on the day of the initial appointment to a future date", async ({
+  21  |       listingPage,
+  22  |       reschedulePage,
+  23  |     }) => {
+  24  |       // Scenario: appointment exists on some date. UCD opens listing,
+  25  |       // clicks Reschedule, calendar opens. UCD removes the old booking
+  26  |       // and picks a new available date. +2 day blackout applies.
+  27  | 
+  28  |       await listingPage.navigate();
+  29  |       await listingPage.searchBtn.click();
+  30  |       await listingPage.waitForNav();
+  31  | 
+  32  |       const rows = await listingPage.getResultRows();
+  33  |       expect(rows.length).toBeGreaterThan(0);
+  34  | 
+  35  |       let targetRow = null;
+  36  |       for (const row of rows) {
+  37  |         if (await listingPage.hasRescheduleAction(row)) {
+  38  |           targetRow = row;
+  39  |           break;
+  40  |         }
+  41  |       }
+  42  |       if (!targetRow) {
+  43  |         test.skip(true, "No appointment with Reschedule action available");
+  44  |         return;
+  45  |       }
+  46  | 
+  47  |       // Click Reschedule → calendar page opens
+  48  |       await listingPage.clickReschedule(targetRow);
+  49  | 
+  50  |       // Blackout-window enforcement is a boundary/negative check, not part of
+  51  |       // this happy-path reschedule — verified separately in Calendar Rules.
+  52  | 
+  53  |       // Verify there are bookable dates available
+  54  |       await reschedulePage.verifyHasBookableDates();
+  55  | 
+  56  |       // Find the currently booked date (orange badge) and first available date
+  57  |       const bookedDate = await reschedulePage.findBookedDate();
+> 58  |       expect(bookedDate).not.toBeNull();
+      |                              ^ Error: expect(received).not.toBeNull()
+  59  | 
+  60  |       const newDate = await reschedulePage.findFirstBookableDate();
+  61  |       expect(newDate).not.toBeNull();
+  62  | 
+  63  |       // Reschedule: remove from booked date → pick new date
+  64  |       await reschedulePage.rescheduleToNewDate({
+  65  |         oldDate: bookedDate!,
+  66  |         newDate: newDate!,
+  67  |         slot: MORNING,
+  68  |       });
+  69  |     });
+  70  | 
+  71  |     test("Reschedule before the day of the appointment to a future date", async ({
+  72  |       listingPage,
+  73  |       reschedulePage,
+  74  |     }) => {
+  75  |       // Scenario: UCD reschedules BEFORE the appointment day.
+  76  |       // Same flow — the booked date is in the future.
+  77  | 
+  78  |       await listingPage.navigate();
+  79  |       await listingPage.searchBtn.click();
+  80  |       await listingPage.waitForNav();
+  81  | 
+  82  |       const rows = await listingPage.getResultRows();
+  83  |       let targetRow = null;
+  84  |       for (const row of rows) {
+  85  |         if (await listingPage.hasRescheduleAction(row)) {
+  86  |           targetRow = row;
+  87  |           break;
+  88  |         }
+  89  |       }
+  90  |       if (!targetRow) {
+  91  |         test.skip(true, "No appointment with Reschedule action available");
+  92  |         return;
+  93  |       }
+  94  | 
+  95  |       await listingPage.clickReschedule(targetRow);
+  96  | 
+  97  |       // Blackout-window enforcement is a boundary/negative check, not part of
+  98  |       // this happy-path reschedule — verified separately in Calendar Rules.
+  99  |       await reschedulePage.verifyHasBookableDates();
+  100 | 
+  101 |       const bookedDate = await reschedulePage.findBookedDate();
+  102 |       expect(bookedDate).not.toBeNull();
+  103 | 
+  104 |       // Find a bookable date that is NOT the same as the booked date
+  105 |       const allBookable = await reschedulePage.page.locator("td.si-book[data-date]").all();
+  106 |       let newDate: string | null = null;
+  107 |       for (const cell of allBookable) {
+  108 |         const date = await cell.getAttribute("data-date");
+  109 |         if (date && date !== bookedDate) {
+  110 |           newDate = date;
+  111 |           break;
+  112 |         }
+  113 |       }
+  114 |       expect(newDate).not.toBeNull();
+  115 | 
+  116 |       await reschedulePage.rescheduleToNewDate({
+  117 |         oldDate: bookedDate!,
+  118 |         newDate: newDate!,
+  119 |         slot: AFTERNOON,
+  120 |       });
+  121 |     });
+  122 | 
+  123 |     test("Reschedule after 1 appointment has successfully finished", async ({
+  124 |       listingPage,
+  125 |     }) => {
+  126 |       // Scenario: UCD bought multiple software installations (e.g. 3).
+  127 |       // 1 installation has been completed (marked by BO).
+  128 |       // The remaining appointments should still be reschedulable.
+  129 | 
+  130 |       await listingPage.navigate();
+  131 |       await listingPage.searchWithFilters({
+  132 |         serviceType: "SOFTWARE_INSTALLATION",
+  133 |       });
+  134 | 
+  135 |       const rows = await listingPage.getResultRows();
+  136 |       if (rows.length === 0) {
+  137 |         test.skip(true, "No software installation appointments found");
+  138 |         return;
+  139 |       }
+  140 | 
+  141 |       // Look for a row with Reschedule action (remaining from multi-unit)
+  142 |       let reschedulableRow = null;
+  143 |       for (const row of rows) {
+  144 |         if (await listingPage.hasRescheduleAction(row)) {
+  145 |           reschedulableRow = row;
+  146 |           break;
+  147 |         }
+  148 |       }
+  149 | 
+  150 |       // Even though 1 appointment is completed, remaining ones should
+  151 |       // still have the Reschedule option
+  152 |       expect(reschedulableRow).not.toBeNull();
+  153 | 
+  154 |       // Verify the reschedule flow works
+  155 |       await listingPage.clickReschedule(reschedulableRow!);
+  156 |       // Calendar should open — verify there are bookable dates
+  157 |       const firstBookable = await listingPage.page.locator("td.si-book[data-date]").first();
+  158 |       await expect(firstBookable).toBeVisible();
+```

@@ -26,6 +26,10 @@ interface Scenario {
   user: "UCD" | "BO" | "BOTH";
   // Extra values the user keys in for this scenario (rendered in "Test data").
   params?: ScenarioParam[];
+  // True for the successful-path scenarios (a real booking/reschedule/add
+  // goes through end to end). False/omitted for negative & boundary checks
+  // (blocked dates, caps refused, cancelled/failed handling, concurrency).
+  happyFlow?: boolean;
 }
 
 interface ScenarioGroup {
@@ -40,10 +44,10 @@ const TEST_GROUPS: ScenarioGroup[] = [
       { id: "sc-1", title: "Morning Slot - Book until full", user: "UCD" },
       { id: "sc-2", title: "Afternoon Slot - Book until full", user: "UCD" },
       { id: "sc-3", title: "Day capacity reach 6/6", user: "UCD" },
-      { id: "sc-4", title: "Software Installation - Mandatory Booking", user: "UCD" },
-      { id: "sc-5", title: "Biometric Purchase - Free Install Option (partial booking)", user: "UCD", params: ["referenceNo"] },
-      { id: "sc-6", title: "Biometric Purchase - Free Install Option (no booking)", user: "UCD", params: ["referenceNo"] },
-      { id: "sc-7", title: "Biometric Purchase - Paid Install Mandatory", user: "UCD" },
+      { id: "sc-4", title: "Software Installation - Mandatory Booking", user: "UCD", happyFlow: true },
+      { id: "sc-5", title: "Biometric Purchase - Free Install Option (partial booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
+      { id: "sc-6", title: "Biometric Purchase - Free Install Option (no booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
+      { id: "sc-7", title: "Biometric Purchase - Paid Install Mandatory", user: "UCD", happyFlow: true },
       { id: "sc-8", title: "Two UCD - Select same last available slot", user: "UCD" },
     ],
   },
@@ -60,36 +64,36 @@ const TEST_GROUPS: ScenarioGroup[] = [
   {
     label: "Reschedule & Handling",
     scenarios: [
-      { id: "rs-1", title: "Reschedule on the day of the initial appointment to a future date", user: "UCD" },
-      { id: "rs-2", title: "Reschedule before the day of the appointment to a future date", user: "UCD" },
-      { id: "rs-3", title: "Reschedule after 1 appointment has successfully finished", user: "UCD" },
+      { id: "rs-1", title: "Reschedule on the day of the initial appointment to a future date", user: "UCD", happyFlow: true },
+      { id: "rs-2", title: "Reschedule before the day of the appointment to a future date", user: "UCD", happyFlow: true },
+      { id: "rs-3", title: "Reschedule after 1 appointment has successfully finished", user: "UCD", happyFlow: true },
       { id: "rs-4", title: "Same-day reschedule via portal — record becomes Failed", user: "UCD" },
       { id: "rs-5", title: "Slot taken mid selection — concurrency", user: "UCD" },
       { id: "rs-6", title: "Reschedule cancelled appointment — should be blocked", user: "BOTH" },
       { id: "rs-7", title: "Reschedule failed appointment — should be blocked for UCD", user: "BOTH" },
-      { id: "rs-8", title: "BO reschedule normal flow", user: "BO" },
-      { id: "rs-9", title: "BO reschedule to afternoon slot", user: "BO" },
+      { id: "rs-8", title: "BO reschedule normal flow", user: "BO", happyFlow: true },
+      { id: "rs-9", title: "BO reschedule to afternoon slot", user: "BO", happyFlow: true },
     ],
   },
   {
     label: "Add Appointment (BO)",
     scenarios: [
-      { id: "aa-1", title: "Add Appointment - Offline Purchase (New Record)", user: "BO" },
-      { id: "aa-2", title: "Add Appointment - Both slots on one date", user: "BO" },
-      { id: "aa-3", title: "Add Appointment - Partial Booking Call-in", user: "BOTH" },
-      { id: "aa-4", title: "CSE not bound by 6/day cap — can add to a full slot", user: "BO" },
-      { id: "aa-5", title: "Afternoon Slot Booking", user: "BO" },
+      { id: "aa-1", title: "Add Appointment - Offline Purchase (New Record)", user: "BO", happyFlow: true },
+      { id: "aa-2", title: "Add Appointment - Both slots on one date", user: "BO", happyFlow: true },
+      { id: "aa-3", title: "Add Appointment - Partial Booking Call-in", user: "BOTH", happyFlow: true },
+      { id: "aa-4", title: "CSE not bound by 6/day cap — can add to a full slot", user: "BO", happyFlow: true },
+      { id: "aa-5", title: "Afternoon Slot Booking", user: "BO", happyFlow: true },
     ],
   },
   {
     label: "BO Calendar & Limits",
     scenarios: [
-      { id: "bo-1", title: "BO add beyond 6 days limit", user: "BOTH" },
-      { id: "bo-2", title: "BO add beyond morning slot limit", user: "BO" },
-      { id: "bo-3", title: "BO add beyond afternoon slot limit", user: "BO" },
-      { id: "bo-4", title: "BO add for current day and the next day", user: "BO" },
+      { id: "bo-1", title: "BO add beyond 6 days limit", user: "BOTH", happyFlow: true },
+      { id: "bo-2", title: "BO add beyond morning slot limit", user: "BO", happyFlow: true },
+      { id: "bo-3", title: "BO add beyond afternoon slot limit", user: "BO", happyFlow: true },
+      { id: "bo-4", title: "BO add for current day and the next day", user: "BO", happyFlow: true },
       { id: "bo-5", title: "BO add for previous dates", user: "BO" },
-      { id: "bo-6", title: "BO book beyond 2 months", user: "BO" },
+      { id: "bo-6", title: "BO book future date more than 2 months", user: "BO", happyFlow: true },
       { id: "bo-7", title: "BO book weekend dates", user: "BO" },
       { id: "bo-8", title: "BO book Public Holiday", user: "BO", params: ["publicHoliday"] },
     ],
@@ -521,6 +525,14 @@ export default function ShoppingCartPage() {
                         <span className={clsx("text-xs flex-1", isSel ? "text-slate-100" : "text-slate-400")}>
                           {scenario.title}
                         </span>
+                        {scenario.happyFlow && (
+                          <span
+                            title="Happy flow — successful path, no error/boundary expected"
+                            className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md font-medium shrink-0 bg-emerald-500/15 text-emerald-300"
+                          >
+                            <CheckCircle2 size={11} /> Happy flow
+                          </span>
+                        )}
                         <UserBadge user={scenario.user} />
                       </label>
                     );

@@ -87,12 +87,16 @@ export class BiometricPurchasePage extends BasePage {
     }
   }
 
-  /** Click Make Payment → wait for jQuery UI dialog → click Yes → wait for redirect to slot.do */
+  /**
+   * Click Make Payment → wait for jQuery UI dialog → click Yes → wait for
+   * redirect to slot.do. Matches either the old `txnId=<number>` or the new
+   * `transactionId=<uuid>` id scheme (see SoftwareInstallationPage.makePayment).
+   */
   async makePayment(): Promise<string> {
     await this.makePaymentBtn.click();
     await this.waitForDialog();
     await this.acceptConfirmDialog();
-    await this.page.waitForURL(/slot\.do\?txnId=/, { timeout: 15000 });
+    await this.page.waitForURL(/slot\.do\?(txnId|transactionId)=/, { timeout: 15000 });
     return this.getTxnIdFromUrl();
   }
 

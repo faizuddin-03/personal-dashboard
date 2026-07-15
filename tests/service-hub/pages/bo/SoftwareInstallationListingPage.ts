@@ -119,8 +119,21 @@ export class SoftwareInstallationListingPage extends BasePage {
     if (opts.installationStatus !== undefined) await this.installationStatusSelect.selectOption(opts.installationStatus);
     if (opts.paymentStatus) await this.paymentStatusSelect.selectOption(opts.paymentStatus);
     if (opts.lhdnStatus) await this.lhdnStatusSelect.selectOption(opts.lhdnStatus);
-    await this.searchBtn.click();
-    await this.waitForNav();
+
+    // Search fires an AJAX GET to the listing API (#sc-filter-form →
+    // .../listing/list.*), not a full page navigation — waitForNav()'s
+    // networkidle can resolve before that fetch/render actually completes,
+    // since #sc-combined-tbl already exists (with the PREVIOUS search's rows)
+    // and so is already "visible" the instant we check. Wait for the actual
+    // list response before treating the search as done.
+    const [response] = await Promise.all([
+      this.page.waitForResponse((res) => /listing\/list/i.test(res.url()), { timeout: 15000 }).catch(() => null),
+      this.searchBtn.click(),
+    ]);
+    if (!response) {
+      // Endpoint didn't match what we expected — fall back to best-effort waits.
+      await this.waitForNav();
+    }
     await this.resultsTable.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
   }
 
@@ -157,7 +170,9 @@ export class SoftwareInstallationListingPage extends BasePage {
     const rows = await this.getResultRows();
     for (const row of rows) {
       const ref = await this.getRowReferenceNo(row);
-      if (/^SR\d+/.test(ref)) return ref;
+      // Real references are SR + a type letter(s) + digits, e.g. SRI67000109
+      // (Installation), SRB67000105 (Biometric) — not bare "SR" + digits.
+      if (/^SR[A-Za-z]*\d+/.test(ref)) return ref;
     }
     return null;
   }
@@ -189,7 +204,23 @@ export class SoftwareInstallationListingPage extends BasePage {
 
   /** Click "View" → BO Software Installation Details Page. */
   async clickView(row: Locator) {
-    await row.locator('a[href*="detail.do"]').first().click();
+    // The View link opens target="_blank" — a real new tab. Page objects in
+    // this suite hold a single fixed `page` reference (constructed once and
+    // reused, e.g. `new SoftwareInstallationDetailsPage(boPage)`), so a click
+    // that opens a *different* tab leaves `this.page` stuck on the listing
+    // forever, and every subsequent Details-page action times out waiting on
+    // an element that's actually on the other tab. Strip the target so the
+    // navigation happens in this same page instead.
+    const link = row.locator('a[href*="detail.do"]').first();
+    await link.evaluate((el) => el.removeAttribute("target"));
+    // waitForNav()'s networkidle can resolve before the details page has
+    // actually replaced the listing DOM (same premature-resolution pattern
+    // as searchWithFilters()) — wait for the URL to actually reach
+    // detail.do rather than trusting network idleness alone.
+    await Promise.all([
+      this.page.waitForURL(/detail\.do/, { timeout: 15000 }).catch(() => null),
+      link.click(),
+    ]);
     await this.waitForNav();
   }
 

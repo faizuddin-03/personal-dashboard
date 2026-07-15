@@ -163,7 +163,13 @@ export class AppointmentCalendarPage extends BasePage {
     await this.dismissDatepicker();
   }
 
-  /** Close the jQuery UI datepicker overlay so it can't intercept clicks. */
+  /**
+   * Close the jQuery UI datepicker overlay so it can't intercept clicks.
+   * Selecting a day can momentarily refocus the (readonly) date input, and
+   * jQuery UI reopens the picker on focus — a synthetic blur() alone can lose
+   * that race. Shifting focus to a real, inert click target (the open
+   * dialog's title bar) is more reliable than blur() at keeping it shut.
+   */
   private async dismissDatepicker() {
     await this.page.evaluate(() => {
       const w = window as unknown as { jQuery?: { datepicker?: { _hideDatepicker?: () => void } } };
@@ -174,12 +180,49 @@ export class AppointmentCalendarPage extends BasePage {
       if (dp) dp.style.display = "none";
       (document.activeElement as HTMLElement | null)?.blur();
     });
+    await this.page
+      .locator(".ui-dialog:visible .ui-dialog-titlebar")
+      .first()
+      .click({ timeout: 2000 })
+      .catch(() => {});
     await this.datepicker.waitFor({ state: "hidden", timeout: 3000 }).catch(() => {});
   }
 
   private isoDayOfMonth(iso: string): number | undefined {
     const m = iso.match(/^\d{4}-\d{2}-(\d{2})$/);
     return m ? Number(m[1]) : undefined;
+  }
+
+  /**
+   * Whether `dateIso` is selectable in the Add Appointment date field.
+   *
+   * Verified live against the real jQuery UI datepicker bound to #ac-add-date
+   * (NOT the read-only #cal-table grid, which only ever displays existing
+   * bookings and has no concept of "blocked" — the actual book/no-book gate
+   * is this datepicker):
+   *  - Past dates (before today): every cell carries
+   *    "ui-datepicker-unselectable ui-state-disabled" and has no onclick.
+   *  - Weekends: same disabled classes, plus "ui-datepicker-week-end".
+   *  - Today and all future weekdays (including >2 months out — BO/CSE has
+   *    no +2-day blackout and no 2-month window limit): enabled, no
+   *    "ui-state-disabled" class.
+   * Must be called with the Add Appointment dialog already open (does not
+   * open/close the dialog itself, so callers can chain further actions).
+   */
+  async isAddDateSelectable(dateIso: string): Promise<boolean> {
+    const [y, m, d] = dateIso.split("-").map(Number);
+    await this.page.evaluate(() => {
+      (window as unknown as { jQuery: any }).jQuery("#ac-add-date").datepicker("show");
+    });
+    await this.datepicker.waitFor({ state: "visible", timeout: 5000 });
+    await this.datepicker.locator("select.ui-datepicker-month").selectOption(String(m - 1));
+    await this.datepicker.locator("select.ui-datepicker-year").selectOption(String(y));
+    // Changing the dropdowns re-renders the day grid — give it a beat.
+    await this.page.waitForTimeout(200);
+    const cell = this.datepicker.locator("td", { hasText: new RegExp(`^${d}$`) }).first();
+    const disabled = await cell.evaluate((el) => el.classList.contains("ui-state-disabled"));
+    await this.dismissDatepicker();
+    return !disabled;
   }
 
   /**
@@ -216,6 +259,9 @@ export class AppointmentCalendarPage extends BasePage {
       // New Appointment Date via datepicker (readonly input → click to open).
       await this.page.locator("#ac-rs-date").click();
       await this.pickDatepickerDay();
+      // Defensive: a refocus race can reopen the picker after pickDatepickerDay
+      // already dismissed it — clear it again before touching the slot radio.
+      if (await this.datepicker.isVisible().catch(() => false)) await this.dismissDatepicker();
       await this.demoHighlight(`input[name="ac-rs-slot"][value="${slot}"]`);
       await this.page.locator(`input[name="ac-rs-slot"][value="${slot}"]`).check();
     });
@@ -228,6 +274,25 @@ export class AppointmentCalendarPage extends BasePage {
       await this.waitForNav();
       await this.demoPause();
     });
+  }
+
+  /**
+   * Open the Add Appointment dialog and return its Locator, without filling
+   * anything in. Used by the calendar date-rule checks (isAddDateSelectable
+   * is scoped to this dialog's #ac-add-date field) — call closeAddDialog()
+   * when done to leave the calendar clean.
+   */
+  async openAddDialog(): Promise<Locator> {
+    await this.addAppointmentBtn.click();
+    const dialog = this.page.locator(".ui-dialog", { has: this.page.locator("#ac-add-dialog") });
+    await dialog.waitFor({ state: "visible", timeout: 10000 });
+    return dialog;
+  }
+
+  /** Close the Add dialog via its Cancel button (best-effort, public wrapper). */
+  async closeAddDialog(dialog: Locator) {
+    await dialog.getByRole("button", { name: "Cancel" }).click().catch(() => {});
+    await dialog.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
   }
 
   /**
@@ -312,6 +377,9 @@ export class AppointmentCalendarPage extends BasePage {
       await this.pickDatepickerDay(opts.appointmentDate ? this.isoDayOfMonth(opts.appointmentDate) : undefined);
       // Capture the date actually chosen (display value = DD-MM-YYYY).
       bookedDate = (await this.page.locator("#ac-add-date").inputValue().catch(() => "")).trim();
+      // Defensive: a refocus race can reopen the picker after pickDatepickerDay
+      // already dismissed it — clear it again before touching the slot radio.
+      if (await this.datepicker.isVisible().catch(() => false)) await this.dismissDatepicker();
       await this.demoHighlight(`#ac-add-slot-${opts.slot}`);
       await this.page.locator(`#ac-add-slot-${opts.slot}`).check();
     });
@@ -331,11 +399,5 @@ export class AppointmentCalendarPage extends BasePage {
       return null;
     }
     return bookedDate || null;
-  }
-
-  /** Close the Add dialog via its Cancel button (best-effort). */
-  private async closeAddDialog(dialog: Locator) {
-    await dialog.getByRole("button", { name: "Cancel" }).click().catch(() => {});
-    await dialog.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
   }
 }

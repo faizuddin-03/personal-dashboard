@@ -86,6 +86,40 @@ function stripAnsi(text: string): string {
   return text.replace(/\x1b\[[0-9;]*m/g, "");
 }
 
+/** Turn a test title into a filesystem-safe name (letters/digits/spaces/dashes only). */
+function sanitizeForFilename(title: string): string {
+  return title.replace(/[^a-z0-9 \-]+/gi, "").replace(/\s+/g, " ").trim().slice(0, 100);
+}
+
+/**
+ * Rename a test's own Playwright-generated evidence (video.webm,
+ * test-failed-N.png, trace.zip) to match the test's title, in place, so every
+ * file reads clearly instead of Playwright's generic/hashed defaults. Videos
+ * recorded by openTrackedContext()/closeTrackedContext() for a test's extra
+ * (cross-portal) browser contexts are already named this way at record time,
+ * so this only needs to handle the attachments Playwright itself produces for
+ * the test's main fixture-managed context.
+ */
+function renameEvidenceFiles(title: string, attachments: { name?: string; path?: string }[]): void {
+  const base = sanitizeForFilename(title);
+  if (!base) return;
+  const extFor: Record<string, string> = { video: ".webm", screenshot: ".png", trace: ".zip" };
+  const seen: Record<string, number> = {};
+  for (const a of attachments) {
+    const ext = a.name ? extFor[a.name] : undefined;
+    if (!ext || !a.path || !fs.existsSync(a.path)) continue;
+    const n = (seen[a.name!] = (seen[a.name!] ?? 0) + 1);
+    const suffix = a.name === "screenshot" ? " - failure" : a.name === "trace" ? " - trace" : "";
+    const numbered = n > 1 ? ` (${n})` : "";
+    const dest = path.join(path.dirname(a.path), `${base}${suffix}${numbered}${ext}`);
+    try {
+      if (path.resolve(dest) !== path.resolve(a.path)) fs.renameSync(a.path, dest);
+    } catch {
+      // best-effort — a rename failure shouldn't break the run's results
+    }
+  }
+}
+
 /**
  * Turn a raw Playwright error message into a one-line, plain-English
  * summary. Falls back to the first meaningful line of the original
@@ -272,6 +306,7 @@ export async function POST(req: NextRequest) {
                 duration?: number;
                 error?: { message?: string; snippet?: string };
                 errors?: { message?: string; snippet?: string }[];
+                attachments?: { name?: string; path?: string }[];
               }[];
             }[];
           };
@@ -299,6 +334,9 @@ export async function POST(req: NextRequest) {
                 }
 
                 const cleanedError = stripAnsi(errorMsg).slice(0, 2000);
+                if (spec.title && testResult?.attachments?.length) {
+                  renameEvidenceFiles(spec.title, testResult.attachments);
+                }
                 out.push({
                   title: spec.title ?? "",
                   status: status === "timedOut" ? "failed" : status,

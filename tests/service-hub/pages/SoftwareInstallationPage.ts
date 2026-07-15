@@ -34,12 +34,17 @@ export class SoftwareInstallationPage extends BasePage {
     }
   }
 
-  /** Click Make Payment → wait for jQuery UI dialog → click Yes → wait for redirect to slot.do */
+  /**
+   * Click Make Payment → wait for jQuery UI dialog → click Yes → wait for
+   * redirect to slot.do. The redirect's id param used to be `txnId=<number>`;
+   * a deployment changed it to `transactionId=<uuid>` (same destination page,
+   * confirmed live) — match either so this keeps working under both schemes.
+   */
   async makePayment(): Promise<string> {
     await this.makePaymentBtn.click();
     await this.waitForDialog();
     await this.acceptConfirmDialog();
-    await this.page.waitForURL(/slot\.do\?txnId=/, { timeout: 15000 });
+    await this.page.waitForURL(/slot\.do\?(txnId|transactionId)=/, { timeout: 15000 });
     return this.getTxnIdFromUrl();
   }
 

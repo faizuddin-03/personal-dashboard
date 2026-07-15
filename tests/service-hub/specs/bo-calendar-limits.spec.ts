@@ -1,5 +1,6 @@
 import { test, expect } from "../fixtures/test-fixtures";
 import { ENV } from "../utils/config";
+import { openTrackedContext, closeTrackedContext } from "../utils/tracked-context";
 
 const MORNING = 0;
 const AFTERNOON = 1;
@@ -15,9 +16,16 @@ const COMPANY = "FAIZUDDIN AUTO TEST";
  * slot already is. Tests skip (rather than fail) when the company has no
  * unallocated units to add against.
  *
- * NOTE: bo-4…bo-8 (BO calendar date rules: current/next day, previous dates,
- * >2 months, weekends, public holiday) are pending a live check of how the BO
- * Appointment Calendar marks non-selectable dates, and will be added next.
+ * The date-rule tests (current/next day, previous dates, >2 months, weekends,
+ * public holiday) are VIEW-only — they open the Add Appointment dialog and
+ * inspect its #ac-add-date datepicker (via isAddDateSelectable), then cancel
+ * without booking anything. Verified live: the read-only #cal-table grid only
+ * ever displays existing bookings and has no "blocked" concept — the real
+ * book/no-book gate is this datepicker, where:
+ *   - past dates: disabled ("ui-datepicker-unselectable ui-state-disabled")
+ *   - weekends: disabled, plus "ui-datepicker-week-end"
+ *   - today and all future weekdays (including >2 months out): enabled —
+ *     BO/CSE has no +2-day blackout and no 2-month window limit.
  */
 test.describe("BO Calendar & Limits", () => {
   test.beforeEach(async ({ loginPage }) => {
@@ -47,7 +55,7 @@ test.describe("BO Calendar & Limits", () => {
     expect(await boCalendarPage.getSlotCount(booked, AFTERNOON)).toBeGreaterThan(0);
   });
 
-  test("BO add beyond 6 days limit", async ({ boCalendarPage, browser }) => {
+  test("BO add beyond 6 days limit", async ({ boCalendarPage, browser }, testInfo) => {
     // Add the appointment as CSE, then OBSERVE it in every location the SRD
     // lists. Email is checked via its on-screen proxy (the UCD Service Request
     // Listing), per the agreed approach.
@@ -79,12 +87,13 @@ test.describe("BO Calendar & Limits", () => {
 
     await test.step("Observe on UCD Service Request Listing (on-screen proxy for the email)", async () => {
       if (!ref) return; // nothing to look up
-      const ucdCtx = await browser.newContext();
+      const ucdCtx = await openTrackedContext(browser, testInfo);
       const ucdPage = await ucdCtx.newPage();
       try {
         const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
         const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
         await ucdLogin.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
+        await ucdListing.navigate();
         await ucdListing.searchByReferenceNo(ref);
         const row = await ucdListing.findRowByRefNo(ref);
         // Best-effort: only assert when this UCD account owns the reference.
@@ -92,8 +101,61 @@ test.describe("BO Calendar & Limits", () => {
           expect((await ucdListing.getRowServiceType(row)).length).toBeGreaterThan(0);
         }
       } finally {
-        await ucdCtx.close();
+        await closeTrackedContext(ucdCtx, testInfo, "UCD verifies listing");
       }
     });
+  });
+
+  test("BO add for current day and the next day", async ({ boCalendarPage }) => {
+    await boCalendarPage.navigate();
+    const dialog = await boCalendarPage.openAddDialog();
+    await test.step("Expected: able to proceed with booking today and tomorrow", async () => {
+      expect(await boCalendarPage.isAddDateSelectable(boCalendarPage.today())).toBe(true);
+      expect(await boCalendarPage.isAddDateSelectable(boCalendarPage.daysFromToday(1))).toBe(true);
+    });
+    await boCalendarPage.closeAddDialog(dialog);
+  });
+
+  test("BO add for previous dates", async ({ boCalendarPage }) => {
+    await boCalendarPage.navigate();
+    const dialog = await boCalendarPage.openAddDialog();
+    await test.step("Expected: a previous date is not selectable", async () => {
+      expect(await boCalendarPage.isAddDateSelectable(boCalendarPage.yesterday())).toBe(false);
+    });
+    await boCalendarPage.closeAddDialog(dialog);
+  });
+
+  test("BO book future date more than 2 months", async ({ boCalendarPage }) => {
+    await boCalendarPage.navigate();
+    const dialog = await boCalendarPage.openAddDialog();
+    const far = boCalendarPage.dateMonthsAhead(3);
+    await test.step(`Expected: ${far} (>2 months out) CAN be booked by BO`, async () => {
+      expect(await boCalendarPage.isAddDateSelectable(far)).toBe(true);
+    });
+    await boCalendarPage.closeAddDialog(dialog);
+  });
+
+  test("BO book weekend dates", async ({ boCalendarPage }) => {
+    await boCalendarPage.navigate();
+    const dialog = await boCalendarPage.openAddDialog();
+    const weekend = boCalendarPage.nextWeekend();
+    await test.step(`Expected: weekend ${weekend} is greyed out / unclickable`, async () => {
+      expect(await boCalendarPage.isAddDateSelectable(weekend)).toBe(false);
+    });
+    await boCalendarPage.closeAddDialog(dialog);
+  });
+
+  test("BO book Public Holiday", async ({ boCalendarPage }) => {
+    const ph = ENV.publicHoliday;
+    if (!ph) {
+      test.skip(true, "No Public Holiday date provided — key one into the runner's Test data panel.");
+      return;
+    }
+    await boCalendarPage.navigate();
+    const dialog = await boCalendarPage.openAddDialog();
+    await test.step(`Expected: public holiday ${ph} is greyed out / unclickable`, async () => {
+      expect(await boCalendarPage.isAddDateSelectable(ph)).toBe(false);
+    });
+    await boCalendarPage.closeAddDialog(dialog);
   });
 });

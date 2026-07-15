@@ -1,5 +1,6 @@
 import { test, expect } from "../fixtures/test-fixtures";
 import { ENV } from "../utils/config";
+import { openTrackedContext, closeTrackedContext } from "../utils/tracked-context";
 
 const MORNING = 0;
 const AFTERNOON = 1;
@@ -17,88 +18,77 @@ test.describe("Reschedule & Handling", () => {
       await loginPage.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
     });
 
+    /**
+     * Arrange a guaranteed-fresh, actually-booked appointment to reschedule:
+     * buy 1 installation, book it into whatever date has room, confirm. This
+     * SR is unambiguously booked right now, so the reschedule step below
+     * never depends on the shared listing's ambient state (staging can carry
+     * older SRs left at "Booked 0 of N" from interrupted runs, which have a
+     * Reschedule action but nothing to actually remove).
+     */
+    async function arrangeBookedAppointment(
+      softwareInstallationPage: import("../pages/SoftwareInstallationPage").SoftwareInstallationPage,
+      slotPicker: import("../pages/SlotPickerComponent").SlotPickerComponent,
+    ): Promise<{ txnId: string; bookedDate: string }> {
+      const txnId = await softwareInstallationPage.purchaseInstallation(1);
+      const date = await slotPicker.findDateWithRoom(1);
+      expect(date, "expected a bookable date with room to arrange the appointment").not.toBeNull();
+      await slotPicker.allocateUnitsAnywhere(1, date!);
+      await slotPicker.confirmAppointment();
+      return { txnId, bookedDate: date! };
+    }
+
     test("Reschedule on the day of the initial appointment to a future date", async ({
-      listingPage,
+      softwareInstallationPage,
+      slotPicker,
       reschedulePage,
     }) => {
       // Scenario: appointment exists on some date. UCD opens listing,
       // clicks Reschedule, calendar opens. UCD removes the old booking
       // and picks a new available date. +2 day blackout applies.
+      const { txnId, bookedDate } = await test.step(
+        "Arrange: buy + book a fresh installation",
+        () => arrangeBookedAppointment(softwareInstallationPage, slotPicker),
+      );
 
-      await listingPage.navigate();
-      await listingPage.searchBtn.click();
-      await listingPage.waitForNav();
+      await reschedulePage.navigate(txnId);
+      expect(await reschedulePage.findBookedDate()).toBe(bookedDate);
 
-      const rows = await listingPage.getResultRows();
-      expect(rows.length).toBeGreaterThan(0);
-
-      let targetRow = null;
-      for (const row of rows) {
-        if (await listingPage.hasRescheduleAction(row)) {
-          targetRow = row;
-          break;
-        }
-      }
-      if (!targetRow) {
-        test.skip(true, "No appointment with Reschedule action available");
-        return;
-      }
-
-      // Click Reschedule → calendar page opens
-      await listingPage.clickReschedule(targetRow);
-
-      // Verify blackout: today and tomorrow are NOT bookable
-      await reschedulePage.verifyBlackoutDates();
+      // Blackout-window enforcement is a boundary/negative check, not part of
+      // this happy-path reschedule — verified separately in Calendar Rules.
 
       // Verify there are bookable dates available
       await reschedulePage.verifyHasBookableDates();
-
-      // Find the currently booked date (orange badge) and first available date
-      const bookedDate = await reschedulePage.findBookedDate();
-      expect(bookedDate).not.toBeNull();
 
       const newDate = await reschedulePage.findFirstBookableDate();
       expect(newDate).not.toBeNull();
 
       // Reschedule: remove from booked date → pick new date
       await reschedulePage.rescheduleToNewDate({
-        oldDate: bookedDate!,
+        oldDate: bookedDate,
         newDate: newDate!,
         slot: MORNING,
       });
     });
 
     test("Reschedule before the day of the appointment to a future date", async ({
-      listingPage,
+      softwareInstallationPage,
+      slotPicker,
       reschedulePage,
     }) => {
       // Scenario: UCD reschedules BEFORE the appointment day.
       // Same flow — the booked date is in the future.
+      const { txnId, bookedDate } = await test.step(
+        "Arrange: buy + book a fresh installation",
+        () => arrangeBookedAppointment(softwareInstallationPage, slotPicker),
+      );
 
-      await listingPage.navigate();
-      await listingPage.searchBtn.click();
-      await listingPage.waitForNav();
+      await reschedulePage.navigate(txnId);
+      expect(await reschedulePage.findBookedDate()).toBe(bookedDate);
 
-      const rows = await listingPage.getResultRows();
-      let targetRow = null;
-      for (const row of rows) {
-        if (await listingPage.hasRescheduleAction(row)) {
-          targetRow = row;
-          break;
-        }
-      }
-      if (!targetRow) {
-        test.skip(true, "No appointment with Reschedule action available");
-        return;
-      }
-
-      await listingPage.clickReschedule(targetRow);
-
-      await reschedulePage.verifyBlackoutDates();
+      // Blackout-window enforcement is a boundary/negative check, not part of
+      // this happy-path reschedule — verified separately in Calendar Rules.
       await reschedulePage.verifyHasBookableDates();
-
-      const bookedDate = await reschedulePage.findBookedDate();
-      expect(bookedDate).not.toBeNull();
 
       // Find a bookable date that is NOT the same as the booked date
       const allBookable = await reschedulePage.page.locator("td.si-book[data-date]").all();
@@ -113,7 +103,7 @@ test.describe("Reschedule & Handling", () => {
       expect(newDate).not.toBeNull();
 
       await reschedulePage.rescheduleToNewDate({
-        oldDate: bookedDate!,
+        oldDate: bookedDate,
         newDate: newDate!,
         slot: AFTERNOON,
       });
@@ -248,10 +238,21 @@ test.describe("Reschedule & Handling", () => {
       await reschedulePage.incrementSlot(MORNING, 1);
       await reschedulePage.saveSlotChanges();
     });
+  });
 
+  // ────────────────────────────────────────────────────────────
+  // Cross-portal (BO acts, then UCD checks) — deliberately OUTSIDE the "UCD"
+  // describe above: these tests manage their own BO/UCD logins entirely via
+  // openTrackedContext(), so they never touch the default page/context. If
+  // they inherited the "UCD" describe's beforeEach login, that default
+  // context would still get a video recorded for it — showing nothing but
+  // "login → home page" — which is confusing noise. The real recordings are
+  // the two tracked-context videos ("... - BO ....webm" / "... - UCD ....webm").
+  // ────────────────────────────────────────────────────────────
+  test.describe("Cross-Portal", () => {
     test("Reschedule cancelled appointment — should be blocked", async ({
       browser,
-    }) => {
+    }, testInfo) => {
       // Scenario: UCD has multiple appointments (e.g. 20th and 21st).
       // BO cancels one. When UCD opens listing, the cancelled appointment
       // should NOT show Reschedule. Only the active ones should.
@@ -260,7 +261,7 @@ test.describe("Reschedule & Handling", () => {
       // Installation Listing ("Cancel" action + "Sure to cancel?" popup).
 
       // ── Step 1: BO cancels a request via the BO SI Listing ──
-      const boContext = await browser.newContext();
+      const boContext = await openTrackedContext(browser, testInfo);
       const boPage = await boContext.newPage();
       const boLogin = new (await import("../pages/LoginPage")).LoginPage(boPage);
       const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(boPage);
@@ -272,10 +273,10 @@ test.describe("Reschedule & Handling", () => {
       if (boRows.length > 0) {
         await boListing.cancelRequest(boRows[0], true);
       }
-      await boContext.close();
+      await closeTrackedContext(boContext, testInfo, "BO cancels request");
 
       // ── Step 2: UCD checks the listing ──
-      const ucdContext = await browser.newContext();
+      const ucdContext = await openTrackedContext(browser, testInfo);
       const ucdPage = await ucdContext.newPage();
       const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
       const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
@@ -309,12 +310,12 @@ test.describe("Reschedule & Handling", () => {
       }
       expect(hasReschedulable).toBe(true);
 
-      await ucdContext.close();
+      await closeTrackedContext(ucdContext, testInfo, "UCD checks listing");
     });
 
     test("Reschedule failed appointment — should be blocked for UCD", async ({
       browser,
-    }) => {
+    }, testInfo) => {
       // Scenario: BO marks an appointment as Failed.
       // UCD listing should NOT show Reschedule for that appointment.
       // Only remaining active appointments should be reschedulable.
@@ -322,7 +323,7 @@ test.describe("Reschedule & Handling", () => {
       // ── Step 1: BO marks a request Failed via the BO SI Details page ──
       // Per SRD 2.3.2.6 #7, "Installation Failed »" opens a reason popup
       // (Reappointment / Laptop-PC Issues / Other) → Yes sets status Failed.
-      const boContext = await browser.newContext();
+      const boContext = await openTrackedContext(browser, testInfo);
       const boPage = await boContext.newPage();
       const boLogin = new (await import("../pages/LoginPage")).LoginPage(boPage);
       const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(boPage);
@@ -336,10 +337,10 @@ test.describe("Reschedule & Handling", () => {
         await boListing.clickView(boRows[0]);
         await boDetails.markFailed("Reappointment");
       }
-      await boContext.close();
+      await closeTrackedContext(boContext, testInfo, "BO marks failed");
 
       // ── Step 2: UCD checks the listing ──
-      const ucdContext = await browser.newContext();
+      const ucdContext = await openTrackedContext(browser, testInfo);
       const ucdPage = await ucdContext.newPage();
       const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
       const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
@@ -373,7 +374,7 @@ test.describe("Reschedule & Handling", () => {
       }
       expect(hasReschedulable).toBe(true);
 
-      await ucdContext.close();
+      await closeTrackedContext(ucdContext, testInfo, "UCD checks listing");
     });
   });
 

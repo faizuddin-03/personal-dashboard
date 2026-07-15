@@ -1,5 +1,6 @@
 import { test, expect } from "../fixtures/test-fixtures";
 import { ENV } from "../utils/config";
+import { openTrackedContext, closeTrackedContext } from "../utils/tracked-context";
 
 const MORNING = 0;
 const AFTERNOON = 1;
@@ -78,12 +79,12 @@ test.describe("Add Appointment (BO)", () => {
   // the partial state as UCD (buy 2 devices → 2 free installs, book 1, confirm
   // leaving 1 unallocated), capture the SR reference, then CALL IN as CSE and
   // book the leftover via Add Appointment › Existing Record.
-  test("Add Appointment - Partial Booking Call-in", async ({ browser }) => {
+  test("Add Appointment - Partial Booking Call-in", async ({ browser }, testInfo) => {
     const LoginPage = (await import("../pages/LoginPage")).LoginPage;
 
     // ── ARRANGE (UCD): buy 2 devices → 2 free installs, book only 1, confirm
     //    (free installs are optional), leaving 1 unallocated. ──
-    const ucdCtx = await browser.newContext();
+    const ucdCtx = await openTrackedContext(browser, testInfo);
     const ucdPage = await ucdCtx.newPage();
     const bio = new (await import("../pages/BiometricPurchasePage")).BiometricPurchasePage(ucdPage);
     const slot = new (await import("../pages/SlotPickerComponent")).SlotPickerComponent(ucdPage);
@@ -104,7 +105,7 @@ test.describe("Add Appointment (BO)", () => {
         arranged = true;
       }
     } finally {
-      await ucdCtx.close();
+      await closeTrackedContext(ucdCtx, testInfo, "UCD arranges partial booking");
     }
     if (!arranged) {
       test.skip(true, "Could not arrange a partially-booked biometric request to call in about.");
@@ -114,7 +115,7 @@ test.describe("Add Appointment (BO)", () => {
     // ── CALL-IN (CSE): look up the reference from the BO SI Listing (search
     //    the company → the freshly-created request is the newest row), then
     //    book the leftover free install via Add Appointment › Existing Record. ──
-    const boCtx = await browser.newContext();
+    const boCtx = await openTrackedContext(browser, testInfo);
     const boPage = await boCtx.newPage();
     const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(boPage);
     const boCal = new (await import("../pages/bo/AppointmentCalendarPage")).AppointmentCalendarPage(boPage);
@@ -134,7 +135,7 @@ test.describe("Add Appointment (BO)", () => {
         });
       }
     } finally {
-      await boCtx.close();
+      await closeTrackedContext(boCtx, testInfo, "CSE call-in booking");
     }
     if (!ref) {
       test.skip(true, `No reference found in the BO listing for "${COMPANY}".`);

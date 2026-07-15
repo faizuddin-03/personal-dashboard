@@ -75,18 +75,25 @@ export const ENV = {
   failedReasons: ["Reappointment", "Laptop/PC Issues", "Other"] as const,
 };
 
+// `txnId` params below are the FULL "key=value" pair (e.g. "txnId=232" or
+// "transactionId=a23be953-..."), as returned by BasePage.getTxnIdFromUrl() /
+// ServiceRequestListingPage.getRescheduleTxnId() — NOT a bare id. The app's
+// post-payment redirect changed schemes (numeric txnId -> uuid
+// transactionId) mid-deployment, so builders splice the pair in as-is
+// (`?${txnId}`) instead of hardcoding the old param name, and stay correct
+// under either scheme.
 export const PATHS = {
   login: "/public/login/",
   ucdHome: "/view/ucd/home.do",
   serviceHub: "/view/ucd/service-hub/view.do",
   softwareInstallation: "/view/ucd/service-hub/installation.do",
-  slotPicker: (txnId: string) => `/view/ucd/service-hub/installation/slot.do?txnId=${txnId}`,
-  submitted: (txnId: string) => `/view/ucd/service-hub/installation/submitted.do?txnId=${txnId}`,
+  slotPicker: (txnId: string) => `/view/ucd/service-hub/installation/slot.do?${txnId}`,
+  submitted: (txnId: string) => `/view/ucd/service-hub/installation/submitted.do?${txnId}`,
   biometricPurchase: "/view/ucd/service-hub/purchase.do",
   listing: "/view/ucd/service-hub/listing.do",
-  requestDetails: (txnId: string) => `/view/ucd/service-hub/details.do?txnId=${txnId}`,
-  receipt: (txnId: string) => `/view/ucd/service-hub/receipt.do?txnId=${txnId}`,
-  reschedule: (txnId: string) => `/view/ucd/service-hub/installation/reschedule.do?txnId=${txnId}`,
+  requestDetails: (txnId: string) => `/view/ucd/service-hub/details.do?${txnId}`,
+  receipt: (txnId: string) => `/view/ucd/service-hub/receipt.do?${txnId}`,
+  reschedule: (txnId: string) => `/view/ucd/service-hub/installation/reschedule.do?${txnId}`,
   // BO paths — confirmed against the real BO portal HTML.
   // The BO "Biometric Device Purchase & Software Installation Listing" is
   // the single entry point; the Appointment Calendar is reached from it
@@ -96,6 +103,6 @@ export const PATHS = {
   boSoftwareInstallationListing: "/view/bo/service-hub/listing/main.do",
   // Detail page needs BOTH txnId and apptId (one row per appointment).
   boSoftwareInstallationDetails: (txnId: string, apptId: string) =>
-    `/view/bo/service-hub/detail.do?txnId=${txnId}&apptId=${apptId}`,
+    `/view/bo/service-hub/detail.do?${txnId}&apptId=${apptId}`,
   boAppointmentCalendar: "/view/bo/service-hub/listing/main.do",
 };

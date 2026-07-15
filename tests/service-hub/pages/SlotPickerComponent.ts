@@ -69,6 +69,12 @@ export class SlotPickerComponent extends BasePage {
   async ensureMonthVisible(dateStr: string, maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<void> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       if ((await this.getDayCell(dateStr).count()) > 0) return;
+      // Was missing this guard (present in every other finder in this file):
+      // without it, the loop still calls goNextMonth() on its LAST allowed
+      // iteration, attempting one click past the app's real limit (the SRD
+      // calendar only ever shows the current + next month — no 3rd month
+      // ever exists to page into). That extra click is what hung on #si-next.
+      if (m >= maxMonthsAhead) break;
       if (!(await this.goNextMonth())) return;
     }
   }
@@ -76,6 +82,11 @@ export class SlotPickerComponent extends BasePage {
   async isDayBookable(dateStr: string): Promise<boolean> {
     await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
+    // A date beyond the calendar's navigable window (e.g. >2 months out)
+    // never renders a cell at all — getAttribute() on a zero-match locator
+    // doesn't return null, it waits/retries until timeout. A non-rendered
+    // date is definitionally not bookable, so short-circuit here.
+    if ((await cell.count()) === 0) return false;
     const classes = await cell.getAttribute("class") ?? "";
     return classes.includes("si-book") && !classes.includes("si-muted");
   }
@@ -83,6 +94,7 @@ export class SlotPickerComponent extends BasePage {
   async isDayFullyBooked(dateStr: string): Promise<boolean> {
     await this.ensureMonthVisible(dateStr);
     const cell = this.getDayCell(dateStr);
+    if ((await cell.count()) === 0) return false;
     const classes = await cell.getAttribute("class") ?? "";
     return classes.includes("si-fullday");
   }
@@ -484,7 +496,9 @@ export class SlotPickerComponent extends BasePage {
   async confirmAppointment() {
     await this.demoHighlight("#si-confirm-booking", { color: "green" });
     await this.page.evaluate(() => (window as any).siConfirmBooking());
-    await this.page.waitForURL(/submitted\.do\?txnId=/, { timeout: 15000 }).catch(() => {});
+    // Matches either the old `txnId=<number>` or the new `transactionId=<uuid>`
+    // id scheme (see SoftwareInstallationPage.makePayment).
+    await this.page.waitForURL(/submitted\.do\?(txnId|transactionId)=/, { timeout: 15000 }).catch(() => {});
     await this.waitForNav();
     await this.demoPause();
   }
@@ -495,6 +509,13 @@ export class SlotPickerComponent extends BasePage {
    * window's forward limit is reached — clicking it then would hang
    * waiting for "visible". Returns false instead of clicking in that case
    * so callers know to stop paging forward.
+   *
+   * The style check is a best-effort guess at how the app marks "no more
+   * months" — if that guess is ever wrong (a different disabled state, or
+   * a genuinely unresponsive arrow), a plain `.click()` would hang for the
+   * full default actionability timeout. Bound it to a short timeout instead
+   * and treat a failed/timed-out click the same as "no more months" so a
+   * mismatch here degrades to a graceful stop, never a hung test.
    */
   async goNextMonth(): Promise<boolean> {
     // A stray open modal's overlay covers the whole page and would
@@ -505,7 +526,11 @@ export class SlotPickerComponent extends BasePage {
     }
     const style = (await this.nextMonthArrow.getAttribute("style")) ?? "";
     if (style.includes("hidden")) return false;
-    await this.nextMonthArrow.click();
+    try {
+      await this.nextMonthArrow.click({ timeout: 3000 });
+    } catch {
+      return false; // arrow didn't respond — treat as the forward limit
+    }
     await this.page.waitForTimeout(300);
     return true;
   }

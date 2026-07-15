@@ -14,19 +14,35 @@ export class ReschedulePage extends SlotPickerComponent {
     await this.goto(PATHS.reschedule(txnId));
   }
 
-  /** Find the currently booked date (has si-bookbadge = orange tag) */
-  async findBookedDate(): Promise<string | null> {
-    const cells = await this.page.locator("td[data-date] .si-bookbadge").all();
-    if (cells.length === 0) return null;
-    const parent = cells[0].locator("xpath=ancestor::td");
-    return await parent.getAttribute("data-date");
+  /**
+   * Find the currently booked date (has si-bookbadge = orange tag). The
+   * calendar only renders the currently-displayed month, and the booked
+   * appointment can be in either the current or next month (the SRD's
+   * 2-month window), so this pages forward like the other finders instead
+   * of only checking whatever month happened to be showing on page load.
+   */
+  async findBookedDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+    for (let m = 0; m <= maxMonthsAhead; m++) {
+      const cells = await this.page.locator("td[data-date] .si-bookbadge").all();
+      if (cells.length > 0) {
+        const parent = cells[0].locator("xpath=ancestor::td");
+        return await parent.getAttribute("data-date");
+      }
+      if (m >= maxMonthsAhead) break;
+      if (!(await this.goNextMonth())) break;
+    }
+    return null;
   }
 
   /** Find the first bookable date on the calendar (has si-book class) */
-  async findFirstBookableDate(): Promise<string | null> {
-    const cells = await this.page.locator("td.si-book[data-date]").all();
-    if (cells.length === 0) return null;
-    return await cells[0].getAttribute("data-date");
+  async findFirstBookableDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+    for (let m = 0; m <= maxMonthsAhead; m++) {
+      const cells = await this.page.locator("td.si-book[data-date]").all();
+      if (cells.length > 0) return await cells[0].getAttribute("data-date");
+      if (m >= maxMonthsAhead) break;
+      if (!(await this.goNextMonth())) break;
+    }
+    return null;
   }
 
   /**
@@ -49,6 +65,26 @@ export class ReschedulePage extends SlotPickerComponent {
     }
     await this.waitForNav();
     await this.demoPause();
+  }
+
+  /**
+   * Confirm a booking removal actually persisted before touching another
+   * date. saveSlotChanges()'s modal-close is a client-side UI action —
+   * siSaveDate() also fires a save request in the background, and it can
+   * still be in flight when the modal closes. Clicking a NEW date before
+   * that request lands can leave the app's own client-state (e.g. "which
+   * date is currently being edited") inconsistent, so the new date's modal
+   * then never opens (`#si-ovl` never appears, and the click hangs). Poll
+   * the calendar's own booked-badge until it's actually gone.
+   */
+  private async waitForRemovalConfirmed(oldDate: string, timeoutMs: number = 8000): Promise<void> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (!(await this.isDateBooked(oldDate))) return;
+      await this.page.waitForTimeout(300);
+    }
+    // Best-effort — proceed regardless; the caller's next step will surface
+    // any real failure on its own rather than us throwing a confusing one here.
   }
 
   /**
@@ -83,6 +119,7 @@ export class ReschedulePage extends SlotPickerComponent {
           if (val > 0) await this.removeSlot(s);
         }
         await this.saveSlotChanges();
+        await this.waitForRemovalConfirmed(oldDate);
       }
     });
 
@@ -157,6 +194,7 @@ export class ReschedulePage extends SlotPickerComponent {
         if (val > 0) await this.removeSlot(s);
       }
       await this.saveSlotChanges();
+      await this.waitForRemovalConfirmed(oldDate);
     }
 
     await this.openSlotModal(today);

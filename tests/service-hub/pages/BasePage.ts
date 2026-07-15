@@ -27,9 +27,25 @@ export class BasePage {
     await this.page.waitForLoadState("networkidle");
   }
 
+  /**
+   * The transaction identifier from the current URL's query string, as a
+   * ready-to-reuse "key=value" pair (e.g. "txnId=232" or
+   * "transactionId=a23be953-...").
+   *
+   * The app used to redirect with `?txnId=<number>`; a deployment changed
+   * this to `?transactionId=<uuid>` (confirmed live — same destination page,
+   * just a different id scheme). Rather than hardcode one param name, this
+   * returns whichever is actually present, INCLUDING its key, so callers can
+   * splice it straight into a follow-up URL (`?${txnId}`) without needing to
+   * know or guess which scheme this particular record uses.
+   */
   getTxnIdFromUrl(): string {
     const url = new URL(this.page.url());
-    return url.searchParams.get("txnId") ?? "";
+    for (const key of ["txnId", "transactionId"]) {
+      const value = url.searchParams.get(key);
+      if (value) return `${key}=${value}`;
+    }
+    return "";
   }
 
   /** Accept the jQuery UI confirmation dialog (clicks the "Yes" button) */
