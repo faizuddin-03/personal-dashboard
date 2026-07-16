@@ -78,6 +78,7 @@ export async function POST(req: NextRequest) {
     const child = spawn("npx", ["playwright", "test", "--project=estm"], {
       cwd: SCRIPT_DIR,
       detached: process.platform !== "win32",
+      shell: process.platform === "win32",
       env: {
         ...process.env,
         ESTM_SKIP_PAUSE: "1",

@@ -174,6 +174,7 @@ export async function POST(req: NextRequest) {
     const child = spawn("npx", ["playwright", "test", "--project=insurance-checker"], {
       cwd: SCRIPT_DIR,
       detached: process.platform !== "win32",
+      shell: process.platform === "win32",
       env: {
         ...process.env,
         ...(username    && { EAUTO_USERNAME:    username }),

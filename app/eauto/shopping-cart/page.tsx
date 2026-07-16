@@ -39,29 +39,6 @@ interface ScenarioGroup {
 
 const TEST_GROUPS: ScenarioGroup[] = [
   {
-    label: "Slot Capacity & Boundary (UCD)",
-    scenarios: [
-      { id: "sc-1", title: "Morning Slot - Book until full", user: "UCD" },
-      { id: "sc-2", title: "Afternoon Slot - Book until full", user: "UCD" },
-      { id: "sc-3", title: "Day capacity reach 6/6", user: "UCD" },
-      { id: "sc-4", title: "Software Installation - Mandatory Booking", user: "UCD", happyFlow: true },
-      { id: "sc-5", title: "Biometric Purchase - Free Install Option (partial booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
-      { id: "sc-6", title: "Biometric Purchase - Free Install Option (no booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
-      { id: "sc-7", title: "Biometric Purchase - Paid Install Mandatory", user: "UCD", happyFlow: true },
-      { id: "sc-8", title: "Two UCD - Select same last available slot", user: "UCD" },
-    ],
-  },
-  {
-    label: "Calendar Rules (UCD)",
-    scenarios: [
-      { id: "cal-1", title: "Book for current day and the next day", user: "UCD" },
-      { id: "cal-2", title: "Book for previous dates", user: "UCD" },
-      { id: "cal-3", title: "Book future dates more than 2 months", user: "UCD" },
-      { id: "cal-4", title: "Book weekend dates", user: "UCD" },
-      { id: "cal-5", title: "Book Public Holiday", user: "UCD", params: ["publicHoliday"] },
-    ],
-  },
-  {
     label: "Reschedule & Handling",
     scenarios: [
       { id: "rs-1", title: "Reschedule on the day of the initial appointment to a future date", user: "UCD", happyFlow: true },
@@ -86,6 +63,29 @@ const TEST_GROUPS: ScenarioGroup[] = [
     ],
   },
   {
+    label: "Slot Capacity & Boundary (UCD)",
+    scenarios: [
+      { id: "sc-1", title: "Morning Slot - Book until full", user: "UCD" },
+      { id: "sc-2", title: "Afternoon Slot - Book until full", user: "UCD" },
+      { id: "sc-3", title: "Day capacity reach 6/6", user: "UCD" },
+      { id: "sc-4", title: "Software Installation - Mandatory Booking", user: "UCD", happyFlow: true },
+      { id: "sc-5", title: "Biometric Purchase - Free Install Option (partial booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
+      { id: "sc-6", title: "Biometric Purchase - Free Install Option (no booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
+      { id: "sc-7", title: "Biometric Purchase - Paid Install Mandatory", user: "UCD", happyFlow: true },
+      { id: "sc-8", title: "Two UCD - Select same last available slot", user: "UCD" },
+    ],
+  },
+  {
+    label: "Calendar Rules (UCD)",
+    scenarios: [
+      { id: "cal-1", title: "Book for current day and the next day", user: "UCD" },
+      { id: "cal-2", title: "Book for previous dates", user: "UCD" },
+      { id: "cal-3", title: "Book future dates more than 2 months", user: "UCD" },
+      { id: "cal-4", title: "Book weekend dates", user: "UCD" },
+      { id: "cal-5", title: "Book Public Holiday", user: "UCD", params: ["publicHoliday"] },
+    ],
+  },
+  {
     label: "BO Calendar & Limits",
     scenarios: [
       { id: "bo-1", title: "BO add beyond 6 days limit", user: "BOTH", happyFlow: true },
@@ -99,6 +99,14 @@ const TEST_GROUPS: ScenarioGroup[] = [
     ],
   },
 ];
+
+/** Display-only naming convention: TSXX_<portal>_<title>. "XX" is a
+ * placeholder until real TS numbers are assigned — the underlying
+ * scenario.title (used to match the spec's test() name) is untouched. */
+function scenarioDisplayLabel(scenario: Scenario): string {
+  const portal = scenario.user === "BOTH" ? "UCD+BO" : scenario.user;
+  return `TSXX_${portal}_${scenario.title}`;
+}
 
 const PARAM_META: Record<ScenarioParam, { label: string; hint: string; type: string; placeholder: string }> = {
   publicHoliday: { label: "Public Holiday date", hint: "The tests try to book this date and expect it greyed out / unclickable.", type: "date", placeholder: "" },
@@ -523,7 +531,7 @@ export default function ShoppingCartPage() {
                           className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-purple-500 focus:ring-0 focus:ring-offset-0 cursor-pointer"
                         />
                         <span className={clsx("text-xs flex-1", isSel ? "text-slate-100" : "text-slate-400")}>
-                          {scenario.title}
+                          {scenarioDisplayLabel(scenario)}
                         </span>
                         {scenario.happyFlow && (
                           <span

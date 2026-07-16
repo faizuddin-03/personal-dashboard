@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
       {
         cwd: SCRIPT_DIR,
         detached: process.platform !== "win32",
+        shell: process.platform === "win32",
         env: {
           ...process.env,
           ...(body.baseUrl        && { SECARANG_BASE_URL:       body.baseUrl }),
