@@ -32,22 +32,23 @@ export class SoftwareInstallationListingPage extends BasePage {
   static readonly COL = {
     num: 0,
     referenceNo: 1,
-    dateRequested: 2,
-    companyName: 3,
-    companyRoc: 4,
-    device: 5,
-    deliveryDate: 6,
-    installationRequest: 7,
-    appointmentDate: 8,
-    timeSlot: 9,
-    paymentStatus: 10,
-    lhdnResponseStatus: 11,
-    deliveryStatus: 12,
-    installationStatus: 13,
-    dateCompleted: 14,
-    remarks: 15,
-    specialRemarks: 16,
-    action: 17,
+    serviceType: 2,
+    dateRequested: 3,
+    companyName: 4,
+    companyRoc: 5,
+    device: 6,
+    deliveryDate: 7,
+    installationRequest: 8,
+    appointmentDate: 9,
+    timeSlot: 10,
+    paymentStatus: 11,
+    lhdnResponseStatus: 12,
+    deliveryStatus: 13,
+    installationStatus: 14,
+    dateCompleted: 15,
+    remarks: 16,
+    specialRemarks: 17,
+    action: 18,
   } as const;
 
   // Filter panel
@@ -70,6 +71,8 @@ export class SoftwareInstallationListingPage extends BasePage {
   readonly appointmentCalendarBtn = this.page.locator("#sc-appt-cal");
 
   readonly resultsTable = this.page.locator("#sc-combined-tbl");
+
+  private headerIndexCache: Record<string, number> | null = null;
 
   constructor(page: Page) {
     super(page);
@@ -152,6 +155,51 @@ export class SoftwareInstallationListingPage extends BasePage {
     return await this.resultsTable.locator("tbody tr:has(td)").all();
   }
 
+  private normalizeHeader(text: string): string {
+    return text.toLowerCase().replace(/\s+/g, " ").trim();
+  }
+
+  private async getHeaderIndexMap(): Promise<Record<string, number>> {
+    if (this.headerIndexCache) return this.headerIndexCache;
+    const map: Record<string, number> = {};
+    const headers = await this.resultsTable.locator("thead tr th").allTextContents();
+    headers.forEach((h, i) => {
+      map[this.normalizeHeader(h)] = i;
+    });
+    this.headerIndexCache = map;
+    return map;
+  }
+
+  private async cellTextByHeader(row: Locator, headerLabel: string): Promise<string> {
+    const map = await this.getHeaderIndexMap();
+    const idx = map[this.normalizeHeader(headerLabel)];
+    if (idx === undefined) return "";
+    return this.cellText(row, idx);
+  }
+
+  /**
+   * Some deployments add/remove leading columns in #sc-combined-tbl,
+   * shifting the fixed indices. Anchor on the row's Reference No. cell and
+   * derive a per-row offset so Company/Payment/Installation Request still map
+   * to the intended logical columns.
+   */
+  private async getColOffset(row: Locator): Promise<number> {
+    const cells = row.locator("td");
+    const n = await cells.count();
+    for (let i = 0; i < n; i++) {
+      const text = ((await cells.nth(i).textContent()) ?? "").trim().replace(/\s+/g, " ");
+      if (/^SR[A-Za-z]*\d+$/.test(text)) {
+        return i - SoftwareInstallationListingPage.COL.referenceNo;
+      }
+    }
+    return 0;
+  }
+
+  private async cellTextByBaseCol(row: Locator, baseColIndex: number): Promise<string> {
+    const offset = await this.getColOffset(row);
+    return this.cellText(row, baseColIndex + offset);
+  }
+
   private async cellText(row: Locator, colIndex: number): Promise<string> {
     const cell = row.locator("td").nth(colIndex);
     if ((await cell.count()) === 0) return "";
@@ -178,23 +226,50 @@ export class SoftwareInstallationListingPage extends BasePage {
   }
 
   async getRowReferenceNo(row: Locator): Promise<string> {
-    return this.cellText(row, SoftwareInstallationListingPage.COL.referenceNo);
+    const byHeader = await this.cellTextByHeader(row, "Reference No.");
+    if (/^SR[A-Za-z]*\d+$/.test(byHeader)) return byHeader;
+
+    const byOffset = await this.cellTextByBaseCol(row, SoftwareInstallationListingPage.COL.referenceNo);
+    if (/^SR[A-Za-z]*\d+$/.test(byOffset)) return byOffset;
+
+    // Last resort: scan the row for a reference-like token.
+    const cells = row.locator("td");
+    const n = await cells.count();
+    for (let i = 0; i < n; i++) {
+      const text = ((await cells.nth(i).textContent()) ?? "").trim().replace(/\s+/g, " ");
+      if (/^SR[A-Za-z]*\d+$/.test(text)) return text;
+    }
+    return "";
   }
 
   async getRowCompanyName(row: Locator): Promise<string> {
-    return this.cellText(row, SoftwareInstallationListingPage.COL.companyName);
+    const byHeader = await this.cellTextByHeader(row, "Company Name");
+    if (byHeader) return byHeader;
+    return this.cellTextByBaseCol(row, SoftwareInstallationListingPage.COL.companyName);
   }
 
   async getRowInstallationStatus(row: Locator): Promise<string> {
-    return this.cellText(row, SoftwareInstallationListingPage.COL.installationStatus);
+    const byHeader = await this.cellTextByHeader(row, "Installation Status");
+    if (byHeader) return byHeader;
+    return this.cellTextByBaseCol(row, SoftwareInstallationListingPage.COL.installationStatus);
   }
 
   async getRowPaymentStatus(row: Locator): Promise<string> {
-    return this.cellText(row, SoftwareInstallationListingPage.COL.paymentStatus);
+    const byHeader = await this.cellTextByHeader(row, "Payment Status");
+    if (byHeader) return byHeader;
+    return this.cellTextByBaseCol(row, SoftwareInstallationListingPage.COL.paymentStatus);
+  }
+
+  async getRowInstallationRequest(row: Locator): Promise<string> {
+    const byHeader = await this.cellTextByHeader(row, "Installation Request");
+    if (byHeader) return byHeader;
+    return this.cellTextByBaseCol(row, SoftwareInstallationListingPage.COL.installationRequest);
   }
 
   async getRowRemarks(row: Locator): Promise<string> {
-    return this.cellText(row, SoftwareInstallationListingPage.COL.remarks);
+    const byHeader = await this.cellTextByHeader(row, "Remarks");
+    if (byHeader) return byHeader;
+    return this.cellTextByBaseCol(row, SoftwareInstallationListingPage.COL.remarks);
   }
 
   /** The View link's detail URL for a row (detail.do?txnId=X&apptId=Y). */

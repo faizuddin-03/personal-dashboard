@@ -85,9 +85,14 @@ export class ServiceRequestDetailsPage extends BasePage {
    * reschedule spec to confirm the SRD 2.3.2.1 #5 note-iii behaviour.
    */
   async hasFailedAppointment(): Promise<boolean> {
+    return this.hasAppointmentWithStatus("fail");
+  }
+
+  /** Whether any appointment row's status contains `statusFragment` (case-insensitive). */
+  async hasAppointmentWithStatus(statusFragment: string): Promise<boolean> {
     for (const row of await this.getAppointmentRows()) {
       const status = (await this.getAppointmentStatus(row)).toLowerCase();
-      if (status.includes("fail")) return true;
+      if (status.includes(statusFragment.toLowerCase())) return true;
     }
     return false;
   }

@@ -238,6 +238,217 @@ test.describe("Reschedule & Handling", () => {
       await reschedulePage.incrementSlot(MORNING, 1);
       await reschedulePage.saveSlotChanges();
     });
+
+    // ── Status-based reschedule blocking (QA doc: "Reschedule Handling") ──
+    // Reschedule is only ever offered for Tx Status = Pending
+    // (ServiceRequestListingPage.hasRescheduleAction / SRD 2.3.2.2 #3) — these
+    // confirm that rule at each of the other statuses the doc calls out.
+
+    test("Reschedule Pending Installation", async ({ listingPage }) => {
+      await listingPage.navigate();
+      await listingPage.searchWithFilters({ status: "PENDING" });
+      const rows = await listingPage.getResultRows();
+      if (rows.length === 0) {
+        test.skip(true, "No Pending Service Request found.");
+        return;
+      }
+      let found = false;
+      for (const row of rows) {
+        if (await listingPage.hasRescheduleAction(row)) {
+          found = true;
+          break;
+        }
+      }
+      expect(found, "a Pending Service Request should offer Reschedule").toBe(true);
+    });
+
+    test("Reschedule Complete Installation", async ({ listingPage }) => {
+      await listingPage.navigate();
+      await listingPage.searchWithFilters({ status: "COMPLETED" });
+      const rows = await listingPage.getResultRows();
+      if (rows.length === 0) {
+        test.skip(true, "No Completed Service Request found.");
+        return;
+      }
+      for (const row of rows) {
+        expect(await listingPage.hasRescheduleAction(row)).toBe(false);
+      }
+    });
+
+    test("Reschedule Expired Installation", async ({ listingPage }) => {
+      // "Expired" IS a real filter value on the Status dropdown (verified
+      // live) — a free biometric install left unbooked for 2 months.
+      await listingPage.navigate();
+      await listingPage.searchWithFilters({ status: "EXPIRED" });
+      const rows = await listingPage.getResultRows();
+      const target = rows[0] ?? null;
+      if (!target) {
+        test.skip(true, "No Expired Service Request found — this status is time-dependent (2 months unbooked) and can't be arranged on demand.");
+        return;
+      }
+      expect(await listingPage.hasRescheduleAction(target)).toBe(false);
+    });
+
+    // ── Calendar-edge reschedule checks ──
+
+    test("Reschedule on Friday", async ({ listingPage, reschedulePage }) => {
+      // Precondition: testing must be done on a Friday. Weekends don't count
+      // within the +2-day blackout, so the buffer must extend through the
+      // weekend — both today (Friday) AND the following Monday stay blocked.
+      if (new Date().getDay() !== 5) {
+        test.skip(true, "This test only applies when run on a Friday (per the QA precondition).");
+        return;
+      }
+      await listingPage.navigate();
+      await listingPage.searchBtn.click();
+      await listingPage.waitForNav();
+      const rows = await listingPage.getResultRows();
+      let targetRow = null;
+      for (const row of rows) {
+        if (await listingPage.hasRescheduleAction(row)) {
+          targetRow = row;
+          break;
+        }
+      }
+      if (!targetRow) {
+        test.skip(true, "No appointment with Reschedule action available");
+        return;
+      }
+      await listingPage.clickReschedule(targetRow);
+
+      await test.step("Expected: Friday and the following Monday are both blocked", async () => {
+        expect(await reschedulePage.isDayBlocked(reschedulePage.today())).toBe(true);
+        expect(await reschedulePage.isDayBlocked(reschedulePage.daysFromToday(3))).toBe(true);
+      });
+    });
+
+    test("Reschedule before Public Holiday", async ({ listingPage, reschedulePage }) => {
+      // Precondition: a public holiday must be patched in for testing, and
+      // today must be the day immediately before it. Public holidays don't
+      // count within the +2-day blackout, so the day AFTER the holiday
+      // should also stay blocked.
+      const ph = ENV.publicHoliday;
+      if (!ph) {
+        test.skip(true, "No Public Holiday date provided — key one into the runner's Test data panel.");
+        return;
+      }
+      if (ph !== reschedulePage.daysFromToday(1)) {
+        test.skip(true, `This test only applies when today is the day before the public holiday (expected ${reschedulePage.daysFromToday(1)}, got ${ph}).`);
+        return;
+      }
+      await listingPage.navigate();
+      await listingPage.searchBtn.click();
+      await listingPage.waitForNav();
+      const rows = await listingPage.getResultRows();
+      let targetRow = null;
+      for (const row of rows) {
+        if (await listingPage.hasRescheduleAction(row)) {
+          targetRow = row;
+          break;
+        }
+      }
+      if (!targetRow) {
+        test.skip(true, "No appointment with Reschedule action available");
+        return;
+      }
+      await listingPage.clickReschedule(targetRow);
+
+      const dayAfterHoliday = reschedulePage.daysFromToday(2);
+      await test.step(`Expected: the day after the public holiday (${dayAfterHoliday}) is still blocked`, async () => {
+        expect(await reschedulePage.isDayBlocked(dayAfterHoliday)).toBe(true);
+      });
+    });
+
+    test("Reschedule from morning to afternoon after 12:00PM", async ({ listingPage, requestDetailsPage, reschedulePage }) => {
+      // Precondition: time of testing must be after 12:00PM, and the
+      // appointment being checked is today's morning appointment. Once the
+      // appointment time has passed, the Reschedule action should disappear.
+      if (new Date().getHours() < 12) {
+        test.skip(true, "This test only applies when run after 12:00PM (per the QA precondition).");
+        return;
+      }
+      await listingPage.navigate();
+      await listingPage.searchBtn.click();
+      await listingPage.waitForNav();
+      const rows = await listingPage.getResultRows();
+
+      const todayIso = reschedulePage.today();
+      const [y, m, d] = todayIso.split("-");
+      const todayDisplay = `${d}-${m}-${y}`; // matches the app's DD-MM-YYYY date displays elsewhere
+
+      let targetRef: string | null = null;
+      for (const row of rows) {
+        if (!(await listingPage.hasRescheduleAction(row))) continue;
+        const txnId = await listingPage.getRescheduleTxnId(row);
+        if (!txnId) continue;
+        const ref = await listingPage.getRowReferenceNo(row);
+        await requestDetailsPage.navigate(txnId);
+        for (const apptRow of await requestDetailsPage.getAppointmentRows()) {
+          const slot = (await requestDetailsPage.getAppointmentTimeSlot(apptRow)).toLowerCase();
+          const isMorning = /10:00|10am|morning/.test(slot);
+          const dateText = await requestDetailsPage.getAppointmentDate(apptRow);
+          if (isMorning && (dateText.includes(todayDisplay) || dateText.includes(todayIso))) {
+            targetRef = ref;
+            break;
+          }
+        }
+        if (targetRef) break;
+      }
+      if (!targetRef) {
+        test.skip(true, "No Service Request with today's morning appointment found.");
+        return;
+      }
+
+      await listingPage.navigate();
+      await listingPage.searchByReferenceNo(targetRef);
+      const refreshedRows = await listingPage.getResultRows();
+      expect(refreshedRows.length, `expected ${targetRef} to still appear in the listing`).toBeGreaterThan(0);
+      await test.step("Expected: the Reschedule action no longer appears — the appointment time has passed", async () => {
+        expect(await listingPage.hasRescheduleAction(refreshedRows[0])).toBe(false);
+      });
+    });
+
+    // NOTE: "Reschedule from afternoon to morning on same day" is marked
+    // TBC ("if the appointment is on the current day, should UCD be able to
+    // see the reschedule button") in the QA doc itself — the expected
+    // behaviour isn't decided yet, so no automated assertion is made here
+    // pending that decision.
+
+    test("Reschedule to the exact same date shows a popup", async ({ listingPage, reschedulePage }) => {
+      // Precondition (doc): reschedule to the exact same date the
+      // appointment is already booked on. Exact popup wording is itself
+      // marked "tbc" in the QA doc, so this only asserts that SOME dialog
+      // appears, not specific text.
+      await listingPage.navigate();
+      await listingPage.searchBtn.click();
+      await listingPage.waitForNav();
+      const rows = await listingPage.getResultRows();
+      let targetRow = null;
+      for (const row of rows) {
+        if (await listingPage.hasRescheduleAction(row)) {
+          targetRow = row;
+          break;
+        }
+      }
+      if (!targetRow) {
+        test.skip(true, "No appointment with Reschedule action available");
+        return;
+      }
+      await listingPage.clickReschedule(targetRow);
+
+      const bookedDate = await reschedulePage.findBookedDate();
+      if (!bookedDate) {
+        test.skip(true, "Could not determine the currently booked date.");
+        return;
+      }
+
+      // Re-select the same date without removing/changing anything, then
+      // attempt to confirm — the app should surface a "same date" message.
+      await reschedulePage.openSlotModal(bookedDate);
+      await reschedulePage.saveSlotChanges();
+      await reschedulePage.confirmBookingBtn.click();
+      await expect(reschedulePage.page.locator(".ui-dialog")).toBeVisible({ timeout: 8000 });
+    });
   });
 
   // ────────────────────────────────────────────────────────────
@@ -411,6 +622,73 @@ test.describe("Reschedule & Handling", () => {
       }
 
       await boCalendarPage.rescheduleFirstListed({ slot: AFTERNOON });
+    });
+
+    // ── Status-based reschedule blocking, BO side ──
+    // Finds a company with the target installationStatus via the BO SI
+    // Listing, then checks the Appointment Calendar (current month only) for
+    // whether that company's entry still offers a Reschedule link.
+    async function assertNoRescheduleForStatus(
+      boListingPage: import("../pages/bo/SoftwareInstallationListingPage").SoftwareInstallationListingPage,
+      boCalendarPage: import("../pages/bo/AppointmentCalendarPage").AppointmentCalendarPage,
+      status: import("../pages/bo/SoftwareInstallationListingPage").InstallationStatus,
+    ): Promise<"ok" | "no-record" | "not-on-calendar"> {
+      await boListingPage.navigate();
+      await boListingPage.searchWithFilters({ installationStatus: status });
+      const rows = await boListingPage.getResultRows();
+      if (rows.length === 0) return "no-record";
+      const company = await boListingPage.getRowCompanyName(rows[0]);
+
+      await boCalendarPage.navigate();
+      const hasReschedule = await boCalendarPage.hasRescheduleForCompany(company);
+      if (hasReschedule === null) return "not-on-calendar";
+      expect(hasReschedule, `${company} (${status}) should not offer Reschedule`).toBe(false);
+      return "ok";
+    }
+
+    test("BO reschedule Cancelled Installation", async ({ boListingPage, boCalendarPage }) => {
+      const result = await assertNoRescheduleForStatus(boListingPage, boCalendarPage, "CANCELLED");
+      if (result === "no-record") { test.skip(true, "No Cancelled installation found."); return; }
+      if (result === "not-on-calendar") { test.skip(true, "The Cancelled installation's company isn't listed on the current month's calendar."); return; }
+    });
+
+    test("BO reschedule Failed Installation", async ({ boListingPage, boCalendarPage }) => {
+      const result = await assertNoRescheduleForStatus(boListingPage, boCalendarPage, "FAILED");
+      if (result === "no-record") { test.skip(true, "No Failed installation found."); return; }
+      if (result === "not-on-calendar") { test.skip(true, "The Failed installation's company isn't listed on the current month's calendar."); return; }
+    });
+
+    test("BO reschedule Complete Installation", async ({ boListingPage, boCalendarPage }) => {
+      const result = await assertNoRescheduleForStatus(boListingPage, boCalendarPage, "COMPLETED");
+      if (result === "no-record") { test.skip(true, "No Completed installation found."); return; }
+      if (result === "not-on-calendar") { test.skip(true, "The Completed installation's company isn't listed on the current month's calendar."); return; }
+    });
+
+    test("BO reschedule Expired Installation", async ({ boListingPage, boCalendarPage }) => {
+      // No "Expired" filter exists in the Installation Status dropdown (it's
+      // time-derived), so search with no filter and text-match instead.
+      await boListingPage.navigate();
+      await boListingPage.searchWithFilters({});
+      const rows = await boListingPage.getResultRows();
+      let target: import("@playwright/test").Locator | null = null;
+      for (const row of rows) {
+        if ((await boListingPage.getRowInstallationStatus(row)).toLowerCase().includes("expired")) {
+          target = row;
+          break;
+        }
+      }
+      if (!target) {
+        test.skip(true, "No Expired installation found — this status is time-dependent and can't be arranged on demand.");
+        return;
+      }
+      const company = await boListingPage.getRowCompanyName(target);
+      await boCalendarPage.navigate();
+      const hasReschedule = await boCalendarPage.hasRescheduleForCompany(company);
+      if (hasReschedule === null) {
+        test.skip(true, "The Expired installation's company isn't listed on the current month's calendar.");
+        return;
+      }
+      expect(hasReschedule, `${company} (Expired) should not offer Reschedule`).toBe(false);
     });
   });
 });

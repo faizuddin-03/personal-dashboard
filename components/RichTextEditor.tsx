@@ -13,10 +13,13 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
-import { Table } from "@tiptap/extension-table";
+import { Table, TableView } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
+import { moveTableRow, moveTableColumn } from "@tiptap/pm/tables";
+import type { EditorView } from "@tiptap/pm/view";
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useState, useCallback } from "react";
 import {
@@ -145,6 +148,221 @@ const Indent = Extension.create({
   },
 });
 
+// Inside a table cell, Table's own keymap normally claims Tab/Shift-Tab to
+// hop between cells before ListItem/TaskItem get a chance to sink/lift.
+// Higher priority makes this extension's shortcuts run first, so a Tab
+// pressed inside a list item nests it instead of moving the cursor.
+const TableListTab = Extension.create({
+  name: "tableListTab",
+  priority: 1000,
+  addKeyboardShortcuts() {
+    return {
+      Tab: () => {
+        const { editor } = this;
+        const inTable = editor.isActive("tableCell") || editor.isActive("tableHeader");
+        if (!inTable) return false;
+        if (editor.isActive("taskItem")) return editor.commands.sinkListItem("taskItem");
+        if (editor.isActive("listItem")) return editor.commands.sinkListItem("listItem");
+        return false;
+      },
+      "Shift-Tab": () => {
+        const { editor } = this;
+        const inTable = editor.isActive("tableCell") || editor.isActive("tableHeader");
+        if (!inTable) return false;
+        if (editor.isActive("taskItem")) return editor.commands.liftListItem("taskItem");
+        if (editor.isActive("listItem")) return editor.commands.liftListItem("listItem");
+        return false;
+      },
+    };
+  },
+});
+
+// ── Draggable table rows/columns ────────────────────────────
+// Extends Tiptap's default resizable TableView with grip handles rendered
+// alongside the table (never inside contentDOM, so ProseMirror never mistakes
+// them for table content) that let the user drag a row or column to a new
+// position. Reordering itself is delegated to prosemirror-tables' own
+// moveTableRow/moveTableColumn, which already understands merged cells.
+type DragKind = "row" | "col";
+
+class DraggableTableView extends TableView {
+  private view: EditorView;
+  private rowGrips: HTMLDivElement;
+  private colGrips: HTMLDivElement;
+  private cleanupHover: () => void;
+  private rafId: number | null = null;
+
+  constructor(node: ProseMirrorNode, cellMinWidth: number, view: EditorView) {
+    super(node, cellMinWidth, view);
+    this.view = view;
+
+    this.dom.style.position = "relative";
+    this.dom.style.paddingTop = "14px";
+    this.dom.style.paddingLeft = "14px";
+
+    this.rowGrips = document.createElement("div");
+    this.rowGrips.style.cssText = "position:absolute;left:0;top:14px;width:12px;pointer-events:none;";
+    this.colGrips = document.createElement("div");
+    this.colGrips.style.cssText = "position:absolute;left:14px;top:0;height:12px;pointer-events:none;";
+    this.dom.appendChild(this.rowGrips);
+    this.dom.appendChild(this.colGrips);
+
+    const showGrips = () => { this.rowGrips.style.opacity = "1"; this.colGrips.style.opacity = "1"; };
+    const hideGrips = () => { this.rowGrips.style.opacity = "0"; this.colGrips.style.opacity = "0"; };
+    this.rowGrips.style.opacity = "0";
+    this.colGrips.style.opacity = "0";
+    this.rowGrips.style.transition = this.colGrips.style.transition = "opacity .15s";
+    this.dom.addEventListener("mouseenter", showGrips);
+    this.dom.addEventListener("mouseleave", hideGrips);
+    this.cleanupHover = () => {
+      this.dom.removeEventListener("mouseenter", showGrips);
+      this.dom.removeEventListener("mouseleave", hideGrips);
+    };
+
+    this.scheduleRefresh();
+  }
+
+  update(node: ProseMirrorNode) {
+    const ok = super.update(node);
+    if (ok) this.scheduleRefresh();
+    return ok;
+  }
+
+  private scheduleRefresh() {
+    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+    this.rafId = requestAnimationFrame(() => { this.rafId = null; this.refreshGrips(); });
+  }
+
+  private tableRows(): HTMLTableRowElement[] {
+    return Array.from(this.table.querySelectorAll(":scope > tbody > tr"));
+  }
+
+  private refreshGrips() {
+    const wrapperRect = this.dom.getBoundingClientRect();
+    const rows = this.tableRows();
+
+    this.rowGrips.innerHTML = "";
+    rows.forEach((rowEl, i) => {
+      const r = rowEl.getBoundingClientRect();
+      const grip = document.createElement("div");
+      grip.title = "Drag to reorder row";
+      grip.style.cssText = [
+        "position:absolute", "left:0", "width:8px", "border-radius:3px",
+        "background:#64748b", "cursor:grab", "pointer-events:auto",
+      ].join(";");
+      grip.style.top = `${r.top - wrapperRect.top}px`;
+      grip.style.height = `${Math.max(r.height - 2, 4)}px`;
+      grip.addEventListener("mousedown", e => this.startDrag(e as MouseEvent, "row", i));
+      this.rowGrips.appendChild(grip);
+    });
+
+    this.colGrips.innerHTML = "";
+    const firstRow = rows[0];
+    if (firstRow) {
+      const cells = Array.from(firstRow.children) as HTMLElement[];
+      cells.forEach((cellEl, i) => {
+        const r = cellEl.getBoundingClientRect();
+        const grip = document.createElement("div");
+        grip.title = "Drag to reorder column";
+        grip.style.cssText = [
+          "position:absolute", "top:0", "height:8px", "border-radius:3px",
+          "background:#64748b", "cursor:grab", "pointer-events:auto",
+        ].join(";");
+        grip.style.left = `${r.left - wrapperRect.left}px`;
+        grip.style.width = `${Math.max(r.width - 2, 4)}px`;
+        grip.addEventListener("mousedown", e => this.startDrag(e as MouseEvent, "col", i));
+        this.colGrips.appendChild(grip);
+      });
+    }
+  }
+
+  private startDrag(e: MouseEvent, kind: DragKind, fromIndex: number) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const rows = this.tableRows();
+    const wrapperRect = this.dom.getBoundingClientRect();
+    const boundaries = kind === "row"
+      ? rows.map(r => r.getBoundingClientRect())
+      : Array.from(rows[0]?.children ?? []).map(c => (c as HTMLElement).getBoundingClientRect());
+    if (boundaries.length === 0) return;
+
+    const indicator = document.createElement("div");
+    indicator.style.position = "absolute";
+    indicator.style.background = "#3b82f6";
+    indicator.style.zIndex = "50";
+    indicator.style.pointerEvents = "none";
+    if (kind === "row") {
+      indicator.style.left = "0"; indicator.style.right = "0"; indicator.style.height = "3px";
+    } else {
+      indicator.style.top = "0"; indicator.style.bottom = "0"; indicator.style.width = "3px";
+    }
+    this.dom.appendChild(indicator);
+
+    let dropIndex = fromIndex;
+
+    const positionIndicator = () => {
+      // dropIndex is an insertion point in the ORIGINAL (pre-drag) array —
+      // "before boundaries[dropIndex]", or "after the last one" if it equals
+      // boundaries.length. moveTableRow/Column instead want the item's final
+      // resting index in the array with the dragged item already removed,
+      // which is one less whenever the drop point is past the source row.
+      const edge = dropIndex < boundaries.length
+        ? (kind === "row" ? boundaries[dropIndex].top - wrapperRect.top : boundaries[dropIndex].left - wrapperRect.left)
+        : (kind === "row" ? boundaries[boundaries.length - 1].bottom - wrapperRect.top : boundaries[boundaries.length - 1].right - wrapperRect.left);
+      if (kind === "row") indicator.style.top = `${edge}px`;
+      else indicator.style.left = `${edge}px`;
+    };
+    positionIndicator();
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const pos = kind === "row" ? moveEvent.clientY : moveEvent.clientX;
+      let next = boundaries.length;
+      for (let i = 0; i < boundaries.length; i++) {
+        const b = boundaries[i];
+        const mid = kind === "row" ? (b.top + b.bottom) / 2 : (b.left + b.right) / 2;
+        if (pos < mid) { next = i; break; }
+      }
+      if (next !== dropIndex) { dropIndex = next; positionIndicator(); }
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+      indicator.remove();
+      const toIndex = dropIndex > fromIndex ? dropIndex - 1 : dropIndex;
+      if (toIndex !== fromIndex) this.commitMove(kind, fromIndex, toIndex);
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  }
+
+  private commitMove(kind: DragKind, fromIndex: number, toIndex: number) {
+    const anchorCell = this.table.querySelector("tbody > tr > *");
+    if (!anchorCell) return;
+    let pos: number;
+    try {
+      pos = this.view.posAtDOM(anchorCell, 0);
+    } catch {
+      return;
+    }
+    const $pos = this.view.state.doc.resolve(pos);
+    let tablePos: number | null = null;
+    for (let d = $pos.depth; d > 0; d--) {
+      if ($pos.node(d).type.name === "table") { tablePos = $pos.before(d); break; }
+    }
+    if (tablePos === null) return;
+    const move = kind === "row" ? moveTableRow : moveTableColumn;
+    move({ from: fromIndex, to: toIndex, pos: tablePos + 1 })(this.view.state, this.view.dispatch);
+  }
+
+  destroy() {
+    this.cleanupHover();
+    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+  }
+}
+
 const FONT_SIZES = ["10px", "12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px", "36px", "48px", "64px"];
 
 const FONTS = [
@@ -209,6 +427,7 @@ export default function RichTextEditor({
       FontFamily,
       FontSize,
       Indent,
+      TableListTab,
       Highlight.configure({ multicolor: true }),
       Underline,
       Subscript,
@@ -224,7 +443,7 @@ export default function RichTextEditor({
         inline: true,
         HTMLAttributes: { class: "max-w-full rounded-lg" },
       }),
-      Table.configure({ resizable: true }),
+      Table.configure({ resizable: true, View: DraggableTableView as any }),
       TableRow,
       TableHeader,
       TableCell,

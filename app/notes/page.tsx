@@ -175,14 +175,22 @@ function PiPNoteEditor({ note, onChange }: {
 }
 
 // ── Note editor panel ───────────────────────────────────────
-function NoteEditor({ note, onChange, onDelete, onBack }: {
+function NoteEditor({ note, onChange, onDelete, onBack, allTags = [] }: {
   note: Note;
   onChange: (updated: Note) => void;
   onDelete: () => void;
   onBack?: () => void;
+  allTags?: string[];
 }) {
   const [showPalette, setShowPalette] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(0);
+  const tagInputRef = useRef<HTMLInputElement>(null);
+
+  const tagSuggestions = allTags.filter(t =>
+    t.includes(tagInput.trim().toLowerCase()) && !(note.tags ?? []).includes(t)
+  );
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const noteRef = useRef(note);
   noteRef.current = note;
@@ -272,6 +280,8 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
       onChange({ ...note, tags: [...tags, tag], updatedAt: new Date().toISOString() });
     }
     setTagInput("");
+    setShowTagSuggestions(false);
+    setActiveSuggestion(0);
   }
 
   function removeTag(tag: string) {
@@ -279,9 +289,29 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
   }
 
   function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "ArrowDown" && showTagSuggestions && tagSuggestions.length > 0) {
+      e.preventDefault();
+      setActiveSuggestion(i => (i + 1) % tagSuggestions.length);
+      return;
+    }
+    if (e.key === "ArrowUp" && showTagSuggestions && tagSuggestions.length > 0) {
+      e.preventDefault();
+      setActiveSuggestion(i => (i - 1 + tagSuggestions.length) % tagSuggestions.length);
+      return;
+    }
+    if (e.key === "Escape") {
+      setShowTagSuggestions(false);
+      return;
+    }
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
-      addTag(tagInput);
+      // If a suggestion is highlighted, pick it — otherwise fall back to
+      // whatever the user actually typed, so a brand-new tag still works.
+      if (showTagSuggestions && tagSuggestions.length > 0) {
+        addTag(tagSuggestions[activeSuggestion]);
+      } else {
+        addTag(tagInput);
+      }
     }
   }
 
@@ -388,7 +418,7 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
       </div>
 
       {/* Tags */}
-      <div className="px-4 sm:px-6 pb-3 shrink-0">
+      <div className="px-4 sm:px-6 pb-3 shrink-0 relative">
         <div className="flex flex-wrap items-center gap-1.5">
           {(note.tags ?? []).map(tag => (
             <span key={tag} className="flex items-center gap-1 bg-slate-700 text-slate-300 text-xs rounded-full px-2 py-0.5">
@@ -401,14 +431,46 @@ function NoteEditor({ note, onChange, onDelete, onBack }: {
             </span>
           ))}
           <input
+            ref={tagInputRef}
             value={tagInput}
-            onChange={e => setTagInput(e.target.value)}
+            onChange={e => {
+              setTagInput(e.target.value);
+              setShowTagSuggestions(true);
+              setActiveSuggestion(0);
+            }}
             onKeyDown={handleTagKeyDown}
-            onBlur={() => addTag(tagInput)}
+            onFocus={() => setShowTagSuggestions(true)}
+            onBlur={() => {
+              // Delay so a click on a suggestion registers before the list unmounts.
+              setTimeout(() => setShowTagSuggestions(false), 150);
+              addTag(tagInput);
+            }}
             placeholder="Add tag…"
             className="bg-transparent text-xs text-slate-400 placeholder-slate-700 focus:outline-none min-w-[80px] flex-1"
           />
         </div>
+        {showTagSuggestions && tagSuggestions.length > 0 && (
+          <ul className="absolute z-30 mt-1 w-48 max-h-48 overflow-y-auto rounded-lg border border-slate-700 bg-slate-800 shadow-lg py-1">
+            {tagSuggestions.map((tag, i) => (
+              <li key={tag}>
+                <button
+                  type="button"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => {
+                    addTag(tag);
+                    tagInputRef.current?.focus();
+                  }}
+                  className={clsx(
+                    "w-full text-left px-3 py-1.5 text-xs",
+                    i === activeSuggestion ? "bg-slate-700 text-slate-100" : "text-slate-300 hover:bg-slate-700/60"
+                  )}
+                >
+                  {tag}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Rich text content */}
@@ -776,6 +838,7 @@ export default function NotesPage() {
             onChange={handleChange}
             onDelete={() => handleDelete(selectedNote.id)}
             onBack={() => setShowEditor(false)}
+            allTags={allTags}
           />
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center px-4">

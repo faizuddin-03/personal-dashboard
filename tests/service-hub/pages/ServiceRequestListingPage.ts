@@ -3,7 +3,9 @@ import { BasePage } from "./BasePage";
 import { PATHS } from "../utils/config";
 
 export type ServiceType = "ALL" | "BIOMETRIC_PURCHASE" | "SOFTWARE_INSTALLATION" | "CHANGE_MAIN_USER";
-export type TxStatus = "ALL" | "NEW" | "PENDING" | "APPROVED" | "COMPLETED" | "FAILED" | "CANCELLED";
+// Verified live against the real Status dropdown: All / "-" (NEW) / Pending /
+// Completed / Failed / Cancelled / Expired. No "Approved" value exists.
+export type TxStatus = "ALL" | "NEW" | "PENDING" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED";
 
 /**
  * eAuto UCD Portal > Service Hub > Service Request Listing (SRD 2.3.2.2).
@@ -129,9 +131,54 @@ export class ServiceRequestListingPage extends BasePage {
     await this.waitForNav();
   }
 
-  /** Click "Reschedule" action link on a row (a.sc-resubmit) */
+  /**
+   * The row's "Reschedule" action link — NOT just any `a.sc-resubmit`.
+   * Verified live: the SAME class is reused for the failed-payment "Resubmit"
+   * retry link (→ slot.do/payment.do), which appears on plenty of rows too —
+   * only the link TEXT tells them apart. Matching on class alone silently
+   * picks up Resubmit rows as if they were reschedulable.
+   */
+  private rescheduleLink(row: Locator): Locator {
+    return row.locator("a.sc-resubmit", { hasText: "Reschedule" });
+  }
+
+  /**
+   * Click "Reschedule" on a row.
+   *
+   * The reschedule flow changed (verified live, SIT2): clicking the link no
+   * longer navigates straight to the calendar. It now opens an in-page modal
+   * (.sc-modal, over #sc-resched-ovl) — "Please select the appointment(s)
+   * you wish to reschedule" — listing the SR's appointment(s) with a
+   * checkbox each (.sc-resched-cb) plus a "select all" header checkbox
+   * (#sc-resched-all). Only after checking (at least) one and clicking
+   * Confirm (.sc-btn-confirm) does it navigate to
+   * installation/reschedule.do?id=<txnId>&apptIds=<uuid[,uuid...]> — and
+   * critically, the chosen appointment(s) are ALREADY REMOVED by then: the
+   * calendar opens straight to picking a new date, no manual
+   * open-modal/remove-slot/save dance needed first.
+   *
+   * Selects ALL listed appointments (via the header checkbox) rather than
+   * one at a time — every current test reschedules a single-appointment SR
+   * anyway, and this matches "select all" being the obvious default action.
+   */
   async clickReschedule(row: Locator) {
-    await row.locator("a.sc-resubmit").click();
+    await this.rescheduleLink(row).click();
+    const modal = this.page.locator(".sc-modal");
+    await modal.waitFor({ state: "visible", timeout: 10000 });
+    const selectAll = modal.locator("#sc-resched-all");
+    if (await selectAll.count()) {
+      try {
+        await selectAll.check({ force: true });
+      } catch {
+        // Fallback for environments where check() can fail to toggle state.
+        await selectAll.evaluate((el) => {
+          const input = el as HTMLInputElement;
+          input.checked = true;
+          input.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+      }
+    }
+    await modal.locator(".sc-btn-confirm").click();
     await this.waitForNav();
   }
 
@@ -141,19 +188,20 @@ export class ServiceRequestListingPage extends BasePage {
    * link is present.
    */
   async hasRescheduleAction(row: Locator): Promise<boolean> {
-    return (await row.locator("a.sc-resubmit").count()) > 0;
+    return (await this.rescheduleLink(row).count()) > 0;
   }
 
   /**
    * The row's Reschedule link txnId, as a full "key=value" pair (e.g.
-   * "txnId=195" or "transactionId=<uuid>" — see BasePage.getTxnIdFromUrl),
-   * or null if the row has no Reschedule action. Lets callers open a
-   * candidate's reschedule page directly (via ReschedulePage.navigate(txnId))
-   * without re-searching the listing.
+   * "id=4d7196b0-..." — the current scheme — or the older "txnId=195" /
+   * "transactionId=<uuid>"; see BasePage.getTxnIdFromUrl), or null if the
+   * row has no Reschedule action. Lets callers open a candidate's reschedule
+   * page directly (via ReschedulePage.navigate(txnId)) without re-searching
+   * the listing.
    */
   async getRescheduleTxnId(row: Locator): Promise<string | null> {
-    const href = await row.locator("a.sc-resubmit").getAttribute("href").catch(() => null);
-    const match = href?.match(/(txnId|transactionId)=([^&]+)/);
+    const href = await this.rescheduleLink(row).getAttribute("href").catch(() => null);
+    const match = href?.match(/(id|txnId|transactionId)=([^&]+)/);
     return match ? `${match[1]}=${match[2]}` : null;
   }
 

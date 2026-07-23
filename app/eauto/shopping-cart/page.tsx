@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   Play, Loader2, CheckCircle2, XCircle, Monitor, MonitorOff,
   ChevronDown, ShoppingCart, Video, Clock, SkipForward,
-  AlertTriangle, ChevronRight, Check, X, Dot, FlaskConical,
+  AlertTriangle, ChevronRight, Check, X, Dot, FlaskConical, RotateCcw,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -13,6 +13,7 @@ const ENV_PRESETS = [
   { label: "UAT2", value: "https://staging.eauto.my/uat2" },
   { label: "UAT3", value: "https://staging.eauto.my/uat3" },
   { label: "SIT1", value: "https://staging.eauto.my/sit1" },
+  { label: "SIT2", value: "https://staging.eauto.my/sit2" },
   { label: "SIT3", value: "https://staging.eauto.my/sit3" },
 ] as const;
 
@@ -50,20 +51,32 @@ const TEST_GROUPS: ScenarioGroup[] = [
       { id: "rs-7", title: "Reschedule failed appointment — should be blocked for UCD", user: "BOTH" },
       { id: "rs-8", title: "BO reschedule normal flow", user: "BO", happyFlow: true },
       { id: "rs-9", title: "BO reschedule to afternoon slot", user: "BO", happyFlow: true },
+      { id: "rs-10", title: "Reschedule Pending Installation", user: "UCD", happyFlow: true },
+      { id: "rs-11", title: "Reschedule Complete Installation", user: "UCD" },
+      { id: "rs-12", title: "Reschedule Expired Installation", user: "UCD" },
+      { id: "rs-13", title: "Reschedule on Friday", user: "UCD" },
+      { id: "rs-14", title: "Reschedule before Public Holiday", user: "UCD", params: ["publicHoliday"] },
+      { id: "rs-15", title: "Reschedule from morning to afternoon after 12:00PM", user: "UCD" },
+      { id: "rs-16", title: "Reschedule to the exact same date shows a popup", user: "UCD" },
+      { id: "rs-17", title: "BO reschedule Cancelled Installation", user: "BO" },
+      { id: "rs-18", title: "BO reschedule Failed Installation", user: "BO" },
+      { id: "rs-19", title: "BO reschedule Complete Installation", user: "BO" },
+      { id: "rs-20", title: "BO reschedule Expired Installation", user: "BO" },
     ],
   },
   {
     label: "Add Appointment (BO)",
     scenarios: [
-      { id: "aa-1", title: "Add Appointment - Offline Purchase (New Record)", user: "BO", happyFlow: true },
-      { id: "aa-2", title: "Add Appointment - Both slots on one date", user: "BO", happyFlow: true },
+      { id: "aa-1", title: "Add Appointment - Offline Purchase (New Record)", user: "BOTH", happyFlow: true },
+      { id: "aa-6", title: "Morning Slot Full Booking - Add Appointment", user: "BOTH", happyFlow: true },
+      { id: "aa-5", title: "Afternoon Slot Booking", user: "BOTH", happyFlow: true },
+      { id: "aa-2", title: "Add Appointment - Both slots on one date", user: "BOTH", happyFlow: true },
+      { id: "aa-4", title: "CSE not bound by 6/day cap — can add to a full slot", user: "BOTH", happyFlow: true },
       { id: "aa-3", title: "Add Appointment - Partial Booking Call-in", user: "BOTH", happyFlow: true },
-      { id: "aa-4", title: "CSE not bound by 6/day cap — can add to a full slot", user: "BO", happyFlow: true },
-      { id: "aa-5", title: "Afternoon Slot Booking", user: "BO", happyFlow: true },
     ],
   },
   {
-    label: "Slot Capacity & Boundary (UCD)",
+    label: "Slot Capacity Boundary",
     scenarios: [
       { id: "sc-1", title: "Morning Slot - Book until full", user: "UCD" },
       { id: "sc-2", title: "Afternoon Slot - Book until full", user: "UCD" },
@@ -73,29 +86,31 @@ const TEST_GROUPS: ScenarioGroup[] = [
       { id: "sc-6", title: "Biometric Purchase - Free Install Option (no booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
       { id: "sc-7", title: "Biometric Purchase - Paid Install Mandatory", user: "UCD", happyFlow: true },
       { id: "sc-8", title: "Two UCD - Select same last available slot", user: "UCD" },
-    ],
-  },
-  {
-    label: "Calendar Rules (UCD)",
-    scenarios: [
       { id: "cal-1", title: "Book for current day and the next day", user: "UCD" },
       { id: "cal-2", title: "Book for previous dates", user: "UCD" },
       { id: "cal-3", title: "Book future dates more than 2 months", user: "UCD" },
       { id: "cal-4", title: "Book weekend dates", user: "UCD" },
       { id: "cal-5", title: "Book Public Holiday", user: "UCD", params: ["publicHoliday"] },
-    ],
-  },
-  {
-    label: "BO Calendar & Limits",
-    scenarios: [
+      { id: "sc-9", title: "Morning Slot - Max Capacity (via Reschedule)", user: "UCD" },
+      { id: "sc-10", title: "Afternoon Slot - Max Capacity (via Reschedule)", user: "UCD" },
+      { id: "sc-11", title: "Daily Max Capacity (via Reschedule)", user: "UCD" },
       { id: "bo-1", title: "BO add beyond 6 days limit", user: "BOTH", happyFlow: true },
-      { id: "bo-2", title: "BO add beyond morning slot limit", user: "BO", happyFlow: true },
-      { id: "bo-3", title: "BO add beyond afternoon slot limit", user: "BO", happyFlow: true },
+      { id: "bo-2", title: "BO add beyond morning slot limit", user: "BOTH", happyFlow: true },
+      { id: "bo-3", title: "BO add beyond afternoon slot limit", user: "BOTH", happyFlow: true },
       { id: "bo-4", title: "BO add for current day and the next day", user: "BO", happyFlow: true },
       { id: "bo-5", title: "BO add for previous dates", user: "BO" },
       { id: "bo-6", title: "BO book future date more than 2 months", user: "BO", happyFlow: true },
       { id: "bo-7", title: "BO book weekend dates", user: "BO" },
       { id: "bo-8", title: "BO book Public Holiday", user: "BO", params: ["publicHoliday"] },
+      { id: "bo-17", title: "Attempt to add existing appointment expired over 2 months", user: "BO" },
+      { id: "bo-9", title: "BO reschedule for current day and the next day", user: "BO", happyFlow: true },
+      { id: "bo-10", title: "BO reschedule for previous dates", user: "BO" },
+      { id: "bo-11", title: "BO reschedule future date more than 2 months", user: "BO", happyFlow: true },
+      { id: "bo-12", title: "BO reschedule weekend dates", user: "BO" },
+      { id: "bo-13", title: "BO reschedule Public Holiday", user: "BO", params: ["publicHoliday"] },
+      { id: "bo-14", title: "BO reschedule beyond morning slot limit", user: "BO", happyFlow: true },
+      { id: "bo-15", title: "BO reschedule beyond afternoon slot limit", user: "BO", happyFlow: true },
+      { id: "bo-16", title: "BO reschedule beyond 6 days limit", user: "BO", happyFlow: true },
     ],
   },
 ];
@@ -293,8 +308,9 @@ export default function ShoppingCartPage() {
     });
   }
 
-  async function runTests() {
-    if (!selected.size) return;
+  async function runTests(idsOverride?: Set<string>) {
+    const ids = idsOverride ?? selected;
+    if (!ids.size) return;
     saveCreds({ ucdUser, ucdPass, boUser, boPass });
     saveParams({ publicHoliday, referenceNo });
     setRunning(true);
@@ -306,7 +322,7 @@ export default function ShoppingCartPage() {
 
     const scenarioTitles = TEST_GROUPS
       .flatMap(g => g.scenarios)
-      .filter(s => selected.has(s.id))
+      .filter(s => ids.has(s.id))
       .map(s => s.title);
 
     try {
@@ -340,6 +356,21 @@ export default function ShoppingCartPage() {
     } finally {
       setRunning(false);
     }
+  }
+
+  /** Re-select and re-run only the tests that failed or skipped last time. */
+  function rerunFailedAndSkipped() {
+    if (!runResult) return;
+    const titleToId = new Map(TEST_GROUPS.flatMap(g => g.scenarios).map(s => [s.title, s.id] as const));
+    const ids = new Set(
+      runResult.results
+        .filter(r => r.status === "failed" || r.status === "skipped")
+        .map(r => titleToId.get(r.title))
+        .filter((id): id is string => !!id)
+    );
+    if (!ids.size) return;
+    setSelected(ids);
+    runTests(ids);
   }
 
   const selectedScenarios = TEST_GROUPS.flatMap(g => g.scenarios).filter(s => selected.has(s.id));
@@ -413,7 +444,7 @@ export default function ShoppingCartPage() {
           <div className="flex-1" />
 
           <button
-            onClick={runTests}
+            onClick={() => runTests()}
             disabled={running || !selected.size}
             className={clsx(
               "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all",
@@ -533,7 +564,9 @@ export default function ShoppingCartPage() {
                         <span className={clsx("text-xs flex-1", isSel ? "text-slate-100" : "text-slate-400")}>
                           {scenarioDisplayLabel(scenario)}
                         </span>
-                        {scenario.happyFlow && (
+                        {/* Happy-flow badge disabled per user request — flip this
+                            back on if they want the tag shown again. */}
+                        {false && scenario.happyFlow && (
                           <span
                             title="Happy flow — successful path, no error/boundary expected"
                             className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-md font-medium shrink-0 bg-emerald-500/15 text-emerald-300"
@@ -570,6 +603,8 @@ export default function ShoppingCartPage() {
         onToggleError={toggleErrorDetails}
         showLogs={showLogs}
         onToggleLogs={() => setShowLogs(v => !v)}
+        onRerunFailedSkipped={rerunFailedAndSkipped}
+        rerunning={running}
       />}
     </div>
   );
@@ -606,7 +641,7 @@ function UserBadge({ user }: { user: "UCD" | "BO" | "BOTH" }) {
   return <span className={clsx("text-[10px] px-1.5 py-0.5 rounded-md font-medium shrink-0", cls)}>{user === "BOTH" ? "UCD+BO" : user}</span>;
 }
 
-function Results({ runResult, envLabel, expandedTests, expandedErrors, onToggleTest, onToggleError, showLogs, onToggleLogs }: {
+function Results({ runResult, envLabel, expandedTests, expandedErrors, onToggleTest, onToggleError, showLogs, onToggleLogs, onRerunFailedSkipped, rerunning }: {
   runResult: RunResult;
   envLabel: string;
   expandedTests: Set<number>;
@@ -615,10 +650,13 @@ function Results({ runResult, envLabel, expandedTests, expandedErrors, onToggleT
   onToggleError: (i: number) => void;
   showLogs: boolean;
   onToggleLogs: () => void;
+  onRerunFailedSkipped: () => void;
+  rerunning: boolean;
 }) {
   const { summary } = runResult;
   const totalMs = runResult.results.reduce((a, r) => a + (r.duration || 0), 0);
   const pct = (n: number) => summary.total ? `${(n / summary.total) * 100}%` : "0%";
+  const rerunCount = summary.failed + summary.skipped;
 
   return (
     <div className="space-y-3">
@@ -628,6 +666,22 @@ function Results({ runResult, envLabel, expandedTests, expandedErrors, onToggleT
           <FlaskConical size={15} className="text-slate-400" />
           <h3 className="text-sm font-semibold text-slate-200 flex-1">Run results</h3>
           <span className="text-[11px] text-slate-500">{envLabel} · {fmtDuration(totalMs)} · {runResult.timestamp.replace("T", " ")}</span>
+          {rerunCount > 0 && (
+            <button
+              onClick={onRerunFailedSkipped}
+              disabled={rerunning}
+              title="Re-select and re-run only the tests that failed or were skipped"
+              className={clsx(
+                "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] border transition-colors shrink-0",
+                rerunning
+                  ? "bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed"
+                  : "bg-amber-500/15 border-amber-500/30 text-amber-300 hover:bg-amber-500/25"
+              )}
+            >
+              {rerunning ? <Loader2 size={12} className="animate-spin" /> : <RotateCcw size={12} />}
+              Rerun failed &amp; skipped ({rerunCount})
+            </button>
+          )}
         </div>
 
         {/* Segmented progress bar */}

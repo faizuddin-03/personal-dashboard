@@ -34,10 +34,12 @@ export interface BoDateSlotInfo {
  *    #ac-rs-ref, #ac-rs-cur (all read-only), #ac-rs-date (readonly
  *    datepicker), radios name="ac-rs-slot" (0/1), buttons Confirm/Cancel in
  *    the .ui-dialog-buttonpane. Confirm raises a NATIVE browser confirm().
- *  - Add dialog #ac-add-dialog: radios name="ac-add-type" (NEW/EXISTING),
- *    #ac-add-name + #ac-add-search + #ac-add-dd dropdown, #ac-add-ref-fld
- *    (#ac-add-refno + #ac-add-ref-search) shown for EXISTING, #ac-add-date
- *    datepicker, radios name="ac-add-slot" (#ac-add-slot-0/1), Confirm/Cancel.
+ *  - Add dialog #ac-add-dialog (verified live, SIT2 — the New/Existing type
+ *    radio is GONE, Reference No. is always required now): #ac-add-name +
+ *    #ac-add-search (typing the EXACT company name auto-binds #ac-add-cid on
+ *    search — no #ac-add-dd dropdown to click), #ac-add-ref-fld
+ *    (#ac-add-refno + #ac-add-ref-search), #ac-add-date datepicker, radios
+ *    name="ac-add-slot" (#ac-add-slot-0/1), Confirm/Cancel.
  */
 export class AppointmentCalendarPage extends BasePage {
   readonly backBtn = this.page.locator("#cal-back");
@@ -136,21 +138,86 @@ export class AppointmentCalendarPage extends BasePage {
   }
 
   /**
+   * Whether the given company's appointment (in the currently-displayed
+   * month) exposes the Reschedule link — used to verify status-based
+   * blocking (Cancelled/Failed/Completed installations must not offer
+   * Reschedule). Returns null if the company isn't listed in the visible
+   * month at all, so callers can skip rather than fail on a stale/absent
+   * candidate.
+   */
+  async hasRescheduleForCompany(companyName: string): Promise<boolean | null> {
+    const li = this.calTable
+      .locator("li", { has: this.page.locator("span.cal-co", { hasText: companyName }) })
+      .first();
+    if ((await li.count()) === 0) return null;
+    return (await li.locator("a.cal-rs").count()) > 0;
+  }
+
+  /**
    * Pick a selectable day in the currently-open jQuery UI datepicker.
    * The date inputs are readonly + backed by a hidden ISO field, so we must
    * go through the datepicker (which sets both) rather than typing. Disabled
    * days render as <span> inside td.ui-state-disabled; selectable days are
-   * <a> — we click the last selectable one (later in the month → future).
+   * <a> — we click the last selectable one (later in the month → future) when
+   * no specific date is requested.
+   *
+   * BUG FIXED: this used to take only a bare day-of-month number and match it
+   * against whatever month happened to already be showing (always the
+   * current month — the datepicker opens on today's month by default). A
+   * requested date in a DIFFERENT month (e.g. daysFromToday(N) crossing a
+   * month boundary) would never match, and — silently, with no error — it
+   * fell back to "last selectable day in the WRONG month" instead. That's
+   * exactly what looked like "clicking a date in the calendar isn't
+   * choosing it": some valid date got picked, just never the one asked for.
+   * Now takes the full ISO date and navigates the month/year selects to the
+   * right month FIRST, the same way isAddDateSelectable/
+   * isRescheduleDateSelectable already do, before looking for the day.
    */
-  private async pickDatepickerDay(dayOfMonth?: number) {
+  private async pickDatepickerDay(dateIso?: string) {
     await this.datepicker.waitFor({ state: "visible", timeout: 5000 });
-    const selectable = this.datepicker.locator("td:not(.ui-state-disabled) a.ui-state-default");
 
+    let dayOfMonth: number | undefined;
+    if (dateIso) {
+      // Accept both ISO (YYYY-MM-DD) and calendar labels (DD-MM-YYYY).
+      const parts = dateIso.split("-").map(Number);
+      let y: number;
+      let m: number;
+      let d: number;
+      if (parts.length === 3 && String(parts[0]).length === 4) {
+        [y, m, d] = parts;
+      } else {
+        [d, m, y] = parts;
+      }
+
+      dayOfMonth = d;
+
+      const monthSelect = this.datepicker.locator("select.ui-datepicker-month");
+      const yearSelect = this.datepicker.locator("select.ui-datepicker-year");
+
+      const monthOptions = await monthSelect
+        .locator("option")
+        .evaluateAll((opts) => opts.map((o) => Number((o as HTMLOptionElement).value)).filter((n) => Number.isFinite(n)));
+      const yearOptions = await yearSelect
+        .locator("option")
+        .evaluateAll((opts) => opts.map((o) => Number((o as HTMLOptionElement).value)).filter((n) => Number.isFinite(n)));
+
+      if (monthOptions.includes(m - 1)) {
+        await monthSelect.selectOption(String(m - 1));
+      }
+      if (yearOptions.includes(y)) {
+        await yearSelect.selectOption(String(y));
+      }
+      // Changing the dropdowns re-renders the day grid — give it a beat.
+      await this.page.waitForTimeout(200);
+    }
+
+    const selectable = this.datepicker.locator("td:not(.ui-state-disabled) a.ui-state-default");
     let target: Locator | null = null;
     if (dayOfMonth !== undefined) {
       const exact = selectable.filter({ hasText: new RegExp(`^${dayOfMonth}$`) }).first();
       if (await exact.count()) target = exact;
-      // else: requested day isn't selectable this month — fall through to any.
+      // else: requested day isn't selectable even in its own month (past/
+      // weekend/holiday) — fall through to any, same as before.
     }
     if (!target) {
       const n = await selectable.count();
@@ -188,11 +255,6 @@ export class AppointmentCalendarPage extends BasePage {
     await this.datepicker.waitFor({ state: "hidden", timeout: 3000 }).catch(() => {});
   }
 
-  private isoDayOfMonth(iso: string): number | undefined {
-    const m = iso.match(/^\d{4}-\d{2}-(\d{2})$/);
-    return m ? Number(m[1]) : undefined;
-  }
-
   /**
    * Whether `dateIso` is selectable in the Add Appointment date field.
    *
@@ -219,10 +281,13 @@ export class AppointmentCalendarPage extends BasePage {
     await this.datepicker.locator("select.ui-datepicker-year").selectOption(String(y));
     // Changing the dropdowns re-renders the day grid — give it a beat.
     await this.page.waitForTimeout(200);
-    const cell = this.datepicker.locator("td", { hasText: new RegExp(`^${d}$`) }).first();
-    const disabled = await cell.evaluate((el) => el.classList.contains("ui-state-disabled"));
+    const selectableDay = this.datepicker
+      .locator("td:not(.ui-state-disabled):not(.ui-datepicker-other-month) a.ui-state-default")
+      .filter({ hasText: new RegExp(`^${d}$`) })
+      .first();
+    const selectable = (await selectableDay.count()) > 0;
     await this.dismissDatepicker();
-    return !disabled;
+    return selectable;
   }
 
   /**
@@ -235,6 +300,53 @@ export class AppointmentCalendarPage extends BasePage {
     await this.demoHighlight(link);
     await link.click();
     await this.completeRescheduleDialog(opts.slot);
+  }
+
+  /**
+   * Open the Reschedule dialog for whichever appointment is listed first,
+   * without completing it — for VIEW-only date-rule checks (mirrors
+   * openAddDialog()/isAddDateSelectable()). Returns null if no appointment
+   * currently offers a Reschedule link, so callers can skip.
+   */
+  async openRescheduleDialogOnly(): Promise<Locator | null> {
+    const link = this.page.locator("a.cal-rs").first();
+    if ((await link.count()) === 0) return null;
+    await link.click();
+    const dialog = this.page.locator(".ui-dialog", { has: this.page.locator("#ac-rs-dialog") });
+    await dialog.waitFor({ state: "visible", timeout: 10000 });
+    return dialog;
+  }
+
+  /** Close the Reschedule dialog via its Cancel button (best-effort). */
+  async closeRescheduleDialog(dialog: Locator) {
+    await dialog.getByRole("button", { name: "Cancel" }).click().catch(() => {});
+    await dialog.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+  }
+
+  /**
+   * Whether `dateIso` is selectable in the Reschedule dialog's #ac-rs-date
+   * datepicker — the Reschedule flow's own date field, separate from Add
+   * Appointment's #ac-add-date (SRD: same no-blackout/no-2-month-limit rules
+   * are expected to apply, but this exercises the actual bound field rather
+   * than assuming parity). Must be called with the Reschedule dialog already
+   * open (does not open/close the dialog itself).
+   */
+  async isRescheduleDateSelectable(dateIso: string): Promise<boolean> {
+    const [y, m, d] = dateIso.split("-").map(Number);
+    await this.page.evaluate(() => {
+      (window as unknown as { jQuery: any }).jQuery("#ac-rs-date").datepicker("show");
+    });
+    await this.datepicker.waitFor({ state: "visible", timeout: 5000 });
+    await this.datepicker.locator("select.ui-datepicker-month").selectOption(String(m - 1));
+    await this.datepicker.locator("select.ui-datepicker-year").selectOption(String(y));
+    await this.page.waitForTimeout(200);
+    const selectableDay = this.datepicker
+      .locator("td:not(.ui-state-disabled):not(.ui-datepicker-other-month) a.ui-state-default")
+      .filter({ hasText: new RegExp(`^${d}$`) })
+      .first();
+    const selectable = (await selectableDay.count()) > 0;
+    await this.dismissDatepicker();
+    return selectable;
   }
 
   /** Reschedule the first appointment whose company name matches. */
@@ -256,8 +368,18 @@ export class AppointmentCalendarPage extends BasePage {
     await this.demoHighlight("#ac-rs-cur");
 
     await test.step(`Pick a new date and the ${slotName} slot`, async () => {
-      // New Appointment Date via datepicker (readonly input → click to open).
-      await this.page.locator("#ac-rs-date").click();
+      // New Appointment Date via datepicker. Opened programmatically
+      // (jQuery datepicker("show")) rather than a plain .click() — verified
+      // live that a bare click can silently fail to (re-)open it, especially
+      // right after a previous picker was force-closed on the same page
+      // (dismissDatepicker's forceful style.display override can leave the
+      // shared #ui-datepicker-div singleton in a state where the next
+      // focus-triggered auto-show just doesn't fire). isAddDateSelectable/
+      // isRescheduleDateSelectable already use this same programmatic show
+      // and it's reliable.
+      await this.page.evaluate(() => {
+        (window as unknown as { jQuery: any }).jQuery("#ac-rs-date").datepicker("show");
+      });
       await this.pickDatepickerDay();
       // Defensive: a refocus race can reopen the picker after pickDatepickerDay
       // already dismissed it — clear it again before touching the slot radio.
@@ -296,30 +418,38 @@ export class AppointmentCalendarPage extends BasePage {
   }
 
   /**
-   * Add Appointment (jQuery UI dialog). Default type is "New Record"; pass
-   * existingRecordRefNo to use the "Existing Record" path.
+   * Add Appointment (jQuery UI dialog).
+   *
+   * Verified live (SIT2): the New Record / Existing Record type radio is
+   * GONE — there is no way to add a brand-new record from this dialog
+   * anymore. It's now always: Company Name (search) → Reference No.
+   * (search) → Appointment Date → Time Slot → Confirm. A reference number is
+   * mandatory, so callers must first arrange one (e.g. have UCD run a
+   * Biometric Device Purchase and exit before booking, leaving a free
+   * unallocated install tied to a fresh reference) rather than assuming this
+   * dialog can create a request from scratch.
+   *
+   * Company search also changed: there's no more results dropdown to click
+   * (`.ac_results` no longer exists). Typing the company's EXACT registered
+   * name and searching auto-binds it to the hidden #ac-add-cid field; a
+   * partial/ambiguous name simply leaves it unbound with no error shown, so
+   * always pass the exact name (look-alikes like "FAIZUDDIN AUTO TEST 2"/"3"
+   * only matter in that they must NOT be what you typed).
    */
   /**
    * Returns the date actually booked (DD-MM-YYYY, matching the calendar
    * label) on success, or `null` when the add couldn't proceed — the company
-   * couldn't be resolved, it has no unallocated units ("No allocation
-   * remaining"), or the confirm was rejected. Callers use null to SKIP
-   * (arrange-else-skip) rather than fail. The chosen date may differ from
-   * `appointmentDate` if that day isn't selectable, which is why we report
-   * back the date the datepicker actually committed.
+   * couldn't be resolved, the reference has no unallocated units ("No
+   * allocation remaining"), or the confirm was rejected. Callers use null to
+   * SKIP (arrange-else-skip) rather than fail. The chosen date may differ
+   * from `appointmentDate` if that day isn't selectable, which is why we
+   * report back the date the datepicker actually committed.
    */
   async addAppointment(opts: {
     companyName: string;
+    existingRecordRefNo: string;
     slot: BoTimeSlot;
     appointmentDate?: string; // ISO (YYYY-MM-DD); picks that day if selectable this month
-    existingRecordRefNo?: string;
-    /**
-     * Exact company to click from the search results. Defaults to
-     * companyName. Needed because several look-alikes exist (e.g.
-     * "FAIZUDDIN AUTO TEST" vs "FAIZUDDIN AUTO TEST 2"/"3") — we match the
-     * result whose text is EXACTLY this, never a prefix.
-     */
-    companySelect?: string;
   }): Promise<string | null> {
     await this.demoHighlight(this.addAppointmentBtn);
     await this.addAppointmentBtn.click();
@@ -327,38 +457,27 @@ export class AppointmentCalendarPage extends BasePage {
     await dialog.waitFor({ state: "visible", timeout: 10000 });
     await this.demoPause();
 
-    // Appointment type radio (New Record vs Existing Record).
-    await this.page
-      .locator(`input[name="ac-add-type"][value="${opts.existingRecordRefNo ? "EXISTING" : "NEW"}"]`)
-      .check();
-
-    // Company search → results render in .ac_results (<ul><li> list). Select
-    // by EXACT text so "FAIZUDDIN AUTO TEST" never matches "… TEST 2"/"… 3".
-    await this.page.locator("#ac-add-name").fill(opts.companyName);
-    await this.demoHighlight("#ac-add-name");
-    await this.page.locator("#ac-add-search").click();
-    const results = this.page.locator(".ac_results");
-    await results.waitFor({ state: "visible", timeout: 8000 }).catch(() => {});
-    const pick = opts.companySelect ?? opts.companyName;
-    const option = results.getByText(pick, { exact: true }).first();
-    if (!(await option.count())) {
-      await this.closeAddDialog(dialog); // company not in results — precondition unmet
+    // Company search — auto-binds #ac-add-cid on an exact name match; no
+    // dropdown to click. If it doesn't bind, the company/precondition is
+    // wrong — bail out rather than proceeding with no company selected.
+    await test.step(`Search company ${opts.companyName}`, async () => {
+      await this.page.locator("#ac-add-name").fill(opts.companyName);
+      await this.demoHighlight("#ac-add-name");
+      await this.page.locator("#ac-add-search").click();
+      await this.page.waitForTimeout(500);
+    });
+    if (!(await this.page.locator("#ac-add-cid").inputValue())) {
+      await this.closeAddDialog(dialog); // company name didn't resolve — precondition unmet
       return null;
     }
-    await this.demoHighlight(option);
-    await option.click();
 
-    // Existing Record: after the company is chosen, key in the reference
-    // (captured from the BO SI Listing for this company) and search to bind it.
-    if (opts.existingRecordRefNo) {
-      const ref = opts.existingRecordRefNo;
-      await test.step(`Enter Existing Record reference ${ref}`, async () => {
-        await this.page.locator("#ac-add-refno").fill(ref);
-        await this.demoHighlight("#ac-add-refno");
-        await this.page.locator("#ac-add-ref-search").click();
-        await this.page.waitForTimeout(500);
-      });
-    }
+    // Reference No. — always required now; key it in and search to bind it.
+    await test.step(`Enter reference ${opts.existingRecordRefNo}`, async () => {
+      await this.page.locator("#ac-add-refno").fill(opts.existingRecordRefNo);
+      await this.demoHighlight("#ac-add-refno");
+      await this.page.locator("#ac-add-ref-search").click();
+      await this.page.waitForTimeout(500);
+    });
 
     // A company with no active installation request, or with no unallocated
     // units left, can't be added — the dialog surfaces one of these errors.
@@ -373,8 +492,15 @@ export class AppointmentCalendarPage extends BasePage {
     // Appointment date via datepicker + time slot radio.
     let bookedDate = "";
     await test.step(`Pick appointment date and the ${opts.slot === 0 ? "morning" : "afternoon"} slot`, async () => {
-      await this.page.locator("#ac-add-date").click();
-      await this.pickDatepickerDay(opts.appointmentDate ? this.isoDayOfMonth(opts.appointmentDate) : undefined);
+      // Opened programmatically rather than a plain .click() — see the
+      // matching comment in completeRescheduleDialog(); a bare click can
+      // silently fail to (re-)open the picker, e.g. on the second
+      // addAppointment() call in the same test after the first one's
+      // picker was force-closed.
+      await this.page.evaluate(() => {
+        (window as unknown as { jQuery: any }).jQuery("#ac-add-date").datepicker("show");
+      });
+      await this.pickDatepickerDay(opts.appointmentDate);
       // Capture the date actually chosen (display value = DD-MM-YYYY).
       bookedDate = (await this.page.locator("#ac-add-date").inputValue().catch(() => "")).trim();
       // Defensive: a refocus race can reopen the picker after pickDatepickerDay

@@ -1,0 +1,226 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Add Appointment - Both slots on one date"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-17T08-44-12",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-17T08-44-12\\report.json"
+        }
+      ],
+      [
+        "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\reporters\\step-reporter.ts",
+        {}
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "add-appointment-bo.spec.ts",
+      "file": "add-appointment-bo.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Add Appointment (BO)",
+          "file": "add-appointment-bo.spec.ts",
+          "line": 33,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Add Appointment - Both slots on one date",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 46798,
+                      "error": {
+                        "message": "TimeoutError: locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#ui-datepicker-div').locator('select.ui-datepicker-year')\u001b[22m\n\u001b[2m    - locator resolved to <select class=\"ui-datepicker-year\" onclick=\"DP_jQuery.datepicker._clickMonthYear('#ac-add-date');\" onchange=\"DP_jQuery.datepicker._selectMonthYear('#ac-add-date', this, 'Y');\">…</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    19 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - did not find some options\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                        "stack": "TimeoutError: locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#ui-datepicker-div').locator('select.ui-datepicker-year')\u001b[22m\n\u001b[2m    - locator resolved to <select class=\"ui-datepicker-year\" onclick=\"DP_jQuery.datepicker._clickMonthYear('#ac-add-date');\" onchange=\"DP_jQuery.datepicker._selectMonthYear('#ac-add-date', this, 'Y');\">…</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    19 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - did not find some options\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at AppointmentCalendarPage.pickDatepickerDay (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:184:66)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:455:7\n    at AppointmentCalendarPage.addAppointment (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:453:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:86:29",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts",
+                          "column": 66,
+                          "line": 184
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\bo\\AppointmentCalendarPage.ts:184\n\n\u001b[0m \u001b[90m 182 |\u001b[39m       dayOfMonth \u001b[33m=\u001b[39m d\u001b[33m;\u001b[39m\n \u001b[90m 183 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mdatepicker\u001b[33m.\u001b[39mlocator(\u001b[32m\"select.ui-datepicker-month\"\u001b[39m)\u001b[33m.\u001b[39mselectOption(\u001b[33mString\u001b[39m(m \u001b[33m-\u001b[39m \u001b[35m1\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 184 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mdatepicker\u001b[33m.\u001b[39mlocator(\u001b[32m\"select.ui-datepicker-year\"\u001b[39m)\u001b[33m.\u001b[39mselectOption(\u001b[33mString\u001b[39m(y))\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 185 |\u001b[39m       \u001b[90m// Changing the dropdowns re-renders the day grid — give it a beat.\u001b[39m\n \u001b[90m 186 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m200\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 187 |\u001b[39m     }\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts",
+                            "column": 66,
+                            "line": 184
+                          },
+                          "message": "TimeoutError: locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#ui-datepicker-div').locator('select.ui-datepicker-year')\u001b[22m\n\u001b[2m    - locator resolved to <select class=\"ui-datepicker-year\" onclick=\"DP_jQuery.datepicker._clickMonthYear('#ac-add-date');\" onchange=\"DP_jQuery.datepicker._selectMonthYear('#ac-add-date', this, 'Y');\">…</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    19 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - did not find some options\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n   at ..\\pages\\bo\\AppointmentCalendarPage.ts:184\n\n  182 |       dayOfMonth = d;\n  183 |       await this.datepicker.locator(\"select.ui-datepicker-month\").selectOption(String(m - 1));\n> 184 |       await this.datepicker.locator(\"select.ui-datepicker-year\").selectOption(String(y));\n      |                                                                  ^\n  185 |       // Changing the dropdowns re-renders the day grid — give it a beat.\n  186 |       await this.page.waitForTimeout(200);\n  187 |     }\n    at AppointmentCalendarPage.pickDatepickerDay (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:184:66)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:455:7\n    at AppointmentCalendarPage.addAppointment (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:453:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:86:29"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Log in as UCD",
+                          "duration": 5223
+                        },
+                        {
+                          "title": "Search company FAIZUDDIN AUTO TEST",
+                          "duration": 2173
+                        },
+                        {
+                          "title": "Enter reference SR67000113",
+                          "duration": 2193
+                        },
+                        {
+                          "title": "Pick appointment date and the morning slot",
+                          "duration": 2607
+                        },
+                        {
+                          "title": "Confirm the appointment",
+                          "duration": 3023
+                        },
+                        {
+                          "title": "Search company FAIZUDDIN AUTO TEST",
+                          "duration": 2170
+                        },
+                        {
+                          "title": "Enter reference SR67000113",
+                          "duration": 2145
+                        },
+                        {
+                          "title": "Pick appointment date and the afternoon slot",
+                          "duration": 10150,
+                          "error": {
+                            "message": "TimeoutError: locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#ui-datepicker-div').locator('select.ui-datepicker-year')\u001b[22m\n\u001b[2m    - locator resolved to <select class=\"ui-datepicker-year\" onclick=\"DP_jQuery.datepicker._clickMonthYear('#ac-add-date');\" onchange=\"DP_jQuery.datepicker._selectMonthYear('#ac-add-date', this, 'Y');\">…</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    19 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - did not find some options\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                            "stack": "TimeoutError: locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#ui-datepicker-div').locator('select.ui-datepicker-year')\u001b[22m\n\u001b[2m    - locator resolved to <select class=\"ui-datepicker-year\" onclick=\"DP_jQuery.datepicker._clickMonthYear('#ac-add-date');\" onchange=\"DP_jQuery.datepicker._selectMonthYear('#ac-add-date', this, 'Y');\">…</select>\u001b[22m\n\u001b[2m  - attempting select option action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m      - did not find some options\u001b[22m\n\u001b[2m    - retrying select option action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    19 × waiting for element to be visible and enabled\u001b[22m\n\u001b[2m       - did not find some options\u001b[22m\n\u001b[2m     - retrying select option action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at AppointmentCalendarPage.pickDatepickerDay (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:184:66)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:455:7\n    at AppointmentCalendarPage.addAppointment (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:453:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:86:29",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts",
+                              "column": 66,
+                              "line": 184
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\bo\\AppointmentCalendarPage.ts:184\n\n\u001b[0m \u001b[90m 182 |\u001b[39m       dayOfMonth \u001b[33m=\u001b[39m d\u001b[33m;\u001b[39m\n \u001b[90m 183 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mdatepicker\u001b[33m.\u001b[39mlocator(\u001b[32m\"select.ui-datepicker-month\"\u001b[39m)\u001b[33m.\u001b[39mselectOption(\u001b[33mString\u001b[39m(m \u001b[33m-\u001b[39m \u001b[35m1\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 184 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mdatepicker\u001b[33m.\u001b[39mlocator(\u001b[32m\"select.ui-datepicker-year\"\u001b[39m)\u001b[33m.\u001b[39mselectOption(\u001b[33mString\u001b[39m(y))\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 185 |\u001b[39m       \u001b[90m// Changing the dropdowns re-renders the day grid — give it a beat.\u001b[39m\n \u001b[90m 186 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m200\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 187 |\u001b[39m     }\u001b[0m"
+                          }
+                        }
+                      ],
+                      "startTime": "2026-07-17T08:44:14.633Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-17T08-44-12\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-17T08-44-12\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\video.webm"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-17T08-44-12\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\test-failed-2.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-17T08-44-12\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-17T08-44-12\\add-appointment-bo-Add-App-2c9c7-nt---Both-slots-on-one-date-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts",
+                        "column": 66,
+                        "line": 184
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "6e13112bcd4d9fd61a7a-6740d9cda0be6498dc79",
+              "file": "add-appointment-bo.spec.ts",
+              "line": 64,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-17T08:44:13.896Z",
+    "duration": 49615.591,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

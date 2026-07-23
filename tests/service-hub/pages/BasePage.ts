@@ -29,19 +29,21 @@ export class BasePage {
 
   /**
    * The transaction identifier from the current URL's query string, as a
-   * ready-to-reuse "key=value" pair (e.g. "txnId=232" or
-   * "transactionId=a23be953-...").
+   * ready-to-reuse "key=value" pair (e.g. "txnId=232", "transactionId=a23be953-...",
+   * or "id=4d7196b0-...").
    *
-   * The app used to redirect with `?txnId=<number>`; a deployment changed
-   * this to `?transactionId=<uuid>` (confirmed live — same destination page,
-   * just a different id scheme). Rather than hardcode one param name, this
-   * returns whichever is actually present, INCLUDING its key, so callers can
-   * splice it straight into a follow-up URL (`?${txnId}`) without needing to
-   * know or guess which scheme this particular record uses.
+   * The app used to redirect with `?txnId=<number>`, then a deployment
+   * changed it to `?transactionId=<uuid>`, and a later one changed it AGAIN
+   * to plain `?id=<uuid>` (confirmed live on SIT2 — same destination page,
+   * just a different id scheme each time). Rather than hardcode one param
+   * name, this returns whichever is actually present, INCLUDING its key, so
+   * callers can splice it straight into a follow-up URL (`?${txnId}`)
+   * without needing to know or guess which scheme this particular record
+   * uses. "id" is checked first since it's the current scheme.
    */
   getTxnIdFromUrl(): string {
     const url = new URL(this.page.url());
-    for (const key of ["txnId", "transactionId"]) {
+    for (const key of ["id", "txnId", "transactionId"]) {
       const value = url.searchParams.get(key);
       if (value) return `${key}=${value}`;
     }

@@ -96,7 +96,7 @@ export class BiometricPurchasePage extends BasePage {
     await this.makePaymentBtn.click();
     await this.waitForDialog();
     await this.acceptConfirmDialog();
-    await this.page.waitForURL(/slot\.do\?(txnId|transactionId)=/, { timeout: 15000 });
+    await this.page.waitForURL(/slot\.do\?(id|txnId|transactionId)=/, { timeout: 15000 });
     return this.getTxnIdFromUrl();
   }
 

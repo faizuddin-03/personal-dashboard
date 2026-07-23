@@ -114,7 +114,7 @@ export class SlotPickerComponent extends BasePage {
     return (await this.getDayCell(dateStr).count()) > 0;
   }
 
-  /** Whether the date shows a slot-availability badge ("Slot n/6"). */
+  /** Whether the date shows a slot-availability badge ("N Available" / "Full"). */
   async hasSlotBadge(dateStr: string): Promise<boolean> {
     return (await this.getSlotBadge(dateStr)).trim().length > 0;
   }
@@ -128,11 +128,20 @@ export class SlotPickerComponent extends BasePage {
     return (await badge.textContent().catch(() => "")) ?? "";
   }
 
+  /**
+   * The day badge reads "N Available" (bookable, room remaining) or "Full"
+   * (td.si-fullday) — verified live; it is NOT the "Slot n/6" format this
+   * used to assume, which silently always fell back to used=0 (the regex
+   * never matched, corrupting every room-based finder below it).
+   */
   async getSlotCount(dateStr: string): Promise<{ used: number; total: number }> {
     const badge = await this.getSlotBadge(dateStr);
-    const match = badge.match(/Slot\s+(\d+)\s*\/\s*(\d+)/);
-    if (!match) return { used: 0, total: ENV.slotCapacity.perDay };
-    return { used: Number(match[1]), total: Number(match[2]) };
+    const total = ENV.slotCapacity.perDay;
+    if (/full/i.test(badge)) return { used: total, total };
+    const match = badge.match(/(\d+)\s*Available/i);
+    if (!match) return { used: 0, total };
+    const available = Number(match[1]);
+    return { used: total - available, total };
   }
 
   async isDateBooked(dateStr: string): Promise<boolean> {
@@ -496,9 +505,10 @@ export class SlotPickerComponent extends BasePage {
   async confirmAppointment() {
     await this.demoHighlight("#si-confirm-booking", { color: "green" });
     await this.page.evaluate(() => (window as any).siConfirmBooking());
-    // Matches either the old `txnId=<number>` or the new `transactionId=<uuid>`
-    // id scheme (see SoftwareInstallationPage.makePayment).
-    await this.page.waitForURL(/submitted\.do\?(txnId|transactionId)=/, { timeout: 15000 }).catch(() => {});
+    // Matches whichever id scheme this deployment currently uses — `id=<uuid>`
+    // (current, confirmed live), or the older `txnId=<number>` /
+    // `transactionId=<uuid>` (see SoftwareInstallationPage.makePayment).
+    await this.page.waitForURL(/submitted\.do\?(id|txnId|transactionId)=/, { timeout: 15000 }).catch(() => {});
     await this.waitForNav();
     await this.demoPause();
   }

@@ -27,29 +27,33 @@ body {
   .group-hover\:opacity-100 { opacity: 1 !important; }
 }
 
-/* ── Tiptap / ProseMirror editor ── */
+/* ── Tiptap / ProseMirror editor ──
+   Uses the same bg/border/text theme variables the rest of the app themes
+   with (see lib/themes.ts) instead of hardcoded dark-theme hex, so the
+   editor's tables, code blocks, and checkboxes don't stay dark under a
+   light theme. The hex values are kept only as fallbacks for the var(). */
 .ProseMirror { outline: none; }
 .ProseMirror > * + * { margin-top: 0.35em; }
-.ProseMirror p { color: #cbd5e1; line-height: 1.65; }
-.ProseMirror h1 { font-size: 1.5rem; font-weight: 700; color: #f1f5f9; margin-top: 0.75em; }
-.ProseMirror h2 { font-size: 1.25rem; font-weight: 600; color: #f1f5f9; margin-top: 0.6em; }
-.ProseMirror h3 { font-size: 1.05rem; font-weight: 600; color: #e2e8f0; margin-top: 0.5em; }
+.ProseMirror p { color: var(--text-secondary, #cbd5e1); line-height: 1.65; }
+.ProseMirror h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary, #f1f5f9); margin-top: 0.75em; }
+.ProseMirror h2 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary, #f1f5f9); margin-top: 0.6em; }
+.ProseMirror h3 { font-size: 1.05rem; font-weight: 600; color: var(--text-secondary, #e2e8f0); margin-top: 0.5em; }
 .ProseMirror strong { font-weight: 700; }
 .ProseMirror em { font-style: italic; }
 .ProseMirror s { text-decoration: line-through; opacity: 0.55; }
 .ProseMirror u { text-decoration: underline; }
-.ProseMirror ul { list-style: disc; padding-left: 1.25rem; color: #cbd5e1; }
-.ProseMirror ol { list-style: decimal; padding-left: 1.25rem; color: #cbd5e1; }
+.ProseMirror ul { list-style: disc; padding-left: 1.25rem; color: var(--text-secondary, #cbd5e1); }
+.ProseMirror ol { list-style: decimal; padding-left: 1.25rem; color: var(--text-secondary, #cbd5e1); }
 .ProseMirror li { margin: 0.1em 0; }
-.ProseMirror blockquote { border-left: 3px solid #475569; padding-left: 1rem; color: #94a3b8; font-style: italic; margin: 0.4em 0; }
-.ProseMirror code { background: #1e293b; border: 1px solid #334155; border-radius: 4px; padding: 0.1em 0.35em; font-family: monospace; font-size: 0.88em; color: #7dd3fc; }
-.ProseMirror pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 0.4em 0; }
+.ProseMirror blockquote { border-left: 3px solid var(--border-main, #475569); padding-left: 1rem; color: var(--text-label, #94a3b8); font-style: italic; margin: 0.4em 0; }
+.ProseMirror code { background: var(--bg-elevated, #1e293b); border: 1px solid var(--border-main, #334155); border-radius: 4px; padding: 0.1em 0.35em; font-family: monospace; font-size: 0.88em; color: #7dd3fc; }
+.ProseMirror pre { background: var(--bg-elevated, #1e293b); border: 1px solid var(--border-main, #334155); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 0.4em 0; }
 .ProseMirror pre code { background: none; border: none; padding: 0; }
-.ProseMirror p.is-editor-empty:first-child::before { color: #475569; content: attr(data-placeholder); float: left; height: 0; pointer-events: none; }
+.ProseMirror p.is-editor-empty:first-child::before { color: var(--text-faint, #475569); content: attr(data-placeholder); float: left; height: 0; pointer-events: none; }
 .ProseMirror ul[data-type="taskList"] { list-style: none; padding-left: 0.25rem; }
 .ProseMirror ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0.2em 0; }
 .ProseMirror ul[data-type="taskList"] li > label { flex-shrink: 0; margin-top: 0.2em; cursor: pointer; }
-.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] { appearance: none; width: 14px; height: 14px; border: 1.5px solid #475569; border-radius: 3px; background: transparent; cursor: pointer; position: relative; display: block; }
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] { appearance: none; width: 14px; height: 14px; border: 1.5px solid var(--border-main, #475569); border-radius: 3px; background: transparent; cursor: pointer; position: relative; display: block; }
 .ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"]:checked { background: #3a6490; border-color: #3a6490; }
 .ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"]:checked::after { content: ""; position: absolute; top: 1px; left: 3px; width: 5px; height: 8px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(40deg); }
 .ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div { opacity: 0.5; text-decoration: line-through; }
@@ -57,8 +61,8 @@ body {
 
 /* Tables */
 .ProseMirror table { border-collapse: collapse; table-layout: fixed; width: 100%; margin: 0.5em 0; overflow: hidden; }
-.ProseMirror td, .ProseMirror th { min-width: 1em; border: 1px solid #334155; padding: 6px 10px; vertical-align: top; box-sizing: border-box; position: relative; color: #cbd5e1; }
-.ProseMirror th { font-weight: 600; background: #1e293b; color: #f1f5f9; }
+.ProseMirror td, .ProseMirror th { min-width: 1em; border: 1px solid var(--border-main, #334155); padding: 6px 10px; vertical-align: top; box-sizing: border-box; position: relative; color: var(--text-secondary, #cbd5e1); }
+.ProseMirror th { font-weight: 600; background: var(--bg-elevated, #1e293b); color: var(--text-primary, #f1f5f9); }
 .ProseMirror .selectedCell::after { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgba(59, 130, 246, 0.15); pointer-events: none; z-index: 2; }
 .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: #3b82f6; cursor: col-resize; z-index: 20; }
 .ProseMirror.resize-cursor { cursor: col-resize; }
@@ -68,21 +72,21 @@ body {
 .ProseMirror img.ProseMirror-selectednode { outline: 2px solid #3b82f6; border-radius: 8px; }
 
 /* Horizontal rule */
-.ProseMirror hr { border: none; border-top: 1px solid #334155; margin: 1em 0; }
+.ProseMirror hr { border: none; border-top: 1px solid var(--border-main, #334155); margin: 1em 0; }
 
 /* Superscript / Subscript */
 .ProseMirror sup { font-size: 0.75em; vertical-align: super; }
 .ProseMirror sub { font-size: 0.75em; vertical-align: sub; }
 
 /* Heading 4 */
-.ProseMirror h4 { font-size: 0.95rem; font-weight: 600; color: #e2e8f0; margin-top: 0.4em; }
+.ProseMirror h4 { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary, #e2e8f0); margin-top: 0.4em; }
 
 /* Link styling */
 .ProseMirror a { color: #60a5fa; text-decoration: underline; cursor: pointer; }
 .ProseMirror a:hover { color: #93c5fd; }
 
 /* Placeholder */
-.ProseMirror p.is-empty::before { color: #475569; content: attr(data-placeholder); float: left; height: 0; pointer-events: none; }
+.ProseMirror p.is-empty::before { color: var(--text-faint, #475569); content: attr(data-placeholder); float: left; height: 0; pointer-events: none; }
 
 /* ── Theme overrides ──────────────────────────────────────────
    :root prefix raises specificity above Tailwind's single-class
@@ -98,16 +102,67 @@ body {
 :root .hover\:bg-slate-800:hover { background-color: var(--bg-elevated, #1e293b); }
 :root .hover\:bg-slate-700:hover { background-color: var(--bg-hover,    #334155); }
 
-/* Opacity variants (backdrop headers, toolbars) */
-:root .bg-slate-950\/80 { background-color: color-mix(in srgb, var(--bg-page,    #020617) 80%, transparent); }
-:root .bg-slate-900\/60 { background-color: color-mix(in srgb, var(--bg-panel,   #0f172a) 60%, transparent); }
-:root .bg-slate-900\/40 { background-color: color-mix(in srgb, var(--bg-panel,   #0f172a) 40%, transparent); }
-:root .bg-slate-800\/60 { background-color: color-mix(in srgb, var(--bg-elevated,#1e293b) 60%, transparent); }
+/* Opacity variants (backdrop headers, toolbars, inactive cards) — every
+   /NN fraction actually used across app/ and components/, generated
+   programmatically so a newly-added fraction can't silently reintroduce
+   this same "dark card on a light page" bug. */
+:root .bg-slate-950\/10 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 10%, transparent); }
+:root .bg-slate-950\/20 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 20%, transparent); }
+:root .bg-slate-950\/30 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 30%, transparent); }
+:root .bg-slate-950\/40 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 40%, transparent); }
+:root .bg-slate-950\/50 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 50%, transparent); }
+:root .bg-slate-950\/60 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 60%, transparent); }
+:root .bg-slate-950\/70 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 70%, transparent); }
+:root .bg-slate-950\/80 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 80%, transparent); }
+:root .bg-slate-950\/90 { background-color: color-mix(in srgb, var(--bg-page,     #020617) 90%, transparent); }
+
+:root .bg-slate-900\/10 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 10%, transparent); }
+:root .bg-slate-900\/20 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 20%, transparent); }
+:root .bg-slate-900\/30 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 30%, transparent); }
+:root .bg-slate-900\/40 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 40%, transparent); }
+:root .bg-slate-900\/50 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 50%, transparent); }
+:root .bg-slate-900\/60 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 60%, transparent); }
+:root .bg-slate-900\/70 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 70%, transparent); }
+:root .bg-slate-900\/80 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 80%, transparent); }
+:root .bg-slate-900\/90 { background-color: color-mix(in srgb, var(--bg-panel,    #0f172a) 90%, transparent); }
+
+:root .bg-slate-800\/10 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 10%, transparent); }
+:root .bg-slate-800\/20 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 20%, transparent); }
+:root .bg-slate-800\/30 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 30%, transparent); }
+:root .bg-slate-800\/40 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 40%, transparent); }
+:root .bg-slate-800\/50 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 50%, transparent); }
+:root .bg-slate-800\/60 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 60%, transparent); }
+:root .bg-slate-800\/70 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 70%, transparent); }
+:root .bg-slate-800\/80 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 80%, transparent); }
+:root .bg-slate-800\/90 { background-color: color-mix(in srgb, var(--bg-elevated, #1e293b) 90%, transparent); }
+
+:root .bg-slate-700\/10 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 10%, transparent); }
+:root .bg-slate-700\/20 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 20%, transparent); }
+:root .bg-slate-700\/30 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 30%, transparent); }
+:root .bg-slate-700\/40 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 40%, transparent); }
+:root .bg-slate-700\/50 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 50%, transparent); }
+:root .bg-slate-700\/60 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 60%, transparent); }
+:root .bg-slate-700\/70 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 70%, transparent); }
+:root .bg-slate-700\/80 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 80%, transparent); }
+:root .bg-slate-700\/90 { background-color: color-mix(in srgb, var(--bg-hover,    #334155) 90%, transparent); }
 
 /* Borders */
 :root .border-slate-800 { border-color: var(--border-subtle, #1e293b); }
 :root .border-slate-700 { border-color: var(--border-main,   #334155); }
 :root .border-slate-600 { border-color: var(--border-main,   #475569); }
+
+:root .border-slate-900\/40 { border-color: color-mix(in srgb, var(--border-subtle, #1e293b) 40%, transparent); }
+:root .border-slate-900\/50 { border-color: color-mix(in srgb, var(--border-subtle, #1e293b) 50%, transparent); }
+:root .border-slate-900\/60 { border-color: color-mix(in srgb, var(--border-subtle, #1e293b) 60%, transparent); }
+:root .border-slate-800\/40 { border-color: color-mix(in srgb, var(--border-subtle, #1e293b) 40%, transparent); }
+:root .border-slate-800\/50 { border-color: color-mix(in srgb, var(--border-subtle, #1e293b) 50%, transparent); }
+:root .border-slate-800\/60 { border-color: color-mix(in srgb, var(--border-subtle, #1e293b) 60%, transparent); }
+:root .border-slate-800\/70 { border-color: color-mix(in srgb, var(--border-subtle, #1e293b) 70%, transparent); }
+:root .border-slate-800\/80 { border-color: color-mix(in srgb, var(--border-subtle, #1e293b) 80%, transparent); }
+:root .border-slate-700\/40 { border-color: color-mix(in srgb, var(--border-main,   #334155) 40%, transparent); }
+:root .border-slate-700\/50 { border-color: color-mix(in srgb, var(--border-main,   #334155) 50%, transparent); }
+:root .border-slate-700\/60 { border-color: color-mix(in srgb, var(--border-main,   #334155) 60%, transparent); }
+:root .border-slate-600\/50 { border-color: color-mix(in srgb, var(--border-main,   #475569) 50%, transparent); }
 
 /* Kanban accent left-borders — !important overrides the border-color
    shorthand set by :root .border-slate-700 { border-color: ... } */
@@ -164,11 +219,6 @@ body {
 [data-theme-type="light"] .bg-red-950\/80,
 [data-theme-type="light"] .bg-red-900\/40  { background-color: #fecaca; }
 
-[data-theme-type="light"] .bg-blue-950\/30,
-[data-theme-type="light"] .bg-blue-900\/40 { background-color: #eff6ff; }
-[data-theme-type="light"] .bg-blue-950\/40 { background-color: #dbeafe; }
-[data-theme-type="light"] .bg-blue-950\/60 { background-color: #bfdbfe; }
-
 [data-theme-type="light"] .bg-green-950\/40 { background-color: #dcfce7; }
 [data-theme-type="light"] .bg-green-950\/60 { background-color: #bbf7d0; }
 
@@ -197,10 +247,6 @@ body {
 [data-theme-type="light"] .border-red-900\/40,
 [data-theme-type="light"] .border-red-900\/50 { border-color: #fca5a5; }
 
-[data-theme-type="light"] .border-blue-800\/50,
-[data-theme-type="light"] .border-blue-800\/60 { border-color: #93c5fd; }
-[data-theme-type="light"] .border-blue-900\/40 { border-color: #93c5fd; }
-
 [data-theme-type="light"] .border-green-800,
 [data-theme-type="light"] .border-green-800\/50,
 [data-theme-type="light"] .border-green-800\/60 { border-color: #86efac; }
@@ -221,8 +267,6 @@ body {
 [data-theme-type="light"] .text-red-400    { color: #dc2626; }
 [data-theme-type="light"] .text-red-300    { color: #b91c1c; }
 [data-theme-type="light"] .text-red-500    { color: #dc2626; }
-[data-theme-type="light"] .text-blue-400   { color: #2563eb; }
-[data-theme-type="light"] .text-blue-300   { color: #1d4ed8; }
 [data-theme-type="light"] .text-green-400  { color: #16a34a; }
 [data-theme-type="light"] .text-green-300  { color: #15803d; }
 [data-theme-type="light"] .text-purple-400 { color: #7e22ce; }
@@ -250,3 +294,102 @@ body {
 [data-theme-type="light"] .border-l-yellow-500 { border-left-color: #ca8a04 !important; }
 [data-theme-type="light"] .border-l-orange-500 { border-left-color: #ea580c !important; }
 [data-theme-type="light"] .border-l-pink-500   { border-left-color: #be185d !important; }
+
+/* ── Per-theme accent (buttons, links, focus rings) ──────────
+   Each theme in lib/themes.ts sets --accent/--accent-hover to a hue
+   chosen to complement (not fight) that theme's own page/panel colour —
+   e.g. Crimson (red) gets a teal accent instead of the stock blue that
+   used to render on every theme regardless of its base colour. Every
+   "blue-*" utility class actually used in the app is remapped here so
+   existing markup doesn't need touching. Kanban's own colour-tag classes
+   (border-l-blue-500 etc. above) are deliberately left alone — those are
+   a user's chosen label colour, not the app's interactive accent, so
+   "blue" there should still look blue. */
+:root {
+  --accent-600: var(--accent);
+  --accent-700: var(--accent-hover);
+}
+/* Tints/shades of --accent, mixed toward white on dark themes (so text
+   pops off a dark page) and toward black on light themes (so text stays
+   legible on a light page) — the same "invert the mix direction by
+   theme type" trick the red/green/purple overrides above already use. */
+[data-theme-type="dark"] {
+  --accent-200: color-mix(in srgb, var(--accent) 22%, white);
+  --accent-300: color-mix(in srgb, var(--accent) 38%, white);
+  --accent-400: color-mix(in srgb, var(--accent) 60%, white);
+  --accent-500: color-mix(in srgb, var(--accent) 85%, white);
+  --accent-badge-bg:     color-mix(in srgb, var(--accent) 55%, black);
+  --accent-badge-border: color-mix(in srgb, var(--accent) 35%, black);
+}
+[data-theme-type="light"] {
+  --accent-200: color-mix(in srgb, var(--accent) 70%, black);
+  --accent-300: color-mix(in srgb, var(--accent) 92%, black);
+  --accent-400: color-mix(in srgb, var(--accent) 80%, black);
+  --accent-500: color-mix(in srgb, var(--accent) 60%, black);
+  --accent-badge-bg:     color-mix(in srgb, var(--accent) 12%, white);
+  --accent-badge-border: color-mix(in srgb, var(--accent) 35%, white);
+}
+
+/* Solid tier — button fills, active borders/rings. Same value regardless
+   of theme type: these are opaque shapes with their own label text, so
+   they don't need a light/dark-specific contrast adjustment. */
+:root .bg-blue-600  { background-color: var(--accent-600); }
+:root .bg-blue-700  { background-color: var(--accent-700); }
+:root .hover\:bg-blue-700:hover { background-color: var(--accent-700); }
+:root .bg-blue-500  { background-color: color-mix(in srgb, var(--accent-600) 90%, white); }
+:root .bg-blue-400  { background-color: color-mix(in srgb, var(--accent-600) 75%, white); }
+:root .border-blue-400  { border-color: var(--accent-400); }
+:root .border-blue-500  { border-color: var(--accent-500); }
+:root .border-blue-600  { border-color: var(--accent-600); }
+:root .border-blue-700\/50,
+:root .border-blue-700\/60 { border-color: color-mix(in srgb, var(--accent-700) 55%, transparent); }
+:root .border-blue-900  { border-color: color-mix(in srgb, var(--accent-badge-bg) 80%, transparent); }
+:root .ring-blue-400 { --tw-ring-color: var(--accent-400); }
+:root .ring-blue-500 { --tw-ring-color: var(--accent-500); }
+:root .ring-blue-600 { --tw-ring-color: var(--accent-600); }
+:root .ring-blue-500\/30 { --tw-ring-color: color-mix(in srgb, var(--accent-500) 30%, transparent); }
+:root .ring-blue-600\/50 { --tw-ring-color: color-mix(in srgb, var(--accent-600) 50%, transparent); }
+
+/* Opacity tints of the solid tier — alpha-blended over whatever's behind,
+   so these read fine on either a light or dark page without inverting. */
+:root .bg-blue-500\/15 { background-color: color-mix(in srgb, var(--accent-500) 15%, transparent); }
+:root .bg-blue-600\/5  { background-color: color-mix(in srgb, var(--accent-600) 5%,  transparent); }
+:root .bg-blue-600\/10 { background-color: color-mix(in srgb, var(--accent-600) 10%, transparent); }
+:root .bg-blue-600\/15 { background-color: color-mix(in srgb, var(--accent-600) 15%, transparent); }
+:root .bg-blue-600\/20 { background-color: color-mix(in srgb, var(--accent-600) 20%, transparent); }
+:root .bg-blue-600\/25 { background-color: color-mix(in srgb, var(--accent-600) 25%, transparent); }
+:root .bg-blue-600\/30 { background-color: color-mix(in srgb, var(--accent-600) 30%, transparent); }
+:root .bg-blue-700\/40 { background-color: color-mix(in srgb, var(--accent-700) 40%, transparent); }
+:root .border-blue-500\/30 { border-color: color-mix(in srgb, var(--accent-500) 30%, transparent); }
+:root .border-blue-500\/50 { border-color: color-mix(in srgb, var(--accent-500) 50%, transparent); }
+:root .border-blue-500\/60 { border-color: color-mix(in srgb, var(--accent-500) 60%, transparent); }
+:root .border-blue-600\/25 { border-color: color-mix(in srgb, var(--accent-600) 25%, transparent); }
+:root .border-blue-600\/30 { border-color: color-mix(in srgb, var(--accent-600) 30%, transparent); }
+:root .border-blue-600\/40 { border-color: color-mix(in srgb, var(--accent-600) 40%, transparent); }
+:root .border-blue-600\/50 { border-color: color-mix(in srgb, var(--accent-600) 50%, transparent); }
+:root .border-blue-600\/60 { border-color: color-mix(in srgb, var(--accent-600) 60%, transparent); }
+
+/* Badge tier — chip backgrounds/borders/text. Inverts direction by theme
+   type (see --accent-badge-bg / --accent-2xx above): a dark tinted chip
+   on dark themes, a pale tinted chip on light themes. */
+:root .bg-blue-900\/20 { background-color: color-mix(in srgb, var(--accent-badge-bg) 20%, transparent); }
+:root .bg-blue-900\/40 { background-color: color-mix(in srgb, var(--accent-badge-bg) 40%, transparent); }
+:root .bg-blue-900\/50 { background-color: color-mix(in srgb, var(--accent-badge-bg) 50%, transparent); }
+:root .bg-blue-900\/60 { background-color: color-mix(in srgb, var(--accent-badge-bg) 60%, transparent); }
+:root .bg-blue-950\/20 { background-color: color-mix(in srgb, var(--accent-badge-bg) 20%, transparent); }
+:root .bg-blue-950\/30 { background-color: color-mix(in srgb, var(--accent-badge-bg) 30%, transparent); }
+:root .bg-blue-950\/40 { background-color: color-mix(in srgb, var(--accent-badge-bg) 40%, transparent); }
+:root .bg-blue-950\/50 { background-color: color-mix(in srgb, var(--accent-badge-bg) 50%, transparent); }
+:root .border-blue-800\/40 { border-color: color-mix(in srgb, var(--accent-badge-border) 40%, transparent); }
+:root .border-blue-800\/50 { border-color: color-mix(in srgb, var(--accent-badge-border) 50%, transparent); }
+:root .border-blue-900\/40 { border-color: color-mix(in srgb, var(--accent-badge-border) 40%, transparent); }
+
+/* Text tier — link/label text, and text sitting on a badge background.
+   Inverted by theme type: bright on dark themes, deep/saturated on
+   light themes (mirrors the pre-existing red/green/purple text rules). */
+:root .text-blue-200    { color: var(--accent-200); }
+:root .text-blue-300    { color: var(--accent-300); }
+:root .text-blue-300\/90 { color: color-mix(in srgb, var(--accent-300) 90%, transparent); }
+:root .text-blue-400    { color: var(--accent-400); }
+:root .text-blue-400\/80 { color: color-mix(in srgb, var(--accent-400) 80%, transparent); }
+:root .text-blue-500    { color: var(--accent-500); }

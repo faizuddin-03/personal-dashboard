@@ -110,6 +110,15 @@ export class ReschedulePage extends SlotPickerComponent {
     // the appointment is today/tomorrow — it can't be opened, and that's fine:
     // confirming the reschedule discards the current appointment anyway
     // ("you will lose your current appointment"), so we simply skip removal.
+    //
+    // NOTE: when the caller reached this calendar via
+    // ServiceRequestListingPage.clickReschedule() (the real, current UI
+    // flow), the old booking has ALREADY been auto-removed by that point —
+    // verified live, SIT2 — so this step is normally a harmless no-op (the
+    // stepper values read 0, nothing to remove). It only does real work when
+    // the calendar was reached by navigating ReschedulePage.navigate(txnId)
+    // directly (bypassing the listing/modal), which still leaves the old
+    // booking in place. Kept as-is so both entry points work correctly.
     await test.step(`Clear the existing booking on ${oldDate}`, async () => {
       if (await this.isDayBookable(oldDate)) {
         await this.openSlotModal(oldDate);

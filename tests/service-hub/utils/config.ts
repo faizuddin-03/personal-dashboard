@@ -61,8 +61,9 @@ export const ENV = {
     slotUnavailable:
       "Sorry, some selected time slot are booked. Please try again with another time slot or dates.",
     // 2.3.2.1 #6 (Reschedule Flow) — reschedule confirmation popup
+    // Verified live (SIT2): "lose", not "lost".
     rescheduleConfirm:
-      "Are you sure you want to reschedule? By proceeding you will lost your current appointment.",
+      "Are you sure you want to reschedule? By proceeding you will lose your current appointment.",
     // 2.3.2.1 #5 (Reschedule Flow, note iii) — system remark set when a
     // UCD reschedules to today's date via the portal.
     sameDayRescheduleRemark: "UCD rescheduled on the same day.",

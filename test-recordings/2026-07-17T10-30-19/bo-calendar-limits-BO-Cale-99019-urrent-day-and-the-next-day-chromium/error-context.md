@@ -1,0 +1,835 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: bo-calendar-limits.spec.ts >> BO Calendar & Limits >> BO reschedule for current day and the next day
+- Location: tests\service-hub\specs\bo-calendar-limits.spec.ts:294:7
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4] [cursor=pointer]: Back
+      - generic [ref=e5]: "Appointment Month:"
+      - textbox [ref=e6] [cursor=pointer]: July 2026
+      - button "Search" [ref=e7]
+      - generic [ref=e8]: "|"
+      - button "Add Appointment" [ref=e9]
+    - generic [ref=e10]: Appointment Calendar
+    - table [ref=e11]:
+      - rowgroup [ref=e12]:
+        - row "Date 10:00am - 12:00pm 2:00pm - 4:00pm" [ref=e13]:
+          - columnheader "Date" [ref=e14]
+          - columnheader "10:00am - 12:00pm" [ref=e15]
+          - columnheader "2:00pm - 4:00pm" [ref=e16]
+      - rowgroup [ref=e17]:
+        - row "01-07-2026 Morning - 0 Afternoon - 0" [ref=e18]:
+          - cell "01-07-2026 Morning - 0 Afternoon - 0" [ref=e19]:
+            - text: 01-07-2026
+            - generic [ref=e20]: Morning - 0
+            - generic [ref=e21]: Afternoon - 0
+          - cell [ref=e22]
+          - cell [ref=e23]
+        - row "02-07-2026 Morning - 0 Afternoon - 0" [ref=e24]:
+          - cell "02-07-2026 Morning - 0 Afternoon - 0" [ref=e25]:
+            - text: 02-07-2026
+            - generic [ref=e26]: Morning - 0
+            - generic [ref=e27]: Afternoon - 0
+          - cell [ref=e28]
+          - cell [ref=e29]
+        - row "03-07-2026 Morning - 0 Afternoon - 0" [ref=e30]:
+          - cell "03-07-2026 Morning - 0 Afternoon - 0" [ref=e31]:
+            - text: 03-07-2026
+            - generic [ref=e32]: Morning - 0
+            - generic [ref=e33]: Afternoon - 0
+          - cell [ref=e34]
+          - cell [ref=e35]
+        - row "04-07-2026 - -" [ref=e36]:
+          - cell "04-07-2026" [ref=e37]
+          - cell "-" [ref=e38]
+          - cell "-" [ref=e39]
+        - row "05-07-2026 - -" [ref=e40]:
+          - cell "05-07-2026" [ref=e41]
+          - cell "-" [ref=e42]
+          - cell "-" [ref=e43]
+        - row "06-07-2026 Morning - 0 Afternoon - 0" [ref=e44]:
+          - cell "06-07-2026 Morning - 0 Afternoon - 0" [ref=e45]:
+            - text: 06-07-2026
+            - generic [ref=e46]: Morning - 0
+            - generic [ref=e47]: Afternoon - 0
+          - cell [ref=e48]
+          - cell [ref=e49]
+        - row "07-07-2026 Morning - 0 Afternoon - 0" [ref=e50]:
+          - cell "07-07-2026 Morning - 0 Afternoon - 0" [ref=e51]:
+            - text: 07-07-2026
+            - generic [ref=e52]: Morning - 0
+            - generic [ref=e53]: Afternoon - 0
+          - cell [ref=e54]
+          - cell [ref=e55]
+        - row "08-07-2026 Morning - 0 Afternoon - 0" [ref=e56]:
+          - cell "08-07-2026 Morning - 0 Afternoon - 0" [ref=e57]:
+            - text: 08-07-2026
+            - generic [ref=e58]: Morning - 0
+            - generic [ref=e59]: Afternoon - 0
+          - cell [ref=e60]
+          - cell [ref=e61]
+        - row "09-07-2026 Morning - 0 Afternoon - 0" [ref=e62]:
+          - cell "09-07-2026 Morning - 0 Afternoon - 0" [ref=e63]:
+            - text: 09-07-2026
+            - generic [ref=e64]: Morning - 0
+            - generic [ref=e65]: Afternoon - 0
+          - cell [ref=e66]
+          - cell [ref=e67]
+        - row "10-07-2026 Morning - 0 Afternoon - 0" [ref=e68]:
+          - cell "10-07-2026 Morning - 0 Afternoon - 0" [ref=e69]:
+            - text: 10-07-2026
+            - generic [ref=e70]: Morning - 0
+            - generic [ref=e71]: Afternoon - 0
+          - cell [ref=e72]
+          - cell [ref=e73]
+        - row "11-07-2026 - -" [ref=e74]:
+          - cell "11-07-2026" [ref=e75]
+          - cell "-" [ref=e76]
+          - cell "-" [ref=e77]
+        - row "12-07-2026 - -" [ref=e78]:
+          - cell "12-07-2026" [ref=e79]
+          - cell "-" [ref=e80]
+          - cell "-" [ref=e81]
+        - row "13-07-2026 Morning - 0 Afternoon - 0" [ref=e82]:
+          - cell "13-07-2026 Morning - 0 Afternoon - 0" [ref=e83]:
+            - text: 13-07-2026
+            - generic [ref=e84]: Morning - 0
+            - generic [ref=e85]: Afternoon - 0
+          - cell [ref=e86]
+          - cell [ref=e87]
+        - row "14-07-2026 Morning - 0 Afternoon - 0" [ref=e88]:
+          - cell "14-07-2026 Morning - 0 Afternoon - 0" [ref=e89]:
+            - text: 14-07-2026
+            - generic [ref=e90]: Morning - 0
+            - generic [ref=e91]: Afternoon - 0
+          - cell [ref=e92]
+          - cell [ref=e93]
+        - row "15-07-2026 Morning - 0 Afternoon - 0" [ref=e94]:
+          - cell "15-07-2026 Morning - 0 Afternoon - 0" [ref=e95]:
+            - text: 15-07-2026
+            - generic [ref=e96]: Morning - 0
+            - generic [ref=e97]: Afternoon - 0
+          - cell [ref=e98]
+          - cell [ref=e99]
+        - row "16-07-2026 Morning - 0 Afternoon - 0" [ref=e100]:
+          - cell "16-07-2026 Morning - 0 Afternoon - 0" [ref=e101]:
+            - text: 16-07-2026
+            - generic [ref=e102]: Morning - 0
+            - generic [ref=e103]: Afternoon - 0
+          - cell [ref=e104]
+          - cell [ref=e105]
+        - row "17-07-2026 Morning - 0 Afternoon - 1 Reschedule 1. TRAZE" [ref=e106]:
+          - cell "17-07-2026 Morning - 0 Afternoon - 1" [ref=e107]:
+            - text: 17-07-2026
+            - generic [ref=e108]: Morning - 0
+            - generic [ref=e109]: Afternoon - 1
+          - cell [ref=e110]
+          - cell "Reschedule 1. TRAZE" [ref=e111]:
+            - list [ref=e112]:
+              - listitem [ref=e113]:
+                - generic [ref=e114] [cursor=pointer]: Reschedule
+                - text: 1. TRAZE
+        - row "18-07-2026 - -" [ref=e115]:
+          - cell "18-07-2026" [ref=e116]
+          - cell "-" [ref=e117]
+          - cell "-" [ref=e118]
+        - row "19-07-2026 - -" [ref=e119]:
+          - cell "19-07-2026" [ref=e120]
+          - cell "-" [ref=e121]
+          - cell "-" [ref=e122]
+        - row "20-07-2026 Morning - 9 (Full) Afternoon - 3 (Full) Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. FAIZUDDIN AUTO TEST Reschedule 5. FAIZUDDIN AUTO TEST Reschedule 6. FAIZUDDIN AUTO TEST Reschedule 7. FAIZUDDIN AUTO TEST Reschedule 8. 193 AUTO TRADING Reschedule 9. FAIZUDDIN AUTO TEST Reschedule 1. MUSICHOB SDN BHD Reschedule 2. MUSICHOB SDN BHD Reschedule 3. MUSICHOB SDN BHD" [ref=e123]:
+          - cell "20-07-2026 Morning - 9 (Full) Afternoon - 3 (Full)" [ref=e124]:
+            - text: 20-07-2026
+            - generic [ref=e125]: Morning - 9 (Full)
+            - generic [ref=e126]: Afternoon - 3 (Full)
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. FAIZUDDIN AUTO TEST Reschedule 5. FAIZUDDIN AUTO TEST Reschedule 6. FAIZUDDIN AUTO TEST Reschedule 7. FAIZUDDIN AUTO TEST Reschedule 8. 193 AUTO TRADING Reschedule 9. FAIZUDDIN AUTO TEST" [ref=e127]:
+            - list [ref=e128]:
+              - listitem [ref=e129]:
+                - generic [ref=e130] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e131]:
+                - generic [ref=e132] [cursor=pointer]: Reschedule
+                - text: 2. FAIZUDDIN AUTO TEST
+              - listitem [ref=e133]:
+                - generic [ref=e134] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+              - listitem [ref=e135]:
+                - generic [ref=e136] [cursor=pointer]: Reschedule
+                - text: 4. FAIZUDDIN AUTO TEST
+              - listitem [ref=e137]:
+                - generic [ref=e138] [cursor=pointer]: Reschedule
+                - text: 5. FAIZUDDIN AUTO TEST
+              - listitem [ref=e139]:
+                - generic [ref=e140] [cursor=pointer]: Reschedule
+                - text: 6. FAIZUDDIN AUTO TEST
+              - listitem [ref=e141]:
+                - generic [ref=e142] [cursor=pointer]: Reschedule
+                - text: 7. FAIZUDDIN AUTO TEST
+              - listitem [ref=e143]:
+                - generic [ref=e144] [cursor=pointer]: Reschedule
+                - text: 8. 193 AUTO TRADING
+              - listitem [ref=e145]:
+                - generic [ref=e146] [cursor=pointer]: Reschedule
+                - text: 9. FAIZUDDIN AUTO TEST
+          - cell "Reschedule 1. MUSICHOB SDN BHD Reschedule 2. MUSICHOB SDN BHD Reschedule 3. MUSICHOB SDN BHD" [ref=e147]:
+            - list [ref=e148]:
+              - listitem [ref=e149]:
+                - generic [ref=e150] [cursor=pointer]: Reschedule
+                - text: 1. MUSICHOB SDN BHD
+              - listitem [ref=e151]:
+                - generic [ref=e152] [cursor=pointer]: Reschedule
+                - text: 2. MUSICHOB SDN BHD
+              - listitem [ref=e153]:
+                - generic [ref=e154] [cursor=pointer]: Reschedule
+                - text: 3. MUSICHOB SDN BHD
+        - row "21-07-2026 Morning - 8 (Full) Afternoon - 4 (Full) Reschedule 1. FAIZUDDIN AUTO TEST 2. MUSICHOB SDN BHD Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. FAIZUDDIN AUTO TEST Reschedule 5. MUSICHOB SDN BHD Reschedule 6. FAIZUDDIN AUTO TEST Reschedule 7. FAIZUDDIN AUTO TEST Reschedule 8. MUSICHOB SDN BHD Reschedule 1. MUSICHOB SDN BHD Reschedule 2. MUSICHOB SDN BHD Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. MUSICHOB SDN BHD" [ref=e155]:
+          - cell "21-07-2026 Morning - 8 (Full) Afternoon - 4 (Full)" [ref=e156]:
+            - text: 21-07-2026
+            - generic [ref=e157]: Morning - 8 (Full)
+            - generic [ref=e158]: Afternoon - 4 (Full)
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST 2. MUSICHOB SDN BHD Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. FAIZUDDIN AUTO TEST Reschedule 5. MUSICHOB SDN BHD Reschedule 6. FAIZUDDIN AUTO TEST Reschedule 7. FAIZUDDIN AUTO TEST Reschedule 8. MUSICHOB SDN BHD" [ref=e159]:
+            - list [ref=e160]:
+              - listitem [ref=e161]:
+                - generic [ref=e162] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e163]: 2. MUSICHOB SDN BHD
+              - listitem [ref=e164]:
+                - generic [ref=e165] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+              - listitem [ref=e166]:
+                - generic [ref=e167] [cursor=pointer]: Reschedule
+                - text: 4. FAIZUDDIN AUTO TEST
+              - listitem [ref=e168]:
+                - generic [ref=e169] [cursor=pointer]: Reschedule
+                - text: 5. MUSICHOB SDN BHD
+              - listitem [ref=e170]:
+                - generic [ref=e171] [cursor=pointer]: Reschedule
+                - text: 6. FAIZUDDIN AUTO TEST
+              - listitem [ref=e172]:
+                - generic [ref=e173] [cursor=pointer]: Reschedule
+                - text: 7. FAIZUDDIN AUTO TEST
+              - listitem [ref=e174]:
+                - generic [ref=e175] [cursor=pointer]: Reschedule
+                - text: 8. MUSICHOB SDN BHD
+          - cell "Reschedule 1. MUSICHOB SDN BHD Reschedule 2. MUSICHOB SDN BHD Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. MUSICHOB SDN BHD" [ref=e176]:
+            - list [ref=e177]:
+              - listitem [ref=e178]:
+                - generic [ref=e179] [cursor=pointer]: Reschedule
+                - text: 1. MUSICHOB SDN BHD
+              - listitem [ref=e180]:
+                - generic [ref=e181] [cursor=pointer]: Reschedule
+                - text: 2. MUSICHOB SDN BHD
+              - listitem [ref=e182]:
+                - generic [ref=e183] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+              - listitem [ref=e184]:
+                - generic [ref=e185] [cursor=pointer]: Reschedule
+                - text: 4. MUSICHOB SDN BHD
+        - row "22-07-2026 Morning - 3 (Full) Afternoon - 3 (Full) Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. JIMI HUUH Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. CHARRRRRR CHICKCOLI SDN BHD123321 Reschedule 3. CHARRRRRR CHICKCOLI SDN BHD123321 Reschedule 4. FAIZUDDIN AUTO TEST" [ref=e186]:
+          - cell "22-07-2026 Morning - 3 (Full) Afternoon - 3 (Full)" [ref=e187]:
+            - text: 22-07-2026
+            - generic [ref=e188]: Morning - 3 (Full)
+            - generic [ref=e189]: Afternoon - 3 (Full)
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. JIMI HUUH" [ref=e190]:
+            - list [ref=e191]:
+              - listitem [ref=e192]:
+                - generic [ref=e193] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e194]:
+                - generic [ref=e195] [cursor=pointer]: Reschedule
+                - text: 2. FAIZUDDIN AUTO TEST
+              - listitem [ref=e196]:
+                - generic [ref=e197] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+              - listitem [ref=e198]:
+                - generic [ref=e199] [cursor=pointer]: Reschedule
+                - text: 4. JIMI HUUH
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. CHARRRRRR CHICKCOLI SDN BHD123321 Reschedule 3. CHARRRRRR CHICKCOLI SDN BHD123321 Reschedule 4. FAIZUDDIN AUTO TEST" [ref=e200]:
+            - list [ref=e201]:
+              - listitem [ref=e202]:
+                - generic [ref=e203] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e204]:
+                - generic [ref=e205] [cursor=pointer]: Reschedule
+                - text: 2. CHARRRRRR CHICKCOLI SDN BHD123321
+              - listitem [ref=e206]:
+                - generic [ref=e207] [cursor=pointer]: Reschedule
+                - text: 3. CHARRRRRR CHICKCOLI SDN BHD123321
+              - listitem [ref=e208]:
+                - generic [ref=e209] [cursor=pointer]: Reschedule
+                - text: 4. FAIZUDDIN AUTO TEST
+        - row "23-07-2026 Morning - 3 (Full) Afternoon - 4 (Full) Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. JIMI HUUH Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. FAIZUDDIN AUTO TEST" [ref=e210]:
+          - cell "23-07-2026 Morning - 3 (Full) Afternoon - 4 (Full)" [ref=e211]:
+            - text: 23-07-2026
+            - generic [ref=e212]: Morning - 3 (Full)
+            - generic [ref=e213]: Afternoon - 4 (Full)
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. JIMI HUUH Reschedule 3. FAIZUDDIN AUTO TEST" [ref=e214]:
+            - list [ref=e215]:
+              - listitem [ref=e216]:
+                - generic [ref=e217] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e218]:
+                - generic [ref=e219] [cursor=pointer]: Reschedule
+                - text: 2. JIMI HUUH
+              - listitem [ref=e220]:
+                - generic [ref=e221] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. FAIZUDDIN AUTO TEST" [ref=e222]:
+            - list [ref=e223]:
+              - listitem [ref=e224]:
+                - generic [ref=e225] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e226]:
+                - generic [ref=e227] [cursor=pointer]: Reschedule
+                - text: 2. FAIZUDDIN AUTO TEST
+              - listitem [ref=e228]:
+                - generic [ref=e229] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+              - listitem [ref=e230]:
+                - generic [ref=e231] [cursor=pointer]: Reschedule
+                - text: 4. FAIZUDDIN AUTO TEST
+        - row "24-07-2026 Morning - 3 (Full) Afternoon - 0 Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST" [ref=e232]:
+          - cell "24-07-2026 Morning - 3 (Full) Afternoon - 0" [ref=e233]:
+            - text: 24-07-2026
+            - generic [ref=e234]: Morning - 3 (Full)
+            - generic [ref=e235]: Afternoon - 0
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST" [ref=e236]:
+            - list [ref=e237]:
+              - listitem [ref=e238]:
+                - generic [ref=e239] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e240]:
+                - generic [ref=e241] [cursor=pointer]: Reschedule
+                - text: 2. FAIZUDDIN AUTO TEST
+              - listitem [ref=e242]:
+                - generic [ref=e243] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+          - cell [ref=e244]
+        - row "25-07-2026 - -" [ref=e245]:
+          - cell "25-07-2026" [ref=e246]
+          - cell "-" [ref=e247]
+          - cell "-" [ref=e248]
+        - row "26-07-2026 - -" [ref=e249]:
+          - cell "26-07-2026" [ref=e250]
+          - cell "-" [ref=e251]
+          - cell "-" [ref=e252]
+        - row "27-07-2026 Morning - 2 Afternoon - 1 Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 1. FAIZUDDIN AUTO TEST" [ref=e253]:
+          - cell "27-07-2026 Morning - 2 Afternoon - 1" [ref=e254]:
+            - text: 27-07-2026
+            - generic [ref=e255]: Morning - 2
+            - generic [ref=e256]: Afternoon - 1
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST" [ref=e257]:
+            - list [ref=e258]:
+              - listitem [ref=e259]:
+                - generic [ref=e260] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e261]:
+                - generic [ref=e262] [cursor=pointer]: Reschedule
+                - text: 2. FAIZUDDIN AUTO TEST
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST" [ref=e263]:
+            - list [ref=e264]:
+              - listitem [ref=e265]:
+                - generic [ref=e266] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+        - row "28-07-2026 Morning - 0 Afternoon - 0" [ref=e267]:
+          - cell "28-07-2026 Morning - 0 Afternoon - 0" [ref=e268]:
+            - text: 28-07-2026
+            - generic [ref=e269]: Morning - 0
+            - generic [ref=e270]: Afternoon - 0
+          - cell [ref=e271]
+          - cell [ref=e272]
+        - row "29-07-2026 Morning - 0 Afternoon - 0" [ref=e273]:
+          - cell "29-07-2026 Morning - 0 Afternoon - 0" [ref=e274]:
+            - text: 29-07-2026
+            - generic [ref=e275]: Morning - 0
+            - generic [ref=e276]: Afternoon - 0
+          - cell [ref=e277]
+          - cell [ref=e278]
+        - row "30-07-2026 Morning - 1 Afternoon - 1 Reschedule 1. JIMI HUUH Reschedule 1. JIMI HUUH" [ref=e279]:
+          - cell "30-07-2026 Morning - 1 Afternoon - 1" [ref=e280]:
+            - text: 30-07-2026
+            - generic [ref=e281]: Morning - 1
+            - generic [ref=e282]: Afternoon - 1
+          - cell "Reschedule 1. JIMI HUUH" [ref=e283]:
+            - list [ref=e284]:
+              - listitem [ref=e285]:
+                - generic [ref=e286] [cursor=pointer]: Reschedule
+                - text: 1. JIMI HUUH
+          - cell "Reschedule 1. JIMI HUUH" [ref=e287]:
+            - list [ref=e288]:
+              - listitem [ref=e289]:
+                - generic [ref=e290] [cursor=pointer]: Reschedule
+                - text: 1. JIMI HUUH
+        - row "31-07-2026 Morning - 10 (Full) Afternoon - 5 (Full) Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. EAST HUAT AUTO SDN BHD Reschedule 5. FAIZUDDIN AUTO TEST Reschedule 6. FAIZUDDIN AUTO TEST Reschedule 7. FAIZUDDIN AUTO TEST Reschedule 8. MUSICHOB SDN BHD Reschedule 9. FAIZUDDIN AUTO TEST Reschedule 10. FAIZUDDIN AUTO TEST Reschedule 1. JIMI HUUH Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. FAIZUDDIN AUTO TEST Reschedule 5. MUSICHOB SDN BHD" [ref=e291]:
+          - cell "31-07-2026 Morning - 10 (Full) Afternoon - 5 (Full)" [ref=e292]:
+            - text: 31-07-2026
+            - generic [ref=e293]: Morning - 10 (Full)
+            - generic [ref=e294]: Afternoon - 5 (Full)
+          - cell "Reschedule 1. FAIZUDDIN AUTO TEST Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. EAST HUAT AUTO SDN BHD Reschedule 5. FAIZUDDIN AUTO TEST Reschedule 6. FAIZUDDIN AUTO TEST Reschedule 7. FAIZUDDIN AUTO TEST Reschedule 8. MUSICHOB SDN BHD Reschedule 9. FAIZUDDIN AUTO TEST Reschedule 10. FAIZUDDIN AUTO TEST" [ref=e295]:
+            - list [ref=e296]:
+              - listitem [ref=e297]:
+                - generic [ref=e298] [cursor=pointer]: Reschedule
+                - text: 1. FAIZUDDIN AUTO TEST
+              - listitem [ref=e299]:
+                - generic [ref=e300] [cursor=pointer]: Reschedule
+                - text: 2. FAIZUDDIN AUTO TEST
+              - listitem [ref=e301]:
+                - generic [ref=e302] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+              - listitem [ref=e303]:
+                - generic [ref=e304] [cursor=pointer]: Reschedule
+                - text: 4. EAST HUAT AUTO SDN BHD
+              - listitem [ref=e305]:
+                - generic [ref=e306] [cursor=pointer]: Reschedule
+                - text: 5. FAIZUDDIN AUTO TEST
+              - listitem [ref=e307]:
+                - generic [ref=e308] [cursor=pointer]: Reschedule
+                - text: 6. FAIZUDDIN AUTO TEST
+              - listitem [ref=e309]:
+                - generic [ref=e310] [cursor=pointer]: Reschedule
+                - text: 7. FAIZUDDIN AUTO TEST
+              - listitem [ref=e311]:
+                - generic [ref=e312] [cursor=pointer]: Reschedule
+                - text: 8. MUSICHOB SDN BHD
+              - listitem [ref=e313]:
+                - generic [ref=e314] [cursor=pointer]: Reschedule
+                - text: 9. FAIZUDDIN AUTO TEST
+              - listitem [ref=e315]:
+                - generic [ref=e316] [cursor=pointer]: Reschedule
+                - text: 10. FAIZUDDIN AUTO TEST
+          - cell "Reschedule 1. JIMI HUUH Reschedule 2. FAIZUDDIN AUTO TEST Reschedule 3. FAIZUDDIN AUTO TEST Reschedule 4. FAIZUDDIN AUTO TEST Reschedule 5. MUSICHOB SDN BHD" [ref=e317]:
+            - list [ref=e318]:
+              - listitem [ref=e319]:
+                - generic [ref=e320] [cursor=pointer]: Reschedule
+                - text: 1. JIMI HUUH
+              - listitem [ref=e321]:
+                - generic [ref=e322] [cursor=pointer]: Reschedule
+                - text: 2. FAIZUDDIN AUTO TEST
+              - listitem [ref=e323]:
+                - generic [ref=e324] [cursor=pointer]: Reschedule
+                - text: 3. FAIZUDDIN AUTO TEST
+              - listitem [ref=e325]:
+                - generic [ref=e326] [cursor=pointer]: Reschedule
+                - text: 4. FAIZUDDIN AUTO TEST
+              - listitem [ref=e327]:
+                - generic [ref=e328] [cursor=pointer]: Reschedule
+                - text: 5. MUSICHOB SDN BHD
+  - table [ref=e330]:
+    - rowgroup [ref=e331]:
+      - row "Home | Menu 2 Pending Transaction Found! Jason Seah, My Account | Logout" [ref=e332]:
+        - cell "Home | Menu 2 Pending Transaction Found!" [ref=e333]:
+          - generic [ref=e334]:
+            - list [ref=e335]:
+              - listitem [ref=e336]:
+                - link "Home |" [ref=e337] [cursor=pointer]:
+                  - /url: /uat1/home/
+              - listitem [ref=e338]:
+                - link "Menu" [ref=e339] [cursor=pointer]:
+                  - /url: "#"
+                  - text: Menu
+                  - img [ref=e340]
+            - generic [ref=e341] [cursor=pointer]: 2 Pending Transaction Found!
+        - cell "Jason Seah, My Account | Logout" [ref=e342]:
+          - list [ref=e344]:
+            - listitem [ref=e345]: Jason Seah,
+            - listitem [ref=e346]:
+              - link "My Account |" [ref=e347] [cursor=pointer]:
+                - /url: /uat1/view/ucd/my-account/view.do?type=Office
+            - listitem [ref=e348]:
+              - link "Logout" [ref=e349] [cursor=pointer]:
+                - /url: "#"
+  - img [ref=e351]
+  - table [ref=e353]:
+    - rowgroup [ref=e354]:
+      - row "Best Compatible With Mozilla Firefox V36.0.4 Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved. Contact Us | Terms & Conditions | Privacy" [ref=e355]:
+        - cell [ref=e356]
+        - cell "Best Compatible With Mozilla Firefox V36.0.4 Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved. Contact Us | Terms & Conditions | Privacy" [ref=e357]:
+          - text: Best Compatible With Mozilla Firefox V36.0.4
+          - text: Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.
+          - link "Contact Us" [ref=e358] [cursor=pointer]:
+            - /url: "#"
+          - text: "|"
+          - link "Terms & Conditions" [ref=e359] [cursor=pointer]:
+            - /url: "#"
+          - text: "|"
+          - link "Privacy" [ref=e360] [cursor=pointer]:
+            - /url: "#"
+        - cell [ref=e361]:
+          - img [ref=e362]
+  - generic [ref=e363]:
+    - generic [ref=e364]:
+      - generic "Prev" [ref=e365]:
+        - generic [ref=e366]: Prev
+      - generic "Next" [ref=e367]:
+        - generic [ref=e368]: Next
+      - generic:
+        - combobox [ref=e369]:
+          - option "Jul" [selected]
+          - option "Aug"
+          - option "Sep"
+          - option "Oct"
+          - option "Nov"
+          - option "Dec"
+        - combobox [ref=e370]:
+          - option "2026" [selected]
+          - option "2027"
+          - option "2028"
+          - option "2029"
+          - option "2030"
+          - option "2031"
+          - option "2032"
+          - option "2033"
+          - option "2034"
+          - option "2035"
+          - option "2036"
+    - table [ref=e371]:
+      - rowgroup [ref=e372]:
+        - row "Su Mo Tu We Th Fr Sa" [ref=e373]:
+          - columnheader "Su" [ref=e374]
+          - columnheader "Mo" [ref=e375]
+          - columnheader "Tu" [ref=e376]
+          - columnheader "We" [ref=e377]
+          - columnheader "Th" [ref=e378]
+          - columnheader "Fr" [ref=e379]
+          - columnheader "Sa" [ref=e380]
+      - rowgroup [ref=e381]:
+        - row "1 2 3 4" [ref=e382]:
+          - cell [ref=e383]
+          - cell [ref=e384]
+          - cell [ref=e385]
+          - cell "1" [ref=e386]:
+            - generic [ref=e387]: "1"
+          - cell "2" [ref=e388]:
+            - generic [ref=e389]: "2"
+          - cell "3" [ref=e390]:
+            - generic [ref=e391]: "3"
+          - cell "4" [ref=e392]:
+            - generic [ref=e393]: "4"
+        - row "5 6 7 8 9 10 11" [ref=e394]:
+          - cell "5" [ref=e395]:
+            - generic [ref=e396]: "5"
+          - cell "6" [ref=e397]:
+            - generic [ref=e398]: "6"
+          - cell "7" [ref=e399]:
+            - generic [ref=e400]: "7"
+          - cell "8" [ref=e401]:
+            - generic [ref=e402]: "8"
+          - cell "9" [ref=e403]:
+            - generic [ref=e404]: "9"
+          - cell "10" [ref=e405]:
+            - generic [ref=e406]: "10"
+          - cell "11" [ref=e407]:
+            - generic [ref=e408]: "11"
+        - row "12 13 14 15 16 17 18" [ref=e409]:
+          - cell "12" [ref=e410]:
+            - generic [ref=e411]: "12"
+          - cell "13" [ref=e412]:
+            - generic [ref=e413]: "13"
+          - cell "14" [ref=e414]:
+            - generic [ref=e415]: "14"
+          - cell "15" [ref=e416]:
+            - generic [ref=e417]: "15"
+          - cell "16" [ref=e418]:
+            - generic [ref=e419]: "16"
+          - cell "17" [ref=e420]:
+            - link "17" [ref=e421] [cursor=pointer]:
+              - /url: "#"
+          - cell "18" [ref=e422]:
+            - generic [ref=e423]: "18"
+        - row "19 20 21 22 23 24 25" [ref=e424]:
+          - cell "19" [ref=e425]:
+            - generic [ref=e426]: "19"
+          - cell "20" [ref=e427]:
+            - link "20" [ref=e428] [cursor=pointer]:
+              - /url: "#"
+          - cell "21" [ref=e429]:
+            - link "21" [ref=e430] [cursor=pointer]:
+              - /url: "#"
+          - cell "22" [ref=e431]:
+            - link "22" [ref=e432] [cursor=pointer]:
+              - /url: "#"
+          - cell "23" [ref=e433]:
+            - link "23" [ref=e434] [cursor=pointer]:
+              - /url: "#"
+          - cell "24" [ref=e435]:
+            - link "24" [ref=e436] [cursor=pointer]:
+              - /url: "#"
+          - cell "25" [ref=e437]:
+            - generic [ref=e438]: "25"
+        - row "26 27 28 29 30 31" [ref=e439]:
+          - cell "26" [ref=e440]:
+            - generic [ref=e441]: "26"
+          - cell "27" [ref=e442]:
+            - link "27" [ref=e443] [cursor=pointer]:
+              - /url: "#"
+          - cell "28" [ref=e444]:
+            - link "28" [ref=e445] [cursor=pointer]:
+              - /url: "#"
+          - cell "29" [ref=e446]:
+            - link "29" [ref=e447] [cursor=pointer]:
+              - /url: "#"
+          - cell "30" [ref=e448]:
+            - link "30" [ref=e449] [cursor=pointer]:
+              - /url: "#"
+          - cell "31" [ref=e450]:
+            - link "31" [ref=e451] [cursor=pointer]:
+              - /url: "#"
+          - cell [ref=e452]
+  - dialog "Reschedule Appointment" [active] [ref=e454]:
+    - generic [ref=e456]: Reschedule Appointment
+    - generic [ref=e457]:
+      - generic [ref=e458]:
+        - generic [ref=e459]: "Company Name:"
+        - text: TRAZE
+      - generic [ref=e460]:
+        - generic [ref=e461]: "Installation Status:"
+        - text: Pending
+      - generic [ref=e462]:
+        - generic [ref=e463]: "Installation Service Reference No.:"
+        - text: SR67000121
+      - generic [ref=e464]:
+        - generic [ref=e465]: "Current Appointment Date:"
+        - text: 17-07-2026 2:00pm - 4:00pm
+      - generic [ref=e466]:
+        - generic [ref=e467]: "New Appointment Date*:"
+        - textbox [ref=e468]
+      - generic [ref=e469]:
+        - generic [ref=e470]: "Time Slot*:"
+        - generic [ref=e471]:
+          - generic [ref=e472]:
+            - radio "10:00am - 12:00pm" [ref=e473]
+            - text: 10:00am - 12:00pm
+          - generic [ref=e474]:
+            - radio "2:00pm - 4:00pm" [ref=e475]
+            - text: 2:00pm - 4:00pm
+    - generic [ref=e476]:
+      - button "Confirm" [ref=e477] [cursor=pointer]
+      - button "Cancel" [ref=e478] [cursor=pointer]
+```
+
+# Test source
+
+```ts
+  204 |     });
+  205 | 
+  206 |     await test.step("Observe on UCD Service Request Listing (on-screen proxy for the email)", async () => {
+  207 |       const ucdCtx = await openTrackedContext(browser, testInfo);
+  208 |       const ucdPage = await ucdCtx.newPage();
+  209 |       try {
+  210 |         const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
+  211 |         const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
+  212 |         await ucdLogin.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
+  213 |         await ucdListing.navigate();
+  214 |         await ucdListing.searchByReferenceNo(ref);
+  215 |         const row = await ucdListing.findRowByRefNo(ref);
+  216 |         // Best-effort: only assert when this UCD account owns the reference.
+  217 |         if (row) {
+  218 |           expect((await ucdListing.getRowServiceType(row)).length).toBeGreaterThan(0);
+  219 |         }
+  220 |       } finally {
+  221 |         await closeTrackedContext(ucdCtx, testInfo, "UCD verifies listing");
+  222 |       }
+  223 |     });
+  224 |   });
+  225 | 
+  226 |   test("BO add for current day and the next day", async ({ boCalendarPage }) => {
+  227 |     const dialog = await prepareAddDialogWithListingSeed(boCalendarPage);
+  228 |     if (!dialog) {
+  229 |       test.skip(true, "No valid BO listing seed (Payment Status=OK, Installation Request='-') for Add Appointment.");
+  230 |       return;
+  231 |     }
+  232 | 
+  233 |     await test.step("Expected: able to proceed with booking today and tomorrow", async () => {
+  234 |       const first = nextBusinessDate(boCalendarPage.today());
+  235 |       const second = nextBusinessDate(addDaysIso(first, 1));
+  236 |       expect(await boCalendarPage.isAddDateSelectable(first)).toBe(true);
+  237 |       expect(await boCalendarPage.isAddDateSelectable(second)).toBe(true);
+  238 |     });
+  239 |     await boCalendarPage.closeAddDialog(dialog);
+  240 |   });
+  241 | 
+  242 |   test("BO add for previous dates", async ({ boCalendarPage }) => {
+  243 |     await boCalendarPage.navigate();
+  244 |     const dialog = await boCalendarPage.openAddDialog();
+  245 |     await test.step("Expected: a previous date is not selectable", async () => {
+  246 |       expect(await boCalendarPage.isAddDateSelectable(boCalendarPage.yesterday())).toBe(false);
+  247 |     });
+  248 |     await boCalendarPage.closeAddDialog(dialog);
+  249 |   });
+  250 | 
+  251 |   test("BO book future date more than 2 months", async ({ boCalendarPage }) => {
+  252 |     const dialog = await prepareAddDialogWithListingSeed(boCalendarPage);
+  253 |     if (!dialog) {
+  254 |       test.skip(true, "No valid BO listing seed (Payment Status=OK, Installation Request='-') for Add Appointment.");
+  255 |       return;
+  256 |     }
+  257 |     const far = nextBusinessDate(boCalendarPage.dateMonthsAhead(3));
+  258 |     await test.step(`Expected: ${far} (>2 months out) CAN be booked by BO`, async () => {
+  259 |       expect(await boCalendarPage.isAddDateSelectable(far)).toBe(true);
+  260 |     });
+  261 |     await boCalendarPage.closeAddDialog(dialog);
+  262 |   });
+  263 | 
+  264 |   test("BO book weekend dates", async ({ boCalendarPage }) => {
+  265 |     await boCalendarPage.navigate();
+  266 |     const dialog = await boCalendarPage.openAddDialog();
+  267 |     const weekend = boCalendarPage.nextWeekend();
+  268 |     await test.step(`Expected: weekend ${weekend} is greyed out / unclickable`, async () => {
+  269 |       expect(await boCalendarPage.isAddDateSelectable(weekend)).toBe(false);
+  270 |     });
+  271 |     await boCalendarPage.closeAddDialog(dialog);
+  272 |   });
+  273 | 
+  274 |   test("BO book Public Holiday", async ({ boCalendarPage }) => {
+  275 |     const ph = ENV.publicHoliday;
+  276 |     if (!ph) {
+  277 |       test.skip(true, "No Public Holiday date provided — key one into the runner's Test data panel.");
+  278 |       return;
+  279 |     }
+  280 |     await boCalendarPage.navigate();
+  281 |     const dialog = await boCalendarPage.openAddDialog();
+  282 |     await test.step(`Expected: public holiday ${ph} is greyed out / unclickable`, async () => {
+  283 |       expect(await boCalendarPage.isAddDateSelectable(ph)).toBe(false);
+  284 |     });
+  285 |     await boCalendarPage.closeAddDialog(dialog);
+  286 |   });
+  287 | 
+  288 |   // ── Reschedule-entry parity ──
+  289 |   // The QA doc pairs every Add scenario above with a Reschedule one too —
+  290 |   // these exercise the Reschedule dialog's OWN #ac-rs-date datepicker
+  291 |   // (isRescheduleDateSelectable), rather than assuming it behaves the same
+  292 |   // as Add's #ac-add-date.
+  293 | 
+  294 |   test("BO reschedule for current day and the next day", async ({ boCalendarPage }) => {
+  295 |     await boCalendarPage.navigate();
+  296 |     const dialog = await boCalendarPage.openRescheduleDialogOnly();
+  297 |     if (!dialog) {
+  298 |       test.skip(true, "No listed appointment to reschedule in this month");
+  299 |       return;
+  300 |     }
+  301 |     await test.step("Expected: able to reschedule into today and tomorrow", async () => {
+  302 |       const first = nextBusinessDate(boCalendarPage.today());
+  303 |       const second = nextBusinessDate(addDaysIso(first, 1));
+> 304 |       expect(await boCalendarPage.isRescheduleDateSelectable(first)).toBe(true);
+      |                                                                      ^ Error: expect(received).toBe(expected) // Object.is equality
+  305 |       expect(await boCalendarPage.isRescheduleDateSelectable(second)).toBe(true);
+  306 |     });
+  307 |     await boCalendarPage.closeRescheduleDialog(dialog);
+  308 |   });
+  309 | 
+  310 |   test("BO reschedule for previous dates", async ({ boCalendarPage }) => {
+  311 |     await boCalendarPage.navigate();
+  312 |     const dialog = await boCalendarPage.openRescheduleDialogOnly();
+  313 |     if (!dialog) {
+  314 |       test.skip(true, "No listed appointment to reschedule in this month");
+  315 |       return;
+  316 |     }
+  317 |     await test.step("Expected: a previous date is not selectable", async () => {
+  318 |       expect(await boCalendarPage.isRescheduleDateSelectable(boCalendarPage.yesterday())).toBe(false);
+  319 |     });
+  320 |     await boCalendarPage.closeRescheduleDialog(dialog);
+  321 |   });
+  322 | 
+  323 |   test("BO reschedule future date more than 2 months", async ({ boCalendarPage }) => {
+  324 |     await boCalendarPage.navigate();
+  325 |     const dialog = await boCalendarPage.openRescheduleDialogOnly();
+  326 |     if (!dialog) {
+  327 |       test.skip(true, "No listed appointment to reschedule in this month");
+  328 |       return;
+  329 |     }
+  330 |     const far = nextBusinessDate(boCalendarPage.dateMonthsAhead(3));
+  331 |     await test.step(`Expected: ${far} (>2 months out) CAN be rescheduled into by BO`, async () => {
+  332 |       expect(await boCalendarPage.isRescheduleDateSelectable(far)).toBe(true);
+  333 |     });
+  334 |     await boCalendarPage.closeRescheduleDialog(dialog);
+  335 |   });
+  336 | 
+  337 |   test("BO reschedule weekend dates", async ({ boCalendarPage }) => {
+  338 |     await boCalendarPage.navigate();
+  339 |     const dialog = await boCalendarPage.openRescheduleDialogOnly();
+  340 |     if (!dialog) {
+  341 |       test.skip(true, "No listed appointment to reschedule in this month");
+  342 |       return;
+  343 |     }
+  344 |     const weekend = boCalendarPage.nextWeekend();
+  345 |     await test.step(`Expected: weekend ${weekend} is greyed out / unclickable`, async () => {
+  346 |       expect(await boCalendarPage.isRescheduleDateSelectable(weekend)).toBe(false);
+  347 |     });
+  348 |     await boCalendarPage.closeRescheduleDialog(dialog);
+  349 |   });
+  350 | 
+  351 |   test("BO reschedule Public Holiday", async ({ boCalendarPage }) => {
+  352 |     const ph = ENV.publicHoliday;
+  353 |     if (!ph) {
+  354 |       test.skip(true, "No Public Holiday date provided — key one into the runner's Test data panel.");
+  355 |       return;
+  356 |     }
+  357 |     await boCalendarPage.navigate();
+  358 |     const dialog = await boCalendarPage.openRescheduleDialogOnly();
+  359 |     if (!dialog) {
+  360 |       test.skip(true, "No listed appointment to reschedule in this month");
+  361 |       return;
+  362 |     }
+  363 |     await test.step(`Expected: public holiday ${ph} is greyed out / unclickable`, async () => {
+  364 |       expect(await boCalendarPage.isRescheduleDateSelectable(ph)).toBe(false);
+  365 |     });
+  366 |     await boCalendarPage.closeRescheduleDialog(dialog);
+  367 |   });
+  368 | 
+  369 |   test("BO reschedule beyond morning slot limit", async ({ boCalendarPage }) => {
+  370 |     await boCalendarPage.navigate();
+  371 |     const fullLabel = await boCalendarPage.findDateWithSlotFull(MORNING);
+  372 |     if (!fullLabel) {
+  373 |       test.skip(true, "No date with a full morning session available.");
+  374 |       return;
+  375 |     }
+  376 |     const [d, m, y] = fullLabel.split("-");
+  377 |     const iso = `${y}-${m}-${d}`;
+  378 |     const dialog = await boCalendarPage.openRescheduleDialogOnly();
+  379 |     if (!dialog) {
+  380 |       test.skip(true, "No listed appointment to reschedule in this month");
+  381 |       return;
+  382 |     }
+  383 |     await test.step(`Expected: CSE can still reschedule into ${fullLabel} despite the morning session being full`, async () => {
+  384 |       expect(await boCalendarPage.isRescheduleDateSelectable(iso)).toBe(true);
+  385 |     });
+  386 |     await boCalendarPage.closeRescheduleDialog(dialog);
+  387 |   });
+  388 | 
+  389 |   test("BO reschedule beyond afternoon slot limit", async ({ boCalendarPage }) => {
+  390 |     await boCalendarPage.navigate();
+  391 |     const fullLabel = await boCalendarPage.findDateWithSlotFull(AFTERNOON);
+  392 |     if (!fullLabel) {
+  393 |       test.skip(true, "No date with a full afternoon session available.");
+  394 |       return;
+  395 |     }
+  396 |     const [d, m, y] = fullLabel.split("-");
+  397 |     const iso = `${y}-${m}-${d}`;
+  398 |     const dialog = await boCalendarPage.openRescheduleDialogOnly();
+  399 |     if (!dialog) {
+  400 |       test.skip(true, "No listed appointment to reschedule in this month");
+  401 |       return;
+  402 |     }
+  403 |     await test.step(`Expected: CSE can still reschedule into ${fullLabel} despite the afternoon session being full`, async () => {
+  404 |       expect(await boCalendarPage.isRescheduleDateSelectable(iso)).toBe(true);
+```

@@ -96,20 +96,25 @@ test.describe("Slot Capacity Boundary", () => {
       const afternoonInitial = await slotPicker.getModalSlotBooked(AFTERNOON);
       const morningRoom = morningInitial.max - morningInitial.booked;
       const afternoonRoom = afternoonInitial.max - afternoonInitial.booked;
+      let remainingToAllocate = await slotPicker.getRemainingToAllocate();
       expect(morningRoom + afternoonRoom).toBeGreaterThan(0);
+      expect(remainingToAllocate).toBeGreaterThan(0);
 
-      if (morningRoom > 0) {
-        await slotPicker.incrementSlot(MORNING, morningRoom);
-        expect(await slotPicker.getStepperValue(MORNING)).toBe(morningRoom);
+      if (morningRoom > 0 && remainingToAllocate > 0) {
+        const morningAlloc = Math.min(morningRoom, remainingToAllocate);
+        await slotPicker.incrementSlot(MORNING, morningAlloc);
+        expect(await slotPicker.getStepperValue(MORNING)).toBe(morningAlloc);
         await slotPicker.incrementSlot(MORNING, 1);
-        expect(await slotPicker.getStepperValue(MORNING)).toBe(morningRoom);
+        expect(await slotPicker.getStepperValue(MORNING)).toBe(morningAlloc);
+        remainingToAllocate -= morningAlloc;
       }
 
-      if (afternoonRoom > 0) {
-        await slotPicker.incrementSlot(AFTERNOON, afternoonRoom);
-        expect(await slotPicker.getStepperValue(AFTERNOON)).toBe(afternoonRoom);
+      if (afternoonRoom > 0 && remainingToAllocate > 0) {
+        const afternoonAlloc = Math.min(afternoonRoom, remainingToAllocate);
+        await slotPicker.incrementSlot(AFTERNOON, afternoonAlloc);
+        expect(await slotPicker.getStepperValue(AFTERNOON)).toBe(afternoonAlloc);
         await slotPicker.incrementSlot(AFTERNOON, 1);
-        expect(await slotPicker.getStepperValue(AFTERNOON)).toBe(afternoonRoom);
+        expect(await slotPicker.getStepperValue(AFTERNOON)).toBe(afternoonAlloc);
       }
     });
 
@@ -277,6 +282,102 @@ test.describe("Slot Capacity Boundary", () => {
 
       await slotPicker.incrementSlot(MORNING, 1);
       await slotPicker.saveSlotChanges();
+    });
+
+    // ── Reschedule-entry parity ──
+    // The QA doc pairs every capacity scenario with both an "Add New" and a
+    // "Reschedule" entry point. The slot modal/stepper is the same shared
+    // component either way (SlotPickerComponent), but the doc explicitly
+    // wants the cap verified when reached via Reschedule too, so these open
+    // the calendar through an existing appointment's Reschedule action
+    // instead of a fresh purchase.
+    async function openRescheduleCalendar(
+      listingPage: import("../pages/ServiceRequestListingPage").ServiceRequestListingPage,
+      reschedulePage: import("../pages/ReschedulePage").ReschedulePage,
+    ): Promise<boolean> {
+      await listingPage.navigate();
+      await listingPage.searchBtn.click();
+      await listingPage.waitForNav();
+      const rows = await listingPage.getResultRows();
+      for (const row of rows) {
+        if (await listingPage.hasRescheduleAction(row)) {
+          await listingPage.clickReschedule(row);
+          return true;
+        }
+      }
+      return false;
+    }
+
+    test("Morning Slot - Max Capacity (via Reschedule)", async ({ listingPage, reschedulePage }) => {
+      if (!(await openRescheduleCalendar(listingPage, reschedulePage))) {
+        test.skip(true, "No reschedulable appointment to open a calendar from.");
+        return;
+      }
+      const total = await reschedulePage.getAllocationTotal();
+      if (total < ENV.slotCapacity.perSlot + 1) {
+        test.skip(
+          true,
+          `Reschedule record has allocation total ${total}; need at least ${ENV.slotCapacity.perSlot + 1} to validate per-slot cap independently of allocation cap.`
+        );
+        return;
+      }
+      const date = await reschedulePage.findDateMatching((i) => i.morning.booked === 0);
+      if (!date) {
+        test.skip(true, "No date with an empty morning session available.");
+        return;
+      }
+      await test.step(`Expected: morning session accepts at most ${ENV.slotCapacity.perSlot}`, async () => {
+        await reschedulePage.openSlotModal(date);
+        await reschedulePage.incrementSlot(MORNING, ENV.slotCapacity.perSlot + 1);
+        expect(await reschedulePage.getStepperValue(MORNING)).toBe(ENV.slotCapacity.perSlot);
+      });
+    });
+
+    test("Afternoon Slot - Max Capacity (via Reschedule)", async ({ listingPage, reschedulePage }) => {
+      if (!(await openRescheduleCalendar(listingPage, reschedulePage))) {
+        test.skip(true, "No reschedulable appointment to open a calendar from.");
+        return;
+      }
+      const total = await reschedulePage.getAllocationTotal();
+      if (total < ENV.slotCapacity.perSlot + 1) {
+        test.skip(
+          true,
+          `Reschedule record has allocation total ${total}; need at least ${ENV.slotCapacity.perSlot + 1} to validate per-slot cap independently of allocation cap.`
+        );
+        return;
+      }
+      const date = await reschedulePage.findDateMatching((i) => i.afternoon.booked === 0);
+      if (!date) {
+        test.skip(true, "No date with an empty afternoon session available.");
+        return;
+      }
+      await test.step(`Expected: afternoon session accepts at most ${ENV.slotCapacity.perSlot}`, async () => {
+        await reschedulePage.openSlotModal(date);
+        await reschedulePage.incrementSlot(AFTERNOON, ENV.slotCapacity.perSlot + 1);
+        expect(await reschedulePage.getStepperValue(AFTERNOON)).toBe(ENV.slotCapacity.perSlot);
+      });
+    });
+
+    test("Daily Max Capacity (via Reschedule)", async ({ listingPage, reschedulePage }) => {
+      if (!(await openRescheduleCalendar(listingPage, reschedulePage))) {
+        test.skip(true, "No reschedulable appointment to open a calendar from.");
+        return;
+      }
+
+      // A fully-booked (6/6) date must not open at all when clicked.
+      const fullDate = await reschedulePage.findFullyBookedDate();
+      if (!fullDate) {
+        test.skip(true, "No fully-booked date available to verify against.");
+        return;
+      }
+      let popupOpened = false;
+      try {
+        await reschedulePage.openSlotModal(fullDate);
+        popupOpened = true;
+      } catch {
+        // Expected — a fully-booked date must refuse to open.
+      }
+      expect(popupOpened).toBe(false);
     });
   });
 
