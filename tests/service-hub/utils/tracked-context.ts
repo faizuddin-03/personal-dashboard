@@ -23,11 +23,14 @@ export async function openTrackedContext(
 }
 
 /**
- * Close a context opened with openTrackedContext, then rename its recorded
- * video (Playwright gives it an opaque hash filename) to
- * "<Test Title> - <label>.webm" in the same folder — matching the test
- * script's own name (like every other piece of evidence) instead of an
- * opaque hash, so it's easy to find later.
+ * Close a context opened with openTrackedContext, then rename its recorded video
+ * (Playwright gives it an opaque hash filename) to "<label>.webm" — e.g. "BO.webm"
+ * — in the test's own output folder.
+ *
+ * Only the portal label is used here. After the run, the runner's evidence pass
+ * prefixes it with the test-script ID and the folder is renamed to the ID too, so
+ * the final file reads "SC_RH_TS02 - BO.webm" without the title being baked in at
+ * record time.
  */
 export async function closeTrackedContext(
   context: BrowserContext,
@@ -37,8 +40,8 @@ export async function closeTrackedContext(
   const pages = context.pages();
   const videos = pages.map((p) => p.video()).filter((v): v is NonNullable<typeof v> => !!v);
   await context.close(); // finalizes video files
-  const safe = (s: string) => s.replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").slice(0, 80);
-  const base = `${safe(testInfo.title)} - ${safe(label)}`;
+  const safe = (s: string) => s.replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  const base = safe(label);
   for (let i = 0; i < videos.length; i++) {
     try {
       const src = await videos[i].path();

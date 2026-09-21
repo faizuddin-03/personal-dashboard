@@ -1,0 +1,51 @@
+# https://staging.eauto.my/obs/admin/preOnb/enquiry
+- text: Back to Backoffice
+- img
+- text: "Pre-Application No:"
+- textbox "Pre-Application No"
+- text: "Company Name:"
+- textbox "Company Name"
+- text: "Submission Date From:"
+- textbox
+- text: "To:"
+- textbox
+- text: "Pre-Application Status:"
+- combobox:
+  - option "All" [selected]
+  - option "New"
+  - option "Approved"
+  - option "Rejected"
+  - option "Cancelled"
+- text: "SSM Status:"
+- combobox:
+  - option "All" [selected]
+  - option "OK"
+  - option "Failed"
+  - option "-"
+- text: "Old BRN:"
+- textbox "Old BRN"
+- text: "New BRN:"
+- textbox "New BRN"
+- text: "Business Trading License Number:"
+- textbox "Business Trading License Number"
+- text: "LHDN Response Status:"
+- combobox:
+  - option "All" [selected]
+  - option "OK"
+  - option "Failed"
+  - option "-"
+  - option "N/A"
+- text: "Business Type:"
+- checkbox "Sdn Bhd / Bhd" [checked]
+- text: Sdn Bhd / Bhd
+- checkbox "Sole Proprietorship / Partnership" [checked]
+- text: Sole Proprietorship / Partnership
+- checkbox "LLP" [checked]
+- text: LLP
+- checkbox "Business Trading (Sabah)" [checked]
+- text: Business Trading (Sabah)
+- checkbox "Business Trading (Sarawak)" [checked]
+- text: Business Trading (Sarawak)
+- button "Search"
+- text: Reset UCD Pre-Application Listing Best Compatible With Mozilla Firefox V36.0.4 Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved. Contact Us | Terms & Conditions | Privacy
+- img

@@ -89,14 +89,18 @@ export class BiometricPurchasePage extends BasePage {
 
   /**
    * Click Make Payment → wait for jQuery UI dialog → click Yes → wait for
-   * redirect to slot.do. Matches either the old `txnId=<number>` or the new
+   * redirect. Matches either the old `txnId=<number>` or the new
    * `transactionId=<uuid>` id scheme (see SoftwareInstallationPage.makePayment).
+   * Redirects to slot.do normally, but goes straight to submitted.do when
+   * the "I don't need software installation" opt-out was checked — there's
+   * no slot to pick, so slot.do never renders (confirmed live, 2026-07-31;
+   * the old slot.do-only pattern hung for the full 15s in that case).
    */
   async makePayment(): Promise<string> {
     await this.makePaymentBtn.click();
     await this.waitForDialog();
     await this.acceptConfirmDialog();
-    await this.page.waitForURL(/slot\.do\?(id|txnId|transactionId)=/, { timeout: 15000 });
+    await this.page.waitForURL(/(slot|submitted)\.do\?(id|txnId|transactionId)=/, { timeout: 15000 });
     return this.getTxnIdFromUrl();
   }
 

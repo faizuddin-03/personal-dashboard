@@ -1,0 +1,56 @@
+# https://staging.eauto.my/obs/admin/form/edit-registration-doc/559565f5-bf36-447b-b9f8-f6a1c8142bdd
+- banner:
+  - img "header-line"
+  - img "Logo"
+  - text: Dealer Application - P260824/00761 / NA68001099 - QA11982 MOTORS 260824-2036-021 ENTERPRISE
+- link "Pre-Application":
+  - /url: /obs/admin/preOnb/summary/9bb98779-a1e0-4ad5-800f-127aacdb6929
+- link "Application":
+  - /url: /obs/admin/form/edit/559565f5-bf36-447b-b9f8-f6a1c8142bdd
+- link "Registration Documents":
+  - /url: "#"
+- text: Registration Documents
+- button "Save"
+- text: "1 RHB Offer Letter * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB document-0.pdf document-0.pdf 2 RHB Direct Debit Application Form * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB document-1.pdf document-1.pdf 3 RHB LoA e-TukarMilik * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB document-2.pdf document-2.pdf 4 RHB Bank Statement Cover / RHB Welcome Letter * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB document-3.pdf document-3.pdf 5 eAuto LoA e-TukarMilik * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB document-4.pdf document-4.pdf 6 LHDN Company Tax Compliance Certificate * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB document-5.pdf document-5.pdf By submitting the required documents via the eAuto portal, I hereby confirm and agree that:"
+- list:
+  - listitem: I am duly authorised to act on behalf of the company/entity named in this application.
+  - listitem: All information and documents provided are true, accurate, complete, and up-to-date.
+  - listitem: I understand that eAuto Sdn Bhd reserves the right to verify the submitted documents with relevant authorities, banks, or third parties, and to request additional documentation or clarification if deemed necessary.
+  - listitem: I acknowledge that submission of documents does not guarantee approval of the application.
+  - listitem: I accept that any false, misleading, or forged information may result in immediate rejection of the application, suspension, or termination of access to eAuto services, without prejudice to any legal action available to eAuto.
+- text: "Application No: NA68001099 Assignee:"
+- combobox:
+  - option "Select"
+  - option "BO ruiluan"
+  - option "BO User bjGIQ"
+  - option "BO User bwvzW"
+  - option "BO User GhFbw"
+  - option "BO User huWnF"
+  - option "BO User kbomK"
+  - option "BO User nPlkY"
+  - option "BO User sxscg"
+  - option "BO User sYRlw"
+  - option "BO user test 1"
+  - option "BRANDON TEST MIE"
+  - option "CHARMAIN EA CHIANG chg" [selected]
+  - option "LIM YI LINK"
+  - option "MUSIC SDN BHD"
+  - option "sdtPhAPWEMhvmv"
+  - option "SlcklBI"
+  - option "traze"
+- text: "Application Status: Approved"
+- button "Extend"
+- text: "Registration Documents Submission Date: 2026-08-24 10:22PM Registration Documents Verification Date: 2026-08-24 10:22PM Payment Document:"
+- button "Download Invoice":
+  - img "Download"
+  - text: Invoice
+- text: "Hardcopy Doc:"
+- combobox:
+  - option "Pending UCD" [selected]
+  - option "Pending UCD - Incomplete Docs"
+  - option "Pending Assignee"
+- dialog "Extend Application Period":
+  - text: "Extend Application Period Provide your remarks to extend the application period by 30 days. Remarks: *"
+  - textbox
+  - button "Cancel"
+  - button "Confirm"

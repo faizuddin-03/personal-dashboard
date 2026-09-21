@@ -1,0 +1,192 @@
+<!--
+  URL: /uat1/view/aatf/dereg/transaction/data-entry.do (Deregistration step 2,
+       inline eDereg Pre-Checking, same transaction/vehicle HXA002 as the
+       sibling JPJ-failed capture, DPC260821000009)
+  Environment: uat1
+  Captured: 2026-08-21
+  Captured by: Faizuddin (pasted into session), saved by Claude per the
+       standing HTML-capture rule.
+  What this shows: the PAYMENT-failed outcome (RHB "IF - Wang di dalam akaun
+       RHB anda TIDAK MENCUKUPI" / insufficient funds), re-rendered inside
+       #precheck-popup with a "Payment History" block listing both prior
+       failed attempts, a #reset-timer countdown, and Next/Cancel buttons in
+       the dialog's own buttonpane (distinct from the JPJ-failed capture's
+       single Close button). Faizuddin confirmed live behaviour not visible
+       in this static HTML: a native browser confirm() popup fires BEFORE
+       this page renders on a failed payment, and clicking this dialog's
+       "Next" button redoes the payment (re-triggering that same native
+       confirm() popup) rather than just refreshing the result. Nothing
+       trimmed — full dialog as pasted.
+-->
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+
+<div id="container">
+
+    <div id="dereg-header">
+        <div class="title1">New Deregistration Transaction:</div>
+        <div class="title2" style="margin:10px 0"></div>
+        <table>
+        <tbody><tr>
+            <td colspan="6">
+                <center>
+    <table>
+        <colgroup><col width="80px"><col width="10px">
+        <col width="80px"><col width="10px">
+        <col width="80px"><col width="10px">
+        <col width="80px"><col width="10px">
+        <col width="80px"><col width="10px">
+        <col width="80px"><col width="10px">
+        </colgroup><tbody>
+            <tr>
+                <td class="header-element"><div class="txn-header-completed"><div class="txn-header-div">1</div></div>Owner</td>
+                <td><br><img src="/uat1/images/right-arrow.png"><br></td>
+                <td class="header-element-active"><div class="txn-header-active"><div class="txn-header-div">2</div></div>Vehicle</td>
+                <td><br><img src="/uat1/images/right-arrow.png"><br></td>
+                <td class="header-element"><div class="txn-header"><div class="txn-header-div">3</div></div>AATF</td>
+                <td><br><img src="/uat1/images/right-arrow.png"><br></td>
+                <td class="header-element"><div class="txn-header"><div class="txn-header-div">4</div></div>JPJ Check</td>
+                <td><br><img src="/uat1/images/right-arrow.png"><br></td>
+                <td class="header-element"><div class="txn-header"><div class="txn-header-div">5</div></div>Payment</td>
+                <td><br><img src="/uat1/images/right-arrow.png"><br></td>
+                <td class="header-element"><div class="txn-header"><div class="txn-header-div">6</div></div>Deregister</td>
+                <td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+</center>
+            </td>
+        </tr>
+        </tbody></table>
+    </div>
+
+    <!-- step-2 vehicle-details form underneath is identical to the sibling
+         JPJ-failed capture (EAINT-9306-dereg-step2-precheck-jpj-failed.html);
+         omitted here since it's unchanged, per that file's full copy -->
+
+</div>
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="payment-result" style="height: auto; min-height: 49px; width: auto; display: none;" class="">
+    <div id="result-content"><div id="result-container" class="center">
+            <input type="hidden" id="jpjStatusLabel" value="Failed">
+            <table>
+                <colgroup><col width="35%">
+                <col width="65%">
+                </colgroup><tbody><tr>
+                    <td class="title">Vehicle Registration Number: </td>
+                    <td class="value" id="responseVehicleNo">HXA002</td>
+                </tr>
+                <tr>
+                    <td class="title">Valid As At: </td>
+                    <td class="value" id="value">21 Aug 2026 04:45 pm</td>
+                </tr>
+                <tr>
+                    <td class="title">JPJ Pre-Checking Status: </td>
+                    <td id="responseDesc" class="value failed">Failed</td>
+                </tr>
+                <tr>
+                    <td class="title">Enquiry Response: </td>
+                    <td id="responseDesc" class="value failed">VEL000045E - PLEASE CONTACT HELPDESK - VELVE</td>
+                </tr>
+                <tr>
+                    <td class="title">Vehicle Record: </td>
+                    <td class="value black" id="vehicleRecord">N/A</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="center value">Note: <span class="fw-700 black">The system is currently unavailable. Kindly contact our Customer Service at 03-27798899</span></td>
+                </tr>
+            </tbody></table>
+            <div class="center mt-16"></div>
+        </div></div>
+    <div style="display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><span style="font-style:italic;color:#696969;">You can view the transaction details in eDEREG Pre-Checking Transaction Listing.</span></div>
+</div><div class="ui-widget-overlay" style="width: 1210px; height: 980px; z-index: 1007;"></div><div class="ui-dialog ui-widget ui-widget-content ui-corner-all " tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-precheck-popup" style="display: block; position: absolute; overflow: hidden; z-index: 1008; outline: 0px; height: auto; width: 660px; top: 176.5px; left: 513px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" unselectable="on"><span class="ui-dialog-title" id="ui-dialog-title-precheck-popup" unselectable="on">eDereg Pre-Checking Enquiry</span><a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" unselectable="on"><span class="ui-icon ui-icon-closethick" unselectable="on">close</span></a></div><div id="precheck-popup" style="height: auto; min-height: 49px; width: auto; display: block;" class="ui-dialog-content ui-widget-content">
+    <div id="warning-precheck" style="display: none;">
+        <img src="/uat1/images/icon-alert-red.svg" class="precheck-icon" style="width:20px;height:20px;margin-right:10px;">
+        <span style="color:red;font-weight:bold;line-height:20px">Approved eDereg Pre-Checking within 6 months is required to proceed</span>
+    </div>
+    <div id="payment-content"><div id="form-container" class="flex flex-column center">
+            <div>
+                <div id="payment-history-portion">
+                    <div style="width: 100%">
+                        <div class="flex mb-20">
+                            <span class="fw-700 fs-14 payment-label">Payment History</span>
+                        </div>
+                        <table>
+                        <colgroup><col width="20px">
+                        </colgroup><tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>
+                                    21-08-2026 04:47pm - RHB (DPC260821000009-HXA002) -
+                                    <span style="color:red"><b>Failed</b></span>
+                                    (IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. &#65279;你的RHB银行余额不足.)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>
+                                    21-08-2026 04:47pm - RHB (DPC260821000009) -
+                                    <span style="color:red"><b>Failed</b></span>
+                                    (IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. &#65279;你的RHB银行余额不足.)
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="flex">
+                    <span class="fw-700 fs-14 mr-12">Vehicle Registration Number:</span>
+                    <span>HXA002</span>
+                </div>
+                <div class="line"></div>
+                <div id="payment-status">
+                    <div style="width: 100%;">
+                        <div class="flex">
+                            <span class="totalPayableAmount label payment-label fs-14 fw-700">Payment Summary</span>
+                        </div>
+                         <table class="paymentsummary" style="width: 100%;">
+                            <tbody><tr>
+                                <td>JPJ Fee :</td>
+                                <td style="text-align:right">RM</td>
+                                <td style="text-align:right">5.00</td>
+                            </tr>
+                            <tr>
+                                <td>eAuto Service Fee :</td>
+                                <td style="text-align:right">RM</td>
+                                <td style="text-align:right">5.00</td>
+                            </tr>
+                            <tr>
+                                <td>Service Tax 8% :</td>
+                                <td style="text-align:right">RM</td>
+                                <td style="text-align:right">0.40</td>
+                            </tr>
+                            <tr class="grandtotal">
+                                <td class="totalPayable fw-700"><b>Total Amount Payable (inclusive of Service Tax 8%) :</b></td>
+                                <td class="totalPayable" style="text-align:right">RM</td>
+                                <td class="totalPayable" style="text-align:right"><span class="totalPayableAmount label">10.40</span></td>
+                            </tr>
+                        </tbody></table>
+                        <div id="reset-timer" class="flex-column mt-20" style="display: none;">
+                            <div class="fixed-flex-width">
+                                <span class="waiting-banner">Waiting for RHB to reset payment.</span>
+                            </div>
+                            <div id="clockdiv" class="center-div">
+                                <div>
+                                  <span class="minutes">48</span>
+                                  <div class="smalltext">Minutes</div>
+                                </div>
+                                <div>
+                                  <span class="seconds">-7</span>
+                                  <div class="smalltext">Seconds</div>
+                                </div>
+                            </div>
+                            <div class="auto-flex-width">
+                                Hotline : 1700 816 186
+                            </div>
+                        </div>
+                        <div class="center mt-20"></div>
+                    </div>
+                </div>
+            </div>
+        </div></div>
+    <div id="payment-note"><span>Note : No refund is allowed, once payment is made.</span></div>
+</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><button type="button" class="ui-state-default ui-corner-all">Next</button><button type="button" class="ui-state-default ui-corner-all">Cancel</button></div></div></body>

@@ -12,8 +12,15 @@ const AFTERNOON = 1;
 // (6/day) cap, so an add should simply proceed.
 const COMPANY = "FAIZUDDIN AUTO TEST";
 
+// LOCAL-calendar yyyy-mm-dd — deliberately not `.toISOString()`, which
+// converts to UTC first and rolls the date back a day whenever the local
+// clock is within the UTC offset of midnight (e.g. every run between
+// 00:00-08:00 in Malaysia, UTC+8). See BasePage.formatLocalDate().
 function toIsoDate(d: Date): string {
-  return d.toISOString().split("T")[0];
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 function fromIsoDate(iso: string): Date {
@@ -135,7 +142,7 @@ test.describe("BO Calendar & Limits", () => {
     return dialog;
   }
 
-  test("BO add beyond morning slot limit", async ({ boCalendarPage, browser }, testInfo) => {
+  test("SC_SCB_TS28: BO add beyond morning slot limit", async ({ boCalendarPage, browser }, testInfo) => {
     const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
@@ -152,7 +159,7 @@ test.describe("BO Calendar & Limits", () => {
     expect(await boCalendarPage.getSlotCount(booked, MORNING)).toBeGreaterThan(0);
   });
 
-  test("BO add beyond afternoon slot limit", async ({ boCalendarPage, browser }, testInfo) => {
+  test("SC_SCB_TS30: BO add beyond afternoon slot limit", async ({ boCalendarPage, browser }, testInfo) => {
     const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
@@ -168,7 +175,7 @@ test.describe("BO Calendar & Limits", () => {
     expect(await boCalendarPage.getSlotCount(booked, AFTERNOON)).toBeGreaterThan(0);
   });
 
-  test("BO add beyond 6 days limit", async ({ boCalendarPage, browser }, testInfo) => {
+  test("SC_SCB_TS26: BO add beyond 6 days limit", async ({ boCalendarPage, browser }, testInfo) => {
     // Add the appointment as CSE, then OBSERVE it in every location the SRD
     // lists. Email is checked via its on-screen proxy (the UCD Service Request
     // Listing), per the agreed approach.
@@ -223,7 +230,7 @@ test.describe("BO Calendar & Limits", () => {
     });
   });
 
-  test("BO add for current day and the next day", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS32: BO add for current day and the next day", async ({ boCalendarPage }) => {
     const dialog = await prepareAddDialogWithListingSeed(boCalendarPage);
     if (!dialog) {
       test.skip(true, "No valid BO listing seed (Payment Status=OK, Installation Request='-') for Add Appointment.");
@@ -239,7 +246,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeAddDialog(dialog);
   });
 
-  test("BO add for previous dates", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS34: BO add for previous dates", async ({ boCalendarPage }) => {
     await boCalendarPage.navigate();
     const dialog = await boCalendarPage.openAddDialog();
     await test.step("Expected: a previous date is not selectable", async () => {
@@ -248,7 +255,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeAddDialog(dialog);
   });
 
-  test("BO book future date more than 2 months", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS36: BO book future date more than 2 months", async ({ boCalendarPage }) => {
     const dialog = await prepareAddDialogWithListingSeed(boCalendarPage);
     if (!dialog) {
       test.skip(true, "No valid BO listing seed (Payment Status=OK, Installation Request='-') for Add Appointment.");
@@ -261,7 +268,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeAddDialog(dialog);
   });
 
-  test("BO book weekend dates", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS38: BO book weekend dates", async ({ boCalendarPage }) => {
     await boCalendarPage.navigate();
     const dialog = await boCalendarPage.openAddDialog();
     const weekend = boCalendarPage.nextWeekend();
@@ -271,7 +278,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeAddDialog(dialog);
   });
 
-  test("BO book Public Holiday", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS40: BO book Public Holiday", async ({ boCalendarPage }) => {
     const ph = ENV.publicHoliday;
     if (!ph) {
       test.skip(true, "No Public Holiday date provided — key one into the runner's Test data panel.");
@@ -291,7 +298,7 @@ test.describe("BO Calendar & Limits", () => {
   // (isRescheduleDateSelectable), rather than assuming it behaves the same
   // as Add's #ac-add-date.
 
-  test("BO reschedule for current day and the next day", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS33: BO reschedule for current day and the next day", async ({ boCalendarPage }) => {
     await boCalendarPage.navigate();
     const dialog = await boCalendarPage.openRescheduleDialogOnly();
     if (!dialog) {
@@ -307,7 +314,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeRescheduleDialog(dialog);
   });
 
-  test("BO reschedule for previous dates", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS35: BO reschedule for previous dates", async ({ boCalendarPage }) => {
     await boCalendarPage.navigate();
     const dialog = await boCalendarPage.openRescheduleDialogOnly();
     if (!dialog) {
@@ -320,7 +327,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeRescheduleDialog(dialog);
   });
 
-  test("BO reschedule future date more than 2 months", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS37: BO reschedule future date more than 2 months", async ({ boCalendarPage }) => {
     await boCalendarPage.navigate();
     const dialog = await boCalendarPage.openRescheduleDialogOnly();
     if (!dialog) {
@@ -334,7 +341,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeRescheduleDialog(dialog);
   });
 
-  test("BO reschedule weekend dates", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS39: BO reschedule weekend dates", async ({ boCalendarPage }) => {
     await boCalendarPage.navigate();
     const dialog = await boCalendarPage.openRescheduleDialogOnly();
     if (!dialog) {
@@ -348,7 +355,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeRescheduleDialog(dialog);
   });
 
-  test("BO reschedule Public Holiday", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS41: BO reschedule Public Holiday", async ({ boCalendarPage }) => {
     const ph = ENV.publicHoliday;
     if (!ph) {
       test.skip(true, "No Public Holiday date provided — key one into the runner's Test data panel.");
@@ -366,7 +373,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeRescheduleDialog(dialog);
   });
 
-  test("BO reschedule beyond morning slot limit", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS29: BO reschedule beyond morning slot limit", async ({ boCalendarPage }) => {
     await boCalendarPage.navigate();
     const fullLabel = await boCalendarPage.findDateWithSlotFull(MORNING);
     if (!fullLabel) {
@@ -386,7 +393,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeRescheduleDialog(dialog);
   });
 
-  test("BO reschedule beyond afternoon slot limit", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS31: BO reschedule beyond afternoon slot limit", async ({ boCalendarPage }) => {
     await boCalendarPage.navigate();
     const fullLabel = await boCalendarPage.findDateWithSlotFull(AFTERNOON);
     if (!fullLabel) {
@@ -406,7 +413,7 @@ test.describe("BO Calendar & Limits", () => {
     await boCalendarPage.closeRescheduleDialog(dialog);
   });
 
-  test("BO reschedule beyond 6 days limit", async ({ boCalendarPage }) => {
+  test("SC_SCB_TS27: BO reschedule beyond 6 days limit", async ({ boCalendarPage }) => {
     // "6 days" = the UCD-facing 6/day cap; CSE ignores it. Reuses whichever
     // full session (morning or afternoon) is found first as evidence the
     // day is at/near that cap.
@@ -430,7 +437,7 @@ test.describe("BO Calendar & Limits", () => {
   });
 
   // ── Add Appointment — existing-reference edge case ──
-  test("Attempt to add existing appointment expired over 2 months", async ({ boListingPage, boCalendarPage }) => {
+  test("SC_SCB_TS25: Attempt to add existing appointment expired over 2 months", async ({ boListingPage, boCalendarPage }) => {
     // No "Expired" filter exists in the Installation Status dropdown (it's
     // time-derived — a free biometric install left unbooked for 2 months),
     // so search with no filter and text-match the status cell instead.

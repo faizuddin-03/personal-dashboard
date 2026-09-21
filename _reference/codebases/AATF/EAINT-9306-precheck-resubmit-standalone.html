@@ -1,0 +1,190 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URL: /uat1/view/aatf/dereg/precheck/enquiry/... (the standalone "eDereg
+       Pre-Checking Enquiry" flow's own Step 2 Payment page, reached via
+       "Resubmit" on the Pre-Checking Transaction Listing — NOT the inline
+       #precheck-popup shown mid-Deregistration-flow, a DIFFERENT page)
+  Env: uat1
+  Captured: 2026-08-26, live, via Faizuddin pasting the page source directly
+  Vehicle in this specific capture: HXA051 (an RE-declined transaction, left
+  over from an earlier MU_TS3 run — the DATA shown here is stale/unrelated
+  to MU_TS4, but the MARKUP/structure is what matters and is confirmed real).
+  Trimmed: nothing removed from the substantive content — header/footer
+  chrome (#header, #footer, session-timeout widgets) kept since this was
+  pasted whole; only the page's own <link>/<script> boilerplate is as given.
+  Used by: knowledge/flow-edereg.md §22 (MU_TS4), pages/PrecheckEnquiryPage.ts
+  openViaListingAndResubmit()/attemptResubmitPayment()
+
+  KEY FINDINGS vs. the ORIGINAL (wrong) assumption that this reuses the
+  inline #precheck-popup's own Next/Cancel dialog shape:
+  1. This is a FULL STANDALONE PAGE (own "eDereg Pre-Checking Enquiry"
+     1 Vehicle -> 2 Payment -> 3 Result wizard, #custom-header), NOT a
+     .ui-dialog popup. session.confirmDialog() (which looks for
+     .ui-dialog:visible) will NEVER find anything here — that's the bug
+     that broke the first live run of MU_TS4.
+  2. The actual retry button is #to-retry-rhb ("RETRY"), NOT #to-payment.
+  3. #payment-history-portion, #payment-status, #reset-timer/#clockdiv all
+     reuse the SAME ids as the inline #precheck-popup's own content (not
+     a coincidence — same underlying template, just rendered standalone
+     here instead of inside a jQuery UI dialog wrapper).
+  4. NEWLY DISCOVERED, unconfirmed whether it applies to non-RE declines
+     too: clicking #to-retry-rhb likely opens #confirm-reset-dialog first
+     (a NOTIFICATION about the risk of double-payment, requiring the
+     "I hereby agree..." checkbox in #checkboxForm/.terms to be ticked)
+     BEFORE any #retry-dialog / native confirm() fires. The jQuery UI
+     buttonpane for #confirm-reset-dialog is generated dynamically by
+     .dialog() at runtime — its button label(s) are NOT visible in this
+     static capture.
+-->
+
+<div id="payment-dialog" style="display:none;">
+    <div>Are you sure to make payment? No refund is allowed, once payment is made</div>
+    <div>Adakah anda pasti akan meneruskan pembayaran? Tiada bayaran balik dibenarkan setelah bayaran dibuat</div>
+</div>
+<div id="retry-dialog" style="display:none;">
+    <div>Are you sure to make payment? No refund is allowed, once payment is made</div>
+    <div>Adakah anda pasti akan meneruskan pembayaran? Tiada bayaran balik dibenarkan setelah bayaran dibuat</div>
+</div>
+<div id="continue-dialog" style="display:none;">
+    <div>Sure to continue later?</div>
+</div>
+
+<div id="container">
+    <div style="width:100%;">
+        <div id="custom-header">
+            <div class="header-title center">
+                eDereg Pre-Checking Enquiry
+            </div>
+            <table class="mt-16">
+                <tbody><tr>
+                    <td colspan="6">
+                        <center>
+    <div style="display:flex;justify-content:center;width:100%;">
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">1</div>
+            </div>
+            Vehicle
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+
+        <div class="header-element-active">
+            <div class="txn-header-active">
+                <div class="txn-header-div">2</div>
+            </div>
+            Payment
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+
+        <div class="header-element">
+            <div class="txn-header">
+                <div class="txn-header-div">3</div>
+            </div>
+            Result
+        </div>
+    </div>
+</center>
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+
+        <div id="form-container" class="flex flex-column center">
+            <div class="form-box">
+                <div id="payment-history-portion">
+                    <div style="width: 100%">
+                        <div class="flex mb-20">
+                            <span class="fw-700 fs-14 payment-label">Payment History</span>
+                        </div>
+                        <table>
+                        <colgroup><col width="20px"></colgroup>
+                        <tbody>
+                          <tr>
+                            <td>1.</td>
+                            <td>
+                              26-08-2026 03:39pm - RHB (DPC260826000021-HXA051) -
+                              <span style="color:red"><b>Failed</b></span>
+                              (RE - Sila TUNGGU 6 minit kemudian klik 'Resubmit'. Sistem RHB sedang diproses. (RHB 网络障碍，请等 6 分钟后再点击'Resubmit'。))
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>2.</td>
+                            <td>
+                              26-08-2026 03:39pm - RHB (DPC260826000021) -
+                              <span style="color:red"><b>Failed</b></span>
+                              (RE - Sila TUNGGU 6 minit kemudian klik 'Resubmit'. Sistem RHB sedang diproses. (RHB 网络障碍，请等 6 分钟后再点击'Resubmit'。))
+                            </td>
+                          </tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                <div class="line"></div>
+
+                <div class="flex">
+                    <span class="fw-700 fs-14 mr-12">Vehicle Registration Number:</span>
+                    <span>HXA051</span>
+                </div>
+                <div class="line"></div>
+
+                <div id="payment-status">
+                    <div style="width: 100%;">
+                        <div id="payment-status-row" class="flex mt-5 mb-12">
+                            <span class="totalPayableAmount label fs-14 fw-700 mr-12 payment-label">Payment Status:</span>
+                            <span class="paymentStatus label f-italic failed">Failed</span>
+                        </div>
+                        <div class="flex">
+                            <span class="totalPayableAmount label payment-label fs-14 fw-700">Payment Summary</span>
+                        </div>
+                        <table class="paymentsummary" style="width: 100%;">
+                            <tbody>
+                              <tr><td>JPJ Fee :</td><td style="text-align:right">RM</td><td style="text-align:right">5.00</td></tr>
+                              <tr><td>eAuto Service Fee :</td><td style="text-align:right">RM</td><td style="text-align:right">5.00</td></tr>
+                              <tr><td>Service Tax 8% :</td><td style="text-align:right">RM</td><td style="text-align:right">0.40</td></tr>
+                              <tr class="grandtotal">
+                                <td class="totalPayable fw-700"><b>Total Amount Payable (inclusive of Service Tax 8%) :</b></td>
+                                <td class="totalPayable" style="text-align:right">RM</td>
+                                <td class="totalPayable" style="text-align:right"><span class="totalPayableAmount label">10.40</span></td>
+                              </tr>
+                            </tbody></table>
+
+                        <div id="reset-timer" class="flex-column mt-20" style="display: none;">
+                            <div class="fixed-flex-width">
+                                <span class="waiting-banner">Waiting for RHB to reset payment.</span>
+                            </div>
+                            <div id="clockdiv" class="center-div">
+                                <div><span class="minutes">29</span><div class="smalltext">Minutes</div></div>
+                                <div><span class="seconds">57</span><div class="smalltext">Seconds</div></div>
+                            </div>
+                            <div class="auto-flex-width">Hotline : 1700 816 186</div>
+                        </div>
+                        <script>
+                            var timerURL = "/uat1/api/aatf/dereg/precheck/transaction/reset-rhb-payment-timer.do";
+                            var transactionId = "bdd7c18a-5c3a-46b4-bd3b-d7cf4d273d36";
+                        </script>
+                        <script type="text/javascript" src="/uat1/common/reset-payment-timer.js"></script>
+
+                        <div class="center mt-20">
+                            <button type="button" id="to-retry-rhb" class="custom-btn">RETRY</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="confirm-reset-dialog" style="display:none;color:#FF4000">
+    <img src="/uat1/images/info-big.png"><br>
+    NOTIFICATION: If you reset to make payment again, you must make sure that earlier payment has been unsuccessful.
+    If you are not sure, please check with your bank or call us at  1700-81-6186 to check. However, if you still wish to proceed,
+    any previous instruction of payment by you (if it happens to be already processed in the banking system) would continue
+    and we will NOT be able to stop the Bank's action. <br> <br>
+
+     Henceforth, we must apologise that earlier payments relating to this transaction cannot and would not be reversed or refunded
+     and you shall not hold us responsible for such reversal and/or refund. <br>
+
+    <br><br>
+    <form id="checkboxForm" style="color:black">
+        <input type="checkbox" class="terms" value="1">I hereby agree to the above and request you to reset for me to make payment.
+    </form>
+</div>

@@ -1,0 +1,48 @@
+# https://staging.eauto.my/obs/preOnb/form/cd404c0b-8746-4bfb-9846-73edc6a0d187
+- banner:
+  - img "header-line"
+  - img "Logo"
+  - text: Dealer Application
+- text: Working... 1 Pre-Application Form 2 Business Info Review Business Information Review Please confirm your business information before proceeding
+- table:
+  - rowgroup:
+    - 'row "Business Registered Name: CHARMAIN QA11982 260831-1744-139 ENTERPRISE"':
+      - cell "Business Registered Name:":
+        - strong: "Business Registered Name:"
+      - cell "CHARMAIN QA11982 260831-1744-139 ENTERPRISE"
+    - 'row "Business Trading License No: KCH/1744139"':
+      - cell "Business Trading License No:":
+        - strong: "Business Trading License No:"
+      - cell "KCH/1744139"
+    - 'row "Tax Identification No (TIN): C3117441390 Please ensure you entered the correct TIN for e-invoice"':
+      - cell "Tax Identification No (TIN):":
+        - strong: "Tax Identification No (TIN):"
+      - cell "C3117441390 Please ensure you entered the correct TIN for e-invoice"
+    - 'row "Business Type: Business Trading (Sarawak)"':
+      - cell "Business Type:":
+        - strong: "Business Type:"
+      - cell "Business Trading (Sarawak)"
+- text: Payment Summary
+- table:
+  - rowgroup:
+    - 'row "Pre-Application Fee: RM 100.00"':
+      - cell "Pre-Application Fee:"
+      - cell "RM 100.00"
+    - 'row "Service Tax 8% : RM 8.00"':
+      - cell "Service Tax 8% :"
+      - cell "RM 8.00"
+    - 'row "Total Amount (Inclusive of 8% Service Tax) : RM 108.00"':
+      - 'cell "Total Amount (Inclusive of 8% Service Tax) : RM 108.00"':
+        - text: "Total Amount (Inclusive of 8% Service Tax) :"
+        - paragraph: RM 108.00
+- checkbox
+- text: "By proceeding with this submission, I hereby:"
+- list:
+  - listitem: represent and warrant that all information provided in this Pre-Application is true, accurate, complete, and not misleading in any respect;
+  - listitem: acknowledge and agree that the Pre-Application Fee is strictly non-refundable, irrespective of the outcome of the application or any subsequent withdrawal or termination;
+  - listitem: understand and accept that the submission of this Pre-Application does not guarantee approval or successful application, which shall remain subject to further review and confirmation by eAuto; and
+  - listitem: confirm that I have read, understood, and agree to be bound by the Terms & Conditions and Privacy Notice, which collectively govern the submission and processing of this application
+- text: As required by the authorities, please confirm that you are a licensed used car/motorcycle dealer. Before making payment, kindly ensure that your company's nature of business and/or business information includes "Wholesale and retail of used motor vehicles" (MSIC 45102). This will help prevent your Pre-Application from being rejected.
+- button "Back"
+- button "Submit and Pay"
+- paragraph: For further assistance, please contact out Customer Service 03-27798899.

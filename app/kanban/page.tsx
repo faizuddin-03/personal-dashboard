@@ -10,16 +10,19 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
   Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight, RefreshCw, Bug,
+  ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
-import { reporterIs, statusColor } from "@/lib/jira";
+import { reporterIs, statusColor, searchJiraIssues } from "@/lib/jira";
 import Linkified from "@/components/Linkified";
 import {
   KanbanCard, KanbanState, ColumnId, Priority,
   COLUMN_IDS, COLUMN_META, PRIORITY_META, ACCENT_COLORS, accentBorderClass,
   ChecklistItem, getKanbanState, saveKanbanState, isOverdue, checklistProgress,
   timeInColumn, getArchivedCards, saveArchivedCards,
+  ColumnSort, ColumnSortState, SORT_META, nextColumnSort, sortCardsByMove,
+  getColumnSort, saveColumnSort,
 } from "@/lib/kanban";
 import { syncCrTickets, getChildBugs, ChildBugMap, bugStats, isRecentlyFixed } from "@/lib/crSync";
 
@@ -40,17 +43,6 @@ function findSuite(suiteId: string, tsData: _TSCREntry[]): { cr: _TSCREntry; sui
     if (suite) return { cr, suite };
   }
   return null;
-}
-
-function buildJiraJql(q: string, projectKey?: string): string {
-  const escaped = q.trim().replace(/"/g, "");
-  const isId  = /^\d+$/.test(escaped);
-  const isKey = /^[A-Za-z]+-\d+$/.test(escaped);
-  const resolvedKey = isId && projectKey ? `${projectKey}-${escaped}` : null;
-  if (resolvedKey) return `key = "${resolvedKey}" ORDER BY updated DESC`;
-  if (isId)        return `id = ${escaped} ORDER BY updated DESC`;
-  if (isKey)       return `key = "${escaped}" ORDER BY updated DESC`;
-  return `text ~ "${escaped}" ORDER BY updated DESC`;
 }
 
 function parseJiraResults(data: { issues?: unknown[] }): JiraResult[] {
@@ -119,8 +111,6 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
   const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
   const [jiraError, setJiraError]       = useState("");
 
-  const buildJql = (q: string) => buildJiraJql(q, creds?.defaultProjectKey);
-
   // Initial load: assigned/reported tickets
   useEffect(() => {
     if (tab !== "jira" || !creds || allJira.length > 0) return;
@@ -147,23 +137,13 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
     if (tab !== "jira" || !creds || jiraQuery.length < 2) return;
     const timer = setTimeout(() => {
       setJiraSearchLoading(true);
-      fetch("/api/jira/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...creds,
-          jql: buildJql(jiraQuery),
-          maxResults: 50,
-          fields: ["summary", "status", "issuetype", "project", "updated"],
-        }),
-      })
-        .then(r => r.json())
+      searchJiraIssues(creds, jiraQuery)
         .then(data => setAllJira(parseJiraResults(data)))
         .catch(() => {})
         .finally(() => setJiraSearchLoading(false));
     }, 500);
     return () => clearTimeout(timer);
-  }, [jiraQuery, tab, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [jiraQuery, tab, creds]);
 
   const filteredJira = jiraQuery.length >= 2 ? allJira : allJira.filter(r => {
     const q = jiraQuery.toLowerCase();
@@ -195,23 +175,13 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
     if (!showJiraLink || !creds || jiraLinkQuery.length < 2) return;
     const timer = setTimeout(() => {
       setJiraLinkSearching(true);
-      fetch("/api/jira/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...creds,
-          jql: buildJql(jiraLinkQuery),
-          maxResults: 50,
-          fields: ["summary", "status", "issuetype", "project", "updated"],
-        }),
-      })
-        .then(r => r.json())
+      searchJiraIssues(creds, jiraLinkQuery)
         .then(data => setJiraLinkResults(parseJiraResults(data)))
         .catch(() => {})
         .finally(() => setJiraLinkSearching(false));
     }, 500);
     return () => clearTimeout(timer);
-  }, [jiraLinkQuery, showJiraLink, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [jiraLinkQuery, showJiraLink, creds]);
 
   function addLabel(e: React.KeyboardEvent) {
     if (e.key === "Enter" && labelInput.trim()) { setLabels(p => [...p, labelInput.trim()]); setLabelInput(""); }
@@ -697,11 +667,35 @@ function DraggableCard({ card, baseUrl, onCardClick, tsData, allCards, childBugs
   );
 }
 
+// ── Sort-by-date-moved toggle ─────────────────────────────
+function SortToggle({ sort, onCycle, tone = "slate" }: {
+  sort: ColumnSort; onCycle: () => void; tone?: "slate" | "red";
+}) {
+  const Icon = sort === "asc" ? ArrowUp : sort === "desc" ? ArrowDown : ArrowUpDown;
+  const active = sort !== "manual";
+  return (
+    <button
+      onClick={onCycle}
+      title={SORT_META[sort].hint}
+      aria-label={`Sort by date moved: ${SORT_META[sort].label}. Click to change.`}
+      className={clsx(
+        "p-0.5 rounded transition-colors",
+        tone === "red"
+          ? clsx("hover:bg-red-900/30", active ? "text-red-300" : "text-red-500 hover:text-red-300")
+          : clsx("hover:bg-black/20", active ? "text-blue-400" : "text-slate-500 hover:text-slate-200"),
+      )}
+    >
+      <Icon size={15} />
+    </button>
+  );
+}
+
 // ── Column ────────────────────────────────────────────────
-function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, tsData, allCards, childBugs }: {
+function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, sort, onCycleSort, tsData, allCards, childBugs }: {
   id: ColumnId; cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
   collapsed?: boolean; onToggleCollapse?: () => void;
+  sort: ColumnSort; onCycleSort: () => void;
   tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const meta = COLUMN_META[id];
@@ -715,6 +709,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
           <span className="text-xs bg-black/20 text-slate-400 px-1.5 py-0.5 rounded-full">{cards.length}</span>
         </div>
         <div className="flex items-center gap-0.5">
+          <SortToggle sort={sort} onCycle={onCycleSort} />
           {onToggleCollapse && (
             <button
               onClick={onToggleCollapse}
@@ -822,16 +817,12 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
     if (!showJiraLinkEdit || !creds || jiraEditQuery.length < 2) return;
     const t = setTimeout(() => {
       setJiraEditSearching(true);
-      fetch("/api/jira/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...creds, jql: buildJiraJql(jiraEditQuery, creds.defaultProjectKey), maxResults: 50, fields: ["summary", "status", "issuetype", "project", "updated"] }),
-      })
-        .then(r => r.json()).then(d => setJiraEditResults(parseJiraResults(d)))
+      searchJiraIssues(creds, jiraEditQuery)
+        .then(d => setJiraEditResults(parseJiraResults(d)))
         .catch(() => {}).finally(() => setJiraEditSearching(false));
     }, 500);
     return () => clearTimeout(t);
-  }, [jiraEditQuery, showJiraLinkEdit, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [jiraEditQuery, showJiraLinkEdit, creds]);
 
   function save() {
     onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined, linkedTSSuiteId: linkedTSSuiteId || undefined });
@@ -1283,9 +1274,10 @@ function ArchiveDrawer({ cards, onClose, onUnarchive }: {
 }
 
 // ── Urgent droppable section ──────────────────────────────
-function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData, allCards, childBugs }: {
+function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, sort, onCycleSort, tsData, allCards, childBugs }: {
   cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
+  sort: ColumnSort; onCycleSort: () => void;
   tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: "urgent" });
@@ -1299,7 +1291,10 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData, allCard
             <span className="text-sm font-semibold text-red-300">Urgent</span>
             <span className="text-xs bg-red-900/40 text-red-400 px-1.5 py-0.5 rounded-full">{cards.length}</span>
           </div>
-          <button onClick={() => onAddCard("urgent")} className="text-red-500 hover:text-red-300 p-0.5 hover:bg-red-900/30 rounded transition-colors"><Plus size={15} /></button>
+          <div className="flex items-center gap-0.5">
+            <SortToggle sort={sort} onCycle={onCycleSort} tone="red" />
+            <button onClick={() => onAddCard("urgent")} className="text-red-500 hover:text-red-300 p-0.5 hover:bg-red-900/30 rounded transition-colors"><Plus size={15} /></button>
+          </div>
         </div>
         <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
         <div
@@ -1337,11 +1332,24 @@ export default function KanbanPage() {
   const [crSyncMsg, setCrSyncMsg]   = useState("");
   const [childBugs, setChildBugs]   = useState<ChildBugMap>({});
 
+  const [columnSort, setColumnSort] = useState<ColumnSortState>({
+    urgent: "manual", todo: "manual", ongoing: "manual", "on-hold": "manual", finished: "manual",
+  });
+
   function toggleCollapse(col: ColumnId) {
     setCollapsedCols(prev => ({ ...prev, [col]: !prev[col] }));
   }
 
+  function cycleSort(col: ColumnId) {
+    setColumnSort(prev => {
+      const next = { ...prev, [col]: nextColumnSort(prev[col]) };
+      saveColumnSort(next);
+      return next;
+    });
+  }
+
   useEffect(() => {
+    setColumnSort(getColumnSort());
     setBoardState(getKanbanState());
     setArchivedCards(getArchivedCards());
     setTsData(loadTSData());
@@ -1429,6 +1437,10 @@ export default function KanbanPage() {
     if (!sourceCol || !destCol) return;
 
     if (sourceCol === destCol) {
+      // A date-sorted column owns its own order — reordering by hand is off there.
+      // Dragging the card to a *different* column still works, since that's the move
+      // being recorded.
+      if (columnSort[sourceCol] !== "manual") return;
       const items = boardState[sourceCol];
       const oldIdx = items.findIndex(c => c.id === cardId);
       const newIdx = COLUMN_IDS.includes(overId as ColumnId)
@@ -1449,7 +1461,8 @@ export default function KanbanPage() {
   const allCards = COLUMN_IDS.flatMap(col => boardState[col]);
   const activeCard = activeId ? allCards.find(c => c.id === activeId) : null;
   function visibleCards(col: ColumnId) {
-    return boardState[col].filter(c => (c.boardType ?? "task") === activeBoardType);
+    const cards = boardState[col].filter(c => (c.boardType ?? "task") === activeBoardType);
+    return sortCardsByMove(cards, columnSort[col]);
   }
 
   return (
@@ -1503,6 +1516,8 @@ export default function KanbanPage() {
           baseUrl={creds?.baseUrl}
           onAddCard={setAddTarget}
           onCardClick={setSelectedCard}
+          sort={columnSort.urgent}
+          onCycleSort={() => cycleSort("urgent")}
           tsData={tsData}
           allCards={allCards}
           childBugs={childBugs}
@@ -1516,6 +1531,8 @@ export default function KanbanPage() {
                 onAddCard={setAddTarget} onCardClick={setSelectedCard}
                 collapsed={collapsedCols[col] ?? false}
                 onToggleCollapse={() => toggleCollapse(col)}
+                sort={columnSort[col]}
+                onCycleSort={() => cycleSort(col)}
                 tsData={tsData}
                 allCards={allCards}
                 childBugs={childBugs}

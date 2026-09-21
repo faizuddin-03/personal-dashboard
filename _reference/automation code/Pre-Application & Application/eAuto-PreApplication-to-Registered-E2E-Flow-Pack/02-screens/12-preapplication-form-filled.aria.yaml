@@ -1,0 +1,121 @@
+# https://staging.eauto.my/obs/preOnb/form
+- banner:
+  - img "header-line"
+  - img "Logo"
+  - text: Dealer Application
+- text: Working... 1 Pre-Application Form 2 Business Info Review Business Information
+- strong: "Business Registered Name: *"
+- 'textbox "Business Registered Name: *"':
+  - /placeholder: Business Registered Name
+  - text: CHARMAIN QA11982 260831-1744-139 ENTERPRISE
+- strong: "Type of Business: *"
+- text: "SSM Registered:"
+- radio "Sdn Bhd / Bhd"
+- text: Sdn Bhd / Bhd
+- radio "Sole Proprietorship / Partnership"
+- text: Sole Proprietorship / Partnership
+- radio "LLP"
+- text: "LLP Non-SSM Registered:"
+- radio "Business Trading (Sabah)"
+- text: Business Trading (Sabah)
+- radio "Business Trading (Sarawak)" [checked]
+- text: Business Trading (Sarawak)
+- strong: "Business Trading License No: *"
+- 'textbox "Business Trading License No: *"':
+  - /placeholder: Business Trading License No
+  - text: KCH/1744139
+- strong: "Trading License: *"
+- text: Upload in pdf, png, jpg, jpeg (max 5MB)
+- button "Browse File..."
+- link "trading-licence.pdf":
+  - /url: "#"
+- link "Delete Attachment":
+  - /url: "#"
+- link "Add More File":
+  - /url: "#"
+- strong: "Tax Identification No (TIN):"
+- textbox "Tax Identification No (TIN):":
+  - /placeholder: Tax Identification No (TIN)
+  - text: C3117441390
+- text: Please ensure you entered the correct TIN for e-invoice
+- strong: "Showroom Address: *"
+- 'textbox "Showroom Address: *"':
+  - /placeholder: Showroom Address
+  - text: LOT 12, JALAN QA, TAMAN AUTOMATION
+- textbox "Showroom Postcode": "93100"
+- combobox:
+  - option "Select State"
+  - option "SARAWAK" [selected]
+- combobox:
+  - option "Select City"
+  - option "SARAWAK"
+  - option "ASAJAYA"
+  - option "BALINGAN"
+  - option "BARAM"
+  - option "BAU"
+  - option "BEKENU"
+  - option "BELAGA"
+  - option "BELAWAI"
+  - option "BETONG"
+  - option "BINTANGOR"
+  - option "BINTULU"
+  - option "DALAT"
+  - option "DARO"
+  - option "DEBAK"
+  - option "ENGKILILI"
+  - option "JULAU"
+  - option "KABONG"
+  - option "KANOWIT"
+  - option "KAPIT"
+  - option "KOTA SAMARAHAN"
+  - option "KUCHING" [selected]
+  - option "LAWAS"
+  - option "LIMBANG"
+  - option "LINGGA"
+  - option "LONG LAMA"
+  - option "LUBOK ANTU"
+  - option "LUNDU"
+  - option "MATU"
+  - option "MIRI"
+  - option "MUKAH"
+  - option "NANGA MEDAMIT"
+  - option "NIAH"
+  - option "PEKENU"
+  - option "PUSA"
+  - option "ROBAN"
+  - option "SARATOK"
+  - option "SARIKEI"
+  - option "SEBAUH"
+  - option "SEBUYAU"
+  - option "SERIAN"
+  - option "SIMUNJAN"
+  - option "SONG"
+  - option "SPAOH"
+  - option "SRI AMAN"
+  - option "SUNDAR"
+  - option "TATAU"
+  - option "TEBAKANG"
+  - option "SIBU"
+  - option "BINTANGOR"
+  - option "TEBEDU"
+  - option "PAKAN"
+  - option "SIBUTI"
+  - option "OYA"
+  - option "MALUDAM"
+- text: Admin In Charge This refers to the representative assisting with this application
+- strong: "Name: *"
+- 'textbox "Name: *"':
+  - /placeholder: Name
+  - text: QA ADMIN -
+- strong: "Mobile No: *"
+- 'textbox "Mobile No: *"':
+  - /placeholder: Mobile No
+  - text: "0126083117"
+- strong: "Email Address: *"
+- 'textbox "Email Address: *"':
+  - /placeholder: Email Address
+  - text: qa.eaint11982260831-1744-139@modefair.com
+- text: We will email an invoice and/or e-invoice once payment is successful.
+- button "Cancel"
+- button "Next"
+- paragraph: For further assistance, please contact out Customer Service 03-27798899.

@@ -1,8 +1,10 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import clsx from "clsx";
 import {
   Eye, EyeOff, CheckCircle, AlertCircle, Loader2,
-  Download, Upload, Save, RefreshCw, LogOut, AlertTriangle,
+  Download, Upload, Save, RefreshCw, LogOut, AlertTriangle, Library,
 } from "lucide-react";
 import { useApp } from "@/components/AppShell";
 import { clearCredentials } from "@/lib/jira";
@@ -254,6 +256,22 @@ export default function SettingsPage() {
               {jiraSaved ? <CheckCircle size={13} /> : <Save size={13} />}
               {jiraSaved ? "Saved!" : "Save"}
             </button>
+          </div>
+        </Section>
+
+        {/* ── Knowledge Base ── */}
+        <Section title="QA Knowledge Base" description="Durable, sourced facts about the systems you test — read by the AI assistant every session.">
+          <div className="flex items-start justify-between gap-4">
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Lives as markdown files in <code className="text-[11px] font-mono px-1 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400">knowledge/</code> in
+              the project. Open it to read or edit any file — saving writes straight to disk, so an
+              edit changes what the assistant knows next session. Every fact should keep its
+              provenance tag.
+            </p>
+            <Link href="/knowledge" className={clsx(primaryBtn, "shrink-0")}>
+              <Library size={13} />
+              Open Knowledge Base
+            </Link>
           </div>
         </Section>
 

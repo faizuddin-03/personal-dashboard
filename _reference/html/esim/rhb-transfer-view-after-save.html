@@ -1,0 +1,73 @@
+<!--
+  URL: /esim/rhb-transfer-resp/140/view (landed on after submitting the edit form)
+  Env: eSIM (VPN-only simulator), env instance not stated by user
+  Captured: 2026-08-21
+  Trimmed: none.
+  Confirms esim.md's existing "saving lands on the record's VIEW page, not
+  back on the list" behaviour for THIS entity too — same alert text pattern
+  ("RHB Transfer Resp saved successfully.") and same Record Details block
+  shape as the eSTM Enquiry example already documented there.
+  Used by: knowledge/esim.md
+-->
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="sidebar-brand" href="/esim/"><span class="sidebar-brand-text">eAuto Sim</span></a>
+      <div class="sidebar-label">Entities</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item sidebar-group" id="group-rhb">
+          <button class="sidebar-group-toggle" onclick="toggleGroup('group-rhb')"><span>RHB</span></button>
+          <ul class="sidebar-group-items">
+            <li class="sidebar-nav-item"><a href="/esim/rhb-enquiry-resp"><span>RHB Enquiry</span></a></li>
+            <li class="sidebar-nav-item active"><a href="/esim/rhb-transfer-resp"><span>RHB Transfer</span></a></li>
+            <li class="sidebar-nav-item"><a href="/esim/service-hub-resp"><span>Service Hub</span></a></li>
+            <li class="sidebar-nav-item"><a href="/esim/rhb-account-info"><span>RHB Account Info</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+    <div class="main-content">
+      <div class="top-bar">
+        <nav class="breadcrumb-nav">
+          <a href="/esim/">home</a>
+          <span><span class="sep">/</span><a href="/esim/rhb-transfer-resp">RHB Transfer Resps</a></span><span><span class="sep">/</span><span class="current">#140</span></span>
+        </nav>
+      </div>
+      <div class="content-body">
+        <div class="page-header">
+          <div class="page-header-left">
+            <a href="/esim/rhb-transfer-resp" class="btn-back" title="Back to list">back</a>
+            <div><h1 class="page-title page-title-sm">RHB Transfer Resp #140</h1></div>
+          </div>
+          <div class="btn-group-actions">
+            <a href="/esim/rhb-transfer-resp/140/edit" class="btn btn-primary">Edit</a>
+            <form action="/esim/rhb-transfer-resp/140/delete" method="post" style="display:inline">
+              <button type="submit" class="btn btn-danger-outline">Delete</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="alert alert-success">
+          <span>RHB Transfer Resp saved successfully.</span>
+          <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-card-header"><span class="detail-card-header-title">Record Details</span></div>
+          <div class="detail-row"><span class="detail-label">ID</span><span class="detail-value">140</span></div>
+          <div class="detail-row"><span class="detail-label">Vn Start With</span><span class="detail-value">HX</span></div>
+          <div class="detail-row"><span class="detail-label">Response Code</span><span class="detail-value">OK</span></div>
+          <div class="detail-row"><span class="detail-label">Description</span><span class="detail-value">OK</span></div>
+          <div class="detail-row"><span class="detail-label">Delay Milliseconds</span><span class="detail-value">0</span></div>
+          <div class="detail-row"><span class="detail-label">Remark</span><span class="detail-value">Faiz
+
+OK
+IF
+RE</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="/esim/js/app.js"></script>
+</body>

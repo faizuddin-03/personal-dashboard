@@ -6,7 +6,8 @@ import {
   LayoutDashboard, ChevronDown, Shield, Car,
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send, Filter, Music2, AtSign, ShoppingCart, ArrowLeftRight,
+  Briefcase, Send, Filter, Music2, AtSign, ShoppingCart, ArrowLeftRight, BookOpen, SearchCheck,
+  Mail, Tickets, Server, Building2, QrCode,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -21,6 +22,7 @@ const nav = [
       { label: "Dashboard",    href: "/jira",          icon: LayoutDashboard },
       { label: "Issue Filter", href: "/jira/filter",   icon: Filter },
       { label: "Mentions",     href: "/jira/mentions", icon: AtSign },
+      { label: "Ticket Studies", href: "/jira/studies", icon: BookOpen },
       { label: "TS Tracker",   href: "/tests",         icon: ClipboardList },
     ],
   },
@@ -45,17 +47,54 @@ const nav = [
       // Regression (Secarang), and Purchase E2E (eAuto).
       { label: "Insurance",       href: "/eauto/insurance", icon: Shield },
       { label: "Shopping Cart",   href: "/eauto/shopping-cart", icon: ShoppingCart },
-      { label: "eSTM",            href: "/eauto/estm",      icon: ArrowLeftRight },
+      { label: "Create eSTM",     href: "/eauto/estm",      icon: ArrowLeftRight },
+      // "Create eSTM (Original)" — the pre-refactor single-file script — is
+      // hidden from the sidebar but still live at /eauto/estm-legacy, same as
+      // the WA Blaster pages below. It is a known-good baseline to fall back on
+      // when this one misbehaves, not something to reach for day to day.
+      // Checker holds data-validity checkers (ROC / New ROC / TIN, more to come).
+      // Not test automation — no recording, no pass/fail.
+      { label: "Checker",         href: "/eauto/checker",   icon: SearchCheck },
+      // eSIM — the eAuto Simulator that steers JPJ/insurance response codes by
+      // vehicle prefix. VPN-only; the page gates every run on confirming that.
+      { label: "eSIM",            href: "/eauto/esim",      icon: Server },
       // WA Blaster (old: scripts/_archive/WA-Blaster, still at /wa-blaster) and
       // WA Blaster Beta (still at /wa-blaster-beta) are hidden from the sidebar
       // but not deleted — reachable by direct URL if ever needed again.
+    ],
+  },
+  {
+    // Automation built for one specific ticket, named by its ticket number.
+    // The groups above are per-module and outlive any single ticket; these
+    // exist because a ticket asked for them. Label them with the number alone
+    // — the page header carries the summary.
+    label: "Tickets",
+    icon: Tickets,
+    children: [
+      // EAINT-11864 — quotation-reminder email. Time-sensitive: the cases are
+      // built around the hourly 07:00-23:00 cron, hence the schedule picker.
+      { label: "11864",           href: "/eauto/quotation-reminder", icon: Mail },
+      // EAINT-9306 — [eAuto-AATF] eDereg Pre-Check as a compulsory step in the
+      // eDereg transaction creation flow. Awaiting case details from Faizuddin.
+      { label: "9306",            href: "/eauto/edereg-precheck",    icon: ClipboardList },
+      // EAINT-12153 — [eAuto-Application] Add Payment Channels for
+      // Pre-application and Application. This page is NOT that feature — it's
+      // a sub-function ("Company Details Checker") to prepare test data for
+      // it: confirms Company ROC / New Company ROC / TIN are not already
+      // used in staging before onboarding a new company with them.
+      { label: "12153",           href: "/eauto/company-details-checker", icon: Building2 },
+      // EAINT-12257 — [eAuto-Application] Add DuitNow QR Payment Channel for
+      // Pre-application and Application. Semi-automated by necessity: the run
+      // drives everything but stops twice for a person — the reCAPTCHA tick and
+      // the QR scan on a physical phone. Runs headed; it cannot go headless.
+      { label: "12257",           href: "/eauto/duitnow-qr", icon: QrCode },
     ],
   },
 ];
 
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState<string[]>(["eAuto", "Productivity", "JIRA"]);
+  const [expanded, setExpanded] = useState<string[]>([]);
   const { openWhatsNew } = useApp();
 
   function toggleGroup(label: string) {

@@ -1,0 +1,95 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URL: dereg step 3 "AATF" (header shows AATF active) — this step actually has TWO
+       sub-screens: owner's thumbprint-witness consent, then the AATF rep's own consent.
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome; the mykad-websocket.js event-handler
+  script (identical to EAINT-9306-dereg-step1-owner-mykad-auth.html, not repeated);
+  base64 photo/thumbprint payloads.
+  Used by: knowledge/flow-edereg.md (§4 DOM handles, §7 preconditions)
+-->
+
+<!-- ============================================================ -->
+<!-- SUB-SCREEN A, STATE 1: "SALINAN PEMUNYA BERDAFTAR" (owner's copy) declaration -->
+<!-- transactionId in this state: 085b3a88-61ae-4dda-bdeb-d31cf2be40a2 -->
+<!-- ============================================================ -->
+<div id="owner-consent-container">
+    <strong>SALINAN PEMUNYA BERDAFTAR / REGISTERED OWNER'S COPY</strong>
+    <p><strong>PERAKUAN PEMUNYA BERDAFTAR KENDERAAN / REGISTERED VEHICLE OWNER'S DECLARATION</strong></p>
+    <ul>
+        <li>Saya, MUHAMMAD FAIZUDDIN BIN BIDI mengaku dan mengesahkan bahawa butiran yang saya nyatakan adalah benar... kenderaan HXA002 adalah dalam pemilikan saya;</li>
+        <li>Saya... bersetuju untuk membatalkan pendaftaran dan melupuskan kenderaan dan berjanji tidak akan mengambil sebarang tindakan perundangan...;</li>
+        <li>Saya... tidak akan menarik balik pembatalan pendaftaran bagi kenderaan HXA002;</li>
+        <li>Saya... juga akan bertanggungjawab sekiranya kenderaan milik saya digunakan atau dikesan di atas jalan raya...;</li>
+        <li>Saya... juga faham dan sedar bahawa memberikan maklumat yang sebahagian atau keseluruhannya tidak benar, palsu atau mengelirukan adalah suatu kesalahan di bawah Seksyen 108 (1) Akta Pengangkutan Jalan 1987...;</li>
+        <li>Saya... juga mengaku bahawa wakil MUHAMMAD FAIZUDDIN BIN BIDI daripada FAIZUDDIN AATF 2 telah membaca perakuan ini di hadapan saya...</li>
+    </ul>
+    <input type="checkbox" value="1" id="owner-consent">
+    Tanda (√) jika bersetuju dan faham akan isi kandungan perakuan. Sila masukkan MyKad dan cap ibujari pemohon untuk pengesahan.
+    <img id="thumbprint-photo" src="/uat1/view/aatf/dereg/transaction/mykad-photo.get?id=085b3a88-61ae-4dda-bdeb-d31cf2be40a2">
+</div>
+
+<div id="applet-container-section" style="visibility: hidden;">
+    <script>
+        var api = {
+            sendMykadDataPath: "/uat1/aatf/dereg/transaction/wskad-owner-consent.do",
+            continueNextPagePath: "/uat1/view/aatf/dereg/transaction/save-owner-consent.do",
+            additionalInfo: "category=1&id=085b3a88-61ae-4dda-bdeb-d31cf2be40a2",
+            cancelPath: "/uat1/view/aatf/dereg/transaction/cancel.do"
+        };
+    </script>
+    <!-- same mykad-container / mykad-control-container widget structure as step 1 -->
+</div>
+
+<!-- ============================================================ -->
+<!-- SUB-SCREEN A, STATE 2: after ticking #owner-consent -->
+<!-- (no visible change to widget visibility in this capture beyond the checkbox itself) -->
+<!-- ============================================================ -->
+
+<!-- ============================================================ -->
+<!-- SUB-SCREEN A, STATE 3: after thumbprint scan completes -->
+<!-- Same "Verification Passed"/"Verification Completed" pattern as step 1. -->
+<!-- readMyKadButton disabled, continueButton enabled. -->
+<!-- Clicking Next posts to wskad-owner-consent.do, redirects to save-owner-consent.do -->
+<!-- ============================================================ -->
+
+<!-- ============================================================ -->
+<!-- SUB-SCREEN B, STATE 1: "SALINAN AATF / AATF'S COPY" declaration -->
+<!-- (reached after the redirect above; header title2 is now blank on this page) -->
+<!-- ============================================================ -->
+<div id="aatf-consent-container">
+    <strong>SALINAN AATF / AATF'S COPY</strong>
+    <p><strong>PERAKUAN WAKIL AATF FAIZUDDIN AATF 2 / AATF REPRESENTATIVE'S DECLARATION FAIZUDDIN AATF 2</strong></p>
+    <ul>
+        <li>Saya, MUHAMMAD FAIZUDDIN BIN BIDI adalah wakil sah FAIZUDDIN AATF 2 mengaku dan mengesahkan bahawa butiran yang dimasukkan ke dalam sistem adalah benar... dan kenderaan HXA002 adalah milik pemunya berdaftar MUHAMMAD FAIZUDDIN BIN BIDI;</li>
+        <li>Saya... juga faham dan sedar bahawa memberikan maklumat yang sebahagian atau keseluruhannya tidak benar, palsu atau mengelirukan adalah suatu kesalahan di bawah Seksyen 108 (1) Akta Pengangkutan Jalan 1987...;</li>
+        <li>MUHAMMAD FAIZUDDIN BIN BIDI selaku pemunya berdaftar HXA002 dengan rela, bersetuju untuk membatalkan pendaftaran dan melupuskan kenderaan ini;</li>
+        <li>Saya... juga akan bertanggungjawab sekiranya kenderaan HXA002 digunakan atau dikesan di atas jalan raya...; dan</li>
+        <li>Saya... mengaku bahawa saya telah membacakan perakuan pemunya berdaftar kenderaan HXA002 ini di hadapannya, memberikan penerangan yang jelas kepada beliau, dan mendapatkan persetujuan beliau untuk meneruskan pembatalan dan pelupusan kenderaan HXA002 ini.</li>
+    </ul>
+    <input type="checkbox" value="1" id="aatf-consent">
+    Tanda (√) jika bersetuju dan faham akan isi kandungan perakuan. Sila masukkan MyKad dan cap ibujari pemohon untuk pengesahan.
+    <button id="to-auth-aatf" type="button" class="hidden">Next</button>
+</div>
+<!-- Note: #to-auth-aatf carries class="hidden" in BOTH the pre-tick and post-tick -->
+<!-- capture; only inline style="display: inline-block;" toggles it visible after -->
+<!-- ticking #aatf-consent (a display-style change wins over the CSS class here) -->
+
+<!-- ============================================================ -->
+<!-- SUB-SCREEN C: fingerprint/mykad reader page for the AATF rep -->
+<!-- URL: dereg step 3, title3 "AATF Authentication" -->
+<!-- ============================================================ -->
+<div id="dereg-header"><div class="title3">AATF Authentication</div></div>
+<div id="applet-container-section">
+    <script>
+        var api = {
+            sendMykadDataPath: "/uat1/aatf/dereg/transaction/wskad.do",
+            continueNextPagePath: "/uat1/view/aatf/dereg/transaction/jpj-enq.do",
+            additionalInfo: "id=085b3a88-61ae-4dda-bdeb-d31cf2be40a2",
+            cancelPath: "/uat1/view/aatf/dereg/transaction/cancel.do"
+        };
+    </script>
+    <!-- same widget; after scan completes, Next posts to wskad.do then redirects to -->
+    <!-- jpj-enq.do — i.e. step 4 (JPJ Check) starts right after AATF fingerprint -->
+</div>

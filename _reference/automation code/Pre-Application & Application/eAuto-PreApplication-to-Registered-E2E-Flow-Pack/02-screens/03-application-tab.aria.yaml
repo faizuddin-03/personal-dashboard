@@ -1,0 +1,161 @@
+# https://staging.eauto.my/obs/admin/enquiry
+- text: Back to Backoffice
+- img
+- text: "Company Name:"
+- textbox "Company Name"
+- text: "Application No:"
+- textbox "Application No": NA68001099
+- text: "Application Status:"
+- combobox:
+  - option "All" [selected]
+  - option "New"
+  - option "Draft"
+  - option "Pending"
+  - option "KIV"
+  - option "Re-evaluate"
+  - option "Approved"
+  - option "Rejected"
+  - option "Expired"
+- text: "Application Created Date From:"
+- textbox
+- text: "To:"
+- textbox
+- text: "Application Submission Date From:"
+- textbox
+- text: "To:"
+- textbox
+- text: "Old BRN:"
+- textbox "Old BRN"
+- text: "New BRN:"
+- textbox "New BRN"
+- text: "Business Trading License Number:"
+- textbox "Business Trading License Number"
+- text: "LHDN Response Status:"
+- combobox:
+  - option "All" [selected]
+  - option "OK"
+  - option "Failed"
+  - option "-"
+  - option "N/A"
+- text: "Assignee:"
+- combobox:
+  - option "All" [selected]
+  - option "BO ruiluan"
+  - option "BO User bjGIQ"
+  - option "BO User bwvzW"
+  - option "BO User GhFbw"
+  - option "BO User huWnF"
+  - option "BO User kbomK"
+  - option "BO User nPlkY"
+  - option "BO User sxscg"
+  - option "BO User sYRlw"
+  - option "BO user test 1"
+  - option "BRANDON TEST MIE"
+  - option "CHARMAIN EA CHIANG chg"
+  - option "LIM YI LINK"
+  - option "MUSIC SDN BHD"
+  - option "sdtPhAPWEMhvmv"
+  - option "SlcklBI"
+  - option "traze"
+- text: "Assignee / UCD:"
+- combobox:
+  - option "All" [selected]
+  - option "Pending UCD"
+  - option "Pending Assignee"
+  - option "Checked"
+- text: "Approver / Assignee:"
+- combobox:
+  - option "All" [selected]
+  - option "Pending Approver"
+  - option "Pending Assignee"
+  - option "Checked"
+- text: "Softcopy Docs:"
+- combobox:
+  - option "All" [selected]
+  - option "Pending UCD"
+  - option "Pending Assignee"
+  - option "Checked"
+- text: "Hardcopy & Acc Created:"
+- combobox:
+  - option "All" [selected]
+  - option "Pending UCD"
+  - option "Pending UCD - Incomplete Docs"
+  - option "Pending Assignee"
+  - option "Registered"
+- text: "Registration Fee:"
+- combobox:
+  - option "All" [selected]
+  - option "-"
+  - option "Pending UCD"
+  - option "Failed"
+  - option "OK"
+- text: "Type of Business:"
+- checkbox "Sdn Bhd / Bhd" [checked]
+- text: Sdn Bhd / Bhd
+- checkbox "Sole Proprietorship / Partnership" [checked]
+- text: Sole Proprietorship / Partnership
+- checkbox "LLP" [checked]
+- text: LLP
+- checkbox "Business Trading (Sabah)" [checked]
+- text: Business Trading (Sabah)
+- checkbox "Business Trading (Sarawak)" [checked]
+- text: Business Trading (Sarawak)
+- button "Search"
+- text: Reset Export UCD Application Listing 1 record(s) in total
+- table:
+  - rowgroup:
+    - row "# Pre-Application Submission Date Application Created Date Application No Company Name Old BRN New BRN Business Trading License Number Type of Business Application Submission Date Approved Date Turn Around Time (Days) Application Expiry Date Assignee Assignee / UCD Approver / Assignee Last Updated Date LHDN Response Status Application Status Softcopy Docs Registration Fee Hardcopy & Acc Created Remarks Action":
+      - columnheader "#"
+      - columnheader "Pre-Application Submission Date"
+      - columnheader "Application Created Date"
+      - columnheader "Application No"
+      - columnheader "Company Name"
+      - columnheader "Old BRN"
+      - columnheader "New BRN"
+      - columnheader "Business Trading License Number"
+      - columnheader "Type of Business"
+      - columnheader "Application Submission Date"
+      - columnheader "Approved Date"
+      - columnheader "Turn Around Time (Days)"
+      - columnheader "Application Expiry Date"
+      - columnheader "Assignee"
+      - columnheader "Assignee / UCD"
+      - columnheader "Approver / Assignee"
+      - columnheader "Last Updated Date"
+      - columnheader "LHDN Response Status"
+      - columnheader "Application Status"
+      - columnheader "Softcopy Docs"
+      - columnheader "Registration Fee"
+      - columnheader "Hardcopy & Acc Created"
+      - columnheader "Remarks"
+      - columnheader "Action"
+  - rowgroup:
+    - row "1 2026-08-24 20:36 2026-08-24 21:10 NA68001099 QA11982 MOTORS 260824-2036-021 ENTERPRISE - - KCH/2036021 Business Trading (Sarawak) 2026-08-24 22:18 2026-08-24 22:19 0 2026-11-22 21:10 CHARMAIN EA CHIANG chg Checked Checked 2026-08-24 22:30 Failed Approved Checked OK Pending UCD TIN verification failed. Kindly provide correct TIN information to eAuto customer service. Edit":
+      - cell "1"
+      - cell "2026-08-24 20:36"
+      - cell "2026-08-24 21:10"
+      - cell "NA68001099"
+      - cell "QA11982 MOTORS 260824-2036-021 ENTERPRISE"
+      - cell "-"
+      - cell "-"
+      - cell "KCH/2036021"
+      - cell "Business Trading (Sarawak)"
+      - cell "2026-08-24 22:18"
+      - cell "2026-08-24 22:19"
+      - cell "0"
+      - cell "2026-11-22 21:10"
+      - cell "CHARMAIN EA CHIANG chg"
+      - cell "Checked"
+      - cell "Checked"
+      - cell "2026-08-24 22:30"
+      - cell "Failed"
+      - cell "Approved"
+      - cell "Checked"
+      - cell "OK"
+      - cell "Pending UCD"
+      - cell "TIN verification failed. Kindly provide correct TIN information to eAuto customer service."
+      - cell "Edit":
+        - link "Edit":
+          - /url: /obs/admin/form/edit-registration-doc/559565f5-bf36-447b-b9f8-f6a1c8142bdd
+- text: Best Compatible With Mozilla Firefox V36.0.4 Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved. Contact Us | Terms & Conditions | Privacy
+- img

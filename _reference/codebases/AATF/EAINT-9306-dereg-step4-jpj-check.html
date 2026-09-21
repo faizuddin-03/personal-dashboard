@@ -1,0 +1,54 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URL: /uat1/view/aatf/dereg/transaction/jpj-enq.do (header "4 JPJ Check" active)
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome.
+  Two states: the submission-confirmation form, then the JPJ result after Next.
+  Note this is a SEPARATE JPJ enquiry from eDereg Pre-Checking (step 1's own JPJ
+  check) — this one runs again at deregistration submission time, using the same
+  GLB000000I / TRANSACTION SUCCESSFUL response code family.
+  Used by: knowledge/flow-edereg.md (§5.2 JPJ response codes — confirms the same
+  codes appear at both the pre-check AND the actual dereg JPJ-check step)
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1: read-only details recap + declaration checkbox -->
+<!-- ============================================================ -->
+<div class="tx-details">
+    <!-- read-only recap: Owner's Name, MyKad No., Vehicle No., Engine No., Chassis No.,
+         AATF's Rep, AATF's Rep MyKad No., Company Name, Company Reg. No.,
+         Company Address, Company Contact No. — all class="notEditable" readonly -->
+</div>
+<div id="i-agree">
+    <input type="checkbox" id="to-agree">
+    <b>I hereby agree to submit the information for deregistration purpose.</b>
+    <div class="button-bar"><input type="button" id="to-enquiry" value="Next"></div>
+</div>
+<!-- Clicking Next triggers the native browser confirm() popup (not jQuery UI) —
+     "staging.eauto.my says [sure to continue?]" — no HTML available for it, only
+     accessible via Playwright's page.on('dialog') handler, NOT a DOM locator -->
+
+<!-- ============================================================ -->
+<!-- STATE 2: after confirming, JPJ enquiry result appears inline on same page -->
+<!-- ============================================================ -->
+<div id="jpj-enquiry">
+    <table>
+        <tbody>
+            <tr><td><b>Valid As At:</b></td><td><span class="requestAt label">21 Aug 2026 03:31 pm</span></td></tr>
+            <tr><td><b>Blacklisted:</b></td><td><span class="blacklisted label" style="color:black">No</span></td></tr>
+            <tr><td><b>Hak Milik Dituntut:</b></td><td><span class="hakmilik label" style="color:black">No</span></td></tr>
+            <tr><td><b>Condition Code:</b></td><td><span class="conditionCodeLabel label" style="color:black">No</span></td></tr>
+            <tr><td><b>JPJ Enquiry Status:</b></td><td><span class="jpjStatus label" style="color:green">OK</span></td></tr>
+            <tr><td><b>Response Code:</b></td><td style="color:green"><span class="responseCodeLabel label">TRANSACTION SUCCESSFUL</span></td></tr>
+            <tr>
+                <td></td>
+                <td class="button-bar">
+                    <input type="button" id="to-cancel" value="Cancel">
+                    <input type="button" id="to-payment" value="Make Payment">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Clicking "Make Payment" triggers ANOTHER native browser confirm() popup, same as above -->

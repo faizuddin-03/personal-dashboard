@@ -1,0 +1,400 @@
+<!--
+  eSTM — step 4 "JPJ Check" ("Submission (JPJ Checking)"), captured with the
+  "Submit to JPJ for checking?" confirmation dialog open.
+  URL:         https://staging.eauto.my/uat1/view/ucd/estm/... (JPJ Check step,
+               reached right after step 3's buyer/vehicle details submission)
+  Environment: uat1
+  Captured:    2026-08-18, by Faizuddin, mid-TS06-run — logged in as
+               MUHAMMAD FAIZUDDIN BIN BIDI, transaction
+               47b20394-f525-45db-a2d0-fb1a60669941, vehicle HX049
+  Trimmed:     nothing. Full page as pasted (step header, JPJ details table,
+               #i-agree, the dialogs, the shared header/footer/scripts).
+               Forms are never trimmed.
+
+  Why this page matters: it settles what TS02/TS03/TS06's automation was
+  missing. Landing on step 4 shows a jQuery UI dialog immediately —
+    <div id="to-retry-dialog" title="Submit">Submit to JPJ for checking?</div>
+    buttons: "No" (.cancel-dialog-btn), "Yes" (.confirm-dialog-btn)
+  — nothing in EstmHandoffPage.ts was dismissing it, so every attempt to find
+  `#lkm-addson-checkbox` (step 5) timed out: the run was still sitting on step
+  4 with this dialog open. `scripts/eauto-estm`'s own `EstmSession.
+  confirmDialog()` / `clickYesAndWait()` already handle exactly this class of
+  dialog (matched by `.confirm-dialog-btn`) — the fix is to actually CALL one
+  of those between reaching step 4 and checking for step 5's eLKM checkbox,
+  not to invent new handling.
+
+  Also note: `#to-buy-insurance`'s click handler is bound on THIS page
+  (JPJ Check, step 4) via inline <script>, not on the Payment step (step 5) as
+  knowledge/flow-estm.md's handoff table previously implied — though the
+  button itself isn't visible in this particular capture (its markup isn't in
+  the body here, only the handler binding), so whether/when it renders is
+  still unconfirmed.
+
+  Cited by: knowledge/flow-estm.md § eSTM → insurance handoff,
+  § Step 4 — JPJ Check, the "Submit to JPJ for checking?" dialog.
+-->
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+
+<div id="sure-to-cancel" style="display:none;" title="Cancel Confirmation">
+    Sure to cancel?
+</div>
+
+<div id="to-continue-dialog" style="display:none; flex-direction: column;" title="Exit Confirmation">
+    <div style="font-size: 14px; font-weight: 400; width: 100%;">Sure to continue later?</div>
+</div>
+
+<div id="sure-to-continue-payment" style="display:none;" title="Confirmation">
+    Sure to continue?
+</div>
+
+<style>
+    .confirm-ssm-details-text {
+        font-weight: 700;
+        font-size: 14px;
+        color: #FF4000;
+        line-height: 16.94px;
+    }
+    .ssm-details-content {
+        font-weight: 500;
+        font-size: 14px;
+        padding: 12px 16px;
+        background-color: #F7F9FA;
+        border-radius: 4px;
+        margin: 8px 0px;
+    }
+    .ssm-label {
+        min-width: 165px;
+        color: #808080;
+    }
+</style>
+<div id="ssm-details" style="display:none;">
+    <div>
+        <div>SSM Document is available to purchase:</div>
+        <div class="ssm-details-content">
+            <div>SSM Company Details</div>
+            <div class="flex"><div class="ssm-label">Buyer Company Name </div> <div id="companyReferenceName"></div></div>
+            <div class="flex"><div class="ssm-label">Buyer SSM Number </div> <div id="companyReferenceNo"></div></div>
+        </div>
+        <div class="confirm-ssm-details-text">Please reconfirm the Buyer Company Name and SSM Number are correct.</div>
+        <br>
+        <div class="confirm-ssm-details-text">
+             It is mandatory that, buyer representative's name <span class="ssm-confirm-name-ic">(Emily Rodriguez &amp; 990909010122)</span> must be listed in the SSM Document as Director/Owner to proceed with the transaction.
+             买方代表的名字<span class="ssm-confirm-name-ic">(Emily Rodriguez &amp; 990909010122)</span>必须在SSM文件中列为董事或公司所有者，才能继续进行交易。
+         </div>
+    </div>
+</div>
+<div id="ssm-payment-popup" style="display:none">
+    <div id="ssm-payment-popup-content" style="width:100%">
+    </div>
+</div>
+
+<div id="container" class="ucd-container">
+
+<div id="estm-header">
+    <div class="title1">New e-SERAHAN Transaction:</div>
+
+    <div class="title2" style="margin:10px 0">
+Selling to Individual
+</div>
+
+    <table>
+    <tbody><tr>
+        <td colspan="6">
+                <center>
+    <div style="display:flex;justify-content:center;width:100%;">
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">1</div>
+            </div>
+            <span style="line-height:14.5px;padding-top:3px;">Buyer<br>(Customer)</span>
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">2</div>
+            </div>
+            Vehicle
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">3</div>
+            </div>
+            <span style="line-height:14.5px;padding-top:3px;">Seller<br>(Dealer)</span>
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element-active">
+            <div class="txn-header-active">
+                <div class="txn-header-div">4</div>
+            </div>
+            JPJ Check
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header">
+                <div class="txn-header-div">5</div>
+            </div>
+            Payment
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header">
+                <div class="txn-header-div">6</div>
+            </div>
+            Transfer
+        </div>
+    </div>
+</center>
+        </td>
+    </tr>
+    </tbody></table>
+</div>
+<div class="estm-header-title">Submission (JPJ Checking)</div>
+
+<style>
+    textarea {overflow:auto;resize:none;width: 100%}
+    #container table#insurance-ads {margin-top: 15px; background-color: #EFEFEF; width: 91%;}
+    #container table td.ads-content {padding: 10px 0px 10px 15px;}
+    span.title {font-weight: bold;}
+    span.warning {color: #ED5108;}
+    #container table#insurance-premium, #container table td#action {margin-top: 10px;}
+    #container table td.insurance-logo {vertical-align: middle;}
+    #container table td.insurance-logo img {width: 70px; padding-right: 15px;}
+    button#to-buy-insurance {width: 93%; color:#ffffff; font-weight: bold; background: #ED7A08 0% 0% no-repeat padding-box;
+                                border: 1px solid #ED7A08; border-radius: 4px; padding: 8px;}
+    #container table td#action {padding-top: 10px;}
+    input {
+        width: 100%;
+    }
+    input#to-agree {
+        width:unset;
+    }
+    .tx-details-address {
+        white-space: pre-line;
+        max-height: 61px;
+        overflow: auto;
+        padding: 3px;
+    }
+    .hide{display:none;}
+</style>
+<script>
+    $(document).ready(function() {
+        $("#to-buy-insurance").click(function() {
+            $("#to-buy-insurance").attr("disabled", "disabled");
+            var data = "transactionId=47b20394-f525-45db-a2d0-fb1a60669941";
+            window.location = "/uat1/view/ucd/insurance/quote/processQuoteFromEstm.do?" + data;
+        });
+    });
+
+    function updateNewOwnerName(name) {
+        $("#newOwnerName").val(name);
+    }
+</script>
+<div class="tx-details">
+<table>
+<colgroup><col width="50%">
+<col width="auto">
+</colgroup><tbody><tr>
+    <td style="padding-right:20px;">
+        <table id="jpjTableLeft">
+        <colgroup><col width="220px">
+        <col width="auto">
+        </colgroup><tbody><tr>
+            <td><b>Dealer's Representative:</b></td>
+            <td><input type="text" name="ucdName" value="MUHAMMAD FAIZUDDIN BIN BIDI" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Representative MyKad No:</b></td>
+            <td><input type="text" name="ucdRefId" value="990909010122" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer:</b></td>
+            <td><input type="text" name="ucdCompanyName" value="FAIZUDDIN AUTO TEST" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Reg No:</b></td>
+            <td><input type="text" name="ucdCompanyRocNo" value="030311-A" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Address:</b></td>
+            <td><div class="notEditable tx-details-address">24, JALAN SULAM EMPAT, 19/14D, 40300 SHAH ALAM, SELANGOR</div></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Contact No:</b></td>
+            <td><input type="text" name="ucdContact" value="0189812839" class="notEditable" readonly=""></td>
+        </tr>
+        </tbody></table>
+    </td>
+    <td style="padding-left:20px;">
+        <table id="jpjTableRight">
+        <colgroup><col width="200px">
+        <col width="auto">
+        </colgroup><tbody>
+                <tr>
+                    <td><b>Buyer's Name:</b></td>
+                    <td><input type="text" name="name" value="Emily Rodriguez" class="notEditable" readonly=""></td>
+                </tr>
+                <tr>
+                    <td><b>Buyer's MyKad No:</b></td>
+                    <td><input type="text" name="refId" id="refId" value="990909010122" class="notEditable" readonly=""></td>
+                </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <td><b>Vehicle No:</b></td>
+                <td><input type="text" name="vehicleRegNo" id="vehicleRegNo" value="HX049" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td><b>Engine No:</b> <span class="required">*</span></td>
+                <td><input type="text" maxlength="22" name="vehicleEngineNo" title="Engine No" id="vehicleEngineNo" value="*/ -1231AA" class=""></td>
+            </tr>
+            <tr>
+                <td><b>Chassis No:</b> <span class="required">*</span></td>
+                <td><input type="text" maxlength="30" name="vehicleChassisNo" title="Chassis No" id="vehicleChassisNo" value="913821AA/* --" class=""></td>
+            </tr>
+            <tr>
+                <td><b>Buyer's Email:</b></td>
+                <td><input type="text" name="buyerEmail" id="buyerEmail" value="faizbid3@gmail.com" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td><b>eVOC Email:</b></td>
+                <td><input type="text" name="email" id="email" value="faizuddin@modefair.com" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><div style="color: #808080;">eVOC will be sent to this email address.</div></td>
+            </tr>
+        </tbody>
+        </table>
+    </td>
+</tr></tbody></table>
+</div>
+
+<div id="i-agree">
+    <div style="display:flex;">
+        <input type="checkbox" id="to-agree">
+        <span style="font-size:14px;font-weight:500;margin-left:5px;">I/We hereby agree to transfer (sell) the vehicle ownership to the new buyer as above and shall take full responsibility on this transaction upon the agreed
+                <a href="#" onclick="window.open('/uat1/view/ucd/estm/transaction/jpj-terms-condition.jsp', 'Terms&amp;Condition','width=800,height=500, scrollbars=yes');">Terms &amp; Conditions</a>.</span>
+    </div>
+    <div class="button-bar">
+        <div class="next-btn" id="to-enquiry" style="display: block;">Next</div>
+    </div>
+</div>
+
+<div id="buyername-info-dialog" style="display:none;">
+    <div style="width:100%;">
+<div id="buyername-popup-container">
+    <div class="center-align">
+        <div class="buyername-details w-720">
+            <div class="buyername-block">
+                <div class="buyername-title-row">Buyer's Company Name keyed-in by UCD:</div>
+                <div class="buyername-detail-row" id="buyerName"></div>
+            </div>
+            <div class="buyername-block">
+                <div class="buyername-title-row">Response from mySIKAP:</div>
+                <div class="buyername-detail-row" id="newOwnerName">NO RECORD</div>
+            </div>
+            <div class="finalbuyername-block">
+                <div class="buyername-title-row">Name will appear on eVOC:</div>
+                <div class="buyername-detail-row" id="finalBuyerName"></div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<div id="insError" style="display:none;">
+    We're unable to retrieve an insurance quotation for this <br>
+    transaction. Kindly reach out to +6018-2884889 or <br>
+    insurance@eauto.my for assistance.
+</div>
+
+<div id="insDoneBuy" style="display:none;">
+    This transaction cannot be processed. Insurance must be <br>
+    purchased through our platform for this vehicle.
+</div>
+
+<div id="blockCase" style="display:none;">
+    You are unable to proceed with the eSerahan transaction for this <br>
+    vehicle. Please contact  at  for further info.
+</div>
+
+</div>
+
+<link rel="stylesheet" type="text/css" href="/uat1/view/ucd/home/screen.css">
+
+<div id="header">
+    <div id="home-bar">
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/home'" id="home-link">HOME</button>
+    <button class="tab-button1" onclick="" id="insurance-link">INSURANCE</button>
+    <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+    <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/user-guide'" id="user-guide-link">USER GUIDE</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/download'" id="download-link">DOWNLOAD</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/contact'" id="contact-link">CONTACT US</button>
+    </div>
+
+    <table id="common-bar">
+    <tbody><tr>
+    <td class="page-title" nowrap="">Online Services - eSerahan Service</td>
+    <td>
+    <ol class="inline">
+        <li>
+            <img src="/uat1/images/icon_user.gif" style="position:relative; top:4px">
+            <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI  </span>
+        </li>
+        <li>&nbsp;|&nbsp;</li>
+        <li><a href="#" class="logout" style="position:relative; top:-1px">Logout</a></li>
+    </ol>
+    </td>
+    </tr>
+    </tbody></table>
+
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:34</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+
+<div id="logout-confirmation" style="display:none;" title="Logout Confirmation">
+    Sure to logout?
+</div>
+
+<div id="access-denied" style="display:none;">
+    Sorry, access denied.
+</div>
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div class="ui-widget-overlay" style="width: 1265px; height: 943px; z-index: 1001;"></div><div class="ui-dialog ui-widget ui-widget-content ui-corner-all " tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-to-retry-dialog" style="display: block; position: absolute; overflow: hidden; z-index: 1002; outline: 0px; height: auto; width: 480px; top: 500.9px; left: 392.5px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" unselectable="on"><span class="ui-dialog-title" id="ui-dialog-title-to-retry-dialog" unselectable="on">Submit</span><a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" unselectable="on"><span class="ui-icon ui-icon-closethick" unselectable="on">close</span></a></div><div id="to-retry-dialog" style="flex-direction: column; height: auto; min-height: 0px; width: auto;" class="ui-dialog-content ui-widget-content">
+    <div style="font-size: 14px; font-weight: 400; width: 100%;">Submit to JPJ for checking?</div>
+</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><button type="button" class="ui-corner-all cancel-dialog-btn">No</button><button type="button" class="ui-corner-all confirm-dialog-btn">Yes</button></div></div></body>

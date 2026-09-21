@@ -1,0 +1,151 @@
+<!--
+  Captured 2026-08-26 by Claude, from a Claude Artifact shared by Faizuddin
+  (dev-authored QA test guide, not an SRD): https://claude.ai/code/artifact/a0a4e364-6618-45ef-90d9-9d616e400170
+  Per AGENTS.md's HTML-capture rule — a durable, sourced document, not just a
+  URL pointer. Content only (the artifact iframe's own bootstrap/runtime
+  script has been stripped; nothing in the visible guide content was
+  trimmed). Referenced from knowledge/flow-edereg.md §24 (MU_TS6) for the
+  "only one record has to satisfy all four" / "a later failure does not
+  undo an earlier approval" rule this guide documents.
+-->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>EAINT-9306 — QA Test Guide</title>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">QA Test Guide · Staging</div>
+  <h1>EAINT-9306 — eDereg Pre-Checking required before Deregistration</h1>
+  <p class="sub">What changed and how to exercise it. Every behaviour below was read from the branch
+  code. Repo <code>eauto_v2</code>, branch <code>dev/feat/EAINT-9306</code>.</p>
+</header>
+
+<div class="note">
+<p><strong>The change in one sentence.</strong> A Deregistration can no longer be created unless the
+vehicle already has an <strong>Approved + Paid + JPJ-Approved</strong> eDereg Pre-Checking (DPC) whose
+JPJ approval is <strong>within the last 6 months</strong>. The AATF data-entry page now checks this the
+moment you leave the vehicle-number field, and if the check fails it creates (or resumes) a precheck and
+opens the precheck payment dialog inline — without leaving the DEREG form.</p>
+</div>
+
+<h2 id="s2">1. Where to look</h2>
+<table>
+  <thead><tr><th>Screen</th><th>What is new</th></tr></thead>
+  <tbody>
+    <tr><td>AATF → Dereg → data entry (vehicle page)</td>
+        <td>The gate itself: the check on leaving the vehicle field, the inline result message, and the
+        precheck payment dialog</td></tr>
+    <tr><td>AATF home, Dereg landing, Dereg transaction view</td>
+        <td>The compliance announcement banner (same wording in all three)</td></tr>
+    <tr><td>AATF Dereg enquiry → view</td>
+        <td>New <strong>"eDereg Pre-Checking:"</strong> row showing <code>Yes</code> or
+        <code>-</code>, linking to the precheck listing. By design this shows <code>Yes</code> if the
+        vehicle has <strong>any</strong> precheck record at all — successful or failed, any age —
+        so it is not the same test as the gate in step 2</td></tr>
+    <tr><td>Back office Dereg enquiry → view</td>
+        <td>The same new row, for operations staff</td></tr>
+    <tr><td>Back office eDereg Pre-Checking listing</td>
+        <td>Now accepts a vehicle number and auto-searches when arrived at from the link above</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s3">2. The rule being enforced</h2>
+<p>A precheck only satisfies the gate when <strong>all four</strong> hold. Anything else — unpaid,
+JPJ-rejected, cancelled, expired, or older than six months — must be treated as
+"no precheck".</p>
+<ul>
+  <li>Transaction status is <strong>Approved</strong></li>
+  <li>Payment status is <strong>Paid</strong></li>
+  <li>JPJ pre-check enquiry status is <strong>Approved</strong></li>
+  <li>The JPJ approval timestamp is <strong>within the last 6 months</strong></li>
+</ul>
+<p>Same vehicle number <em>and</em> same AATF company — another company's precheck never counts.</p>
+<p><strong>Only one record has to satisfy all four.</strong> A later failed or cancelled attempt does
+<strong>not</strong> cancel out an earlier approved one — if any precheck for that vehicle was
+approved within the last 6 months, the vehicle can proceed.</p>
+
+<h2 id="s4">3. Test scenarios</h2>
+<ol class="qlist">
+  <li>
+    <strong>Vehicle with a valid precheck → allowed.</strong> Leave the vehicle-number field.
+    A green message appears: <em>"This vehicle is allowed to create eDereg transaction"</em>.
+    Continue and save the DEREG as normal — it must go through.
+  </li>
+  <li>
+    <strong>Vehicle with no precheck at all → blocked, then offered one.</strong> A red message
+    appears: <em>"Approved eDereg Pre-Checking within 6 months is required to proceed"</em>,
+    a new precheck is created, and the precheck payment dialog opens on top of the DEREG form.
+    Complete the payment, let the JPJ enquiry come back Approved, then confirm the DEREG can now be saved.
+  </li>
+  <li>
+    <strong>Precheck exists but is not valid → blocked.</strong> Try each of: unpaid, JPJ-rejected,
+    Cancelled, Expired, and one approved <em>more than</em> six months ago. All five must be refused with
+    the red message. This is the core of the ticket — worth doing all five rather than one.
+  </li>
+  <li>
+    <strong>A later failure does not undo an earlier approval.</strong> On a vehicle with an approved
+    precheck from (say) 1 January and a failed one from 5 January, both within 6 months, the DEREG must
+    still be allowed. The most recent record is the failure, so this confirms the rule looks at
+    <em>any</em> qualifying record rather than just the latest.
+  </li>
+  <li>
+    <strong>Abandoned precheck with no payment → reused, not duplicated.</strong> Trigger the gate,
+    let the dialog open, Cancel it, then leave the vehicle field again. You must get the
+    <em>same</em> precheck back — the listing must not grow a second row each time.
+  </li>
+  <li>
+    <strong>Precheck with a failed payment → resumed in retry mode, with its history.</strong>
+    Fail a payment, cancel out, then leave the vehicle field again (or reload and redo it). The dialog
+    must reopen on the <em>same</em> precheck in retry mode and show the earlier failed attempts under
+    Payment History. Previously each attempt created a fresh row and the history disappeared — that
+    is what this fixes, so it is the highest-value retest.
+  </li>
+  <li>
+    <strong>Long payment history stays usable.</strong> On a precheck with several failed attempts,
+    confirm the history area scrolls inside the dialog and the Cancel / Next buttons stay on screen.
+    Check at 1366×768 or smaller, not just a large monitor.
+  </li>
+  <li>
+    <strong>Another company's precheck does not count.</strong> With a vehicle that has a valid precheck
+    under company A, log in as company B and confirm B is still blocked.
+  </li>
+  <li>
+    <strong>The JPJ receipt email is populated.</strong> Create a precheck <em>from the DEREG form</em>
+    and confirm the resulting DPC JPJ receipt carries the AATF's precheck email. It was missing on this
+    path until a late fix, so it needs a specific check. If the email is blank, first confirm the AATF
+    company actually has a precheck email configured before raising it.
+  </li>
+  <li>
+    <strong>The enquiry indicator.</strong> Open a DEREG transaction in both the AATF and the back-office
+    enquiry views and confirm the "eDereg Pre-Checking" row appears and the link reaches the
+    precheck listing for that vehicle.
+  </li>
+  <li>
+    <strong>The banner.</strong> Present and readable on the AATF home page, the Dereg landing page and
+    the Dereg transaction view.
+  </li>
+</ol>
+
+<h2 id="s6">4. What to include when raising a defect</h2>
+<ol>
+  <li>Vehicle number, AATF company, and the precheck reference number</li>
+  <li>The state of the precheck when you started — status, payment status, JPJ status</li>
+  <li>Which of the scenarios above you were on, and the exact on-screen message</li>
+  <li>A screenshot including the dialog, if one was open</li>
+  <li>Rough timestamp, so the JPJ and payment logs can be lined up</li>
+</ol>
+<p>Point 2 matters more than usual here: nearly all of this feature's behaviour depends on the precheck's
+existing state, so "it blocked me" is only actionable once we know what the vehicle already
+had on file.</p>
+
+<footer>
+EAINT-9306 · QA test guide for staging · repo <code>eauto_v2</code>, branch
+<code>dev/feat/EAINT-9306</code>. Behaviour taken from the branch source.
+</footer>
+</div>
+
+</body></html>

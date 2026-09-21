@@ -1,0 +1,50 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URL: dereg step 5 "Payment" and step 6 "Deregister" (no distinct URL captured;
+       content swaps in place on the transaction flow, same pattern as earlier steps)
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome, repeated read-only tx-details recap
+  block (identical shape to EAINT-9306-dereg-step4-jpj-check.html STATE 1).
+  Used by: knowledge/flow-edereg.md (§5.3 payment codes, §5.4 Trx Status)
+-->
+
+<!-- ============================================================ -->
+<!-- STEP 5 - Payment landing -->
+<!-- ============================================================ -->
+<div id="payment-method">
+    <div style="font-size: 18px; color:red;">Click NEXT to pay and DEREGISTER.</div>
+    <div style="display: none">
+        <label><input type="radio" name="paymentMethod" value="RHB" checked="">RHB Direct Debit (DD)</label>
+    </div>
+    <div class="button-bar">
+        <input type="button" id="to-cancel" value="Cancel">
+        <input type="button" id="to-payment" value="Next">
+    </div>
+</div>
+<!-- confirm-reset-dialog (hidden, only shown on a manual reset-to-retry-payment flow):
+     warns that a reset does NOT guarantee the earlier payment attempt was
+     reversed/cancelled at the bank; requires a checkbox tick to proceed -->
+<!-- Clicking Next -> native browser confirm() popup again (no HTML available) -->
+
+<!-- ============================================================ -->
+<!-- STEP 6 - Deregister: JPJ Deregistration (Final Submission) result -->
+<!-- ============================================================ -->
+<div id="jpj-submission">
+    <table>
+        <tbody>
+            <tr>
+                <td><b>JPJ Deregistration Status:</b></td>
+                <td><span class="jpjStatus label approved">OK - TRANSACTION SUCCESSFUL</span></td>
+            </tr>
+            <tr>
+                <td><b>Submission Date/Time:</b></td>
+                <td><span class="requestAt label"> 21 Aug 2026 03:32 pm</span></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button onclick="location.href='/uat1/view/aatf/dereg/enquiry/view.do?id=085b3a88-61ae-4dda-bdeb-d31cf2be40a2'">Done</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

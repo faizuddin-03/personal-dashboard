@@ -1,0 +1,298 @@
+<!--
+  CAPTURE
+  url         https://172.30.202.114:9089/esim/estm-enquiry-resp/306/edit
+  system      eSIM (eAuto Simulator) — VPN only
+  captured    2026-08-17
+  trimmed     the <aside class="sidebar"> nav — identical on every eSIM page,
+              captured once in app-shell.html. THE FORM ITSELF IS COMPLETE:
+              every field, id, name, type and required marker is present.
+  notes       Record #306 is the "HX" prefix (Faiz - eSTM Enq).
+              Field ids are misspelled in places — note delayMiliSeconds
+              (one l) against the label "Delay Milliseconds".
+              Each field is label.form-label[for=<id>] wrapping a <span> with
+              the visible text, which is why scripts/eauto-esim resolves inputs
+              by label text rather than hardcoding ids.
+              The empty lines inside each .form-group are the server template's
+              unrendered branches for other input types — kept verbatim.
+  see also    knowledge/esim.md, scripts/eauto-esim/pages/EsimPages.ts
+-->
+<body>
+  <div class="app-layout">
+    <!-- <aside class="sidebar"> … see app-shell.html … </aside> -->
+    <div class="main-content">
+      <div class="top-bar">
+        <nav class="breadcrumb-nav">
+          <a href="/esim/">
+            <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          </a>
+          <span>
+            <span class="sep">/</span>
+            <a href="/esim/estm-enquiry-resp">Estm Enquiry Resps</a>
+          </span><span>
+            <span class="sep">/</span>
+            <span class="current">Edit #306</span>
+          </span>
+        </nav>
+        <div>
+          <span class="user-avatar">A</span>
+        </div>
+      </div>
+      <div class="content-body">
+
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-left">
+            <a href="/esim/estm-enquiry-resp" class="btn-back" title="Back to list">
+              <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </a>
+            <h1 class="page-title page-title-sm">Edit Estm Enquiry Resp #306</h1>
+          </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+          <div class="form-card-header">
+            <span class="form-card-header-title">EDIT RECORD</span>
+          </div>
+          <div class="form-card-body">
+            <form action="/esim/estm-enquiry-resp/save" method="post">
+              <input type="hidden" name="id" value="306">
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vnStartWith">
+                    <span>Vn Start With</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="vnStartWith" name="vnStartWith" value="HX" placeholder="Enter Vn Start With" required="required">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="loan">
+                    <span>Loan</span>
+                  </label>
+                  <input type="text" class="form-input" id="loan" name="loan" value="" placeholder="Enter Loan">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="claim">
+                    <span>Claim</span>
+                  </label>
+                  <input type="text" class="form-input" id="claim" name="claim" value="" placeholder="Enter Claim">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="jsjStatus">
+                    <span>JSJ Status</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="jsjStatus" name="jsjStatus" value="0" placeholder="Enter JSJ Status" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="sekatStatus">
+                    <span>Sekat Status</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="sekatStatus" name="sekatStatus" value="0" placeholder="Enter Sekat Status" required="required">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="jpjEnqStatus">
+                    <span>JPJ Enq Status</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="jpjEnqStatus" name="jpjEnqStatus" value="0" placeholder="Enter JPJ Enq Status" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="conditionCode1">
+                    <span>Condition Code 1</span>
+                  </label>
+                  <input type="text" class="form-input" id="conditionCode1" name="conditionCode1" value="" placeholder="Enter Condition Code 1">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="conditionCode2">
+                    <span>Condition Code 2</span>
+                  </label>
+                  <input type="text" class="form-input" id="conditionCode2" name="conditionCode2" value="" placeholder="Enter Condition Code 2">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="conditionCode3">
+                    <span>Condition Code 3</span>
+                  </label>
+                  <input type="text" class="form-input" id="conditionCode3" name="conditionCode3" value="" placeholder="Enter Condition Code 3">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="responseCode">
+                    <span>Response Code</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="responseCode" name="responseCode" value="GLB000000I" placeholder="Enter Response Code" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="usageCode">
+                    <span>Usage Code</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="usageCode" name="usageCode" value="AB" placeholder="Enter Usage Code" required="required">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="bodyType">
+                    <span>Body Type</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="bodyType" name="bodyType" value="MKR" placeholder="Enter Body Type" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="jpjRevenueCode">
+                    <span>JPJ Revenue Code</span>
+                  </label>
+                  <input type="text" class="form-input" id="jpjRevenueCode" name="jpjRevenueCode" value="2361007" placeholder="Enter JPJ Revenue Code">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="paymentAmount">
+                    <span>Payment Amount</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="number" step="any" class="form-input" id="paymentAmount" name="paymentAmount" value="100.00" placeholder="Enter Payment Amount" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="fisRevenueCode">
+                    <span>FIS Revenue Code</span>
+                  </label>
+                  <input type="text" class="form-input" id="fisRevenueCode" name="fisRevenueCode" value="2354071" placeholder="Enter FIS Revenue Code">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="fisAmount">
+                    <span>FIS Amount</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="number" step="any" class="form-input" id="fisAmount" name="fisAmount" value="50.00" placeholder="Enter FIS Amount" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="lkmRevenueCode">
+                    <span>LKM Revenue Code</span>
+                  </label>
+                  <input type="text" class="form-input" id="lkmRevenueCode" name="lkmRevenueCode" value="2354072" placeholder="Enter LKM Revenue Code">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="lkmAmount">
+                    <span>LKM Amount</span>
+                  </label>
+                  <input type="number" step="any" class="form-input" id="lkmAmount" name="lkmAmount" value="200.00" placeholder="Enter LKM Amount">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="lkmEffectiveDate">
+                    <span>LKM Effective Date</span>
+                  </label>
+                  <input type="datetime-local" class="form-input" id="lkmEffectiveDate" name="lkmEffectiveDate" value="">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="lkmExpiryDate">
+                    <span>LKM Expiry Date</span>
+                  </label>
+                  <input type="datetime-local" class="form-input" id="lkmExpiryDate" name="lkmExpiryDate" value="">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="declarationArea">
+                    <span>Declaration Area</span>
+                  </label>
+                  <input type="text" class="form-input" id="declarationArea" name="declarationArea" value="Semenanjung" placeholder="Enter Declaration Area">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="delayMiliSeconds">
+                    <span>Delay Milliseconds</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="number" step="any" class="form-input" id="delayMiliSeconds" name="delayMiliSeconds" value="0" placeholder="Enter Delay Milliseconds" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="evocEmail">
+                    <span>EVOC Email</span>
+                  </label>
+                  <input type="text" class="form-input" id="evocEmail" name="evocEmail" value="faizuddin@modefair.com" placeholder="Enter EVOC Email">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="newOwnerName">
+                    <span>New Owner Name</span>
+                  </label>
+                  <input type="text" class="form-input" id="newOwnerName" name="newOwnerName" value="COMPANY FAIZUDDIN" placeholder="Enter New Owner Name">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="remark">
+                    <span>Remark</span>
+                  </label>
+                  <textarea class="form-textarea" id="remark" name="remark" placeholder="Enter Remark">Faiz - eSTM Enq
+
+VEL000401E
+VEL000069E
+GLB000000I
+VEL000392E - APT stuffs</textarea>
+                </div>
+              </div>
+
+              <!-- Claim records (jomcheck-report-resp only) — part of THIS form, so they are
+                   saved together when you click Create / Save Changes, on both new and existing records. -->
+
+              <div class="form-actions">
+                <a href="/esim/estm-enquiry-resp" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="/esim/js/app.js"></script>
+
+  <!-- bold-pay-response only: filter the Issuing Bank options by the selected Pymt Method.
+       CC -> card schemes, DD -> FPX placeholders, WA -> e-wallets. -->
+</body>

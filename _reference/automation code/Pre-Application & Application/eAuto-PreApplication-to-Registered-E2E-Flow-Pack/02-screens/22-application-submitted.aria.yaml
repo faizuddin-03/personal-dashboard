@@ -1,0 +1,112 @@
+# https://staging.eauto.my/obs/form/a3c13510-2cb6-4279-a556-a95e684e092b?id=KCH%2F1744139&s=0435d069ead9bb9ea38923116c088296a892870528874c6668e4bd36473810f9&v=1
+- img
+- text: "Support Team: 03-2779 8899 Application email: apply@eauto.my WA : 012 200 1324 eAuto Application Form 1 Business Information 2 Upload Files 3 Acknowledgement Success Notification: Your application has been successfully submitted. Our team will get back to you soon with the next steps! Note: Kindly answer all the questions accurately with asterisk (*) symbol and our Team will revert to you as soon as possible. Business Information Type of Business: * SSM Registered:"
+- radio "Sdn Bhd / Bhd" [disabled]
+- text: Sdn Bhd / Bhd
+- radio "Sole Proprietorship / Partnership" [disabled]
+- text: Sole Proprietorship / Partnership
+- radio "LLP" [disabled]
+- text: "LLP Non-SSM Registered:"
+- radio "Business Trading (Sabah)" [disabled]
+- text: Business Trading (Sabah)
+- radio "Business Trading (Sarawak)" [checked] [disabled]
+- text: "Business Trading (Sarawak) Business Registered Name: *"
+- textbox "Business Registered Name (as per SSM)" [disabled]: CHARMAIN QA11982 260831-1744-139 ENTERPRISE
+- text: "Business Trading License No: *"
+- textbox [disabled]: KCH/1744139
+- text: "Tax Identification No (TIN): *"
+- textbox "TIN" [disabled]: C3117441390
+- text: "Sales and Service Tax (SST) No:"
+- textbox "SST No (Optional)" [disabled]: W26083117441390
+- text: "Showroom Ownership:"
+- radio "Own Showroom" [checked] [disabled]
+- text: Own Showroom
+- radio "Shared Showroom" [disabled]
+- text: Shared Showroom
+- radio "No Showroom" [disabled]
+- text: "No Showroom Showroom Address:"
+- textbox "Line 1" [disabled]: LOT 12, JALAN QA, TAMAN AUTOMATION
+- textbox "Line 2 (Optional)" [disabled]
+- textbox "Line 3 (Optional)" [disabled]
+- text: "Postcode: *"
+- textbox "Postcode" [disabled]: "93100"
+- text: "State: *"
+- combobox [disabled]:
+  - option "Select"
+  - option "SARAWAK(13)" [selected]
+- text: "City: *"
+- combobox [disabled]:
+  - option "Select"
+  - option "SARAWAK (1300)"
+  - option "ASAJAYA (1301)"
+  - option "BALINGAN (1302)"
+  - option "BARAM (1303)"
+  - option "BAU (1304)"
+  - option "BEKENU (1305)"
+  - option "BELAGA (1306)"
+  - option "BELAWAI (1307)"
+  - option "BETONG (1308)"
+  - option "BINTANGOR (1309)"
+  - option "BINTULU (1310)"
+  - option "DALAT (1311)"
+  - option "DARO (1312)"
+  - option "DEBAK (1313)"
+  - option "ENGKILILI (1314)"
+  - option "JULAU (1315)"
+  - option "KABONG (1316)"
+  - option "KANOWIT (1317)"
+  - option "KAPIT (1318)"
+  - option "KOTA SAMARAHAN (1319)"
+  - option "KUCHING (1320)" [selected]
+  - option "LAWAS (1321)"
+  - option "LIMBANG (1322)"
+  - option "LINGGA (1323)"
+  - option "LONG LAMA (1324)"
+  - option "LUBOK ANTU (1325)"
+  - option "LUNDU (1326)"
+  - option "MATU (1327)"
+  - option "MIRI (1328)"
+  - option "MUKAH (1329)"
+  - option "NANGA MEDAMIT (1330)"
+  - option "NIAH (1331)"
+  - option "PEKENU (1332)"
+  - option "PUSA (1333)"
+  - option "ROBAN (1334)"
+  - option "SARATOK (1335)"
+  - option "SARIKEI (1336)"
+  - option "SEBAUH (1337)"
+  - option "SEBUYAU (1338)"
+  - option "SERIAN (1339)"
+  - option "SIMUNJAN (1340)"
+  - option "SONG (1341)"
+  - option "SPAOH (1342)"
+  - option "SRI AMAN (1343)"
+  - option "SUNDAR (1344)"
+  - option "TATAU (1345)"
+  - option "TEBAKANG (1346)"
+  - option "SIBU (1347)"
+  - option "BINTANGOR (1348)"
+  - option "TEBEDU (1349)"
+  - option "PAKAN (1378)"
+  - option "SIBUTI (1379)"
+  - option "OYA (1380)"
+  - option "MALUDAM (1381)"
+  - option "LAIN-LAIN (9999)"
+- text: Other Motor Vehicle Business Information Do you advertise your motor vehicles on any of this online platform? (e.g Mudah.my)
+- radio [disabled]
+- text: "Yes"
+- radio [checked] [disabled]
+- text: No Is your Business registered with any motor vehicle Auction House? *
+- radio [disabled]
+- text: "Yes"
+- radio [checked] [disabled]
+- text: No Please tick if your Business is a member of any Motor Vehicle Association. * No
+- checkbox [checked] [disabled]
+- text: FMC
+- checkbox [disabled]
+- text: MMSDA
+- checkbox [disabled]
+- text: PEKEMA
+- checkbox [disabled]
+- button "Next"
+- text: Application Form / Version 1.0

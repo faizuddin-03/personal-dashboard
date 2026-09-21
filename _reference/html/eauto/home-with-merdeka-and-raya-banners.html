@@ -1,0 +1,639 @@
+<!--
+  eAuto — UCD Home page (/uat1/view/ucd/home.do), captured with the
+  Merdeka campaign banner open (dialog-merdeka-campaign has no
+  display:none — it is the actively-shown dialog) and the Raya campaign
+  banner stacked behind it (dialog-raya-campaign, display:none).
+  URL:         https://staging.eauto.my/uat1/view/ucd/home.do
+  Environment: uat1
+  Captured:    2026-08-18, by Faizuddin — logged in as
+               MUHAMMAD FAIZUDDIN BIN BIDI (RHB:235498893030-Active)
+  Trimmed:     nothing. Full page as pasted — every dialog, every inline
+               <style>/<script> block, the dashboard tiles, the footer.
+               Forms are never trimmed (none present here besides the
+               consent/T&C checkboxes, all kept intact).
+
+  Why this page matters — the actual root cause of "the banner doesn't get
+  closed": BOTH campaign dialogs use the SAME id on their close button,
+  `#dialog-campaign-close-btn` (dialog-raya-campaign's copy comes FIRST in
+  DOM order, dialog-merdeka-campaign's comes second). `BasePage.dismissBanners()`
+  in scripts/eauto-quotation-reminder and scripts/eauto-insurance both did
+  `page.locator('#dialog-campaign-close-btn').first()` then checked
+  `.isVisible()` on THAT ONE match — which always resolves to the Raya
+  banner's button, hidden behind display:none, even when the Merdeka banner
+  is the one actually showing on screen. isVisible() correctly reports false
+  for the Raya button, dismissBanners() concludes "nothing visible" and
+  returns having clicked nothing, and the visible Merdeka banner is left
+  covering the page.
+
+  Also note the inline script block near the end of <head> that runs on
+  EVERY page load:
+    localStorage.setItem("homerayacampaign", true);
+    localStorage.setItem("homemerdekacampaign", true);
+  — this OVERWRITES whatever the automation's addInitScript set those flags
+  to, unconditionally forcing both campaign banners on. So these two cannot
+  be suppressed via localStorage the way homeAnnouncement/
+  homeStmsCancellationReminder can; they must be actively closed every time
+  the shared UCD header/dialog-chain script runs — which is on every page
+  under /view/ucd/..., not just home. Confirmed by the user: clicking through
+  to the Insurance page re-triggers the identical dialog chain, so the
+  banners show TWICE in the insurance flow — once at home after login, once
+  again on landing at Insurance.
+
+  Cited by: knowledge/flow-ucd-shell.md § Traps in the shared markup
+  (duplicate ids — already documented there before this capture existed;
+  this is the concrete case that proves the trap bites in dismissBanners()
+  itself, not just in page-object selectors).
+-->
+<body>
+<div id="videoModal" class="video-modal-overlay hidden" onclick="if(event.target === this) window.closeVideoPopup()">
+    <div class="video-modal-content">
+        <button type="button" class="video-close-btn" id="closeVideoBtn" onclick="window.closeVideoPopup()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </button>
+        <div class="video-container">
+            <video id="videoPlayer" width="100%" height="100%" oncontextmenu="return false;" controls="" controlslist="nodownload">
+                <source id="videoSourceMp4" src="" type="video/mp4">
+                <source id="videoSourceWebm" src="" type="video/webm">
+            </video>
+        </div>
+    </div>
+</div>
+
+<div id="dialog-websocket" class="custom-dialog" style="display: none">
+    <div class="dialog-overlay"></div>
+    <div class="dialog-content">
+        <div class="eauto-popup">
+            <div class="popup-overlay" id="eautoPopupOverlay">
+                <div class="popup-container">
+                    <button class="close-btn" id="eautoCloseBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+
+                    <div class="popup-inner-container">
+                        <div class="popup-box">
+                            <h1 class="main-title">
+                                <img class="speaker-icon" alt="" src="/uat1/images/announcement-speaker-icon.png">
+                                <span class="highlight">Announcement 公告</span>
+                                <img class="speaker-icon" style="transform: scaleX(-1);" alt="" src="/uat1/images/announcement-speaker-icon.png">
+                            </h1>
+                            <div class="popup-content">
+                                <div class="all-description">
+                                    <p class="description">
+                                        We are transitioning from <strong>Mozilla Firefox to Google Chrome</strong> to enhance our security features and improve browsing efficiency.
+                                    </p>
+                                    <p class="description">
+                                        This transition will take effect from <strong>18 December 2025</strong> and Mozilla Firefox will be fully phased out by March 2026.
+                                    </p>
+                                    <p class="description">
+                                        To assist you with the transition process, please click the following button for detailed guidance:
+                                    </p>
+                                    <div class="inline-buttons-row">
+                                        <a href="https://cdn2.eauto.my/ws/eAutoBiometricUpgrade_guidance.pdf" target="_blank" class="inline-btn pdf-btn">
+                                            <img class="pdf-icon" alt="" src="/uat1/images/download-pdf-icon.svg">
+                                            View PDF Guide
+                                        </a>
+                                        <a href="javascript:void(0);" class="inline-btn video-btn" id="openVideoBtn">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"></circle><polygon points="10,8 16,12 10,16" fill="white"></polygon></svg>
+                                            Watch Tutorial Video
+                                        </a>
+                                        <span class="inline-text">or learn more at <a href="/uat1/view/ucd/user-guide/" class="text-link">user guide</a> page</span>
+                                    </div>
+                                    <div class="chinese-section">
+                                        <p class="description">
+                                            为提升安全性能并提高浏览效率，我们将从Mozilla Firefox转换到Google Chrome。
+                                        </p>
+                                        <p class="description">
+                                            此转换将于<strong>2025年12月18日</strong>生效，Mozilla Firefox将于2026年3月前全面停用。为了协助您顺利完成转换，请点击以下链接查看详细的操作指南：
+                                        </p>
+                                        <div class="inline-buttons-row">
+                                            <a href="https://cdn2.eauto.my/ws/eAutoBiometricUpgrade_guidance.pdf" target="_blank" class="inline-btn pdf-btn">
+                                                <img class="pdf-icon" alt="" src="/uat1/images/download-pdf-icon.svg">
+                                                查看操作指南
+                                            </a>
+                                            <a href="javascript:void(0);" class="inline-btn video-btn" id="openVideoBtnCn">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"></circle><polygon points="10,8 16,12 10,16" fill="white"></polygon></svg>
+                                                查看教学视频
+                                            </a>
+                                            <span class="inline-text">或在 <a href="/uat1/view/ucd/user-guide/" class="text-link">user guide</a> 页面了解更多</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="max-width: 580px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <p class="footer-text-small">
+                                            Thank you for your cooperation and commitment to maintaining a secure digital environment.
+                                        </p>
+                                        <p class="footer-text-small">
+                                            感谢您在维护安全高效的数字化环境中给予的配合与支持。
+                                        </p>
+                                    </div>
+                                    <div class="eauto-logo">
+                                        <img src="/uat1/images/eAuto_TM_logo.svg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       <div class="chrome-logo">
+                        <img style="top: -100px; border-bottom-right-radius: 16px;" src="/uat1/images/chrome_logo.png">
+                       </div>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        function closeDialog() {
+            $('#dialog-websocket').hide();
+            localStorage.setItem("dialog-websocket", "false");
+            try {
+                if(handleOpenOtherDialogsOnWebsocketDialogClose != null) handleOpenOtherDialogsOnWebsocketDialogClose();
+            } catch(e) { }
+        }
+        $('#dialog-websocket #eautoCloseBtn').click(function() {
+            closeDialog();
+        });
+    });
+    $('#openVideoBtn').click(function() {
+        window.openVideoPopup('en');
+    });
+    $('#openVideoBtnCn').click(function() {
+        window.openVideoPopup('zh');
+    });
+</script>
+
+<div id="dialog-eastcoast" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span id="dialog-eastcoast-close-btn" class="close-btn">×</span>
+        <img class="dialog-eastcoast-frame" src="/uat1/images/ins_eastcoast_banner1.png" alt="Modal Image">
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    function closeDialog() {
+        $('#dialog-eastcoast').hide();
+        localStorage.setItem("dialog-eastcoast", false);
+        try {
+            if(handleOpenOtherDialogsOnEastCoastDialogClose != null) handleOpenOtherDialogsOnEastCoastDialogClose();
+        } catch(e) { }
+    }
+    $('#dialog-eastcoast #dialog-eastcoast-close-btn').click(function() {
+        closeDialog();
+    });
+});
+</script>
+
+<div id="dialog-einvoice" class="custom-dialog" style="display: none">
+    <div class="dialog-overlay"></div>
+    <div class="dialog-content">
+        <div class="dialog-image">
+            <img src="/uat1/images/einvoice_popup.png" alt="e-Invoice">
+        </div>
+        <h3 class="dialog-title">Company/Business Profile Update</h3>
+        <div class="dialog-text">
+            Inland Revenue Board has begun its implementation on e-Invoicing in stages effective
+            1 August 2024, which is based on each company's annual turnover. eAuto Sdn Bhd falls under
+            phase 3 of the implementation timeline, which begins on 1 July 2025.
+        </div>
+        <div class="dialog-text">
+            Registered UCD's main user is required to cooperate and comply by updating
+            FAIZUDDIN AUTO TEST company/business profile
+            <b>before 31 August 2025</b>, to ensure seamless transition for our e-Invoicing purposes.
+            <span style="color:red;">Failure to comply, may result on your account with eAuto be suspended.</span>
+        </div>
+        <div class="dialog-buttons">
+            <button class="btn-blue-outline" id="close-dialog">Close</button>
+            <button class="btn-blue" id="update-now">Update Now</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        function closeDialog() {
+            $('#dialog-einvoice').hide();
+            localStorage.setItem("homeEInvoiceReminder", "false");
+            try {
+                if(handleOpenOtherDialogsOnEInvoiceDialogClose != null) handleOpenOtherDialogsOnEInvoiceDialogClose();
+            } catch(e) { }
+        }
+        $('#dialog-einvoice #close-dialog').click(function() {
+            closeDialog();
+        });
+        $('#dialog-einvoice #update-now').click(function() {
+            window.location = "/uat1/view/ucd/einvoice/view.do";
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        function closeDialog() {
+            $('.ui-widget-header').removeClass('notis');
+            $('#dialog-stms-cancellation-reminder').dialog("destroy");
+            localStorage.setItem("homeStmsCancellationReminder", false);
+            try {
+                if(handleOpenOtherDialogsOnStmsReminderDialogClose != null) handleOpenOtherDialogsOnStmsReminderDialogClose();
+            } catch(e) { }
+        }
+        $("#close-dialog-stms-cancellation-reminder").click(closeDialog);
+        $('#dialog-stms-cancellation-reminder').dialog({
+            title: "NOTIS PENTING!!!",
+            autoOpen: false,
+            modal: true,
+            width: "950",
+            resizable: false,
+            draggable: false,
+            position: ["top", "32%"],
+            closeOnEscape: false,
+            buttons: {
+                Tutup: function() {
+                    $(this).dialog("close");
+                    $(this).dialog("destroy");
+                }
+            },
+            open: function() {
+                $('.ui-dialog-buttonpane').find('button:contains("Tutup")').addClass('ok-dialog-btn');
+                $('.ui-widget-header').addClass('notis');
+            },
+            close: closeDialog
+        }).css("font-size","14px");
+    });
+</script>
+
+<div id="dialog-raya-campaign" class="modal-campaign" style="display: none;">
+    <div class="modal-content-campaign">
+        <span id="dialog-campaign-close-btn" class="close-btn">×</span>
+        <img src="https://cdn2.eauto.my/media/webinar/august_webinar.png" alt="Modal Image">
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    function closeDialog() {
+        $('#dialog-raya-campaign').hide();
+        localStorage.setItem("homerayacampaign", false);
+        try {
+            if(handleOpenOtherDialogsOnCampaignDialogClose != null) handleOpenOtherDialogsOnCampaignDialogClose('dialog-raya-campaign');
+        } catch(e) { }
+    }
+    $('#dialog-raya-campaign #dialog-campaign-close-btn').click(function() {
+        closeDialog();
+    });
+});
+</script>
+
+<div id="dialog-merdeka-campaign" class="modal-campaign" style="">
+    <div class="modal-content-campaign">
+        <span id="dialog-campaign-close-btn" class="close-btn">×</span>
+        <img class="dialog-campaign-0 dialog-campaign-frame" src="https://cdn2.eauto.my/media/merdeka/MerdekaCampaign_en.png" alt="Modal Image">
+        <img class="dialog-campaign-1 dialog-campaign-frame" src="https://cdn2.eauto.my/media/merdeka/MerdekaCampaign_cn.png" alt="Modal Image">
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    function closeDialog() {
+        $('#dialog-merdeka-campaign').hide();
+        localStorage.setItem("homemerdekacampaign", false);
+        try {
+            if(handleOpenOtherDialogsOnCampaignDialogClose != null) handleOpenOtherDialogsOnCampaignDialogClose('dialog-merdeka-campaign');
+        } catch(e) { }
+    }
+    $('#dialog-merdeka-campaign #dialog-campaign-close-btn').click(function() {
+        closeDialog();
+    });
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    // Setting it to false to temporarily disable the dialog
+    localStorage.setItem("homeStmsCancellationReminder", false);
+
+    // These two OVERWRITE whatever the automation set before load — the
+    // localStorage-suppression trick that works for homeAnnouncement /
+    // homeStmsCancellationReminder does NOT work for the campaign banners.
+    localStorage.setItem("homerayacampaign", true);
+    localStorage.setItem("homemerdekacampaign", true);
+
+    if(localStorage.getItem("dialog-websocket") === "true") {
+        showDialogMap["#dialog-websocket"] = true;
+    }
+    if(localStorage.getItem("dialog-eastcoast") === "true") {
+        showDialogMap["#dialog-eastcoast"] = true;
+    }
+    if(localStorage.getItem("homecnycampaign") === "true") {
+        showDialogMap["#dialog-cny-campaign"] = true;
+    }
+    if(localStorage.getItem("homerayacampaign") === "true") {
+        showDialogMap["#dialog-raya-campaign"] = true;
+    }
+    if(localStorage.getItem("homemerdekacampaign") === "true") {
+        showDialogMap["#dialog-merdeka-campaign"] = true;
+    }
+    if(localStorage.getItem("homeAnnouncement") != "false") {
+        showDialogMap["#dialog-announcement"] = true;
+    }
+    if(localStorage.getItem("homeStmsCancellationReminder") != "false") {
+        showDialogMap["#dialog-stms-cancellation-reminder"] = true;
+    }
+
+    // Deferred to setTimeout(0) so other JSPs' ready handlers (e.g. home.jsp's
+    // showProfileUpdatesDialog) get to register their flags before the chain runs.
+    setTimeout(function() {
+        for(var i=0; i<dialogSelectorOrder.length; i++) {
+            var dialogSelector = dialogSelectorOrder[i];
+            if(showDialogMap[dialogSelector] == true) {
+                openDialogWithSelector(dialogSelector);
+                break;
+            }
+        }
+    }, 0);
+})
+
+var dialogSelectorOrder = [
+    "#dialog-websocket",
+    "#dialog-eastcoast",
+    "#dialog-merdeka-campaign",
+    "#profile-updates-dialog",
+    "#dialog-einvoice",
+    "#dialog-cny-campaign",
+    "#dialog-raya-campaign"]
+
+var showDialogMap = {
+    "#dialog-einvoice": false,
+    "#dialog-websocket": false,
+    "#dialog-eastcoast": false,
+    "#dialog-merdeka-campaign": false,
+    "#profile-updates-dialog": false,
+    "#dialog-cny-campaign": false,
+    "#dialog-raya-campaign": false,
+}
+
+var jQueryDialogMap = {
+    "#dialog-einvoice": false,
+    "#profile-updates-dialog": true
+}
+
+function handleOpenOtherDialogsOnEInvoiceDialogClose() {
+    findNextDialog("#dialog-einvoice")
+}
+function handleOpenOtherDialogsOnWebsocketDialogClose() {
+    findNextDialog("#dialog-websocket")
+}
+function handleOpenOtherDialogsOnEastCoastDialogClose() {
+    findNextDialog("#dialog-eastcoast")
+}
+function handleOpenOtherDialogsOnStmsReminderDialogClose() {
+    findNextDialog("#dialog-stms-cancellation-reminder")
+}
+function handleOpenOtherDialogsOnCampaignDialogClose(dialogId) {
+    findNextDialog("#" + dialogId);
+}
+function findNextDialog(dialogSelector) {
+    var index = dialogSelectorOrder.indexOf(dialogSelector);
+    if(index == -1) { return false; }
+    var nextIndex = index + 1;
+    if(nextIndex == dialogSelectorOrder.length) { return false; }
+    var isNextDialogFound = false;
+    while(nextIndex < dialogSelectorOrder.length && !isNextDialogFound) {
+        var nextDialogSelector = dialogSelectorOrder[nextIndex];
+        if(nextDialogSelector != '' && showDialogMap[nextDialogSelector] == true) {
+            isNextDialogFound = true;
+            openDialogWithSelector(nextDialogSelector);
+        }
+        nextIndex = nextIndex + 1;
+    }
+}
+function openDialogWithSelector(dialogSelector) {
+    if(showDialogMap[dialogSelector] == true) {
+        if(jQueryDialogMap[dialogSelector] == true) {
+            $(dialogSelector).dialog('open');
+        } else {
+            $(dialogSelector).show();
+        }
+    }
+}
+</script>
+
+<div id="container" class="ucd-container">
+<div style="display: flex;width:100%;" class="ucd-container">
+    <div style="border-right:1px solid #CCCCCC;width:100%;">
+        <div style="padding:16px; display:flex;align-items:center;border-bottom:1px solid #CCCCCC;">
+            <div style="margin-right:auto;">
+                <span style="font-weight:700; color: #0B4C5F;">FAIZUDDIN AUTO TEST</span>
+            </div>
+        </div>
+        <div class="pending-section" id="totalCount" style="display: block;">You have 7 of APT transactions pending for Payment. Click APT button to view.</div>
+        <div style="padding:24px 32px 24px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;min-width:760px">
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_stms.svg">
+                <p class="menu-price">From <span class="menu-price-red">RM30</span>*</p>
+                <button class="dashboard-menu-item-btn" onclick="window.location='/uat1/view/ucd/stms/view.do'">STMS</button>
+                <p class="menu-title">Sistem Tukar Milik Sementara</p>
+                <p class="menu-subtitle">(View or Create Transaction)</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_ucd_transfer.svg">
+                <p class="menu-price"><span class="menu-price-red">RM30</span> only*</p>
+                <button class="dashboard-menu-item-btn" onclick="window.location='/uat1/view/ucd/stms/interstate/ucd-view.do'">UCD TO UCD</button>
+                <p class="menu-title">Dealer to Dealer</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_apt.svg">
+                <p class="menu-price"><span class="menu-price-red">RM115</span> only*</p>
+                <button class="dashboard-menu-item-btn" onclick="window.location='/uat1/view/ucd/apt/enquiry/'" id="APT">APT</button>
+                <p class="menu-title">Automatic Permanent Transfer</p>
+                <p class="menu-subtitle">(View / Make Payment for vehicles in STMS which are 6 months or more)</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <div style="position: relative;">
+                    <img class="rm10-evoc-banner" src="/uat1/images/dashboard/rm10-evoc-request.svg">
+                    <img src="/uat1/images/dashboard/icon_eserahan.svg">
+                </div>
+                <p class="menu-price">From <span class="menu-price-red">RM135</span>*</p>
+                <button class="dashboard-menu-item-btn" id="ESTM">eSERAHAN</button>
+                <p class="menu-title">Online Transfer</p>
+                <p class="menu-subtitle">(Dealer to Customer)</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_bmk.svg">
+                <p class="menu-price"><span class="menu-price-red">RM30</span> only*</p>
+                <div><button class="dashboard-menu-item-btn" id="bmk">BMK</button></div>
+                <p class="menu-title">Butiran Maklumat Kenderaan</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_insurance.svg">
+                <p class="menu-price"><span class="menu-price-green">Instant Commission</span></p>
+                <button class="dashboard-menu-item-btn" id="insurance">INSURANCE</button>
+                <p class="menu-title">Motor Insurance</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_jomcheck.svg">
+                <p class="menu-price"><span class="menu-price-red">RM18</span> only*</p>
+                <button class="dashboard-menu-item-btn" id="jomcheck">JOMCHECK REPORT</button>
+                <p class="menu-title">Vehicle Check Report</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_service_hub.svg">
+                <p class="menu-price"></p>
+                <button class="dashboard-menu-item-btn" id="servicehub" onclick="window.location='/uat1/view/ucd/service-hub/view.do'">SERVICE HUB</button>
+                <p class="menu-title">Request and manage your services or appointments</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <span class="new-label blink" style="">NEW!</span>
+                <img src="/uat1/images/dashboard/icon_evoc.svg">
+                <p class="menu-price"></p>
+                <button class="dashboard-menu-item-btn disabled" id="evoc">eVOC</button>
+                <p class="menu-title">eVehicle Ownership Certificate</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_lkm_refund.svg">
+                <p class="menu-price"></p>
+                <div>
+                    <button class="dashboard-menu-item-btn disabled">LKM REFUND</button>
+                    <div class="coming-soon"><img src="/uat1/images/dashboard/coming_soon.svg"></div>
+                </div>
+                <p class="menu-title">Lesen Kenderaan Motor Refund</p>
+            </div>
+            <div class="dashboard-menu-item"></div>
+            <div class="dashboard-menu-item"></div>
+            <div class="sst-info">* The price is exclusive of government service tax.<br>The product price consists of JPJ and eAuto Service Fee.</div>
+        </div>
+        <div style="padding:24px 32px 0px 24px;display:flex;justify-content:space-between;flex-wrap:wrap;border-top:1px solid #CCCCCC;">
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_einvoice.svg">
+                <button class="dashboard-menu-item-btn" id="company-business-profile">COMPANY/<br>BUSINESS PROFILE</button>
+                <p class="menu-title">Main user, update your<br>company/business profile<br>before 31 August 2025</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_settings.svg">
+                <button class="dashboard-menu-item-btn" id="setting">SETTINGS</button>
+                <p class="menu-title">Manage the branches,<br>registration or users</p>
+            </div>
+            <div class="dashboard-menu-item">
+                <img src="/uat1/images/dashboard/icon_reports.svg">
+                <button class="dashboard-menu-item-btn" id="report">REPORTS</button>
+            </div>
+            <div class="dashboard-menu-item"></div>
+            <div class="dashboard-menu-item"></div>
+        </div>
+    </div>
+    <div style="width:410px; padding:24px 0px 24px 32px;">
+        <div style="margin-bottom:32px;">
+            <h6 style="color:#0B4C5F;font-size:16px;margin-bottom:12px;">What's New</h6>
+            <div style="height:221px;width:377px;">
+                <video width="100%" height="100%" oncontextmenu="return false;" controls="" controlslist="nodownload" poster="https://cdn2.eauto.my/media/eauto-bmk-video-thumbnail.png">
+                  <source src="https://cdn2.eauto.my/media/eauto-bmk-walthrough-en.webm" type="video/webm">
+                  <source src="https://cdn2.eauto.my/media/eauto-bmk-walthrough-en.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div style="margin-bottom:32px;margin-top: 45px;" class="need-help-section">
+            <h6 style="color:#0B4C5F;font-size:16px;margin-bottom:12px;">Need Help?</h6>
+            <div style="display:flex;margin-bottom:1rem;">
+                <div style="margin-right:16px;"><img src="/uat1/images/telephone.png" width="100%"></div>
+                <div>
+                    <table>
+                        <tbody><tr><td style="width:140px;font-weight:700;">Support Hotline</td><td style="padding-left:16px;">: <b>03-27798899</b></td></tr>
+                        <tr><td style="width:140px;">Mon to Fri</td><td style="padding-left:16px;">: 9am to 6pm</td></tr>
+                        <tr><td style="width:140px;">Sat, Sun &amp; P.Holiday</td><td style="padding-left:16px;">: 10am to 4pm</td></tr>
+                        </tbody></table>
+                </div>
+            </div>
+            <div style="display:flex;margin-bottom:1rem;">
+                <div style="align-self:center;margin-right:16px;"><img src="/uat1/images/email.png" width="28px"></div>
+                <div><table><tbody><tr><td style="width:140px;font-weight:700;">Email</td><td style="padding-left:16px;">: <b>support@eauto.my</b></td></tr></tbody></table></div>
+            </div>
+            <div style="display:flex;">
+                <div style="align-self:center;margin-right:16px;"><img src="/uat1/images/whatsapp.png" width="28px"></div>
+                <div><table><tbody><tr><td style="width:140px;font-weight:700;">WhatsApp</td><td style="padding-left:16px;">: <b>012-200 1324</b></td></tr></tbody></table></div>
+            </div>
+        </div>
+        <div style="margin-bottom:32px;">
+            <h6 style="color:#0B4C5F;font-size:16px;margin-bottom:2px;">Useful Link</h6>
+            <div style="display:flex;flex-wrap:wrap;">
+                <button class="jpjinfo-link-btn" onclick="window.location='/uat1/view/ucd/useful-link.do'">JPJ Info</button>
+                <button class="teamviewer-link-btn" onclick="window.location='https://cdn.eauto.my/TeamViewerQS.exe'">TeamViewer</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div id="header">
+    <div id="home-bar">
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/home'" id="home-link">HOME</button>
+    <button class="tab-button1" onclick="" id="insurance-link">INSURANCE</button>
+    <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+    <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/user-guide'" id="user-guide-link">USER GUIDE</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/download'" id="download-link">DOWNLOAD</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/contact'" id="contact-link">CONTACT US</button>
+    </div>
+    <table id="common-bar">
+    <tbody><tr>
+    <td class="page-title" nowrap="">Welcome to eAuto</td>
+    <td>
+    <ol class="inline">
+        <li><img src="/uat1/images/icon_user.gif" style="position:relative; top:4px"> <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI (RHB:235498893030-Active) </span></li>
+        <li>&nbsp;|&nbsp;</li>
+        <li><a href="#" class="logout" style="position:relative; top:-1px">Logout</a></li>
+    </ol>
+    </td>
+    </tr>
+    </tbody></table>
+</div>
+<div id="logo"><img src="/uat1/images/eAuto_TM_logo.svg"></div>
+
+<div id="wholesale-tnc-dialog" style="display:none; color:black;">
+    <div style="width:100%; height:100%; flex:1 1 100%; display:flex; flex-direction:column;">
+        <iframe id="wholesale-tnc-pdf" title="eAuto Digits Marketplace Terms and Conditions" data-src="/uat1/view/ucd/wholesale/tnc-viewer.do" style="flex:1 1 auto; width:100%; min-height:160px; border:1px solid #ccc; display:block;"></iframe>
+        <div style="margin-top:12px; flex:0 0 auto;">
+            <label style="display:flex; align-items:flex-start; cursor:pointer; font-weight:normal;">
+                <input type="checkbox" class="wholesale-tnc-terms" value="1" style="margin-top:3px; margin-right:8px;">
+                <span style="font-weight:normal;">By clicking this checkbox and the "I Accept" button below, you agree to participate in our Wholesale Programme.</span>
+            </label>
+        </div>
+    </div>
+</div>
+<div id="wholesale-onboard-dialog" style="display:none; color:black;">
+    <p>This feature will be available to you once you onboard to Wholesale.</p>
+</div>
+<div id="wholesale-tnc-success-dialog" style="display:none; color:black;">
+    <p>You have successfully accepted the terms and conditions. You may now access to the eAuto Marketplace WhatsApp Service.</p>
+</div>
+
+<div id="ic-null-dialog" style="display:none;">
+<div><br>Sila hubungi 03-27798899 untuk bantuan.<br><span style="color:#FF4000">请致电 03-27798899 求助。</span><br><br></div>
+</div>
+
+<div id="profile-updates-dialog" style="display:none;">
+    If you're not the Main User, please ask the Main User (Director, <br>Sole Proprietor / Business Partner) to login and update the company/business profile.Thank you.
+</div>
+
+<div class="footer">
+    <div class="footer-container" style="display:flex;align-items:flex-end;width:63%;justify-content:space-between;">
+        <div style="display:flex;flex-direction:column;">
+            <div class="footer-row" style="display:flex;">
+                <a href="#" style="padding-right:10px;" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding:0 10px" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding-left:10px" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </div>
+            <div class="footer-row" style="color:#808080;">Best Compatible With Mozilla Firefox V36.0.4</div>
+            <div class="footer-row" style="color:#808080;">Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+        </div>
+    </div>
+    <div style="text-align:right;"><img src="/uat1/images/eAuto_TM_logo.svg" width="126" height="52"></div>
+</div>
+</body>

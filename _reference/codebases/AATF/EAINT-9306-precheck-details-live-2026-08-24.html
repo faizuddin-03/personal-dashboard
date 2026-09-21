@@ -1,0 +1,217 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  Page: Pre-Checking transaction Details view
+  URL: /uat1/view/aatf/dereg/precheck/enquiry/view.do?id=1370ed41-8dfc-4c4c-9eb6-b8fd725ddeea
+  Env: uat1
+  Captured: 2026-08-24
+  Pasted directly by Faizuddin (not a file save from DevTools) — saved
+  verbatim per the standing HTML-capture rule. Not trimmed.
+
+  WHY THIS CAPTURE EXISTS: supersedes the assumption in
+  EAINT-9306-precheck-details-and-listing.html, which elided the entire
+  Result section with a comment ("same 12-attribute JPJ enquiry result block
+  as STATE 3") instead of real markup. That assumption was WRONG — this live
+  page proves the Result section here does NOT reuse the standalone flow's
+  `#responseVehicleNo`/`#jpjStatusLabel`/`#responseDesc` ids at all:
+
+    - "Enquiry Response:" is plain text in a <span>, no id.
+    - No `#responseVehicleNo` anywhere on the page — the vehicle no. only
+      appears in the title bar (`<span style="color:red">HXA030</span>`).
+    - No `#jpjStatusLabel` hidden input.
+    - No `#responseDesc` — the enquiry response text has no id at all.
+    - `#validAsAt`, `#vehicleRecord`, `#vehicleStatus`, `#usageCode`,
+      `#jpjBlacklist`, `#jsjBlacklist`, `#agencyBlacklist`,
+      `#claimOwnership`, `#vehicleInInvestigation`, `#vehicleCondition` DO
+      exist and match the standalone flow's ids.
+    - `#verifiedStatus` is used TWICE on this page (once for the real
+      "Verified Status:" row, again mistakenly on the "Note: Able to
+      proceed for eDereg" row) — a real duplicate-id bug in the page itself,
+      not a capture error.
+
+  PrecheckEnquiryPage.verifyDetailsPage() was waiting on `#responseVehicleNo`
+  (itself a guess replacing an earlier wrong guess, `#result-container`) —
+  confirmed by this capture to be genuinely absent, so the wait times out
+  and throws, killing the whole test right after the Pre-Checking leg,
+  before Deregistration ever starts. Not yet fixed as of this capture — see
+  knowledge/flow-edereg.md §10 for the actual field ids to use instead.
+-->
+<body>
+
+<div id="container">
+
+<form id="transaction-form">
+<input type="hidden" name="transactionId" id="transactionId" value="1370ed41-8dfc-4c4c-9eb6-b8fd725ddeea">
+
+<table style="width: 1220px !important; font-size:13px  !important;">
+    <colgroup><col width="250px">
+    <col width="310px">
+    <col width="200px">
+    <col width="300px">
+    <col width="200px">
+    <col width="200px">
+    <col width="auto">
+    </colgroup><tbody><tr>
+        <td colspan="4" class="title1">
+            <input type="button" value="« Back" onclick="location='/uat1/view/aatf/dereg/precheck/enquiry/main.do'" style="height: 35px;">
+            <span style="color:red">HXA030</span>
+            (Ref No.: PC68001157) - Transaction Details
+        </td>
+        <td>
+            <span class="approved" style="font-weight:bold; font-size:21px; text-align: left;">Approved</span>
+        </td>
+    </tr>
+    <tr>
+        <td><b>Date Created:</b></td>
+        <td>24-08-2026 04:30pm</td>
+        <td></td>
+        <td></td>
+        <td>
+            <button class="download-button" id="to-print-invoice" style="width: 100%;">
+                <img src="/uat1/images/icon-print.png">
+                Invoice
+            </button>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+            <button class="download-button" id="to-print-jpj-receipt" style="width: 100%;">
+                <img src="/uat1/images/icon-print.png">
+                JPJ Official Receipt
+            </button>
+        </td>
+    </tr>
+    <tr>
+        <td><b>e-Invoice Submission Date:</b></td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td><b>LHDN Response Status:</b></td>
+        <td><b>
+            <span style="color:#FF4000">Failed</span>
+        </b></td>
+        <td colspan="3" rowspan="2">
+            <div style="color: red; text-align: left;">
+                e-Invoices are only available for customers with a valid TIN. <br>
+                e-Invoices can only be issued for transactions within the current calendar month.
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td><b>e-Invoice Validation Date:</b></td>
+        <td>-</td>
+    </tr>
+</tbody></table>
+
+<hr>
+
+<table style="width:500px]">
+<colgroup><col width="500px">
+<col width="500px">
+</colgroup><tbody><tr>
+<td>
+    <div class="title2">AATF</div>
+    <table>
+    <colgroup><col width="200px">
+    <col width="350px">
+    </colgroup><tbody>
+        <tr><td><b>AATF:</b></td><td>FAIZUDDIN AATF ACC</td></tr>
+        <tr><td><b>Company Reg. No:</b></td><td>202208153901</td></tr>
+        <tr><td><b>Company Address:</b></td><td class="address">24, JALAN SULAM EMPAT, 19/14D, 40300 SHAH ALAM, SELANGOR</td></tr>
+        <tr><td><b>Company Contact No:</b></td><td>0189812839</td></tr>
+    </tbody>
+    <tbody>
+        <tr><td colspan="2" class="title3">AATF's Authorised Representative</td></tr>
+        <tr><td><b>Name:</b></td><td>MUHAMMAD FAIZUDDIN BIN BIDI</td></tr>
+        <tr><td><b>MyKad No:</b></td><td>030217141005</td></tr>
+        <tr><td><b>Mobile No:</b></td><td>60200000</td></tr>
+    </tbody>
+    </table>
+</td>
+<td></td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<div class="title2">Result</div>
+
+<table>
+<colgroup><col width="500px">
+<col width="500px">
+</colgroup><tbody><tr>
+    <td>
+        <table style="width:500px">
+            <colgroup><col width="200px"></colgroup>
+            <tbody>
+            <tr><td><b>Enquiry Response:</b></td><td><span class="label fw-700" style="color:green">GLB000000I - TRANSACTION SUCCESSFUL</span></td></tr>
+            <tr><td><b>Valid As At:</b></td><td class="label" id="validAsAt">24 Aug 2026 04:30 pm</td></tr>
+            <tr><td><b>Vehicle Record:</b></td><td class="label" id="vehicleRecord">Exist</td></tr>
+            <tr><td><b>Vehicle Status:</b></td><td class="label" id="vehicleStatus">Active</td></tr>
+            <tr><td><b>Verified Status:</b></td><td class="label" id="verifiedStatus">Yes</td></tr>
+            <tr><td><b>Usage Code:</b></td><td class="label" id="usageCode">Yes</td></tr>
+            <tr><td><b>Blacklist (JPJ):</b></td><td class="label" id="jpjBlacklist">No</td></tr>
+            </tbody>
+        </table>
+    </td>
+    <td>
+        <table style="width:500px">
+            <colgroup><col width="200px"></colgroup>
+            <tbody>
+            <tr><td><b>Blacklist (JSJ):</b></td><td class="label" id="jsjBlacklist">No</td></tr>
+            <tr><td><b>Blacklist (Agency):</b></td><td class="label" id="agencyBlacklist">No</td></tr>
+            <tr><td><b>Claim Ownership:</b></td><td class="label" id="claimOwnership">No</td></tr>
+            <tr><td><b>Vehicle in Investigation:</b></td><td class="label" id="vehicleInInvestigation">No</td></tr>
+            <tr><td><b>Vehicle Condition:</b></td><td class="label" id="vehicleCondition">No</td></tr>
+            <tr><td><b>Note:</b></td><td class="label fw-700 green" id="verifiedStatus">Able to proceed for eDereg</td></tr>
+            </tbody>
+        </table>
+    </td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<table>
+<colgroup><col width="500px">
+<col width="500px">
+</colgroup><tbody><tr>
+<td>
+    <div class="title2">Payment Details</div>
+    <table>
+    <colgroup><col width="20px"></colgroup>
+    <tbody>
+    <tr><td>1.</td><td>24-08-2026 04:30pm - RHB (DPC260824000059-HXA030) - <span style="color:green"><b>OK</b></span></td></tr>
+    <tr><td>2.</td><td>24-08-2026 04:30pm - RHB (DPC260824000059) - <span style="color:green"><b>OK</b></span></td></tr>
+    </tbody>
+    </table>
+</td>
+<td></td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<table>
+<colgroup><col width="500px">
+<col width="500px">
+</colgroup><tbody><tr>
+<td>
+    <div class="title2">JPJ Final Submission:</div>
+    <table>
+    <tbody><tr>
+        <td>24-08-2026 04:30pm <span class="successful"><b>Successful</b></span></td>
+        <td></td>
+    </tr>
+    </tbody></table>
+</td>
+<td></td>
+</tr>
+</tbody></table>
+
+</form>
+</div>
+</body>

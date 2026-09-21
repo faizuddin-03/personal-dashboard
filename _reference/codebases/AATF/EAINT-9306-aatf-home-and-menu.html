@@ -1,0 +1,162 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URLs: /uat1/view/aatf/home (main page) and /uat1/view/aatf/dereg/view.do (eDereg menu)
+  Env: uat1 (AATF portal, not UCD)
+  Captured: 2026-08-21
+  Trimmed: the repeated header/nav bar, footer, and inline <style>/<script> chrome
+  identical on every AATF page in this ticket's capture set were dropped here —
+  they are captured verbatim once in _reference/html/eauto/ucd-home-hub-admin.html.
+  Kept: the #container content that differs per page/state, including the
+  "Announcement" popup dialog HTML (shown once, dismissible, stored in
+  localStorage "homeAnnouncement").
+  Used by: knowledge/flow-edereg.md (§6 UI locations), lib/ticketStudies.ts
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1: AATF home page, DEREGISTRATION button + compulsory-gate banner -->
+<!-- URL: /uat1/view/aatf/home -->
+<!-- ============================================================ -->
+<div id="container">
+<table>
+    <tbody><tr style="padding-left: 0px;">
+        <td id="main-content" style="padding-left: 0px!important;">
+            <div id="home-menu" style="width:98%">
+                <table style="border: 0">
+                    <tbody><tr>
+                        <td colspan="5" class="center">
+                            <span style="font-size:1.6em; color:red; font-style: italic;">Welcome to eAuto2.0</span><br>
+                            <span><b>FAIZUDDIN AATF 2</b></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <table style="border: 0">
+                                    <tbody><tr>
+                                        <td class="icon-holder center">
+                                            <img src="/uat1/images/DEREG.png" class="jpj-logo" style="padding-top: 5px;"><br>
+                                            <button onclick="" id="DEREGISTRATION">eDEREG</button><br>
+                                            <span class="desc">DEREGISTRATION</span>
+                                            <div class="extra-desc">(View / Create transactions)</div>
+                                        </td>
+                                    </tr>
+                                </tbody></table>
+                            </div>
+                        </td>
+                        <td>
+                            <div><table style="border: 0"><tbody><tr><td class="icon-holder center">
+                                <img src="/uat1/images/Settings.png" class="jpj-logo"><br>
+                                <button onclick="" id="setting">SETTINGS</button><br>
+                            </td></tr></tbody></table></div>
+                        </td>
+                        <td>
+                            <div><table style="border: 0"><tbody><tr><td class="icon-holder center">
+                                <img src="/uat1/images/Reports.png" class="jpj-logo"><br>
+                                <button type="button" id="report">REPORTS</button><br>
+                            </td></tr></tbody></table></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="padding:15px 60px;">
+                            <div style="text-align:center; font-size:1.15em; color:red; font-weight:bold;">
+                                Effective immediately, AATF is required to complete the eDereg Pre-checking process prior to proceeding with Deregistration, and Deregistration may only be carried out upon successful completion of the said pre-checking.
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                                <marquee behavior="alternate" direction="right" scrollamount="5" style="font-size:1.6em; color:red">DEMO SYSTEM!!  DEMO SYSTEM!!  DEMO SYSTEM!! </marquee>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </div>
+        </td>
+    </tr>
+</tbody></table>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#DEREGISTRATION").click(function() {
+            window.location="/uat1/view/aatf/dereg/view.do";
+        });
+    });
+</script>
+
+<!-- ============================================================ -->
+<!-- STATE 2: Same page, "Announcement" popup dialog open (jQuery UI dialog) -->
+<!-- Dismiss stores localStorage "homeAnnouncement" = false, so it shows once -->
+<!-- Unrelated to the compulsory-gate banner above; TnC/Privacy revision notice -->
+<!-- ============================================================ -->
+<div id="dialog-announcement" style="font-size: 14px;">
+    <div>
+        <h3 style="font-size:16px; font-weight: 700; margin-bottom:12px; color: #FF4000">NEW! / TERBAHARU!</h3>
+        <div style="display: flex; line-height: 16.94px;">
+            <div style="font-weight: 700; margin-bottom: 8px;">1. Revision of Terms of Use and Privacy Notice</div>
+            <div>We are updating our Terms of Use and Privacy Notice to better reflect our current practices and legal obligations...</div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function() {
+    localStorage.setItem("homeAnnouncement", true);
+    if(localStorage.getItem("homeAnnouncement") != "false") {
+        showDialogMap["#dialog-announcement"] = true;
+    }
+    // dialogSelectorOrder = ["#dialog-websocket", "#dialog-announcement"]
+});
+</script>
+
+<!-- ============================================================ -->
+<!-- STATE 3: eDereg menu page -->
+<!-- URL: /uat1/view/aatf/dereg/view.do -->
+<!-- Four buttons: precheck-transaction (enquiry), precheck-listing, transactionListing (dereg listing), deregTransaction (create) -->
+<!-- ============================================================ -->
+<div id="container">
+    <table>
+        <tbody><tr>
+            <td>
+                <div id="home-menu">
+                    <table border="0">
+                        <tbody><tr>
+                            <td colspan="6" style="text-align:center; margin-top:30px;">
+                                <br><img src="/uat1/images/DEREG.png" class="jpj-logo">
+                                <div style="font-weight:bold; font-size:16px; margin-top:10px !important">DEREGISTRATION (eDEREG)</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td style="text-align:center">
+                                <div><button id="precheck-transaction" class="button-height">eDEREG<br>PRE-CHECKING<br>ENQUIRY</button></div>
+                            </td>
+                            <td style="text-align:center">
+                                <div><button id="precheck-listing" class="button-height">eDEREG<br>PRE-CHECKING<br>TRANSACTION<br>LISTING</button></div>
+                            </td>
+                            <td style="text-align:center">
+                                <div>
+                                    <button onclick="" id="transactionListing" class="button-height">DEREGISTRATION<br>TRANSACTION <br>LISTING</button>
+                                    <span class="desc">View / Check Status (submitted transaction)</span>
+                                </div>
+                            </td>
+                            <td style="text-align:center">
+                                <div>
+                                    <button onclick="" id="deregTransaction" class="button-height">CREATE <br>DEREGISTRATION<br>TRANSACTION</button>
+                                    <span class="desc">Create a new DEREGISTRATION Transaction</span>
+                                </div>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td colspan="4" style="padding:20px 180px;">
+                                <div style="text-align:center; font-size:1.15em; color:red; font-weight:bold;">
+                                    Effective immediately, AATF is required to complete the eDereg Pre-checking process prior to proceeding with Deregistration, and Deregistration may only be carried out upon successful completion of the said pre-checking.
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+            </td>
+        </tr>
+    </tbody></table>
+</div>

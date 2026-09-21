@@ -1,0 +1,444 @@
+<!--
+URL: /uat1/view/ucd/estm/enquiry/view.do?id=60aff269-d68d-4520-86fb-95b74239f584
+Environment: staging uat1
+Captured: 2026-08-19
+Trimmed: none — commented-out legacy markup (old <table> layout) left in place
+exactly as served, since it was in the live response.
+This is the eSTM transaction details page reached by clicking "View" from
+estm-listing-with-approved-row.html (same transaction: HX056 / E681941406).
+This is THE second, real entry point for TS03's banner flow: the
+"GET FREE QUOTE FOR HX056" button (#to-buy-insurance) shown in the
+"get-free-quote" box. Clicking it calls redirectInsuranceQuote() via the
+buy-insurance-dialog confirm (#buy-insurance-dialog / #toProceed), which is
+the actual "Buy Insurance" banner referenced in the ticket's TS03 scenario.
+-->
+<body>
+
+<div id="sure-to-reset" style="display:none;" title="Reset Confirmation">
+    Are you sure to RESET?
+</div>
+
+<div id="container" class="ucd-container">
+
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <a onclick="viewEstmDashboard()">eSerahan</a>
+        <div class="separator">/</div>
+        <a href="/uat1/view/ucd/estm/enquiry/main.do">eSTM Transaction Listing</a>
+        <div class="separator">/</div>
+        <div class="page-name">HX056</div>
+    </div>
+
+    <div class="trx-details-row">
+        <div class="flex">
+            <div class="flex flex-row">
+                <button class="btn-blue-outline" style="font-size: 13px; margin: 4.5px 0; padding: 5px 15px;" onclick="window.location='/uat1/view/ucd/estm/enquiry/main.do'">
+                    « Back
+                </button>
+                <h1 class="title-id">HX056</h1>
+                <h6 class="ref-no">(Ref No: E681941406)</h6>
+            </div>
+            <div class="flex flex-row">
+                <h3 class="trx-details-status approved"> Approved</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" style="margin-bottom: 50px;">
+
+        <input type="hidden" name="transactionId" id="transactionId" value="60aff269-d68d-4520-86fb-95b74239f584">
+
+        <div class="flex justify-content-between trx-details-header">
+            <div>
+                <h3 class="main-title">Transaction Details</h3>
+            </div>
+            <div class="flex flex-row">
+                <button id="to-print-invoice" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 116px; height: 40px;">
+                    <div class="flex justify-content-center">
+                        <div class="flex items-center">
+                            <img class="icon" src="/uat1/images/file-money-icon.png">
+                            <div>Invoice</div>
+                        </div>
+                    </div>
+                </button>
+                <button id="to-print-jpj-receipt" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 192px; height: 40px;">
+                    <div class="flex justify-content-center">
+                        <div class="flex items-center">
+                            <img class="icon" src="/uat1/images/file-money-icon.png">
+                            <div>JPJ Official Receipt</div>
+                        </div>
+                    </div>
+                </button>
+                <button id="to-print" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 170px; height: 40px;">
+                    <div class="flex justify-content-center">
+                        <div class="flex items-center">
+                            <img class="icon" src="/uat1/images/file-tick-icon.png">
+                            <div>Slip Pengesahan</div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div class="box-container" style="margin-top: 20px;">
+
+            <div class="box">
+                <div class="flex flex-row">
+                    <h6 class="label w-40">Category:</h6>
+                    <h6 class="data w-60">UCD to Malaysian</h6>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="label w-40">Engine No:</h6>
+                    <h6 class="data w-60">*/ -1231AA</h6>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="label w-40">Chassis No:</h6>
+                    <h6 class="data w-60">913821AA/* --</h6>
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="flex flex-row">
+                    <h6 class="label w-40">Date Created:</h6>
+                    <h6 class="data w-60">19-08-2026 09:58am</h6>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="label w-40">Request eVOC:</h6>
+                    <h6 class="data w-60">Yes</h6>
+                </div>
+            </div>
+
+            <!-- THE banner: this is the actual second insurance entry point for TS03 -->
+            <div class="box box-3">
+                <div class="get-free-quote">
+                    <img src="/uat1/images/estm-detail-insurance.png" alt="Buy Insurance">
+                    <button class="btn-get-quote" id="to-buy-insurance">GET FREE QUOTE FOR HX056</button>
+                </div>
+                <div class="box box-3">
+                    <div class="flex flex-row">
+                        <div style="color: red;">e-Invoices are only available for customers with a valid TIN. <br>
+                            e-Invoices can only be issued for transactions within the current calendar month.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="line"></div>
+
+        <div class="box-container">
+            <div class="box">
+                <div>
+                    <h3 class="subtitle">e-Invoice (eSTM)</h3>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="trx-details-label w-50">e-Invoice Submission Date:</h6>
+                    <h6 class="data w-50">-</h6>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="trx-details-label w-50">LHDN Response Status:</h6>
+                    <h6 class="data w-50"><b><span style="color:#FF4000">Failed</span></b></h6>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="trx-details-label w-50">e-Invoice Validation Date:</h6>
+                    <h6 class="data w-50">-</h6>
+                </div>
+            </div>
+
+            <div class="box">
+                <div>
+                    <h3 class="subtitle">e-Invoice (eVOC)</h3>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="trx-details-label w-50">e-Invoice Submission Date:</h6>
+                    <h6 class="data w-50">-</h6>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="trx-details-label w-50">LHDN Response Status:</h6>
+                    <h6 class="data w-50"><b><span style="color:#FF4000">Failed</span></b></h6>
+                </div>
+                <div class="flex flex-row">
+                    <h6 class="trx-details-label w-50">e-Invoice Validation Date:</h6>
+                    <h6 class="data w-50">-</h6>
+                </div>
+            </div>
+
+            <div class="box box-3"></div>
+        </div>
+        <div class="line"></div>
+
+        <div class="box-container">
+
+            <div class="box">
+                <div>
+                    <h3 class="subtitle">Buyer</h3>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Name:</h6>
+                        <h6 class="data w-60">Emily Rodriguez</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">MyKad No:</h6>
+                        <h6 class="data w-60">990909010122</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Mobile No:</h6>
+                        <h6 class="data w-60">0111111128</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Buyer's Email:</h6>
+                        <h6 class="data w-60">faizbid3@gmail.com</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">eVOC Email:</h6>
+                        <h6 class="data w-60">faizuddin@modefair.com</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Latest Address:</h6>
+                        <h6 class="data w-60">321 Elm Boulevard<br> Floor 3<br> City Center<br> 52000 KUALA LUMPUR<br> WILAYAH PERSEKUTUAN KUALA LUMPUR</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">MyKad/Thumbprint <br> verified on:</h6>
+                        <h6 class="data w-60">19-08-2026 09:58am</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <div>
+                    <h3 class="subtitle">Dealer (Seller)</h3>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Dealer:</h6>
+                        <h6 class="data w-60">FAIZUDDIN AUTO TEST</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Dealer's Reg No:</h6>
+                        <h6 class="data w-60">030311-A</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Dealer's Address:</h6>
+                        <h6 class="data w-60">24, JALAN SULAM EMPAT, 19/14D, 40300 SHAH ALAM, SELANGOR</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Dealer's Contact No:</h6>
+                        <h6 class="data w-60">0189812839</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box box-3">
+                <div>
+                    <h3 class="subtitle">Dealer's Authorised Representative</h3>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Dealer's Representative:</h6>
+                        <h6 class="data w-60">MUHAMMAD FAIZUDDIN BIN BIDI</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Representative MyKad No:</h6>
+                        <h6 class="data w-60">990909010122</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Representative Mobile No:</h6>
+                        <h6 class="data w-60">0111111113</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">MyKad/Thumbprint verified on:</h6>
+                        <h6 class="data w-60">19-08-2026 09:58am</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="line"></div>
+
+        <div class="box-container">
+            <div class="box">
+                <div>
+                    <h3 class="subtitle">JPJ Enquiry</h3>
+                    <div>
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <h6 class="data" style="margin-right: 3px;">1.</h6>
+                            <div style="display: flex; flex-wrap: wrap;">
+                                <h6 class="data" style="margin-right: 3px;">19-08-2026 09:58am - </h6>
+                                <span class="text-green" style="margin-right: 3px;">OK</span>
+                                <h6 class="data">(GLB000000I)</h6>
+                                <br>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <h6 class="data" style="margin-right: 3px;">2.</h6>
+                            <div style="display: flex; flex-wrap: wrap;">
+                                <h6 class="data" style="margin-right: 3px;">19-08-2026 09:58am - </h6>
+                                <span class="text-green" style="margin-right: 3px;">OK</span>
+                                <h6 class="data">(GLB000000I)</h6>
+                                <br>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <h6 class="data" style="margin-right: 3px;">3.</h6>
+                            <div style="display: flex; flex-wrap: wrap;">
+                                <h6 class="data" style="margin-right: 3px;">19-08-2026 09:58am - </h6>
+                                <span class="text-green" style="margin-right: 3px;">OK</span>
+                                <h6 class="data">(GLB000000I)</h6>
+                                <br>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <h6 class="data" style="margin-right: 3px;">4.</h6>
+                            <div style="display: flex; flex-wrap: wrap;">
+                                <h6 class="data" style="margin-right: 3px;">19-08-2026 09:58am - </h6>
+                                <span class="text-green" style="margin-right: 3px;">OK</span>
+                                <h6 class="data">(GLB000000I)</h6>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <div>
+                    <h3 class="subtitle">JPJ Enquiry Status</h3>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Valid As At:</h6>
+                        <h6 class="data w-60">19 Aug 2026 09:58 am</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Blacklisted:</h6>
+                        <h6 class="data w-60">No</h6>
+                    </div>
+                    <div class="flex flex-row">
+                        <h6 class="label w-40">Condition Code:</h6>
+                        <h6 class="data w-60">No</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box box-3">
+                <div>
+                    <h3 class="subtitle">JPJ Transfer (Final Submission)</h3>
+                    <div>
+                        19-08-2026 09:58am
+                        <h6 class="successful" style="font-size: 14px; font-weight: 700;">Successful</h6>
+                    </div>
+                </div>
+                <br>
+                <div>
+                    <h3 class="subtitle">eVOC (Final Submission)</h3>
+                    <div>
+                        19-08-2026 09:58am
+                        <h6 class="successful" style="font-size: 14px; font-weight: 700;">Successful</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="line"></div>
+
+        <div class="box-container payment-details">
+            <div class="box" style="max-width:100% !important">
+                <div>
+                    <h3 class="subtitle">Payment Details (eSTM)</h3>
+                    <div>
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <h6 class="data" style="min-width:20px;">1.</h6>
+                            <h6 class="data w-90">
+                                19-08-2026 09:58am -
+                                RHB
+                                (2608190017000003-HX056) -
+                                <span class="text-green" style="margin-top: 2px; margin-left: 3px;">OK</span>
+                            </h6>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <h6 class="data" style="min-width:20px;">2.</h6>
+                            <h6 class="data w-90">
+                                19-08-2026 09:58am -
+                                RHB
+                                (2608190017000003) -
+                                <span class="text-green" style="margin-top: 2px; margin-left: 3px;">OK</span>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box" style="max-width:100% !important">
+                <div>
+                    <h3 class="subtitle">Payment Details (eVOC)</h3>
+                    <div>
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <h6 class="data" style="min-width:20px;">1.</h6>
+                            <h6 class="data w-90">
+                                19-08-2026 09:58am -
+                                RHB
+                                (EV260819000002-HX056) -
+                                <span class="text-green" style="margin-top: 2px; margin-left: 3px;">OK</span>
+                            </h6>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap;">
+                            <h6 class="data" style="min-width:20px;">2.</h6>
+                            <h6 class="data w-90">
+                                19-08-2026 09:58am -
+                                RHB
+                                (EV260819000002) -
+                                <span class="text-green" style="margin-top: 2px; margin-left: 3px;">OK</span>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box box-3"></div>
+        </div>
+    </div>
+
+    <!-- Legacy commented-out table markup left exactly as served — dead code
+         still emitted by the template, harmless, kept verbatim in case it
+         ever explains an id collision. -->
+    <form id="transaction-form">
+        <table>
+            <colgroup><col width="500px"><col width="500px"></colgroup>
+            <tbody>
+                <tr>
+                    <td>
+                        <img id="icon-approved" style="display:none" src="/uat1/images/approved.jpg" width="80px" height="80px" title="Approved">
+                    </td>
+                </tr>
+                <tr></tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<!-- The "Buy Insurance?" confirm dialog — clicking #to-buy-insurance opens
+     this; #toProceed calls redirectInsuranceQuote() which is the actual
+     redirect into the Get Free Quote flow. -->
+<div id="buy-insurance-dialog" style="display:none; overflow: hidden;">
+<div>
+<div id="planLogo">
+    <img src="/uat1/images/eAuto_TM_logo-Insurance.svg" alt="Insurace" width="200">
+</div>
+<table width="480">
+    <colgroup><col width="auto"></colgroup>
+    <tbody>
+    <tr>
+        <td>
+            <p class="center">Do you want to buy&nbsp;<span><b>motor insurance</b></span>?</p>
+            <p class="center">Adakah anda ingin membeli&nbsp;<span><b>insurans kenderaan</b></span>?</p>
+            <p class="center">你要买<span><b>车险</b></span>吗?</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<div id="buyInsuranceButton">
+    <button id="doNotProceed" type="button" onclick="closeBuyInsuranceDialog();" class="cancel-dialog-btn">NO</button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button id="toProceed" type="button" onclick="redirectInsuranceQuote();" class="confirm-dialog-btn">YES</button>
+</div>
+</div>
+</div>
+
+<div id="DivToAppendPicker"><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div></div>
+
+</body>

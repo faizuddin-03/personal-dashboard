@@ -7,7 +7,35 @@ const SCRIPT_DIR   = process.env.SECARANG_SCRIPT_DIR
   ?? path.join(process.cwd(), "scripts", "secarang-insurance");
 const RESULT_FILE  = path.join(SCRIPT_DIR, "regression-result.json");
 const LOG_FILE     = path.join(SCRIPT_DIR, "regression-log.txt");
+const PUBLIC_ART   = path.join(process.cwd(), "public", "qa-artifacts", "secarang-regression");
 const TIMEOUT_MS   = 10 * 60 * 1000; // 10 min
+
+/**
+ * Copy the newest .webm Playwright produced into public/ so the browser can play
+ * it, and return its web path. Mirrors the eSTM runner. The folder is wiped
+ * first so a failed run can never leave the previous run's video on screen.
+ */
+function publishVideo(): string | undefined {
+  const webBase = "/qa-artifacts/secarang-regression";
+  fs.mkdirSync(PUBLIC_ART, { recursive: true });
+  for (const f of fs.existsSync(PUBLIC_ART) ? fs.readdirSync(PUBLIC_ART) : []) {
+    try { fs.rmSync(path.join(PUBLIC_ART, f), { force: true }); } catch { /* ignore */ }
+  }
+  const tr = path.join(SCRIPT_DIR, "test-results");
+  if (!fs.existsSync(tr)) return undefined;
+  const vids: { p: string; t: number }[] = [];
+  const walk = (dir: string) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (/\.webm$/i.test(e.name)) vids.push({ p: full, t: fs.statSync(full).mtimeMs });
+    }
+  };
+  walk(tr);
+  if (!vids.length) return undefined;
+  const newest = vids.sort((a, b) => b.t - a.t)[0].p;
+  try { fs.copyFileSync(newest, path.join(PUBLIC_ART, "run.webm")); return `${webBase}/run.webm`; } catch { return undefined; }
+}
 
 let currentChild: ChildProcess | null = null;
 let stopRequested = false;
@@ -31,7 +59,12 @@ export async function GET() {
   }
   try {
     const data = JSON.parse(fs.readFileSync(RESULT_FILE, "utf-8"));
-    return NextResponse.json(data);
+    // POST publishes the recording; re-advertise it here so the player survives
+    // a page reload or a poll that lands after the run finished.
+    const video = fs.existsSync(path.join(PUBLIC_ART, "run.webm"))
+      ? "/qa-artifacts/secarang-regression/run.webm"
+      : undefined;
+    return NextResponse.json({ ...data, video });
   } catch {
     return NextResponse.json({ error: "Failed to read result file." }, { status: 500 });
   }
@@ -144,15 +177,17 @@ export async function POST(req: NextRequest) {
     child.on("error",  (err)  => { clearTimeout(timer); currentChild = null; forceResolveRun = null; resolve({ code: 1, output: err.message }); });
   });
 
+  const video = publishVideo();
+
   if (stopRequested) {
-    return NextResponse.json({ stopped: true, log: result.output });
+    return NextResponse.json({ stopped: true, video, log: result.output });
   }
 
   // Try to read the result file the script wrote
   if (fs.existsSync(RESULT_FILE)) {
     try {
       const data = JSON.parse(fs.readFileSync(RESULT_FILE, "utf-8"));
-      return NextResponse.json({ ...data, log: result.output });
+      return NextResponse.json({ ...data, video, log: result.output });
     } catch {
       /* fall through */
     }
@@ -163,6 +198,7 @@ export async function POST(req: NextRequest) {
     overallStatus: "FAIL",
     steps: [],
     errorMessage: result.output || "Playwright test failed without output.",
+    video,
     log: result.output,
   }, { status: result.code !== 0 ? 500 : 200 });
 }

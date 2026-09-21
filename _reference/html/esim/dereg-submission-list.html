@@ -1,0 +1,139 @@
+<!--
+  URL: /esim/dereg-submission-resp (list)
+  Env: eSIM (VPN-only simulator), env instance not stated by user
+  Captured: 2026-08-21
+  Trimmed: none — all 52 records are present in the DOM; rows past #10 carry
+  inline style="display:none" from the app's own client-side pagination
+  (10 rows/page, "Showing 1-10 of 52 results"), same pattern already noted for
+  dereg-enquiry-list.html. The repeated per-row SVG action icons (view/edit/
+  delete) are boilerplate identical across every row; kept once per distinct
+  row shown below for completeness, not stripped.
+  Sidebar confirms the full "Deregistration" entity group: Dereg Enquiry,
+  Dereg Submission (this file), Dereg Decomposition, Dereg Precheck — the last
+  two still uncaptured.
+  Used by: knowledge/esim.md, knowledge/flow-edereg.md (§5.2)
+-->
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-label">Entities</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item sidebar-group" id="group-stms">
+          <ul class="sidebar-group-items">
+            <li><a href="/esim/stms-enquiry-resp">STMS Enquiry</a></li>
+            <li><a href="/esim/stms-submission-resp">STMS Submission</a></li>
+            <li><a href="/esim/estm-enquiry-resp">eSTM Enquiry</a></li>
+            <li><a href="/esim/estm-submission-resp">eSTM Submission</a></li>
+            <li><a href="/esim/estm-cancel-submission-resp">eSTM Cancel</a></li>
+            <li><a href="/esim/apt-submission-resp">APT Submission</a></li>
+          </ul>
+        </li>
+        <li class="sidebar-nav-item sidebar-group open" id="group-dereg">
+          <span>Deregistration</span>
+          <ul class="sidebar-group-items">
+            <li><a href="/esim/dereg-enquiry-resp">Dereg Enquiry</a></li>
+            <li class="active"><a href="/esim/dereg-submission-resp">Dereg Submission</a></li>
+            <li><a href="/esim/dereg-decomposition-resp">Dereg Decomposition</a></li>
+            <li><a href="/esim/dereg-precheck-enquiry-resp">Dereg Precheck</a></li>
+          </ul>
+        </li>
+        <li class="sidebar-nav-item sidebar-group" id="group-rhb">
+          <ul class="sidebar-group-items">
+            <li><a href="/esim/rhb-enquiry-resp">RHB Enquiry</a></li>
+            <li><a href="/esim/rhb-transfer-resp">RHB Transfer</a></li>
+            <li><a href="/esim/service-hub-resp">Service Hub</a></li>
+            <li><a href="/esim/rhb-account-info">RHB Account Info</a></li>
+          </ul>
+        </li>
+        <!-- also present: LKM, LKM Refund, BMK, Insurance, Jomcheck, SSM, Payments, OTH groups -->
+      </ul>
+    </aside>
+    <div class="main-content">
+      <div class="top-bar">
+        <nav class="breadcrumb-nav"><a href="/esim/">home</a><span class="current">Dereg Submission Resps</span></nav>
+      </div>
+      <div class="content-body">
+        <div class="page-header">
+          <h1 class="page-title">Dereg Submission Resps</h1>
+          <p class="page-subtitle"><span id="recordCount">52</span> records</p>
+          <a href="/esim/dereg-submission-resp/new" class="btn btn-primary">Create New</a>
+        </div>
+        <div class="search-bar" id="searchBar">
+          <input type="text" id="searchInput" placeholder="Search records..." autocomplete="off">
+        </div>
+        <div class="data-table-wrap" id="dataTableWrap">
+          <table class="data-table" id="dataTable">
+            <thead>
+              <tr>
+                <th class="col-id">ID</th>
+                <th>Vn Start With</th>
+                <th>Response Code</th>
+                <th>Delay Milliseconds</th>
+                <th>Remark</th>
+                <th class="col-actions">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="col-id">1</td><td>WA</td><td>GLB000000I</td><td>0</td><td>TRANSACTION SUCCESSFUL - Use for 19.08.2025 JPJ Demo</td></tr>
+              <tr><td class="col-id">2</td><td>VA</td><td>GLB000001E</td><td>0</td><td>MANDATORY FIELD(S) REQUIRED</td></tr>
+              <tr><td class="col-id">3</td><td>VT</td><td>GLB000002E</td><td>0</td><td>VERIFICATION FIELD(S) ERROR</td></tr>
+              <tr><td class="col-id">4</td><td>AD</td><td>GLB000000I</td><td>0</td><td>DATA TYPE ERROR</td></tr>
+              <tr><td class="col-id">5</td><td>AE</td><td>VEL000100E</td><td>0</td><td>VEHICLE NOT FOUND</td></tr>
+              <tr><td class="col-id">6</td><td>AF</td><td>VEL000102E</td><td>0</td><td>DEADLOCK - VELVE</td></tr>
+              <tr><td class="col-id">7</td><td>AG</td><td>VEL000103E</td><td>0</td><td>DUPLICATE</td></tr>
+              <tr><td class="col-id">8</td><td>AH</td><td>VEL000045E</td><td>0</td><td>PLEASE CONTACT HELPDESK - VELVE</td></tr>
+              <tr><td class="col-id">9</td><td>M1</td><td>VEL000066E</td><td>0</td><td>VEHICLE STATUS NOT ACTIVE</td></tr>
+              <tr><td class="col-id">10</td><td>AJ</td><td>VEL000009E</td><td>0</td><td>USAGE NOT ALLOWED</td></tr>
+              <tr><td class="col-id">11</td><td>AK</td><td>VEL000010E</td><td>0</td><td>CONDITION CODE EXIST</td></tr>
+              <tr><td class="col-id">12</td><td>AL</td><td>VEL000006E</td><td>0</td><td>CHASSIS NO. NOT MATCH</td></tr>
+              <tr><td class="col-id">13</td><td>AM</td><td>VEL000007E</td><td>0</td><td>ENGINE NO. NOT MATCH</td></tr>
+              <tr><td class="col-id">14</td><td>AN</td><td>GLB000006E</td><td>0</td><td>OWNER REF NO. NOT FOUND</td></tr>
+              <tr><td class="col-id">15</td><td>AO</td><td>GLB000048E</td><td>0</td><td>DEADLOCK - REFOW</td></tr>
+              <tr><td class="col-id">16</td><td>AP</td><td>GLB000056E</td><td>0</td><td>PLEASE CONTACT HELPDESK - REFOW</td></tr>
+              <tr><td class="col-id">17</td><td>AQ</td><td>VEL000008E</td><td>0</td><td>OWNER NOT MATCH</td></tr>
+              <tr><td class="col-id">18</td><td>AR</td><td>GLB000005E</td><td>0</td><td>OWNER RECORD NOT FOUND</td></tr>
+              <tr><td class="col-id">19</td><td>AS</td><td>GLB000033E</td><td>0</td><td>DEADLOCK - CMNOW</td></tr>
+              <tr><td class="col-id">20</td><td>AT</td><td>GLB000055E</td><td>0</td><td>PLEASE CONTACT HELPDESK - CMNOW</td></tr>
+              <tr><td class="col-id">21</td><td>AU</td><td>GLB000007E</td><td>0</td><td>OWNER DECEASED</td></tr>
+              <tr><td class="col-id">22</td><td>AV</td><td>VEL000014E</td><td>0</td><td>BLACKLISTED - JPJ</td></tr>
+              <tr><td class="col-id">23</td><td>AW</td><td>ENF000008E</td><td>0</td><td>DEADLOCK - ENFBL</td></tr>
+              <tr><td class="col-id">24</td><td>AX</td><td>ENF000009E</td><td>0</td><td>PLEASE CONTACT HELPDESK - ENFBL</td></tr>
+              <tr><td class="col-id">25</td><td>AY</td><td>VEL000015E</td><td>0</td><td>BLACKLISTED - JSJ</td></tr>
+              <tr><td class="col-id">26</td><td>AZ</td><td>ENF000012E</td><td>0</td><td>DEADLOCK - ENFJS</td></tr>
+              <tr><td class="col-id">27</td><td>BA</td><td>GLB000000I</td><td>0</td><td>OK</td></tr>
+              <tr><td class="col-id">28</td><td>BB</td><td>VEL000016E</td><td>0</td><td>BLACKLISTED - SEKAT</td></tr>
+              <tr><td class="col-id">29</td><td>BC</td><td>VEL000050E</td><td>0</td><td>PLEASE CONTACT HELPDESK - ENFAB</td></tr>
+              <tr><td class="col-id">30</td><td>BD</td><td>GLB000223E</td><td>0</td><td>DUPLICATE - OLCAM</td></tr>
+              <tr><td class="col-id">31</td><td>BE</td><td>GLB000224E</td><td>0</td><td>DEADLOCK - OLCAM</td></tr>
+              <tr><td class="col-id">32</td><td>BF</td><td>GLB000225E</td><td>0</td><td>PLEASE CONTACT HELPDESK - OLCAM</td></tr>
+              <tr><td class="col-id">33</td><td>BG</td><td>GLB000228E</td><td>0</td><td>RECORD NOT FOUND</td></tr>
+              <tr><td class="col-id">34</td><td>BH</td><td>VEL000403E</td><td>0</td><td>DEADLOCK - VELVO</td></tr>
+              <tr><td class="col-id">35</td><td>BI</td><td>VEL000200E</td><td>0</td><td>PLEASE CONTACT HELPDESK - VELVO</td></tr>
+              <tr><td class="col-id">36</td><td>BJ</td><td>VEL000120E</td><td>0</td><td>DUPLICATE - VELLD</td></tr>
+              <tr><td class="col-id">37</td><td>BK</td><td>VEL000044E</td><td>0</td><td>DEADLOCK - VELLD</td></tr>
+              <tr><td class="col-id">38</td><td>BL</td><td>VEL000051E</td><td>0</td><td>PLEASE CONTACT HELPDESK - VELLD</td></tr>
+              <tr><td class="col-id">39</td><td>BM</td><td>REV000048E</td><td>0</td><td>DEADLOCK - REVRF</td></tr>
+              <tr><td class="col-id">40</td><td>BN</td><td>REV000049E</td><td>0</td><td>PLEASE CONTACT HELPDESK - REVRF</td></tr>
+              <tr><td class="col-id">41</td><td>BO</td><td>VEL000083E</td><td>0</td><td>DEADLOCK - VELVH</td></tr>
+              <tr><td class="col-id">42</td><td>BP</td><td>VEL000084E</td><td>0</td><td>PLEASE CONTACT HELPDESK - VELVH</td></tr>
+              <tr><td class="col-id">43</td><td>BQ</td><td>VEL000548E</td><td>0</td><td>RECORD NOT FOUND</td></tr>
+              <tr><td class="col-id">44</td><td>BR</td><td>VEL000547E</td><td>0</td><td>DEADLOCK - VELOD</td></tr>
+              <tr><td class="col-id">45</td><td>BS</td><td>VEL000546E</td><td>0</td><td>PLEASE CONTACT HELPDESK - VELOD</td></tr>
+              <tr><td class="col-id">46</td><td>BT</td><td>VEL000404E</td><td>0</td><td>CLAIM OWNERSHIP EXIST</td></tr>
+              <tr><td class="col-id">47</td><td>BU</td><td>VEL000165E</td><td>0</td><td>DEADLOCK - VELCO</td></tr>
+              <tr><td class="col-id">48</td><td>BV</td><td>VEL000166E</td><td>0</td><td>PLEASE CONTACT HELPDESK - VELCO</td></tr>
+              <tr><td class="col-id">49</td><td>VP</td><td>GLB000000I</td><td>0</td><td>VEHICLE UNDER JPJ INVESTIGATION : PLEASE REFER TO JPJ</td></tr>
+              <tr><td class="col-id">50</td><td>WB</td><td>GLB000000I</td><td>0</td><td>nick</td></tr>
+              <tr><td class="col-id">101</td><td>WH</td><td>VEL000066E</td><td>0</td><td>ALIAH - VEL000066E VEHICLE STATUS NOT ACTIVE , GLB000000I success</td></tr>
+              <tr><td class="col-id">102</td><td>FZ</td><td>GLB000000I</td><td>0</td><td>Faiz - REV000001E (reset payment)</td></tr>
+            </tbody>
+          </table>
+          <div class="pagination-bar" id="paginationBar">
+            <span class="pagination-info" id="paginationInfo">Showing 1-10 of 52 results</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/esim/js/app.js"></script>
+</body>

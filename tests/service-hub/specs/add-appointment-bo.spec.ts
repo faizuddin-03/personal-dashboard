@@ -1,6 +1,5 @@
 import { test, expect } from "../fixtures/test-fixtures";
 import { ENV } from "../utils/config";
-import { openTrackedContext, closeTrackedContext } from "../utils/tracked-context";
 import { arrangeBdpReferenceViaUCD } from "../utils/arrange";
 
 const MORNING = 0;
@@ -23,6 +22,11 @@ const AFTERNOON = 1;
  * CSE to key in here. addAppointment()/arrangeBdpReferenceViaUCD return
  * null when they can't proceed, and these tests SKIP in that case rather
  * than fail, so the overall run always finishes (arrange-else-skip).
+ *
+ * Scope matches the "Add Appointment (BO)" CSV exactly (SC_APBO_TS01–5).
+ * SC_APBO_TS06/7 (expired-transaction adds) are excluded — their precondition
+ * requires a dev to manually patch a transaction to Expired, which this
+ * automation cannot do without human intervention.
  */
 // Search term = the exact company we want; addAppointment only binds on an
 // EXACT name match, so look-alikes ("FAIZUDDIN AUTO TEST 2"/"3") are never
@@ -35,10 +39,9 @@ test.describe("Add Appointment (BO)", () => {
     await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
   });
 
-  // Offline Purchase: the customer paid offline (not via the UCD portal), so
-  // CSE books the appointment for them via Add Appointment › Existing Record
-  // (using a reference UCD already purchased but hasn't booked yet).
-  test("Add Appointment - Offline Purchase (New Record)", async ({ boCalendarPage, browser }, testInfo) => {
+  // SC_APBO_TS01: "Add Appointment - Existing Record Free Booking" — CSE books
+  // for a UCD who already purchased (via BDP) but hasn't booked yet.
+  test("SC_APBO_TS01: Add Appointment - Existing Record Free Booking", async ({ boCalendarPage, browser }, testInfo) => {
     const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
@@ -46,10 +49,15 @@ test.describe("Add Appointment (BO)", () => {
     }
 
     await boCalendarPage.navigate();
+    // No appointmentDate given: addAppointment()'s datepicker fallback picks
+    // the last selectable day in the CURRENTLY DISPLAYED month. A fixed
+    // day-offset (e.g. daysFromToday(3)) can cross into next month near
+    // month-end, and getSlotCount() below only scans whatever month is
+    // showing after the fresh navigate() — a real mismatch that read as a
+    // false "0 booked" failure (see debug session 2026-07-31).
     const booked = await boCalendarPage.addAppointment({
       companyName: COMPANY,
       existingRecordRefNo: ref,
-      appointmentDate: boCalendarPage.daysFromToday(3),
       slot: MORNING,
     });
     if (!booked) {
@@ -61,122 +69,9 @@ test.describe("Add Appointment (BO)", () => {
     expect(await boCalendarPage.getSlotCount(booked, MORNING)).toBeGreaterThan(0);
   });
 
-  test("Add Appointment - Both slots on one date", async ({ boCalendarPage, browser }, testInfo) => {
-    // Needs 2 allocatable units on the same reference — one for each slot —
-    // so arrange with deviceQty: 2 (2 devices → 2 free installs).
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo, { deviceQty: 2 });
-    if (!ref) {
-      test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
-      return;
-    }
-
-    await boCalendarPage.navigate();
-    const targetDate = boCalendarPage.daysFromToday(4);
-
-    const bookedMorning = await boCalendarPage.addAppointment({
-      companyName: COMPANY,
-      existingRecordRefNo: ref,
-      appointmentDate: targetDate,
-      slot: MORNING,
-    });
-    if (!bookedMorning) {
-      test.skip(true, `Could not add a morning appointment for reference ${ref}.`);
-      return;
-    }
-    // Re-use the same ISO date requested for the morning slot — NOT
-    // `bookedMorning`, which is the date INPUT'S DISPLAY VALUE (DD-MM-YYYY,
-    // e.g. "22-07-2026"). addAppointment()/pickDatepickerDay() expect ISO
-    // (YYYY-MM-DD); feeding the display value back in gets parsed as
-    // year="22", month="07", day="2026" — garbage that made the datepicker
-    // navigate to a nonexistent month/year and, on a fresh dialog, never
-    // even open (timed out waiting on #ui-datepicker-div).
-    const bookedAfternoon = await boCalendarPage.addAppointment({
-      companyName: COMPANY,
-      existingRecordRefNo: ref,
-      appointmentDate: targetDate,
-      slot: AFTERNOON,
-    });
-
-    await boCalendarPage.navigate();
-    expect(await boCalendarPage.getSlotCount(bookedMorning, MORNING)).toBeGreaterThan(0);
-    if (bookedAfternoon) {
-      expect(await boCalendarPage.getSlotCount(bookedAfternoon, AFTERNOON)).toBeGreaterThan(0);
-    }
-  });
-
-  // Partial Booking Call-in: a UCD booked only SOME of their units and phones
-  // CSE to book the rest. A Software Installation must be fully booked before
-  // it can be confirmed, so the only way to leave a request partially booked
-  // is a BIOMETRIC purchase — its FREE installs are optional. So we ARRANGE
-  // the partial state as UCD (buy 2 devices → 2 free installs, book 1, confirm
-  // leaving 1 unallocated), capture the SR reference, then CALL IN as CSE and
-  // book the leftover via Add Appointment › Existing Record.
-  test("Add Appointment - Partial Booking Call-in", async ({ browser }, testInfo) => {
-    const LoginPage = (await import("../pages/LoginPage")).LoginPage;
-
-    // ── ARRANGE (UCD): buy 2 devices → 2 free installs, book only 1, confirm
-    //    (free installs are optional), leaving 1 unallocated. ──
-    const ucdCtx = await openTrackedContext(browser, testInfo);
-    const ucdPage = await ucdCtx.newPage();
-    const bio = new (await import("../pages/BiometricPurchasePage")).BiometricPurchasePage(ucdPage);
-    const slot = new (await import("../pages/SlotPickerComponent")).SlotPickerComponent(ucdPage);
-
-    let arranged = false;
-    try {
-      await new LoginPage(ucdPage).loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
-      await bio.purchaseDevice({
-        deviceQty: 2,
-        recipientName: "Test Receiver",
-        contactNo: "0123456789",
-        shipToShowroom: true,
-      });
-      const target = await slot.findDateWithRoom(1);
-      if (target) {
-        await slot.allocateUnitsAnywhere(1, target); // book 1 of 2 free installs
-        await slot.confirmAppointment();              // free installs optional → confirm allowed
-        arranged = true;
-      }
-    } finally {
-      await closeTrackedContext(ucdCtx, testInfo, "UCD arranges partial booking");
-    }
-    if (!arranged) {
-      test.skip(true, "Could not arrange a partially-booked biometric request to call in about.");
-      return;
-    }
-
-    // ── CALL-IN (CSE): look up the reference from the BO SI Listing (search
-    //    the company → the freshly-created request is the newest row), then
-    //    book the leftover free install via Add Appointment › Existing Record. ──
-    const boCtx = await openTrackedContext(browser, testInfo);
-    const boPage = await boCtx.newPage();
-    const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(boPage);
-    const boCal = new (await import("../pages/bo/AppointmentCalendarPage")).AppointmentCalendarPage(boPage);
-
-    let ref: string | null = null;
-    let booked: string | null = null;
-    try {
-      await new LoginPage(boPage).loginAsBO(ENV.boUsername, ENV.boPassword);
-      await boListing.navigate();
-      ref = await boListing.getLatestReferenceForCompany(COMPANY);
-      if (ref) {
-        await boCal.navigate();
-        booked = await boCal.addAppointment({
-          companyName: COMPANY,
-          existingRecordRefNo: ref,
-          slot: MORNING,
-        });
-      }
-    } finally {
-      await closeTrackedContext(boCtx, testInfo, "CSE call-in booking");
-    }
-    if (!ref) {
-      test.skip(true, `No reference found in the BO listing for "${COMPANY}".`);
-      return;
-    }
-    expect(booked, `CSE should book the leftover unit for ${ref} via Existing Record`).not.toBeNull();
-  });
-
-  test("CSE not bound by 6/day cap — can add to a full slot", async ({ boCalendarPage, browser }, testInfo) => {
+  // SC_APBO_TS02: "Morning Slot Full Booking - Add Appointment" — CSE is not
+  // bound by the UCD-facing 6/day cap; numbering continues past "Full".
+  test("SC_APBO_TS02: Morning Slot Full Booking - Add Appointment", async ({ boCalendarPage, browser }, testInfo) => {
     const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
@@ -185,41 +80,16 @@ test.describe("Add Appointment (BO)", () => {
 
     await boCalendarPage.navigate();
 
-    // Prefer a session the UCD-facing counter already marks (Full); CSE
-    // should still be able to add to it. Falls back to any near date.
+    // Precondition: the date's morning session must already be Full.
     const fullDate = await boCalendarPage.findDateWithSlotFull(MORNING);
+    if (!fullDate) {
+      test.skip(true, "No date with a full morning session currently available.");
+      return;
+    }
     const booked = await boCalendarPage.addAppointment({
       companyName: COMPANY,
       existingRecordRefNo: ref,
-      appointmentDate: fullDate ?? boCalendarPage.daysFromToday(3),
-      slot: MORNING,
-    });
-    if (!booked) {
-      test.skip(true, `Could not add an appointment for reference ${ref}.`);
-      return;
-    }
-
-    await boCalendarPage.navigate();
-    // The counter is informational for CSE; the add should have succeeded.
-    expect(await boCalendarPage.getSlotCount(booked, MORNING)).toBeGreaterThan(0);
-  });
-
-  test("Morning Slot Full Booking - Add Appointment", async ({ boCalendarPage, browser }, testInfo) => {
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
-    if (!ref) {
-      test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
-      return;
-    }
-
-    await boCalendarPage.navigate();
-
-    // Prefer a date the UCD-facing counter already marks morning (Full);
-    // CSE should still be able to add to it. Falls back to any near date.
-    const fullDate = await boCalendarPage.findDateWithSlotFull(MORNING);
-    const booked = await boCalendarPage.addAppointment({
-      companyName: COMPANY,
-      existingRecordRefNo: ref,
-      appointmentDate: fullDate ?? boCalendarPage.daysFromToday(5),
+      appointmentDate: fullDate,
       slot: MORNING,
     });
     if (!booked) {
@@ -232,7 +102,9 @@ test.describe("Add Appointment (BO)", () => {
     expect(await boCalendarPage.getSlotCount(booked, MORNING)).toBeGreaterThan(0);
   });
 
-  test("Afternoon Slot Booking", async ({ boCalendarPage, browser }, testInfo) => {
+  // SC_APBO_TS03: "Afternoon Slot Full Booking - Add Appointment" — same as
+  // APBO_2 but the afternoon session.
+  test("SC_APBO_TS03: Afternoon Slot Full Booking - Add Appointment", async ({ boCalendarPage, browser }, testInfo) => {
     const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
@@ -241,10 +113,15 @@ test.describe("Add Appointment (BO)", () => {
 
     await boCalendarPage.navigate();
 
+    const fullDate = await boCalendarPage.findDateWithSlotFull(AFTERNOON);
+    if (!fullDate) {
+      test.skip(true, "No date with a full afternoon session currently available.");
+      return;
+    }
     const booked = await boCalendarPage.addAppointment({
       companyName: COMPANY,
       existingRecordRefNo: ref,
-      appointmentDate: boCalendarPage.daysFromToday(6),
+      appointmentDate: fullDate,
       slot: AFTERNOON,
     });
     if (!booked) {
@@ -254,5 +131,76 @@ test.describe("Add Appointment (BO)", () => {
 
     await boCalendarPage.navigate();
     expect(await boCalendarPage.getSlotCount(booked, AFTERNOON)).toBeGreaterThan(0);
+  });
+
+  // SC_APBO_TS04: "Full date booking" — the WHOLE day (both sessions) already
+  // fully booked; CSE can still add, and the numbering continues.
+  test("SC_APBO_TS04: Full date booking", async ({ boCalendarPage, browser }, testInfo) => {
+    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
+    if (!ref) {
+      test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
+      return;
+    }
+
+    await boCalendarPage.navigate();
+
+    const fullDate = await boCalendarPage.findDateMatching(
+      (i) => i.morning.full && i.afternoon.full,
+    );
+    if (!fullDate) {
+      test.skip(true, "No date with both sessions fully booked currently available.");
+      return;
+    }
+    const booked = await boCalendarPage.addAppointment({
+      companyName: COMPANY,
+      existingRecordRefNo: ref,
+      appointmentDate: fullDate,
+      slot: MORNING,
+    });
+    if (!booked) {
+      test.skip(true, `Could not add an appointment for reference ${ref}.`);
+      return;
+    }
+
+    await boCalendarPage.navigate();
+    expect(await boCalendarPage.getSlotCount(booked, MORNING)).toBeGreaterThan(0);
+  });
+
+  // SC_APBO_TS05: "Add free booking that is cancelled" — the reference's
+  // request was cancelled before any appointment was made; the Reference
+  // No. field must show the CANCELLED error, and adding must be blocked.
+  test("SC_APBO_TS05: Add free booking that is cancelled", async ({ boCalendarPage, boListingPage }) => {
+    await boListingPage.navigate();
+    await boListingPage.searchWithFilters({});
+    const rows = await boListingPage.getResultRows();
+    let cancelledRef: string | null = null;
+    let cancelledCompany: string | null = null;
+    for (const row of rows) {
+      if ((await boListingPage.getRowInstallationStatus(row)).toLowerCase().includes("cancel")) {
+        cancelledRef = await boListingPage.getRowReferenceNo(row);
+        cancelledCompany = await boListingPage.getRowCompanyName(row);
+        break;
+      }
+    }
+    if (!cancelledRef || !cancelledCompany) {
+      test.skip(true, "No Cancelled installation reference found to test against.");
+      return;
+    }
+
+    await boCalendarPage.navigate();
+    const dialog = await boCalendarPage.openAddDialog();
+    await boCalendarPage.page.locator("#ac-add-name").fill(cancelledCompany);
+    await boCalendarPage.page.locator("#ac-add-search").click();
+    await boCalendarPage.page.waitForTimeout(500);
+    await boCalendarPage.page.locator("#ac-add-refno").fill(cancelledRef);
+    await boCalendarPage.page.locator("#ac-add-ref-search").click();
+    await boCalendarPage.page.waitForTimeout(500);
+
+    await test.step("Expected: 'This transaction is CANCELLED and cannot be rescheduled.' under Reference No.", async () => {
+      const errorNearRef = dialog.getByText(/cancelled/i);
+      await expect(errorNearRef.first()).toBeVisible({ timeout: 5000 });
+    });
+
+    await boCalendarPage.closeAddDialog(dialog);
   });
 });

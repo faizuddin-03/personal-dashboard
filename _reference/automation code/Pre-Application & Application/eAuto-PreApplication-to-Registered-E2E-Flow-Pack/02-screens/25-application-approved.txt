@@ -1,0 +1,207 @@
+https://staging.eauto.my/obs/admin/form/edit/69a88691-a3e7-4b65-9f75-6d80ae961de6
+
+Dealer Application - P260831/00838 / NA68001162 - CHARMAIN QA11982 260831-1744-139 ENTERPRISE
+Pre-Application
+Application
+Registration Documents
+Application Form
+Save
+Business Information
+Type of Business:
+SSM Registered:
+ Sdn Bhd / Bhd
+ Sole Proprietorship / Partnership
+ LLP
+Non-SSM Registered:
+ Business Trading (Sabah)
+ Business Trading (Sarawak)
+Business Registered Name:
+Business Trading License No:
+Tax Identification No (TIN):
+Sales and Service Tax (SST) No:
+Showroom Ownership:
+ Own Showroom
+ Shared Showroom
+ No Showroom
+Showroom Address:
+Postcode:
+State:
+Select
+SARAWAK(13)
+City:
+Select
+SARAWAK (1300)
+ASAJAYA (1301)
+BALINGAN (1302)
+BARAM (1303)
+BAU (1304)
+BEKENU (1305)
+BELAGA (1306)
+BELAWAI (1307)
+BETONG (1308)
+BINTANGOR (1309)
+BINTULU (1310)
+DALAT (1311)
+DARO (1312)
+DEBAK (1313)
+ENGKILILI (1314)
+JULAU (1315)
+KABONG (1316)
+KANOWIT (1317)
+KAPIT (1318)
+KOTA SAMARAHAN (1319)
+KUCHING (1320)
+LAWAS (1321)
+LIMBANG (1322)
+LINGGA (1323)
+LONG LAMA (1324)
+LUBOK ANTU (1325)
+LUNDU (1326)
+MATU (1327)
+MIRI (1328)
+MUKAH (1329)
+NANGA MEDAMIT (1330)
+NIAH (1331)
+PEKENU (1332)
+PUSA (1333)
+ROBAN (1334)
+SARATOK (1335)
+SARIKEI (1336)
+SEBAUH (1337)
+SEBUYAU (1338)
+SERIAN (1339)
+SIMUNJAN (1340)
+SONG (1341)
+SPAOH (1342)
+SRI AMAN (1343)
+SUNDAR (1344)
+TATAU (1345)
+TEBAKANG (1346)
+SIBU (1347)
+BINTANGOR (1348)
+TEBEDU (1349)
+PAKAN (1378)
+SIBUTI (1379)
+OYA (1380)
+MALUDAM (1381)
+LAIN-LAIN (9999)
+Remarks:
+Other Motor Vehicle Business Information
+Do you advertise your motor vehicles on any of this online platform? (e.g Mudah.my)
+ Yes
+ No
+Is your Business registered with any motor vehicle Auction House?
+ Yes
+ No
+Please tick if your Business is a member of any Motor Vehicle Association.
+No
+FMC
+MMSDA
+PEKEMA
+Upload Files
+Please upload all relevant documents / material required.
+Kindly upload the documents and photos / video required to complete and fast track your application.
+1
+SSM Company / Business Profile
+Up to 4 files allowed: pdf, png, jpg, jpeg, docx. Max Size: 10MB
+1
+document-0.pdf
+2
+MyKad / MyPR / Passport Copies of All Directors / Business Owner(s)
+1 file per Director/Business Owner allowed: pdf, png, jpg, jpeg. Max Size: 5MB.
+Please make sure the front and back IC is in one document
+Number of Directors / Business Owner(s):
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+1
+document-1.pdf
+3
+Four (4) Showroom Pictures and 20 Seconds Showroom Video (with Signboard)
+1 file per field allowed: pdf, png, jpg, jpeg, mp4. Max Size (Picture): 5MB. Max Size (Video): 20MB
+Picture 1
+document-2.jpg
+Picture 2
+document-3.jpg
+Picture 3
+document-4.jpg
+Picture 4
+document-5.jpg
+Video
+showroom-video-6.mp4
+4
+Business Card
+1 file allowed: pdf, png, jpg, jpeg. Max Size: 5MB
+document-7.pdf
+5
+Dealer Security Deposit Receipt from the Auction House
+1 file per field allowed: pdf, png, jpg, jpeg. Max Size: 5MB
+6
+Current Motor Vehicle Association Membership Receipt
+1 file per field allowed: pdf, png, jpg, jpeg. Max Size: 5MB
+7
+Company / Business Official Stamp (1. Round Stamp    2. Stamp with Address)
+1 file allowed: pdf, png, jpg, jpeg. Max Size: 5MB
+document-8.pdf
+Director / Business Owner in Charge
+This refers to the Director or Business Owner who will represent the company as the Main User of the eAuto system. Definition of Main User: Holds full system authorisation and permissions.
+Name:
+MyKad No:
+Mobile No:
+Email Address:
+Admin in Charge
+This refers to the representative assisting with this application
+Name:
+MyKad No:
+Mobile No:
+Email Address:
+e-Invoice Person-in-Charge
+This refers to the representative of the company for e-Invoice
+Name:
+Mobile No:
+Email Address:
+
+I hereby declare, represent, and warrant that I am duly authorised to submit this application and to act on behalf of the company named in this application form. I further confirm that all information and documents provided are true, accurate, complete, and up to date in all respects. I undertake to promptly notify eAuto of any changes to the information submitted herein, and acknowledge that eAuto shall be entitled to rely on the information provided herein.
+
+eAuto reserves the right to verify any information submitted and to approve, reject, or revoke any application at its sole discretion. Any falsification or misrepresentation may result in immediate suspension or termination of the applicant’s account. For the avoidance of doubt, the applicant acknowledges and agrees that all fees paid in connection with this application are strictly non-refundable, irrespective of whether the application is approved, rejected, withdrawn, incomplete, or subsequently revoked.
+
+By submitting this application, you confirm that you have read, understood, and agreed to the declarations set out above.
+
+Application No: NA68001162
+Assignee:
+Select
+BO ruiluan
+BO User bjGIQ
+BO User bwvzW
+BO User GhFbw
+BO User huWnF
+BO User kbomK
+BO User nPlkY
+BO User sxscg
+BO User sYRlw
+BO user test 1
+BRANDON TEST MIE
+CHARMAIN EA CHIANG chg
+LIM YI LINK
+MUSIC SDN BHD
+sdtPhAPWEMhvmv
+SlcklBI
+traze
+Application Status:
+Approved
+Application Submission Date:
+2026-08-31 05:47PM
+Application Approval Date:
+2026-08-31 05:47PM

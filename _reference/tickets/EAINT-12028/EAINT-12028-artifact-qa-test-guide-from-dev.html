@@ -1,0 +1,501 @@
+<!--
+  Source: https://claude.ai/code/artifact/7f855cb9-fb56-4b8b-823a-a955ec098cd7
+  Captured: 2026-09-04, via WebFetch (artifact shared with Faizuddin, visible to org)
+  Title: "EAINT-12028 QA Test Guide" — a dev/engineering-authored QA test guide for the
+  Association Payment Listing module, built from SRD v1.1 (31.07.2026) plus a 2026-09-04
+  engineering review of MR !1 (dev/feat/EAINT-12028 -> main, eauto-backoffice repo).
+  Trimmed: only the Claude-artifact hosting/frame-runtime boilerplate (the inline JS that
+  makes the page work as an embedded artifact preview) was cut. Every authored section,
+  table, test case, and checklist item below is verbatim and untrimmed.
+-->
+<title>EAINT-12028 QA Test Guide</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --surface:#fff; --surface-2:#f0f2f5; --ink:#16181d; --ink-2:#4a505c; --ink-3:#767d8b;
+    --line:#dfe3ea; --line-2:#eef1f5; --accent:#2f5fd0; --accent-bg:#eef2fd;
+    --ok:#1e7a4d; --ok-bg:#e9f6ef; --warn:#a15c00; --warn-bg:#fdf1de; --bad:#b13636; --bad-bg:#fbebe9;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#14161a; --surface:#1c1f25; --surface-2:#23272e; --ink:#e9ecf1; --ink-2:#b3bac6; --ink-3:#8b93a1;
+    --line:#2f343d; --line-2:#262b32; --accent:#8fb0ff; --accent-bg:#1a2133;
+    --ok:#6fd39b; --ok-bg:#12291e; --warn:#e3ab52; --warn-bg:#332510; --bad:#ff8a80; --bad-bg:#32191a;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1c1f25; --surface-2:#23272e; --ink:#e9ecf1; --ink-2:#b3bac6; --ink-3:#8b93a1;
+    --line:#2f343d; --line-2:#262b32; --accent:#8fb0ff; --accent-bg:#1a2133;
+    --ok:#6fd39b; --ok-bg:#12291e; --warn:#e3ab52; --warn-bg:#332510; --bad:#ff8a80; --bad-bg:#32191a;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.6; font-size:15px; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:980px; margin:0 auto; padding:32px 20px 90px}
+  code,.mono{font-family:var(--mono); font-size:.86em}
+  code{background:var(--surface-2); padding:.1em .38em; border-radius:4px}
+  a{color:var(--accent)}
+
+  header.top{border-bottom:1px solid var(--line); padding-bottom:22px; margin-bottom:22px}
+  .kicker{font-size:12px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); font-weight:650}
+  h1{font-size:clamp(24px,4vw,32px); line-height:1.15; margin:.28em 0 .2em; letter-spacing:-.02em}
+  .lede{color:var(--ink-2); font-size:15.5px; max-width:74ch; margin:0}
+  .meta{display:flex; flex-wrap:wrap; gap:7px; margin-top:14px}
+  .chip{font-size:12px; background:var(--surface); border:1px solid var(--line); color:var(--ink-2); padding:4px 10px; border-radius:20px}
+  nav.toc{display:flex; flex-wrap:wrap; gap:.45rem; margin-top:16px}
+  nav.toc a{font-size:.78rem; color:var(--ink-2); text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:.32rem .65rem; border-radius:999px}
+  nav.toc a:hover{color:var(--accent); border-color:var(--accent)}
+
+  h2{font-size:20px; margin:42px 0 4px; letter-spacing:-.01em; display:flex; align-items:baseline; gap:9px; scroll-margin-top:1rem}
+  h2 .n{font-family:var(--mono); font-size:13px; color:var(--accent); font-weight:700}
+  .sub{color:var(--ink-2); margin:0 0 16px; max-width:74ch; font-size:14px}
+  h3{font-size:15.5px; margin:22px 0 8px}
+
+  .banner{border-radius:14px; padding:18px 20px; margin:6px 0 30px; border:1px solid var(--secline,var(--line))}
+  .banner.bad{background:var(--bad-bg); border-color:color-mix(in srgb, var(--bad) 35%, transparent)}
+  .banner h2{margin:0 0 8px; font-size:17px; color:var(--bad)}
+  .banner p{margin:.4rem 0; color:var(--ink); font-size:14px}
+  .banner .status-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+  .status-pill{font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.02em}
+  .status-pill.bad{background:color-mix(in srgb, var(--bad) 20%, transparent); color:var(--bad)}
+  .status-pill.warn{background:color-mix(in srgb, var(--warn) 20%, transparent); color:var(--warn)}
+
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:14px 0}
+  .card h3{margin:0 0 8px; font-size:15px}
+  .grid{display:grid; gap:12px} @media(min-width:680px){ .grid.two{grid-template-columns:1fr 1fr} }
+
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; margin:14px 0}
+  table{border-collapse:collapse; width:100%; min-width:560px; font-size:13.5px}
+  th{text-align:left; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); padding:10px 13px; border-bottom:1px solid var(--line); background:var(--surface-2); font-weight:650}
+  td{padding:11px 13px; border-bottom:1px solid var(--line-2); vertical-align:top; color:var(--ink-2)}
+  tr:last-child td{border-bottom:none} td strong{color:var(--ink)}
+  td.k{font-family:var(--mono); font-size:12px; color:var(--ink); white-space:nowrap}
+
+  /* test case cards */
+  .tc{background:var(--surface); border:1px solid var(--line); border-radius:12px; margin:12px 0; overflow:hidden}
+  .tc summary{cursor:pointer; list-style:none; padding:12px 16px; display:flex; align-items:center; gap:10px; font-weight:600; font-size:14px}
+  .tc summary::-webkit-details-marker{display:none}
+  .tc summary .id{font-family:var(--mono); font-size:11.5px; font-weight:700; color:var(--accent); background:var(--accent-bg); padding:2px 8px; border-radius:6px; flex:none}
+  .tc summary .prio{margin-left:auto; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:999px; text-transform:uppercase; flex:none}
+  .prio.p1{background:var(--bad-bg); color:var(--bad)} .prio.p2{background:var(--warn-bg); color:var(--warn)} .prio.p3{background:var(--surface-2); color:var(--ink-3)}
+  .tc-body{padding:0 16px 16px; border-top:1px solid var(--line-2)}
+  .tc-body ol{margin:10px 0 4px; padding-left:20px} .tc-body ol li{margin-bottom:6px; font-size:13.5px; color:var(--ink-2)}
+  .tc-body .expect{background:var(--ok-bg); border-radius:8px; padding:9px 12px; margin-top:10px; font-size:13.5px; color:var(--ink)}
+  .tc-body .expect b{color:var(--ok)}
+  .tc-body .refs{margin-top:8px; font-size:11.5px; color:var(--ink-3)}
+
+  .chk{list-style:none; margin:.6rem 0; padding:0}
+  .chk li{display:grid; grid-template-columns:1.1rem 1fr; gap:.6rem; padding:.55rem 0; border-bottom:1px dashed var(--line-2); align-items:start; font-size:13.5px}
+  .chk li:last-child{border-bottom:none}
+  .chk .box{width:1rem; height:1rem; border:2px solid var(--ink-3); border-radius:4px; margin-top:.2rem; flex:none}
+  .chk .what{font-weight:600; color:var(--ink)}
+  .chk .expect{color:var(--ink-2); font-size:12.8px; margin-top:.1rem}
+  .chk .expect b{color:var(--ok)}
+
+  ul.tight{margin:6px 0; padding-left:20px} ul.tight li{margin-bottom:5px; color:var(--ink-2); font-size:13.5px}
+  .callout{border-radius:12px; padding:14px 17px; margin:14px 0; border:1px solid var(--line); background:var(--surface)}
+  .callout.warn{background:var(--warn-bg); border-color:color-mix(in srgb,var(--warn) 30%,transparent)}
+  .callout h3{margin:0 0 6px; font-size:14px} .callout p{margin:0 0 6px; color:var(--ink-2); font-size:13.5px} .callout p:last-child{margin:0}
+
+  footer{margin-top:50px; padding-top:16px; border-top:1px solid var(--line); color:var(--ink-3); font-size:12px}
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">EAINT-12028 · eAuto BackOffice · Association Payment Listing</div>
+  <h1>QA Test Guide</h1>
+  <p class="lede">A from-the-SRD test plan for the new Association Payment Listing module — what to
+  set up, who to log in as, and a test case for every requirement (REQ-001 → REQ-019), plus the
+  security/session and cross-cutting checks a functional-only pass would miss.</p>
+  <div class="meta">
+    <span class="chip">SRD v1.1 · 31.07.2026</span>
+    <span class="chip">core (eauto) → eauto-backoffice → eauto-cron</span>
+    <span class="chip">Branch <code>dev/feat/EAINT-12028</code></span>
+    <span class="chip">MR !1</span>
+  </div>
+  <nav class="toc">
+    <a href="#status">Current status</a>
+    <a href="#setup">Environment &amp; accounts</a>
+    <a href="#data">Getting test data onto a month</a>
+    <a href="#cases">SRD test cases</a>
+    <a href="#security">Security &amp; session</a>
+    <a href="#crosscutting">Cross-cutting checks</a>
+    <a href="#outofscope">Not a bug — known/deferred</a>
+    <a href="#reporting">Reporting a bug</a>
+  </nav>
+</header>
+
+<section id="status">
+  <div class="banner bad">
+    <h2>⚠ Not yet ready for staging — read this before you start</h2>
+    <p><strong>As of 2026-09-04</strong>, MR !1 (<code>dev/feat/EAINT-12028 → main</code>,
+    129 files / +10,920 / 40 commits) carries a code-review verdict of <strong>⛔ BLOCK</strong>:
+    1 blocker, 2 high, 7 medium findings (plus 13 lower-severity items deferred to a follow-up).
+    A fix pass for all 10 blocking findings is <strong>actively in progress right now</strong> on
+    the same branch (worker session <code>20260904070535239-d80dde</code> — 8 of 10 fixes coded,
+    still finishing the HTTP-level workflow test, the CSRF test rewrite, and a full green test
+    suite run before it's done).</p>
+    <p>Two of the ten fixes are directly test-relevant, so re-check them once the fix lands rather
+    than trusting a pre-fix build: <strong>H1</strong> (a role from one module could authorize a
+    different module's pages) and <strong>H2</strong> (an open-redirect on session-expiry/logout).
+    Both are covered as dedicated cases in <a href="#security">§ Security &amp; session</a> below.</p>
+    <div class="status-row">
+      <span class="status-pill bad">MR !1 — blocked</span>
+      <span class="status-pill warn">Fix CR in progress</span>
+      <span class="status-pill warn">eauto-cron branch not yet merged (§ deploy)</span>
+    </div>
+    <p style="margin-top:12px">You can still run this guide against the current build to get
+    familiar with the flows and pre-stage your test data — just don't sign off staging readiness
+    until: (1) the fix CR finishes and MR !1's verdict flips to a clean pass, and (2) the deployment
+    checklist in the review guide (settings keys on all 3 core editions, shared <code>X-API-KEY</code>,
+    browser-resolvable base URLs, DB migration run once, <code>eauto-cron</code>'s own
+    <code>dev/feat/EAINT-12028</code> branch merged) is confirmed done for the target environment.</p>
+  </div>
+</section>
+
+<section id="setup">
+  <h2><span class="n">01</span> Environment &amp; test accounts</h2>
+  <p class="sub">Two apps, one browser session, no separate login for BackOffice — you always enter
+  through core.</p>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>App</th><th>Local URL</th><th>Notes</th></tr>
+      <tr><td class="k">eauto core</td><td class="k">http://localhost:8080/eauto</td><td>Entry point. Log in here first — Reports → <strong>Association Payment Listing</strong>.</td></tr>
+      <tr><td class="k">eauto-backoffice</td><td class="k">http://localhost:8095/backoffice</td><td>Never log in directly here — you should only ever arrive via the core menu link (SSO hand-off). Landing here cold with no session is itself worth trying once (§ Security).</td></tr>
+    </table>
+  </div>
+  <p>Dependencies the box needs up: <code>eauto-mysql</code> (shared schema — this module has no
+  DB of its own), <code>minio</code> (local S3-compatible object storage for signatures + PDFs).</p>
+
+  <h3>Test users — role comes from login ID, never a dropdown (REQ-003)</h3>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>User</th><th>Role(s)</th><th>What to test with them</th></tr>
+      <tr><td class="k">eautozara, mfared</td><td>Drafter</td><td>First-approval signature capture; KIV; Reject-back-to-Drafter re-entry.</td></tr>
+      <tr><td class="k">eautonurul</td><td>Reviewer</td><td>Approve / Reject-with-remarks.</td></tr>
+      <tr><td class="k">kmcheah</td><td>Approver</td><td>Final approve + mandatory future payment date; PDF generation trigger.</td></tr>
+      <tr><td class="k">mfizni</td><td><strong>all three</strong></td><td>Confirms one signature is reused across all three signature blocks on the PDF (§ cross-cutting). Also a fast way to walk a whole month through the workflow solo.</td></tr>
+      <tr><td class="k">(any user with no role row)</td><td>none</td><td>Negative case: menu link visible from core, but the module itself must 403 — "visibility ≠ authorization".</td></tr>
+    </table>
+  </div>
+  <div class="callout">
+    <h3>Signature is per person, not per role</h3>
+    <p>Log in as a user for the very first time they approve/review <em>anything</em> → a signature
+    pad is mandatory. Every later action by that same user (any month, any role they hold) reuses
+    the stored PNG silently. Plan your test order so you see the pad exactly once per test user.</p>
+  </div>
+</section>
+
+<section id="data">
+  <h2><span class="n">02</span> Getting test data onto a month — the month-close job</h2>
+  <p class="sub">The listing shows nothing for a month until it's <strong>closed</strong> — a
+  scheduled job (or a manual trigger you can use directly) freezes that month's counts × rate into
+  a snapshot. Nothing on the page is ever live-computed.</p>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>Trigger</th><th>How</th><th>Use it for</th></tr>
+      <tr><td>Manual, fastest for QA</td><td class="k">GET {eauto-cron}/eautocron/sys/manual/association-payment-month-close/{year}/{month}</td><td>Force-close any past month on demand instead of waiting for the 1st-of-month schedule.</td></tr>
+      <tr><td>Machine (what core/cron actually call)</td><td class="k">POST /ext/association/{year}/{month}/close (X-API-KEY)</td><td>Reproducing the exact call path if the manual endpoint isn't available in your box.</td></tr>
+      <tr><td>Real schedule</td><td><code>eauto-cron</code>, 00:05 on day 1</td><td>Don't wait for this in normal testing — use the manual trigger above.</td></tr>
+    </table>
+  </div>
+  <div class="callout">
+    <h3>The three states you'll see per month on the summary listing</h3>
+    <ul class="tight">
+      <li><strong>"–" not yet closed</strong> — no snapshot exists yet. No figures, no actions available. Confirm this is what an un-closed month looks like before you close one, so you know what "before" looked like.</li>
+      <li><strong>"0.00" closed, no data</strong> — closed, but no qualifying transactions that month. Confirm the workflow buttons still work on a zero-amount month (don't assume zero = broken).</li>
+      <li><strong>Real figures, closed</strong> — ready to review and approve; this is the main path.</li>
+    </ul>
+  </div>
+  <p>What counts toward a month's figures (so you can sanity-check a number, not just eyeball it):
+  approved <strong>+ paid</strong> STMS/eSTM/APT transactions, counted by <strong>JPJ Approved
+  Date</strong> (not created date), grouped by the <strong>dealer's registered state</strong> (not
+  the vehicle's plate state), split into cars (<code>CAR</code>+<code>COMM_CAR</code>, RM1.00 each)
+  and motorcycles (<code>BIKE</code>+<code>COMM_BIKE</code>, RM2.00 each).</p>
+</section>
+
+<section id="cases">
+  <h2><span class="n">03</span> Test cases by SRD requirement</h2>
+  <p class="sub">One case per requirement ID, straight from the SRD's own acceptance criteria.
+  Click each to expand the steps. <span class="prio p1" style="display:inline">P1</span> = core
+  happy-path/gate, must pass before sign-off. <span class="prio p2" style="display:inline">P2</span>
+  = important edge case. <span class="prio p3" style="display:inline">P3</span> = nice-to-confirm.</p>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-001</span> New Reports menu entry <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Log in to core as any user with access to BackOffice.</li>
+        <li>Open the <strong>Reports</strong> menu.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> "Association Payment Listing" appears under Reports; clicking it lands you on the BackOffice summary page, already authenticated (no second login).</div>
+    </div>
+  </details>
+
+  <details class="tc">
+    <summary><span class="id">REQ-002</span> Year filter + Search <span class="prio p2">P2</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>On the summary page, set the Year filter to 2026 and click Search.</li>
+        <li>Try a year with no closed months at all.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> case 1 shows 2026's 12 months; case 2 shows all 12 months as "not yet closed", not an error or empty page. Year options start from 2026 only.</div>
+    </div>
+  </details>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-003</span> Role resolved from login ID, not a picker <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Log in as <code>eautozara</code> (Drafter-only) and open a closed month's details.</li>
+        <li>Log in as <code>mfizni</code> (all three roles) and open the same month at each workflow stage.</li>
+        <li>Log in as a user with <strong>no</strong> role row at all and try to open the details page directly by URL.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> case 1 shows only Drafter actions, no role dropdown anywhere. Case 2 shows the actionable block for whichever role's turn it currently is. Case 3 → <b>403</b>, even though the Reports menu link was visible in core.</div>
+    </div>
+  </details>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-004</span> Monthly rows: Car/Motorcycle counts + RM, by JPJ Approved Date <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Close a month with a known set of approved+paid transactions (or use existing seeded data).</li>
+        <li>Compare the listing's Car Transactions / Cars (RM) / Motorcycle Transactions / Motorcycles (RM) against a manual count from core's own Transaction Summary Report by State for the same month.</li>
+        <li>Check the year-to-date/full-year total row sums the 12 months correctly.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> all 12 months listed; figures match core's report exactly (same source data, same JPJ-approved-date window); RM = count × rate (RM1.00 car, RM2.00 motorcycle); total row = sum of the 12 rows.</div>
+    </div>
+  </details>
+
+  <details class="tc">
+    <summary><span class="id">REQ-005</span> Workflow status columns <span class="prio p2">P2</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Walk one month through Drafter Approve → Reviewer Approve → Approver Approve, checking the summary row after each step.</li>
+        <li>Walk a second month through Drafter KIV, and a third through a Reviewer Reject.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> Drafter Status cycles Pending→Approved / KIV / Review Again as appropriate; Reviewer Status Pending→Approved/Review Again; Approver Status only ever Pending→Approved. No status value outside this set ever appears.</div>
+    </div>
+  </details>
+
+  <details class="tc">
+    <summary><span class="id">REQ-006</span> Finance Payment Date column <span class="prio p3">P3</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Check the column before Approver action, and again right after.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> shows <code>"-"</code> before Approver approval; shows the picked date as <code>DD-MM-YYYY</code> (e.g. <code>31-07-2026</code>) immediately after.</div>
+    </div>
+  </details>
+
+  <details class="tc">
+    <summary><span class="id">REQ-007</span> View action <span class="prio p3">P3</span></summary>
+    <div class="tc-body">
+      <ol><li>Click View on any month row.</li></ol>
+      <div class="expect"><b>Expect:</b> opens that month's details page (state breakdown + workflow for that specific month, not another one).</div>
+    </div>
+  </details>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-008</span> State-level breakdown — all 16 states + TOTAL <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Open a closed month's details page.</li>
+        <li>Count the state rows and check the formatting of a non-trivial amount.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> exactly the 16 states listed (Johor → Putrajaya, per the SRD's numbered list) plus a TOTAL row that equals the sum of the 16. Amounts formatted <code>#,##0.00</code> (e.g. <code>38,785.00</code>). Car and Motorcycle figures shown separately, never combined into one number.</div>
+    </div>
+  </details>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-009</span> Sequential approval enforced <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Before Drafter acts, log in as Reviewer and try to act on the same month.</li>
+        <li>Before Reviewer acts, log in as Approver and try to act.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> the later role's action buttons are disabled with a waiting note in both cases — never clickable out of order. Forcing the underlying URL/request directly (not just the UI) should also be rejected server-side, not merely hidden client-side.</div>
+    </div>
+  </details>
+
+  <details class="tc">
+    <summary><span class="id">REQ-010</span> Drafter: Approve or KIV <span class="prio p2">P2</span></summary>
+    <div class="tc-body">
+      <ol><li>Approve one month as Drafter.</li><li>KIV a different month as Drafter.</li></ol>
+      <div class="expect"><b>Expect:</b> Approve → Drafter Status = Approved, Reviewer unlocked. KIV → Drafter Status = KIV, workflow parked (note: there is currently no un-KIV path — a KIV'd month stays KIV; confirm this matches what the business expects, it's a known open item, not something to test a resolution for).</div>
+    </div>
+  </details>
+
+  <details class="tc">
+    <summary><span class="id">REQ-011</span> Reviewer: Approve or Reject (remarks mandatory) <span class="prio p2">P2</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Approve a Drafter-approved month as Reviewer.</li>
+        <li>Reject a different one, first trying to submit with an empty remarks field.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> Approve → Reviewer Status = Approved. Reject with blank remarks is blocked client- and server-side; with remarks filled in, the month bounces back with Drafter Status = "Review Again" and the remarks visible in the audit log.</div>
+    </div>
+  </details>
+
+  <details class="tc">
+    <summary><span class="id">REQ-012</span> Approver: Approve or Reject (remarks mandatory) <span class="prio p2">P2</span></summary>
+    <div class="tc-body">
+      <ol><li>Approve a Reviewer-approved month as Approver.</li><li>Reject a different one with remarks.</li></ol>
+      <div class="expect"><b>Expect:</b> Approve proceeds straight to the payment-date picker (REQ-013). Reject returns the month to the Reviewer with Reviewer Status = "Review Again" and the remarks logged.</div>
+    </div>
+  </details>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-013</span> Finance payment date — future-only, picker-only <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>As Approver, approve and pick a future date from the on-screen picker.</li>
+        <li>Try to submit with the field empty.</li>
+        <li>Try to select today's date or a past date (if the picker allows navigating there).</li>
+        <li>Try to type or paste a date directly into the field (not via the picker) — e.g. via keyboard input or a pasted string.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> case 1 saves normally. Cases 2 &amp; 3 are rejected with a validation message; approval does not complete. Case 4 is blocked entirely — the field only ever accepts a picker selection, confirm typed/pasted input has no effect on the stored value.</div>
+    </div>
+  </details>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-014</span> On-screen e-signature, captured once <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>As a test user acting in a role for the very first time, trigger an Approve action.</li>
+        <li>Have that same user perform a second approval (different month, same or different role they hold).</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> case 1 shows the signature pad and blocks completion until something is drawn. Case 2 does not show the pad again — the stored signature is silently reused.</div>
+    </div>
+  </details>
+
+  <details class="tc">
+    <summary><span class="id">REQ-015</span> Audit log — every transition recorded <span class="prio p2">P2</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Walk a month through Drafter Approve → Reviewer Reject → Drafter re-Approve → Reviewer Approve → Approver Approve.</li>
+        <li>Open the audit log on the details page after each step.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> one row per transition, each with date/time, role, action/status, remarks (when applicable), and — for approvals — a signature record and, for the Approver, the payment date. Log entries appear in order and none are skipped/merged.</div>
+    </div>
+  </details>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-016</span> Payment Request download gated on full approval <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>On a month that is NOT yet fully approved, look for the FMC/MMSDA download buttons.</li>
+        <li>Fully approve a month (all three roles), then check again.</li>
+        <li>With the month not fully approved, try hitting the download URL directly (bypassing the UI).</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> case 1 — buttons hidden, pending note shown ("...available for download once the Drafter, Reviewer and Approver have all approved."). Case 2 — both buttons appear and download successfully. Case 3 — <b>403</b>, not a partial/blank file.</div>
+    </div>
+  </details>
+
+  <details class="tc" open>
+    <summary><span class="id">REQ-017 / REQ-018 / REQ-019</span> Payment Request document format &amp; field mapping (FMC + MMSDA) <span class="prio p1">P1</span></summary>
+    <div class="tc-body">
+      <ol>
+        <li>Download both FMC and MMSDA for a fully-approved month.</li>
+        <li>Check the file name against the required format.</li>
+        <li>Check every field on both documents against the SRD's fixed/flexible mapping tables (§2.2.10 / §2.2.11).</li>
+        <li>Re-download the same document a second time.</li>
+      </ol>
+      <div class="expect"><b>Expect:</b> filenames match <code>Payment Requisition_&lt;Association&gt;_&lt;Month&gt;&lt;Year&gt;.pdf</code> (e.g. <code>Payment Requisition_FMC_August 2026.pdf</code>). All "Fixed" fields match the SRD verbatim (company header, To/Attn "Marie Ann"/Adds, vendor bank details — different per association). All "Flexible" fields are correctly sourced: dates as <code>DD-MM-YYYY</code>, amount in figures <strong>and</strong> matching amount in words, each Prepared/Checked/Approved-by block shows the correct signer's real drawn signature + full name + their own approval date (not the month-close date, not another signer's). Re-download returns the identical archived file, not a freshly re-rendered one (should be instant).</div>
+      <div class="refs">If a value looks wrong, check it against the exact SRD table (§2.2.10 FMC / §2.2.11 MMSDA) before filing — several fields (vendor bank name/account/contact) legitimately differ between FMC and MMSDA.</div>
+    </div>
+  </details>
+</section>
+
+<section id="security">
+  <h2><span class="n">04</span> Security &amp; session — worth your own hands-on time</h2>
+  <p class="sub">This app has no login form of its own — it fully trusts a hand-off from core. These
+  aren't in the SRD (it's a functional spec), but a hole here is account-takeover-class, not
+  cosmetic, so they're first-class test cases, not an afterthought.</p>
+  <ul class="chk">
+    <li><div class="box"></div><div><div class="what">Replay a used SSO hand-off URL</div><div class="expect">Open a fresh hand-off link from core, then open the <em>exact same URL</em> a second time (e.g. via browser history). Expect: <b>401 "Token already used"</b> on the second open — never a second successful login.</div></div></li>
+    <li><div class="box"></div><div><div class="what">Cross-app logout propagation</div><div class="expect">Open BackOffice in one tab, log out from <strong>core</strong> in another tab, then refresh the BackOffice tab. Expect: it does <b>not</b> still render the listing — you're bounced to re-authenticate, not left on a stale authenticated page.</div></div></li>
+    <li><div class="box"></div><div><div class="what">Logout the other direction</div><div class="expect">Click Logout from inside BackOffice. Expect: you land back on core's own login/home, and a subsequent direct hit on a BackOffice page requires a fresh hand-off.</div></div></li>
+    <li><div class="box"></div><div><div class="what">Idle-timeout bounce</div><div class="expect">Leave a BackOffice tab idle past the session timeout, then click anything under <code>/admin</code>. Expect: a clean re-auth bounce back through core — no dead-end error page.</div></div></li>
+    <li><div class="box"></div><div><div class="what">Hand-off for a user with no role at all</div><div class="expect">Use a core account that has no Association Payment role mapped. Expect: <b>403</b> "No access to this module" — the SSO hand-off itself succeeds (real login), only the module authorization fails.</div></div></li>
+    <li><div class="box"></div><div><div class="what"><b>H1 (in fix, re-test once landed)</b> — cross-module role confusion</div><div class="expect">If any other BackOffice module ever shares a bare role name (e.g. a generic <code>DRAFTER</code>), a session authorized for that other module must NOT be able to act on <code>/admin/association/**</code>. Not independently reproducible today with one module live — re-check the fix CR's own dedicated test/proof once it lands, and spot-check that a legitimately-scoped Association user still works normally afterward (no regression).</div></div></li>
+    <li><div class="box"></div><div><div class="what"><b>H2 (in fix, re-test once landed)</b> — open redirect on session-expiry/logout</div><div class="expect">Trigger the session-expiry bounce (idle-timeout case above) and the logout redirect. Expect both to land only on a trusted core origin — never an attacker-controlled off-site URL, even if one could theoretically be crafted into the flow. Confirm the ordinary same-origin case still redirects correctly (no regression from the fix).</div></div></li>
+    <li><div class="box"></div><div><div class="what">Concurrent double-submit (two tabs, same action)</div><div class="expect">Open the same month's details in two tabs as the same approving user; submit the same action from both. Expect: the second submit gets <b>409</b> "someone else already actioned this, please refresh" — never a silent double-write, and only one audit-log row is created.</div></div></li>
+  </ul>
+</section>
+
+<section id="crosscutting">
+  <h2><span class="n">05</span> Cross-cutting checks — beyond the SRD's happy path</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>Month-close idempotency</h3>
+      <ul class="tight">
+        <li>Close an approved month once → <b>200 CLOSED</b>.</li>
+        <li>Close the exact same month again immediately → <b>200 SKIPPED_ALREADY_CLOSED</b>, and the underlying DB row is unchanged (ask a dev to confirm a before/after diff if you can't query directly).</li>
+        <li>Try closing a month that hasn't reached full approval yet → <b>409 SKIPPED_NOT_APPROVED</b>, not a silent no-op or a 500.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Storage sanity (ask a dev to confirm the DB side)</h3>
+      <ul class="tight">
+        <li>A user's signature is stored exactly once, referenced by object key — never re-drawn or duplicated across months.</li>
+        <li>Downloaded PDFs are byte-identical on repeat download (served from the archived object, not re-rendered each time).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Out-of-role / out-of-sequence actions</h3>
+      <ul class="tight">
+        <li>An Approver-only account attempting a Drafter action (e.g. by guessing/replaying a request) → <b>403</b>, never a silent success.</li>
+        <li>Any action attempted on a month that's already fully approved (terminal state) → rejected, not accepted as a new transition.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Numbers tie back to core</h3>
+      <ul class="tight">
+        <li>Pick one state + vehicle type for a closed month; manually cross-check the count against core's Transaction Summary Report by State for the same JPJ-approved-date window. They should match exactly — this module never invents figures.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="outofscope">
+  <h2><span class="n">06</span> Not a bug — known limitations &amp; deferred items</h2>
+  <p class="sub">Save time: these are already known/accepted, don't file fresh reports on them
+  (though flagging one you personally think is riskier than rated is still welcome).</p>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>Item</th><th>Why it's expected</th></tr>
+      <tr><td>JomCheck has no payment listing yet</td><td>Explicitly out of scope for Phase 1 (SRD §2.1.2) — Car and Motorcycle only.</td></tr>
+      <tr><td>No actual money movement happens in this module</td><td>Disbursement is handled by the existing Finance process outside this module (SRD §2.1.2).</td></tr>
+      <tr><td>Vendor bank details can't be edited here</td><td>Vendor bank master-data maintenance is explicitly out of scope (SRD §2.1.2).</td></tr>
+      <tr><td>A KIV'd month has no "un-KIV" button</td><td>Known gap (deferred item L2) — needs a business decision on whether KIV should be resumable, not a pure code fix. If you hit this, it's expected; note it for product, not as a bug.</td></tr>
+      <tr><td>App must run as a single instance</td><td>Session replay-guard and registry are in-memory/per-JVM by design (deferred item R4/single-instance constraint) — a concern for ops sizing the deployment, not something QA can exercise from the UI.</td></tr>
+      <tr><td>S3 region mismatch in the firewall allow-list</td><td>Personal-account testing artifact (ap-southeast-2 allow-listed vs. ap-southeast-1 app default) — flagged for correction before a real environment, not a functional bug.</td></tr>
+      <tr><td><code>eauto-cron</code>'s own <code>dev/feat/EAINT-12028</code> branch isn't merged yet</td><td>Without it, the scheduled/manual month-close trigger doesn't exist in whichever environment you're testing — if the manual endpoint 404s, this is almost certainly why; check with the team before filing.</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="reporting">
+  <h2><span class="n">07</span> Reporting a bug</h2>
+  <div class="callout warn">
+    <h3>What makes a report actionable here</h3>
+    <p>Reference the exact requirement ID (e.g. "REQ-013 case 3") or security case you were running,
+    the test user/role you were logged in as, the month you were testing against, and what you
+    expected vs. what happened. If you have console/network output, attach it — several of these
+    flows return specific HTTP status codes (401/403/409) that are meaningful on their own.</p>
+    <p>File against <a href="https://mfservices.atlassian.net/browse/EAINT-12028" target="_blank" rel="noopener">EAINT-12028</a>
+    (or a linked sub-ticket per your team's convention). For anything under
+    <a href="#status">§ Current status</a>'s active fix items (B1/H1/H2/M1–M7), check with the dev
+    first — it may already be fixed on a commit newer than what you're running.</p>
+  </div>
+</section>
+
+<footer>
+  EAINT-12028 · Association Payment Listing · QA test guide derived from
+  <code>System_Requirement_Document_SRD.md</code> v1.1 (31.07.2026) plus the engineering review of
+  MR !1 dated 2026-09-04. Branch/MR status is a point-in-time snapshot — re-check
+  <a href="https://masterjedi.modefair.com/eauto/eauto-backoffice/-/merge_requests/1" target="_blank" rel="noopener">MR !1</a>
+  before you rely on this guide's "current status" section.
+</footer>
+
+</div>

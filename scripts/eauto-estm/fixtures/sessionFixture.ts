@@ -21,7 +21,7 @@ export const test = base.extend<EstmFixtures>({
 
   session: async ({ page }, use) => {
     await page.context().addInitScript(OVERLAY_INIT_SCRIPT);
-    await use(new EstmSession(page.context()));
+    await use(new EstmSession(page.context(), page));
   },
 
   loggedInPage: async ({ page, session, inputs }, use) => {

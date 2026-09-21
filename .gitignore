@@ -44,11 +44,21 @@ next-env.d.ts
 scripts/**/node_modules/
 scripts/**/playwright-report/
 scripts/**/test-results/
+# Per-run scratch folders added 2026-08-28 (eDereg Pre-Checking's
+# simultaneous-run support) — each dashboard run gets its own
+# `test-results-<runId>/` (Playwright's own --output dir, cleaned up after
+# publishing) and `.run-signals/` holds the pause/continue marker files.
+scripts/**/test-results-*/
+scripts/**/.run-signals/
 scripts/eauto-insurance/input-vehicles.xlsx
 scripts/eauto-insurance/output-results.xlsx
 scripts/secarang-insurance/input-vehicles.xlsx
 scripts/secarang-insurance/output-results.xlsx
 scripts/secarang-insurance/receipt-*.pdf
+# JPJ Code Checker sweep output (EAINT-9306) — regenerated per sweep and
+# resumed from between runs, not a source artefact.
+scripts/eauto-edereg-precheck/jpj-code-results.json
+scripts/eauto-edereg-precheck/jpj-code-screenshots/
 scripts/secarang-insurance/regression-log.txt
 scripts/secarang-insurance/regression-result.json
 scripts/_archive/WA-Blaster/results/*.json
@@ -59,6 +69,18 @@ scripts/WA-Blaster-Beta/screenshots/
 scripts/eauto-e2e/artifacts/
 scripts/eauto-estm/artifacts/
 public/qa-artifacts/
+
+# Automation run output — regenerated on every run, never reviewed as source
+test-evidence/
+test-recordings/
+
+# Reference drop zone — see _reference/README.md. The tree is tracked so
+# references travel with the repo; these two are personal scratch that would
+# only churn or bloat it. Use `git add -f` for one that should be permanent.
+_reference/inbox/*
+!_reference/inbox/.gitkeep
+_reference/screenshots/**
+!_reference/screenshots/.gitkeep
 
 # .env.example files are documentation — keep them tracked despite .env* above
 !**/.env.example

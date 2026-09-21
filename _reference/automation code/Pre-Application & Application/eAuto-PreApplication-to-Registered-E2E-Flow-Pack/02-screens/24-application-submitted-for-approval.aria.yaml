@@ -1,0 +1,188 @@
+# https://staging.eauto.my/obs/admin/form/edit/69a88691-a3e7-4b65-9f75-6d80ae961de6
+- banner:
+  - img "header-line"
+  - img "Logo"
+  - text: Dealer Application - P260831/00838 / NA68001162 - CHARMAIN QA11982 260831-1744-139 ENTERPRISE
+- link "Pre-Application":
+  - /url: /obs/admin/preOnb/summary/cd404c0b-8746-4bfb-9846-73edc6a0d187
+- link "Application":
+  - /url: "#"
+- text: Application Form
+- button "Save"
+- text: "Business Information Type of Business: * SSM Registered:"
+- radio "Sdn Bhd / Bhd" [disabled]
+- text: Sdn Bhd / Bhd
+- radio "Sole Proprietorship / Partnership" [disabled]
+- text: Sole Proprietorship / Partnership
+- radio "LLP" [disabled]
+- text: "LLP Non-SSM Registered:"
+- radio "Business Trading (Sabah)" [disabled]
+- text: Business Trading (Sabah)
+- radio "Business Trading (Sarawak)" [checked] [disabled]
+- text: "Business Trading (Sarawak) Business Registered Name: *"
+- textbox "Business Registered Name (as per SSM)" [disabled]: CHARMAIN QA11982 260831-1744-139 ENTERPRISE
+- text: "Business Trading License No: *"
+- textbox: KCH/1744139
+- text: "Tax Identification No (TIN): *"
+- textbox "TIN" [disabled]: C3117441390
+- text: "Sales and Service Tax (SST) No:"
+- textbox "SST No (Optional)" [disabled]: W26083117441390
+- text: "Showroom Ownership: *"
+- radio "Own Showroom" [checked] [disabled]
+- text: Own Showroom
+- radio "Shared Showroom" [disabled]
+- text: Shared Showroom
+- radio "No Showroom" [disabled]
+- text: "No Showroom Showroom Address: *"
+- textbox "Line 1" [disabled]: LOT 12, JALAN QA, TAMAN AUTOMATION
+- textbox "Line 2 (Optional)" [disabled]
+- textbox "Line 3 (Optional)" [disabled]
+- text: "Postcode: *"
+- textbox "Postcode" [disabled]: "93100"
+- text: "State: *"
+- combobox [disabled]:
+  - option "Select"
+  - option "SARAWAK(13)" [selected]
+- text: "City: *"
+- combobox [disabled]:
+  - option "Select"
+  - option "SARAWAK (1300)"
+  - option "ASAJAYA (1301)"
+  - option "BALINGAN (1302)"
+  - option "BARAM (1303)"
+  - option "BAU (1304)"
+  - option "BEKENU (1305)"
+  - option "BELAGA (1306)"
+  - option "BELAWAI (1307)"
+  - option "BETONG (1308)"
+  - option "BINTANGOR (1309)"
+  - option "BINTULU (1310)"
+  - option "DALAT (1311)"
+  - option "DARO (1312)"
+  - option "DEBAK (1313)"
+  - option "ENGKILILI (1314)"
+  - option "JULAU (1315)"
+  - option "KABONG (1316)"
+  - option "KANOWIT (1317)"
+  - option "KAPIT (1318)"
+  - option "KOTA SAMARAHAN (1319)"
+  - option "KUCHING (1320)" [selected]
+  - option "LAWAS (1321)"
+  - option "LIMBANG (1322)"
+  - option "LINGGA (1323)"
+  - option "LONG LAMA (1324)"
+  - option "LUBOK ANTU (1325)"
+  - option "LUNDU (1326)"
+  - option "MATU (1327)"
+  - option "MIRI (1328)"
+  - option "MUKAH (1329)"
+  - option "NANGA MEDAMIT (1330)"
+  - option "NIAH (1331)"
+  - option "PEKENU (1332)"
+  - option "PUSA (1333)"
+  - option "ROBAN (1334)"
+  - option "SARATOK (1335)"
+  - option "SARIKEI (1336)"
+  - option "SEBAUH (1337)"
+  - option "SEBUYAU (1338)"
+  - option "SERIAN (1339)"
+  - option "SIMUNJAN (1340)"
+  - option "SONG (1341)"
+  - option "SPAOH (1342)"
+  - option "SRI AMAN (1343)"
+  - option "SUNDAR (1344)"
+  - option "TATAU (1345)"
+  - option "TEBAKANG (1346)"
+  - option "SIBU (1347)"
+  - option "BINTANGOR (1348)"
+  - option "TEBEDU (1349)"
+  - option "PAKAN (1378)"
+  - option "SIBUTI (1379)"
+  - option "OYA (1380)"
+  - option "MALUDAM (1381)"
+  - option "LAIN-LAIN (9999)"
+- text: "Remarks:"
+- textbox "Enter Remarks"
+- text: Other Motor Vehicle Business Information Do you advertise your motor vehicles on any of this online platform? (e.g Mudah.my)
+- radio [disabled]
+- text: "Yes"
+- radio [checked] [disabled]
+- text: No Is your Business registered with any motor vehicle Auction House? *
+- radio [disabled]
+- text: "Yes"
+- radio [checked] [disabled]
+- text: No Please tick if your Business is a member of any Motor Vehicle Association. * No
+- checkbox [checked] [disabled]
+- text: FMC
+- checkbox [disabled]
+- text: MMSDA
+- checkbox [disabled]
+- text: PEKEMA
+- checkbox [disabled]
+- text: "Upload Files Please upload all relevant documents / material required. Kindly upload the documents and photos / video required to complete and fast track your application. 1 SSM Company / Business Profile * Up to 4 files allowed: pdf, png, jpg, jpeg, docx. Max Size: 10MB 1 document-0.pdf 2 MyKad / MyPR / Passport Copies of All Directors / Business Owner(s) * 1 file per Director/Business Owner allowed: pdf, png, jpg, jpeg. Max Size: 5MB. Please make sure the front and back IC is in one document Number of Directors / Business Owner(s): *"
+- combobox [disabled]:
+  - option "1" [selected]
+  - option "2"
+  - option "3"
+  - option "4"
+  - option "5"
+  - option "6"
+  - option "7"
+  - option "8"
+  - option "9"
+  - option "10"
+  - option "11"
+  - option "12"
+  - option "13"
+  - option "14"
+  - option "15"
+- text: "1"
+- textbox "Name" [disabled]: QA DIRECTOR
+- text: "document-1.pdf 3 Four (4) Showroom Pictures and 20 Seconds Showroom Video (with Signboard) * 1 file per field allowed: pdf, png, jpg, jpeg, mp4. Max Size (Picture): 5MB. Max Size (Video): 20MB Picture 1 document-2.jpg Picture 2 document-3.jpg Picture 3 document-4.jpg Picture 4 document-5.jpg Video showroom-video-6.mp4 4 Business Card 1 file allowed: pdf, png, jpg, jpeg. Max Size: 5MB document-7.pdf 5 Dealer Security Deposit Receipt from the Auction House * 1 file per field allowed: pdf, png, jpg, jpeg. Max Size: 5MB 6 Current Motor Vehicle Association Membership Receipt * 1 file per field allowed: pdf, png, jpg, jpeg. Max Size: 5MB 7 Company / Business Official Stamp (1. Round Stamp 2. Stamp with Address) * 1 file allowed: pdf, png, jpg, jpeg. Max Size: 5MB document-8.pdf Director / Business Owner in Charge This refers to the Director or Business Owner who will represent the company as the Main User of the eAuto system."
+- strong: "Definition of Main User:"
+- text: "Holds full system authorisation and permissions. Name: *"
+- textbox "Name" [disabled]: QA DIRECTOR
+- text: "MyKad No: *"
+- textbox "MyKad No" [disabled]: "902608311744"
+- text: "Mobile No: *"
+- textbox "Mobile No" [disabled]: "0122608311"
+- text: "Email Address: *"
+- textbox "Email Address" [disabled]: qa.eaint11982@modefair.com
+- text: "Admin in Charge This refers to the representative assisting with this application Name:"
+- textbox "Name" [disabled]: QA ADMIN -
+- text: "MyKad No:"
+- textbox "MyKad No" [disabled]: "902608311744"
+- text: "Mobile No:"
+- textbox "Mobile No" [disabled]: "0126083117"
+- text: "Email Address:"
+- textbox "Email Address" [disabled]: qa.eaint11982260831-1744-139@modefair.com
+- text: "e-Invoice Person-in-Charge This refers to the representative of the company for e-Invoice Name: *"
+- textbox "Name" [disabled]: QA DIRECTOR
+- text: "Mobile No: *"
+- textbox "Mobile No" [disabled]: "0122608311"
+- text: "Email Address: *"
+- textbox "Email Address" [disabled]: qa.eaint11982@modefair.com
+- paragraph: I hereby declare, represent, and warrant that I am duly authorised to submit this application and to act on behalf of the company named in this application form. I further confirm that all information and documents provided are true, accurate, complete, and up to date in all respects. I undertake to promptly notify eAuto of any changes to the information submitted herein, and acknowledge that eAuto shall be entitled to rely on the information provided herein.
+- paragraph: eAuto reserves the right to verify any information submitted and to approve, reject, or revoke any application at its sole discretion. Any falsification or misrepresentation may result in immediate suspension or termination of the applicant’s account. For the avoidance of doubt, the applicant acknowledges and agrees that all fees paid in connection with this application are strictly non-refundable, irrespective of whether the application is approved, rejected, withdrawn, incomplete, or subsequently revoked.
+- paragraph: By submitting this application, you confirm that you have read, understood, and agreed to the declarations set out above.
+- text: "Application No: NA68001162 Assignee:"
+- combobox:
+  - option "Select"
+  - option "BO ruiluan"
+  - option "BO User bjGIQ"
+  - option "BO User bwvzW"
+  - option "BO User GhFbw"
+  - option "BO User huWnF"
+  - option "BO User kbomK"
+  - option "BO User nPlkY"
+  - option "BO User sxscg"
+  - option "BO User sYRlw"
+  - option "BO user test 1"
+  - option "BRANDON TEST MIE"
+  - option "CHARMAIN EA CHIANG chg" [selected]
+  - option "LIM YI LINK"
+  - option "MUSIC SDN BHD"
+  - option "sdtPhAPWEMhvmv"
+  - option "SlcklBI"
+  - option "traze"
+- text: "Application Status: Pending Application Submission Date: 2026-08-31 05:47PM"

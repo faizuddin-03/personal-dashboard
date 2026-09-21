@@ -113,10 +113,18 @@ export class AppointmentCalendarPage extends BasePage {
    * different month via #cal-month-picker + Search first if you need one.
    */
   async findDateMatching(predicate: (info: BoDateSlotInfo) => boolean): Promise<string | null> {
+    const todayIso = this.today();
     const labels = await this.calTable.locator("tbody tr span.cal-daynum").allTextContents();
     for (const raw of labels) {
       const date = raw.trim();
       if (!date) continue;
+      // Skip past dates — a "Full" date from an earlier point in the shared
+      // calendar is a real match for the predicate, but rescheduling INTO
+      // the past is correctly blocked by the app's own datepicker (past
+      // dates disabled), so a predicate match here must never be a date
+      // that's already gone.
+      const [d, m, y] = date.split("-");
+      if (`${y}-${m}-${d}` < todayIso) continue;
       const info: BoDateSlotInfo = {
         date,
         morning: { booked: await this.getSlotCount(date, 0), full: await this.isSlotFull(date, 0) },
@@ -460,11 +468,20 @@ export class AppointmentCalendarPage extends BasePage {
     // Company search — auto-binds #ac-add-cid on an exact name match; no
     // dropdown to click. If it doesn't bind, the company/precondition is
     // wrong — bail out rather than proceeding with no company selected.
+    // Polls #ac-add-cid instead of a fixed sleep: a fixed wait reads as
+    // "not found" whenever the AJAX response is merely slow, not just when
+    // it genuinely fails to match (see debug session 2026-07-31).
     await test.step(`Search company ${opts.companyName}`, async () => {
       await this.page.locator("#ac-add-name").fill(opts.companyName);
       await this.demoHighlight("#ac-add-name");
       await this.page.locator("#ac-add-search").click();
-      await this.page.waitForTimeout(500);
+      await this.page
+        .waitForFunction(
+          () => !!(document.querySelector("#ac-add-cid") as HTMLInputElement | null)?.value,
+          undefined,
+          { timeout: 5000 },
+        )
+        .catch(() => {}); // no match within the timeout — fall through, the empty-value check below still catches it
     });
     if (!(await this.page.locator("#ac-add-cid").inputValue())) {
       await this.closeAddDialog(dialog); // company name didn't resolve — precondition unmet
@@ -472,11 +489,19 @@ export class AppointmentCalendarPage extends BasePage {
     }
 
     // Reference No. — always required now; key it in and search to bind it.
+    // Same polling rationale as the company search above — wait for either
+    // a resolved reference or a visible error, not a fixed sleep.
     await test.step(`Enter reference ${opts.existingRecordRefNo}`, async () => {
       await this.page.locator("#ac-add-refno").fill(opts.existingRecordRefNo);
       await this.demoHighlight("#ac-add-refno");
       await this.page.locator("#ac-add-ref-search").click();
-      await this.page.waitForTimeout(500);
+      // The only two failure signals this dialog shows are #ac-add-noreq and
+      // #ac-add-alloc-no (checked right below) — wait for either to actually
+      // appear, with a real timeout, instead of guessing a fixed delay.
+      await Promise.race([
+        this.page.locator("#ac-add-noreq").waitFor({ state: "visible", timeout: 5000 }),
+        this.page.locator("#ac-add-alloc-no").waitFor({ state: "visible", timeout: 5000 }),
+      ]).catch(() => {}); // neither appeared — reference resolved fine, fall through
     });
 
     // A company with no active installation request, or with no unallocated

@@ -47,6 +47,7 @@ export class LoginPage extends BasePage {
 
     await this.submitCredentials(creds);
     console.log(`   Post-login: ${this.page.url()}`);
+    await this.dismissBanners();
 
     await this.openEnquiryPage();
 
@@ -55,6 +56,7 @@ export class LoginPage extends BasePage {
       console.log('   Still on login — trying again on current page...');
       if (await this.isLoginFormVisible()) {
         await this.submitCredentials(creds);
+        await this.dismissBanners();
         await this.openEnquiryPage();
       }
     }

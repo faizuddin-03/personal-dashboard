@@ -1,0 +1,412 @@
+<!-- Title lives in <title> below -->
+<title>Device Serial Number Capture</title>
+<style>
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0f1417;
+      --card: #171d21;
+      --card-raised: #1d2429;
+      --ink: #e8edef;
+      --ink-soft: #9aa7ac;
+      --line: #2a3338;
+      --line-strong: #3a444a;
+      --accent: #e0836f;
+      --accent-ink: #1a0f0c;
+      --confirm: #57c497;
+      --confirm-bg: #123027;
+      --pending: #e6c25a;
+      --pending-bg: #33290f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0f1417;
+    --card: #171d21;
+    --card-raised: #1d2429;
+    --ink: #e8edef;
+    --ink-soft: #9aa7ac;
+    --line: #2a3338;
+    --line-strong: #3a444a;
+    --accent: #e0836f;
+    --accent-ink: #1a0f0c;
+    --confirm: #57c497;
+    --confirm-bg: #123027;
+    --pending: #e6c25a;
+    --pending-bg: #33290f;
+  }
+  :root {
+    --paper: #eef1f2;
+    --card: #ffffff;
+    --card-raised: #f6f8f9;
+    --ink: #131a1f;
+    --ink-soft: #56636b;
+    --line: #d3dade;
+    --line-strong: #b7c1c6;
+    --accent: #c1443a;
+    --accent-ink: #ffffff;
+    --confirm: #2f7a5c;
+    --confirm-bg: #e5f3ec;
+    --pending: #b8860b;
+    --pending-bg: #faf1dc;
+
+    --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "Consolas", "Liberation Mono", monospace;
+    --sans: -apple-system, "Segoe UI", "Inter", ui-sans-serif, system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.55;
+    padding: 48px 20px 96px;
+  }
+  a { color: var(--accent); }
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+
+  .sheet { max-width: 760px; margin: 0 auto; }
+
+  .tag {
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    padding: 28px 32px 24px;
+    position: relative;
+  }
+  .tag::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 6px;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 18px, transparent 18px 30px);
+    border-radius: 4px 4px 0 0;
+    opacity: .85;
+  }
+  .tag-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 6px 0 10px;
+  }
+  .tag-key { font-family: var(--mono); font-size: 34px; font-weight: 700; margin: 0 0 6px; }
+  .tag-title { font-size: 19px; font-weight: 650; text-wrap: balance; margin: 0 0 18px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 16px; border-top: 1px dashed var(--line-strong); }
+  .chip {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em;
+    padding: 5px 10px; border: 1px solid var(--line-strong); border-radius: 3px;
+    color: var(--ink-soft); background: var(--card-raised); white-space: nowrap;
+  }
+  .chip b { color: var(--ink); font-weight: 650; }
+  .chip.warn { border-color: var(--pending); background: var(--pending-bg); color: #8a6a10; }
+  :root[data-theme="dark"] .chip.warn,
+  :root:not([data-theme="light"]) .chip.warn { color: var(--pending); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.warn { color: var(--pending); } }
+
+  .section { margin-top: 34px; }
+  h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-soft);
+    margin: 2px 0 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--line-strong);
+  }
+  p { margin: 0 0 12px; max-width: 66ch; }
+  .lead { font-size: 15.5px; }
+
+  .kv { display: grid; grid-template-columns: 140px 1fr; gap: 10px 16px; font-size: 14px; }
+  .kv dt { color: var(--ink-soft); font-family: var(--mono); font-size: 12px; padding-top: 2px; }
+  .kv dd { margin: 0; }
+
+  ul.plain { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  ul.plain li { padding-left: 18px; position: relative; font-size: 14.5px; max-width: 62ch; }
+  ul.plain li::before { content: "—"; position: absolute; left: 0; color: var(--line-strong); }
+
+  .req { display: grid; grid-template-columns: 118px 1fr; gap: 4px 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .req:last-child { border-bottom: none; }
+  .req-id { font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); }
+  .req-body h3 { font-size: 14.5px; margin: 0 0 4px; font-weight: 650; }
+  .req-body p { font-size: 13.8px; margin: 0 0 6px; color: var(--ink); }
+  .req-body p.rule {
+    background: var(--card-raised); border-left: 2px solid var(--accent);
+    padding: 8px 10px; border-radius: 0 3px 3px 0; font-size: 13.3px; color: var(--ink-soft);
+  }
+  .req-body p del { color: var(--ink-soft); opacity: .7; }
+
+  .pivot {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--card-raised); border: 1px solid var(--line); border-radius: 4px;
+    padding: 14px 16px; margin: 4px 0 0;
+  }
+  .pivot .col { flex: 1; min-width: 0; }
+  .pivot .col h4 { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  .pivot .col.was h4 { color: var(--ink-soft); }
+  .pivot .col.was p { text-decoration: line-through; color: var(--ink-soft); }
+  .pivot .col.now h4 { color: var(--confirm); }
+  .pivot .arrow { color: var(--line-strong); padding-top: 20px; font-family: var(--mono); }
+  .pivot p { margin: 0; font-size: 13.3px; }
+
+  .callout { border: 1px solid var(--line-strong); border-radius: 4px; padding: 18px 20px; background: var(--card); }
+  .callout.qa { border-left: 4px solid var(--accent); }
+  .callout.open { border-left: 4px solid var(--pending); }
+  .callout-label { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin: 0 0 10px; }
+  .callout.qa .callout-label { color: var(--accent); }
+  .callout.open .callout-label { color: var(--pending); }
+  .callout.qa ul.plain li::before { color: var(--accent); content: "!"; font-family: var(--mono); }
+  .callout.open ul.plain li::before { color: var(--pending); content: "?"; font-family: var(--mono); }
+
+  .blocklist {
+    font-family: var(--mono); font-size: 12px; color: var(--ink-soft);
+    background: var(--card-raised); border: 1px solid var(--line); border-radius: 4px;
+    padding: 12px 14px; margin-top: 8px; line-height: 1.9;
+    columns: 2; column-gap: 20px;
+  }
+
+  .footer-note {
+    margin-top: 40px; padding-top: 16px; border-top: 1px dashed var(--line-strong);
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+
+  /* ---- cross-page checklist table ---- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line-strong); border-radius: 4px; }
+  table.cross-table { width: 100%; border-collapse: collapse; font-size: 13.3px; }
+  table.cross-table th {
+    text-align: left; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--ink-soft); background: var(--card-raised);
+    padding: 10px 12px; border-bottom: 1px solid var(--line-strong); white-space: nowrap;
+  }
+  table.cross-table td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.cross-table tr:last-child td { border-bottom: none; }
+  table.cross-table td:first-child { font-weight: 650; min-width: 170px; }
+  table.cross-table td:nth-child(2) { color: var(--ink-soft); min-width: 150px; }
+  table.cross-table .stamp {
+    display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: .04em;
+    padding: 1px 6px; border-radius: 3px; background: var(--confirm-bg); color: var(--confirm); margin-left: 6px;
+  }
+
+  @media (max-width: 480px) {
+    .req { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr; }
+    .kv dt { padding-top: 8px; }
+    .pivot { flex-direction: column; }
+    .pivot .arrow { padding-top: 0; }
+    .blocklist { columns: 1; }
+  }
+</style>
+
+<div class="sheet">
+
+  <div class="tag">
+    <div class="tag-eyebrow">eAuto BackOffice · Service Hub · QA Ticket Study</div>
+    <div class="tag-key">EAINT-12167</div>
+    <div class="tag-title">Allow Ops to Input Device SN on Device Purchase SR Info Page When Updating Delivery Status to Arranged</div>
+    <div class="chips">
+      <span class="chip">Status <b>Code Review</b></span>
+      <span class="chip">Priority <b>Medium</b></span>
+      <span class="chip">Assignee <b>Lim Yi Link</b></span>
+      <span class="chip">SRD <b>v1.2 · 17 Aug 2026</b></span>
+      <span class="chip warn">Environment <b>not yet confirmed</b></span>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Overview</h2>
+    <p class="lead">Adds two fields to the shipping-details update flow for a Device Purchase Service Request — Number of Device and Device Serial No. — so Ops can record each device's serial number before marking delivery Arranged. This SN is what <strong>EAINT-12166</strong>'s Delivery Order prints.</p>
+  </div>
+
+  <div class="section">
+    <h2>Portal &amp; where the changes live</h2>
+    <dl class="kv">
+      <dt>Portal</dt><dd>BackOffice</dd>
+      <dt>Module</dt><dd>Service Hub — Biometric Device Purchase &amp; Software Installation</dd>
+      <dt>Primary page</dt><dd>Biometric Device Purchase &amp; Software Installation Listing → <strong>Service Request Details</strong> — two new fields under Consignment Number</dd>
+      <dt>Also touches (v1.2)</dt><dd>The Listing itself — now shows Number of Device / Device Serial No. per record</dd>
+    </dl>
+  </div>
+
+  <div class="section">
+    <h2>Why</h2>
+    <p>No field exists today for Ops to capture a device's serial number, so EAINT-12166's Delivery Order PDF has nothing to print in that slot. This closes that gap.</p>
+  </div>
+
+  <div class="section">
+    <h2>The mid-SRD pivot</h2>
+    <p>A dev-review comment (zhan.choon → Lim Yi Link, 12 Aug 2026) questioned the original design before build started. Three questions were raised; the SRD's final shape (v1.1 onward) reflects the answers — worth knowing when reading the requirement list below, since struck-through acceptance criteria in the SRD trace back to this thread.</p>
+    <div class="pivot">
+      <div class="col was">
+        <h4>v0.1–v1.0 design</h4>
+        <p>Number of Device: a manual dropdown, Ops picks 1–10. One SN field generated per unit selected.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="col now">
+        <h4>v1.1 onward (current)</h4>
+        <p>Number of Device: auto-filled from the order, disabled, view-only, no ceiling. SN field count always matches it — 13 devices means 13 fields.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>What's new — requirement manifest</h2>
+
+    <div class="req">
+      <div class="req-id">REQ-001<br><span style="opacity:.6">upd. v1.2</span></div>
+      <div class="req-body">
+        <h3>Number of Device — new field</h3>
+        <p>Displays under Consignment Number. Auto-filled with the quantity purchased in the same transaction. Disabled — view only, no free text.</p>
+        <p class="rule">v1.2 clarified: the value shown is the transaction total, not the quantity on a single device record — matters once you cross-check against the Listing (REQ-011 below).</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-002<br><span style="opacity:.6">upd. v1.1</span></div>
+      <div class="req-body">
+        <h3>Validation specs</h3>
+        <p><del>Dropdown selection, 1–10 units</del> → Auto-filled by system, disabled, mandatory, no free text entry.</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-003<br><span style="opacity:.6">upd. v1.1</span></div>
+      <div class="req-body">
+        <h3>Serial No. field generation</h3>
+        <p>One Device Serial No. field per unit — count always matches Number of Device. Example: 13 devices → 13 fields, numbered 1–13. No 10-field ceiling.</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-004</div>
+      <div class="req-body">
+        <h3>Serial No. — validation</h3>
+        <p class="rule">8–12 characters, alphanumeric, spaces allowed, no special characters, English only, mandatory.</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-005</div>
+      <div class="req-body">
+        <h3>Serial No. — input handling</h3>
+        <p>Special characters strip automatically as typed. 12 characters is a hard stop. Below 8 on save: "Device Serial No. must be between 8 and 12 characters."</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-006</div>
+      <div class="req-body">
+        <h3>Field availability by status</h3>
+        <p>Editable only while Delivery Status = New. Read-only once the status has moved past New.</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-007<br><span style="opacity:.6">upd. v1.1</span></div>
+      <div class="req-body">
+        <h3>Mandatory check on save</h3>
+        <p><del>Number of Device not selected</del> — struck out, no longer a valid scenario now that the field auto-fills. Every Serial No. field left blank still blocks save: "This field is required."</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-008</div>
+      <div class="req-body">
+        <h3>Triggers the EAINT-12166 flow</h3>
+        <p class="rule">Saving with every field complete + Delivery Status set to Arranged triggers EAINT-12166's Delivery Order generation. An incomplete field blocks the status change entirely — the flow never fires half-done.</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-009</div>
+      <div class="req-body">
+        <h3>Access restriction</h3>
+        <p>All Hub Admin users get access to the new fields, except an 18-account blocklist. Per the dev's confirmed comment, these accounts are already blocked from the "Update Shipping Details" function today — no code change needed for them.</p>
+        <div class="blocklist">
+          eautohamal · eautojenilyn · eautojrjaya · eautonashwa · eautoshamini ·
+          eautovegas · eautoxiayuan · kokping · tempstaff · wahidahzaki ·
+          mfnabila · mfnadhirah · mfzuhaira · eautochinwei · mfaliah ·
+          mfmaisarah · mfnicholas · mfteckyung
+        </div>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-010<br><span style="opacity:.6">v1.1</span></div>
+      <div class="req-body">
+        <h3>UI display on the popup</h3>
+        <p>"Device Serial No." field group, labelled and marked mandatory, sits directly below Number of Device. Fields number sequentially from 1, laid out two per row, left to right, inside a scrollable area once they exceed the popup's visible height.</p>
+      </div>
+    </div>
+
+    <div class="req">
+      <div class="req-id">REQ-011<br><span style="opacity:.6">v1.2</span></div>
+      <div class="req-body">
+        <h3>Record display in the Listing</h3>
+        <p class="rule">Each device purchased in one transaction gets its own row in the Listing. Every row shows Number of Device = 1 and one Serial No. — not the transaction total. Example: 10 units purchased → 10 rows, each showing "1" and its own serial.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="callout open">
+      <p class="callout-label">Open — not resolved in the SRD</p>
+      <ul class="plain">
+        <li><strong>What happens when Ops mistypes a locked Serial No.?</strong> The comment thread offered two options — A: accept it, fix via an IT support ticket; B: let a senior Hub Admin correct it even after Arranged (extra build work). SRD v1.2 never states which was picked. Flag to Lim Yi Link or dev before writing a test case for this scenario — don't assume either option.</li>
+        <li><strong>Duplicate-SN rejection</strong> — "no two devices share a serial" is described in the comment thread as an intended build rule, but it isn't restated as a formal requirement row or acceptance criterion anywhere in the SRD body. Confirm it actually made it into the build before relying on it.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="callout qa">
+      <p class="callout-label">Important for QA</p>
+      <ul class="plain">
+        <li>This ticket gates EAINT-12166 — its flow only fires the Delivery Order once SN entry + Arranged status succeed together in one save.</li>
+        <li>Check the 18-account blocklist against real BO test logins — those accounts should not see the new fields at all, not just be unable to edit them.</li>
+        <li>Test the boundary values on Serial No. directly: 7 chars (reject), 8 (accept), 12 (accept), 13 (blocked at input), and a stray special character (auto-stripped, not rejected).</li>
+        <li>Test field-count-follows-quantity at both ends: 1 device (1 field) and a double-digit purchase like 13 (13 fields, two-per-row, scrollable) — the old 10-field ceiling is gone as of v1.1.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Where these details must match — cross-page checklist</h2>
+    <p>Number of Device and Device Serial No. get entered once but read back in four other places, plus one downstream ticket. Check every surface below agrees, in both directions of the flow.</p>
+    <div class="table-wrap">
+      <table class="cross-table">
+        <thead>
+          <tr><th>Page / surface</th><th>What shows there</th><th>What to verify</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>UCD Service Hub → Biometric Device Purchase → Step 1 Selection</td>
+            <td>Purchase quantity (device count)</td>
+            <td>The ultimate source of Number of Device — confirm the quantity purchased there is exactly what auto-fills on the SR Details page.</td>
+          </tr>
+          <tr>
+            <td>Service Request Details → "Update Shipping Details" popup, Delivery Status = New</td>
+            <td>Number of Device (auto-filled, disabled), Device Serial No. × N editable fields</td>
+            <td>The entry point. Field count must always equal the auto-filled Number of Device — no ceiling, even above 10.</td>
+          </tr>
+          <tr>
+            <td>Same popup, Delivery Status ≠ New</td>
+            <td>Same two fields, now read-only</td>
+            <td>Values must persist exactly as saved — no reset, no blanking, once status has moved past New.</td>
+          </tr>
+          <tr>
+            <td>BackOffice → Biometric Device Purchase &amp; Software Installation Listing (row level, v1.2)</td>
+            <td>Number of Device (= 1 per row), Device Serial No. (single, per row)</td>
+            <td>One row per device purchased in the transaction; row count = units purchased, and no serial repeats across rows.</td>
+          </tr>
+          <tr>
+            <td>EAINT-12166 → generated Delivery Order PDF <span class="stamp">downstream</span></td>
+            <td>Device Serial No. field</td>
+            <td>The serial printed must match exactly what was keyed in here, unit-for-unit — this is the whole reason this ticket exists.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <span>SRD saved: EAINT-12167_SRD_..._v1.2_20260817.pdf</span>
+    <span>Study compiled from Jira + SRD, 2026-09-10</span>
+  </div>
+
+</div>

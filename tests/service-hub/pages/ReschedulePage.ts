@@ -21,7 +21,7 @@ export class ReschedulePage extends SlotPickerComponent {
    * 2-month window), so this pages forward like the other finders instead
    * of only checking whatever month happened to be showing on page load.
    */
-  async findBookedDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+  async findBookedDate(maxMonthsAhead: number = ENV.calendar.searchMonthsAhead): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       const cells = await this.page.locator("td[data-date] .si-bookbadge").all();
       if (cells.length > 0) {
@@ -35,7 +35,7 @@ export class ReschedulePage extends SlotPickerComponent {
   }
 
   /** Find the first bookable date on the calendar (has si-book class) */
-  async findFirstBookableDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+  async findFirstBookableDate(maxMonthsAhead: number = ENV.calendar.searchMonthsAhead): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       const cells = await this.page.locator("td.si-book[data-date]").all();
       if (cells.length > 0) return await cells[0].getAttribute("data-date");

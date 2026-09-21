@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
+import { organizeTestEvidence } from "@/lib/testEvidence";
 
 export const maxDuration = 300;
 
@@ -13,6 +14,8 @@ interface RunRequest {
   ucdPass: string;
   boUser: string;
   boPass: string;
+  ucd2User?: string;
+  ucd2Pass?: string;
   detailed?: boolean;
   publicHoliday?: string; // YYYY-MM-DD keyed in by the user (Public-Holiday tests)
   referenceNo?: string;   // existing SR reference (biometric free-install validity)
@@ -86,39 +89,6 @@ function stripAnsi(text: string): string {
   return text.replace(/\x1b\[[0-9;]*m/g, "");
 }
 
-/** Turn a test title into a filesystem-safe name (letters/digits/spaces/dashes only). */
-function sanitizeForFilename(title: string): string {
-  return title.replace(/[^a-z0-9 \-]+/gi, "").replace(/\s+/g, " ").trim().slice(0, 100);
-}
-
-/**
- * Rename a test's own Playwright-generated evidence (video.webm,
- * test-failed-N.png, trace.zip) to match the test's title, in place, so every
- * file reads clearly instead of Playwright's generic/hashed defaults. Videos
- * recorded by openTrackedContext()/closeTrackedContext() for a test's extra
- * (cross-portal) browser contexts are already named this way at record time,
- * so this only needs to handle the attachments Playwright itself produces for
- * the test's main fixture-managed context.
- */
-function renameEvidenceFiles(title: string, attachments: { name?: string; path?: string }[]): void {
-  const base = sanitizeForFilename(title);
-  if (!base) return;
-  const extFor: Record<string, string> = { video: ".webm", screenshot: ".png", trace: ".zip" };
-  const seen: Record<string, number> = {};
-  for (const a of attachments) {
-    const ext = a.name ? extFor[a.name] : undefined;
-    if (!ext || !a.path || !fs.existsSync(a.path)) continue;
-    const n = (seen[a.name!] = (seen[a.name!] ?? 0) + 1);
-    const suffix = a.name === "screenshot" ? " - failure" : a.name === "trace" ? " - trace" : "";
-    const numbered = n > 1 ? ` (${n})` : "";
-    const dest = path.join(path.dirname(a.path), `${base}${suffix}${numbered}${ext}`);
-    try {
-      if (path.resolve(dest) !== path.resolve(a.path)) fs.renameSync(a.path, dest);
-    } catch {
-      // best-effort — a rename failure shouldn't break the run's results
-    }
-  }
-}
 
 /**
  * Turn a raw Playwright error message into a one-line, plain-English
@@ -195,7 +165,7 @@ function toPlainEnglish(rawMessage: string): string {
 export async function POST(req: NextRequest) {
   try {
     const body: RunRequest = await req.json();
-    const { scenarios, headless, baseUrl, ucdUser, ucdPass, boUser, boPass, detailed, publicHoliday, referenceNo } = body;
+    const { scenarios, headless, baseUrl, ucdUser, ucdPass, boUser, boPass, ucd2User, ucd2Pass, detailed, publicHoliday, referenceNo } = body;
 
     if (!scenarios.length) {
       return NextResponse.json({ error: "No scenarios selected." }, { status: 400 });
@@ -209,13 +179,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Test config not found." }, { status: 500 });
     }
 
+    // One folder per run, stamped in local time: "2026-08-12_1432". Inside it, one
+    // folder per test script named by its ID (see organizeTestEvidence), and a _run
+    // folder holding the machine-readable reports so they don't sit among the evidence.
     const now = new Date();
-    const ts = now.toISOString().replace(/[:.]/g, "-").slice(0, 19);
-    const recordDir = path.join(projectRoot, "test-recordings", ts);
-    fs.mkdirSync(recordDir, { recursive: true });
+    const p2 = (n: number) => String(n).padStart(2, "0");
+    const ts = `${now.getFullYear()}-${p2(now.getMonth() + 1)}-${p2(now.getDate())}_${p2(now.getHours())}${p2(now.getMinutes())}`;
+    const recordDir = path.join(projectRoot, "test-evidence", ts);
+    const runMetaDir = path.join(recordDir, "_run");
+    fs.mkdirSync(runMetaDir, { recursive: true });
 
-    const jsonReportPath = path.join(recordDir, "report.json");
-    const stepReportPath = path.join(recordDir, "steps.json");
+    const jsonReportPath = path.join(runMetaDir, "report.json");
+    const stepReportPath = path.join(runMetaDir, "steps.json");
 
     const grepPattern = scenarios.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
 
@@ -226,6 +201,8 @@ export async function POST(req: NextRequest) {
       EAUTO_UCD_PASS: ucdPass,
       EAUTO_BO_USER: boUser,
       EAUTO_BO_PASS: boPass,
+      EAUTO_UCD2_USER: ucd2User ?? "",
+      EAUTO_UCD2_PASS: ucd2Pass ?? "",
       PW_HEADED: headless ? "0" : "1",
       PW_VIDEO: "1",
       PW_OUTPUT_DIR: recordDir,
@@ -335,7 +312,7 @@ export async function POST(req: NextRequest) {
 
                 const cleanedError = stripAnsi(errorMsg).slice(0, 2000);
                 if (spec.title && testResult?.attachments?.length) {
-                  renameEvidenceFiles(spec.title, testResult.attachments);
+                  organizeTestEvidence(spec.title, testResult.attachments);
                 }
                 out.push({
                   title: spec.title ?? "",

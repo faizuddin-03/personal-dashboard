@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eAuto BackOffice - Association Payment Listing (Mockup)</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Verdana, Arial, sans-serif; font-size: 13px; color: #222; background: #fff; }
+
+  .topbar {
+    background: linear-gradient(90deg, #8a0010 0%, #c8102e 55%, #e0203c 100%);
+    color: #fff; display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 18px; font-size: 13px;
+  }
+  .topbar .nav { display: flex; align-items: center; gap: 14px; }
+  .topbar .nav a { color: #fff; text-decoration: none; cursor: pointer; }
+  .topbar .pending { color: #ffe08a; font-weight: bold; }
+  .topbar .account b { color: #fff; }
+
+  .brandrow { display: flex; align-items: center; padding: 14px 18px 4px; }
+  .logo { font-weight: bold; font-size: 30px; color: #c8102e; letter-spacing: -1px; }
+  .logo .my { color: #1a4b8c; font-size: 16px; vertical-align: super; }
+  .greeting { padding: 6px 18px 4px; font-weight: bold; font-size: 15px; }
+
+  .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 10px 18px 40px; }
+  .menu-col h3 { color: #7a1420; font-size: 16px; margin: 0 0 8px; display: flex; align-items: center; gap: 6px; }
+  .menu-col ul { list-style: none; margin: 0; padding: 0; }
+  .menu-col li { margin: 4px 0; line-height: 1.35; }
+  .menu-col li a { color: #1a3fd0; text-decoration: none; cursor: pointer; }
+  .menu-col li a:hover { text-decoration: underline; }
+  .menu-col li a.new { font-weight: bold; }
+  .menu-col li a.new::after { content: " NEW"; color: #fff; background: #2e9e4f; font-size: 9px; padding: 1px 4px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
+  .arrow { color: #1a3fd0; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+  .crumb { padding: 8px 18px; background: #f3f3f3; border-bottom: 1px solid #ddd; font-size: 12px; }
+  .crumb a { color: #1a3fd0; text-decoration: none; cursor: pointer; }
+  .report-wrap { padding: 14px 18px 50px; }
+  .report-title { color: #7a1420; font-size: 20px; margin: 0 0 4px; }
+  .report-sub { color: #555; font-size: 12px; margin: 0 0 14px; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; background: #faf7f2; border: 1px solid #e7ddcd; padding: 10px 12px; border-radius: 4px; margin-bottom: 18px; }
+  .filters label { display: block; font-size: 11px; color: #666; margin-bottom: 3px; }
+  .filters select { padding: 5px 7px; border: 1px solid #bbb; border-radius: 3px; font-size: 12px; }
+  .btn { background: #c8102e; color: #fff; border: none; padding: 7px 16px; border-radius: 3px; cursor: pointer; font-size: 12px; font-weight: bold; }
+  .btn.secondary { background: #6c757d; }
+
+  .section-title { text-align: center; font-weight: bold; font-size: 16px; color: #222; margin: 22px 0 6px; }
+  .rec-count { font-size: 12px; color: #333; margin: 4px 0 4px; }
+  .section-head { color: #fff; padding: 7px 12px; font-size: 15px; font-weight: bold; border-radius: 3px 3px 0 0; margin-top: 18px; display: flex; align-items: center; gap: 8px; }
+  .section-head .tag { background: rgba(255,255,255,.25); font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: normal; }
+
+  /* STMS-style listing table */
+  table.rpt { border-collapse: collapse; width: 100%; font-size: 12px; }
+  table.rpt th, table.rpt td { border: 1px solid #ffffff; padding: 8px 8px; }
+  table.rpt thead th { background: #5b9bd5; color: #fff; text-align: center; font-weight: bold; vertical-align: middle; }
+  table.rpt thead th.state, table.rpt thead th.left { text-align: left; }
+  table.rpt tbody td { background: #cfeaf6; text-align: center; }
+  table.rpt td.state, table.rpt td.left { text-align: left; }
+  table.rpt td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.rpt tbody tr:hover td { background: #b6ddef; }
+  table.rpt tfoot td { background: #a9d5ea; font-weight: bold; text-align: right; }
+  table.rpt tfoot td.left { text-align: left; }
+  table.rpt a.view { color: #1a3fd0; font-weight: bold; text-decoration: none; cursor: pointer; }
+  table.rpt a.view:hover { text-decoration: underline; }
+  .stat-ok { color: #1a7a34; font-weight: bold; }
+  .stat-na { color: #c0392b; font-weight: bold; }
+
+  /* Approval workflow */
+  .pill2 { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 10px; color: #fff; font-weight: bold; white-space: nowrap; }
+  .pill2.pending { background: #8a8a8a; }
+  .pill2.approved { background: #2e9e4f; }
+  .pill2.kiv { background: #e08a00; }
+  .pill2.review { background: #c0392b; }
+  .wf-bar { border: 1px solid #e2e2e2; background: #fafafa; border-radius: 5px; padding: 12px 14px; margin: 4px 0 18px; }
+  .wf-bar .wf-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin-bottom: 10px; }
+  .wf-bar .wf-stat { font-size: 12px; color: #444; }
+  .wf-actions { display: flex; gap: 10px; align-items: center; }
+  .abtn { border: none; padding: 8px 20px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #fff; cursor: pointer; }
+  .abtn.approve { background: #2e9e4f; }
+  .abtn.kiv { background: #e08a00; }
+  .abtn.reject { background: #c0392b; }
+  .abtn:disabled { background: #cfcfcf; cursor: not-allowed; }
+  .wf-note { font-size: 12px; color: #666; font-style: italic; margin-top: 8px; }
+  .role-tag { font-size: 12px; background: #1f6390; color: #fff; padding: 3px 12px; border-radius: 10px; font-weight: bold; }
+  table.rpt thead th br { line-height: 1; }
+  .pay-date-tag { font-size: 12px; background: #2e7d46; color: #fff; padding: 3px 12px; border-radius: 10px; font-weight: bold; }
+
+  /* Modals */
+  .ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; align-items: center; justify-content: center; }
+  .mbox { background: #fff; border-radius: 8px; padding: 22px 24px; width: 430px; max-width: 92%; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+  .mbox h3 { margin: 0 0 12px; color: #7a1420; font-size: 16px; }
+  .mbox p { font-size: 12px; color: #555; margin: 0 0 8px; }
+  .mbox textarea, .mbox input[type=date] { width: 100%; padding: 8px; border: 1px solid #bbb; border-radius: 4px; font-size: 13px; font-family: inherit; }
+  .mbtns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+  #sig-pad { border: 1px solid #bbb; border-radius: 4px; touch-action: none; background: #fff; width: 100%; }
+
+  /* Finance invoice buttons */
+  .inv-btns { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .ibtn { border: 1px solid #1f6390; background: #fff; color: #1f6390; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+  .ibtn:hover { background: #1f6390; color: #fff; }
+  .sig-thumb { height: 30px; border: 1px solid #ddd; border-radius: 3px; background: #fff; vertical-align: middle; }
+
+  .note { font-size: 11px; color: #888; margin-top: 6px; font-style: italic; }
+  .mock-flag { position: fixed; bottom: 8px; right: 10px; background: #c8102e; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 3px; opacity: .85; }
+</style>
+</head>
+<body>
+
+<!-- ============ HOME PAGE ============ -->
+<div id="home" class="page active">
+  <div class="topbar">
+    <div class="nav"><a>Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+  <div class="brandrow"><span class="logo">eAuto<span class="my">.my&#8482;</span></span></div>
+  <div class="greeting">Good Afternoon, Adrian Tan</div>
+
+  <div class="menu-grid">
+    <div class="menu-col">
+      <h3><span>&#128101;</span> Account Management</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Manage Company Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Backoffice User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>View UCD User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Bank/Credit Company Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Bank/Credit Company User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage AATF/PBT Account</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage e-Invoice Setup Company Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage LKM Refund Amount (below RM30)</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> Reports</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Reports</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Account Balance Summary</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Account Deposit / Adjustment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company POB Balance Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>POB Payment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Statement of Account (UCD)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Transaction Summary Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Vehicle Movement Report (UCD)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Interim Payment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Inter-Branch Transfer History Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a class="new" onclick="showSummary()">Association Payment Listing</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128197;</span> Insurance</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Permission Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Endorsement</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Payment Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Quote Enquiry</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Refer Risk Log</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128197;</span> Onboarding</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>UCD New Application</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Application Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Pre-Application Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Application Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Pre-Application Audit Log</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SUMMARY PAGE ============ -->
+<div id="summary" class="page">
+  <div class="topbar">
+    <div class="nav"><a onclick="showHome()">Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+  <div class="crumb"><a onclick="showHome()">Home</a> &nbsp;&#8250;&nbsp; Reports &nbsp;&#8250;&nbsp; <b>Association Payment Listing</b></div>
+
+  <div class="report-wrap">
+    <h1 class="report-title">Association Payment Listing</h1>
+    <p class="report-sub">Monthly summary for the year. Click <b>View</b> on any month to drill into the state-level breakdown (Cars &amp; Motorcycles).</p>
+
+    <div class="filters">
+      <div><label>Year</label><select id="sel-year"><option value="2026">2026</option></select></div>
+      <div><label>Role <span style="font-weight:normal;color:#888;font-size:10px;">(mockup display only — real system determines role by login ID)</span></label><select id="sel-role" onchange="changeRole(this.value)"><option value="Drafter">Drafter</option><option value="Reviewer">Reviewer</option><option value="Approver">Approver</option></select></div>
+      <div><button class="btn" onclick="applySearch()">Search</button></div>
+    </div>
+
+    <div class="section-title">Association Payment Listing &mdash; 2026 Monthly Summary</div>
+    <div class="rec-count" id="rec-summary"></div>
+    <table class="rpt" id="tbl-summary"></table>
+    <p class="note">Cars and Motorcycles are counted separately (transaction values are not combined across vehicle types). Months with no data yet are marked "No data".</p>
+  </div>
+</div>
+
+<!-- ============ DETAILS PAGE ============ -->
+<div id="details" class="page">
+  <div class="topbar">
+    <div class="nav"><a onclick="showHome()">Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+  <div class="crumb"><a onclick="showHome()">Home</a> &nbsp;&#8250;&nbsp; Reports &nbsp;&#8250;&nbsp; <a onclick="showSummary()">Association Payment Listing</a> &nbsp;&#8250;&nbsp; <b id="crumb-month">Details</b></div>
+
+  <div class="report-wrap">
+    <h1 class="report-title" id="det-title">Association Payment Listing &mdash; Details</h1>
+    <p class="report-sub">Review the amounts and act according to your role. Approval sequence: Drafter &#8594; Reviewer &#8594; Approver.</p>
+    <button class="btn secondary" onclick="showSummary()" style="margin-bottom:14px;">&#8592; Back to Summary</button>
+
+    <div class="wf-bar" id="wf-bar"></div>
+    <div class="wf-bar" id="inv-bar"></div>
+
+    <div class="section-head" style="background:#1f6390;">&#128663;&#127949; Vehicle Breakdown by State <span class="tag" id="tag-veh"></span></div>
+    <div class="rec-count" id="rec-veh"></div>
+    <table class="rpt" id="tbl-veh"></table>
+    <p class="note">* Motorcycle figures are sample/placeholder data for layout illustration only.</p>
+
+    <div class="section-head" style="background:#555;">&#128340; Audit Log <span class="tag" id="tag-log"></span></div>
+    <table class="rpt" id="tbl-log"></table>
+  </div>
+</div>
+
+<!-- Remarks modal (Reject) -->
+<div class="ov" id="rmk-modal">
+  <div class="mbox">
+    <h3 id="rmk-title">Reject &mdash; Remarks</h3>
+    <p>Please state the reason for rejection. This will be recorded in the audit log.</p>
+    <textarea id="rmk-text" rows="4" placeholder="Enter remarks (required)"></textarea>
+    <div class="mbtns">
+      <button class="btn secondary" onclick="closeRmk()">Cancel</button>
+      <button class="btn" onclick="submitRmk()">Submit Reject</button>
+    </div>
+  </div>
+</div>
+
+<!-- Payment date modal (Approver Approve) -->
+<div class="ov" id="date-modal">
+  <div class="mbox">
+    <h3>Approve &mdash; Finance Payment Date</h3>
+    <p>Select the date when Finance needs to make the payment. Only a future date is allowed.</p>
+    <input type="date" id="pay-date" onkeydown="return false" onpaste="return false" autocomplete="off" title="Select from the date picker only">
+    <p style="font-size:11px;color:#888;margin-top:4px;">Select from the date picker only — typing or pasting is disabled.</p>
+    <div class="mbtns">
+      <button class="btn secondary" onclick="closeDate()">Cancel</button>
+      <button class="btn" onclick="submitDate()">Confirm Approve</button>
+    </div>
+  </div>
+</div>
+
+<!-- Signature modal (first-time approval per role) -->
+<div class="ov" id="sig-modal">
+  <div class="mbox">
+    <h3 id="sig-title">Sign to Approve</h3>
+    <p id="sig-desc">First-time approval for this role. Please sign below &mdash; your signature will be saved and reused for all future approvals.</p>
+    <canvas id="sig-pad" width="382" height="150"></canvas>
+    <div class="mbtns">
+      <button class="btn secondary" onclick="clearSig()">Clear</button>
+      <button class="btn secondary" onclick="closeSig()">Cancel</button>
+      <button class="btn" onclick="saveSig()">Save &amp; Approve</button>
+    </div>
+  </div>
+</div>
+
+<div class="mock-flag">MOCKUP &mdash; EAINT-12028</div>
+
+<script>
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const states = [
+    "JOHOR (01)","KEDAH (02)","KELANTAN (03)","MELAKA (04)","NEGERI SEMBILAN (05)",
+    "PAHANG (06)","PERAK (08)","PERLIS (09)","PULAU PINANG (07)","SABAH (12)",
+    "SARAWAK (13)","SELANGOR (10)","TERENGGANU (11)","WILAYAH PERSEKUTUAN KUALA LUMPUR (14)",
+    "WILAYAH PERSEKUTUAN LABUAN (15)","WILAYAH PERSEKUTUAN PUTRAJAYA (16)"
+  ];
+  // rows = state, cols = month (Jan..Jun have data)
+  const cars = [
+    [15130,10582,12803,14563,13076,12659],[2946,2384,2542,2960,2467,2659],
+    [2066,1750,1767,2160,1858,2117],[1133,835,1037,1358,1171,1119],
+    [1032,869,1044,1101,952,961],[1702,1357,1541,1722,1348,1406],
+    [4884,3800,4426,5224,4193,4465],[119,90,124,135,129,111],
+    [5077,3691,4500,5422,4606,4683],[2798,2178,2358,2736,2588,2481],
+    [3484,2667,3277,3673,3597,2892],[38785,30790,38451,43218,39885,38289],
+    [454,381,357,447,368,441],[10124,7093,8895,9809,8967,8740],
+    [15,11,9,8,15,12],[2,1,4,0,0,0]
+  ];
+  const bikes = [
+    [6210,5480,5990,6420,5870,5730],[1980,1720,1810,2010,1690,1780],
+    [1540,1300,1360,1580,1320,1450],[640,520,590,700,610,580],
+    [710,600,660,720,640,650],[1120,930,1010,1180,980,1040],
+    [2650,2200,2410,2780,2330,2500],[80,60,72,88,70,66],
+    [2980,2440,2700,3120,2610,2780],[1460,1180,1290,1520,1300,1350],
+    [1720,1400,1560,1810,1520,1600],[15980,13200,14900,16800,14600,15100],
+    [310,260,280,330,270,300],[4120,3300,3720,4400,3600,3900],
+    [8,6,7,9,7,6],[1,0,2,0,1,0]
+  ];
+  function fmt(n){ return n.toLocaleString('en-US'); }
+  function fmtAmt(n){ return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+  function colSum(arr, m){ let t=0; arr.forEach(r => t += r[m]); return t; }
+
+  // Deterministic generator to fabricate a full 12-month sample year from the 6-month base
+  function genMatrix(base, nMonths, seed){
+    return base.map(function(row,i){
+      let out=[];
+      for(let m=0;m<nMonths;m++){
+        let bv = row[m % row.length];
+        let f = 0.85 + ((Math.sin((m+1)*(i+2)*seed)+1)/2)*0.30; // 0.85..1.15
+        out.push(Math.round(bv*f));
+      }
+      return out;
+    });
+  }
+
+  // Year datasets: 2026 = actual (Jan-Jun available), 2025 = full-year sample
+  const YEARS = {
+    "2026": { cars: cars, bikes: bikes, dataMonths: 6 },
+    "2025": { cars: genMatrix(cars,12,0.63), bikes: genMatrix(bikes,12,1.27), dataMonths: 12 }
+  };
+  let curYear = "2026";
+  let curRole = "Drafter";
+  let curMonth = 0;
+  function ds(){ return YEARS[curYear]; }
+
+  // ---- Approval workflow state (per year + month) ----
+  const wfState = {};
+  function stKey(m){ return curYear + "-" + m; }
+  function getSt(m){ const k = stKey(m); if(!wfState[k]) wfState[k] = { drafter:'Pending', reviewer:'Pending', approver:'Pending', paymentDate:null, log:[] }; return wfState[k]; }
+  function nowStr(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return p(d.getDate())+"-"+p(d.getMonth()+1)+"-"+d.getFullYear()+" "+p(d.getHours())+":"+p(d.getMinutes()); }
+  function fmtDate(iso){ const a=iso.split("-"); return a[2]+"-"+a[1]+"-"+a[0]; }
+  function addLog(m, role, action, remarks, sig){ getSt(m).log.push({ time: nowStr(), role: role, action: action, remarks: remarks, sig: sig||null }); }
+
+  // ---- Signatures (stored once per role, reused forever) ----
+  const signatures = { Drafter:null, Reviewer:null, Approver:null, New:null };
+  let sigCtx=null, sigDrawing=false, sigHasInk=false, pendingSig=null, pendingRole=null;
+  function initSigPad(){
+    const c=document.getElementById('sig-pad'); if(!c) return; sigCtx=c.getContext('2d');
+    sigCtx.lineWidth=2.2; sigCtx.lineCap='round'; sigCtx.strokeStyle='#123458';
+    function pos(e){ const r=c.getBoundingClientRect(); const t=e.touches?e.touches[0]:e; return { x:(t.clientX-r.left)*(c.width/r.width), y:(t.clientY-r.top)*(c.height/r.height) }; }
+    function start(e){ sigDrawing=true; const p=pos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x,p.y); e.preventDefault(); }
+    function move(e){ if(!sigDrawing) return; const p=pos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); sigHasInk=true; e.preventDefault(); }
+    function end(){ sigDrawing=false; }
+    c.addEventListener('mousedown',start); c.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+    c.addEventListener('touchstart',start,{passive:false}); c.addEventListener('touchmove',move,{passive:false}); c.addEventListener('touchend',end);
+  }
+  function ensureSignature(role, cb){
+    if(signatures[role]){ cb(); return; }               // already signed before -> reuse
+    pendingSig=cb; pendingRole=role;
+    document.getElementById('sig-title').textContent='Sign to Approve — '+role;
+    clearSig();
+    document.getElementById('sig-modal').style.display='flex';
+  }
+  function clearSig(){ if(sigCtx) sigCtx.clearRect(0,0,382,150); sigHasInk=false; }
+  function closeSig(){ document.getElementById('sig-modal').style.display='none'; pendingSig=null; pendingRole=null; }
+  function saveSig(){ if(!sigHasInk){ alert('Please provide your signature.'); return; } signatures[pendingRole]=document.getElementById('sig-pad').toDataURL(); const cb=pendingSig; document.getElementById('sig-modal').style.display='none'; pendingSig=null; pendingRole=null; if(cb) cb(); }
+
+  function isFullyApproved(m){ const s=getSt(m); return s.drafter==='Approved' && s.reviewer==='Approved' && s.approver==='Approved'; }
+
+  // ---- Amount to words ----
+  function toWords(n){
+    const ones=['','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','TEN','ELEVEN','TWELVE','THIRTEEN','FOURTEEN','FIFTEEN','SIXTEEN','SEVENTEEN','EIGHTEEN','NINETEEN'];
+    const tens=['','','TWENTY','THIRTY','FORTY','FIFTY','SIXTY','SEVENTY','EIGHTY','NINETY'];
+    function below1000(x){ let s=''; if(x>=100){ s+=ones[Math.floor(x/100)]+' HUNDRED'; x%=100; if(x) s+=' '; } if(x>=20){ s+=tens[Math.floor(x/10)]; x%=10; if(x) s+=' '+ones[x]; } else if(x>0){ s+=ones[x]; } return s; }
+    if(n===0) return 'ZERO';
+    let parts=[]; const scales=[['BILLION',1e9],['MILLION',1e6],['THOUSAND',1e3]];
+    for(const sc of scales){ if(n>=sc[1]){ parts.push(below1000(Math.floor(n/sc[1]))+' '+sc[0]); n%=sc[1]; } }
+    if(n>0) parts.push(below1000(n));
+    return parts.join(' ').replace(/\s+/g,' ').trim();
+  }
+  function amtWords(amount){ const intp=Math.floor(amount); const sen=Math.round((amount-intp)*100); let w=toWords(intp); if(sen>0) w+=' AND '+toWords(sen)+' SEN'; return w+' ONLY'; }
+  function logDate(m, role){ const e=getSt(m).log.find(function(x){ return x.role===role && x.action.indexOf('Approved')===0; }); return e ? e.time.split(' ')[0] : ''; }
+
+  function downloadInvoice(m, type){
+    const D=ds();
+    const amt = type==='Cars'?colSum(D.cars,m)*1 : colSum(D.bikes,m)*2;
+    const s=getSt(m);
+    const assoc = type==='Cars'?'FMCCAM' : 'MMSDA';
+    const fileAssoc = type==='Cars'?'FMC' : 'MMSDA';
+    const per = months[m].slice(0,3).toUpperCase()+' '+curYear;
+    const topDate = logDate(m,'Approver') || (s.paymentDate?fmtDate(s.paymentDate):'');
+    const sig = function(r){ return signatures[r] ? "<img src='"+signatures[r]+"' style='height:38px'>" : ""; };
+
+    const doc =
+`<html><head><meta charset="utf-8"><title>Online Payment Requisition - ${assoc} ${per}</title>
+<style>
+  @page{size:A4;margin:14mm}
+  body{font-family:Arial,Helvetica,sans-serif;color:#222;font-size:12px;margin:0;padding:24px}
+  .sheet{border:1px solid #000;max-width:720px;margin:0 auto;padding:22px 26px}
+  .top{display:flex;justify-content:space-between;align-items:flex-start}
+  .co{font-size:11px;line-height:1.5}.co b{font-size:12px}
+  .logo{font-weight:bold;font-size:22px;color:#c8102e}.logo span{color:#1a4b8c;font-size:12px;vertical-align:super}
+  h1{text-align:center;font-size:15px;letter-spacing:1px;margin:22px 0 20px}
+  .row{display:flex;justify-content:space-between;font-size:11px;line-height:1.7}
+  .lbl{font-size:11px;font-weight:bold;margin:16px 0 4px}
+  .box{border:1px solid #000;padding:10px 12px}
+  .reason{text-align:center;color:#1f4e79;font-weight:bold}
+  .reason .l1{font-size:14px}.reason .l2{font-size:14px;margin-top:6px}
+  table.payto{width:100%;border-collapse:collapse;font-size:11px}
+  table.payto td{padding:3px 6px;vertical-align:top}
+  table.payto td.k{width:150px;border-right:1px solid #000}
+  .amt{display:flex;gap:40px;font-size:12px}
+  .amt .w{font-style:italic}
+  .sign{display:flex;justify-content:space-between;margin-top:40px;font-size:11px}
+  .sign .col{width:30%}
+  .sign .line{height:44px;border-bottom:1px solid #000;margin-bottom:4px;display:flex;align-items:flex-end}
+</style></head>
+<body><div class="sheet">
+  <div class="top">
+    <div class="co"><b>eAuto Sdn .Bhd. 200401038456 (676967-T)</b><br>Level 15, Sunway Tower<br>86, Jalan Ampang<br>50450 Kuala Lumpur</div>
+    <div class="logo">eAuto<span>.my</span></div>
+  </div>
+
+  <h1>ONLINE PAYMENT REQUISITION</h1>
+
+  <div class="row">
+    <div>
+      <table style="font-size:11px;line-height:1.7"><tr><td style="width:44px">To:</td><td>Finance @ eAuto Sdn Bhd</td></tr>
+      <tr><td>Attn:</td><td>Marie Ann</td></tr>
+      <tr><td>Adds:</td><td>Level 15, Sunway Tower<br>86, Jalan Ampang<br>50450 Kuala Lumpur</td></tr></table>
+    </div>
+    <div style="text-align:left">
+      <table style="font-size:11px;line-height:1.7"><tr><td style="width:80px">Date:</td><td>${topDate||'&nbsp;'}</td></tr>
+      <tr><td>Requestor:</td><td>Muhammad Fared</td></tr></table>
+    </div>
+  </div>
+
+  <div class="lbl">Reason for Payment</div>
+  <div class="box reason"><div class="l1">eAUTO PAYMENT TO ${assoc}</div><div class="l2">${per}</div></div>
+
+  <div class="lbl">Pay to</div>
+  <div class="box"><table class="payto">
+    <tr><td class="k">Account Holder Name</td><td></td></tr>
+    <tr><td class="k">Address</td><td></td></tr>
+    <tr><td class="k">Bank Name</td><td></td></tr>
+    <tr><td class="k">Bank Account No.</td><td></td></tr>
+    <tr><td class="k">Person in charge</td><td></td></tr>
+    <tr><td class="k">Contact Number</td><td></td></tr>
+    <tr><td class="k">Email Address</td><td></td></tr>
+  </table></div>
+
+  <div class="lbl">Amount Payable</div>
+  <div class="box"><div class="amt"><div>Ringgit Malaysia</div><div>MYR&nbsp;&nbsp;&nbsp;${fmtAmt(amt)}</div></div>
+    <div class="w">${amtWords(amt)}</div></div>
+
+  <div class="sign">
+    <div class="col"><div>Prepared by:</div><div class="line">${sig('Drafter')}</div>Muhammad Fared<br>${logDate(m,'Drafter')||'Date:'}</div>
+    <div class="col"><div>Checked by:</div><div class="line">${sig('Reviewer')}</div>Nurul Saadiah<br>${logDate(m,'Reviewer')||'Date:'}</div>
+    <div class="col"><div>Approved by:</div><div class="line">${sig('Approver')}</div>Chia Ket Ming<br>${logDate(m,'Approver')||'Date:'}</div>
+  </div>
+</div></body></html>`;
+
+    const blob=new Blob([doc],{type:'text/html'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download="Payment Requisition_"+fileAssoc+"_"+months[m]+" "+curYear+".pdf"; document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  function actionCell(m){
+    return "<td><a class='view' onclick='showDetails("+m+")'>View &#187;</a></td>";
+  }
+  const PILL = { 'Pending':'pending', 'Approved':'approved', 'KIV':'kiv', 'Review Again':'review' };
+  function pill(s){ return "<span class='pill2 "+(PILL[s]||'pending')+"'>"+s+"</span>"; }
+  function statusCells(m){ const s=getSt(m); return "<td>"+pill(s.drafter)+"</td><td>"+pill(s.reviewer)+"</td><td>"+pill(s.approver)+"</td>"; }
+
+  function changeRole(r){ curRole = r; buildSummary(); if(document.getElementById('details').classList.contains('active')) renderWorkflow(curMonth); }
+  function applySearch(){ curYear = document.getElementById('sel-year').value; buildSummary(); }
+
+  // ---- Workflow bar + role-based actions on the details page ----
+  function renderWorkflow(m){
+    const s = getSt(m); let acts="", note="";
+    if(curRole==="Drafter"){
+      const can = (s.drafter==='Pending'||s.drafter==='Review Again'||s.drafter==='KIV');
+      acts = "<button class='abtn approve' "+(can?"":"disabled")+" onclick='drafterApprove("+m+")'>Approve</button>"
+           + "<button class='abtn kiv' "+(can?"":"disabled")+" onclick='drafterKIV("+m+")'>KIV</button>";
+      if(!can) note = "Drafter has already approved this month. Waiting for the Reviewer.";
+      else if(s.drafter==='Review Again') note = "Returned for the Drafter to review the amount again.";
+    } else if(curRole==="Reviewer"){
+      const can = (s.drafter==='Approved' && (s.reviewer==='Pending'||s.reviewer==='Review Again'));
+      acts = "<button class='abtn approve' "+(can?"":"disabled")+" onclick='reviewerApprove("+m+")'>Approve</button>"
+           + "<button class='abtn reject' "+(can?"":"disabled")+" onclick='reviewerReject("+m+")'>Reject</button>";
+      if(s.drafter!=='Approved') note = "Waiting for the Drafter to approve first.";
+      else if(s.reviewer==='Approved') note = "Reviewer has already approved. Waiting for the Approver.";
+      else if(s.reviewer==='Review Again') note = "Returned by the Approver for the Reviewer to review the amount again.";
+    } else if(curRole==="Approver"){
+      const can = (s.reviewer==='Approved' && (s.approver==='Pending'||s.approver==='Review Again'));
+      acts = "<button class='abtn approve' "+(can?"":"disabled")+" onclick='approverApprove("+m+")'>Approve</button>"
+           + "<button class='abtn reject' "+(can?"":"disabled")+" onclick='approverReject("+m+")'>Reject</button>";
+      if(s.reviewer!=='Approved') note = "Waiting for the Reviewer to approve first.";
+      else if(s.approver==='Approved') note = "Fully approved.";
+    } else if(curRole==="Finance"){
+      note = "View only. No approval action is required for Finance.";
+    } else { // New - demo the first-time on-screen signature capture
+      acts = "<button class='abtn approve' onclick='newApprove("+m+")'>Approve (Sign)</button>";
+      note = "Demo role: click Approve to preview the first-time on-screen signature capture.";
+    }
+    const payTag = s.paymentDate ? "<span class='pay-date-tag'>Finance Payment Date: "+fmtDate(s.paymentDate)+"</span>" : "";
+    document.getElementById('wf-bar').innerHTML =
+      "<div class='wf-row'><span class='role-tag'>Acting as: "+curRole+"</span>"
+      + "<span class='wf-stat'>Drafter Status: "+pill(s.drafter)+"</span>"
+      + "<span class='wf-stat'>Reviewer Status: "+pill(s.reviewer)+"</span>"
+      + "<span class='wf-stat'>Approver Status: "+pill(s.approver)+"</span>"
+      + payTag + "</div>"
+      + "<div class='wf-actions'>"+acts+"</div>"
+      + (note?"<div class='wf-note'>"+note+"</div>":"");
+  }
+
+  function refresh(m){ renderWorkflow(m); renderInvoices(m); renderLog(m); buildSummary(); }
+
+  // Invoice bar - shown for ALL roles on details; downloadable once fully approved
+  function renderInvoices(m){
+    const el=document.getElementById('inv-bar');
+    if(isFullyApproved(m)){
+      el.innerHTML = "<div class='wf-row'><span style='font-size:12px;font-weight:bold;'>Payment Request (fully approved &mdash; download):</span>"
+        + "<button class='ibtn' onclick='downloadInvoice("+m+",\"Cars\")'>FMC Payment Request</button>"
+        + "<button class='ibtn' onclick='downloadInvoice("+m+",\"Motorcycles\")'>MMSDA Payment Request</button></div>";
+    } else {
+      el.innerHTML = "<div class='wf-note'>Payment Request documents will be available for download once the Drafter, Reviewer and Approver have all approved.</div>";
+    }
+  }
+  function drafterApprove(m){ ensureSignature('Drafter', function(){ getSt(m).drafter='Approved'; addLog(m,'Drafter','Approved (signed)','',signatures['Drafter']); refresh(m); }); }
+  function drafterKIV(m){ getSt(m).drafter='KIV'; addLog(m,'Drafter','KIV',''); refresh(m); }
+  function reviewerApprove(m){ ensureSignature('Reviewer', function(){ getSt(m).reviewer='Approved'; addLog(m,'Reviewer','Approved (signed)','',signatures['Reviewer']); refresh(m); }); }
+  function reviewerReject(m){ askReject('Reviewer', function(r){ const s=getSt(m); s.reviewer='Pending'; s.drafter='Review Again'; addLog(m,'Reviewer','Rejected — returned to Drafter',r); refresh(m); }); }
+  function approverApprove(m){ ensureSignature('Approver', function(){ askDate(function(d){ const s=getSt(m); s.approver='Approved'; s.paymentDate=d; addLog(m,'Approver','Approved (signed)','Finance payment date: '+fmtDate(d),signatures['Approver']); refresh(m); }); }); }
+  function approverReject(m){ askReject('Approver', function(r){ const s=getSt(m); s.approver='Pending'; s.reviewer='Review Again'; addLog(m,'Approver','Rejected — returned to Reviewer',r); refresh(m); }); }
+  // 'New' demo role: always show the sign-on-screen pad so the capture UI can be previewed
+  function newApprove(m){
+    pendingSig=function(){ addLog(m,'New','Approved (signed)','First-time signature captured & stored.',signatures['New']); refresh(m); };
+    pendingRole='New';
+    document.getElementById('sig-title').textContent='Sign to Approve — New';
+    clearSig();
+    document.getElementById('sig-modal').style.display='flex';
+  }
+
+  // ---- Modals ----
+  let pendingReject=null, pendingApprove=null;
+  function askReject(who, cb){ pendingReject=cb; document.getElementById('rmk-title').innerHTML=who+' &mdash; Reject Remarks'; document.getElementById('rmk-text').value=''; document.getElementById('rmk-modal').style.display='flex'; }
+  function closeRmk(){ document.getElementById('rmk-modal').style.display='none'; pendingReject=null; }
+  function submitRmk(){ const t=document.getElementById('rmk-text').value.trim(); if(!t){ alert('Remarks are required to reject.'); return; } const cb=pendingReject; closeRmk(); if(cb) cb(t); }
+  function askDate(cb){ pendingApprove=cb; const inp=document.getElementById('pay-date'); inp.value=''; const t=new Date(); t.setDate(t.getDate()+1); inp.min=t.toISOString().slice(0,10); document.getElementById('date-modal').style.display='flex'; }
+  function closeDate(){ document.getElementById('date-modal').style.display='none'; pendingApprove=null; }
+  function submitDate(){ const v=document.getElementById('pay-date').value; if(!v){ alert('Please select a payment date.'); return; } const today=new Date(); today.setHours(0,0,0,0); const d=new Date(v+'T00:00:00'); if(d<=today){ alert('Payment date must be a future date.'); return; } const cb=pendingApprove; closeDate(); if(cb) cb(v); }
+
+  // ---- Audit log render ----
+  function renderLog(m){
+    const log=getSt(m).log;
+    let h="<thead><tr><th>#</th><th class='left'>Date / Time</th><th class='left'>Role</th><th class='left'>Action / Status</th><th class='left'>Remarks</th></tr></thead><tbody>";
+    if(log.length===0){ h+="<tr><td class='left' colspan='5'>No activity yet.</td></tr>"; }
+    else log.forEach(function(e,i){ h+="<tr><td>"+(i+1)+"</td><td class='left'>"+e.time+"</td><td class='left'>"+e.role+"</td><td class='left'>"+e.action+"</td><td class='left'>"+(e.remarks||'-')+"</td></tr>"; });
+    h+="</tbody>";
+    document.getElementById('tbl-log').innerHTML=h;
+    document.getElementById('tag-log').textContent = months[m]+" "+curYear;
+  }
+
+  // ---- Seed sample workflow data (2026) ----
+  function seed(){
+    wfState['2026-0']={drafter:'Approved',reviewer:'Approved',approver:'Approved',paymentDate:'2026-07-31',log:[
+      {time:'02-07-2026 09:15',role:'Drafter',action:'Approved',remarks:'Amounts tallied with backend export.'},
+      {time:'03-07-2026 11:40',role:'Reviewer',action:'Approved',remarks:'Verified against STMS / eSTM / APT.'},
+      {time:'04-07-2026 15:05',role:'Approver',action:'Approved',remarks:'Finance payment date: 31-07-2026'}]};
+    wfState['2026-1']={drafter:'Approved',reviewer:'Approved',approver:'Pending',paymentDate:null,log:[
+      {time:'05-07-2026 10:20',role:'Drafter',action:'Approved',remarks:''},
+      {time:'06-07-2026 14:10',role:'Reviewer',action:'Approved',remarks:'OK, no discrepancy.'}]};
+    wfState['2026-2']={drafter:'Approved',reviewer:'Pending',approver:'Pending',paymentDate:null,log:[
+      {time:'07-07-2026 09:00',role:'Drafter',action:'Approved',remarks:''}]};
+    wfState['2026-3']={drafter:'KIV',reviewer:'Pending',approver:'Pending',paymentDate:null,log:[
+      {time:'08-07-2026 16:30',role:'Drafter',action:'KIV',remarks:'Selangor figure looks high, pending recheck.'}]};
+    wfState['2026-4']={drafter:'Review Again',reviewer:'Pending',approver:'Pending',paymentDate:null,log:[
+      {time:'09-07-2026 09:45',role:'Drafter',action:'Approved',remarks:''},
+      {time:'09-07-2026 13:20',role:'Reviewer',action:'Rejected — returned to Drafter',remarks:'Perak amount mismatch, please recheck.'}]};
+    wfState['2026-5']={drafter:'Pending',reviewer:'Pending',approver:'Pending',paymentDate:null,log:[]};
+    // 2025 - all months fully approved
+    for(let m=0;m<12;m++){
+      const mm=String(m+1).padStart(2,'0');
+      wfState['2025-'+m]={drafter:'Approved',reviewer:'Approved',approver:'Approved',paymentDate:'2025-'+mm+'-28',log:[
+        {time:'05-'+mm+'-2025 09:30',role:'Drafter',action:'Approved',remarks:''},
+        {time:'06-'+mm+'-2025 11:15',role:'Reviewer',action:'Approved',remarks:''},
+        {time:'07-'+mm+'-2025 14:40',role:'Approver',action:'Approved',remarks:'Finance payment date: 28-'+mm+'-2025'}]};
+    }
+  }
+  seed();
+
+  // ---- Summary table (all 12 months) ----
+  function buildSummary(){
+    const D = ds();
+    let html = "<thead><tr><th>#</th><th class='left'>Month ("+curYear+")</th><th>Car<br>Transactions</th><th>Cars (RM)</th><th>Motorcycle<br>Transactions</th><th>Motorcycles (RM)</th><th>Drafter<br>Status</th><th>Reviewer<br>Status</th><th>Approver<br>Status</th><th>Payment<br>Date</th><th>Action</th></tr></thead><tbody>";
+    for (let m=0; m<12; m++){
+      if (m < D.dataMonths){
+        const c = colSum(D.cars, m), b = colSum(D.bikes, m);
+        const pd = getSt(m).paymentDate ? fmtDate(getSt(m).paymentDate) : "-";
+        html += "<tr><td>"+(m+1)+"</td><td class='left'>"+months[m]+"</td><td class='num'>"+fmt(c)+"</td><td class='num'>"+fmtAmt(c*1)+"</td><td class='num'>"+fmt(b)+"</td><td class='num'>"+fmtAmt(b*2)+"</td>"
+             + statusCells(m)
+             + "<td>"+pd+"</td>"
+             + actionCell(m)+"</tr>";
+      } else {
+        html += "<tr><td>"+(m+1)+"</td><td class='left'>"+months[m]+"</td><td class='num'>-</td><td class='num'>-</td><td class='num'>-</td><td class='num'>-</td>"
+             + "<td><span class='stat-na'>No data</span></td><td>-</td><td>-</td><td>-</td><td>-</td></tr>";
+      }
+    }
+    let cy=0, by=0; for(let m=0;m<D.dataMonths;m++){ cy+=colSum(D.cars,m); by+=colSum(D.bikes,m); }
+    const label = D.dataMonths<12 ? "YEAR TO DATE (Jan&ndash;Jun)" : "FULL YEAR TOTAL";
+    html += "</tbody><tfoot><tr><td class='left' colspan='2'>"+label+"</td><td>"+fmt(cy)+"</td><td>"+fmtAmt(cy*1)+"</td><td>"+fmt(by)+"</td><td>"+fmtAmt(by*2)+"</td><td></td><td></td><td></td><td></td><td></td></tr></tfoot>";
+    document.getElementById('tbl-summary').innerHTML = html;
+    document.getElementById('rec-summary').innerHTML = "<b>12</b> record(s) in total";
+  }
+
+  function changeYear(y){ curYear = y; buildSummary(); }
+
+  // ---- Details for one month: combined Cars + Motorcycles by state ----
+  function buildDetails(m){
+    const D = ds();
+    curMonth = m;
+    document.getElementById('det-title').innerHTML = "Association Payment Listing &mdash; " + months[m] + " " + curYear;
+    document.getElementById('crumb-month').textContent = months[m] + " " + curYear;
+    document.getElementById('tag-veh').textContent = months[m] + " " + curYear;
+
+    // combined table: # | State | Cars (RM) | Motorcycles (RM)
+    let html = "<thead><tr><th>#</th><th class='state'>PEN &amp; E. MALAYSIA</th><th>Car Transactions</th><th>Cars (RM)</th><th>Motorcycle Transactions</th><th>Motorcycles (RM)</th></tr></thead><tbody>";
+    let tc = 0, tb = 0;
+    states.forEach(function(st,i){
+      html += "<tr><td>"+(i+1)+"</td><td class='state'>"+st+"</td><td class='num'>"+fmt(D.cars[i][m])+"</td><td class='num'>"+fmtAmt(D.cars[i][m]*1)+"</td><td class='num'>"+fmt(D.bikes[i][m])+"</td><td class='num'>"+fmtAmt(D.bikes[i][m]*2)+"</td></tr>";
+      tc += D.cars[i][m]; tb += D.bikes[i][m];
+    });
+    html += "</tbody><tfoot><tr><td class='left' colspan='2'>TOTAL</td><td>"+fmt(tc)+"</td><td>"+fmtAmt(tc*1)+"</td><td>"+fmt(tb)+"</td><td>"+fmtAmt(tb*2)+"</td></tr></tfoot>";
+    document.getElementById('tbl-veh').innerHTML = html;
+    document.getElementById('rec-veh').innerHTML = "<b>"+states.length+"</b> record(s) in total";
+
+    renderWorkflow(m);
+    renderInvoices(m);
+    renderLog(m);
+  }
+
+  function show(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+  function showHome(){ show('home'); }
+  function showSummary(){ buildSummary(); show('summary'); }
+  function showDetails(m){ buildDetails(m); show('details'); }
+
+  initSigPad();
+  buildSummary();
+</script>
+</body>
+</html>

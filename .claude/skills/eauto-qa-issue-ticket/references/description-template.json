@@ -1,0 +1,135 @@
+{
+  "_comment": "Ready-to-fill ADF for an eAuto QA-Issue description. Pass this object as `description` with contentFormat: 'adf'. Replace every <PLACEHOLDER>. Colours/marks are already wired: note panel (#eae6ff), orange Staging Test data (#ff991f), red/green headers (#bf2600 / #006644), blue step title (#0747A6), red failing words (#DE350B), green correct words (#006644). Duplicate the second tableRow if the ticket has more than one step/scenario. Delete these _comment keys before sending if your client rejects unknown keys (Jira ignores them, but cleaner to remove).",
+  "type": "doc",
+  "version": 1,
+  "content": [
+    {
+      "type": "panel",
+      "attrs": { "panelType": "note" },
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            { "type": "text", "text": "Testing Environment: ", "marks": [{ "type": "strong" }] },
+            { "type": "text", "text": "<STAGING ENV e.g. staging/uat3>" }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            { "type": "text", "text": "Browser: ", "marks": [{ "type": "strong" }] },
+            { "type": "text", "text": "Google Chrome" }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            { "type": "text", "text": "Module: ", "marks": [{ "type": "strong" }] },
+            { "type": "text", "text": "eAuto > <PORTAL> > <PAGE PATH>" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "Staging Test: ", "marks": [{ "type": "strong" }] },
+        { "type": "text", "text": "(<REFERENCE DATA e.g. eSTM id = ..., Vehicle No = ...>) ", "marks": [{ "type": "textColor", "attrs": { "color": "#ff991f" } }] },
+        { "type": "text", "text": "<one-sentence scenario / setup>" }
+      ]
+    },
+    {
+      "type": "table",
+      "attrs": { "isNumberColumnEnabled": false, "layout": "default" },
+      "content": [
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableHeader",
+              "attrs": {},
+              "content": [
+                { "type": "paragraph", "content": [
+                  { "type": "text", "text": "Item / Step to Simulate", "marks": [{ "type": "strong" }] }
+                ] }
+              ]
+            },
+            {
+              "type": "tableHeader",
+              "attrs": {},
+              "content": [
+                { "type": "paragraph", "content": [
+                  { "type": "text", "text": "Actual Result", "marks": [{ "type": "textColor", "attrs": { "color": "#bf2600" } }, { "type": "strong" }] }
+                ] }
+              ]
+            },
+            {
+              "type": "tableHeader",
+              "attrs": {},
+              "content": [
+                { "type": "paragraph", "content": [
+                  { "type": "text", "text": "Expected Result", "marks": [{ "type": "textColor", "attrs": { "color": "#006644" } }, { "type": "strong" }] }
+                ] }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            {
+              "type": "tableCell",
+              "attrs": {},
+              "content": [
+                { "type": "paragraph", "content": [
+                  { "type": "text", "text": "<SHORT STEP TITLE>", "marks": [{ "type": "textColor", "attrs": { "color": "#0747A6" } }, { "type": "strong" }] }
+                ] },
+                {
+                  "type": "orderedList",
+                  "attrs": { "order": 1 },
+                  "content": [
+                    { "type": "listItem", "content": [ { "type": "paragraph", "content": [ { "type": "text", "text": "<step 1>" } ] } ] },
+                    { "type": "listItem", "content": [ { "type": "paragraph", "content": [ { "type": "text", "text": "<step 2>" } ] } ] },
+                    { "type": "listItem", "content": [ { "type": "paragraph", "content": [ { "type": "text", "text": "<step 3>" } ] } ] }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {},
+              "content": [
+                {
+                  "type": "bulletList",
+                  "content": [
+                    { "type": "listItem", "content": [ { "type": "paragraph", "content": [
+                      { "type": "text", "text": "<what happened; put failing words like " },
+                      { "type": "text", "text": "does not show up", "marks": [{ "type": "textColor", "attrs": { "color": "#DE350B" } }, { "type": "strong" }] },
+                      { "type": "text", "text": " in red>" }
+                    ] } ] }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "tableCell",
+              "attrs": {},
+              "content": [
+                {
+                  "type": "bulletList",
+                  "content": [
+                    { "type": "listItem", "content": [ { "type": "paragraph", "content": [
+                      { "type": "text", "text": "<what should happen; put correct words like " },
+                      { "type": "text", "text": "should show up", "marks": [{ "type": "textColor", "attrs": { "color": "#006644" } }, { "type": "strong" }] },
+                      { "type": "text", "text": " in green>" }
+                    ] } ] }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

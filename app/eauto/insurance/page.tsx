@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Shield, Play, Download, Loader2, Square,
   TableProperties, LayoutGrid, AlertCircle, ChevronDown, ChevronUp, Eye, EyeOff, Trash2,
-  Search, X,
+  Search, X, Film,
 } from "lucide-react";
 import ExcelJS from "exceljs";
 import clsx from "clsx";
@@ -2667,6 +2667,15 @@ function RegressionTab() {
         </div>
       )}
 
+      {result?.video && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+          <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2 flex items-center gap-1.5">
+            <Film size={12} />Run recording
+          </p>
+          <video src={result.video} controls className="w-full rounded-lg border border-slate-800" />
+        </div>
+      )}
+
       <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
 
@@ -2900,7 +2909,7 @@ function RegressionTab() {
                     TPFT
                   </button>
                   <p className="text-[10px] text-red-500/80 text-center leading-tight">
-                    (pending to be deployed by dev. enable once changes has been pushed)
+                    (enable once TPFT can use)
                   </p>
                 </div>
               </div>

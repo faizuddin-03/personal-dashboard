@@ -1,0 +1,517 @@
+{
+  "preapp.businessName": {
+    "spec": {
+      "css": "#businessName",
+      "label": "/business registered name/i"
+    },
+    "matchedBy": "label=/business registered name/i",
+    "at": "2026-08-31T09:44:42.988Z"
+  },
+  "preapp.businessType": {
+    "spec": {
+      "css": "input[name=\"businessType\"][value=\"TRADING_SARAWAK\"]"
+    },
+    "matchedBy": "css=input[name=\"businessType\"][value=\"TRADING_SARAWAK\"]",
+    "at": "2026-08-31T09:44:43.174Z"
+  },
+  "preapp.businessLicenseNo": {
+    "spec": {
+      "css": "#businessLicenseNo",
+      "placeholder": "Business Trading License No"
+    },
+    "matchedBy": "placeholder=Business Trading License No",
+    "at": "2026-08-31T09:44:43.732Z"
+  },
+  "preapp.licenceFile": {
+    "spec": {
+      "role": "button",
+      "label": "/browse file/i"
+    },
+    "matchedBy": "role=button name=/browse file/i -> filechooser",
+    "at": "2026-08-31T09:44:44.137Z"
+  },
+  "preapp.tin": {
+    "spec": {
+      "css": "#tin",
+      "placeholder": "Tax Identification No (TIN)"
+    },
+    "matchedBy": "placeholder=Tax Identification No (TIN)",
+    "at": "2026-08-31T09:44:44.292Z"
+  },
+  "preapp.showroomAddress": {
+    "spec": {
+      "css": "#showroomAddress",
+      "label": "/showroom address/i"
+    },
+    "matchedBy": "label=/showroom address/i",
+    "at": "2026-08-31T09:44:44.433Z"
+  },
+  "preapp.showroomPostcode": {
+    "spec": {
+      "css": "#showroomPostcode",
+      "placeholder": "Showroom Postcode"
+    },
+    "matchedBy": "placeholder=Showroom Postcode",
+    "at": "2026-08-31T09:44:44.592Z"
+  },
+  "preapp.adminName": {
+    "spec": {
+      "css": "#adminName",
+      "label": "/^name/i"
+    },
+    "matchedBy": "css=#adminName",
+    "at": "2026-08-31T09:44:45.028Z"
+  },
+  "preapp.mobileNo": {
+    "spec": {
+      "css": "#mobileNo",
+      "placeholder": "Mobile No"
+    },
+    "matchedBy": "placeholder=Mobile No",
+    "at": "2026-08-31T09:44:45.168Z"
+  },
+  "preapp.adminEmail": {
+    "spec": {
+      "css": "#adminEmail",
+      "placeholder": "Email Address"
+    },
+    "matchedBy": "placeholder=Email Address",
+    "at": "2026-08-31T09:44:45.308Z"
+  },
+  "preapp.next.1": {
+    "spec": {
+      "css": "#nextSubmitBtn"
+    },
+    "matchedBy": "css=#nextSubmitBtn",
+    "at": "2026-08-31T09:44:45.683Z"
+  },
+  "preapp.next.2": {
+    "spec": {
+      "css": "#nextSubmitBtn"
+    },
+    "matchedBy": "css=#nextSubmitBtn",
+    "at": "2026-08-31T09:44:49.432Z"
+  },
+  "preapp.newBrn": {
+    "spec": {
+      "css": "#newBrn",
+      "placeholder": "New Business Registration No (BRN)"
+    },
+    "matchedBy": "placeholder=New Business Registration No (BRN)",
+    "at": "2026-08-24T04:31:09.216Z"
+  },
+  "preapp.oldBrn": {
+    "spec": {
+      "css": "#oldBrn",
+      "placeholder": "Old Business Registration No (BRN)"
+    },
+    "matchedBy": "placeholder=Old Business Registration No (BRN)",
+    "at": "2026-08-24T04:31:09.312Z"
+  },
+  "review.agreeTerms": {
+    "spec": {
+      "css": "#agreeTerms"
+    },
+    "matchedBy": "css=#agreeTerms",
+    "at": "2026-08-31T09:45:19.748Z"
+  },
+  "review.paymentMethod": {
+    "spec": {
+      "text": "/online banking \\(personal\\)/i"
+    },
+    "matchedBy": "text=/online banking \\(personal\\)/i",
+    "at": "2026-08-31T09:48:16.807Z"
+  },
+  "review.submitAndPay": {
+    "spec": {
+      "css": "#nextSubmitBtn"
+    },
+    "matchedBy": "css=#nextSubmitBtn",
+    "at": "2026-08-31T09:45:21.390Z"
+  },
+  "review.bank": {
+    "spec": {
+      "label": "/maybank/i",
+      "role": "img"
+    },
+    "matchedBy": "role=img name=/maybank/i",
+    "at": "2026-08-31T09:48:17.651Z"
+  },
+  "appform.upload1": {
+    "spec": {
+      "css": "input[type=file]"
+    },
+    "matchedBy": "css=input[type=file]",
+    "at": "2026-08-24T07:59:19.049Z"
+  },
+  "appform.upload2": {
+    "spec": {
+      "css": "input[type=file]"
+    },
+    "matchedBy": "css=input[type=file]",
+    "at": "2026-08-24T07:59:19.205Z"
+  },
+  "appform.upload3": {
+    "spec": {
+      "css": "input[type=file]"
+    },
+    "matchedBy": "css=input[type=file]",
+    "at": "2026-08-24T07:59:19.359Z"
+  },
+  "appform.next.0": {
+    "spec": {
+      "role": "button",
+      "label": "/^(next|save and next|continue)$/i"
+    },
+    "matchedBy": "role=button name=/^(next|save and next|continue)$/i",
+    "at": "2026-08-24T07:59:20.951Z"
+  },
+  "appform.next.1": {
+    "spec": {
+      "role": "button",
+      "label": "/^(next|save and next|continue)$/i"
+    },
+    "matchedBy": "role=button name=/^(next|save and next|continue)$/i",
+    "at": "2026-08-24T07:59:22.272Z"
+  },
+  "appform.next.2": {
+    "spec": {
+      "role": "button",
+      "label": "/^(next|save and next|continue)$/i"
+    },
+    "matchedBy": "role=button name=/^(next|save and next|continue)$/i",
+    "at": "2026-08-24T07:59:23.470Z"
+  },
+  "appform.next.3": {
+    "spec": {
+      "role": "button",
+      "label": "/^(next|save and next|continue)$/i"
+    },
+    "matchedBy": "role=button name=/^(next|save and next|continue)$/i",
+    "at": "2026-08-24T07:59:24.782Z"
+  },
+  "appform.next.4": {
+    "spec": {
+      "role": "button",
+      "label": "/^(next|save and next|continue)$/i"
+    },
+    "matchedBy": "role=button name=/^(next|save and next|continue)$/i",
+    "at": "2026-08-24T07:59:26.107Z"
+  },
+  "appform.next.5": {
+    "spec": {
+      "role": "button",
+      "label": "/^(next|save and next|continue)$/i"
+    },
+    "matchedBy": "role=button name=/^(next|save and next|continue)$/i",
+    "at": "2026-08-24T07:59:27.356Z"
+  },
+  "appform.businessType": {
+    "spec": {
+      "css": "#business-type-TRADING_SARAWAK"
+    },
+    "matchedBy": "css=#business-type-TRADING_SARAWAK",
+    "at": "2026-08-27T08:25:12.596Z"
+  },
+  "appform.companyName": {
+    "spec": {
+      "css": "#companyName"
+    },
+    "matchedBy": "css=#companyName",
+    "at": "2026-08-27T08:25:13.171Z"
+  },
+  "appform.tin": {
+    "spec": {
+      "css": "#tinNo"
+    },
+    "matchedBy": "css=#tinNo",
+    "at": "2026-08-27T08:25:13.328Z"
+  },
+  "appform.sst": {
+    "spec": {
+      "css": "#sstNo"
+    },
+    "matchedBy": "css=#sstNo",
+    "at": "2026-08-31T09:45:42.837Z"
+  },
+  "appform.showroomOwn": {
+    "spec": {
+      "css": "#showroom-type-OWN"
+    },
+    "matchedBy": "css=#showroom-type-OWN",
+    "at": "2026-08-24T08:05:55.403Z"
+  },
+  "appform.address1": {
+    "spec": {
+      "css": "#address1"
+    },
+    "matchedBy": "css=#address1",
+    "at": "2026-08-27T08:25:13.639Z"
+  },
+  "appform.postcode": {
+    "spec": {
+      "css": "#postcode"
+    },
+    "matchedBy": "css=#postcode",
+    "at": "2026-08-27T08:25:13.794Z"
+  },
+  "appform.noAdvertising": {
+    "spec": {
+      "css": "#hasAdvertisingPlatform1"
+    },
+    "matchedBy": "css=#hasAdvertisingPlatform1",
+    "at": "2026-08-24T08:05:57.327Z"
+  },
+  "appform.noAuctionHouse": {
+    "spec": {
+      "css": "#hasAuctionHouse2"
+    },
+    "matchedBy": "css=#hasAuctionHouse2",
+    "at": "2026-08-24T08:05:57.559Z"
+  },
+  "appform.noAssociation": {
+    "spec": {
+      "css": "#isNoAssociation1"
+    },
+    "matchedBy": "css=#isNoAssociation1",
+    "at": "2026-08-31T09:45:44.563Z"
+  },
+  "appform.next": {
+    "spec": {
+      "css": "#to-next-step"
+    },
+    "matchedBy": "css=#to-next-step",
+    "at": "2026-08-31T09:45:59.766Z"
+  },
+  "preapplisting.search": {
+    "spec": {
+      "label": "/company|business.*name/i",
+      "name": "companyName"
+    },
+    "matchedBy": "[name]=companyName",
+    "at": "2026-08-31T09:45:37.382Z"
+  },
+  "preapplisting.searchBtn": {
+    "spec": {
+      "role": "button",
+      "label": "/^search$/i"
+    },
+    "matchedBy": "role=button name=/^search$/i",
+    "at": "2026-08-31T09:45:37.537Z"
+  },
+  "preapp.approve": {
+    "spec": {
+      "role": "button",
+      "label": "/^approve$/i"
+    },
+    "matchedBy": "role=button name=/^approve$/i",
+    "at": "2026-08-31T09:45:39.382Z"
+  },
+  "preapp.approve.confirm": {
+    "spec": {
+      "role": "button",
+      "label": "/^(yes|ok|confirm|proceed)$/i"
+    },
+    "matchedBy": "role=button name=/^(yes|ok|confirm|proceed)$/i",
+    "at": "2026-08-31T09:45:39.555Z"
+  },
+  "appform.saveContinue": {
+    "spec": {
+      "role": "button",
+      "label": "/^save\\s*&\\s*continue$/i"
+    },
+    "matchedBy": "role=button name=/^save\\s*&\\s*continue$/i",
+    "at": "2026-08-31T09:46:01.940Z"
+  },
+  "appform.next.retry": {
+    "spec": {
+      "css": "#to-next-step"
+    },
+    "matchedBy": "css=#to-next-step",
+    "at": "2026-08-27T08:25:20.305Z"
+  },
+  "ack.sameAsDirector": {
+    "spec": {
+      "label": "/same as director/i",
+      "css": "input[type=checkbox]"
+    },
+    "matchedBy": "label=/same as director/i",
+    "at": "2026-08-31T09:47:04.180Z"
+  },
+  "appform.acknowledge": {
+    "spec": {
+      "label": "/acknowledg|declar|agree/i",
+      "css": "input[type=checkbox]"
+    },
+    "matchedBy": "css=input[type=checkbox] [match 7 of 7]",
+    "at": "2026-08-24T13:54:39.945Z"
+  },
+  "app.assignee.save": {
+    "spec": {
+      "role": "button",
+      "label": "/^save$/i"
+    },
+    "matchedBy": "role=button name=/^save$/i",
+    "at": "2026-08-31T09:47:19.784Z"
+  },
+  "appform.submit.dialog.1": {
+    "spec": {
+      "role": "button",
+      "label": "/^(save\\s*&\\s*continue|yes|ok|confirm)$/i"
+    },
+    "matchedBy": "role=button name=/^(save\\s*&\\s*continue|yes|ok|confirm)$/i",
+    "at": "2026-08-31T09:47:08.698Z"
+  },
+  "appform.success.ok": {
+    "spec": {
+      "role": "button",
+      "label": "/^ok$/i"
+    },
+    "matchedBy": "role=button name=/^ok$/i",
+    "at": "2026-08-31T09:47:10.179Z"
+  },
+  "app.submitForApproval": {
+    "spec": {
+      "role": "button",
+      "label": "/submit for approval/i"
+    },
+    "matchedBy": "role=button name=/submit for approval/i",
+    "at": "2026-08-31T09:47:24.749Z"
+  },
+  "app.submitForApproval.confirm": {
+    "spec": {
+      "role": "button",
+      "label": "/^(yes|ok|confirm|proceed)$/i"
+    },
+    "matchedBy": "role=button name=/^(yes|ok|confirm|proceed)$/i",
+    "at": "2026-08-31T09:47:24.934Z"
+  },
+  "app.approve": {
+    "spec": {
+      "role": "button",
+      "label": "/^approve$/i"
+    },
+    "matchedBy": "role=button name=/^approve$/i",
+    "at": "2026-08-31T09:47:30.071Z"
+  },
+  "app.approve.confirm": {
+    "spec": {
+      "role": "button",
+      "label": "/^(yes|ok|confirm|proceed)$/i"
+    },
+    "matchedBy": "role=button name=/^(yes|ok|confirm|proceed)$/i",
+    "at": "2026-08-31T09:47:30.231Z"
+  },
+  "regdocs.submit": {
+    "spec": {
+      "role": "button",
+      "label": "/^(submit|submit documents)$/i"
+    },
+    "matchedBy": "role=button name=/^(submit|submit documents)$/i",
+    "at": "2026-08-31T09:47:38.617Z"
+  },
+  "regdocs.submit.dialog.1": {
+    "spec": {
+      "role": "button",
+      "label": "/^(save\\s*&\\s*continue|yes|ok|confirm)$/i"
+    },
+    "matchedBy": "role=button name=/^(save\\s*&\\s*continue|yes|ok|confirm)$/i",
+    "at": "2026-08-31T09:47:40.300Z"
+  },
+  "regdocs.success.ok": {
+    "spec": {
+      "role": "button",
+      "label": "/^ok$/i"
+    },
+    "matchedBy": "role=button name=/^ok$/i",
+    "at": "2026-08-31T09:47:41.986Z"
+  },
+  "regdocs.verified": {
+    "spec": {
+      "role": "button",
+      "label": "/^verified$/i"
+    },
+    "matchedBy": "role=button name=/^verified$/i",
+    "at": "2026-08-31T09:47:45.372Z"
+  },
+  "regdocs.verified.confirm": {
+    "spec": {
+      "role": "button",
+      "label": "/^(yes|ok|confirm|proceed)$/i"
+    },
+    "matchedBy": "role=button name=/^(yes|ok|confirm|proceed)$/i",
+    "at": "2026-08-31T09:47:45.529Z"
+  },
+  "regfee.submitAndPay": {
+    "spec": {
+      "role": "button",
+      "label": "/submit\\s*(&|and)\\s*pay/i"
+    },
+    "matchedBy": "role=button name=/submit\\s*(&|and)\\s*pay/i",
+    "at": "2026-08-31T09:48:17.823Z"
+  },
+  "fpx.approve.1": {
+    "spec": {
+      "role": "button",
+      "label": "/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i"
+    },
+    "matchedBy": "role=button name=/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i",
+    "at": "2026-08-31T09:48:25.542Z"
+  },
+  "fpx.approve.2": {
+    "spec": {
+      "role": "button",
+      "label": "/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i"
+    },
+    "matchedBy": "role=button name=/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i",
+    "at": "2026-08-31T09:48:28.137Z"
+  },
+  "fpx.approve.3": {
+    "spec": {
+      "role": "button",
+      "label": "/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i"
+    },
+    "matchedBy": "role=button name=/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i",
+    "at": "2026-08-24T14:23:25.375Z"
+  },
+  "fpx.approve.4": {
+    "spec": {
+      "role": "button",
+      "label": "/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i"
+    },
+    "matchedBy": "role=button name=/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i",
+    "at": "2026-08-24T14:23:27.773Z"
+  },
+  "fpx.approve.5": {
+    "spec": {
+      "role": "button",
+      "label": "/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i"
+    },
+    "matchedBy": "role=button name=/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i",
+    "at": "2026-08-24T14:23:30.182Z"
+  },
+  "fpx.approve.6": {
+    "spec": {
+      "role": "button",
+      "label": "/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i"
+    },
+    "matchedBy": "role=button name=/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i",
+    "at": "2026-08-24T14:23:32.568Z"
+  },
+  "fpx.approve.7": {
+    "spec": {
+      "role": "button",
+      "label": "/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i"
+    },
+    "matchedBy": "role=button name=/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i",
+    "at": "2026-08-24T14:23:34.965Z"
+  },
+  "fpx.approve.8": {
+    "spec": {
+      "role": "button",
+      "label": "/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i"
+    },
+    "matchedBy": "role=button name=/^(pay|pay now|confirm|approve|submit|proceed|continue|agree|accept|ok|next|done|request tac)$/i",
+    "at": "2026-08-24T14:23:37.374Z"
+  }
+}

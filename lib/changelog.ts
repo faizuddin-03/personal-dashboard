@@ -141,6 +141,14 @@ export const RELEASED_VERSIONS: ChangelogVersion[] = [
 // Reset to [] after every prod-local push.
 export const CURRENT_CHANGES: ChangelogEntry[] = [
   {
+    title: "QA Knowledge Base Page",
+    description: "Settings → QA Knowledge Base opens a reader/editor for the knowledge/ markdown files: eAuto portals and environments, Service Hub business rules, payment gateways, the automation playbook, and known quirks. Provenance tags render as colour-coded badges (green verified, teal verified-live, blue from-ticket, red unconfirmed), and saving writes straight to the file on disk.",
+  },
+  {
+    title: "JIRA Ticket Studies",
+    description: "A new reading page under JIRA that collects every ticket we've studied in depth — Jira metadata, SRD requirements, what the SRD leaves undefined, decisions already settled with the requestor, what's still open, the resulting test script, and the automation feasibility verdict. Each ticket also has its own free-text notes box. First entry: EAINT-12153 (UCD onboarding payment channels).",
+  },
+  {
     title: "Note Checklists",
     description: "The note editor now supports task lists. Click the checklist icon (☑) in the toolbar to insert one, then tick items directly in the editor. Nested checklists are supported.",
   },

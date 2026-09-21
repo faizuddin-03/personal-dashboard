@@ -10,6 +10,7 @@ import { CURRENT_CHANGES } from "@/lib/changelog";
 import { InsuranceJob, InsuranceRunParams, saveInsuranceResults } from "@/lib/insurance";
 import { SecarangJob, SecarangRunParams, SecarangRow, saveSecarangResults, saveRegressionSecarangResults } from "@/lib/secarang";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
+import { useBackgroundRuns, type RunMap, type StartRunOptions } from "@/hooks/useBackgroundRuns";
 import { loadAndApplyTheme } from "@/lib/themes";
 import clsx from "clsx";
 
@@ -34,6 +35,15 @@ interface AppCtx {
   stopRegressionSecarangRun: () => void;
   clearRegressionSecarangJob: () => void;
   restoreRegressionSecarangJob: (job: SecarangJob) => void;
+  /**
+   * Runner state that survives navigating away, keyed by page. Insurance and
+   * Secarang above are the hand-rolled originals; anything new should use this
+   * instead of owning its own fetch. See hooks/useBackgroundRuns.ts.
+   */
+  runs: RunMap;
+  startRun: <T>(key: string, opts: StartRunOptions) => string;
+  stopRun: (key: string) => void;
+  clearRun: (key: string) => void;
 }
 
 export const AppContext = createContext<AppCtx>({
@@ -57,6 +67,10 @@ export const AppContext = createContext<AppCtx>({
   stopRegressionSecarangRun: () => {},
   clearRegressionSecarangJob: () => {},
   restoreRegressionSecarangJob: () => {},
+  runs: {},
+  startRun: () => "",
+  stopRun: () => {},
+  clearRun: () => {},
 });
 
 export function useApp() {
@@ -236,6 +250,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setRegressionSecarangJob(job);
   }
 
+  const { runs, startRun, stopRun, clearRun } = useBackgroundRuns();
+
   useAutoBackup();
 
   useEffect(() => {
@@ -285,6 +301,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       insuranceJob, startInsuranceRun, stopInsuranceRun, clearInsuranceJob, restoreInsuranceJob,
       secarangJob, startSecarangRun, stopSecarangRun, clearSecarangJob, restoreSecarangJob,
       regressionSecarangJob, startRegressionSecarangRun, stopRegressionSecarangRun, clearRegressionSecarangJob, restoreRegressionSecarangJob,
+      runs, startRun, stopRun, clearRun,
     }}>
       <div className="flex h-screen overflow-hidden">
         {/* Mobile overlay */}

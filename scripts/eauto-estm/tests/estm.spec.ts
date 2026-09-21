@@ -8,7 +8,18 @@ import { PaymentPage } from '../pages/PaymentPage';
 // Login (via fixture) → create transaction → pick ID type → buyer + vehicle
 // details with the two required "bypass" redirects → payment → Done.
 test('eSTM eSERAHAN transaction — full flow', async ({ loggedInPage: page, session, inputs }) => {
-  test.setTimeout(180_000);
+  // 3 minutes was not enough and the way it failed was silent: Playwright kills
+  // the test where it stands, so the browser was left parked on step 5 with the
+  // "Next" button untouched — indistinguishable from a selector that missed.
+  // The flow does real JPJ enquiries and a bank call; budget for that. The run
+  // route's own cap is 10 minutes, so stay under it to fail here (with a step
+  // list and a video) rather than there (with neither).
+  test.setTimeout(8 * 60_000);
+
+  // Post-login banners — there can be more than one stacked, and they
+  // intercept pointer events. No-op when none are showing.
+  session.logUrl('after login');
+  await session.closeBanners();
 
   const createPage = new CreateTransactionPage(page, session);
   await createPage.openAndCreate();

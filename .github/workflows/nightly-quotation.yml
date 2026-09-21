@@ -1,0 +1,90 @@
+name: Nightly insurance quotation (EAINT-11864)
+
+# The overnight half of the split. Creates a quotation and stops at step 3, on a
+# machine that is awake at 23:30 MYT — the laptop is off from 18:00. The email
+# half is checked by hand the next morning, because Mailtrap is read through a
+# signed-in Chrome profile that a runner does not have.
+#
+# ⚠️ BEFORE ENABLING: confirm this repository is PRIVATE. The secrets below are
+# real staging credentials. On a public repo, secrets are not exposed to forked
+# PRs but the run logs are world-readable, and this job logs the vehicle number
+# and base URL.
+
+on:
+  # ── SCHEDULE IS OFF ──
+  # Turned off 2026-08-17 so the flow can be proven under supervision first: a
+  # broken script running unattended at 23:30 is worse than no script at all.
+  # Uncomment the two lines below once a manual run has passed end to end.
+  #
+  # 15:30 UTC = 23:30 MYT (UTC+8). GitHub cron has NO timezone option, so this
+  # must be re-derived by hand if the target time ever moves. Actions cron is
+  # best-effort and commonly fires 5-30 min late; harmless here (the point is
+  # "after 23:00, before midnight"), but not if it ever becomes a hard cut-off.
+  #
+  # schedule:
+  #   - cron: '30 15 * * *'
+  workflow_dispatch:
+    # So it can be proven end to end without waiting for the night.
+    inputs:
+      vehicleNo:
+        description: 'Vehicle number (blank = the VEHICLE_NO secret)'
+        required: false
+      insurer:
+        description: 'Insurer to select at step 1'
+        required: false
+        default: 'Lonpac'
+
+concurrency:
+  # Never let two nights overlap — they share one vehicle number.
+  group: nightly-quotation
+  cancel-in-progress: false
+
+jobs:
+  quotation:
+    runs-on: ubuntu-latest
+    # Well above the spec's own 15-minute timeout, so Playwright reports the
+    # failure with a video and a trace instead of the runner killing it blind.
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: scripts/eauto-quotation-reminder
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: scripts/eauto-quotation-reminder/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Create the quotation (stop at step 3)
+        env:
+          QR_BASE_URL: ${{ secrets.QR_BASE_URL }}
+          QR_UCD_USER: ${{ secrets.QR_UCD_USER }}
+          QR_UCD_PASS: ${{ secrets.QR_UCD_PASS }}
+          QR_VEHICLE_NO: ${{ inputs.vehicleNo || secrets.QR_VEHICLE_NO }}
+          QR_IC: ${{ secrets.QR_IC }}
+          NQ_INSURER: ${{ inputs.insurer || 'Lonpac' }}
+        run: npx playwright test -c playwright.nightly.config.ts
+
+      - name: Upload report and failure artifacts
+        # `always()` so a failed night still leaves the video and trace behind —
+        # nobody is watching when this runs, so the artifacts are the only
+        # account of what happened.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-quotation-${{ github.run_id }}
+          path: |
+            scripts/eauto-quotation-reminder/playwright-report/
+            scripts/eauto-quotation-reminder/test-results/
+          retention-days: 14
+          if-no-files-found: ignore

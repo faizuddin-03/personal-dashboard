@@ -1,0 +1,17 @@
+{
+  "name": "eauto-company-checker",
+  "version": "1.0.0",
+  "description": "Company ROC / New ROC / TIN duplicate checker for eAuto staging back office (EAINT-12153 sub-function)",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}

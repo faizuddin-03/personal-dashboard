@@ -1,0 +1,569 @@
+<!--
+  URL: https://staging.eauto.my/uat1/view/account/company  (after clicking Search)
+  Env: uat1 (Hub Admin role)
+  Captured: 2026-08-21
+  Trimmed: none — all 8 matching rows kept, since this is a small result set and
+  the exact cell values (dashes for unset fields, real ROC/TIN examples) are
+  reference material for how "present" data looks.
+  This is the "present" state: #result's inner table has <tr> rows in <tbody>.
+  This is the signal the Company Details Checker (EAINT-12153 sub-function)
+  reads as "this value is already used in staging" — i.e. NOT safe to use for
+  that field.
+  Used by: knowledge/flow-ucd-company-listing.md
+-->
+<body>
+
+<div id="container">
+<table width="100%">
+<tbody><tr>
+    <td class="not-to-print">
+    <form id="search-form" style="margin-left:20px;">
+    <table style="width:100%">
+    <tbody><tr>
+        <td>
+            <b>Company Name:</b>
+        </td>
+        <td>
+            <input title="Company Name" class="filter-input" type="text" name="name" id="name" value="" size="20">
+        </td>
+        <td>
+            <b>Company ROC:</b>
+        </td>
+        <td>
+            <input title="Company ROC" class="filter-input" type="text" name="registrationCompany" id="registrationCompany" value="" size="20">
+        </td>
+
+        <td>
+            <b>New Company ROC:</b>
+        </td>
+        <td>
+            <input title="New Company ROC" class="filter-input" type="text" name="newRegistrationCompany" size="20">
+        </td>
+
+        <td>
+            <b>Company ID:</b>
+        </td>
+        <td>
+            <input title="Company ID" class="filter-input" type="text" name="companyAccountId" size="20">
+        </td>
+    </tr>
+    <tr>
+
+        <td>
+            <b>Email Address:</b>
+        </td>
+        <td>
+            <input title="Email Address" class="filter-input" type="text" name="email" size="20">
+        </td>
+
+
+        <td>
+            <b>Login ID:</b>
+        </td>
+        <td>
+            <input title="Login ID" class="filter-input" type="text" name="loginName" size="20">
+        </td>
+        <td>
+            <b>MyKad No:</b>
+        </td>
+        <td>
+            <input title="MyKad No" class="filter-input" type="text" name="refId" size="20">
+        </td>
+        <td>
+            <b>Contact Person Name:</b>
+        </td>
+        <td>
+            <input title="Contact Person Name" class="filter-input" type="text" name="contactPersonName" size="20">
+        </td>
+
+    </tr>
+    <tr>
+        <td>
+            <b>TIN Number:</b>
+        </td>
+        <td>
+            <input title="Tin Number" class="filter-input" type="text" name="tinNo" size="20">
+        </td>
+        <td>
+            <b>e-Invoice PIC Name:</b>
+        </td>
+        <td>
+            <input type="text" class="filter-input" id="eInvoiceContactName" name="eInvoiceContactName" size="20">
+        </td>
+        <td>
+            <b>e-Invoice PIC Contact No:</b>
+        </td>
+        <td>
+            <input type="text" class="filter-input" id="eInvoiceContactNumber" name="eInvoiceContactNumber" size="20">
+        </td>
+        <td>
+            <b>e-Invoice PIC Email:</b>
+        </td>
+        <td>
+            <input type="text" class="filter-input" id="eInvoiceContactEmail" name="eInvoiceContactEmail" size="20">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>SST Number:</b>
+        </td>
+        <td>
+            <input title="SST Number" class="filter-input" type="text" name="sstNo" size="20">
+        </td>
+        <td>
+            <b>Business Type:</b>
+        </td>
+        <td>
+            <select name="businessType" class="filter-input" style="padding:3px">
+                <option value="">All Types </option>
+                <option value="ROC">Sdn Bhd or Bhd </option>
+                <option value="ROB">Sole Proprietorship or Partnership </option>
+                <option value="TRADING_LICENSE">Trading License </option>
+                <option value="LLP">Limited Liability Partnership (LLP) </option>
+            </select>
+        </td>
+        <td>
+            <b>Transaction Restriction</b>
+        </td>
+        <td>
+            <select name="transactionRestriction" class="filter-input" style="padding:3px">
+                <option value="">All </option>
+                <option value="true">Yes </option>
+                <option value="false">No </option>
+            </select>
+        </td>
+        <td>
+            <b>Decision Maker Name:</b>
+        </td>
+        <td>
+            <input title="Decision Maker Name" class="filter-input" type="text" name="makerName" size="20">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Decision Maker Contact Number:</b>
+        </td>
+        <td>
+            <input title="Decision Maker Contact Number" class="filter-input" type="text" name="makerPhone" size="20">
+        </td>
+        <td>
+            <b>Decision Maker Email Address:</b>
+        </td>
+        <td>
+            <input title="Decision Maker Email Address" class="filter-input" type="text" name="makerEmail" size="20">
+        </td>
+        <td colspan="4"></td>
+    </tr>
+    <tr>
+        <td colspan="5">
+        </td>
+        <td colspan="3" align="right">
+            <br>
+            <select name="state" style="width:140px; padding:3px">
+            <option value=""> All State </option>
+<option value="01">JOHOR (01)</option>
+<option value="02">KEDAH (02)</option>
+<option value="03">KELANTAN (03)</option>
+<option value="04">MELAKA (04)</option>
+<option value="05">NEGERI SEMBILAN (05)</option>
+<option value="06">PAHANG (06)</option>
+<option value="07">PULAU PINANG (07)</option>
+<option value="08">PERAK (08)</option>
+<option value="09">PERLIS (09)</option>
+<option value="10">SELANGOR (10)</option>
+<option value="11">TERENGGANU (11)</option>
+<option value="12">SABAH (12)</option>
+<option value="13">SARAWAK (13)</option>
+<option value="14">WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option>
+<option value="15">WILAYAH PERSEKUTUAN LABUAN (15)</option>
+<option value="16">WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option>
+</select>
+
+            <select name="type" style="width:100px; padding:3px">
+                                <option value="ALL">All</option>
+                <option value="UCD">UCD</option>
+                <option value="Bank">Bank</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Workshop">Workshop</option>
+                <option value="JPJ">JPJ</option>
+            </select>
+
+            <input type="submit" id="to-search" value="Search" style="height: 35px;">
+
+            | <input type="button" id="to-new" value="Create New">
+            <a class="to-reset" href="#">Reset</a>
+
+
+                <a id="to-export" class="hidden" href="#" style="display: inline;">Export CSV</a>
+
+
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-top:10px; font-size:14px; text-align:center" colspan="8">
+            <b>Company Account Listing</b>
+        </td>
+    </tr>
+    </tbody></table>
+    </form>
+
+    </td>
+</tr>
+<tr>
+    <td id="result" colspan="2">
+<table style="width:100% !important">
+<colgroup><col width="10px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="50px">
+<col width="100px">
+<col width="100px">
+<col width="50px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="100px">
+<col width="200px">
+<col width="50px">
+<col width="200px">
+</colgroup><thead>
+    <tr class="header">
+    <th>#</th>
+    <th>Company Name</th>
+    <th>Company ROC</th>
+    <th>New Company ROC</th>
+    <th>TIN Number</th>
+    <th>Company ID</th>
+    <th>Contact No</th>
+    <th>Email Address</th>
+    <th>Company Type</th>
+    <th>UCD Group</th>
+    <th>Block STMS Transaction</th>
+    <th>RHB Status</th>
+    <th>Limited Features For UCD to UCD</th>
+    <th>Transaction Restriction</th>
+    <th>eLKM</th>
+    <th>RHB DD Number</th>
+    <th>Group</th>
+    <th>Company Account Status</th>
+    <th>Registration Date</th>
+    <th>Verified Date</th>
+    <th>Activation Date</th>
+    <th>Business Type</th>
+    <th>SST Number</th>
+    <th>e-Invoice PIC Name</th>
+    <th>e-Invoice PIC Contact No</th>
+    <th>e-Invoice PIC Email</th>
+    <th>Decision Maker Name</th>
+    <th>Decision Maker Contact Number</th>
+    <th>Decision Maker Email Address</th>
+    </tr>
+</thead>
+<tbody>
+
+    <tr class="even">
+    <td>1.</td>
+    <td><a href="/uat1/view/account/company/edit.get?id=1060148">FAIZ AUTOMOTIVE SDN. BHD.</a></td>
+    <td>1267120-H</td>
+    <td>201801005106</td>
+    <td>-</td>
+    <td>1060148</td>
+    <td>095687726</td>
+    <td>5d7eb0ca@gmail.com</td>
+    <td>UCD</td>
+    <td>-</td>
+    <td>-</td>
+    <td>Active</td>
+    <td>No</td>
+    <td>No</td>
+    <td>Yes </td>
+    <td>08572765168336</td>
+    <td>C4</td>
+    <td>Activated</td>
+    <td>05-09-2019</td>
+    <td>05-09-2019</td>
+    <td>05-09-2019</td>
+    <td>-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    </tr>
+
+    <tr class="odd">
+    <td>2.</td>
+    <td><a href="/uat1/view/account/company/edit.get?id=1149587">FAIZUDDIN 10164 E2E TS2 3</a></td>
+    <td>020311-A</td>
+    <td>192245580902</td>
+    <td>C59980851090</td>
+    <td>1149587</td>
+    <td>0189812839</td>
+    <td>faizuddin@modefair.com</td>
+    <td>UCD</td>
+    <td>UCD</td>
+    <td>-</td>
+    <td>Inactivated</td>
+    <td>No</td>
+    <td>No</td>
+    <td>Yes </td>
+    <td>-</td>
+    <td>-</td>
+    <td>New</td>
+    <td>07-07-2026</td>
+    <td>-</td>
+    <td>-</td>
+    <td>Sdn Bhd or Bhd</td>
+    <td>-</td>
+    <td class="col-limit-width">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+    <td>0189812839</td>
+    <td class="col-limit-width">faizuddin@modefair.com</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    </tr>
+
+    <tr class="even">
+    <td>3.</td>
+    <td><a href="/uat1/view/account/company/edit.get?id=1149603">FAIZUDDIN 11979_TS_01</a></td>
+    <td>120934-R</td>
+    <td>202239049012</td>
+    <td>12345678910</td>
+    <td>1149603</td>
+    <td>0111111111</td>
+    <td>nakjsdfaj@email.com</td>
+    <td>UCD</td>
+    <td>Authorised Dealer</td>
+    <td>-</td>
+    <td>Inactivated</td>
+    <td>No</td>
+    <td>No</td>
+    <td>Yes </td>
+    <td>-</td>
+    <td>-</td>
+    <td>Activated</td>
+    <td>11-08-2026</td>
+    <td>-</td>
+    <td>11-08-2026</td>
+    <td>-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    <td class="col-limit-width">FAIZ 1197901</td>
+    <td>0189999999</td>
+    <td class="col-limit-width">nakjsdfaj@email.com</td>
+    </tr>
+
+    <tr class="odd">
+    <td>4.</td>
+    <td><a href="/uat1/view/account/company/edit.get?id=1109700">FAIZUDDIN AUTO TEST</a></td>
+    <td>030311-A</td>
+    <td>202245580902</td>
+    <td>C59980851090</td>
+    <td>1109700</td>
+    <td>0189812839</td>
+    <td>faizuddin@modefair.com</td>
+    <td>UCD</td>
+    <td>-</td>
+    <td>-</td>
+    <td>Active</td>
+    <td>No</td>
+    <td>No</td>
+    <td>Yes </td>
+    <td>235498893030</td>
+    <td>C4</td>
+    <td>Activated</td>
+    <td>03-04-2026</td>
+    <td>03-04-2026</td>
+    <td>03-04-2026</td>
+    <td>Sdn Bhd or Bhd</td>
+    <td>-</td>
+    <td class="col-limit-width">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+    <td>0189812839</td>
+    <td class="col-limit-width">faizuddin@modefair.com</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    </tr>
+
+    <tr class="even">
+    <td>5.</td>
+    <td><a href="/uat1/view/account/company/edit.get?id=1109702">FAIZUDDIN AUTO TEST 2</a></td>
+    <td>030312-A</td>
+    <td>202245580903</td>
+    <td>D0883202904</td>
+    <td>1109702</td>
+    <td>0189812839</td>
+    <td>faizbidi03@gmail.com</td>
+    <td>UCD</td>
+    <td>-</td>
+    <td>-</td>
+    <td>Active</td>
+    <td>No</td>
+    <td>No</td>
+    <td>Yes </td>
+    <td>783456657878</td>
+    <td>C4</td>
+    <td>Activated</td>
+    <td>06-04-2026</td>
+    <td>06-04-2026</td>
+    <td>06-04-2026</td>
+    <td>Sdn Bhd or Bhd</td>
+    <td>-</td>
+    <td class="col-limit-width">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+    <td>0189812839</td>
+    <td class="col-limit-width">faizbidi03@gmail.com</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    </tr>
+
+    <tr class="odd">
+    <td>6.</td>
+    <td><a href="/uat1/view/account/company/edit.get?id=1109703">FAIZUDDIN AUTO TEST 3</a></td>
+    <td>202312340987</td>
+    <td>-</td>
+    <td>D0883202904</td>
+    <td>1109703</td>
+    <td>0189812839</td>
+    <td>faizbidi03@gmail.com</td>
+    <td>UCD</td>
+    <td>-</td>
+    <td>-</td>
+    <td>Active</td>
+    <td>No</td>
+    <td>No</td>
+    <td>Yes </td>
+    <td>837433432929</td>
+    <td>C4</td>
+    <td>Activated</td>
+    <td>06-04-2026</td>
+    <td>06-04-2026</td>
+    <td>06-04-2026</td>
+    <td>Sdn Bhd or Bhd</td>
+    <td>-</td>
+    <td class="col-limit-width">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+    <td>0189812839</td>
+    <td class="col-limit-width">faizbidi03@gmail.com</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    </tr>
+
+    <tr class="even">
+    <td>7.</td>
+    <td><a href="/uat1/view/account/company/edit.get?id=1109714">FAIZUDDIN TEST 11978 02</a></td>
+    <td>003706420-X</td>
+    <td>202503063255</td>
+    <td>D59999969010</td>
+    <td>1109714</td>
+    <td>0188888888</td>
+    <td>ajfhakjsdhf@email.com</td>
+    <td>UCD</td>
+    <td>Authorised Dealer</td>
+    <td>-</td>
+    <td>Inactivated</td>
+    <td>No</td>
+    <td>No</td>
+    <td>Yes </td>
+    <td>-</td>
+    <td>-</td>
+    <td>Activated</td>
+    <td>10-08-2026</td>
+    <td>-</td>
+    <td>10-08-2026</td>
+    <td>Sole Proprietorship or Partnership</td>
+    <td>-</td>
+    <td class="col-limit-width">NUR IZNI BINTI ZURNI</td>
+    <td>01111111112</td>
+    <td class="col-limit-width">ajfhakjsdhf@email.com</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    </tr>
+
+    <tr class="odd">
+    <td>8.</td>
+    <td><a href="/uat1/view/account/company/edit.get?id=1070064">FAIZUL AZHAR AUTO</a></td>
+    <td>AS0345074-U</td>
+    <td>201203005133</td>
+    <td>-</td>
+    <td>1070064</td>
+    <td>0124295699</td>
+    <td>bf0fde7a@yahoo.com.my</td>
+    <td>UCD</td>
+    <td>-</td>
+    <td>-</td>
+    <td>Active</td>
+    <td>No</td>
+    <td>No</td>
+    <td>Yes </td>
+    <td>80433370247886</td>
+    <td>C4</td>
+    <td>Activated</td>
+    <td>01-11-2013</td>
+    <td>-</td>
+    <td>29-04-2015</td>
+    <td>-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    <td class="col-limit-width">-</td>
+    <td>-</td>
+    <td class="col-limit-width">-</td>
+    </tr>
+
+</tbody></table></td>
+</tr>
+</tbody></table>
+</div>
+
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar" style="width: 350px !important;">
+                <ol class="inline">
+                    <li>
+                        <a href="/uat1/home/" id="home-link">Home |</a>
+                    </li>
+                    <li><a href="#" id="menu-link">Menu <img src="/uat1/images/arrow_down.gif"></a></li>
+                </ol>
+                <div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onclick="window.location='/uat1/view/support/incomplete-txn/';">
+<span>
+    3 Pending Transaction Found!
+</span>
+</div>
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">Muhammad Fared</span>,</li>
+                <li><a href="/uat1/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+</div>
+</body>

@@ -100,6 +100,59 @@ function emptyState(): KanbanState {
   return { urgent: [], todo: [], ongoing: [], "on-hold": [], finished: [] };
 }
 
+// ── Per-column sort by date moved ───────────────────────────
+// "manual" keeps the hand-arranged order stored in KanbanState. The two date modes
+// are display-only — they never rewrite the stored array, so switching back to
+// "manual" restores the arrangement exactly as it was left.
+
+export type ColumnSort = "manual" | "asc" | "desc";
+export type ColumnSortState = Record<ColumnId, ColumnSort>;
+
+export const SORT_META: Record<ColumnSort, { label: string; hint: string }> = {
+  manual: { label: "Manual",      hint: "Default order — drag to arrange" },
+  asc:    { label: "Oldest move", hint: "Sorted by date moved, oldest first — drag to reorder is off" },
+  desc:   { label: "Newest move", hint: "Sorted by date moved, newest first — drag to reorder is off" },
+};
+
+/** Cycles Manual → Oldest → Newest → Manual. */
+export function nextColumnSort(sort: ColumnSort): ColumnSort {
+  return sort === "manual" ? "asc" : sort === "asc" ? "desc" : "manual";
+}
+
+/**
+ * When the card last entered its column. Cards created before `columnEnteredAt`
+ * existed, and cards that have never moved, fall back to their creation date —
+ * the same rule `timeInColumn` uses.
+ */
+export function movedAt(card: KanbanCard): number {
+  const raw = card.columnEnteredAt ?? card.createdAt;
+  const t = new Date(raw).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
+/** Display-only ordering. Equal timestamps keep their relative manual order (stable sort). */
+export function sortCardsByMove(cards: KanbanCard[], sort: ColumnSort): KanbanCard[] {
+  if (sort === "manual") return cards;
+  const dir = sort === "asc" ? 1 : -1;
+  return [...cards].sort((a, b) => (movedAt(a) - movedAt(b)) * dir);
+}
+
+function emptySortState(): ColumnSortState {
+  return { urgent: "manual", todo: "manual", ongoing: "manual", "on-hold": "manual", finished: "manual" };
+}
+
+export function getColumnSort(): ColumnSortState {
+  if (typeof window === "undefined") return emptySortState();
+  try {
+    const raw = localStorage.getItem("kanban_column_sort");
+    return raw ? { ...emptySortState(), ...JSON.parse(raw) } : emptySortState();
+  } catch { return emptySortState(); }
+}
+
+export function saveColumnSort(state: ColumnSortState) {
+  localStorage.setItem("kanban_column_sort", JSON.stringify(state));
+}
+
 export function isOverdue(card: KanbanCard): boolean {
   if (!card.dueDate || card.columnId === "finished") return false;
   const dateStr = card.dueTime ? `${card.dueDate}T${card.dueTime}` : `${card.dueDate}T23:59:59`;

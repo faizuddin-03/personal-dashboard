@@ -1,0 +1,177 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URLs: /uat1/view/aatf/dereg/enquiry/view.do?id=<id>  (transaction details)
+        /uat1/view/aatf/dereg/enquiry/main.do           (listing, before/after search)
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome. Forms kept complete.
+  Confirms the "eDereg Pre-Checking: Yes" link on the details page cross-references
+  back into the pre-checking flow by vehicle number
+  (/uat1/view/aatf/dereg/precheck/enquiry/main.do?vehicleNo=HXA002&autoSearch=true).
+  Used by: knowledge/flow-edereg.md (§3 URL map, §5.4 Trx Status / COD column)
+-->
+
+<!-- ============================================================ -->
+<!-- Deregistration Transaction Details view -->
+<!-- ============================================================ -->
+<div id="container">
+<form id="transaction-form">
+<input type="hidden" name="transactionId" id="transactionId" value="085b3a88-61ae-4dda-bdeb-d31cf2be40a2">
+<table>
+    <tbody>
+        <tr>
+            <td colspan="4" class="title1">
+                <input type="button" value="« Back" onclick="location='/uat1/view/aatf/dereg/enquiry/main.do'">
+                <span style="color:red">HXA002</span> (Ref No.: D680000560) - Transaction Details
+            </td>
+            <td><span class="approved" style="font-size:21px;">Approved</span></td>
+        </tr>
+        <tr><td><b>Category:</b></td><td>Malaysian to AATF</td><td><b>Date Created:</b></td><td>21-08-2026 03:28pm</td></tr>
+        <tr><td><b>Engine No:</b></td><td>PX451*-/ H36TT</td><td><b>e-Invoice Submission Date:</b></td><td>-</td></tr>
+        <tr><td><b>Chassis No:</b></td><td>UAV232*-/ H36TT</td><td><b>LHDN Response Status:</b></td><td><b><span style="color:#FF4000">Failed</span></b></td></tr>
+        <tr><td><b>Vehicle Make / Model:</b></td><td>Comel / Manja 110</td><td><b>e-Invoice Validation Date:</b></td><td>-</td></tr>
+        <tr>
+            <td><b>Manufacturing Year:</b></td><td>2009</td>
+            <td><b>eDereg Pre-Checking:</b></td>
+            <td><a href="/uat1/view/aatf/dereg/precheck/enquiry/main.do?vehicleNo=HXA002&amp;autoSearch=true">Yes</a></td>
+        </tr>
+    </tbody>
+</table>
+<hr>
+<div class="title2">Owner</div>
+<table>
+    <tbody>
+        <tr><td><b>Name:</b></td><td>MUHAMMAD FAIZUDDIN BIN BIDI</td></tr>
+        <tr><td><b>MyKad. No:</b></td><td>030217141005</td></tr>
+        <tr><td><b>Address:</b></td><td class="address">24, JALAN SULAM 19/14D, 40300 SHAH ALAM, SELANGOR</td></tr>
+        <tr><td><b>Mobile No:</b></td><td>01898122903</td></tr>
+        <tr><td><b>Email:</b></td><td>faizbidi03@gmail.com</td></tr>
+        <tr><td><b>MyKad/Thumbprint verified on:</b></td><td>21-08-2026 03:28pm</td></tr>
+        <tr>
+            <td><b>Uploaded Document:</b><br><button id="openAll" type="button">OPEN ALL</button></td>
+            <td><a href="/uat1/view/aatf/dereg/photo/view.do?id=D680000560%2FPhoto1" class="to-view">Photo 1</a></td>
+        </tr>
+    </tbody>
+</table>
+<div class="title2">AATF</div>
+<table>
+    <tbody>
+        <tr><td><b>AATF:</b></td><td>FAIZUDDIN AATF 2</td></tr>
+        <tr><td><b>Company Reg. No:</b></td><td>003001-A</td></tr>
+        <tr><td><b>Company Address:</b></td><td class="address">30, JALAN PERMATA BLOK ANGSANA APARTMENT PUTERI LILIN, 55000 SETAPAK, WILAYAH PERSEKUTUAN KUALA LUMPUR</td></tr>
+        <tr><td><b>Company Contact No:</b></td><td>0111111111</td></tr>
+        <tr><td colspan="2" class="title3">AATF's Authorised Representative</td></tr>
+        <tr><td><b>Name:</b></td><td>MUHAMMAD FAIZUDDIN BIN BIDI</td></tr>
+        <tr><td><b>MyKad No:</b></td><td>030217141005</td></tr>
+        <tr><td><b>Mobile No:</b></td><td>0189812839</td></tr>
+        <tr><td><b>MyKad/Thumbprint verified on:</b></td><td>21-08-2026 03:30pm</td></tr>
+        <tr><td colspan="2" class="title3">AATF's Authorised Representative (Uploaded COD)</td></tr>
+        <tr><td><b>Name:</b></td><td>-</td></tr>
+        <tr><td><b>MyKad No:</b></td><td>-</td></tr>
+        <tr><td><b>Mobile No:</b></td><td>-</td></tr>
+        <tr><td><b>Vehicle Destruction Date:</b></td><td>-</td></tr>
+        <tr><td><b>COD Uploaded on:</b></td><td>-</td></tr>
+    </tbody>
+</table>
+<hr>
+<div class="title2">JPJ Enquiry:</div>
+<table><tbody>
+    <tr><td>1.</td><td>21-08-2026 03:31pm - <span style="color:green"><b>OK</b></span> (GLB000000I)</td></tr>
+    <tr><td>2.</td><td>21-08-2026 03:32pm - <span style="color:green"><b>OK</b></span> (GLB000000I)</td></tr>
+</tbody></table>
+<div class="title2">Payment Details:</div>
+<table><tbody>
+    <tr><td>1.</td><td>21-08-2026 03:32pm - RHB (DRG260821000001-HXA002) - <span style="color:green"><b>OK</b></span></td></tr>
+</tbody></table>
+<hr>
+<div class="title2">JPJ Enquiry Status:</div>
+<table>
+    <tbody>
+        <tr><td><b>Valid As At:</b></td><td><span class="requestAt label">21 Aug 2026 03:32 pm</span></td></tr>
+        <tr><td><b>Blacklisted:</b></td><td><span class="blacklisted label" style="color:black">No</span></td></tr>
+        <tr><td><b>Hak Milik Dituntut:</b></td><td><span class="hakmilik label" style="color:black">No</span></td></tr>
+        <tr><td><b>Condition Code:</b></td><td><span class="conditionCodeLabel label" style="color:black">No</span></td></tr>
+    </tbody>
+</table>
+<hr>
+<div class="title2">JPJ Deregistration (Final Submission):</div>
+<table><tbody><tr><td>21-08-2026 03:32pm <span class="successful"><b>Successful</b></span></td></tr></tbody></table>
+<hr>
+<div class="title2">JPJ COD Submission:</div>
+<div style="color:red">-</div>
+</form>
+</div>
+
+<!-- ============================================================ -->
+<!-- Deregistration Transaction Listing — blank, then after Search Now -->
+<!-- ============================================================ -->
+<div id="container">
+<form id="search-form">
+    <b>Vehicle No.:</b> <input type="text" name="vehicleNo" id="vehicleNo">
+    <span id="not-draft">
+        <b>Transaction No.:</b> <input type="text" name="refNo" id="refNo" size="10">
+        <b>From</b>: <input type="text" name="fromDate" id="fromDate" readonly="readOnly">
+        <b>To</b>: <input type="text" name="toDate" id="toDate" readonly="readOnly">
+        <b>Filter by</b>
+        <select name="status" id="to-filter">
+            <option value="" selected="">Transaction Status</option>
+            <option value="Approved">Approved</option><option value="Failed">Failed</option>
+            <option value="Pending">Pending</option><option value="Cancelled">Cancelled</option>
+            <option value="Expired">Expired</option>
+        </select>
+        <b>Payment From:</b> <input type="text" name="paymentFrom" id="paymentFrom" readonly="readOnly">
+        <b>Payment To:</b> <input type="text" name="paymentTo" id="paymentTo" readonly="readOnly">
+        <b>COD:</b>
+        <select name="isJpjDecApproved" id="to-cod">
+            <option value="" selected="">All</option><option value="true">Yes</option><option value="false">No</option>
+        </select>
+        <b>PBT</b>:
+        <select name="pbtCompanyId" id="to-pbt">
+            <option value="" selected="">All</option><option value="INDIVIDU">INDIVIDU</option>
+            <option value="5020001">DFSADRWE - CHAR MIFASO</option><option value="5070001">GGT - CHARMAIN AATF</option>
+            <option value="5040001">MBMB - MAJLIS BANDARAYA MELAKA BERSEJARAH</option><option value="5050001">MBS - MAJLIS BANDARAYA SEREMBAN</option>
+            <option value="5100001">MPKJ - MAJLIS PERBANDARAN KAJANG</option><option value="5100002">MBPJ - MAJLIS PERBANDARAN PETALING JAYA</option>
+            <option value="5040002">MBJ - MAJLIS PERBANDARAN JASIN</option><option value="5140001">TEST - NICK PBT TEST</option>
+        </select>
+    </span>
+    <input type="submit" id="to-search" value="SEARCH Now">
+    <span style="color:red"> &lt;&lt; Please click to show record(s) </span>
+    <a class="to-reset" href="#">Reset</a>
+    <a id="to-export" class="hidden" href="#">Export CSV</a>
+</form>
+<div id="result">
+<!-- populated after Search Now: -->
+<table>
+    <tbody>
+        <tr class="header">
+            <th>#</th><th>Vehicle</th><th>Transaction No.</th><th>Owner Name</th><th>Created At</th>
+            <th>Method</th><th>JPJ Enquiry</th><th>Payment</th><th>JPJ Dereg</th><th>Tx Status</th>
+            <th>COD</th><th>e-Invoice Status</th><th>Remarks</th><th>Action</th>
+        </tr>
+        <tr class="odd">
+            <td class="center">1</td>
+            <td class="center">HXA002</td>
+            <td class="center">D680000560</td>
+            <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+            <td class="center">21-08-2026 15:28</td>
+            <td class="center">RHB</td>
+            <td class="center" style="color:green"><b>OK</b></td>
+            <td class="center" style="color:green"><b>OK</b></td>
+            <td class="center" style="color:green"><b>OK</b></td>
+            <td class="center" style="color:green"><b>Approved</b></td>
+            <td class="center"><b style="color:red">No</b></td>
+            <td class="center" style="color:#FF4000"><b>Failed</b></td>
+            <td>No TIN info has been provided.</td>
+            <td class="center">
+                <a href="/uat1/view/aatf/dereg/enquiry/view.do?id=085b3a88-61ae-4dda-bdeb-d31cf2be40a2" title="to view D680000560">View</a>
+                | <a class="to-retry" href="/uat1/view/aatf/dereg/cod/auth-aatf.do?id=085b3a88-61ae-4dda-bdeb-d31cf2be40a2" title="to upload COD">Upload COD</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</div>
+<!-- Note: "COD" (Certificate of Destruction) is a DISTINCT post-deregistration step
+     not covered by this ticket's captures — Approved tx status still shows
+     "COD: No" and an "Upload COD" action link, confirming COD is a separate
+     workflow after JPJ Deregistration succeeds. -->

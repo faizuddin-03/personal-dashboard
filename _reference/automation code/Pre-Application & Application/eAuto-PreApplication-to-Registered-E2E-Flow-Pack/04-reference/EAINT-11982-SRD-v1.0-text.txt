@@ -1,0 +1,303 @@
+=== PAGE 1 ===
+SYSTEM REQUIREMENT DOCUMENT (SRD)
+Requirement [eAuto-Application] To Allow BackOffice user to Extend Expiration of Application
+Version Version 1.0
+Latest Revision Date 26.08.2026 (Wednesday)
+=== PAGE 2 ===
+CONTENTS
+1.0 DOCUMENT INFORMATION .................................................................................................................................................... 3
+1.1 Purpose ............................................................................................................................................................................. 3
+1.2 Intended Audience ............................................................................................................................................................. 3
+1.3 Revision History ................................................................................................................................................................. 3
+1.4 Glossary of Terms ............................................................................................................................................................. 4
+1.5 Associated Document(s) .................................................................................................................................................... 4
+2.0 REQUIREMENT ........................................................................................................................................................................ 6
+2.1 High-Level Requirement Overview ..................................................................................................................................... 6
+2.1.1 Assumptions ............................................................................................................................................................. 7
+2.1.2 Out-of-Scope ............................................................................................................................................................. 7
+2.2 Key Highlights and Baseline Requirements ........................................................................................................................ 8
+2.2.1 Background ............................................................................................................................................................... 8
+2.2.2 Existing Issue & Expected Behaviour.......................................................................................................................... 9
+2.2.3 Affected Pages ........................................................................................................................................................ 10
+2.2.4 Extend Button Availability ........................................................................................................................................ 11
+2.2.5 Application Extension Handling ............................................................................................................................... 14
+2.2.6 Concurrent Extension Handling ................................................................................................................................ 17
+Appendix — Requirement Change Log .......................................................................................................................................... 18
+=== PAGE 3 ===
+1.0 DOCUMENT INFORMATION
+1.1 Purpose
+The System Requirements Document outlines the agreed system specifications. Once approved, it becomes the baseline to ensure
+the system meets business goals. Sign-off is required for development to start, and any changes must follow the System
+Enhancement Management process.
+1.2 Intended Audience
+The intended audience for this document includes project stakeholders and any team members involved in defining, implementing,
+or validating the system requirements.
+1.3 Revision History
+This section records all modifications to the document until it reaches Version 1.0, at which point it is finalized and established as
+the baseline for future reference. Once baselined, any new changes will be assessed based on their severity — significant changes
+may result in an addendum, while less critical updates may be handled through a formal change request.
+Version No Date Revised By Reason for Revision
+0.1 26.08.2026 (Wed) Lim Yi Link Initial Draft
+1.0 26.08.2026 (Wed) Lim Yi Link Send out for external review
+=== PAGE 4 ===
+1.4 Glossary of Terms
+# Abbreviation / Term Interpretation / Description
+1 Potential UCD Prospective Used Car Dealer going through the onboarding journey.
+2 Assignee eAuto internal staff or BackOffice reviewer handling the application.
+3 PA Pre-Application
+1.5 Associated Document(s)
+# Item Location / URL Rationale for Relevance
+1 EAINT-11982 — [eAuto-Application] To Allow https://mfservices.atlassian.net/br Main enhancement ticket
+BackOffice user to Extend Expiration of owse/EAINT-11982
+Application
+2 CCB-924 — EAUTO | To Allow BackOffice user https://mfservices.atlassian.net/br Change Control Board ticket
+to Extend Expiration of Application owse/CCB-924
+3 EAUTO-947 — ENHANCEMENT REQUEST FOR https://mfservices.atlassian.net/br Source enhancement request
+PRE-ONBOARDING AND ONBOARDING owse/EAUTO-947
+(REMINDER, EXTENSION & REACTIVATION)
+=== PAGE 5 ===
+# Item Location / URL Rationale for Relevance
+4 EAINT-11868 — [eAuto-Application] To https://mfservices.atlassian.net/br Related enhancement covering
+Implement Email Reminders & Application owse/EAINT-11868 reminder emails and application
+Link Reactivation link reactivation
+5 Figma Design (UI/UX Reference) — Extend https://www.figma.com/design/0S UI/UX design reference for the
+feature 3hEtbYShUSNS3OZS6PyC/Onboard Extend feature
+ing-form?node-id=9058-
+29823&t=DVf2SGZndP8SaMCJ-1
+=== PAGE 6 ===
+2.0 REQUIREMENT
+2.1 High-Level Requirement Overview
+# Item Description
+2.1.1 Enhancement Overview Allow a BackOffice user to extend the expiration of a potential UCD
+application once for 30 days, with remarks recorded against the
+application.
+2.1.2 Key Value(s) Expected Give BackOffice users the flexibility to keep a near-expiry or recently
+expired application active without a reactivation payment, so that fewer
+applications lapse before completion.
+2.1.3 Additional Note(s) The Application Expiry Extension scope was separated from EAINT-
+11868, which now covers reminder emails and application link
+reactivation only.
+=== PAGE 7 ===
+2.1.1 Assumptions
+# Assumption
+1 Application link reactivation under EAINT-11868 is available for applications that are no longer eligible for extension.
+2 The list of BackOffice user accounts excluded from the Extend button is maintained by the Ops team.
+3 The existing Remarks field behaviour in the Application remains unchanged.
+2.1.2 Out-of-Scope
+# Item Reason
+1 Automated reminder emails Covered under EAINT-11868.
+2 Application link reactivation and the reactivation fee Covered under EAINT-11868.
+handling
+3 Changes to the Softcopy Docs and Hardcopy & Acc Existing status flows remain unchanged.
+Created status flows
+=== PAGE 8 ===
+2.2 Key Highlights and Baseline Requirements
+The following key highlights and requirements were established during the initial sync-up sessions with the requestor. As this
+forms the baseline, any changes requested thereafter may result in adjustments to scope, timeline, or deliverables, for which the
+requestor will be responsible to review and confirm.
+2.2.1 Background
+# Affected Item Description
+1 Project eAuto
+2 Portal BackOffice
+3 Module Application
+4 Request Allow a BackOffice user to extend the expiration of a potential UCD application.
+5 Additional Note -
+=== PAGE 9 ===
+2.2.2 Existing Issue & Expected Behaviour
+# Item Description
+1 Existing Issue / Behaviour There is currently no mechanism for a BackOffice user to extend an application
+before or shortly after it expires. Once an application expires, it can only be revived
+through application link reactivation.
+2 Expected New Handling / The system shall allow a BackOffice user to extend an application once for 30 days.
+Behaviour
+The Extend button shall be available from 30 days before the expiry date until 3
+months after the expiry date.
+Extension remarks shall be recorded and the updated expiry date shall be reflected
+in the Application Listing.
+=== PAGE 10 ===
+2.2.3 Affected Pages
+# Affected Pages Description
+1 Application (BackOffice view) Extend button and entry of extension remarks.
+2 Application — Right Sidebar Display of the saved extension remarks.
+3 Application Listing Display of the updated Application Expiry Date after extension.
+=== PAGE 11 ===
+2.2.4 Extend Button Availability
+# Requirement ID Item Description Acceptance Criteria
+1 EAINT-11982- Extend Button The system shall display the Extend Extend button is displayed only when both
+REQ-001 Display button on the Application page when conditions are met and the application
+Conditions both of the following conditions are has not been extended before.
+met:
+a. The potential UCD is allowed to
+submit registration documents
+(Softcopy and Hardcopy) after
+Application Status = Approved; and
+b. The Hardcopy & Acc Created status
+is not Registered.
+The Extend button shall be displayed
+regardless of the current Softcopy
+Docs status and Hardcopy & Acc
+Created status, except when Hardcopy
+& Acc Created = Registered.
+2 EAINT-11982- Extend Button The system shall not display the Extend button is not displayed when
+REQ-002 Unavailable on Extend button when the Hardcopy & Hardcopy & Acc Created = Registered.
+Registered Acc Created status is Registered.
+Application
+=== PAGE 12 ===
+# Requirement ID Item Description Acceptance Criteria
+3 EAINT-11982- Extend Button The system shall display the Extend Example 1: Current date falls within 30
+REQ-003 Availability button from 30 days before the days before the expiry date
+Window application expiry date until 3 months a. Extend button is displayed.
+after the application expiry date.
+Example 2: Current date falls within 3
+The system shall stop displaying the months after the expiry date
+Extend button once the 3-month a. Extend button is displayed.
+window after the expiry date has
+passed. Example 3: Current date falls more than 3
+months after the expiry date
+a. Extend button is not displayed.
+=== PAGE 13 ===
+# Requirement ID Item Description Acceptance Criteria
+4 EAINT-11982- BackOffice User The system shall allow all BackOffice The listed BackOffice user accounts
+REQ-004 Access users to view and click the Extend cannot view or click the Extend button. All
+button, except the following user other BackOffice users can view and click
+accounts: it.
+a. eautohamal
+b. eautojenilyn
+c. eautojrjaya
+d. eautonashwa
+e. eautoshamini
+f. eautovegas
+g. eautoxiayuan
+h. kokping
+i. tempstaff
+j. wahidahzaki
+k. mfnabila
+l. mfnadhirah
+m. mfzuhaira
+n. eautochinwei
+o. mfaliah
+p. mfmaisarah
+q. mfnicholas
+r. mfteckyung
+=== PAGE 14 ===
+2.2.5 Application Extension Handling
+# Requirement ID Item Description Acceptance Criteria
+5 EAINT-11982- One-Time The system shall allow each Example 1: Application has not been
+REQ-005 Extension application to be extended once only, extended before
+for a fixed period of 30 days. a. Extend button is displayed and the
+extension is allowed.
+The system shall stop displaying the
+Extend button once the application has Example 2: Application has already been
+been extended. extended once
+a. Extend button is not displayed and a
+Where an application expires after the second extension is blocked.
+30-day extension, the application shall
+be revived through application link Example 3: Application is reactivated after
+reactivation, which is covered under expiry
+EAINT-11868. a. Extend button is not displayed and no
+further extension is allowed.
+Once reactivated, the application shall
+not be eligible for any further
+extension.
+=== PAGE 15 ===
+# Requirement ID Item Description Acceptance Criteria
+6 EAINT-11982- New Expiry Example expiry date: 1 August 2026 New expiry date is calculated based on
+REQ-006 Date when the [Extend] button is clicked: it
+1. Before expiry date — 30 days before
+Calculation counts from the original expiry date when
+expiry (2 Jul 2026 – 1 Aug 2026)
+clicked before expiry (within 30 days
+• BO user can view and click the
+before), and from the Extend-click date
+[Extend] button.
+when clicked after expiry (up to 3 months
+• Expected behaviour: New expiry date after).
+counts from the original expiry date.
+Original expiry date + 30 days = New
+expiry date.
+• Example: If BO extends on 20 Jul
+2026, the new expiry still counts from
+1 Aug 2026.
+2. After expiry date — up to 3 months
+after expiry (1 Aug 2026 – 1 Nov
+2026)
+• BO user can view and click the
+[Extend] button.
+• Expected behaviour: New expiry date
+starts counting from the date the
+[Extend] button is clicked.
+• Example: If BO extends on 15 Sep
+2026, the new expiry counts from 15
+Sep 2026 → New expiry date = 15 Oct
+2026
+=== PAGE 16 ===
+# Requirement ID Item Description Acceptance Criteria
+7 EAINT-11982- Application The system shall set the application Application status = Approved after the
+REQ-007 Status After status to Approved once the extension is completed.
+Extension application is extended.
+8 EAINT-11982- Extension The existing Remarks field behaviour Remarks entered during the extension are
+REQ-008 Remarks in the Application shall remain saved and displayed in the right sidebar of
+unchanged. the Application.
+a. Upon clicking the Extend button, the
+BackOffice user shall be able to enter
+remarks for the extension.
+b. The system shall save the remarks
+against the application.
+c. The system shall display the saved
+remarks in the right sidebar of the
+Application.
+9 EAINT-11982- No Automated The system shall not send any No email is sent to the potential UCD or
+REQ-009 Email on automated email when an extension is the BackOffice user after an extension.
+Extension performed.
+=== PAGE 17 ===
+# Requirement ID Item Description Acceptance Criteria
+10 EAINT-11982- Application The system shall update the Application Listing displays the new expiry
+REQ-010 Listing Expiry Application Expiry Date in the date after the extension.
+Date Update Application Listing once the
+application is extended.
+2.2.6 Concurrent Extension Handling
+# Requirement ID Item Description Acceptance Criteria
+11 EAINT-11982- Concurrent The system shall accept only the first Example 1: First concurrent Extend button
+REQ-011 Extension Extend request when two BackOffice click
+users, or two browser tabs, click the a. Extension succeeds and the new expiry
+Extend button on the same application date is applied.
+at the same time.
+Example 2: Subsequent concurrent
+The system shall reject the Extend button click
+subsequent request and display the a. Extension fails and the message
+message: “Action could not be “Action could not be completed because
+completed because some details have some details have changed. Please
+changed. Please refresh and try refresh and try again.” is displayed.
+again.”
+Example 3: Resulting application state
+a. The application is extended once, not
+twice.
+=== PAGE 18 ===
+Appendix — Requirement Change Log
+# SRD Requirement ID Status Reason
+Version
+1 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-001
+2 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-002
+3 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-003
+4 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-004
+5 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-005
+6 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-006
+7 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-007
+=== PAGE 19 ===
+# SRD Requirement ID Status Reason
+Version
+8 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-008
+9 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-009
+10 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-010
+11 0.1 EAINT-11982- Added New requirement introduced in initial draft
+REQ-011

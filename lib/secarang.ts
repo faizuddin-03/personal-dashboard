@@ -148,6 +148,8 @@ export interface RegressionResult {
   completedAt:         string;
   durationMs:          number;
   log?:                string;
+  /** Web path to the run recording, e.g. /qa-artifacts/secarang-regression/run.webm */
+  video?:              string;
   stopped?:            boolean;
   verificationReport?: string;
   verificationData?:   VerificationData;

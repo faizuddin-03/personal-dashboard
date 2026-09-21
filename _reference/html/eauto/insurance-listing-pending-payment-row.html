@@ -1,0 +1,649 @@
+<!--
+  eAuto — Insurance Transaction Listing, showing an unpaid transaction that
+  reached step 3 (payment) and was left there.
+  URL:         https://staging.eauto.my/uat1/view/ucd/insurance/enquiry (after
+               searching by vehicle number only)
+  Environment: uat1
+  Captured:    2026-08-18, by Faizuddin, while a TS04 run was in progress —
+               logged in as MUHAMMAD FAIZUDDIN BIN BIDI
+  Trimmed:     nothing material. Full page as pasted (search form, banner
+               carousel markup, the one data row, and the shared header/
+               footer/script chrome). Forms are never trimmed.
+
+  Why this page matters: it overturns knowledge/eauto-insurance.md's claim that
+  stopping at step 3 leaves a DRAFT ("Quotation") row. The live row here —
+  vehicle HX047, Ref B68004346, Payment "-", JPJ "-" — renders
+  <td class="center status" style="color:blue"><b>Pending Payment</b></td>,
+  i.e. status code PENDING, not DRAFT. Its Action cell also carries the real
+  resume control:
+    <a href="#" class="to-payment" data="37bba22a-50c4-443d-ae79-bea012c587e2"
+       title="to payment B68004346">Resubmit</a>
+  — not any of the guessed selectors previously tried in
+  InsuranceListingPage.resumeToPayment().
+
+  Cited by: knowledge/eauto-insurance.md, knowledge/flow-insurance-purchase.md
+  § Paying is a click, and you can come back to it later.
+-->
+<body>
+<div id="container" style="min-height:calc(100vh - 203px);">
+
+    <!-- NEW ESTM UI: START -->
+    <div>
+
+        <!-- breadcrumb -->
+        <div class="breadcrumb" style="margin-top: -12px !important;">
+            <a href="/uat1/view/ucd/">Home</a>
+            <div class="separator">/</div>
+            <a href="/uat1/view/ucd/insurance/">Motor Insurance</a>
+            <div class="separator">/</div>
+            <div class="page-name">Insurance Transaction Listing</div>
+        </div>
+
+        <!-- filter -->
+        <form id="search-form" class="not-to-print">
+            <div class="filter-box">
+                <div class="filter-header">
+                    <h6>Search &amp; Filter</h6>
+                </div>
+                <div class="filter-body" style="padding-bottom: 0; position: relative;">
+                    <div class="form-container">
+                        <div class="flex flex-wrap">
+                            <div class="form-group">
+                                <div class="label-box">
+                                    <label>Vehicle No :</label>
+                                </div>
+                                <input type="text" name="vehicleNo" id="vehicleNo" value="">
+                            </div>
+                            <div class="form-group not-draft">
+                                <div class="label-box">
+                                    <label>Transaction No :</label>
+                                </div>
+                                <input type="text" name="refNo" id="refNo" value="">
+                            </div>
+                            <div class="form-group not-draft">
+                                <div class="label-box">
+                                    <label>Date Created :</label>
+                                </div>
+                                <div class="flex flex-row">
+                                    <div class="input-date">
+                                        <input type="text" name="fromDate" id="fromDate" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                    <div class="input-date" style="margin-left: 8px;">
+                                        <input type="text" name="toDate" id="toDate" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="break"></div>
+                            <div class="form-group not-draft">
+                                <div class="label-box">
+                                    <label>Status :</label>
+                                </div>
+                                <div class="custom-select">
+                                    <select class="select" name="status" id="to-filter" style="margin-left: 0px; width: 164px !important;">
+                                        <option value="" selected="">All</option>
+                                        <option value="DRAFT">Quotation</option>
+                                        <option value="PENDING">Pending Payment</option>
+                                        <option value="SUCCESS">Insurance Created</option>
+                                        <option value="FAILED">Failed</option>
+                                        <option value="APPROVAL">Pending Approval</option>
+                                        <option value="EXPIRED">Quotation Expired</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group not-draft">
+                                <div class="label-box">
+                                    <label>Insurance <br> Company :</label>
+                                </div>
+                                <div class="custom-select select-company">
+                                    <select class="select" name="insuranceCompany" id="to-filter" style="margin-left: 0px; width: 164px !important;">
+                                        <option value="" selected="">All</option>
+                                        <option value="RHB">RHB Insurance Berhad</option>
+                                        <option value="Takaful">Takaful Malaysia Berhad</option>
+                                        <option value="Chubb">Chubb Insurance Malaysia Berhad</option>
+                                        <option value="Lonpac">Lonpac Insurance Berhad</option>
+                                        <option value="TokioMarine">Tokio Marine Malaysia Berhad</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group not-draft">
+                                <div class="label-box">
+                                    <label>Payment Date :</label>
+                                </div>
+                                <div class="flex flex-row">
+                                    <div class="input-date">
+                                        <input type="text" name="paymentFrom" id="paymentFrom" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                    <div class="input-date" style="margin-left: 8px;">
+                                        <input type="text" name="paymentTo" id="paymentTo" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="height: 32px; position: absolute; bottom: 16px; right: 16px;">
+                        <button type="submit" id="to-search" class="btn-blue" style="width: 108px; height: 32px; margin-right: 5px; font-size: 13px; padding: 0;">
+                            Search Now
+                        </button>
+                        <button class="btn-blue-outline to-reset" style="width: 108px; height: 32px; font-size: 13px; padding: 0;">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="pageNo" value="1">
+        </form>
+
+        <div>
+
+<style>
+    .ins-banner-frame {
+      width: 100%;
+      height: auto;
+      display: block;
+      opacity: 0;
+      animation-duration: 14s;
+      animation-iteration-count: infinite;
+      animation-timing-function: steps(1, end);
+    }
+
+    .ins-banner-0 {
+      position: relative;
+      animation-name: ins-banner-show-0;
+      opacity: 1;
+    }
+    .ins-banner-1 {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        animation-name: ins-banner-show-1;
+    }
+
+    @keyframes ins-banner-show-0 {
+      0%, 50% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    @keyframes ins-banner-show-1 {
+      0%, 50% { opacity: 0; }
+      50%, 100% { opacity: 1; }
+    }
+</style>
+
+<style>
+    .ins-banner-frame { animation-duration: 21s; }
+    .ins-banner-2 { position: absolute; top: 0; left: 50%; transform: translateX(-50%); animation-name: ins-banner-show-2; }
+    @keyframes ins-banner-show-0 { 0%, 33.3% { opacity: 1; } 33.3%, 100% { opacity: 0; } }
+    @keyframes ins-banner-show-1 { 0%, 33.3% { opacity: 0; } 33.3%, 66.6% { opacity: 1; } 66.6%, 100% { opacity: 0; } }
+    @keyframes ins-banner-show-2 { 0%, 66.6% { opacity: 0; } 66.6%, 100% { opacity: 1; } }
+</style>
+
+<div style="margin-top: 15px; position: relative; text-align: center; max-width: 700px; margin-left: auto; margin-right: auto;">
+
+    <img class="ins-banner-0 ins-banner-frame" src="https://cdn2.eauto.my/media/merdeka/MerdekaCampaign-H-en.png" alt="Modal Image">
+    <img class="ins-banner-1 ins-banner-frame" src="https://cdn2.eauto.my/media/merdeka/MerdekaCampaign-H-cn.png" alt="Modal Image">
+
+    <img class="ins-banner-2 ins-banner-frame" src="https://cdn2.eauto.my/media/webinar/august_webinar_h.png" alt="Modal Image">
+
+</div>
+
+            <!-- header -->
+            <div class="table-title flex flex-row">
+                <h1>Insurance Transaction Listing</h1>
+            </div>
+
+            <!-- table empty state -->
+            <div id="empty-state" class="table-empty-state" style="display: none;">
+                <div class="flex justify-content-center">
+                    <img class="icon" src="/uat1/images/eSTM-empty-state.png">
+                </div>
+                <h6 class="title">Please apply search to show the record.</h6>
+            </div>
+
+            <!-- table -->
+            <table width="100%">
+                <tbody><tr>
+                    <td id="result" colspan="2">
+
+<style>
+    .custom-table tr th {
+        line-height: 16px;
+        height: 58px;
+    }
+    .custom-table tr td {
+        height: 60px;
+    }
+    .custom-table .action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .custom-table .action a {
+        color: #0000FF !important;
+    }
+</style>
+
+<table style="width:100% !important; margin-bottom: 15px;" class="custom-table">
+    <colgroup><col width="2%">
+    <col width="7%">
+    <col width="8%">
+    <col width="8%">
+    <col width="10%">
+    <col width="10%">
+    <col width="7%">
+    <col width="6%">
+    <col width="6%">
+    <col width="7%">
+    <col width="10%">
+    <col width="auto">
+    <col width="9%">
+    </colgroup><tbody><tr class="header">
+        <th>#</th>
+        <th>Vehicle No</th>
+        <th>Reference No</th>
+        <th>Insured Name</th>
+        <th>Created Date</th>
+        <th>Insurance Company</th>
+        <th>Payment Amount</th>
+        <th>Payment</th>
+        <th>JPJ</th>
+        <th>Status</th>
+        <th>E-Certificate No</th>
+        <th>Remarks</th>
+        <th>Action</th>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">HX047</td>
+        <td class="center">B68004346</td>
+
+            <td class="center">Emily Rodriguez</td>
+
+        <td class="center">18-08-2026 12:45</td>
+        <td class="center">
+
+                    Takaful Malaysia Berhad
+
+        </td>
+        <td class="center">3,934.55
+</td>
+
+
+
+        <td class="center" style="color:black">
+            <b>-</b>
+        </td>
+        <td class="center" style="color:black">
+            <b>-</b>
+        </td>
+        <td class="center status" style="color:blue">
+            <b>Pending Payment</b>
+        </td>
+        <td class="center">
+
+                -
+
+        </td>
+        <td class="left">
+
+        </td>
+        <td class="center action" style="color: #808080">
+            <a href="#" class="to-view" data="37bba22a-50c4-443d-ae79-bea012c587e2" title="to view B68004346">View</a>
+
+
+                        <div style="margin: 0 8px;">|</div> <a href="#" class="to-payment" data="37bba22a-50c4-443d-ae79-bea012c587e2" title="to payment B68004346">Resubmit</a>
+
+        </td>
+    </tr>
+
+
+<!--  -->
+</tbody></table>
+
+</td>
+                </tr>
+            </tbody></table>
+        </div>
+
+    </div>
+    <!-- NEW ESTM UI: END -->
+
+
+</div>
+<div id="DivToAppendPicker"><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div></div>
+
+<div id="popup-dialog" style="display:none;"></div>
+
+<link rel="stylesheet" type="text/css" href="/uat1/view/ucd/home/screen.css">
+<script>
+$(document).ready(function() {
+    $("#common-bar .page-title").text($("head title").text());
+    $("#header a.logout").click(function() {
+            $("#logout-confirmation").dialog({
+                modal: true,
+                width: "300",
+                minHeight: "150",
+                resizable: false,
+                draggable: false,
+                position: "center",
+                closeOnEscape: false,
+                close: function() {
+                    $(this).dialog("destroy");
+                },
+                buttons:
+                {
+                    "No": function() {
+                        $(this).dialog("close");
+                        $(this).dialog("destroy");
+                    },
+                    "Yes": function() {
+                        window.location.href = "/uat1/user/logout.do";
+                    }
+                },
+                open: function() {
+                    $('.ui-dialog-buttonpane').find('button:contains("No")').addClass('cancel-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button:contains("Yes")').addClass('confirm-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                }
+        }).dialog("open");
+        return false;
+    });
+
+    LoginSessionTimer.startCountdown();
+
+    $("#deposit-info").click(function() {
+        window.location.href = "/uat1/view/ucd/deposit/generate.do?companyAccountId=" + 1109700;
+        return false;
+    });
+
+    $("#payment-history").click(function() {
+        window.location.href = "/uat1/view/ucd/topup-pob/payment-history.do?companyId=" + 1109700;
+        return false;
+    });
+
+    $(":button, :submit").mouseenter(function() {
+        $(this).css({'cursor': 'pointer'});
+    }).mouseleave(function() {
+        $(this).css({'cursor': 'default'});
+    });
+
+    $("#settings-link").click(function() {
+
+
+            window.location="/uat1/view/ucd/settings/view.do";
+
+
+    });
+
+    $("#reports-link").click(function() {
+
+            window.location="/uat1/view/ucd/report/view.do";
+
+    });
+
+    $("#insurance-link").click(function() {
+        window.location="/uat1/view/ucd/insurance";
+    });
+
+    $("#econtract").live("click", function() {
+        var conf = "width=800,height=450,scrollbars=yes,location=no,menubar=no,status=no,toolbar=no,directories=no";
+        popup_window = window.open("/uat1/view/ucd/insurance/enquiry/generate-econtract-page.do","",conf);
+
+    });
+});
+
+function openAccessDeniedDialog() {
+    $("#access-denied").dialog({
+        modal: true,
+        width: "300",
+        minHeight: "150",
+        resizable: false,
+        draggable: false,
+        position: "center",
+        closeOnEscape: false,
+        close: function() {
+            $(this).dialog("destroy");
+        },
+        buttons:
+        {
+            "Ok": function() {
+                $(this).dialog("close");
+                $(this).dialog("destroy");
+            }
+        },
+        open: function() {
+            $('.ui-dialog-buttonpane').find('button:contains("Ok")').addClass('confirm-dialog-btn');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+        }
+    }).dialog("open");
+}
+</script>
+
+<!--[if lte IE 8]>
+<style>
+.tab-button1{ padding-left: 10px; padding-right: 10px; margin-left: 5px;}
+#home-bar{margin: 20px 0px 0 0 !important}
+</style>
+<!--<![endif]-->
+
+<style>
+a#deposit-log {text-decoration:underline !important; color:#FF4000!important;}
+.new {
+    position: absolute;
+    top: 10px;
+    color: #FF4000;
+    font-weight:bold;
+    font-size:16px;
+    margin-left:30px;
+}
+
+.terms {padding: 3px; width: 10px;}
+</style>
+<div id="header">
+
+    <div id="home-bar">
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/home'" id="home-link" style="cursor: default;">HOME</button>
+
+    <button class="tab-button1" onclick="" id="insurance-link">INSURANCE</button>
+
+    <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+    <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/user-guide'" id="user-guide-link">USER GUIDE</button>
+
+
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/download'" id="download-link">DOWNLOAD</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/contact'" id="contact-link">CONTACT US</button>
+
+
+    </div>
+
+    <table id="common-bar">
+    <tbody><tr>
+    <td class="page-title" nowrap="">Online Services - Motor Insurance</td>
+    <!--td class="scroll-message"><marquee behavior="scroll" direction="left" scrollamount="3"  width="70%"><div id="scroll-message" name="scroll-message">You have 7 of APT transactions pending for Payment. Please make payment to complete APT process. Thank you.</div></marquee></td-->
+    <td>
+    <ol class="inline">
+
+        <li>
+            <img src="/uat1/images/icon_user.gif" style="position:relative; top:4px">
+            <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI  </span>
+        </li>
+        <li>
+            &nbsp;|&nbsp;
+        </li>
+        <li><a href="#" class="logout" style="position:relative; top:-1px">Logout</a></li>
+    </ol>
+    </td>
+    </tr>
+    </tbody></table>
+
+
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:41</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+<div id="allow-insurance-dialog" style="display:none;color:#FF4000">
+    <div>
+        <form id="checkboxForm" style="color:black">
+            <div class="flex flex-row">
+                <input type="checkbox" class="terms" value="1" style="padding: 3px; width: 10px;">
+                <span>By clicking this checkbox and the "I Accept" button below, you agree to participate in our Insurance Programme.</span>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="dialog-insurance-not-add-as-user" style="display: none">
+Anda belum dibenarkan menggunakan Insurance. Sila rujuk User Guide (<a href="/uat1/view/ucd/user-guide/Add_New_Insurance1.pdf" target="_new"><b>sini</b></a>) untuk mengetahui cara <b>Main user/Director</b> menambah
+<br>pengguna Insurance. <br>Support Hotline: 1700-816-186.
+<br><br>
+您还未被授权使用 Insurance 。请参阅用户指南 (<a href="/uat1/view/ucd/user-guide/Add_New_Insurance1.pdf" target="_new"><b>此处</b></a>) 以了解 <b>主要用户</b> 如何增加 Insurance 用户。 <br>Support Hotline: 1700-816-186 。
+</div>
+<div id="dialog-insurance-access-denied" style="display:none;color:#FF4000">
+    <form id="checkboxForm" style="color:black"><br>
+            This user named MUHAMMAD FAIZUDDIN BIN BIDI will be chosen to participate in Insurance<br>
+            18/08/2026 <br>
+        <br>
+        <input type="checkbox" class="terms" value="1" style="padding: 3px; width: 10px;">By clicking this checkbox and the "I Accept" button below, you agree to participate in our Insurance Programme.
+    </form>
+</div>
+
+<div id="logout-confirmation" style="display:none;" title="Logout Confirmation">
+    Sure to logout?
+</div>
+
+<div id="access-denied" style="display:none;">
+    Sorry, access denied.
+</div>
+
+<style>
+    .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 60px;
+        border-top: 1px solid #CCCCCC;
+    }
+
+    .footer .footer-container {
+        height: 60px;
+    }
+
+    .footer .footer-container .footer-row {
+        height: 20px;
+    }
+
+    .ucd-container, .aatf-container {
+        min-height: calc(100vh - 221px);
+    }
+    @media screen and (max-width: 693px) {
+      .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 90px;
+        border-top: 1px solid #CCCCCC;
+      }
+
+      .ucd-container, .aatf-container {
+        min-height: calc(100vh - 251px);
+      }
+
+      .footer .footer-container {
+        height: 90px;
+      }
+
+      .footer .footer-container .footer-row {
+        height: auto;
+      }
+    }
+
+
+    @media screen and (max-width: 500px) {
+      .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 131px;
+        border-top: 1px solid #CCCCCC;
+      }
+
+      .ucd-container, .aatf-container {
+        min-height: calc(100vh - 292px);
+      }
+
+      .footer .footer-container {
+        height: 131px;
+      }
+
+      .footer .footer-container .footer-row {
+        height: auto;
+      }
+    }
+
+    .footer a {
+        color:#0B4C5F!important;
+        font-weight:500;
+    }
+    .footer .separator {
+        color:#CCC;
+    }
+    #footer table tr td{font-size:11px!important;}
+</style>
+
+<!-- <script>
+    $(document).ready(function() {
+        setInterval(function() {
+            if($(".ui-dialog").length > 0) {
+                $("body").css("overflow","hidden");
+            } else {
+                $("body").css("overflow","auto");
+            }
+        }, 1000);
+    })
+</script> -->
+
+<div class="footer">
+    <div class="footer-container" style="display:flex;align-items:flex-end;width:63%;justify-content:space-between;">
+        <div style="display:flex;flex-direction:column;">
+            <div class="footer-row" style="display:flex;">
+                <a href="#" style="padding-right:10px;" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding:0 10px" ;="" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding-left:10px" ;="" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </div>
+            <div class="footer-row" style="color:#808080;">Best Compatible With Mozilla Firefox V36.0.4</div>
+            <div class="footer-row" style="color:#808080;">Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+        </div>
+    </div>
+
+    <div style="text-align:right;">
+        <img src="/uat1/images/eAuto_TM_logo.svg" width="126" height="52">
+    </div>
+
+
+</div>
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div></body>

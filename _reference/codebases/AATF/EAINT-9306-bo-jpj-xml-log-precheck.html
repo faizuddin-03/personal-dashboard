@@ -1,0 +1,138 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  Page: BO "JPJ XML Log (eDereg Pre-Checking)" — search form + results
+  URL: /uat1/view/dereg/precheck/jpj/log/main.do (Settings (Hub Admin) >
+       "JPJ XML Log (eDereg Pre-Checking)", linked from
+       EAINT-9306-bo-home-menu.html)
+  Env: uat1
+  Captured: 2026-08-24
+  Pasted directly by Faizuddin (not a file save from DevTools) — saved
+  verbatim per the standing HTML-capture rule. Forms kept complete, untrimmed.
+  Results table shown in full (only 2 rows existed for this search).
+
+  This IS the ticket's own log — distinct from EAINT-9306-bo-jpj-xml-log-dereg.html
+  (the Deregistration leg's log, different URL/table shape: extra "Search By"
+  column here, no "SecondEnquiry"/"Submission" rows in this sample — both rows
+  are type "PrecheckEnquiry"). Field meaning for the `~`-delimited Request
+  Data / Response Data strings: see
+  `_reference/JPJ XML Log - Code Splitter/` (Faizuddin, 2026-08-24) — decode
+  before asserting on response content, don't guess field order.
+
+  STATE 1: blank search form (radio: Vehicle No. / Transaction Ref No.,
+  hidden pageNo=1)
+  STATE 2: after searching by Vehicle No. "HXA021" — 2 rows (both
+  "PrecheckEnquiry" type, transactions PC68001153 and PC68001144)
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1: blank search form -->
+<!-- ============================================================ -->
+<div id="container">
+    <table width="100%">
+        <tbody><tr>
+            <td class="not-to-print">
+            <form id="search-form" style="margin-left:20px;">
+                <input type="hidden" name="pageNo" value="1">
+                <table style="width:100%">
+                    <tbody><tr>
+                        <td style="padding-left:20px">
+                            <label>
+                                <input type="radio" checked="checked" value="vehicleNo" id="type" name="type">
+                                <b>Vehicle No.:</b>
+                                <input type="text" name="vehicleNo" id="vehicleNo" value="" size="15">
+                            </label>
+                            <label>
+                                <input type="radio" value="refNo" id="type" name="type">
+                                <b>Transaction Ref No.:</b>
+                                <input type="text" name="refNo" id="refNo" value="" size="30">
+                            </label>
+                            <input type="submit" id="to-search" value="SEARCH Now">
+                        </td>
+                    </tr>
+                    <tr style="padding-left:20px">
+                        <td style="padding-top:10px; font-size:14px; text-align: center">
+                            <b>eDereg Pre-Checking Transaction Enquiry</b>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </form>
+            </td>
+        </tr>
+        <tr>
+            <td id="result" colspan="2">&nbsp;</td>
+        </tr>
+    </tbody></table>
+</div>
+
+<!-- ============================================================ -->
+<!-- STATE 2: after searching by Vehicle No. "HXA021" -->
+<!-- ============================================================ -->
+<div id="container">
+    <table width="100%">
+        <tbody><tr>
+            <td class="not-to-print">
+            <form id="search-form" style="margin-left:20px;">
+                <input type="hidden" name="pageNo" value="1">
+                <table style="width:100%">
+                    <tbody><tr>
+                        <td style="padding-left:20px">
+                            <label>
+                                <input type="radio" checked="checked" value="vehicleNo" id="type" name="type">
+                                <b>Vehicle No.:</b>
+                                <input type="text" name="vehicleNo" id="vehicleNo" value="" size="15">
+                            </label>
+                            <label>
+                                <input type="radio" value="refNo" id="type" name="type">
+                                <b>Transaction Ref No.:</b>
+                                <input type="text" name="refNo" id="refNo" value="" size="30">
+                            </label>
+                            <input type="submit" id="to-search" value="SEARCH Now">
+                        </td>
+                    </tr>
+                    <tr style="padding-left:20px">
+                        <td style="padding-top:10px; font-size:14px; text-align: center">
+                            <b>eDereg Pre-Checking Transaction Enquiry</b>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </form>
+            </td>
+        </tr>
+        <tr>
+            <td id="result" colspan="2">
+<table style="width: 100% !important">
+    <colgroup><col width="30px"><col width="100px"><col width="100px"><col width="300px"><col width="100px"><col width="150px"><col width="100px"><col width="150px"></colgroup>
+    <tbody>
+    <tr class="header">
+        <th>#</th><th>Vehicle</th><th>Transaction No.</th><th>Search By</th><th>Type</th>
+        <th>Submitted At</th><th>Request Data</th>
+        <th>Responded At</th><th>Response Data</th>
+    </tr>
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">HXA021</td>
+        <td class="center"><a href="/uat1/view/dereg/precheck/jpj/log/view.do?id=54f087cf-d736-4a6f-a610-1a41d5cc33e6"><b>PC68001153</b></a></td>
+        <td class="center">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+        <td class="center">PrecheckEnquiry</td>
+        <td class="center">24-08-2026 15:07</td>
+        <td>HXA021~2026-08-24 15:07:40.000~DPC260824000051~26082408070026~72404~2910002~E~5.00~202208153901~~systemtest@eauto.my</td>
+        <td class="center">24-08-2026 15:07</td>
+        <td>GLB000000I~Y~Y~Y~Y~N~N~N~N~N~N~2026082483685479</td>
+    </tr>
+    <tr class="even">
+        <td class="center">2</td>
+        <td class="center">HXA021</td>
+        <td class="center"><a href="/uat1/view/dereg/precheck/jpj/log/view.do?id=decd3d86-47ad-4ca9-b9b5-ae64dda07767"><b>PC68001144</b></a></td>
+        <td class="center">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+        <td class="center">PrecheckEnquiry</td>
+        <td class="center">24-08-2026 12:24</td>
+        <td>HXA021~2026-08-24 12:24:51.000~DPC260824000033~26082408070017~72404~2910002~E~5.00~202208153901~faizuddin@modefair.com~systemtest@eauto.my</td>
+        <td class="center">24-08-2026 12:24</td>
+        <td>GLB000000I~Y~Y~Y~Y~N~N~N~N~N~N~2026082479374126</td>
+    </tr>
+    </tbody>
+</table>
+            </td>
+        </tr>
+    </tbody></table>
+</div>

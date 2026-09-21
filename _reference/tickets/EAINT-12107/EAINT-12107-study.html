@@ -1,0 +1,600 @@
+<title>EAINT-12107 Payment Gateway Study</title>
+<style>
+  @font-face {
+    font-family: 'IBM Plex Mono Local';
+    src: local('IBM Plex Mono'), local('Consolas'), local('Menlo');
+  }
+
+  :root {
+    --bg: #F5F6F9;
+    --surface: #FFFFFF;
+    --surface-2: #EEF0F5;
+    --ink: #1B2333;
+    --muted: #5C6478;
+    --faint: #8B93A6;
+    --border: #E1E4EC;
+    --accent: #3454D1;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #E8ECFC;
+    --success: #1F8A5C;
+    --success-soft: #E4F5EC;
+    --warning: #B4741B;
+    --warning-soft: #FBF0DF;
+    --critical: #C6394A;
+    --critical-soft: #FBE7EA;
+    --shadow: 0 1px 2px rgba(27,35,51,0.04), 0 6px 16px rgba(27,35,51,0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F131C;
+      --surface: #171E2B;
+      --surface-2: #1D2535;
+      --ink: #E7EAF2;
+      --muted: #9BA3B7;
+      --faint: #6B7488;
+      --border: #2A3347;
+      --accent: #7A93FF;
+      --accent-ink: #0F131C;
+      --accent-soft: #232C48;
+      --success: #4FBF8C;
+      --success-soft: #17301F;
+      --warning: #E0A94B;
+      --warning-soft: #332411;
+      --critical: #E27080;
+      --critical-soft: #35181C;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0F131C;
+    --surface: #171E2B;
+    --surface-2: #1D2535;
+    --ink: #E7EAF2;
+    --muted: #9BA3B7;
+    --faint: #6B7488;
+    --border: #2A3347;
+    --accent: #7A93FF;
+    --accent-ink: #0F131C;
+    --accent-soft: #232C48;
+    --success: #4FBF8C;
+    --success-soft: #17301F;
+    --warning: #E0A94B;
+    --warning-soft: #332411;
+    --critical: #E27080;
+    --critical-soft: #35181C;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Inter", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono {
+    font-family: 'IBM Plex Mono Local', ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono Local', ui-monospace, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    align-items: center;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .pill.status-progress { background: var(--warning-soft); color: var(--warning); }
+  .pill.status-good { background: var(--success-soft); color: var(--success); }
+  .pill.neutral { background: var(--surface-2); color: var(--muted); border-color: var(--border); }
+
+  .meta-line {
+    font-size: 13.5px;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  .meta-line b { color: var(--ink); font-weight: 600; }
+
+  .banner {
+    display: flex;
+    gap: 12px;
+    background: var(--accent-soft);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .banner .dot {
+    flex: none;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 7px;
+  }
+  .banner b { color: var(--accent); }
+
+  /* ---------- Sections ---------- */
+  section {
+    margin-bottom: 36px;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 700;
+    color: var(--faint);
+    margin: 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+  }
+
+  p { margin: 0 0 10px; color: var(--ink); }
+  p:last-child { margin-bottom: 0; }
+  .lede { font-size: 15.5px; color: var(--ink); }
+  .sub { color: var(--muted); font-size: 13.5px; }
+
+  ul.clean { margin: 0; padding-left: 20px; }
+  ul.clean li { margin-bottom: 7px; }
+  ul.clean li:last-child { margin-bottom: 0; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .kv {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .kv .k { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--faint); font-weight: 600; }
+  .kv .v { font-size: 14.5px; color: var(--ink); }
+
+  /* ---------- Testability matrix ---------- */
+  .matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .matrix th, .matrix td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .matrix th {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--faint);
+    font-weight: 600;
+  }
+  .matrix tr:last-child td { border-bottom: none; }
+  .matrix td.label { font-weight: 600; }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag.ok { background: var(--success-soft); color: var(--success); }
+  .tag.no { background: var(--critical-soft); color: var(--critical); }
+  .tag.na { background: var(--surface-2); color: var(--faint); }
+  .cell-note { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
+
+  /* ---------- Timeline ---------- */
+  .timeline {
+    position: relative;
+    padding-left: 26px;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 5px; top: 4px; bottom: 4px;
+    width: 1.5px;
+    background: var(--border);
+  }
+  .t-item {
+    position: relative;
+    padding-bottom: 20px;
+  }
+  .t-item:last-child { padding-bottom: 0; }
+  .t-item::before {
+    content: "";
+    position: absolute;
+    left: -26px;
+    top: 4px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+  }
+  .t-item.pivotal::before { background: var(--accent); }
+  .t-date {
+    font-family: 'IBM Plex Mono Local', ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--faint);
+    margin-bottom: 3px;
+  }
+  .t-who { font-weight: 600; color: var(--ink); }
+  .t-body { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .t-body b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Test scope ---------- */
+  .scope-group {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .scope-group:first-child { padding-top: 2px; }
+  .scope-group:last-child { padding-bottom: 0; border-bottom: none; }
+  .scope-num {
+    flex: none;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .scope-title {
+    font-weight: 650;
+    font-size: 14.5px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .scope-cases {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .scope-case {
+    display: flex;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--muted);
+    align-items: baseline;
+  }
+  .scope-case .ts {
+    font-family: 'IBM Plex Mono Local', ui-monospace, monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent);
+    flex: none;
+    min-width: 30px;
+  }
+  .scope-case b { color: var(--ink); font-weight: 600; }
+  .scope-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--faint);
+    margin-top: 4px;
+  }
+
+  /* ---------- Open questions ---------- */
+  .qlist { display: flex; flex-direction: column; gap: 10px; }
+  .q {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--warning-soft);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .q .mark { color: var(--warning); font-weight: 700; flex: none; }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  a { color: var(--accent); }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .card, .banner { transition: box-shadow 0.15s ease; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Jira Ticket Study</div>
+    <h1>EAINT-12107 — Enhance Payment Gateway to Enable ShopeePay and GrabPay</h1>
+    <div class="meta-row">
+      <span class="pill status-progress">● Code Review (Jira)</span>
+      <span class="pill status-good">✓ QA-ready (Teams, today 10:21)</span>
+      <span class="pill neutral">Medium priority</span>
+      <span class="pill neutral">Secarang · Fiuu</span>
+    </div>
+    <div class="meta-line">
+      <span><b>Assignee</b> Lim Yi Link</span>
+      <span>·</span>
+      <span><b>Environment</b> Staging (Secarang + CIBO)</span>
+      <span>·</span>
+      <span><b>Related</b> EAINT-12327 (relates to)</span>
+    </div>
+    <div class="banner">
+      <span class="dot"></span>
+      <span><b>Jira hasn't caught up.</b> The status field still reads "Code Review", but Kasheng confirmed in Teams today at 10:21 that review is done and the build is ready for QA. Also — the ticket's title and description name different things ("ShopeePay/GrabPay" vs "SPAY Later/PayLater by Grab"); the SRD confirms these are the same channels — SPayLater and PayLater by Grab are the BNPL mode within ShopeePay/GrabPay, not separate channels (Assumption #3, §2.1.1).</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head"><h2>Overview</h2></div>
+    <div class="card">
+      <p class="lede">Adds two e-wallet payment methods — GrabPay and ShopeePay — to the Secarang gateway (Fiuu). Each wallet also offers a Buy-Now-Pay-Later option once the customer is inside the wallet's own app: pay in full now, next month, or in instalments. CIBO's Payment Management gets matching filters and columns so these transactions are visible and reportable.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Where the changes land</h2></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="kv" style="margin-bottom:14px;">
+          <span class="k">Secarang checkout</span>
+          <span class="v">Two new payment options at checkout: GrabPay, ShopeePay</span>
+        </div>
+        <div class="kv">
+          <span class="k">Backend</span>
+          <span class="v">Reuses the existing card-payment data block + 1 new column, keyed off Fiuu's <code class="mono">grabpay_indicator</code> field (<code class="mono">GPWALLET</code> / <code class="mono">POSTPAID</code> / <code class="mono">INSTALMENT_4</code>)</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="kv" style="margin-bottom:14px;">
+          <span class="k">CIBO · Payment Channels filter <span class="mono" style="color:var(--faint); font-weight:500;">REQ-011–013</span></span>
+          <span class="v">New "Fiuu - eWallet" filter option; ticking it defaults all 4 sub-options on — GrabPay, GrabPay - PayLater by Grab, ShopeePay, ShopeePay - SPayLater — and each can be individually unticked</span>
+        </div>
+        <div class="kv">
+          <span class="k">CIBO · Transaction Management</span>
+          <span class="v">Payment method column fixed — no longer shows "–" (done, confirmed 08/09)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Payment Reference ID</h2>
+      <span class="sub">New in SRD v1.1 — REQ-014, REQ-015</span>
+    </div>
+    <div class="card">
+      <p>Every e-wallet transaction gets an <b>EW</b> identifier in its Payment Reference ID, e.g. <code class="mono">LON20260908SEW0002</code>. The updated ID must show up in five places: Payment Management Listing, its exported file, Transaction Details (inside Transaction Management), Payment Report, and its exported file — <b>CIBO Payment Report is a newly affected page</b>, not previously called out in the ticket description.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>What QA can actually test in staging today</h2>
+      <span class="sub">Sandbox limitations, not scope decisions</span>
+    </div>
+    <div class="card" style="padding:0; overflow-x:auto;">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Channel</th>
+            <th>Full payment</th>
+            <th>Pay Later (BNPL)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label">GrabPay</td>
+            <td><span class="tag ok">Testable</span><span class="cell-note">Working in staging as of 07/09</span></td>
+            <td><span class="tag no">Not testable</span><span class="cell-note">Fiuu sandbox has no BNPL simulation</span></td>
+          </tr>
+          <tr>
+            <td class="label">ShopeePay</td>
+            <td><span class="tag no">Not testable</span><span class="cell-note">Fiuu's sandbox simulator is broken — still true as of 09/09</span></td>
+            <td><span class="tag no">Not testable</span><span class="cell-note">Same sandbox gap as GrabPay</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:12px;">This matches the SRD exactly — §2.2.8 "Eligibility of Testing in Sandbox Environment of Fiuu" states GrabPay – Full Amount as the only option QA is able to test, with the other three marked "Not available for testing in the sandbox environment of Fiuu." The team already agreed (Yi Link, confirmed with Shamini, 07/09) to ship both BNPL variants to production <b>without</b> staging testing. Fiuu offered a live dev account that would exercise BNPL for real, but it uses real money — whose account to use, and whether it's refundable, was never resolved.</p>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Agreed test scope</h2>
+      <span class="sub">Faizuddin ↔ May Chin, DM, 11 Sep</span>
+    </div>
+    <div class="card">
+      <div class="scope-group">
+        <span class="scope-num">1</span>
+        <div style="flex:1;">
+          <div class="scope-title">E2E Flow</div>
+          <div class="scope-cases">
+            <div class="scope-case"><span class="ts">TS1</span><span>Create Transaction → <b>GrabPay</b> → Payment = OK</span></div>
+            <div class="scope-case"><span class="ts">TS2</span><span>Create Transaction → <b>GrabPay</b> → Payment = Failed</span></div>
+            <div class="scope-case"><span class="ts">TS3</span><span>Create Transaction → Regress existing payment method (<b>Credit/Debit Card / FPX Online Banking</b>) → Payment = OK</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="scope-group">
+        <span class="scope-num">2</span>
+        <div style="flex:1;">
+          <div class="scope-title">Request dev patching</div>
+          <span class="sub" style="display:block; margin-bottom:8px;">Stands in for what the sandbox can't produce (§2.2.8)</span>
+          <div class="scope-cases">
+            <div class="scope-case"><span class="ts">TS1</span><span>Payment = <b>ShopeePay</b></span></div>
+            <div class="scope-case"><span class="ts">TS2</span><span>Payment = <b>SPayLater</b></span></div>
+            <div class="scope-case"><span class="ts">TS3</span><span>Payment = <b>PayLater by Grab</b> <span class="sub">(added after May Chin's first draft, confirmed 17:53)</span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="scope-group">
+        <span class="scope-num">3</span>
+        <div style="flex:1;">
+          <div class="scope-title">Functional testing</div>
+          <div class="scope-cases">
+            <div class="scope-case"><span>Verify the CIBO filter function &amp; payment type display correctly, including the export file</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="scope-meta">
+        <span><b style="color:var(--ink);">Insurer scope:</b> any 1 available insurer — all insurers share the same payment gateway (confirmed via Charmain/KJ)</span>
+        <span><b style="color:var(--ink);">Estimate:</b> 1+1 days (revised down from an initial 2+1, once ShopeePay's sandbox gap was confirmed)</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>How this ticket unfolded</h2>
+      <span class="sub">Teams channel, 03 Sep → today</span>
+    </div>
+    <div class="card">
+      <div class="timeline">
+        <div class="t-item pivotal">
+          <div class="t-date">03 SEP</div>
+          <div class="t-who">Briefing + SRD v0.1 uploaded</div>
+          <div class="t-body">QA raises four questions for dev: payment flow of both methods, success/fail/cancel behaviour, sandbox max limits, and <b>how to test both methods in staging</b>.</div>
+        </div>
+        <div class="t-item pivotal">
+          <div class="t-date">03 SEP</div>
+          <div class="t-who">Kasheng Liew — findings</div>
+          <div class="t-body"><b>SPayLater and PayLater by Grab are not separate payment channels</b> — they're a mode inside the existing wallet flow. Fiuu's sandbox has no BNPL to test against; a real-money dev account was offered as the only alternative.</div>
+        </div>
+        <div class="t-item">
+          <div class="t-date">07 SEP</div>
+          <div class="t-who">Yi Link Lim</div>
+          <div class="t-body">Confirms with Shamini: enable both wallets in Secarang; ship BNPL to prod <b>without staging testing</b> since the sandbox can't support it. Payment methods will be built disableable in case either needs to be turned off post-launch.</div>
+        </div>
+        <div class="t-item">
+          <div class="t-date">07 SEP</div>
+          <div class="t-who">Kasheng Liew — CIBO filter spec</div>
+          <div class="t-body">Posts the new "Fiuu – eWallet" filter tree for CIBO Payment Management, and notes only full-payment vs instalment needs distinguishing — no need to store instalment tenure in months.</div>
+        </div>
+        <div class="t-item">
+          <div class="t-date">08 SEP</div>
+          <div class="t-who">Dev update — 5 items</div>
+          <div class="t-body">Secarang + serba-sentral-api staging done and tested; CIBO shows eWallet transactions and the new filter works; transaction listing "–" bug fixed; GrabPay/ShopeePay PayLater filter entries still pending Fiuu's production indicator; <b>ShopeePay in staging fails — its Fiuu sandbox simulator doesn't work.</b></div>
+        </div>
+        <div class="t-item">
+          <div class="t-date">09 SEP</div>
+          <div class="t-who">Kasheng ↔ Yi Link</div>
+          <div class="t-body">Confirms QA is limited to GrabPay only in staging (pass/fail), no PayLater option to select. Separately, Shane confirms any payment method can be disabled via data patching if needed.</div>
+        </div>
+        <div class="t-item">
+          <div class="t-date">Fri 11 SEP</div>
+          <div class="t-who">Yi Link Lim</div>
+          <div class="t-body">SRD updated to v1.1: §2.2.3 (Affected Pages) revised and §2.2.9 <b>Payment Reference ID</b> added — the EW-prefixed reference ID requirement, based on dev feedback.</div>
+        </div>
+        <div class="t-item pivotal">
+          <div class="t-date">TODAY 10:21</div>
+          <div class="t-who">Kasheng Liew</div>
+          <div class="t-body">Confirms code review is done and the build is <b>ready for QA testing</b> — ahead of Jira's own status field, which still reads "Code Review".</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Open questions</h2></div>
+    <div class="qlist">
+      <div class="q"><span class="mark">?</span><span>ShopeePay has no API field equivalent to GrabPay's <code class="mono">grabpay_indicator</code> — only visible in Fiuu's merchant portal. Dev was still checking with Fiuu as of 03/09; no resolution seen since, and the SRD itself is silent on it.</span></div>
+      <div class="q"><span class="mark">?</span><span>QA never visibly answered Yi Link's 07/09 question about shipping BNPL to production without staging coverage — worth confirming directly before treating that as settled.</span></div>
+      <div class="q"><span class="mark">?</span><span>The real-money Fiuu dev account for BNPL testing — whose account, and whether charges are refundable — was never resolved.</span></div>
+    </div>
+    <p class="sub" style="margin-top:12px;"><b>Resolved by the SRD:</b> instalment tenure (3/6/12 or 4/8/12 months) does not need to be stored — Assumption #2 (§2.1.1) states tenure/terms are managed entirely by Shopee/Grab and "not verified in Secarang." The 26 May / 21 June 2026 activation dates in §2.1.3 are also confirmed intentional, not stale copy — both channels release together in one deployment regardless (REQ-005).</p>
+  </section>
+
+  <footer>
+    <span>Sources: Jira EAINT-12107 (description, 3 comments) · Teams channel "EAINT-12107 […]" (03 Sep – 15 Sep) · SRD v1.1 (20260911), full text read</span>
+    <span>REQ IDs per SRD §2.2</span>
+  </footer>
+
+</div>

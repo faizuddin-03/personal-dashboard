@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Play, Loader2, CheckCircle2, XCircle, Monitor, MonitorOff,
   ChevronDown, ShoppingCart, Video, Clock, SkipForward,
@@ -8,10 +8,16 @@ import {
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 
+/** Registry key for this page's run in AppShell's background-run store — see
+ *  hooks/useBackgroundRuns.ts. Keeps the run and its results alive across
+ *  navigating to another dashboard page and back. */
+const RUN_KEY = "eauto/shopping-cart";
+
 const ENV_PRESETS = [
   { label: "UAT1", value: "https://staging.eauto.my/uat1" },
   { label: "UAT2", value: "https://staging.eauto.my/uat2" },
   { label: "UAT3", value: "https://staging.eauto.my/uat3" },
+  { label: "UAT4", value: "https://staging.eauto.my/uat4" },
   { label: "SIT1", value: "https://staging.eauto.my/sit1" },
   { label: "SIT2", value: "https://staging.eauto.my/sit2" },
   { label: "SIT3", value: "https://staging.eauto.my/sit3" },
@@ -31,6 +37,9 @@ interface Scenario {
   // goes through end to end). False/omitted for negative & boundary checks
   // (blocked dates, caps refused, cancelled/failed handling, concurrency).
   happyFlow?: boolean;
+  // True for concurrency scenarios that need a SECOND UCD account (distinct
+  // from the primary UCD login) racing the same slot/date.
+  needsUcd2?: boolean;
 }
 
 interface ScenarioGroup {
@@ -42,85 +51,103 @@ const TEST_GROUPS: ScenarioGroup[] = [
   {
     label: "Reschedule & Handling",
     scenarios: [
-      { id: "rs-1", title: "Reschedule on the day of the initial appointment to a future date", user: "UCD", happyFlow: true },
-      { id: "rs-2", title: "Reschedule before the day of the appointment to a future date", user: "UCD", happyFlow: true },
-      { id: "rs-3", title: "Reschedule after 1 appointment has successfully finished", user: "UCD", happyFlow: true },
-      { id: "rs-4", title: "Same-day reschedule via portal — record becomes Failed", user: "UCD" },
-      { id: "rs-5", title: "Slot taken mid selection — concurrency", user: "UCD" },
-      { id: "rs-6", title: "Reschedule cancelled appointment — should be blocked", user: "BOTH" },
-      { id: "rs-7", title: "Reschedule failed appointment — should be blocked for UCD", user: "BOTH" },
-      { id: "rs-8", title: "BO reschedule normal flow", user: "BO", happyFlow: true },
-      { id: "rs-9", title: "BO reschedule to afternoon slot", user: "BO", happyFlow: true },
-      { id: "rs-10", title: "Reschedule Pending Installation", user: "UCD", happyFlow: true },
-      { id: "rs-11", title: "Reschedule Complete Installation", user: "UCD" },
-      { id: "rs-12", title: "Reschedule Expired Installation", user: "UCD" },
-      { id: "rs-13", title: "Reschedule on Friday", user: "UCD" },
-      { id: "rs-14", title: "Reschedule before Public Holiday", user: "UCD", params: ["publicHoliday"] },
-      { id: "rs-15", title: "Reschedule from morning to afternoon after 12:00PM", user: "UCD" },
-      { id: "rs-16", title: "Reschedule to the exact same date shows a popup", user: "UCD" },
-      { id: "rs-17", title: "BO reschedule Cancelled Installation", user: "BO" },
-      { id: "rs-18", title: "BO reschedule Failed Installation", user: "BO" },
-      { id: "rs-19", title: "BO reschedule Complete Installation", user: "BO" },
-      { id: "rs-20", title: "BO reschedule Expired Installation", user: "BO" },
+      // SC_RH_TS01 removed — better done manually (per user, 2026-07-31): the
+      // scenario needs a real same-day appointment arranged across 3 browser
+      // contexts, which is slow/fragile to automate reliably.
+      { id: "rs-2", title: "SC_RH_TS02: Reschedule before the day of the appointment to a future date", user: "UCD", happyFlow: true },
+      { id: "rs-3", title: "SC_RH_TS03: Reschedule after 1 appointment has successfully completed", user: "UCD", happyFlow: true },
+      { id: "rs-4", title: "SC_RH_TS04: Reschedule Cancelled Installation", user: "BOTH" },
+      { id: "rs-5", title: "SC_RH_TS05: Reschedule Failed Installation", user: "BOTH" },
+      { id: "rs-6", title: "SC_RH_TS06: Reschedule Pending Installation", user: "UCD", happyFlow: true },
+      { id: "rs-7", title: "SC_RH_TS07: Reschedule Complete Installation", user: "UCD" },
+      { id: "rs-8", title: "SC_RH_TS08: Reschedule Expired Installation", user: "UCD" },
+      // SC_RH_TS09 removed — better done manually (per user, 2026-07-31): it
+      // only runs on Fridays and paged into a calendar state that kept
+      // timing out; not worth automating reliably right now.
+      { id: "rs-11", title: "SC_RH_TS11: Reschedule from morning to afternoon after 12:00PM", user: "UCD" },
+      { id: "rs-12", title: "SC_RH_TS12: Reschedule from afternoon to morning on same day", user: "UCD" },
+      { id: "rs-13", title: "SC_RH_TS13: Reschedule same date", user: "UCD" },
+      { id: "rs-14", title: "SC_RH_TS14: BO reschedule normal flow", user: "BO", happyFlow: true },
+      { id: "rs-15", title: "SC_RH_TS15: BO Reschedule Cancelled Installation", user: "BO" },
+      { id: "rs-16", title: "SC_RH_TS16: BO Reschedule Failed Installation", user: "BO" },
+      { id: "rs-17", title: "SC_RH_TS17: BO Reschedule Pending Installation", user: "BO", happyFlow: true },
+      { id: "rs-18", title: "SC_RH_TS18: BO Reschedule Complete Installation", user: "BO" },
+      { id: "rs-19", title: "SC_RH_TS19: BO Reschedule Expired Installation", user: "BO" },
+      { id: "rs-20", title: "SC_RH_TS20: BO reschedule on same day different time slot", user: "BO", happyFlow: true },
+      { id: "rs-23", title: "SC_RH_TS23: BO Reschedule from morning to afternoon after 12:00PM", user: "BO" },
+      { id: "rs-24", title: "SC_RH_TS24: BO Reschedule from afternoon to morning on same day", user: "BO" },
+      // SC_RH_TS10/22 excluded — precondition requires a dev to manually patch a
+      // public holiday into the system; not automatable without intervention.
     ],
   },
   {
     label: "Add Appointment (BO)",
     scenarios: [
-      { id: "aa-1", title: "Add Appointment - Offline Purchase (New Record)", user: "BOTH", happyFlow: true },
-      { id: "aa-6", title: "Morning Slot Full Booking - Add Appointment", user: "BOTH", happyFlow: true },
-      { id: "aa-5", title: "Afternoon Slot Booking", user: "BOTH", happyFlow: true },
-      { id: "aa-2", title: "Add Appointment - Both slots on one date", user: "BOTH", happyFlow: true },
-      { id: "aa-4", title: "CSE not bound by 6/day cap — can add to a full slot", user: "BOTH", happyFlow: true },
-      { id: "aa-3", title: "Add Appointment - Partial Booking Call-in", user: "BOTH", happyFlow: true },
+      { id: "aa-1", title: "SC_APBO_TS01: Add Appointment - Existing Record Free Booking", user: "BOTH", happyFlow: true },
+      { id: "aa-6", title: "SC_APBO_TS02: Morning Slot Full Booking - Add Appointment", user: "BOTH", happyFlow: true },
+      { id: "aa-5", title: "SC_APBO_TS03: Afternoon Slot Full Booking - Add Appointment", user: "BOTH", happyFlow: true },
+      { id: "aa-7", title: "SC_APBO_TS04: Full date booking", user: "BOTH", happyFlow: true },
+      { id: "aa-8", title: "SC_APBO_TS05: Add free booking that is cancelled", user: "BO" },
+      // SC_APBO_TS06/7 excluded — precondition requires a dev to manually patch
+      // a transaction to Expired; not automatable without intervention.
     ],
   },
   {
     label: "Slot Capacity Boundary",
     scenarios: [
-      { id: "sc-1", title: "Morning Slot - Book until full", user: "UCD" },
-      { id: "sc-2", title: "Afternoon Slot - Book until full", user: "UCD" },
-      { id: "sc-3", title: "Day capacity reach 6/6", user: "UCD" },
-      { id: "sc-4", title: "Software Installation - Mandatory Booking", user: "UCD", happyFlow: true },
-      { id: "sc-5", title: "Biometric Purchase - Free Install Option (partial booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
-      { id: "sc-6", title: "Biometric Purchase - Free Install Option (no booking)", user: "UCD", params: ["referenceNo"], happyFlow: true },
-      { id: "sc-7", title: "Biometric Purchase - Paid Install Mandatory", user: "UCD", happyFlow: true },
-      { id: "sc-8", title: "Two UCD - Select same last available slot", user: "UCD" },
-      { id: "cal-1", title: "Book for current day and the next day", user: "UCD" },
-      { id: "cal-2", title: "Book for previous dates", user: "UCD" },
-      { id: "cal-3", title: "Book future dates more than 2 months", user: "UCD" },
-      { id: "cal-4", title: "Book weekend dates", user: "UCD" },
-      { id: "cal-5", title: "Book Public Holiday", user: "UCD", params: ["publicHoliday"] },
-      { id: "sc-9", title: "Morning Slot - Max Capacity (via Reschedule)", user: "UCD" },
-      { id: "sc-10", title: "Afternoon Slot - Max Capacity (via Reschedule)", user: "UCD" },
-      { id: "sc-11", title: "Daily Max Capacity (via Reschedule)", user: "UCD" },
-      { id: "bo-1", title: "BO add beyond 6 days limit", user: "BOTH", happyFlow: true },
-      { id: "bo-2", title: "BO add beyond morning slot limit", user: "BOTH", happyFlow: true },
-      { id: "bo-3", title: "BO add beyond afternoon slot limit", user: "BOTH", happyFlow: true },
-      { id: "bo-4", title: "BO add for current day and the next day", user: "BO", happyFlow: true },
-      { id: "bo-5", title: "BO add for previous dates", user: "BO" },
-      { id: "bo-6", title: "BO book future date more than 2 months", user: "BO", happyFlow: true },
-      { id: "bo-7", title: "BO book weekend dates", user: "BO" },
-      { id: "bo-8", title: "BO book Public Holiday", user: "BO", params: ["publicHoliday"] },
-      { id: "bo-17", title: "Attempt to add existing appointment expired over 2 months", user: "BO" },
-      { id: "bo-9", title: "BO reschedule for current day and the next day", user: "BO", happyFlow: true },
-      { id: "bo-10", title: "BO reschedule for previous dates", user: "BO" },
-      { id: "bo-11", title: "BO reschedule future date more than 2 months", user: "BO", happyFlow: true },
-      { id: "bo-12", title: "BO reschedule weekend dates", user: "BO" },
-      { id: "bo-13", title: "BO reschedule Public Holiday", user: "BO", params: ["publicHoliday"] },
-      { id: "bo-14", title: "BO reschedule beyond morning slot limit", user: "BO", happyFlow: true },
-      { id: "bo-15", title: "BO reschedule beyond afternoon slot limit", user: "BO", happyFlow: true },
-      { id: "bo-16", title: "BO reschedule beyond 6 days limit", user: "BO", happyFlow: true },
+      { id: "sc-1", title: "SC_SCB_TS01: Morning Slot - Book until full", user: "UCD" },
+      { id: "sc-2", title: "SC_SCB_TS03: Afternoon Slot - Book until full", user: "UCD" },
+      { id: "sc-3", title: "SC_SCB_TS05: Day capacity reach 6/6", user: "UCD" },
+      { id: "sc-4", title: "SC_SCB_TS07: Software Installation - Mandatory Booking", user: "UCD", happyFlow: true },
+      { id: "sc-5", title: "SC_SCB_TS08: Biometric Purchase - Mandatory free installation (full booking)", user: "UCD", happyFlow: true },
+      { id: "sc-6", title: "SC_SCB_TS09: Biometric Purchase - No Installation", user: "UCD", happyFlow: true },
+      { id: "sc-7", title: "SC_SCB_TS10: Biometric Purchase - Paid Install Mandatory", user: "UCD", happyFlow: true },
+      { id: "cal-1", title: "SC_SCB_TS11: Book for current day and the next day", user: "UCD" },
+      { id: "cal-2", title: "SC_SCB_TS13: Book for previous dates", user: "UCD" },
+      { id: "cal-3", title: "SC_SCB_TS15: Book future dates more than 2 months", user: "UCD" },
+      { id: "cal-4", title: "SC_SCB_TS17: Book weekend dates", user: "UCD" },
+      { id: "cal-5", title: "SC_SCB_TS19: Book Public Holiday", user: "UCD", params: ["publicHoliday"] },
+      { id: "sc-9", title: "SC_SCB_TS02: Morning Slot - Max Capacity (via Reschedule)", user: "UCD" },
+      { id: "sc-10", title: "SC_SCB_TS04: Afternoon Slot - Max Capacity (via Reschedule)", user: "UCD" },
+      { id: "sc-11", title: "SC_SCB_TS06: Daily Max Capacity (via Reschedule)", user: "UCD" },
+      { id: "cal-6", title: "SC_SCB_TS12: Reschedule to current day and the next day", user: "UCD" },
+      { id: "cal-7", title: "SC_SCB_TS14: Reschedule to previous dates", user: "UCD" },
+      { id: "cal-8", title: "SC_SCB_TS16: Reschedule to future dates more than 2 months", user: "UCD" },
+      { id: "cal-9", title: "SC_SCB_TS18: Reschedule to weekend dates", user: "UCD" },
+      { id: "cal-10", title: "SC_SCB_TS20: Reschedule to Public Holiday", user: "UCD", params: ["publicHoliday"] },
+      // 15-min hold booking — these literally wait 15 real minutes, so each
+      // takes ~15-20 minutes to run (per user direction, 2026-07-31).
+      { id: "hold-1", title: "SC_SCB_TS21: 15 Minutes Hold Booking - Slot still available", user: "UCD", happyFlow: true },
+      { id: "hold-2", title: "SC_SCB_TS22: Reschedule to 15 Minutes Hold Booking - Slot still available", user: "UCD", happyFlow: true },
+      { id: "hold-3", title: "SC_SCB_TS23: 15 Minutes Hold Booking - Slot fully booked", user: "UCD", needsUcd2: true },
+      { id: "hold-4", title: "SC_SCB_TS24: Reschedule to 15 Minutes Hold Booking - Slot fully booked", user: "UCD", needsUcd2: true },
+      { id: "bo-1", title: "SC_SCB_TS26: BO add beyond 6 days limit", user: "BOTH", happyFlow: true },
+      { id: "bo-2", title: "SC_SCB_TS28: BO add beyond morning slot limit", user: "BOTH", happyFlow: true },
+      { id: "bo-3", title: "SC_SCB_TS30: BO add beyond afternoon slot limit", user: "BOTH", happyFlow: true },
+      { id: "bo-4", title: "SC_SCB_TS32: BO add for current day and the next day", user: "BO", happyFlow: true },
+      { id: "bo-5", title: "SC_SCB_TS34: BO add for previous dates", user: "BO" },
+      { id: "bo-6", title: "SC_SCB_TS36: BO book future date more than 2 months", user: "BO", happyFlow: true },
+      { id: "bo-7", title: "SC_SCB_TS38: BO book weekend dates", user: "BO" },
+      { id: "bo-8", title: "SC_SCB_TS40: BO book Public Holiday", user: "BO", params: ["publicHoliday"] },
+      { id: "bo-17", title: "SC_SCB_TS25: Attempt to add existing appointment expired over 2 months", user: "BO" },
+      { id: "bo-9", title: "SC_SCB_TS33: BO reschedule for current day and the next day", user: "BO", happyFlow: true },
+      { id: "bo-10", title: "SC_SCB_TS35: BO reschedule for previous dates", user: "BO" },
+      { id: "bo-11", title: "SC_SCB_TS37: BO reschedule future date more than 2 months", user: "BO", happyFlow: true },
+      { id: "bo-12", title: "SC_SCB_TS39: BO reschedule weekend dates", user: "BO" },
+      { id: "bo-13", title: "SC_SCB_TS41: BO reschedule Public Holiday", user: "BO", params: ["publicHoliday"] },
+      { id: "bo-14", title: "SC_SCB_TS29: BO reschedule beyond morning slot limit", user: "BO", happyFlow: true },
+      { id: "bo-15", title: "SC_SCB_TS31: BO reschedule beyond afternoon slot limit", user: "BO", happyFlow: true },
+      { id: "bo-16", title: "SC_SCB_TS27: BO reschedule beyond 6 days limit", user: "BO", happyFlow: true },
     ],
   },
 ];
 
-/** Display-only naming convention: TSXX_<portal>_<title>. "XX" is a
- * placeholder until real TS numbers are assigned — the underlying
+/** Display-only: just the CSV TS No. + name (e.g. "SC_RH_TS01: ..."), exactly
+ * as it appears in the CSV — the portal is already shown separately via the
+ * UCD/BO/UCD+BO badge, so it's not repeated in the text. The underlying
  * scenario.title (used to match the spec's test() name) is untouched. */
 function scenarioDisplayLabel(scenario: Scenario): string {
-  const portal = scenario.user === "BOTH" ? "UCD+BO" : scenario.user;
-  return `TSXX_${portal}_${scenario.title}`;
+  return scenario.title;
 }
 
 const PARAM_META: Record<ScenarioParam, { label: string; hint: string; type: string; placeholder: string }> = {
@@ -171,12 +198,12 @@ const CREDS_KEY = "shopping_cart_test_creds";
 function loadCreds() {
   try {
     const raw = localStorage.getItem(CREDS_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return { ucdUser: "", ucdPass: "", boUser: "", boPass: "", ucd2User: "", ucd2Pass: "", ...JSON.parse(raw) };
   } catch {}
-  return { ucdUser: "", ucdPass: "", boUser: "", boPass: "" };
+  return { ucdUser: "", ucdPass: "", boUser: "", boPass: "", ucd2User: "", ucd2Pass: "" };
 }
 
-function saveCreds(c: { ucdUser: string; ucdPass: string; boUser: string; boPass: string }) {
+function saveCreds(c: { ucdUser: string; ucdPass: string; boUser: string; boPass: string; ucd2User: string; ucd2Pass: string }) {
   localStorage.setItem(CREDS_KEY, JSON.stringify(c));
 }
 
@@ -236,7 +263,18 @@ function TestStatusIcon({ status, size = 18 }: { status: string; size?: number }
 }
 
 export default function ShoppingCartPage() {
-  useApp();
+  // The run lives in AppShell (hooks/useBackgroundRuns.ts) so it survives
+  // navigating away and back — this page has no live-log route and no Stop
+  // button (the route has no DELETE handler), so only running/result/error
+  // carry over.
+  const { runs, startRun } = useApp();
+  const bgRun = runs[RUN_KEY];
+  const running = !!bgRun?.running;
+  const orphaned = !!bgRun?.orphaned;
+  const runResult = (bgRun?.result as RunResult | null) ?? null;
+  const [formError, setFormError] = useState("");
+  const error = formError || bgRun?.error || "";
+
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
     new Set(TEST_GROUPS.map(g => g.label))
@@ -244,18 +282,17 @@ export default function ShoppingCartPage() {
   const [headless, setHeadless] = useState(true);
   const [detailed, setDetailed] = useState(true);
   const [baseUrl, setBaseUrl] = useState<string>(ENV_PRESETS[0].value);
-  const [running, setRunning] = useState(false);
-  const [runResult, setRunResult] = useState<RunResult | null>(null);
-  const [error, setError] = useState("");
   const [expandedTests, setExpandedTests] = useState<Set<number>>(new Set());
   const [expandedErrors, setExpandedErrors] = useState<Set<number>>(new Set());
   const [showLogs, setShowLogs] = useState(false);
 
-  const saved = typeof window !== "undefined" ? loadCreds() : { ucdUser: "", ucdPass: "", boUser: "", boPass: "" };
+  const saved = typeof window !== "undefined" ? loadCreds() : { ucdUser: "", ucdPass: "", boUser: "", boPass: "", ucd2User: "", ucd2Pass: "" };
   const [ucdUser, setUcdUser] = useState(saved.ucdUser);
   const [ucdPass, setUcdPass] = useState(saved.ucdPass);
   const [boUser, setBoUser] = useState(saved.boUser);
   const [boPass, setBoPass] = useState(saved.boPass);
+  const [ucd2User, setUcd2User] = useState(saved.ucd2User);
+  const [ucd2Pass, setUcd2Pass] = useState(saved.ucd2Pass);
 
   const savedParams = typeof window !== "undefined" ? loadParams() : { publicHoliday: "", referenceNo: "" };
   const [publicHoliday, setPublicHoliday] = useState(savedParams.publicHoliday);
@@ -308,14 +345,12 @@ export default function ShoppingCartPage() {
     });
   }
 
-  async function runTests(idsOverride?: Set<string>) {
+  function runTests(idsOverride?: Set<string>) {
     const ids = idsOverride ?? selected;
     if (!ids.size) return;
-    saveCreds({ ucdUser, ucdPass, boUser, boPass });
+    saveCreds({ ucdUser, ucdPass, boUser, boPass, ucd2User, ucd2Pass });
     saveParams({ publicHoliday, referenceNo });
-    setRunning(true);
-    setError("");
-    setRunResult(null);
+    setFormError("");
     setExpandedTests(new Set());
     setExpandedErrors(new Set());
     setShowLogs(false);
@@ -325,38 +360,40 @@ export default function ShoppingCartPage() {
       .filter(s => ids.has(s.id))
       .map(s => s.title);
 
-    try {
-      const res = await fetch("/api/eauto/shopping-cart/run", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          scenarios: scenarioTitles,
-          headless,
-          detailed,
-          baseUrl,
-          ucdUser,
-          ucdPass,
-          boUser,
-          boPass,
-          publicHoliday,
-          referenceNo,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? `Run failed (${res.status})`);
-      setRunResult(data);
-      // Auto-expand failed tests so the failing step is visible immediately.
-      const failed = new Set<number>();
-      (data.results as TestResult[]).forEach((r, i) => {
-        if (r.status === "failed") failed.add(i);
-      });
-      setExpandedTests(failed);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Run failed");
-    } finally {
-      setRunning(false);
-    }
+    startRun<RunResult>(RUN_KEY, {
+      url: "/api/eauto/shopping-cart/run",
+      body: {
+        scenarios: scenarioTitles,
+        headless,
+        detailed,
+        baseUrl,
+        ucdUser,
+        ucdPass,
+        boUser,
+        boPass,
+        ucd2User,
+        ucd2Pass,
+        publicHoliday,
+        referenceNo,
+      },
+    });
   }
+
+  // Auto-expand failed tests so the failing step is visible immediately. Used
+  // to run inline after runTests()'s own fetch resolved; the run now finishes
+  // inside AppShell, possibly while this page isn't mounted, so this reacts to
+  // the stored result instead. Guarded by runId so it only fires once per run.
+  const expandedForRunId = useRef<string | null>(null);
+  useEffect(() => {
+    if (!bgRun || bgRun.running || !bgRun.result) return;
+    if (expandedForRunId.current === bgRun.runId) return;
+    expandedForRunId.current = bgRun.runId;
+    const failed = new Set<number>();
+    ((bgRun.result as RunResult).results ?? []).forEach((r, i) => {
+      if (r.status === "failed") failed.add(i);
+    });
+    setExpandedTests(failed);
+  }, [bgRun?.runId, bgRun?.running, bgRun?.result]);
 
   /** Re-select and re-run only the tests that failed or skipped last time. */
   function rerunFailedAndSkipped() {
@@ -376,6 +413,7 @@ export default function ShoppingCartPage() {
   const selectedScenarios = TEST_GROUPS.flatMap(g => g.scenarios).filter(s => selected.has(s.id));
   const needsBO = selectedScenarios.some(s => s.user === "BO" || s.user === "BOTH");
   const needsUCD = selectedScenarios.some(s => s.user === "UCD" || s.user === "BOTH");
+  const needsUCD2 = selectedScenarios.some(s => s.needsUcd2);
   const neededParams = new Set<ScenarioParam>();
   selectedScenarios.forEach(s => (s.params ?? []).forEach(p => neededParams.add(p)));
   const paramValue: Record<ScenarioParam, string> = { publicHoliday, referenceNo };
@@ -458,7 +496,7 @@ export default function ShoppingCartPage() {
           </button>
         </div>
 
-        {(needsUCD || needsBO) && (
+        {(needsUCD || needsBO || needsUCD2) && (
           <div className="grid sm:grid-cols-2 gap-3">
             {needsUCD && (
               <CredBox label="UCD Login" accent="blue"
@@ -467,6 +505,10 @@ export default function ShoppingCartPage() {
             {needsBO && (
               <CredBox label="BO Login" accent="amber"
                 user={boUser} pass={boPass} onUser={setBoUser} onPass={setBoPass} />
+            )}
+            {needsUCD2 && (
+              <CredBox label="UCD (2nd account) Login" accent="blue"
+                user={ucd2User} pass={ucd2Pass} onUser={setUcd2User} onPass={setUcd2Pass} />
             )}
           </div>
         )}
@@ -574,7 +616,6 @@ export default function ShoppingCartPage() {
                             <CheckCircle2 size={11} /> Happy flow
                           </span>
                         )}
-                        <UserBadge user={scenario.user} />
                       </label>
                     );
                   })}
@@ -590,6 +631,17 @@ export default function ShoppingCartPage() {
         <div className="bg-rose-950/30 border border-rose-800/50 rounded-2xl p-3.5 flex items-start gap-2.5">
           <AlertTriangle size={15} className="text-rose-400 shrink-0 mt-0.5" />
           <span className="text-xs text-rose-300 leading-relaxed">{error}</span>
+        </div>
+      )}
+
+      {/* Survived the page but not a full browser reload. */}
+      {orphaned && !runResult && (
+        <div className="bg-amber-950/20 border border-amber-800/50 rounded-2xl p-3.5 flex items-start gap-2.5">
+          <AlertTriangle size={15} className="text-amber-400 shrink-0 mt-0.5" />
+          <span className="text-xs text-amber-200 leading-relaxed">
+            A run was still going when this browser reloaded, so the dashboard lost track of it.
+            It may well have finished — check the terminal.
+          </span>
         </div>
       )}
 
@@ -632,13 +684,6 @@ function CredBox({ label, accent, user, pass, onUser, onPass }: {
       </div>
     </div>
   );
-}
-
-function UserBadge({ user }: { user: "UCD" | "BO" | "BOTH" }) {
-  const cls = user === "UCD" ? "bg-blue-500/15 text-blue-300"
-    : user === "BO" ? "bg-amber-500/15 text-amber-300"
-    : "bg-purple-500/15 text-purple-300";
-  return <span className={clsx("text-[10px] px-1.5 py-0.5 rounded-md font-medium shrink-0", cls)}>{user === "BOTH" ? "UCD+BO" : user}</span>;
 }
 
 function Results({ runResult, envLabel, expandedTests, expandedErrors, onToggleTest, onToggleError, showLogs, onToggleLogs, onRerunFailedSkipped, rerunning }: {

@@ -1,0 +1,1085 @@
+<!-- Source for the combined EAINT-12166/12167 QA study artifact.
+     Republish with the Artifact tool, file_path = this file,
+     url = https://claude.ai/code/artifact/272e5af6-2f09-475b-aef5-6ea929e24bc9
+     to update in place rather than creating a new artifact.
+     2026-09-18: added the EAINT-12167 click-through flow section (per Faizuddin's
+     request) and resolved the locked-SN-typo open question using the Teams
+     confirmation captured in knowledge/flow-device-purchase.md. -->
+<title>Delivery Order &amp; Serial Capture</title>
+<style>
+  :root {
+    --paper: #f1f4f2;
+    --card: #ffffff;
+    --card-raised: #e9eee9;
+    --ink: #182420;
+    --ink-soft: #57655d;
+    --ink-faint: #7c8a81;
+    --line: #dbe3dc;
+    --line-strong: #c2cdc4;
+
+    --t166: #2c6f5f;
+    --t166-bg: #e2efe9;
+    --t166-ink: #ffffff;
+
+    --t167: #464b8c;
+    --t167-bg: #e7e8f4;
+    --t167-ink: #ffffff;
+
+    --warn: #9c611b;
+    --warn-bg: #f9ecd9;
+    --warn-line: #e3c68f;
+
+    --confirm: #2b7a4f;
+    --confirm-bg: #e3f1e7;
+
+    --mono: ui-monospace, "Cascadia Mono", "Consolas", "SFMono-Regular", monospace;
+    --serif: Charter, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, "Segoe UI", "Inter", ui-sans-serif, system-ui, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #121613;
+      --card: #191f1b;
+      --card-raised: #1f2621;
+      --ink: #e7ece8;
+      --ink-soft: #a4ada5;
+      --ink-faint: #79837b;
+      --line: #2b332d;
+      --line-strong: #3b453d;
+
+      --t166: #6bbfa6;
+      --t166-bg: #16302a;
+      --t166-ink: #0b1a16;
+
+      --t167: #9ea3e6;
+      --t167-bg: #212454;
+      --t167-ink: #12143a;
+
+      --warn: #e3ab5c;
+      --warn-bg: #3a2c14;
+      --warn-line: #5b4620;
+
+      --confirm: #6fc491;
+      --confirm-bg: #16301f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #121613;
+    --card: #191f1b;
+    --card-raised: #1f2621;
+    --ink: #e7ece8;
+    --ink-soft: #a4ada5;
+    --ink-faint: #79837b;
+    --line: #2b332d;
+    --line-strong: #3b453d;
+
+    --t166: #6bbfa6;
+    --t166-bg: #16302a;
+    --t166-ink: #0b1a16;
+
+    --t167: #9ea3e6;
+    --t167-bg: #212454;
+    --t167-ink: #12143a;
+
+    --warn: #e3ab5c;
+    --warn-bg: #3a2c14;
+    --warn-line: #5b4620;
+
+    --confirm: #6fc491;
+    --confirm-bg: #16301f;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.55;
+    padding: 40px 20px 100px;
+  }
+  a { color: inherit; }
+  ::selection { background: var(--t166); color: var(--t166-ink); }
+
+  .sheet { max-width: 880px; margin: 0 auto; }
+
+  /* ---------- header ---------- */
+  header.top {
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font: 600 12px/1 var(--sans);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    margin: 0 0 10px;
+  }
+  h1 {
+    font: 600 34px/1.15 var(--serif);
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  .dek {
+    font: 400 16px/1.6 var(--sans);
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0 0 18px;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    font: 500 12.5px/1 var(--sans);
+    color: var(--ink-soft);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--line-strong);
+    background: var(--card);
+  }
+  .chip b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- banner ---------- */
+  .banner {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-line);
+    border-radius: 5px;
+    padding: 14px 16px;
+    margin: 22px 0;
+  }
+  .banner .mark {
+    font-family: var(--serif);
+    font-weight: 700;
+    color: var(--warn);
+    font-size: 15px;
+    line-height: 1.5;
+    flex: none;
+  }
+  .banner p { margin: 0; font-size: 14.5px; color: var(--ink); }
+  .banner p + p { margin-top: 6px; }
+  .banner b { color: var(--warn); }
+
+  /* ---------- flow diagram ---------- */
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: stretch;
+    gap: 10px;
+    margin: 28px 0 32px;
+  }
+  .flow-step {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .flow-step .tk {
+    font: 600 11px/1 var(--mono);
+    letter-spacing: 0.02em;
+  }
+  .flow-step .tk.a { color: var(--t167); }
+  .flow-step .tk.b { color: var(--t166); }
+  .flow-step .desc { font-size: 13px; color: var(--ink-soft); }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-size: 18px;
+  }
+  @media (max-width: 640px) {
+    .flow { grid-template-columns: 1fr; }
+    .flow-arrow { transform: rotate(90deg); padding: 2px 0; }
+  }
+
+  /* ---------- nav ---------- */
+  nav.jump {
+    display: flex;
+    gap: 18px;
+    padding: 10px 0;
+    margin-bottom: 8px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    font: 600 13px/1 var(--sans);
+  }
+  nav.jump a { text-decoration: none; color: var(--ink-soft); }
+  nav.jump a:hover { color: var(--ink); }
+
+  /* ---------- ticket sections ---------- */
+  section.ticket { margin-top: 44px; }
+
+  .ticket-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 3px solid var(--tk-color);
+    margin-bottom: 18px;
+  }
+  .ticket-head .key {
+    font: 700 13px/1 var(--mono);
+    color: var(--tk-ink);
+    background: var(--tk-color);
+    padding: 4px 8px;
+    border-radius: 3px;
+    flex: none;
+  }
+  .ticket-head h2 {
+    font: 600 23px/1.3 var(--serif);
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 240px;
+    text-wrap: balance;
+  }
+  .ticket-head .status {
+    font: 600 12px/1 var(--sans);
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  #t166 { --tk-color: var(--t166); --tk-ink: var(--t166-ink); }
+  #t167 { --tk-color: var(--t167); --tk-ink: var(--t167-ink); }
+
+  h3.sub {
+    font: 600 12px/1 var(--sans);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tk-color);
+    margin: 26px 0 10px;
+  }
+  p.body-text { font-size: 15px; color: var(--ink); margin: 0 0 12px; max-width: 68ch; }
+
+  ul.plain { margin: 0 0 12px; padding-left: 20px; }
+  ul.plain li { font-size: 14.5px; margin-bottom: 5px; color: var(--ink); }
+  ul.plain li b { font-weight: 600; }
+
+  /* affected pages */
+  .pages { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+  .page-row {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 13.5px;
+    padding: 9px 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+  }
+  .page-row .path { font-family: var(--mono); font-size: 12.5px; color: var(--tk-color); flex: none; }
+  .page-row .what { color: var(--ink-soft); }
+
+  /* click-through flow steps */
+  .steps { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 11px 13px;
+  }
+  .step .num {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--tk-color);
+    color: var(--tk-ink);
+    font: 700 11.5px/22px var(--mono);
+    text-align: center;
+  }
+  .step .body { flex: 1 1 auto; min-width: 0; }
+  .step .click { font-size: 14px; color: var(--ink); margin: 0 0 3px; }
+  .step .click b { font-weight: 600; }
+  .step .then { font-size: 12.8px; color: var(--ink-soft); margin: 0; }
+  .step .then b { color: var(--ink); font-weight: 600; }
+
+  /* requirement table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; margin-bottom: 8px; }
+  table.req {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 560px;
+    background: var(--card);
+    font-size: 13.5px;
+  }
+  table.req th {
+    text-align: left;
+    font: 600 11px/1 var(--sans);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    background: var(--card-raised);
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line-strong);
+    white-space: nowrap;
+  }
+  table.req td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink);
+  }
+  table.req tr:last-child td { border-bottom: none; }
+  table.req td.id { font-family: var(--mono); font-size: 12px; color: var(--tk-color); white-space: nowrap; }
+  table.req td.rule { color: var(--ink-soft); font-size: 13px; }
+  .tag-new {
+    display: inline-block;
+    font: 700 10px/1 var(--mono);
+    color: var(--tk-color);
+    border: 1px solid var(--tk-color);
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* proposed test scenarios */
+  #ts167 { --tk-color: var(--t167); --tk-ink: var(--t167-ink); }
+  #ts166 { --tk-color: var(--t166); --tk-ink: var(--t166-ink); }
+  .ts-ticket-head {
+    font: 600 17px/1.3 var(--serif);
+    color: var(--tk-color, var(--ink));
+    margin: 30px 0 4px;
+  }
+  .tech-label {
+    display: inline-block;
+    font: 700 10.5px/1 var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--tk-color, var(--ink-soft));
+    border: 1px solid var(--tk-color, var(--line-strong));
+    padding: 4px 9px;
+    border-radius: 4px;
+    margin: 18px 0 8px;
+  }
+  table.ts {
+    border-collapse: collapse;
+    width: 100%;
+    background: var(--card);
+    font-size: 13.5px;
+  }
+  table.ts th {
+    text-align: left;
+    font: 600 11px/1 var(--sans);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    background: var(--card-raised);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line-strong);
+    white-space: nowrap;
+  }
+  table.ts td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    vertical-align: top;
+  }
+  table.ts tr:last-child td { border-bottom: none; }
+  table.ts td.tsid { font-family: var(--mono); font-size: 11.5px; color: var(--tk-color, var(--ink-faint)); white-space: nowrap; }
+  table.dt {
+    border-collapse: collapse;
+    width: 100%;
+    background: var(--card);
+    font-size: 12.8px;
+  }
+  table.dt th, table.dt td {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    text-align: center;
+    vertical-align: middle;
+  }
+  table.dt th {
+    background: var(--card-raised);
+    font: 600 10.5px/1 var(--sans);
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  table.dt td.outcome { text-align: left; color: var(--ink-soft); }
+  table.dt td.gap { background: var(--warn-bg); color: var(--warn); font-weight: 600; }
+
+  /* callouts */
+  .callout {
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 14px 0;
+    border: 1px solid var(--line);
+    background: var(--card);
+  }
+  .callout.qa { border-color: var(--tk-color); background: var(--tk-bg, var(--card)); }
+  #t166 .callout.qa { background: var(--t166-bg); border-color: var(--t166); }
+  #t167 .callout.qa { background: var(--t167-bg); border-color: var(--t167); }
+  .callout h4 {
+    margin: 0 0 8px;
+    font: 700 12px/1 var(--sans);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tk-color);
+  }
+  .callout ul { margin: 0; padding-left: 18px; }
+  .callout li { font-size: 13.5px; margin-bottom: 6px; color: var(--ink); }
+  .callout li:last-child { margin-bottom: 0; }
+
+  /* open question card */
+  .oq {
+    border: 1px solid var(--warn-line);
+    background: var(--warn-bg);
+    border-radius: 6px;
+    padding: 13px 15px;
+    margin-bottom: 10px;
+  }
+  .oq .n { font: 700 11px/1 var(--mono); color: var(--warn); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; }
+  .oq p { margin: 0; font-size: 13.5px; color: var(--ink); }
+  .oq.resolved { border-color: var(--confirm); background: var(--confirm-bg); }
+  .oq.resolved .n { color: var(--confirm); }
+
+  /* footer */
+  footer {
+    margin-top: 52px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+  }
+  footer span b { color: var(--ink-soft); }
+
+  /* combined flow diagram */
+  figure.combined-flow { margin: 30px 0 6px; }
+  figure.combined-flow svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  figure.combined-flow figcaption {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    margin-top: 12px;
+  }
+  figure.combined-flow figcaption b.a { color: var(--t167); }
+  figure.combined-flow figcaption b.b { color: var(--t166); }
+</style>
+
+<div class="sheet">
+
+  <header class="top">
+    <p class="eyebrow">eAuto BackOffice · Service Hub · Combined QA study</p>
+    <h1>Delivery Order Auto-Generation &amp; Device Serial Capture</h1>
+    <p class="dek">EAINT-12167 captures the device serial number; EAINT-12166 consumes it to auto-generate the
+      Delivery Order. Read together — 12166 cannot be meaningfully tested without 12167's data existing first.</p>
+    <div class="meta-row">
+      <span class="chip">Fix Version <b>S33.X&#8209;20260928</b></span>
+      <span class="chip">Both <b>Code Review</b> in Jira</span>
+      <span class="chip">SRDs read <b>in full</b>, live-checked <b>2026&#8209;09&#8209;15</b></span>
+      <span class="chip">Teams re-checked <b>2026&#8209;09&#8209;18</b></span>
+    </div>
+  </header>
+
+  <div class="banner">
+    <span class="mark">!</span>
+    <div>
+      <p><b>Environment not specified</b> anywhere — not in Jira fields, the description, or either SRD, on either
+        ticket. Needs confirming before test execution can be scheduled.</p>
+      <p>Jira's <b>status</b> field still reads "Code Review" on both, despite the 12167 dev thread (12&nbsp;Aug)
+        saying code review is done and QA is next — same inconsistency pattern seen on EAINT-12028. Confirm with
+        dev before pulling into staging.</p>
+    </div>
+  </div>
+
+  <div class="flow" aria-label="Data flow between the two tickets">
+    <div class="flow-step">
+      <span class="tk a">UCD · Step 1</span>
+      <span class="desc">Company selects &amp; pays for device quantity (max 40/txn, capped by 12166&#8209;REQ&#8209;007)</span>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <span class="tk a">EAINT-12167</span>
+      <span class="desc">Ops keys in one Device Serial No. per unit while Delivery Status = New; locks on save</span>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <span class="tk b">EAINT-12166</span>
+      <span class="desc">Status set to Arranged &rarr; DO auto-generates as PDF, snapshotting all source data</span>
+    </div>
+  </div>
+
+  <figure class="combined-flow" id="combflow">
+    <svg viewBox="0 0 760 706" role="img" aria-label="End-to-end flow: UCD purchase, through EAINT-12167 serial capture, into EAINT-12166 Delivery Order generation">
+      <defs>
+        <marker id="af" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint)"/>
+        </marker>
+      </defs>
+
+      <!-- 1: UCD Portal (neutral) -->
+      <rect x="160" y="24" width="440" height="54" rx="8" fill="var(--card)" stroke="var(--line-strong)"/>
+      <text x="380" y="47" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">UCD Portal</text>
+      <text x="380" y="64" text-anchor="middle" font-size="11" fill="var(--ink-soft)">Buys devices &#8212; max 40/txn</text>
+
+      <line x1="380" y1="78" x2="380" y2="120" stroke="var(--ink-faint)" stroke-width="1.6" marker-end="url(#af)"/>
+      <text x="610" y="103" font-size="11" fill="var(--ink-faint)">purchase &#8594; SR</text>
+
+      <!-- 2: Device Listing (neutral) -->
+      <rect x="160" y="124" width="440" height="54" rx="8" fill="var(--card)" stroke="var(--line-strong)"/>
+      <text x="380" y="147" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">Device Listing</text>
+      <text x="380" y="164" text-anchor="middle" font-size="11" fill="var(--ink-soft)">1 row per device</text>
+
+      <line x1="380" y1="178" x2="380" y2="220" stroke="var(--ink-faint)" stroke-width="1.6" marker-end="url(#af)"/>
+      <text x="610" y="203" font-size="11" fill="var(--ink-faint)">Ops opens SR</text>
+
+      <!-- 3: Key Serial Numbers (12167) -->
+      <rect x="160" y="224" width="440" height="54" rx="8" fill="var(--t167-bg)" stroke="var(--t167)"/>
+      <text x="380" y="247" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">Key Serial Numbers</text>
+      <text x="380" y="264" text-anchor="middle" font-size="11" fill="var(--ink-soft)">1 box/unit &#8594; status Arranged</text>
+
+      <line x1="380" y1="278" x2="380" y2="320" stroke="var(--ink-faint)" stroke-width="1.6" marker-end="url(#af)"/>
+      <text x="610" y="303" font-size="11" fill="var(--ink-faint)">save</text>
+
+      <!-- 4: Fields Lock (12167) -->
+      <rect x="160" y="324" width="440" height="54" rx="8" fill="var(--t167-bg)" stroke="var(--t167)"/>
+      <text x="380" y="347" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">Fields Lock</text>
+      <text x="380" y="364" text-anchor="middle" font-size="11" fill="var(--ink-soft)">No edit, even Hub Admin</text>
+
+      <line x1="380" y1="378" x2="380" y2="420" stroke="var(--ink-faint)" stroke-width="1.6" marker-end="url(#af)"/>
+      <text x="610" y="403" font-size="11" fill="var(--ink-faint)">consignment note updated</text>
+
+      <!-- 5: Consignment Note Updated (12166) -->
+      <rect x="160" y="424" width="440" height="54" rx="8" fill="var(--t166-bg)" stroke="var(--t166)"/>
+      <text x="380" y="447" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">Generation Trigger Fires</text>
+      <text x="380" y="464" text-anchor="middle" font-size="11" fill="var(--ink-soft)">on consignment note update</text>
+
+      <line x1="380" y1="478" x2="380" y2="520" stroke="var(--ink-faint)" stroke-width="1.6" marker-end="url(#af)"/>
+      <text x="610" y="503" font-size="11" fill="var(--ink-faint)">auto-generates</text>
+
+      <!-- 6: DO Snapshot Frozen (12166) -->
+      <rect x="160" y="524" width="440" height="54" rx="8" fill="var(--t166-bg)" stroke="var(--t166)"/>
+      <text x="380" y="547" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">DO Snapshot Frozen</text>
+      <text x="380" y="564" text-anchor="middle" font-size="11" fill="var(--ink-soft)">company + serials locked in</text>
+
+      <line x1="380" y1="578" x2="380" y2="620" stroke="var(--ink-faint)" stroke-width="1.6" marker-end="url(#af)"/>
+      <text x="610" y="603" font-size="11" fill="var(--ink-faint)">click DO</text>
+
+      <!-- 7: PDF Downloads (12166) -->
+      <rect x="160" y="624" width="440" height="54" rx="8" fill="var(--t166-bg)" stroke="var(--t166)"/>
+      <text x="380" y="647" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">PDF Downloads</text>
+      <text x="380" y="664" text-anchor="middle" font-size="11" fill="var(--ink-soft)">1 page &#8804;20u &#183; split 20+20 for 21&#8211;40</text>
+    </svg>
+    <figcaption>UCD purchase to PDF in hand &#8212; <b class="a">indigo = EAINT-12167</b> (serial capture), <b class="b">green = EAINT-12166</b> (DO generation).</figcaption>
+  </figure>
+
+  <nav class="jump">
+    <a href="#combflow">Combined flow</a>
+    <a href="#t166">EAINT-12166 — DO Generation</a>
+    <a href="#t166flow">EAINT-12166 — Click-through flow</a>
+    <a href="#t167">EAINT-12167 — Serial Capture</a>
+    <a href="#t167flow">EAINT-12167 — Click-through flow</a>
+    <a href="#open">Open questions</a>
+    <a href="#tsproposal">Proposed test scenarios</a>
+    <a href="#concurrency">Concurrency — dev questions</a>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- EAINT-12166                                                    -->
+  <!-- ============================================================ -->
+  <section class="ticket" id="t166">
+    <div class="ticket-head">
+      <span class="key">EAINT-12166</span>
+      <h2>Enable DO Creation for Device Purchase, with Interim Upload Space <em style="font-style:normal;color:var(--ink-faint);font-size:14px;">(upload space dropped from scope, see below)</em></h2>
+      <span class="status">Assignee: Chee Mei Jia</span>
+    </div>
+
+    <h3 class="sub">Overview</h3>
+    <p class="body-text">Adds a one-click "DO" button on the Device Purchase Transaction Details page that
+      auto-generates a Delivery Order PDF, reusing the existing DO template from Company Management. Removes manual
+      DO prep entirely. The "interim document upload space" named in the ticket title was <b>dropped from scope as
+      of SRD v0.4</b> — confirmed with the requestor. Don't test it, and don't be confused by the ticket title.</p>
+
+    <h3 class="sub" id="t166flow">Click-through flow (BackOffice)</h3>
+    <p class="body-text">Derived from the SRD plus a working client-side mockup (<code>eAuto_BackOffice_Existing_Mockup_20260818.html</code>,
+      a real jsPDF generator, not a wireframe) — <b>not yet confirmed against a live build</b>, nothing has been
+      pushed to any environment for this ticket yet (see Teams status above).</p>
+    <div class="steps">
+      <div class="step">
+        <span class="num">1</span>
+        <div class="body">
+          <p class="click">Open <b>Biometric Device Purchase &amp; Software Installation Listing</b>, select a Device Purchase transaction &rarr; <b>Transaction Details</b>.</p>
+          <p class="then">A new "DO" button appears next to INVOICE / e-INVOICE in the top action row — on Purchase-only and Purchase+Installation transactions only; correctly absent on Installation-only SRs (out of scope for this CR).</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">2</span>
+        <div class="body">
+          <p class="click">Update the consignment note (existing action).</p>
+          <p class="then">Per REQ-001 this is the actual generation trigger. <b>Not modeled by the mockup</b> — its DO button is always clickable against static pre-filled data, so the pre-consignment-note state and both REQ-006 error messages ("required details are incomplete" / "could not be generated") can't be exercised until a live build exists. <b>Per dev's own QA guide: the DO is created after BO clicks [Update] in the Update Shipping Details dialog</b> — specifically the save that moves Delivery Status New &rarr; Arranged, not a separate consignment-note-only action.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">3</span>
+        <div class="body">
+          <p class="click">Click <b>DO</b>.</p>
+          <p class="then">PDF downloads immediately, auto-populated from the transaction record — company, payment, and device details, zero manual entry (REQ-002).</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">4</span>
+        <div class="body">
+          <p class="click">Check the PDF for a &le;20-unit transaction.</p>
+          <p class="then">Single page, one Delivery Order Number. For 21&#8211;40 units: 2 pages in one PDF, two Delivery Order Numbers (e.g. DP-0001, DP-0002), serials numbered continuously across the split, each page showing its own count + "Split order &middot; N of 2" (REQ-003 — verified exactly against the mockup's generator).</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">5</span>
+        <div class="body">
+          <p class="click">Edit the company name, address, tel, or recipient elsewhere, then re-download the same DO.</p>
+          <p class="then">Re-download must return the original values as at generation time (REQ-008 snapshot rule) — not the edited ones.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">Affected pages</h3>
+    <div class="pages">
+      <div class="page-row"><span class="path">Proforma&nbsp;Invoice &gt; ...&nbsp;Listing &gt; Transaction Details</span><span class="what">New "DO" button — generates &amp; downloads the PDF</span></div>
+      <div class="page-row"><span class="path">Account Management &gt; Company Details &gt; "Print DO"</span><span class="what">Existing feature, reused for template/format only — unchanged</span></div>
+      <div class="page-row"><span class="path">UCD Service Hub &gt; Biometric Device Purchase &gt; Step 1</span><span class="what">Quantity now hard-capped at 40/transaction — determines the DO split</span></div>
+    </div>
+
+    <h3 class="sub">Requirements</h3>
+    <div class="table-wrap">
+      <table class="req">
+        <tr><th>ID</th><th>Item</th><th>Rule</th></tr>
+        <tr><td class="id">REQ-001</td><td>Auto-generate &amp; download</td><td class="rule">DO generates on consignment-note update; "DO" button downloads it as a PDF.</td></tr>
+        <tr><td class="id">REQ-002</td><td>Auto-populate data</td><td class="rule">All fields pulled from the transaction record — zero manual entry.</td></tr>
+        <tr><td class="id">REQ-003</td><td>Serial number &amp; split</td><td class="rule">Max 20 devices per DO. 21&#8211;40 units split into 2 DOs in one PDF (e.g. 25&nbsp;&rarr;&nbsp;20+5); serials run continuously across the split; each DO shows its own count + "Split order &middot; N of 2".</td></tr>
+        <tr><td class="id">REQ-004</td><td>Remarks</td><td class="rule">Defaults to "Device warranty 1 year".</td></tr>
+        <tr><td class="id">REQ-005</td><td>Generate as PDF</td><td class="rule">Matches the existing Company Management DO layout exactly.</td></tr>
+        <tr><td class="id">REQ-006</td><td>Error handling</td><td class="rule">Incomplete transaction data &rarr; generation blocked with a specific message. System failure &rarr; generic retry message.</td></tr>
+        <tr><td class="id">REQ-007 <span class="tag-new">v1.1</span></td><td>Quantity cap</td><td class="rule">UCD "+" disables at 40; manual entry above 40 is corrected back to 40 on blur, with validation message.</td></tr>
+        <tr><td class="id">REQ-008 <span class="tag-new">v1.1</span></td><td>Data snapshot</td><td class="rule">DO data is fixed at generation time. Editing company name/address/tel/recipient afterward does <b>not</b> update an already-generated DO — re-download returns the original values.</td></tr>
+      </table>
+    </div>
+
+    <div class="callout qa">
+      <h4>Important for QA</h4>
+      <ul>
+        <li><b>Hard dependency on EAINT-12167</b> — the Device Serial No. on the DO is sourced from that ticket's field. 12166 cannot be tested end-to-end without 12167's data existing first.</li>
+        <li>The <b>20/40-unit split boundary</b> needs explicit coverage: 20 (no split), 21 (20+1), 25 (20+5), 40 (20+20) — verify split numbering, continuous serials, per-DO counts.</li>
+        <li>The <b>snapshot rule (REQ-008)</b> is easy to miss on a happy-path pass — requires a mid-test data edit, re-download, and diff against the original.</li>
+        <li>21 fields are mapped field-by-field to their data source in SRD §2.2.5 — use it as the field-level checklist.</li>
+        <li><b>Mockup vs SRD field-mapping gaps</b> (don't take the mockup's layout as final): it combines Company Name and Company Reg. No. into one row, where the SRD's §2.2.5 table lists them as two separate DO fields; its Payment Ref./Date text omits the "REF"/"DATED" wording the SRD's sample value shows literally; and "Issued by — Name" is hardcoded to one sample name rather than the actual BackOffice user who keyed the serial. Verify all three against the real build.</li>
+      </ul>
+    </div>
+
+    <h3 class="sub">How to test the Report Engine outage (dev guide §6)</h3>
+    <p class="body-text" style="max-width:none;">Steps in the order you'd actually do them — the dev guide lists
+      them by test number, not by when to do each one.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="num">1</span>
+        <div class="body">
+          <p class="click">Ask dev/deploy to <b>stop the Report Engine</b> first.</p>
+          <p class="then">Everything below needs it down.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">2</span>
+        <div class="body">
+          <p class="click">Still stopped: fill in all serials + consignment note + delivery date on a paid order, set status <b>Arranged</b>, click Update.</p>
+          <p class="then">Save still works — status changes, serials save, a DO number gets assigned. Nothing looks broken here; the failure is invisible until the next step.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">3</span>
+        <div class="body">
+          <p class="click">Still stopped: click the <b>DO</b> button on that same order.</p>
+          <p class="then">Within a few seconds: "Delivery Order could not be generated. Please try again." No spinner that never ends, no raw error page.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">4</span>
+        <div class="body">
+          <p class="click">Ask dev to <b>start the Report Engine</b> back up.</p>
+          <p class="then">&nbsp;</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">5</span>
+        <div class="body">
+          <p class="click">Click <b>DO</b> again on the <b>same order</b> from steps 2&ndash;3.</p>
+          <p class="then">PDF now generates and downloads. No stored copy was ever made for this order, so it keeps generating fresh every time you click DO on it, from now on.</p>
+        </div>
+      </div>
+    </div>
+    <p class="body-text" style="max-width:none;"><b>Tip:</b> a separate message — "Unable to generate Delivery Order: required details are incomplete." — belongs to a <i>different</i> case (missing required data), not this Report Engine outage. Don't expect both messages from one click.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- EAINT-12167                                                    -->
+  <!-- ============================================================ -->
+  <section class="ticket" id="t167">
+    <div class="ticket-head">
+      <span class="key">EAINT-12167</span>
+      <h2>Allow Ops to Input Device Serial Number on Device Purchase SR Info Page</h2>
+      <span class="status">Assignee: Lim Yi Link</span>
+    </div>
+
+    <h3 class="sub">Overview</h3>
+    <p class="body-text">Adds two fields to the shipping-details update popup for a Device Purchase Service Request:
+      an auto-filled, locked "Number of Device," and one "Device Serial No." box per unit. Ops fills serials while
+      Delivery Status&nbsp;=&nbsp;New; saving with status set to Arranged triggers EAINT-12166's DO flow. This is the
+      upstream data source 12166 depends on.</p>
+
+    <h3 class="sub">The mid-SRD pivot</h3>
+    <p class="body-text" style="max-width:none;">SRD v1.0 originally specified a manual 1&#8211;10 dropdown for
+      Number of Device. The dev review thread (12&nbsp;Aug) pushed back: the system already knows the paid quantity,
+      and Ops picking a different number would contradict the listing (which already shows one line per device
+      purchased). <b>Settled in v1.1:</b> the field is now auto-filled from the order and view-only. The unit cap
+      was also raised from 10 to <b>40</b> in the same round of Teams discussion (14&#8211;17&nbsp;Aug) — a parcel
+      still ships at most 10 devices, so a full 40-unit order is expected to go out across several parcels.</p>
+
+    <h3 class="sub" id="t167flow">Click-through flow (BackOffice)</h3>
+    <p class="body-text">What a Hub Admin actually clicks through, end to end, and what happens after each step.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="num">1</span>
+        <div class="body">
+          <p class="click">Log in to <b>BackOffice</b> as a Hub Admin account not on the 18-account blocklist (REQ-009).</p>
+          <p class="then">Blocklisted accounts are already excluded from the function that follows — no new restriction, just a pre-existing gate.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">2</span>
+        <div class="body">
+          <p class="click">Open <b>Biometric Device Purchase &amp; Software Installation Listing</b> and select the Service Request &rarr; <b>Service Request Details</b>.</p>
+          <p class="then">Details page shows the existing shipping fields (delivery date, consignment number, Delivery Status) plus the device quantity paid for on the UCD side.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">3</span>
+        <div class="body">
+          <p class="click">Click <b>Update Shipping Details</b>.</p>
+          <p class="then">Popup opens. <b>Number of Device</b> now appears directly under Consignment Number — auto-filled with the order quantity, disabled, no free text.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">4</span>
+        <div class="body">
+          <p class="click">Scroll to <b>Device Serial No.</b>, below Number of Device.</p>
+          <p class="then">One empty, mandatory box per device, numbered 1&#8211;N, laid out two per row; the box area scrolls once the count exceeds the popup's visible height.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">5</span>
+        <div class="body">
+          <p class="click">Key in each device's serial number (8&#8211;12 chars, alphanumeric + spaces).</p>
+          <p class="then">A typed special character is stripped automatically, not blocked. Below 8 chars on save: "Device Serial No. must be between 8 and 12 characters." A serial already used elsewhere (same request or another) is expected to be rejected as a duplicate — a build rule from the dev comment thread, not yet reconfirmed live.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">6</span>
+        <div class="body">
+          <p class="click">Set <b>Delivery Status</b> to <b>Arranged</b> (or leave at New if not shipping yet).</p>
+          <p class="then">Any Serial No. box left blank blocks the status change entirely — "This field is required." The flow never fires half-done.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">7</span>
+        <div class="body">
+          <p class="click">Click <b>Save</b>.</p>
+          <p class="then">If every field is complete and status = Arranged: the record saves and <b>EAINT-12166's Delivery Order flow becomes available</b> — the "DO" button on the Transaction Details page can now generate the PDF using these exact serials. If status is still New: the serials just save, fields stay editable.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">8</span>
+        <div class="body">
+          <p class="click">Reopen <b>Update Shipping Details</b> after an Arranged save.</p>
+          <p class="then">Number of Device and every Serial No. box are now read-only — no edit control appears for anyone, including a senior Hub Admin. <span class="tag-new" style="margin-left:0;">resolved</span> Confirmed via Teams (17&nbsp;Aug): a mistyped serial at this point is fixed only by raising an IT support ticket — see the resolved item under Open questions below.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="num">9</span>
+        <div class="body">
+          <p class="click">Check <b>Biometric Device Purchase &amp; Software Installation Listing</b>.</p>
+          <p class="then">One row per physical device in the transaction (v1.2) — each row shows Number of Device = 1 and its own single serial, never the transaction total.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">Affected pages</h3>
+    <div class="pages">
+      <div class="page-row"><span class="path">Service Request Details &gt; shipping-details popup</span><span class="what">New Number of Device (locked) + dynamic Device Serial No. fields, under Consignment Number</span></div>
+      <div class="page-row"><span class="path">Biometric Device Purchase &amp; Software Installation Listing</span><span class="what"><span class="tag-new" style="margin-left:0;margin-right:6px;">v1.2</span>One row per device; each shows Number of Device = 1 and its own serial</span></div>
+    </div>
+
+    <h3 class="sub">Requirements</h3>
+    <div class="table-wrap">
+      <table class="req">
+        <tr><th>ID</th><th>Item</th><th>Rule</th></tr>
+        <tr><td class="id">REQ-001/002</td><td>Number of Device</td><td class="rule">Auto-filled from the order, disabled, no free text, mandatory — <em>not</em> a manual dropdown (superseded in v1.1).</td></tr>
+        <tr><td class="id">REQ-003</td><td>Field generation</td><td class="rule">One serial field generated per unit — field count always matches Number of Device, uncapped (order itself capped at 40 as of the 17&nbsp;Aug Teams discussion).</td></tr>
+        <tr><td class="id">REQ-004/005</td><td>Serial validation</td><td class="rule">8&#8211;12 chars, alphanumeric + spaces, English only, mandatory. Special characters auto-stripped on entry, not rejected.</td></tr>
+        <tr><td class="id">REQ-006</td><td>Editable window</td><td class="rule">Fields editable only while Delivery Status = New; read-only once status moves on.</td></tr>
+        <tr><td class="id">REQ-007</td><td>Save validation</td><td class="rule">Every serial field must be completed before the shipping-details update is allowed to save.</td></tr>
+        <tr><td class="id">REQ-008</td><td>Trigger 12166</td><td class="rule">Both fields complete + status &rarr; Arranged saves the record and proceeds into EAINT-12166's DO flow.</td></tr>
+        <tr><td class="id">REQ-009</td><td>Access limitation</td><td class="rule">18 named accounts excluded — already outside the "Update Shipping Details" access list pre-change, per dev; effectively a documentation note, not new access work.</td></tr>
+        <tr><td class="id">REQ-010</td><td>UI display</td><td class="rule">Fields numbered sequentially, 2 per row, left to right, inside a scrollable area once they exceed the popup height.</td></tr>
+        <tr><td class="id">REQ-011 <span class="tag-new">v1.2</span></td><td>Listing display</td><td class="rule">One listing row per device; each row shows Number of Device = 1 and its own single serial.</td></tr>
+      </table>
+    </div>
+
+    <div class="callout qa">
+      <h4>Important for QA</h4>
+      <ul>
+        <li>Boundary values to automate: 7 chars (reject), 8 (accept), 12 (accept), 13 (blocked at input), a stray special character (auto-stripped, not rejected).</li>
+        <li>Field-count-follows-quantity at both ends: 1 device &rarr; 1 field; the new max order of 40 &rarr; 40 fields, two-per-row, scrollable.</li>
+        <li>Check the 18-account blocklist against real BO test logins as part of the access-restriction script.</li>
+        <li>This ticket <b>gates</b> EAINT-12166 — its own test data needs to exist before 12166's DO generation can be meaningfully tested.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- OPEN QUESTIONS                                                 -->
+  <!-- ============================================================ -->
+  <section id="open" style="margin-top:44px;">
+    <h3 class="sub" style="color:var(--warn);">Open questions before writing definitive test cases</h3>
+
+    <div class="oq resolved">
+      <div class="n">Resolved 17&nbsp;Aug via Teams &middot; EAINT-12167</div>
+      <p><b>Locked-SN-typo handling.</b> The 12&nbsp;Aug dev thread offered two options — (A) accept mistakes, fix via
+        an IT support ticket; (B) let a senior Hub Admin correct a serial post-Arranged. SRD v1.2 never states which
+        was picked, but the EAINT-12167 Teams CR group settled it on 17&nbsp;Aug: <b>Option A</b> — fix by IT support
+        request only; confirmed with Ops that no one, including a senior Hub Admin, can edit a keyed serial once
+        Arranged. Safe to write this as a definitive test case now.</p>
+    </div>
+    <div class="oq">
+      <div class="n">Unconfirmed &middot; EAINT-12167</div>
+      <p><b>Duplicate-SN rejection.</b> "No two devices may share a serial" is asserted as an intended build rule in
+        the dev comment thread, but is not restated as a formal requirement/acceptance-criteria row anywhere in the
+        SRD body. Confirm it's actually implemented before relying on it in a test.</p>
+    </div>
+    <div class="oq">
+      <div class="n">Blocking both tickets</div>
+      <p><b>Testing environment.</b> Not stated in either ticket's Jira fields, description, or SRD, and still not
+        surfaced in either ticket's Teams CR group as of the 2026&#8209;09&#8209;18 recheck. Ask the requestor
+        (Chee&nbsp;Mei&nbsp;Jia) or dev before scheduling execution.</p>
+    </div>
+    <div class="oq">
+      <div class="n">Status mismatch</div>
+      <p>Jira <b>status</b> reads "Code Review" on both tickets, while the 12167 dev thread says code review is
+        already done and QA is next (dev's own "ready for testing" confirmation lands 20&nbsp;Aug in Teams). Confirm
+        actual readiness before pulling into staging — don't trust the status field alone.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PROPOSED TEST SCENARIOS                                        -->
+  <!-- ============================================================ -->
+  <section id="tsproposal" style="margin-top:44px;">
+    <h3 class="sub" style="color:var(--ink-soft);">Proposed test scenarios</h3>
+    <p class="body-text" style="max-width:none;">33 candidate TS, generated with CTFL black-box techniques where the
+      scope actually has that shape — BVA on the ranged/length fields, a decision table on each ticket's
+      multi-condition outcome, a state table on Delivery Status. Everything else is a plain scenario read straight
+      off the SRD. Not yet written into the standard xlsx.</p>
+
+    <div id="ts167">
+      <p class="ts-ticket-head">EAINT-12167 — Device Serial No. capture</p>
+
+      <p class="tech-label">BVA &middot; Serial No. length (valid 8&#8211;12 chars)</p>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12167_TS01</td><td>Serial No. 7 chars rejected on save</td></tr>
+        <tr><td class="tsid">12167_TS02</td><td>Serial No. 8 chars accepted (lower boundary)</td></tr>
+        <tr><td class="tsid">12167_TS03</td><td>Serial No. 12 chars accepted (upper boundary)</td></tr>
+        <tr><td class="tsid">12167_TS04</td><td>Serial No. 13th character blocked at input, cannot be typed</td></tr>
+        <tr><td class="tsid">12167_TS05</td><td>Special character typed into Serial No. auto-stripped, not rejected</td></tr>
+      </table></div>
+
+      <p class="tech-label">BVA &middot; field count follows quantity (1&#8211;40)</p>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12167_TS06</td><td>1-unit transaction shows 1 Serial No. field</td></tr>
+        <tr><td class="tsid">12167_TS07</td><td>40-unit transaction shows 40 Serial No. fields, 2 per row, scrollable</td></tr>
+      </table></div>
+
+      <p class="tech-label">Decision table &middot; save/lock outcome</p>
+      <div class="table-wrap"><table class="dt">
+        <tr><th>All serials complete?</th><th>Status &rarr; Arranged?</th><th>Outcome</th></tr>
+        <tr><td>No</td><td>&#8212;</td><td class="outcome">Save blocked, "This field is required"</td></tr>
+        <tr><td>Yes</td><td>No</td><td class="outcome">Saves, fields stay editable</td></tr>
+        <tr><td>Yes</td><td>Yes</td><td class="outcome">Saves, fields lock, EAINT-12166's DO flow becomes available</td></tr>
+      </table></div>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12167_TS08</td><td>Save blocked when any Serial No. left blank</td></tr>
+        <tr><td class="tsid">12167_TS09</td><td>Save succeeds, fields stay editable when status stays New</td></tr>
+        <tr><td class="tsid">12167_TS10</td><td>Save succeeds, fields lock, DO flow unlocked when status set to Arranged</td></tr>
+      </table></div>
+
+      <p class="tech-label">State table &middot; Delivery Status</p>
+      <div class="table-wrap"><table class="dt">
+        <tr><th>State</th><th>Edit serial</th><th>Reopen popup</th></tr>
+        <tr><td>New</td><td class="outcome">allowed</td><td class="outcome">fields editable</td></tr>
+        <tr><td>Arranged</td><td class="gap">blocked &#8212; dash cell</td><td class="outcome">fields read-only, even senior Hub Admin</td></tr>
+      </table></div>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12167_TS11</td><td>Serial No. fields read-only after Arranged, for every role including senior Hub Admin</td></tr>
+      </table></div>
+
+      <p class="tech-label">Plain scenarios</p>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12167_TS12</td><td>Duplicate Serial No. within same request rejected</td></tr>
+        <tr><td class="tsid">12167_TS13</td><td>Duplicate Serial No. already used on another request rejected</td></tr>
+        <tr><td class="tsid">12167_TS14</td><td>Blocklisted account (18-account list) cannot access Update Shipping Details</td></tr>
+        <tr><td class="tsid">12167_TS15</td><td>Pre-change existing request shows blank Serial No., no backfill</td></tr>
+        <tr><td class="tsid">12167_TS16</td><td>Listing page shows Number of Device = 1 per row (not transaction total) &#8212; regression vs. Details page</td></tr>
+      </table></div>
+    </div>
+
+    <div id="ts166">
+      <p class="ts-ticket-head">EAINT-12166 — Delivery Order generation</p>
+
+      <p class="tech-label">BVA &middot; split boundary (1&#8211;40 units, split above 20)</p>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12166_TS01</td><td>20-unit transaction &rarr; single DO, no split</td></tr>
+        <tr><td class="tsid">12166_TS02</td><td>21-unit transaction &rarr; split 20+1, continuous serials, split annotation</td></tr>
+        <tr><td class="tsid">12166_TS03</td><td>25-unit transaction &rarr; split 20+5</td></tr>
+        <tr><td class="tsid">12166_TS04</td><td>40-unit transaction &rarr; split 20+20, 2-page PDF</td></tr>
+      </table></div>
+
+      <p class="tech-label">BVA &middot; UCD quantity cap (max 40)</p>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12166_TS05</td><td>"+" control disabled once quantity reaches 40</td></tr>
+        <tr><td class="tsid">12166_TS06</td><td>Manual entry of 45 corrected to 40 on blur, validation message shown</td></tr>
+        <tr><td class="tsid">12166_TS07</td><td>"-" stays enabled at 40; reducing below 40 re-enables "+"</td></tr>
+      </table></div>
+
+      <p class="tech-label">Decision table &middot; DO generation outcome</p>
+      <div class="table-wrap"><table class="dt">
+        <tr><th>Consignment updated?</th><th>Data complete?</th><th>Outcome</th></tr>
+        <tr><td>No</td><td>&#8212;</td><td class="gap">Nothing generates &#8212; not modeled by the mockup, untested until a live build exists</td></tr>
+        <tr><td>Yes</td><td>No</td><td class="outcome">Blocked, "Unable to generate Delivery Order: required details are incomplete."</td></tr>
+        <tr><td>Yes</td><td>Yes</td><td class="outcome">DO generates</td></tr>
+      </table></div>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12166_TS08</td><td>DO generates when consignment note updated with complete transaction data</td></tr>
+        <tr><td class="tsid">12166_TS09</td><td>Generation blocked with exact message when transaction data incomplete</td></tr>
+        <tr><td class="tsid">12166_TS10</td><td>Generic retry message shown on system/generation failure &#8212; needs fault injection, flag as hard to test without dev support</td></tr>
+      </table></div>
+
+      <p class="tech-label">EP &middot; DO button visibility by transaction category</p>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12166_TS11</td><td>DO button present on Purchase-only transaction</td></tr>
+        <tr><td class="tsid">12166_TS12</td><td>DO button present on Purchase+Installation transaction</td></tr>
+        <tr><td class="tsid">12166_TS13</td><td>DO button absent on Installation-only transaction (regression)</td></tr>
+      </table></div>
+
+      <p class="tech-label">Plain scenarios</p>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">12166_TS14</td><td>Snapshot rule: edit company name/address/tel/recipient after generation, re-download same DO shows original values</td></tr>
+        <tr><td class="tsid">12166_TS15</td><td>Remarks defaults to "Device warranty 1 year"</td></tr>
+        <tr><td class="tsid">12166_TS16</td><td>Generated PDF layout matches existing Company Management DO template</td></tr>
+      </table></div>
+    </div>
+
+    <div>
+      <p class="ts-ticket-head" style="color:var(--ink);">Cross-ticket integration</p>
+      <div class="table-wrap"><table class="ts">
+        <tr><th>TS</th><th>Scenario</th></tr>
+        <tr><td class="tsid">INT_TS01</td><td>End-to-end 1-unit: Ops-keyed serial appears correctly on the generated DO</td></tr>
+        <tr><td class="tsid">INT_TS02</td><td>End-to-end 25-unit split: all serials on both DO pages match exactly what Ops entered, in order</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CONCURRENCY — DEV QUESTIONS                                    -->
+  <!-- ============================================================ -->
+  <section id="concurrency" style="margin-top:44px;">
+    <h3 class="sub" style="color:var(--warn);">Concurrency — questions for dev, not yet candidate TS</h3>
+    <p class="body-text" style="max-width:none;">Neither SRD says anything about concurrent access. This is error
+      guessing, not one of the three CTFL shapes used above — doesn't fit EP/BVA, a decision table, or a state
+      table, so it isn't forced into one. Most of these need either two testers clicking in coordinated real-time or
+      a script firing parallel requests to actually trigger — hard to hit reliably by hand, and none of them are
+      answerable without dev confirming what locking/idempotency exists server-side. Treat as questions to put to
+      dev before any of these become scripted TS.</p>
+
+    <div class="oq">
+      <div class="n">EAINT-12167 &middot; unconfirmed</div>
+      <p><b>Same-SR concurrent save.</b> Two Hub Admins open Update Shipping Details on the same SR at once, both
+        key in serials, both Save — does the second save silently overwrite the first, or is there a conflict
+        warning/lock?</p>
+    </div>
+    <div class="oq">
+      <div class="n">EAINT-12167 &middot; unconfirmed</div>
+      <p><b>Duplicate-SN race.</b> Two Ops key the same serial number onto two different devices at nearly the same
+        instant — does the duplicate-SN check catch it (a real DB constraint), or is there a race window where both
+        saves succeed?</p>
+    </div>
+    <div class="oq">
+      <div class="n">EAINT-12167 &middot; unconfirmed</div>
+      <p><b>Lock-mid-edit race.</b> User A saves with status &rarr; Arranged (locking the record) while User B still
+        has the popup open mid-edit on the same record — what happens to B's in-flight save after A's lock takes
+        effect?</p>
+    </div>
+    <div class="oq">
+      <div class="n">EAINT-12167 &middot; unconfirmed, gated on the shared-vs-per-SR structural question</div>
+      <p><b>Multi-device concurrent edit.</b> If a multi-device transaction really is "one shared shipping update
+        covers all devices" (still open — see Open Questions above), two Ops touching different device-rows of the
+        <em>same</em> transaction concurrently could clobber each other. Needs that structural question answered
+        first before this is even well-formed.</p>
+    </div>
+    <div class="oq">
+      <div class="n">EAINT-12166 &middot; unconfirmed</div>
+      <p><b>Double-generation race.</b> Two users click "DO" on the same transaction before it's ever been generated
+        — does generation fire twice (two DO Numbers created), or is the first generation idempotent/locked so the
+        second click just downloads the same PDF?</p>
+    </div>
+    <div class="oq">
+      <div class="n">EAINT-12166 &middot; unconfirmed</div>
+      <p><b>Split-numbering collision.</b> If the above race did fire generation twice on a split-order (21&#8211;40
+        units), could DP-000X numbering collide or duplicate across the two concurrent attempts?</p>
+    </div>
+    <div class="oq">
+      <div class="n">EAINT-12166 &middot; unconfirmed, low risk</div>
+      <p><b>Concurrent re-download.</b> Two users re-downloading an already-generated DO at the same time — should
+        be safe/read-only, worth a quick confirm both get identical bytes.</p>
+    </div>
+    <div class="oq">
+      <div class="n">EAINT-12166 &middot; unconfirmed</div>
+      <p><b>Snapshot-timing race.</b> Company info is edited in Account Management at the exact moment generation is
+        firing (REQ-008 snapshot) — does the snapshot capture pre- or post-edit data if the timing overlaps
+        generation itself?</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>SRD <b>EAINT-12166_SRD_v1.1_20260828.pdf</b></span>
+    <span>SRD <b>EAINT-12167 SRD ..._v1.2_20260817.pdf</b></span>
+    <span>Jira live-checked <b>2026-09-15</b></span>
+    <span>Teams re-checked <b>2026-09-18</b> (12167 chat quiet since 21 Aug, 12166 chat quiet since 2 Sept)</span>
+    <span>12166 mockup cross-checked against SRD <b>2026-09-21</b></span>
+  </footer>
+
+</div>

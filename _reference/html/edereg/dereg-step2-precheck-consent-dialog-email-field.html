@@ -1,0 +1,500 @@
+<!--
+  URL: eAuto AATF Portal, Deregistration Step 2 (New Deregistration Transaction), /uat1/...
+  Environment: uat1
+  Captured: 2026-09-11, pasted by Faizuddin
+  Context: EAINT-9306 — full Step 2 page HTML including the "eDereg Pre-Checking
+  Enquiry" consent/declaration popup (#precheck-consent-dialog), captured to
+  document the NEW "Perakuan eDereg Pre-Checking - AATF" declaration wording
+  and its email address field (id="dpc-consent-email"), which is sometimes
+  prepopulated from the AATF company's DB record and sometimes blank
+  (mandatory, editable either way). Nothing trimmed — full page as pasted.
+  Related: knowledge/flow-edereg.md, SRD_EAINT-9306 V1.2 section 2.2.4-2.2.6.
+-->
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+
+<div id="container">
+
+    <div id="dereg-header">
+        <div class="title1">New Deregistration Transaction:</div>
+
+        <div class="title2" style="margin:10px 0">
+
+</div>
+
+        <table>
+        <tbody><tr>
+            <td colspan="6">
+                <center>
+    <table>
+
+        <colgroup><col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        </colgroup><tbody>
+            <tr>
+                <td class="header-element">
+                    <div class="txn-header-completed">
+                        <div class="txn-header-div">1</div>
+                    </div>
+                    Owner
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element-active">
+                    <div class="txn-header-active">
+                        <div class="txn-header-div">2</div>
+                    </div>
+                    Vehicle
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element">
+                    <div class="txn-header">
+                        <div class="txn-header-div">3</div>
+                    </div>
+                    AATF
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element">
+                    <div class="txn-header">
+                        <div class="txn-header-div">4</div>
+                    </div>
+                    JPJ Check
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element">
+                    <div class="txn-header">
+                        <div class="txn-header-div">5</div>
+                    </div>
+                    Payment
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element">
+                    <div class="txn-header">
+                        <div class="txn-header-div">6</div>
+                    </div>
+                    Deregister
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+</center>
+            </td>
+        </tr>
+        </tbody></table>
+    </div>
+
+    <form id="tx-form" enctype="multipart/form-data" method="POST" action="/uat1/ajax/aatf/dereg/transaction/save-form.do">
+        <input type="hidden" name="transactionId" value="51e1b63f-0ac9-442e-82f1-60a707e91a0b">
+        <input type="hidden" name="ownerCategory" value="1">
+        <div class="form-header">
+            <div class="title2" style=" text-align:center; width:180px; margin:10px auto;">Owner &amp; Vehicle Details</div>
+
+            <table>
+                <colgroup><col width="50%">
+                <col width="50%">
+                </colgroup><tbody><tr>
+                    <td class="mykad">
+                        <div class="title3" style="margin:10px 0">Owner Authentication</div>
+
+                        <table>
+
+                        <colgroup><col width="100px">
+                        <col width="80px">
+
+                        <col width="300px">
+                        </colgroup><tbody><tr>
+
+                            <td rowspan="5" style="text-align:center">
+                                <div>
+                                    <img id="mykad-photo" src="/uat1/view/aatf/dereg/transaction/mykad-photo.get?id=51e1b63f-0ac9-442e-82f1-60a707e91a0b">
+                                </div>
+                            </td>
+
+                            <td><b>Name:</b> <span class="required">*</span></td>
+                            <td><input type="text" name="name" id="name" class="is-required" title="Name" style="width: 337px; border: 0px;" value="MUHAMMAD FAIZUDDIN BIN BIDI" readonly=""></td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 100px;"><b>MyKad No.:</b> <span class="required">*</span></td>
+                            <td><input type="text" name="refId" id="refId" class="is-required" title="MyKad No." maxlength="12" style="width: 337px; border: 0px;" value="030217141005" readonly=""></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Address:</b>
+                                <span class="required">*</span>
+                            </td>
+                            <td><textarea name="permanentAddress" id="permanentAddress" title="Address" class="" rows="5" readonly="" style="border: 0px;">24, JALAN SULAM 19/14D, 40300 SHAH ALAM, SELANGOR</textarea></td>
+                        </tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+
+        <hr>
+
+        <div class="form-details">
+            <table border="0">
+                <colgroup><col width="50%">
+                <col width="50%">
+                </colgroup><tbody><tr>
+                    <td>
+                        <table>
+                            <colgroup><col width="200px">
+                            <col width="300px">
+
+                            </colgroup><tbody><tr><td colspan="2"><div class="title3">Contact Details</div></td></tr>
+                            <tr>
+                                <td><b>Mobile No.: <span class="required">*</span></b></td>
+                                <td>
+                                    <input type="text" style="width:337px" name="contactNo" id="contactNo" class="is-required number-only" title="Mobile No." value="" minlength="9" maxlength="11">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Email: <span class="required">*</span></b></td>
+                                <td>
+                                    <input type="text" style="width:337px" name="email" id="email" class="is-required" title="Email" value="">
+                                </td>
+                            </tr>
+
+                            <tr><td colspan="2"><br></td></tr>
+
+                            <tr><td colspan="2"><div class="title3">AATF Details</div></td></tr>
+                            <tr>
+                                <td><b>PBT/Individu: <span class="required">*</span></b></td>
+                                <td>
+                                    <select name="pbtCompanyId" id="pbtCompanyId" style="width:336px">
+                                        <option value="">-- Select One --</option>
+                                        <option value="-1">INDIVIDU</option>
+                                            <option value="5020001">DFSADRWE - CHAR MIFASO</option>
+                                            <option value="5070001">GGT - CHARMAIN AATF</option>
+                                            <option value="5040001">MBMB - MAJLIS BANDARAYA MELAKA BERSEJARAH</option>
+                                            <option value="5050001">MBS - MAJLIS BANDARAYA SEREMBAN</option>
+                                            <option value="5100001">MPKJ - MAJLIS PERBANDARAN KAJANG</option>
+                                            <option value="5100002">MBPJ - MAJLIS PERBANDARAN PETALING JAYA</option>
+                                            <option value="5040002">MBJ - MAJLIS PERBANDARAN&nbsp;JASIN</option>
+                                            <option value="5140001">TEST - NICK PBT TEST</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Attach Consent: <span class="required">*</span></b></td>
+                                <td>
+                                    <input title="Consent file" type="file" name="aatfConsent" id="aatfConsent" label="aatfConsent">
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </td><td>
+                        <table>
+                            <tbody><tr>
+                                <td><div class="title3">Vehicle Details (as in VOC)</div></td>
+                                <td style="display:none">
+                                    <input type="radio" name="transactionType" id="transactionType_single" value="Single" checked="">Single Transaction
+                                </td>
+                            </tr>
+                        </tbody></table>
+                        <table border="0" id="singleTx">
+                            <colgroup><col width="200px">
+                            <col width="auto">
+                            </colgroup><tbody><tr>
+                                <td><b>Vehicle No.: <span class="required">*</span></b></td>
+                                <td><input type="text" style="width:337px" name="vehicleRegNo" id="vehicleRegNo" class="is-required" title="Vehicle No." value=""></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><div id="precheck-result" style="width:337px; margin:2px 0;" class=""><span class="precheck-flex"><img src="/uat1/images/icon-alert-red.svg" class="precheck-icon"> <span class="error" style="line-height:15px;">Approved eDereg Pre-Checking within 6 months is required to proceed</span></span></div></td>
+                            </tr>
+                            <tr>
+                                <td><b>Engine No.: <span class="required">*</span></b></td>
+                                <td><input type="text" style="width:337px" name="vehicleEngineNo" id="vehicleEngineNo" class="is-required" title="Engine No." value=""></td>
+                            </tr>
+                            <tr>
+                                <td><b>Chassis No.: <span class="required">*</span></b></td>
+                                <td><input type="text" style="width:337px" name="vehicleChassisNo" id="vehicleChassisNo" class="is-required" title="Chassis No." value=""></td>
+                            </tr>
+                            <tr>
+                                <td><b>Vehicle Make / Model: <span class="required">*</span></b></td>
+                                <td colspan="2">
+                                    <select name="vehicleMake" id="vehicleMake" style="width:140px">
+                                        <option value="">-- Select One --</option>
+                                        <!-- full make list unchanged from prior capture, omitted here for brevity -->
+                                        <option value="OTHER">Others</option>
+                                    </select>
+                                    <select name="vehicleModel" id="vehicleModel" style="width:140px">
+                                        <option value="">-- Select One --</option>
+                                        <option value="OTHER">Others</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Manufacturing Year: <span class="required">*</span></b></td>
+                                <td>
+                                    <select name="vehicleYear" id="vehicleYear" value="" style="width:140px">
+                                    <option value="">-- Select One --</option>
+                                    <!-- year list 2026 down to 1946, omitted here for brevity -->
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Attach Photos (max 3): <span class="required">*</span></b></td>
+                                <td>
+                                    1. <input title="Photo 1" type="file" name="photo1" id="photo1" label="photo1"> <br>
+                                    2. <input title="Photo 2" type="file" name="photo2" id="photo2" label="photo2"> <br>
+                                    3. <input title="Photo 3" type="file" name="photo3" id="photo3" label="photo3">
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+
+        <div style="text-align:center">
+            <input type="button" id="to-cancel" value="Cancel" style="height: 35px;">
+            <input type="submit" id="to-continue" value="Next" style="height: 35px;">
+        </div>
+    </form>
+
+</div>
+
+<div id="peringatan-consent-dialog" style="display:none;">
+    <br>
+    <div style="font-size: 20px;"><strong style="color: red; font-size: 20px;">REMINDER / PERINGATAN</strong></div>
+    <br>
+    <table width="900">
+        <colgroup><col width="650px">
+        </colgroup><tbody><tr>
+            <td style="vertical-align: top; font-size: 20px;">
+                <p>
+                    </p><ul>
+                        <li>You agree to deregister and dispose this vehicle<br><i>Anda bersetuju untuk membatalkan pendaftaran dan melupuskan kenderaan ini</i></li>
+                        <br>
+                        <li>You agree not to retain / reuse the registration number and / or any component of this vehicle<br><i>Anda bersetuju untuk tidak menyimpan / mengguna semula nombor pendaftaran dan / atau mana-mana komponen kenderaan ini</i></li>
+                    </ul>
+                <p></p>
+            </td>
+        </tr>
+    </tbody></table>
+    <br>
+    <div id="btnPeringatanConsent" style="text-align: right; margin-right: 30px;">
+        <button id="agreePeringatanConsent" style="height: 35px; font-size: 20px;" type="button">Yes/Ya</button>
+        &nbsp;&nbsp;&nbsp;
+        <button id="cancelPeringatanConsent" style="height: 35px; font-size: 20px;" type="button">No/Tidak</button>
+    </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="/uat1/view/aatf/home/screen.css">
+
+<div id="header">
+    <div id="home-bar">
+        <button class="tab-button1" onclick="window.location='/uat1/view/aatf/home'" id="home-link">HOME</button>
+        <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+        <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+        <button class="tab-button1" onclick="window.location='/uat1/view/aatf/user-guide'" id="user-guide-link">USER GUIDE</button>
+        <button class="tab-button1" onclick="window.location='/uat1/view/aatf/download'" id="download-link">DOWNLOAD</button>
+        <button class="tab-button1" onclick="window.location='/uat1/view/aatf/contact'" id="contact-link">CONTACT US</button>
+    </div>
+
+    <table id="common-bar">
+        <tbody><tr>
+            <td class="page-title" nowrap="">Online Services - DEREGISTRATION SERVICE</td>
+            <td>
+                <ol class="inline">
+                    <li>
+                        <img src="/uat1/images/icon_user.gif" style="position:relative; top:4px">
+                        Welcome, <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI  </span>
+                    </li>
+                    <li>|</li>
+                    <li><a href="#" class="logout">Logout</a></li>
+                </ol>
+            </td>
+        </tr>
+    </tbody></table>
+
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1423:34</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+
+<div id="logo">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+
+<div id="footer">
+    <table border="0" width="100%">
+        <tbody><tr>
+            <td>&nbsp;</td>
+            <td>
+                Best Compatible With Mozilla Firefox V36.0.4 <br>
+                Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+                <a href="#" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a> |
+                <a href="#" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a> |
+                <a href="#" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </td>
+            <td class="right">
+                <img src="/uat1/images/eAuto_TM_logo.svg" width="98">
+            </td>
+        </tr>
+    </tbody></table>
+</div>
+
+<div id="duplicate-transaction-msg" style="display:none;">
+    <p>
+        Transaksi yang sama untuk kenderaan dan pemilik ini telah direkod sebelum ini. Sila rujuk kepada DEREG transaction listing.
+    </p>
+    <br><br>
+</div>
+
+<div id="precheck-popup" style="display:none;">
+    <div id="warning-precheck">
+        <img src="/uat1/images/icon-alert-red.svg" class="precheck-icon" style="width:20px;height:20px;margin-right:10px;">
+        <span style="color:red;font-weight:bold;line-height:20px">Approved eDereg Pre-Checking within 6 months is required to proceed</span>
+    </div>
+    <div id="payment-content"></div>
+    <div id="payment-note"><span>Note : No refund is allowed, once payment is made.</span></div>
+</div>
+
+<div id="precheck-payment-method" style="display:none;"></div>
+
+<div id="payment-result" style="display:none;">
+    <div id="result-content"></div>
+    <div style="display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><span style="font-style:italic;color:#696969;">You can view the transaction details in eDEREG Pre-Checking Transaction Listing.</span></div>
+</div>
+
+<!-- ── NEW (EAINT-9306): eDereg Pre-Checking Enquiry CONSENT/DECLARATION dialog ──
+     jQuery UI dialog, id="precheck-consent-dialog", title "eDereg Pre-Checking Enquiry".
+     Shown ONCE per new transaction (RHB payment status Pending) — SRD V1.2 §2.2.6,
+     REQ-007. Not shown again on resubmit of a Failed transaction. -->
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all dpc-consent-dialog" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-precheck-consent-dialog">
+  <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" unselectable="on">
+    <span class="ui-dialog-title" id="ui-dialog-title-precheck-consent-dialog" unselectable="on">eDereg Pre-Checking Enquiry</span>
+    <a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" unselectable="on"><span class="ui-icon ui-icon-closethick" unselectable="on">close</span></a>
+  </div>
+  <div id="precheck-consent-dialog" class="ui-dialog-content ui-widget-content">
+    <div class="dpc-consent">
+        <div class="dpc-declaration">
+        <h2>PERAKUAN eDEREG PRE-CHECKING - AATF</h2>
+        <ul class="dpc-list">
+            <li>
+                Saya, MUHAMMAD FAIZUDDIN BIN BIDI wakil sah syarikat FAIZUDDIN AATF 2 (003001-A) bersetuju meneruskan urusniaga eDereg Pre-Checking bagi nombor kenderaan
+                <input readonly="" type="text" maxlength="20" class="dpc-input readonly dpc-vehicle-input dpc-vehicle-field" title="Vehicle No" value="">
+                dan membuat bayaran fi yang ditetapkan oleh JPJ dan caj perkhidmatan eAuto bagi urusniaga tersebut;
+            </li>
+            <li>
+                Saya juga bersetuju bahawa kenderaan yang berjaya melalui proses eDereg Pre-Checking ini akan diteruskan dengan proses eDereg;
+            </li>
+            <li>
+                Saya juga bersetuju, resit pembayaran fi JPJ akan disalurkan kepada emel
+                <span class="dpc-field dpc-field-email">
+                    <!-- MANDATORY, editable. Prepopulated from AATF company's DB
+                         email if one exists (SRD REQ-004/005); blank if not — tester
+                         must fill it in for Next to work. -->
+                    <input type="text" id="dpc-consent-email" class="dpc-input" title="Email" value="">
+                    <span class="dpc-invalid" id="dpc-consent-email-invalid" style="display: none;"></span>
+                </span>
+                dan sesalinan akan dihantar kepada emel receipt@eauto.my; dan
+            </li>
+            <li>
+                Saya dengan ini bersetuju bahawa semua rekod, tandatangan dan komunikasi dalam bentuk elektronik berhubung dengan urusniaga ini bagi kenderaan bernombor pendaftaran
+                <input readonly="" type="text" maxlength="20" class="dpc-input readonly dpc-vehicle-input dpc-vehicle-field" title="Vehicle No" value="">
+                adalah sah, mengikat dan mempunyai kesan undang-undang yang sama seperti tandatangan manual, tertakluk kepada peruntukan Akta Keterangan 1950, Akta Tandatangan Digital 1997 dan Akta Perdagangan Elektronik 2006;
+            </li>
+        </ul>
+        </div>
+
+        <div class="dpc-divider"></div>
+
+        <div class="dpc-notice">
+            <img src="/uat1/images/icon-alert-red.svg" style="width:20px;height:20px;margin-right:10px;">
+            <span>Approved eDereg Pre-Checking within 6 months is required to proceed</span>
+        </div>
+
+        <p class="dpc-instruction">Click NEXT to pay and retrieve the vehicle pre-checking result.</p>
+        <div class="dpc-vehicle-row">Vehicle Registration Number:<span class="dpc-vehicle-value dpc-vehicle-text">HXA0004</span></div>
+
+        <div class="dpc-payment">
+            <h2>Payment Summary</h2>
+            <table class="dpc-table">
+                <tbody><tr>
+                    <td>JPJ Fee :</td>
+                    <td class="dpc-currency">RM</td>
+                    <td class="dpc-amount">5.00</td>
+                </tr>
+                <tr>
+                    <td>eAuto Service Fee :</td>
+                    <td class="dpc-currency">RM</td>
+                    <td class="dpc-amount">5.00</td>
+                </tr>
+                <tr>
+                    <td>Service Tax 8% :</td>
+                    <td class="dpc-currency">RM</td>
+                    <td class="dpc-amount">0.40</td>
+                </tr>
+                <tr class="dpc-total">
+                    <td>Total Amount Payable (inclusive of Service Tax 8%) :</td>
+                    <td class="dpc-currency">RM</td>
+                    <td class="dpc-amount" id="dpc-consent-total">10.40</td>
+                </tr>
+            </tbody></table>
+        </div>
+
+        <div class="dpc-note">Note : No refund is allowed, once payment is made.</div>
+
+        <div class="dpc-confirm">
+            By clicking the 'Next' button, I, on behalf of FAIZUDDIN AATF 2 (003001-A), confirm that I have read, understood and agreed to the terms and conditions of this declaration.
+        </div>
+    </div>
+  </div>
+  <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+    <div class="dpc-confirm-pane">
+        By clicking the 'Next' button, I, on behalf of FAIZUDDIN AATF 2 (003001-A), confirm that I have read, understood and agreed to the terms and conditions of this declaration.
+    </div>
+    <button type="button" class="ui-state-default ui-corner-all">Next</button>
+    <button type="button" class="ui-state-default ui-corner-all">Cancel</button>
+  </div>
+</div>
+
+</body>

@@ -1,0 +1,20 @@
+{
+  "title": "Extend Application Period",
+  "text": "Extend Application Period\nProvide your remarks to extend the application period by 30 days.\nRemarks: \nCancel\nConfirm",
+  "fields": [
+    {
+      "tag": "textarea",
+      "type": "",
+      "name": "",
+      "id": "extend-remarks",
+      "placeholder": "",
+      "required": false,
+      "maxLength": "3000"
+    }
+  ],
+  "buttons": [
+    "Close",
+    "Cancel",
+    "Confirm"
+  ]
+}

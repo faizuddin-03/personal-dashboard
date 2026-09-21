@@ -1,0 +1,57 @@
+# https://staging.eauto.my/obs/form/a3c13510-2cb6-4279-a556-a95e684e092b?id=KCH%2F1744139&s=0435d069ead9bb9ea38923116c088296a892870528874c6668e4bd36473810f9&v=1
+- img
+- text: "Support Team: 03-2779 8899 Application email: apply@eauto.my WA : 012 200 1324 eAuto Application Form 1 Business Information 2 Upload Files 3 Acknowledgement Upload Files Please upload all relevant documents / material required. Kindly upload the documents and photos / video required to complete and fast track your application. 1 SSM Company / Business Profile * Up to 4 files allowed: pdf, png, jpg, jpeg, docx. Max Size: 10MB 1 document-0.pdf"
+- button "Delete Attachment"
+- button "Browse Files..."
+- text: "2 MyKad / MyPR / Passport Copies of All Directors / Business Owner(s) * 1 file per Director/Business Owner allowed: pdf, png, jpg, jpeg. Max Size: 5MB. Please make sure the front and back IC is in one document Number of Directors / Business Owner(s): *"
+- combobox:
+  - option "1" [selected]
+  - option "2"
+  - option "3"
+  - option "4"
+  - option "5"
+  - option "6"
+  - option "7"
+  - option "8"
+  - option "9"
+  - option "10"
+  - option "11"
+  - option "12"
+  - option "13"
+  - option "14"
+  - option "15"
+- text: "1"
+- textbox "Name": QA DIRECTOR
+- button "Browse Files..."
+- text: document-1.pdf
+- button "Delete Attachment"
+- text: "3 Four (4) Showroom Pictures and 20 Seconds Showroom Video (with Signboard) * 1 file per field allowed: pdf, png, jpg, jpeg, mp4. Max Size (Picture): 5MB. Max Size (Video): 20MB Picture 1"
+- button "Browse Files..."
+- text: document-2.jpg
+- button "Delete Attachment"
+- text: Picture 2
+- button "Browse Files..."
+- text: document-3.jpg
+- button "Delete Attachment"
+- text: Picture 3
+- button "Browse Files..."
+- text: document-4.jpg
+- button "Delete Attachment"
+- text: Picture 4
+- button "Browse Files..."
+- text: document-5.jpg
+- button "Delete Attachment"
+- text: Video
+- button "Browse Files..."
+- text: showroom-video-6.mp4
+- button "Delete Attachment"
+- text: "4 Business Card 1 file allowed: pdf, png, jpg, jpeg. Max Size: 5MB document-7.pdf"
+- button "Delete Attachment"
+- button "Browse Files..."
+- text: "5 Dealer Security Deposit Receipt from the Auction House * 1 file per field allowed: pdf, png, jpg, jpeg. Max Size: 5MB 6 Current Motor Vehicle Association Membership Receipt * 1 file per field allowed: pdf, png, jpg, jpeg. Max Size: 5MB 7 Company / Business Official Stamp (1. Round Stamp 2. Stamp with Address) * 1 file allowed: pdf, png, jpg, jpeg. Max Size: 5MB document-8.pdf"
+- button "Delete Attachment"
+- button "Browse Files..."
+- button "Back"
+- button "Save & Continue Later"
+- button "Next"
+- text: Application Form / Version 1.0

@@ -59,7 +59,9 @@ function publishVideo(): string | undefined {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => ({})) as Record<string, string>;
+  // Mostly strings, but the add-on toggles arrive as booleans.
+  const body = await req.json().catch(() => ({})) as Record<string, string | boolean | undefined>;
+  const str = (k: string) => (typeof body[k] === "string" ? body[k] : "");
 
   if (!fs.existsSync(path.join(SCRIPT_DIR, "node_modules"))) {
     return NextResponse.json({ error: `Playwright not installed. Run:\n\n  cd scripts/eauto-estm && npm install && npx playwright install chromium` }, { status: 500 });
@@ -82,14 +84,23 @@ export async function POST(req: NextRequest) {
       env: {
         ...process.env,
         ESTM_SKIP_PAUSE: "1",
-        ESTM_ENV_SEGMENT:   body.envSegment,
-        ESTM_VEHICLE_REG_NO: body.vehicleRegNo,
-        ESTM_EMAIL_ADDRESS: body.emailAddress,
-        ESTM_MOBILE_NO:     body.mobileNo,
-        ...(body.username && { ESTM_USERNAME: body.username }),
-        ...(body.password && { ESTM_PASSWORD: body.password }),
-        ...(body.idType   && { ESTM_ID_TYPE:  body.idType }),
-        ...(body.evocEmail && { ESTM_EVOC_EMAIL: body.evocEmail }),
+        ESTM_ENV_SEGMENT:   str("envSegment"),
+        ESTM_VEHICLE_REG_NO: str("vehicleRegNo"),
+        ESTM_EMAIL_ADDRESS: str("emailAddress"),
+        ESTM_MOBILE_NO:     str("mobileNo"),
+        ...(str("username") && { ESTM_USERNAME: str("username") }),
+        ...(str("password") && { ESTM_PASSWORD: str("password") }),
+        ...(str("idType")   && { ESTM_ID_TYPE:  str("idType") }),
+        ...(str("evocEmail") && { ESTM_EVOC_EMAIL: str("evocEmail") }),
+        // No bypass slot. The dashboard field was removed 2026-08-17 — the slot
+        // no longer varies per run. The suite still needs one to build the
+        // bypass URL and keeps `zzz/22` as CONFIG.bypassSlot; override it with
+        // ESTM_BYPASS_SLOT in the environment if that ever changes.
+        // Payment-step add-ons, both ticked by default (as the portal does).
+        // Always send an explicit "1"/"0" — the suite treats an UNSET var as
+        // on, so spreading these conditionally would make "off" unsendable.
+        ESTM_ELKM: body.elkm === false ? "0" : "1",
+        ESTM_EVOC: body.evoc === false ? "0" : "1",
       },
     });
     currentChild = child;

@@ -1,0 +1,223 @@
+<!--
+  URL: http://localhost:7878 (the emulator's own control-panel page — NOT part
+  of any eAuto portal; this is a separate local tool run on the tester's own
+  machine to stand in for the physical Dermalog MyKad/thumbprint reader
+  hardware, distinct from eSIM which is a hosted VPN-only app)
+  Env: local, port 7878 (confirmed by Faizuddin, 2026-08-21)
+  Captured: 2026-08-21
+  Trimmed: the two base64 photo/thumbprint image blobs inside the "Response
+  Log" panel's most recent log entries — non-diagnostic bulk, the surrounding
+  JSON structure (NRIC, GMPCName, etc.) is kept complete. Nothing else trimmed;
+  every command button, form field and profile-management script kept whole.
+  THIS RESOLVES the fingerprint-bypass blocker previously flagged in
+  knowledge/flow-edereg.md §9 and lib/ticketStudies.ts's openItems/blockers.
+  Used by: knowledge/mykad-emulator.md
+-->
+<body>
+    <h1>MyKad Reader Emulator — Test Page</h1>
+
+    <div class="panel">
+      <h2>Connection</h2>
+      <div class="inline-form">
+        <input type="text" id="wsUrl" value="ws://localhost:7878/IDCard" style="flex: 2">
+        <button class="success" onclick="doConnect()">Connect</button>
+        <button class="danger" onclick="doDisconnect()">Disconnect</button>
+      </div>
+      <div class="status-bar">
+        <span class="dot closed" id="statusDot"></span>
+        <span id="statusText">CLOSED</span>
+        <span style="color: #666; margin-left: 12px">readyState: <span id="readyState">3</span></span>
+      </div>
+      <div id="cardStatus" class="card-status no-card">No card inserted</div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <h2>Device Commands</h2>
+          <div class="btn-row">
+            <button onclick="sendCmd('GETTOTALSESSION')">GETTOTALSESSION</button>
+            <button onclick="sendCmd('INIT')">INIT</button>
+            <button onclick="sendCmd('READCARD')">READCARD</button>
+            <button onclick="sendCmd('LIVESCAN')">LIVESCAN</button>
+          </div>
+        </div>
+
+        <!-- READCARD waits until a card is inserted. INSERTCARD (with full card
+             JSON) is what the tester sends to satisfy that wait. -->
+        <div class="panel">
+          <h2>Insert / Remove Card</h2>
+          <label>INSERTCARD (JSON — all card fields):</label>
+          <div class="inline-form">
+            <textarea id="insertcardJson" rows="12"></textarea>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <button class="success" onclick="sendInsertCard()">Insert Card</button>
+              <button onclick="resetInsertCardJson()">Reset JSON</button>
+              <button onclick="sendCmd('GETCARD')">GETCARD</button>
+              <button class="danger" onclick="sendCmd('REMOVECARD')">REMOVECARD</button>
+            </div>
+          </div>
+          <!-- Quick Profiles: 3 built-in (Johan / Gstesttest / Testucd) plus any
+               tester-saved ones, persisted in this page's OWN localStorage
+               ("mykad_user_profiles") — "FaizuddinAATF" below is one such
+               saved profile, matching the confirmed AATF test account. -->
+          <label>Quick Profiles:</label>
+          <div id="profileBtnRow" class="btn-row">
+            <button class="warn">Johan (Super Rock Auto)</button>
+            <button class="warn">Gstesttest (Super Rocket)</button>
+            <button class="warn">Testucd (Middleman / TEST UCD AUTO)</button>
+            <span style="display: inline-flex;">
+              <button class="warn" style="border-radius: 4px 0 0 4px; border-right: none;">FaizuddinAATF</button>
+              <button class="danger" title="Delete profile" style="border-radius: 0 4px 4px 0; padding: 6px 8px;">×</button>
+            </span>
+          </div>
+          <div class="inline-form" style="margin-top: 4px">
+            <input type="text" id="newProfileName" placeholder="Profile name...">
+            <button class="success" onclick="saveCurrentAsProfile()">Save Profile</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Device &amp; Config</h2>
+          <div class="btn-row">
+            <button onclick="sendCmd('GETDEVICE')">GETDEVICE</button>
+            <button onclick="sendCmd('GETCONFIG')">GETCONFIG</button>
+          </div>
+          <label>SETDEVICE (JSON):</label>
+          <div class="inline-form">
+            <textarea id="setdeviceJson" placeholder='{"Version":"4.5.2604.40","DeviceNumber":"10029630"}'></textarea>
+            <button onclick="sendSetJson('SETDEVICE', 'setdeviceJson')">Send</button>
+          </div>
+          <label>SETCONFIG (JSON):</label>
+          <div class="inline-form">
+            <textarea id="setconfigJson" placeholder='{"sendVersion":false,"matchResult":"Not Identical"}'></textarea>
+            <button onclick="sendSetJson('SETCONFIG', 'setconfigJson')">Send</button>
+          </div>
+          <label>SET_ Field Command:</label>
+          <div class="inline-form">
+            <select id="setFieldName">
+              <option value="SET_VERSION">SET_VERSION</option>
+              <option value="SET_DEVICENUMBER">SET_DEVICENUMBER</option>
+              <option value="SET_CARDREADER">SET_CARDREADER</option>
+              <option value="SET_SENDVERSION">SET_SENDVERSION</option>
+              <option value="SET_MATCHRESULT">SET_MATCHRESULT</option>
+            </select>
+            <input type="text" id="setFieldValue" placeholder="value">
+            <button onclick="sendSetField()">Send</button>
+          </div>
+          <label>Reset:</label>
+          <div class="btn-row">
+            <button class="danger" onclick="sendCmd('RESETDEVICE')">RESETDEVICE</button>
+            <button class="danger" onclick="sendCmd('RESETCONFIG')">RESETCONFIG</button>
+            <button class="danger" onclick="sendCmd('RESETALL')">RESETALL</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Raw Command</h2>
+          <div class="inline-form">
+            <input type="text" id="rawCmd" placeholder="Enter any command..." onkeydown="if (event.key === 'Enter') sendRaw();">
+            <button onclick="sendRaw()">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel" style="min-height: 400px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <h2 style="margin-bottom: 0; border: none; padding: 0">Response Log</h2>
+            <button class="danger" onclick="clearLog()">Clear</button>
+          </div>
+          <!-- Log entries observed, newest first (base64 Photo/Fingerprint payloads trimmed): -->
+          <div id="log">
+            <div class="log-entry"><span class="ts">16:14:13.404</span> <span style="color:#2ecc71;">Disconnected (code=1006)</span></div>
+            <div class="log-entry"><span class="ts">16:14:09.545</span> <span class="title ack">SimulatorAck</span><pre>{
+  "DataTitle": "SimulatorAck",
+  "Message": "INSERTCARD OK",
+  "Data": {
+    "NRIC": "030217141005",
+    "GMPCName": "MUHAMMAD FAIZUDDIN BIN BIDI",
+    "OriginalName": "MUHAMMAD FAIZUDDIN BIN BIDI",
+    "Gender": "L",
+    "DOB": "01/01/1988",
+    "POB": "JOHOR",
+    "DateIssue": "01/01/2010",
+    "Citizenship": "WARGANEGARA",
+    "Race": "MELAYU",
+    "Religion": "ISLAM",
+    "Category": "Normal",
+    "Address1": "NO 1 JALAN TEST",
+    "Address2": "TAMAN SIMULATOR",
+    "Postcode": "81100",
+    "City": "JOHOR BAHRU",
+    "State": "JOHOR",
+    "LeftHandCode": "R1",
+    "RightHandCode": "L1",
+    "Photo": "[base64 JPEG, trimmed]"
+  }
+}</pre></div>
+            <div class="log-entry"><span class="ts">16:14:09.541</span> <span style="color:#f1c40f;">→ SENT:</span> <code>INSERTCARD:{
+  "NRIC": "030217141005",
+  "GMPCName": "MUHAMMAD FAIZUDDIN BIN BIDI",
+  "OriginalName": "MUHAMMAD FAIZUDDIN BIN BIDI",
+  "Gender": "L",
+  "DOB": "01/01/1988",
+  "POB": "JOHOR",
+  "DateIssue": "01/01/2010",
+  "Citizenship": "WARGANEGARA",
+  "Race": "MELAYU",
+  "Religion": "ISLAM",
+  "Category": "Normal",
+  "Address1": "NO 1 JALAN TEST",
+  "Address2": "TAMAN SIMULATOR",
+  "Postcode": "81100",
+  "City": "JOHOR BAHRU",
+  "State": "JOHOR",
+  "LeftHandCode": "R1",
+  "RightHandCode": "L1"
+}</code></div>
+            <div class="log-entry"><span class="ts">16:14:02.380</span> <span style="color:#2ecc71;">Profile "FaizuddinAATF" saved</span></div>
+            <div class="log-entry"><span class="ts">16:11:55.268</span> <span style="color:#2ecc71;">Connected to ws://localhost:7878/IDCard</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Default card data template (mirrors CARD_DEFAULTS in server.js)
+      var DEFAULT_CARD = {
+        NRIC: "880101-01-1234", GMPCName: "MUHAMMAD ALI BIN ABDULLAH",
+        OriginalName: "MUHAMMAD ALI BIN ABDULLAH", Gender: "L", DOB: "01/01/1988",
+        POB: "JOHOR", DateIssue: "01/01/2010", Citizenship: "WARGANEGARA",
+        Race: "MELAYU", Religion: "ISLAM", Category: "Normal",
+        Address1: "NO 1 JALAN TEST", Address2: "TAMAN SIMULATOR", Postcode: "81100",
+        City: "JOHOR BAHRU", State: "JOHOR", LeftHandCode: "R1", RightHandCode: "L1",
+      };
+
+      // Three built-in profiles ship with the emulator (Johan, Gstesttest,
+      // Testucd) — any others (like "FaizuddinAATF") are tester-created via
+      // "Save Profile" and persisted in THIS PAGE's localStorage under the key
+      // "mykad_user_profiles", not on any server.
+      var BUILTIN_PROFILES = { johan: {/* ... */}, gstesttest: {/* ... */}, testucd: {/* ... */} };
+      var USER_PROFILES = JSON.parse(localStorage.getItem("mykad_user_profiles") || "{}");
+
+      var ws = null;
+
+      function doConnect() {
+        var wsUrl = document.getElementById("wsUrl").value.trim(); // ws://localhost:7878/IDCard
+        ws = new WebSocket(wsUrl);
+        ws.onmessage = function (evt) {
+          var data = JSON.parse(evt.data);
+          // Tracks card state from server ACKs: INSERTCARD OK -> has-card,
+          // REMOVECARD/RESETALL OK -> no-card, "Matching Result" -> card
+          // ejected after a full READCARD sequence completes.
+        };
+      }
+
+      function sendCmd(cmd) { ws.send(cmd); }
+      function sendInsertCard() {
+        var json = document.getElementById("insertcardJson").value.trim();
+        sendCmd("INSERTCARD:" + json);
+      }
+    </script>
+</body>

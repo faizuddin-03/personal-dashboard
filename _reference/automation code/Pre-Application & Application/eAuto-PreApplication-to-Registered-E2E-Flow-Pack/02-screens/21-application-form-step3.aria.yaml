@@ -1,0 +1,76 @@
+# https://staging.eauto.my/obs/form/1dae6c82-5a35-45aa-85d8-da815a5fc640?id=559017-B&s=1094a30d013bf638fb48c3014e665ac489767e13d1c2c84bb18814f84439b07d&v=1
+- img
+- text: "Support Team: 03-2779 8899 Application email: apply@eauto.my WA : 012 200 1324 eAuto Application Form 1 Business Information 2 Upload Files 3 Acknowledgement Note: Kindly answer all the questions accurately with asterisk (*) symbol and our Team will revert to you as soon as possible. Business Information Type of Business: * SSM Registered:"
+- radio "Sdn Bhd / Bhd" [checked]
+- text: Sdn Bhd / Bhd
+- radio "Sole Proprietorship / Partnership"
+- text: Sole Proprietorship / Partnership
+- radio "LLP"
+- text: "LLP Non-SSM Registered:"
+- radio "Business Trading (Sabah)" [disabled]
+- text: Business Trading (Sabah)
+- radio "Business Trading (Sarawak)" [disabled]
+- text: "Business Trading (Sarawak) Business Registered Name: *"
+- textbox "Business Registered Name (as per SSM)"
+- text: "This field is required Business Registration No: *"
+- textbox [disabled]: Old BRN 559017-B
+- textbox [disabled]: New BRN 202601559017
+- text: "Tax Identification No (TIN): *"
+- textbox "TIN"
+- text: "This field is required Sales and Service Tax (SST) No:"
+- textbox "SST No (Optional)"
+- text: "Showroom Ownership:"
+- radio "Own Showroom" [checked]
+- text: Own Showroom
+- radio "Shared Showroom"
+- text: Shared Showroom
+- radio "No Showroom" [disabled]
+- text: "No Showroom Showroom Address:"
+- textbox "Line 1"
+- text: This field is required
+- textbox "Line 2 (Optional)"
+- textbox "Line 3 (Optional)"
+- text: "Postcode: *"
+- textbox "Postcode"
+- text: "This field is required State: *"
+- combobox:
+  - option "Select" [selected]
+  - option "JOHOR (01)"
+  - option "KEDAH (02)"
+  - option "KELANTAN (03)"
+  - option "MELAKA (04)"
+  - option "NEGERI SEMBILAN (05)"
+  - option "PAHANG (06)"
+  - option "PULAU PINANG (07)"
+  - option "PERAK (08)"
+  - option "PERLIS (09)"
+  - option "SELANGOR (10)"
+  - option "TERENGGANU (11)"
+  - option "SABAH (12)"
+  - option "SARAWAK (13)"
+  - option "WILAYAH PERSEKUTUAN KUALA LUMPUR (14)"
+  - option "WILAYAH PERSEKUTUAN LABUAN (15)"
+  - option "WILAYAH PERSEKUTUAN PUTRAJAYA (16)"
+- text: "This field is required City: *"
+- combobox:
+  - option "Select" [selected]
+  - option "LAIN-LAIN (9999)"
+- text: This field is required Other Motor Vehicle Business Information Do you advertise your motor vehicles on any of this online platform? (e.g Mudah.my)
+- radio
+- text: "Yes"
+- radio [checked]
+- text: No Is your Business registered with any motor vehicle Auction House? *
+- radio
+- text: "Yes"
+- radio [checked]
+- text: No Please tick if your Business is a member of any Motor Vehicle Association. * Select at least one No
+- checkbox
+- text: FMC
+- checkbox
+- text: MMSDA
+- checkbox
+- text: PEKEMA
+- checkbox
+- button "Save & Continue Later"
+- button "Next"
+- text: Application Form / Version 1.0

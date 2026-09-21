@@ -30,7 +30,9 @@ export default defineConfig({
     },
     {
       name: 'secarang-regression',
-      use: { ...devices['Desktop Chrome'], headless: false },
+      // video only on this project — the checker runs many vehicles in parallel
+      // contexts and recording all of them is pure overhead.
+      use: { ...devices['Desktop Chrome'], headless: false, video: 'on' },
       testMatch: '**/secarang-regression.spec.ts',
     },
   ],

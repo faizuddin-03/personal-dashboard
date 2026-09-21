@@ -66,7 +66,7 @@ export class SlotPickerComponent extends BasePage {
    * until we page forward to it again. Call this before touching any
    * specific date.
    */
-  async ensureMonthVisible(dateStr: string, maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<void> {
+  async ensureMonthVisible(dateStr: string, maxMonthsAhead: number = ENV.calendar.searchMonthsAhead): Promise<void> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       if ((await this.getDayCell(dateStr).count()) > 0) return;
       // Was missing this guard (present in every other finder in this file):
@@ -173,7 +173,7 @@ export class SlotPickerComponent extends BasePage {
    * current month, so this pages forward through future months until it
    * finds one, up to maxMonthsAhead.
    */
-  async findEmptyBookableDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+  async findEmptyBookableDate(maxMonthsAhead: number = ENV.calendar.searchMonthsAhead): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       for (const date of await this.findBookableDates()) {
         const { used } = await this.getSlotCount(date);
@@ -191,7 +191,7 @@ export class SlotPickerComponent extends BasePage {
    * the shared staging calendar no longer has any completely untouched
    * dates left in the navigable window.
    */
-  async findAnyBookableDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+  async findAnyBookableDate(maxMonthsAhead: number = ENV.calendar.searchMonthsAhead): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       const dates = await this.findBookableDates();
       if (dates.length > 0) return dates[0];
@@ -202,7 +202,7 @@ export class SlotPickerComponent extends BasePage {
   }
 
   /** First bookable date whose combined day capacity (both slots) has at least minRoom free */
-  async findDateWithRoom(minRoom: number, maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+  async findDateWithRoom(minRoom: number, maxMonthsAhead: number = ENV.calendar.searchMonthsAhead): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       for (const date of await this.findBookableDates()) {
         const { used, total } = await this.getSlotCount(date);
@@ -215,7 +215,7 @@ export class SlotPickerComponent extends BasePage {
   }
 
   /** First date on the calendar that's already fully booked (td.si-fullday) */
-  async findFullyBookedDate(maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+  async findFullyBookedDate(maxMonthsAhead: number = ENV.calendar.searchMonthsAhead): Promise<string | null> {
     for (let m = 0; m <= maxMonthsAhead; m++) {
       const cells = await this.page.locator("td.si-fullday[data-date]").all();
       for (const cell of cells) {
@@ -235,7 +235,7 @@ export class SlotPickerComponent extends BasePage {
    * modal to check that slot directly rather than relying on the day
    * badge (which only reflects combined capacity across both slots).
    */
-  async findDateWithSlotRoom(slotIndex: number, minRoom: number, maxMonthsAhead: number = ENV.calendar.monthsVisible - 1): Promise<string | null> {
+  async findDateWithSlotRoom(slotIndex: number, minRoom: number, maxMonthsAhead: number = ENV.calendar.searchMonthsAhead): Promise<string | null> {
     // Scanning opens/closes many modals just to inspect — suppress demo
     // highlighting/pauses so the recording only slows down for the date the
     // test actually acts on.
@@ -272,7 +272,7 @@ export class SlotPickerComponent extends BasePage {
    */
   async findDateMatching(
     predicate: (info: DateSlotInfo) => boolean,
-    maxMonthsAhead: number = ENV.calendar.monthsVisible - 1,
+    maxMonthsAhead: number = ENV.calendar.searchMonthsAhead,
   ): Promise<string | null> {
     // Inspecting each candidate opens/closes its modal — suppress demo
     // highlighting/pauses so the scan stays fast and quiet.
@@ -315,7 +315,7 @@ export class SlotPickerComponent extends BasePage {
    */
   async findDateWithSlotFull(
     slotIndex: number,
-    maxMonthsAhead: number = ENV.calendar.monthsVisible - 1,
+    maxMonthsAhead: number = ENV.calendar.searchMonthsAhead,
   ): Promise<string | null> {
     return this.findDateMatching(
       (i) => (slotIndex === 0 ? i.morning : i.afternoon).room === 0,
@@ -504,11 +504,20 @@ export class SlotPickerComponent extends BasePage {
    */
   async confirmAppointment() {
     await this.demoHighlight("#si-confirm-booking", { color: "green" });
+    // Attach the navigation wait BEFORE triggering the click/evaluate that
+    // causes it — siConfirmBooking() can redirect fast enough that a
+    // waitForURL() started only after the evaluate() call misses the
+    // navigation entirely and times out despite the redirect having already
+    // landed (confirmed live, 2026-07-31: page was already on submitted.do
+    // when this used to time out).
+    const navPromise = this.page
+      .waitForURL(/submitted\.do\?(id|txnId|transactionId)=/, { timeout: 15000 })
+      .catch(() => {});
     await this.page.evaluate(() => (window as any).siConfirmBooking());
     // Matches whichever id scheme this deployment currently uses — `id=<uuid>`
     // (current, confirmed live), or the older `txnId=<number>` /
     // `transactionId=<uuid>` (see SoftwareInstallationPage.makePayment).
-    await this.page.waitForURL(/submitted\.do\?(id|txnId|transactionId)=/, { timeout: 15000 }).catch(() => {});
+    await navPromise;
     await this.waitForNav();
     await this.demoPause();
   }
@@ -534,8 +543,14 @@ export class SlotPickerComponent extends BasePage {
       await this.closeSlotModal();
       await this.modalOverlay.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
     }
-    const style = (await this.nextMonthArrow.getAttribute("style")) ?? "";
-    if (style.includes("hidden")) return false;
+    // Explicit short timeout: getAttribute() otherwise waits out the
+    // project-wide default timeout if #si-next never attaches (e.g. the
+    // reschedule calendar, unlike the purchase-flow calendar, appears to
+    // enforce a hard 2-month cap — paging past it can leave the arrow gone
+    // entirely rather than merely hidden). Treat that the same as "no more
+    // months" instead of hanging the whole test.
+    const style = await this.nextMonthArrow.getAttribute("style", { timeout: 3000 }).catch(() => null);
+    if (style === null || style.includes("hidden")) return false;
     try {
       await this.nextMonthArrow.click({ timeout: 3000 });
     } catch {

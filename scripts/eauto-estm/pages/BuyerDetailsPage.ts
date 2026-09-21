@@ -11,6 +11,14 @@ export class BuyerDetailsPage {
 
   // selectors (bound to whichever page is active at call time)
   private vehicleRegNo   = (p: Page) => p.locator('#vehicleRegNo');
+  // Step 2's buyer email is `#buyerEmail` (verified live 2026-08-18), but this
+  // stays a ROLE locator on purpose. Switching it to the id on 2026-08-18 broke
+  // the run: the biometric gate came up, meaning the bypass never applied.
+  // The id matches the instant the element exists — including on a page that is
+  // mid-redirect — so the fill lands on a page about to be replaced, and the
+  // bypass then reads its dynamic segment from the wrong URL. The role lookup
+  // is slower and resolves after the page settles, which is what this stretch
+  // depends on. Reverted; do not re-apply without proving a full run green.
   private emailBox       = (p: Page) => p.getByRole('textbox', { name: 'Email' });
   private buyerConsent   = (p: Page) => p.locator('#buyer-consent');
   private reconfirmEmail = (p: Page) => p.getByRole('textbox', { name: 'Reconfirm eVOC Email' });
@@ -61,7 +69,7 @@ export class BuyerDetailsPage {
 
     // ── First bypass: inject the live dynamic segment into the URL ──
     ap = this.session.active();
-    const dynamicSegment = ap.url().match(new RegExp(`/${escapeRegex(inputs.envSegment)}/(.+?)/${escapeRegex(inputs.envSegment)}/`))?.[1] ?? 'zzz/22';
+    const dynamicSegment = ap.url().match(new RegExp(`/${escapeRegex(inputs.envSegment)}/(.+?)/${escapeRegex(inputs.envSegment)}/`))?.[1] ?? CONFIG.bypassSlot;
     const withSegment = (rawUrl: string) => {
       if (rawUrl.includes(`/${inputs.envSegment}/${dynamicSegment}/${inputs.envSegment}/view/`)) return rawUrl;
       return rawUrl.replace(
@@ -69,8 +77,11 @@ export class BuyerDetailsPage {
         `/${inputs.envSegment}/${dynamicSegment}/${inputs.envSegment}/$1`,
       );
     };
+    this.session.logUrl('before bypass1');
+    console.log(`Bypass slot in use: ${dynamicSegment}`);
     await ap.goto(withSegment(ap.url()), { waitUntil: 'domcontentloaded' }).catch(() => {});
     await this.session.waitForDomReady();
+    this.session.logUrl('after bypass1');
     this.session.progress('bypass1', 'Apply Bypass');
 
     // ── Reconfirm eVOC email + contact details ──
@@ -98,9 +109,17 @@ export class BuyerDetailsPage {
     await expect(this.engineNo(ap)).toBeVisible({ timeout: 20000 });
     ap = this.session.active();
     await this.engineNo(ap).fill('*/ -1231Aa');
-    await this.session.active().locator('input[name="chassisNo"], #chassisNo').first().fill('913821AA/* --').catch(async () => {
-      await this.chassisNo(this.session.active()).fill('913821AA/* --');
-    });
+
+    // Resolve the chassis field by count() before filling. Never fall back via
+    // .catch() on .fill() — a non-matching locator polls for the full 30s
+    // actionTimeout before rejecting, which silently added half a minute to
+    // every run. count() answers immediately.
+    ap = this.session.active();
+    const chassisByCss = ap.locator('input[name="chassisNo"], #chassisNo').first();
+    const chassisField = (await chassisByCss.count().catch(() => 0)) > 0
+      ? chassisByCss
+      : this.chassisNo(ap);
+    await chassisField.fill('913821AA/* --');
     this.session.progress('engine_chassis', 'Engine & Chassis');
 
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -130,18 +149,31 @@ export class BuyerDetailsPage {
     await this.session.waitForDomReady();
 
     // ── Second bypass ──
+    // Deliberately a plain literal replace, NOT withSegment(). withSegment() is
+    // idempotent — it returns the URL untouched when a segment is already
+    // present — but this step must re-assert the segment unconditionally, even
+    // over an existing one. Route it through withSegment() and the portal drops
+    // back to the real login identity and blocks with "Please use login user's
+    // mykad". Verified by breaking it exactly that way on 2026-08-13.
     ap = this.session.active();
-    await ap.goto(
-      ap.url().replace(`/${inputs.envSegment}/view/`, `/${inputs.envSegment}/zzz/22/${inputs.envSegment}/view/`),
-      { waitUntil: 'domcontentloaded' },
-    ).catch(() => {});
+    this.session.logUrl('before bypass2');
+    const bypass2Url = ap.url().replace(`/${inputs.envSegment}/view/`, `/${inputs.envSegment}/${CONFIG.bypassSlot}/${inputs.envSegment}/view/`);
+    if (bypass2Url === ap.url()) {
+      // The literal `/<env>/view/` was not in the URL, so nothing was injected
+      // and the identity bypass is not applied for step 3's biometric gate.
+      console.log(`WARNING: bypass2 did not change the URL — no "/${inputs.envSegment}/view/" segment to replace.`);
+    }
+    console.log(`Bypass2 target: ${bypass2Url}`);
+    await ap.goto(bypass2Url, { waitUntil: 'domcontentloaded' }).catch(() => {});
     await this.session.waitForDomReady();
+    this.session.logUrl('after bypass2');
+    await this.session.closeBanners();
     this.session.progress('bypass2', '2nd Bypass');
 
     // ── Agree + Next ──
     await this.session.ensureChecked('#to-agree');
     ap = await this.session.waitForActivePage();
-    await ap.getByText('Next').click().catch(() => {});
+    await ap.getByText('Next').click({ timeout: 10_000 }).catch(() => {});
     await this.session.waitForDomReady();
   }
 }

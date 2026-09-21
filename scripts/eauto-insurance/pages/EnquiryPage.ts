@@ -18,6 +18,9 @@ export class EnquiryPage extends BasePage {
   private postcodeInput    = () => this.page.locator('#postcode');
   private vehicleDetail    = () => this.page.locator('#vehicle-detail');
   private getQuoteBtn      = () => this.page.locator('#to-continue');
+  // Only some motorbikes show this — a plain "Make/Model" car or a
+  // motorbike with a single known variant skips it entirely.
+  private variantSeriesSelect = () => this.page.locator('#varientSeriesType');
 
   constructor(
     page: Page,
@@ -28,6 +31,7 @@ export class EnquiryPage extends BasePage {
   async goto(): Promise<void> {
     await this.page.goto(`${CONFIG.baseUrl}${CONFIG.enquiryPath}`, { waitUntil: 'load', timeout: CONFIG.navigationTimeout });
     await this.settleAfterLoad();
+    await this.dismissBanners();
   }
 
   /**
@@ -120,6 +124,19 @@ export class EnquiryPage extends BasePage {
         return emptyResult(vn, 'ERROR', 'Vehicle detail did not appear');
       }
 
+      // ── Step 7b: Pick a variant/series if this vehicle needs one ───
+      // Only some motorbikes surface this dropdown; when it's absent the
+      // form already has everything it needs. We don't care which variant
+      // gets picked — any real option (skipping the "SELECT..." placeholder
+      // at index 0) is enough to unblock GET QUOTE.
+      if (await this.variantSeriesSelect().isVisible().catch(() => false)) {
+        const optionCount = await this.variantSeriesSelect().locator('option').count();
+        if (optionCount > 1) {
+          console.log('   Variant (Series) dropdown present — selecting the first available option...');
+          await this.variantSeriesSelect().selectOption({ index: 1 });
+        }
+      }
+
       // ── Step 8: Extract vehicle details ────────────────────────────
       const vehicleInfo = await this.extractVehicleDetails();
       console.log(`   ✅ ${vehicleInfo.make} ${vehicleInfo.model} (${vehicleInfo.manufacturingYear})`);
@@ -155,7 +172,13 @@ export class EnquiryPage extends BasePage {
         const labels = document.querySelectorAll('#vehicle-detail td.quote-label');
         for (const el of labels) {
           if (el.textContent?.trim().replace(/\s+/g, ' ').includes(label)) {
-            return el.nextElementSibling?.textContent?.trim().replace(/\s+/g, ' ') || '';
+            const valueCell = el.nextElementSibling;
+            // Variant (Series) renders as a <select> on some motorbikes
+            // instead of plain text — read the chosen option, not the
+            // raw textContent (which would run every option together).
+            const select = valueCell?.querySelector('select') as HTMLSelectElement | null;
+            if (select) return select.selectedOptions[0]?.textContent?.trim().replace(/\s+/g, ' ') || '';
+            return valueCell?.textContent?.trim().replace(/\s+/g, ' ') || '';
           }
         }
         return '';

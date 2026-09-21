@@ -1,6 +1,6 @@
 export const ENV = {
-  baseUrl: process.env.EAUTO_BASE_URL || "https://staging.eauto.my/uat1",
-  envPath: process.env.EAUTO_ENV_PATH || "/uat1",
+  baseUrl: process.env.EAUTO_BASE_URL || "https://staging.eauto.my/uat4",
+  envPath: process.env.EAUTO_ENV_PATH || "/uat4",
 
   ucdUsername: process.env.EAUTO_UCD_USER || "",
   ucdPassword: process.env.EAUTO_UCD_PASS || "",
@@ -42,7 +42,18 @@ export const ENV = {
   calendar: {
     // SRD 2.3.2.1 #3: the calendar shows only the current month and the
     // following month (a 2-month window), not an open-ended lookahead.
+    // Used by the actual boundary-rule assertions (e.g. "Book future dates
+    // more than 2 months") — do not change this to work around a full
+    // calendar; it must stay a faithful check of the real SRD rule.
     monthsVisible: 2,
+    // For test-data ARRANGEMENT only (finding *any* open date to book
+    // against), not for asserting the 2-month rule itself. Per user
+    // direction (2026-07-30): staging's shared calendar is fully booked
+    // through the real 2-month window right now, but real open dates exist
+    // further out (verified live through November); the finder helpers page
+    // this far forward when hunting for room so arrangement doesn't spuriously
+    // fail just because the near-term window happens to be exhausted.
+    searchMonthsAhead: 6,
   },
 
   pricing: {
@@ -92,7 +103,9 @@ export const PATHS = {
   submitted: (txnId: string) => `/view/ucd/service-hub/installation/submitted.do?${txnId}`,
   biometricPurchase: "/view/ucd/service-hub/purchase.do",
   listing: "/view/ucd/service-hub/listing.do",
-  requestDetails: (txnId: string) => `/view/ucd/service-hub/details.do?${txnId}`,
+  // Verified live (uat4): the Listing's "View" link goes to receipt.do, not
+  // details.do — details.do does not exist as a distinct page.
+  requestDetails: (txnId: string) => `/view/ucd/service-hub/receipt.do?${txnId}`,
   receipt: (txnId: string) => `/view/ucd/service-hub/receipt.do?${txnId}`,
   reschedule: (txnId: string) => `/view/ucd/service-hub/installation/reschedule.do?${txnId}`,
   // BO paths — confirmed against the real BO portal HTML.

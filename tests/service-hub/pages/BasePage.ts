@@ -65,14 +65,28 @@ export class BasePage {
     await this.page.locator(".ui-dialog").waitFor({ state: "visible", timeout: 5000 });
   }
 
+  /**
+   * Format a Date as its LOCAL-calendar yyyy-mm-dd. Deliberately NOT
+   * `.toISOString().split("T")[0]` — that converts to UTC first, which
+   * silently rolls the date back by one whenever the local clock is within
+   * the UTC offset of midnight (e.g. every run between 00:00–08:00 in
+   * Malaysia, UTC+8). Every date helper below must funnel through this.
+   */
+  private formatLocalDate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
   today(): string {
-    return new Date().toISOString().split("T")[0];
+    return this.formatLocalDate(new Date());
   }
 
   daysFromToday(n: number): string {
     const d = new Date();
     d.setDate(d.getDate() + n);
-    return d.toISOString().split("T")[0];
+    return this.formatLocalDate(d);
   }
 
   earliestRescheduleDate(): string {
@@ -90,14 +104,14 @@ export class BasePage {
     do {
       d.setDate(d.getDate() + 1);
     } while (d.getDay() !== 6); // 0 = Sun, 6 = Sat
-    return d.toISOString().split("T")[0];
+    return this.formatLocalDate(d);
   }
 
   /** A date `months` months ahead of today, ISO yyyy-mm-dd. */
   dateMonthsAhead(months: number): string {
     const d = new Date();
     d.setMonth(d.getMonth() + months);
-    return d.toISOString().split("T")[0];
+    return this.formatLocalDate(d);
   }
 
   // ──────────────────────────────────────────────────────────────
