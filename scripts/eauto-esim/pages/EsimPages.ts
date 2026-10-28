@@ -182,4 +182,86 @@ export class EntityEditPage {
   async viewPageText(): Promise<string> {
     return (await this.page.locator('body').innerText()).replace(/\s+/g, ' ');
   }
+
+  // ──────────────────────────────────────────────────────────────
+  // `jomcheck-report`-only: the dynamic "Claim Records" sub-form. See
+  // `_reference/html/esim/jomcheck-report-edit.html` — "+ Add Claim Record"
+  // clones a `<template>` client-side (`claimValues[N].*`), "Remove Record"
+  // deletes one `.claim-record` block. Unlike the top-level fields above,
+  // a claim record's own labels carry NO `for` attribute (just plain
+  // `<label class="form-label">Mileage</label>` next to its input) — so
+  // these resolve by walking to the sibling input inside the SAME
+  // `.form-group`, scoped to one `.claim-record` block, not by `for`/`id`.
+  // Added 2026-10-03 for EAINT-12339's TS05-TS19, which need EXACT claim
+  // values (mileage/parts/claim-code boundaries) that purchasing against
+  // the real API can't reliably produce.
+  // ──────────────────────────────────────────────────────────────
+
+  private claimRecordBlocks = () => this.page.locator('.claim-record');
+
+  /** Every existing claim record as a label→value map (blank fields left
+   *  out), in page order — the same shape `addClaimRecords()` takes, so a
+   *  read can be written straight back to restore a shared prefix. */
+  async readClaimRecords(): Promise<Record<string, string>[]> {
+    const out: Record<string, string>[] = [];
+    const blocks = this.claimRecordBlocks();
+    for (let i = 0; i < await blocks.count(); i++) {
+      const groups = blocks.nth(i).locator('.form-group:has(label)');
+      const record: Record<string, string> = {};
+      for (let j = 0; j < await groups.count(); j++) {
+        const group = groups.nth(j);
+        const field = group.locator('input, select').first();
+        if (!(await field.count())) continue;
+        const label = (await group.locator('label').first().innerText()).trim();
+        const value = (await field.inputValue()).trim();
+        if (value) record[label] = value;
+      }
+      out.push(record);
+    }
+    return out;
+  }
+
+  /** Removes every EXISTING claim record (via its own "Remove Record"
+   *  button) — use alone to restore a prefix to "no claim history" after a
+   *  TS that set specific claims finishes, or before adding fresh ones so
+   *  a leftover record from a previous run never bleeds into this one. */
+  async removeAllClaimRecords(): Promise<number> {
+    let removed = 0;
+    while ((await this.claimRecordBlocks().count()) > 0) {
+      await this.claimRecordBlocks().first().locator('button:has-text("Remove Record")').click();
+      removed++;
+    }
+    step(`Removed ${removed} existing claim record(s)`);
+    return removed;
+  }
+
+  /** Adds one claim record per entry in `records`, each a label→value map
+   *  resolved against that NEW record's own fields (e.g. `{"Mileage":
+   *  "9999", "Severity": "MEDIUM"}`) — a `select` field (Possible Total
+   *  Loss/Possible BER) uses `.selectOption()`, same tag-detection as
+   *  `applyChanges()`. Does not touch any record already on the page —
+   *  call `removeAllClaimRecords()` first if a clean slate is needed. */
+  async addClaimRecords(records: Record<string, string>[]): Promise<void> {
+    const addBtn = this.page.getByRole('button', { name: '+ Add Claim Record' });
+    for (const record of records) {
+      const before = await this.claimRecordBlocks().count();
+      await addBtn.click();
+      const block = this.claimRecordBlocks().nth(before);
+      await block.waitFor({ state: 'visible', timeout: 5000 });
+
+      for (const [label, value] of Object.entries(record)) {
+        if (value === '') continue; // blank means "leave this claim field empty", not "type nothing"
+        const field = block
+          .locator(`.form-group:has(label:text-is("${label}")) input, .form-group:has(label:text-is("${label}")) select`)
+          .first();
+        if ((await field.count()) === 0) {
+          throw new Error(`No claim-record field labelled "${label}" — check the spelling against jomcheck-report-edit.html.`);
+        }
+        const tag = await field.evaluate(el => el.tagName.toLowerCase());
+        if (tag === 'select') await field.selectOption(value);
+        else await field.fill(value);
+        step(`Claim ${before + 1} — ${label}: "${value}"`);
+      }
+    }
+  }
 }

@@ -1,0 +1,338 @@
+
+===== PAGE 1 =====
+SYSTEM REQUIREMENT DOCUMENT (SRD) 
+Requirement 
+ 
+[eAuto-BackOffice] Exclude Resubmission Records from Reconciliation Listing 
+ 
+Version 
+ 
+Version 1.0 
+ 
+Latest Revision Date 
+ 
+23.07.2026 (Thursday) 
+ 
+
+===== PAGE 2 =====
+CONTENTS 
+1.0  DOCUMENT INFORMATION .................................................................................................................................................... 3 
+1.1  Purpose ............................................................................................................................................................................. 3 
+1.2  Intended Audience ............................................................................................................................................................. 3 
+1.3  Revision History ................................................................................................................................................................. 3 
+1.4  Glossary of Terms ............................................................................................................................................................. 4 
+1.5  Associated Document(s) .................................................................................................................................................... 4 
+2.0  REQUIREMENT ........................................................................................................................................................................ 5 
+2.1  High-Level Requirement Overview ..................................................................................................................................... 5 
+2.1.1  Assumptions ............................................................................................................................................................. 6 
+2.2  Key Highlights and Baseline Requirements ........................................................................................................................ 7 
+2.2.1  Background ............................................................................................................................................................... 7 
+2.2.2  Existing Issue & Expected Behaviour.......................................................................................................................... 8 
+2.2.3  Affected Pages .......................................................................................................................................................... 9 
+2.2.4  Reconciliation Summary Listing ................................................................................................................................. 9 
+ 
+
+===== PAGE 3 =====
+1.0  DOCUMENT INFORMATION 
+1.1  Purpose 
+The System Requirements Document outlines the agreed system specifications. Once approved, it becomes the baseline to ensure 
+the system meets business goals. Sign-off is required for development to start, and any changes must follow the System 
+Enhancement Management process. 
+ 
+1.2  Intended Audience 
+The intended audience for this document includes project stakeholders and any team members involved in defining, implementing, 
+or validating the system requirements. 
+ 
+1.3  Revision History 
+This section records all modifications to the document until it reaches Version 1.0, at which point it is finalized and established as 
+the baseline for future reference. Once baselined, any new changes will be assessed based on their severity — significant changes 
+may result in an addendum, while less critical updates may be handled through a formal change request. 
+Version No 
+Date 
+Revised By 
+Reason for Revision 
+0.1 
+23.07.2026 (Thurs) 
+Lim Yi Link 
+Initial Draft 
+1.0 
+23.07.2026 (Thurs) 
+Lim Yi Link 
+Send out for external review 
+
+===== PAGE 4 =====
+1.4  Glossary of Terms 
+# 
+Abbreviation / Term 
+Interpretation / Description 
+  
+ 
+  
+ 
+  
+ 
+ 
+1.5  Associated Document(s) 
+# 
+Item 
+Location / URL 
+Rationale for Relevance 
+1 
+ 
+EAINT-12055 — [eAuto-BackOffice] Exclude 
+Resubmission Records from Reconciliation 
+Listing 
+ 
+https://mfservices.atlassian.net/bro
+wse/EAINT-12055 
+ 
+Main internal tracking ticket 
+for this requirement 
+ 
+2 
+ 
+CCB-867 — EAUTO | Exclude Resubmission 
+Records from Reconciliation Listing 
+ 
+https://mfservices.atlassian.net/bro
+wse/CCB-867 
+ 
+Change Control Board ticket 
+ 
+3 
+ 
+EAUTO-991 — Enhancement of Recon Listing 
+ 
+https://mfservices.atlassian.net/bro
+wse/EAUTO-991 
+ 
+Source enhancement request 
+ticket 
+ 
+
+===== PAGE 5 =====
+2.0  REQUIREMENT 
+2.1  High-Level Requirement Overview 
+# 
+Item 
+Description 
+2.1.1 
+ 
+Enhancement Overview 
+ 
+Exclude a payment and its matched approved transaction from the Reconciliation 
+Listing, even when the two fall on different dates. 
+ 
+2.1.2 
+ 
+Key Value(s) Expected 
+ 
+The listing shows only unmatched transactions, so matched pairs no longer 
+appear as duplicate lines. 
+ 
+
+===== PAGE 6 =====
+2.1.1  Assumptions 
+# 
+Assumption 
+1 
+ 
+A payment and an approved transaction are considered a matched pair when they share the same Payment Ref No. 
+ 
+2 
+ 
+For a matched pair, the Approved Amount in eAuto and the Payment Amount in RHB offset each other (one value 
+against the other for the same reference). 
+ 
+3 
+ 
+The existing reconciliation matching logic remains unchanged apart from broadening the date comparison to allow 
+different dates and cross-month matching. 
+ 
+
+===== PAGE 7 =====
+2.2  Key Highlights and Baseline Requirements 
+The following key highlights and requirements were established during the initial sync-up sessions with the requestor. As this 
+forms the baseline, any changes requested thereafter may result in adjustments to scope, timeline, or deliverables, for which the 
+requestor will be responsible to review and confirm. 
+ 
+2.2.1  Background 
+# 
+Affected Item 
+Description 
+1 
+ 
+Project 
+ 
+eAuto 
+ 
+2 
+ 
+Portal 
+ 
+eAuto Back Office User Portal 
+ 
+3 
+ 
+Module 
+ 
+eAuto Recon Module (Reconciliation Summary Listing) 
+ 
+4 
+ 
+Request 
+ 
+Exclude matched payment-and-approved transactions from the Reconciliation 
+Listing when they occur on different dates, including across months. 
+ 
+5 
+ 
+Additional Note 
+ 
+  
+ 
+
+===== PAGE 8 =====
+2.2.2  Existing Issue & Expected Behaviour 
+# 
+Item 
+Description 
+1 
+ 
+Existing Issue / Behaviour 
+ 
+1. When a transaction is approved on a different date from the payment date into 
+the RHB account, it appears as two separate lines in the Recon list. 
+2. Each of the two lines carries a different “Refund Required” value (e.g. one 
+“Yes” and one “No”), even though the payment is already matched with the 
+approved transaction. 
+ 
+2 
+ 
+Expected New Handling / 
+Behaviour 
+ 
+1. The listing should not show a matched payment and approved transaction 
+even when they occur on different dates. 
+2. The date matching should be broadened to also match across different 
+months (e.g. payment on 30 July 2026 and approved transaction on 1 August 
+2026). 
+3. When the two transactions are matched, both are aborted (removed) from the 
+listing. 
+ 
+
+===== PAGE 9 =====
+2.2.3  Affected Pages 
+# 
+Affected Pages 
+Description 
+1 
+ 
+Reconciliation Summary Listing 
+(Reconciliation Listing tab) 
+ 
+BackOffice page that lists reconciliation records filtered by Payment 
+Date range and Transaction Type; the exclusion logic applies to the 
+records shown here. 
+ 
+ 
+2.2.4  Reconciliation Summary Listing 
+# 
+Item 
+Description 
+Acceptance Criteria 
+1 
+ 
+Exclude matched payments 
+ 
+1. Once a payment is matched with an 
+approved transaction, it will no longer be 
+displayed in the listing.  
+2. Only unmatched payments or those 
+requiring further attention will remain 
+visible. 
+ 
+A payment that has been matched 
+with an approved transaction no 
+longer appears in the listing, while 
+unmatched payments and those 
+requiring further attention remain 
+visible. 
+ 
+2 
+ 
+Match transactions across 
+months 
+ 
+1. The system shall match a payment with an 
+approved transaction even if the payment 
+date and transaction approval date fall in 
+different calendar months. 
+2.  This ensures that valid matches across 
+month-end periods are not missed. 
+ 
+Example: A payment made on 30 July shall be 
+matched with a transaction approved on 1 
+August. 
+ 
+A payment dated 30 July is matched 
+with a transaction approved on 1 
+August, confirming that matches are 
+made even when the dates fall in 
+different calendar months. 
+ 
+
+===== PAGE 10 =====
+# 
+Item 
+Description 
+Acceptance Criteria 
+3 
+ 
+Remove both matched records 
+ 
+Once a payment and an approved transaction 
+have been successfully matched, the system 
+shall remove both records from the 
+reconciliation listing to prevent an incorrect 
+Refund Required result from being displayed. 
+ 
+Once a payment and an approved 
+transaction are matched, both records 
+are removed from the listing and no 
+incorrect Refund Required result is 
+displayed for them. 
+ 
+4 
+ 
+Display unmatched transaction 
+ 
+The system shall continue to display 
+transactions that do not have a matching 
+payment, ensuring that all outstanding items 
+remain visible for further action. 
+ 
+A transaction that has no matching 
+payment continues to be displayed in 
+the listing so that all outstanding 
+items remain visible for further action. 
+ 
+5 
+ 
+Apply to existing records 
+ 
+1. Upon deployment of this enhancement, the 
+system shall apply the same matching logic 
+to existing records in the reconciliation 
+listing. 
+2. Any payment and approved transaction that 
+meet the matching criteria shall be 
+automatically matched and removed from 
+the listing. 
+ 
+After deployment, existing records in 
+the listing that meet the matching 
+criteria are automatically matched and 
+removed. 
+ 
+ 

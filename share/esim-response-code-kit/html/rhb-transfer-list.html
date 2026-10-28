@@ -1,0 +1,122 @@
+<!--
+  URL: /esim/rhb-transfer-resp
+  Env: eSIM (VPN-only simulator), env instance not stated by user
+  Captured: 2026-08-21
+  Trimmed: rows 11-122 reduced to representative examples (this table has 122
+  records; client-side pagination past row 10 is the app's own behaviour, not
+  a capture trim). Full response-code set at capture, Vn Start With → Response
+  Code → Description → Remark, for the rows NOT reproduced below:
+    PM OK EC; PO NR "No Record"; PB RP "Need To Reprocess / Resent Due To Line
+    Down (RP)"; PQ OK ERROR; PR OK -; PS ER-T -; DL DL -; DR DR OK; WB OK nick;
+    BP OK "Insufficient fund" (Lonpac UAT, DO NOT CHANGE 10-20 Feb 2025); UT OK -
+    (STMS & BMK - Char); JR OK OK; 1110041 OK "Dura - eLKM Fail"; RA OK OK;
+    WU OK OK; QS OK OK; GH OK - (21.08.2024 eAuto Ops); JQ OK OK; VJ OK OK
+    (Izni, until further notice); PK OK OK; B8 IF failed; BM OK OK; MJ OK OK
+    (Izni); JS OK OK (Izni); AH OK OK; AW OK OK; VF OK OK (Azila Testing);
+    EA OK - ("eSTM & eDereg PreChecking - Char"); 1149424 OK " " (Dura);
+    MA OK May; SM OK " " (Dura); WP OK - (eAuto ops staging test);
+    YB OK 0 (jib); PL OK - (Lonpac UAT); VM OK - (szechoong); JA OK OK (Jasmin);
+    DE OK " " (Delay test); WT OK OK ("Yi Link - UAT with JPJ 03-04.03.2026
+    [DO NOT CHANGE]"); DJ OK OK ("aliah OK - success, IF - Insufficient Fund");
+    RH OK OK (Mobile testing RHB Failed); AE OK OK (Mobile Testing RE RHB
+    Payment); VD OK br; AL OK OK (Lonpac UAT); TP OK " " (eAuto ops demo);
+    FU NA Failed; RP OK Failed; WQ OK Automation; FJ OK - (20000ms delay);
+    XV OK Automation (1000ms, Drools rule → setFinalCode("IF")); XZ OK
+    Automation (Drools → "IF"); LI OK automation (Drools → IF/OK/OK 3-rule
+    chain); LM OK automation (100ms, Drools → IF); LN OK automation (100ms,
+    Drools → IF/IF/OK/OK 4-rule chain); LO OK automation (100ms, Drools → IF);
+    VG OK OK; JH OK OK (Izni); QA OK OK; LL OK IF; JU OK OK; WV OK OK;
+    PJ OK OK; LX OK OK; 1010001 OK OK; 1149571 OK "Nick - Pre e-invoice";
+    UL OK OK (10000ms, Yi Link); 1109610 OK " " (Pre eInvoice - Char);
+    980508 OK OK (60000ms, Nabila - ROB); 1051079 NA NA; 1080442 OK OK
+    (Nabila); VA OK "Mobile Insurance Testing" (Yi Link, JPJ walkthrough
+    19.06.2026); 1020775 OK "P.einvoice" (Nick 2); 4100011 OK OK (Nabila -
+    AATF); 4070002 OK - ("eDereg PreChecking - Char"); 4140011 OK OK
+    (UAT 3.6.2025); 4160001 IF OK (Pre-UAT 3.6.2025); PP IF "Insufficient
+    Funds"; MC OK OK; BE OK OK; BB OK IF (Brandon); OK(vn) IF IF; ES OK IF
+    (KJ test); PF OK "Mobile Testing Payment Failed"; NH OK OK (Nabila);
+    CE OK nick2 (JPJ UAT 12.01.2026); VP OK OK; TY IF OK (Teck Yung Vn);
+    BJ OK OK; CC OK OK (UAT JPJ 12.01.26); TA OK "Insufficient balance"
+    (amirul); JX OK OK (maisarah); XG OK Automation (1000ms, Drools → IF/IF
+    2-rule chain); MM OK O; SA OK OK; ND OK OK; WA OK OK (huixin); MD IF -;
+    VR OK OK (kinhang); YF OK OK (yifung test); FZ RE RE ("Faiz — OK Normal,
+    IF Insufficient Fund"); ZK OK "ZK Testing" (2000ms, Drools → OK then RE);
+    AC OK OK ("Faiz — OK Normal, IF Insufficient Fund, RE 6 minutes timer");
+    VH OK OK "Insufficient fund"; GG OK OK (10000ms, Brandon); WY OK -
+    ("OK\nIF"); GT IF OK (Brandon Using); VE OK OK (nick2); WD OK OK;
+    HA OK OK (30000ms, Faiz); HB IF IF (60000ms, Faiz); HC OK OK (Faiz);
+    HD OK OK (Faiz).
+  Purpose: this is the eSIM entity that steers RHB payment outcomes — the "IF"
+  and "RE" codes cited in the EAINT-9306 dev guide/test plan for simulating
+  Payment success/failed are set HERE, on `Vn Start With` = the vehicle
+  number's own prefix, not on Dereg Enquiry. Confirmed applicable to eDereg
+  Pre-Checking payment specifically by remarks on rows EA (#38, "eSTM & eDereg
+  PreChecking - Char") and #90 (4070002, "eDereg PreChecking - Char").
+  Used by: knowledge/flow-edereg.md, knowledge/esim.md
+-->
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="sidebar-brand" href="/esim/"><span class="sidebar-brand-text">eAuto Sim</span></a>
+      <div class="sidebar-label">Entities</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item sidebar-group" id="group-rhb">
+          <button class="sidebar-group-toggle" onclick="toggleGroup('group-rhb')"><span>RHB</span></button>
+          <ul class="sidebar-group-items">
+            <li class="sidebar-nav-item"><a href="/esim/rhb-enquiry-resp"><span>RHB Enquiry</span></a></li>
+            <li class="sidebar-nav-item active"><a href="/esim/rhb-transfer-resp"><span>RHB Transfer</span></a></li>
+            <li class="sidebar-nav-item"><a href="/esim/service-hub-resp"><span>Service Hub</span></a></li>
+            <li class="sidebar-nav-item"><a href="/esim/rhb-account-info"><span>RHB Account Info</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+    <div class="main-content">
+      <div class="top-bar">
+        <nav class="breadcrumb-nav"><span class="current">RHB Transfer Resps</span></nav>
+      </div>
+      <div class="content-body">
+        <div class="page-header">
+          <div><h1 class="page-title">RHB Transfer Resps</h1><p class="page-subtitle"><span id="recordCount">122</span> records</p></div>
+          <a href="/esim/rhb-transfer-resp/new" class="btn btn-primary">Create New</a>
+        </div>
+        <div class="search-bar" id="searchBar"><input type="text" id="searchInput" placeholder="Search records..." autocomplete="off"></div>
+        <div class="data-table-wrap" id="dataTableWrap">
+          <div class="table-scroll">
+          <table class="data-table" id="dataTable">
+            <thead>
+              <tr><th class="col-id">ID</th><th>Vn Start With</th><th>Response Code</th><th>Description</th><th>Delay Milliseconds</th><th>Remark</th><th class="col-actions">ACTIONS</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="col-id">1</td><td><span class="cell-primary">AB</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">Azpar</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/1/edit">edit</a></td></tr>
+              <tr><td class="col-id">2</td><td><span class="cell-primary">M1</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">-</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">Azila Testing - 12/2/25</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/2/edit">edit</a></td></tr>
+              <tr><td class="col-id">3</td><td><span class="cell-primary">KG</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">—</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/3/edit">edit</a></td></tr>
+              <tr><td class="col-id">4</td><td><span class="cell-primary">VV</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">OK</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/4/edit">edit</a></td></tr>
+              <tr><td class="col-id">5</td><td><span class="cell-primary">VB</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">60000</span></td><td><span class="cell-primary">—</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/5/edit">edit</a></td></tr>
+              <tr><td class="col-id">6</td><td><span class="cell-primary">AG</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">Need to reprocess</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">—</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/6/edit">edit</a></td></tr>
+              <tr><td class="col-id">7</td><td><span class="cell-primary">TT</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary"> </span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">SIT LKM Refund</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/7/edit">edit</a></td></tr>
+              <tr><td class="col-id">8</td><td><span class="cell-primary">BK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">used  by rl</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/8/edit">edit</a></td></tr>
+              <tr><td class="col-id">9</td><td><span class="cell-primary">PI</span></td><td><span class="cell-primary">NF</span></td><td><span class="cell-primary">—</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">—</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/9/edit">edit</a></td></tr>
+              <tr><td class="col-id">10</td><td><span class="cell-primary">LK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">Need to reprocess</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">—</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/10/edit">edit</a></td></tr>
+              <!-- Rows 11-122: see header trim summary for the full response-code inventory -->
+              <tr><td class="col-id">31</td><td><span class="cell-primary">B8</span></td><td><span class="cell-primary">IF</span></td><td><span class="cell-primary">failed</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">—</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/31/edit">edit</a></td></tr>
+              <tr><td class="col-id">38</td><td><span class="cell-primary">EA</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">-</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">eSTM &amp; eDereg PreChecking - Char</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/38/edit">edit</a></td></tr>
+              <tr><td class="col-id">49</td><td><span class="cell-primary">DJ</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">aliah OK - success, IF - Insufficient Fund</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/49/edit">edit</a></td></tr>
+              <tr><td class="col-id">90</td><td><span class="cell-primary">4070002</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">-</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">eDereg PreChecking - Char</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/90/edit">edit</a></td></tr>
+              <tr><td class="col-id">94</td><td><span class="cell-primary">PP</span></td><td><span class="cell-primary">IF</span></td><td><span class="cell-primary">Insufficient Funds</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">—</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/94/edit">edit</a></td></tr>
+              <tr><td class="col-id">126</td><td><span class="cell-primary">FZ</span></td><td><span class="cell-primary">RE</span></td><td><span class="cell-primary">RE</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">Faiz&#10;OK - Normal&#10;IF - Insufficient Fund</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/126/edit">edit</a></td></tr>
+              <tr><td class="col-id">127</td><td><span class="cell-primary">ZK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">ZK Testing</span></td><td><span class="cell-primary">2000</span></td><td><span class="cell-primary">rule "RHB Transfer Rule 1" when $req: SimulatorRequest() then $req.setFinalCode("OK"); end rule "RHB Transfer Rule 2" when $req: SimulatorRequest() then $req.setFinalCode("RE"); end</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/127/edit">edit</a></td></tr>
+              <tr><td class="col-id">128</td><td><span class="cell-primary">AC</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">Faiz&#10;&#10;OK - Normal&#10;IF - Insufficient Fund&#10;RE - 6 minutes timer</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/128/edit">edit</a></td></tr>
+              <tr><td class="col-id">140</td><td><span class="cell-primary">HX</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">OK</span></td><td><span class="cell-primary">0</span></td><td><span class="cell-primary">Faiz</span></td><td class="col-actions"><a href="/esim/rhb-transfer-resp/140/edit">edit</a></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <div class="pagination-bar" id="paginationBar">
+            <span class="pagination-info" id="paginationInfo">Showing 1-10 of 122 results</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/esim/js/app.js"></script>
+</body>

@@ -1,0 +1,140 @@
+<!--
+  URL:      https://bank-simulator.fiuu.com/fpx-b2b/payment
+  Captured: 2026-10-22T09:13:19.469Z by the 12153 guided-capture run (page loaded)
+  Trimmed:  nothing
+-->
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPX B2B Simulator</title>
+    <link rel="shortcut icon" href="https://bank-simulator.fiuu.com/sandbox.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href="https://bank-simulator.fiuu.com/css/fpxb2b.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="blue-bar">
+    <img src="https://bank-simulator.fiuu.com/img/fiuuSimulator.png" alt="Fiuu Logo">
+</div>
+
+<div class="simulator-wrapper">
+    <form id="fpx_b2b_form" method="post" action="">
+        <input type="hidden" name="_token" value="HpWj41Twco1q79WXXNBDm1oiNvpdDZYV2JVwBY6r">
+        <div class="payment-card">
+            <div class="card-header">
+                <div>
+                    <div class="card-header-title">Corporate Payment</div>
+                    <div class="card-header-subtitle">FPX Business-to-Business</div>
+                </div>
+                <img src="https://bank-simulator.fiuu.com/img/fpx-logo.png" alt="FPX Logo" style="width: 64px; height: auto;">
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-row">
+                    <span class="detail-label">Amount</span>
+                    <span class="detail-value amount-highlight">MYR 108.00</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Bank</span>
+                    <span class="detail-value">MBB0228</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Order ID</span>
+                    <span class="detail-value">200650</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Currency</span>
+                    <span class="detail-value">MYR</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Description</span>
+                    <span class="detail-value">0d42d67b5b6e4ae9974edd9c8241d</span>
+                </div>
+            </div>
+
+            
+                                        <input type="hidden" name="fpx_msgType" value="AE">
+                            <input type="hidden" name="fpx_msgToken" value="02">
+                            <input type="hidden" name="fpx_sellerExId" value="EX00003995">
+                            <input type="hidden" name="fpx_sellerExOrderNo" value="200650">
+                            <input type="hidden" name="fpx_sellerTxnTime" value="20261022171319">
+                            <input type="hidden" name="fpx_sellerOrderNo" value="200650">
+                            <input type="hidden" name="fpx_sellerId" value="SE00007037">
+                            <input type="hidden" name="fpx_txnCurrency" value="MYR">
+                            <input type="hidden" name="fpx_txnAmount" value="108.00">
+                            <input type="hidden" name="fpx_buyerName" value="">
+                            <input type="hidden" name="fpx_buyerBankId" value="MBB0228">
+                            <input type="hidden" name="fpx_buyerBankBranch" value="">
+                            <input type="hidden" name="fpx_buyerId" value="">
+                            <input type="hidden" name="fpx_makerName" value="">
+                            <input type="hidden" name="fpx_buyerIban" value="">
+                            <input type="hidden" name="fpx_productDesc" value="0d42d67b5b6e4ae9974edd9c8241d">
+                            <input type="hidden" name="fpx_fpxTxnId" value="2610221713203860">
+                            <input type="hidden" name="fpx_fpxTxnTime" value="20261022171320">
+                            <input type="hidden" name="fpx_debitAuthCode" value="">
+                            <input type="hidden" name="fpx_debitAuthNo" value="">
+                            <input type="hidden" name="fpx_creditAuthCode" value="">
+                            <input type="hidden" name="fpx_creditAuthNo" value="">
+                            <input type="hidden" name="fpx_checkSum" value="8D7987C1CA7E8201C83B21BD1A10B83D68D038F6361AD7C69EC3C932A17E95A27433969236BFD7872D10678FED4C7313BBEEBFA2998DCBDD1979037120865AF235696112B2E266BA7C3C5A5E57BAD77E18A2A7D689D066BE5F753FCE0FC142C915A2D9DB46DEE3C8120EE9E2A14D518A2C720B5E31E7C33993A1B376EE02325A97EAECB143B81B115DE1DD46DEC8926EE8C7F753CDDD1EF334EDE9E955F914E2903F9F929A523DE6CDFA8BFA42A9DD67AA1CF98ACC8BB4EC927D741695351BAAFAE505923E8097703F92CDB7CFCCCF160AB96E2EBC287FAF46BEF9766EDE802AC5D756AF2572BAA998DA5DACF7481BD5DE180EDFF4696D403C4EBBA40591ABBB">
+            
+            <div class="action-section">
+                <button type="button" class="btn-approve" onclick="submitMakerDecision('authorize')">
+                    Authorize
+                </button>
+                <button type="button" class="btn-reject" onclick="submitMakerDecision('reject')">
+                    Reject
+                </button>
+            </div>
+            <div style="padding: 16px 24px 20px; background: #f8fafc; border-top: 1px solid #e8ecf0;">
+                <p style="font-size: 14px; color: #555; margin: 0;">
+                    "Authorize" is the maker's decision only - it does not finalize the payment.
+                    A separate checker step must still Approve or Reject before the transaction
+                    is captured or failed, mirroring production.
+                </p>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="footer-bar">
+        Powered by
+        <img src="https://bank-simulator.fiuu.com/img/FiuuBlue.png" alt="Fiuu Logo">
+    </div>
+</div>
+
+<script>
+    function submitMakerDecision(decision) {
+        // Belt-and-braces alongside the server-side per-order lock: stop a
+        // double-click/double-tap from firing two callbacks to RMS.
+        $('.btn-approve, .btn-reject').prop('disabled', true);
+
+        if (decision === 'authorize') {
+            // Maker authorization (fpx_debitAuthCode=99) is handled server-side
+            // so the simulator can remember this order for the later, separate
+            // checker decision - see /fpx-b2b/pending.
+            $('#fpx_b2b_form').attr('action', "https:\/\/bank-simulator.fiuu.com\/fpx-b2b\/authorize");
+            $('#fpx_b2b_form').submit();
+            return;
+        }
+
+        // Maker rejection ends the flow immediately, same as production - no
+        // checker step follows, so this still posts straight to RMS.
+        $('input[name="fpx_debitAuthCode"]').val('1C');
+        $('input[name="fpx_creditAuthCode"]').val('1C');
+
+        var paymentUrl = "https:\/\/sandbox-payment.fiuu.com";
+        if (!paymentUrl) {
+            alert('Configuration error: PAYMENT_URL is not set');
+            $('.btn-approve, .btn-reject').prop('disabled', false);
+            return;
+        }
+        $('#fpx_b2b_form').attr('action', paymentUrl + '/fpxindirect.php');
+        $('#fpx_b2b_form').submit();
+    }
+</script>
+
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;2c289d5631264377ad806da7050358cc&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+
+</body></html>

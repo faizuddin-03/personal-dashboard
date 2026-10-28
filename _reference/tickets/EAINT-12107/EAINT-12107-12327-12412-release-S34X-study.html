@@ -1,0 +1,406 @@
+<title>Release S34.X QA Study</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: single reading column (72ch) with a sticky jump bar; data lives in tables, prose stays short. */
+  :root {
+    --bg: #f7f8f6;
+    --surface: #ffffff;
+    --fg: #1c2420;
+    --muted: #5b665f;
+    --line: #d9ded9;
+    --accent: #0f6e5c;
+    --accent-soft: #e2f1ec;
+    --ok: #2f7d4f;
+    --warn: #a86a12;
+    --bad: #b03a2e;
+    --ok-soft: #e3f2e8;
+    --warn-soft: #f8ecd8;
+    --bad-soft: #f8e2df;
+    --font-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "Spline Sans Mono", "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141917; --surface: #1d2420; --fg: #e6ebe7; --muted: #9ba79f; --line: #2f3a34;
+      --accent: #5fc3ab; --accent-soft: #1b3a33; --ok: #7bd39a; --warn: #e3b26a; --bad: #f08c80;
+      --ok-soft: #1d3326; --warn-soft: #3a2d18; --bad-soft: #3d201c; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141917; --surface: #1d2420; --fg: #e6ebe7; --muted: #9ba79f; --line: #2f3a34;
+    --accent: #5fc3ab; --accent-soft: #1b3a33; --ok: #7bd39a; --warn: #e3b26a; --bad: #f08c80;
+    --ok-soft: #1d3326; --warn-soft: #3a2d18; --bad-soft: #3d201c; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55; margin: 0; }
+  .wrap { max-width: 960px; margin: 0 auto; padding-block: 28px 64px; padding-inline: 16px; }
+  h1, h2, h3 { text-wrap: balance; line-height: 1.2; margin: 0; }
+  h1 { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 1.3rem; font-weight: 700; padding-top: 8px; }
+  h3 { font-size: 1.02rem; font-weight: 600; }
+  p { margin: 0; max-width: 72ch; }
+  .eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+  .mono { font-family: var(--font-mono); font-size: 0.86em; }
+  a { color: var(--accent); }
+  header.mast { display: grid; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: 0.9rem; }
+  .facts b { color: var(--fg); font-weight: 600; }
+  blockquote { margin: 0; padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--surface); max-width: 72ch; font-size: 0.95rem; }
+  blockquote cite { display: block; margin-top: 6px; font-style: normal; color: var(--muted); font-size: 0.82rem; }
+  nav.jump { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); margin-block: 0 24px; display: flex; gap: 4px; overflow-x: auto; padding-block: 8px; }
+  nav.jump a { white-space: nowrap; text-decoration: none; color: var(--fg); padding: 6px 10px; border-radius: 6px; font-size: 0.88rem; font-weight: 500; }
+  nav.jump a:hover, nav.jump a:focus-visible { background: var(--accent-soft); outline: none; }
+  section { display: grid; gap: 14px; padding-block: 24px; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: 0; }
+  .cal { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
+  .day { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; display: grid; gap: 4px; }
+  .day .d { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
+  .day .w { font-weight: 600; }
+  .day.test { border-color: var(--accent); }
+  .day.deploy { background: var(--accent-soft); border-color: var(--accent); }
+  .day.off { opacity: 0.55; }
+  .day small { color: var(--muted); font-size: 0.78rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; background: var(--surface); }
+  .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; background: var(--bg); }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { font-variant-numeric: tabular-nums; text-align: right; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.76rem; font-weight: 600; white-space: nowrap; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .pill.neutral { background: var(--accent-soft); color: var(--accent); }
+  ol, ul { margin: 0; padding-left: 1.3em; max-width: 72ch; display: grid; gap: 5px; }
+  li::marker { color: var(--muted); }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .two > div { min-width: 0; display: grid; gap: 8px; align-content: start; }
+  .src { color: var(--muted); font-size: 0.82rem; }
+  .ticket-head { display: grid; gap: 6px; }
+  .ticket-head .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.86rem; color: var(--muted); }
+  .verdict { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 16px; display: grid; gap: 6px; }
+  .verdict p { max-width: none; }
+  .fmt { font-family: var(--font-mono); font-size: 0.82rem; display: grid; gap: 3px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; overflow-x: auto; }
+  .fmt span { white-space: nowrap; }
+  .fmt b { color: var(--accent); font-weight: 500; }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; }
+  summary { cursor: pointer; font-weight: 600; font-size: 0.92rem; }
+  details > *:not(summary) { margin-top: 8px; }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <span class="eyebrow">QA study · 15 Oct 2026 · Faizuddin</span>
+    <h1>Release S34.X: EAINT-12107, 12327, 12412</h1>
+    <div class="facts">
+      <span>Fix version <b>S34.X-20261020/21 🌞 TBC</b></span>
+      <span>Release date <b>Tue 20 Oct 2026</b></span>
+      <span>Requested mandays <b>2 + 2 = 4</b></span>
+      <span>Working days left <b>3</b> (15, 16, 19 Oct)</span>
+    </div>
+    <blockquote>
+      "please study the following tickets and let me know if the estimated testing mandays work for you and if we're able to target these tickets to deploy on 20th or 21st Oct next week. EAINT-12107 - 1 + 1 = 2 days. EAINT-12327 - test together with 12107. EAINT-12412 - 1 + 1 = 2 days. Note: you can refer the high level test scope in the QA Portal for reference"
+      <cite>May Chin Mei Theng, "eAuto QAs" chat, 15/10/2026 10:11</cite>
+    </blockquote>
+  </header>
+
+  <nav class="jump" aria-label="Sections">
+    <a href="#readiness">Readiness</a>
+    <a href="#t12107">12107</a>
+    <a href="#t12327">12327</a>
+    <a href="#t12412">12412</a>
+    <a href="#portal">QA Portal scope</a>
+    <a href="#data">Test data</a>
+    <a href="#answer">Answer to May Chin</a>
+    <a href="#sources">Sources</a>
+  </nav>
+
+  <section id="readiness">
+    <h2>Readiness at a glance</h2>
+    <div class="cal">
+      <div class="day test"><span class="d">Thu 15 Oct</span><span class="w">Day 1</span><small>12107 testable now</small></div>
+      <div class="day test"><span class="d">Fri 16 Oct</span><span class="w">Day 2</span><small>12327 / 12412 need staging by here</small></div>
+      <div class="day off"><span class="d">Sat 17 Oct</span><span class="w">Off</span></div>
+      <div class="day off"><span class="d">Sun 18 Oct</span><span class="w">Off</span></div>
+      <div class="day test"><span class="d">Mon 19 Oct</span><span class="w">Day 3</span><small>last testing day</small></div>
+      <div class="day deploy"><span class="d">Tue 20 Oct</span><span class="w">Deploy</span><small>morning slot (Kasheng, 07/10)</small></div>
+      <div class="day deploy"><span class="d">Wed 21 Oct</span><span class="w">Deploy alt.</span><small>adds 1 testing day</small></div>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Ticket</th><th>Jira status</th><th>Staging</th><th>Jira QA field</th><th>Estimate</th><th>What decides the date</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>EAINT-12107</b><br><span class="src">Secarang-Fiuu ShopeePay / GrabPay</span></td>
+          <td>Code Review<br><span class="src">dev: ready for QA since 15/09</span></td>
+          <td><span class="pill ok">Up since 07/09</span><br><span class="src">CIBO part up 09/09</span></td>
+          <td>Amirul Azfar<br><span class="src">stale, back with Faizuddin</span></td>
+          <td class="num">1 + 1</td>
+          <td>Dev data patching for 3 BNPL / ShopeePay rows. Not yet requested.</td>
+        </tr>
+        <tr>
+          <td><b>EAINT-12327</b><br><span class="src">CIBO Payment Mode column</span></td>
+          <td>Ready For Development<br><span class="src">no comments</span></td>
+          <td><span class="pill bad">Not built</span><br><span class="src">28/09: "need frontend and backend"</span></td>
+          <td>empty</td>
+          <td class="num">with 12107</td>
+          <td>Build date unknown. Kasheng Liew owns it since 01/10. 7 payment modes need patched rows.</td>
+        </tr>
+        <tr>
+          <td><b>EAINT-12412</b><br><span class="src">JomCheck invoice split</span></td>
+          <td>Ready For Development<br><span class="src">updated 12/10</span></td>
+          <td><span class="pill warn">Unknown</span><br><span class="src">dev ETA was Fri 09/10</span></td>
+          <td>empty</td>
+          <td class="num">1 + 1</td>
+          <td>Staging date, environment, and pre-deploy JomCheck transactions for the cut-off cases.</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="t12107">
+    <div class="ticket-head">
+      <span class="eyebrow">Ticket 1 of 3 · Secarang + CIBO</span>
+      <h2>EAINT-12107 · Enhance Payment Gateway to Enable ShopeePay and GrabPay</h2>
+      <div class="meta">
+        <span>Assignee Lim Yi Link</span><span>Dev Shane / Kasheng Liew</span><span>SRD v1.1, 11/09/2026</span>
+        <span><a href="https://mfservices.atlassian.net/browse/EAINT-12107">Jira</a></span>
+      </div>
+    </div>
+    <div class="two">
+      <div>
+        <h3>What changes</h3>
+        <ol>
+          <li>Secarang checkout gets GrabPay and ShopeePay under the Fiuu gateway, each with a BNPL option (PayLater by Grab, SPayLater). Tenure is handled by Grab/Shopee, not stored by Secarang.</li>
+          <li>CIBO Payment Channels filter gets a "Fiuu - eWallet" group with 4 checkboxes. Ticking the parent ticks all 4; any child unticks on its own (REQ-011 to 013).</li>
+          <li>E-wallet transactions carry <span class="mono">EW</span> in the Payment Reference ID, e.g. <span class="mono">LON20260908SEW0002</span>, shown in 5 places including the CIBO Payment Report (REQ-014/015).</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Sandbox limits</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>Rail</th><th>Live in sandbox</th></tr></thead>
+          <tbody>
+            <tr><td>GrabPay, full amount</td><td><span class="pill ok">Yes</span></td></tr>
+            <tr><td>GrabPay, PayLater by Grab</td><td><span class="pill bad">No, patch data</span></td></tr>
+            <tr><td>ShopeePay, full amount</td><td><span class="pill bad">No, patch data</span></td></tr>
+            <tr><td>ShopeePay, SPayLater</td><td><span class="pill bad">No, patch data</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="src">SRD v1.1 §2.2.8. Shane, Jira 07/09: ShopeePay "stimulator in sandbox doesn't work"; 09/09: "we can disable any payment method by data patching".</p>
+      </div>
+    </div>
+    <h3>Agreed test scope (May Chin and Faizuddin, 11/09/2026, 1 + 1 days)</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Group</th><th>TS</th><th>Scenario</th><th>Run</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">E2E</td><td>TS1</td><td>Create transaction, GrabPay, Payment = OK</td><td>Live</td></tr>
+        <tr><td>TS2</td><td>Create transaction, GrabPay, Payment = Failed</td><td>Live</td></tr>
+        <tr><td>TS3</td><td>Create transaction, existing method (Card or FPX), Payment = OK</td><td>Live, regression</td></tr>
+        <tr><td rowspan="3">Dev patching</td><td>TS1</td><td>Payment = ShopeePay</td><td>Patched row</td></tr>
+        <tr><td>TS2</td><td>Payment = SPayLater</td><td>Patched row</td></tr>
+        <tr><td>TS3</td><td>Payment = PayLater by Grab</td><td>Patched row</td></tr>
+        <tr><td>Functional</td><td></td><td>CIBO filter works; payment type shows correctly in listing, details and export</td><td>Manual in CIBO</td></tr>
+      </tbody>
+    </table></div>
+    <div class="two">
+      <div>
+        <h3>Settled</h3>
+        <ul>
+          <li>Any one insurer is enough; all insurers share the gateway. <span class="src">Charmain via KJ, 11/09 16:37</span></li>
+          <li>Morning deployment for this CR and 12327. <span class="src">Kasheng Liew, 07/10 12:55: "can deploy in morning ya"</span></li>
+          <li>TS xlsx (E2E + negative flow) drafted 15/09 and shared with Azfar. <span class="src">eAuto QAs, 15/09 18:18</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Open</h3>
+        <ul>
+          <li>Patched rows not requested yet as far as Teams shows. Ask on day 1, together with 12327's 7 modes.</li>
+          <li>Regression TS was "pending" on 15/09. No later record.</li>
+          <li>Listing row text per channel is not in this SRD. 12327 now defines it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="t12327">
+    <div class="ticket-head">
+      <span class="eyebrow">Ticket 2 of 3 · CIBO · tested with 12107</span>
+      <h2>EAINT-12327 · Enhance Payment Mode Column Format in Transaction Listing and Payment Report</h2>
+      <div class="meta">
+        <span>Assignee Lim Yi Link</span><span>Dev Kasheng Liew (from 01/10)</span><span>SRD v1.0, 17/09/2026</span>
+        <span><a href="https://mfservices.atlassian.net/browse/EAINT-12327">Jira</a></span>
+      </div>
+    </div>
+    <h3>The one format, 7 values</h3>
+    <div class="fmt">
+      <span><b>BoldPay</b> | eWallet – TouchNGo</span>
+      <span><b>BoldPay</b> | Online Banking – FPX-Bank Name</span>
+      <span><b>BoldPay</b> | Credit/Debit Card – MBBMGATE_MS</span>
+      <span><b>Fiuu</b> | eWallet – ShopeePay – Full Amount – Single Payment</span>
+      <span><b>Fiuu</b> | eWallet – ShopeePay – BNPL – Installment</span>
+      <span><b>Fiuu</b> | eWallet – GrabPay – Full Amount – Single Payment</span>
+      <span><b>Fiuu</b> | eWallet – GrabPay – BNPL – Installment</span>
+    </div>
+    <p class="src">Order is gateway, method, details. Jira description row 3; SRD REQ-001.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Page</th><th>Today</th><th>After the CR</th><th>REQ</th></tr></thead>
+      <tbody>
+        <tr><td>CIBO &gt; Transaction Management &gt; Transaction Listing</td><td>No Payment Mode column</td><td>New column after Payment, before Discount Code. Dash when blank.</td><td>003, 004</td></tr>
+        <tr><td>Exported Transaction Listing</td><td>No column</td><td>Same column, same position, same value as the page.</td><td>005</td></tr>
+        <tr><td>CIBO &gt; Payment Report</td><td>Gateway name only ("BoldPay" or "Fiuu")</td><td>Same position, full format value. No blanks here.</td><td>006</td></tr>
+        <tr><td>Exported Payment Report</td><td>Gateway name only</td><td>Same value as the page.</td><td>007</td></tr>
+      </tbody>
+    </table></div>
+    <div class="two">
+      <div>
+        <h3>Dev trail (Teams, ticket chat)</h3>
+        <ol>
+          <li>25/09: Yi Link recorded a briefing (7m 37s) because nobody joined.</li>
+          <li>28/09 13:21, Kasheng: "cross checked 12327, not done yet. transaction listing and payment report both untouched on latest staging, need frontend and backend. 12107 got some parts can reuse".</li>
+          <li>28/09 14:09: Wong Kar Kin assigned.</li>
+          <li>01/10 10:35, Kasheng: "i will takeover this ticket from Kar Kin ya". Last message.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Not in the SRD</h3>
+        <ul>
+          <li>Whether historical rows are back-filled. REQ-001 says "Existing and new transactions" and nothing more.</li>
+          <li>Where "Bank Name" comes from for FPX rows.</li>
+          <li>Whether BoldPay has e-wallets other than TouchNGo.</li>
+          <li>Any filter or sort on the new column.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="t12412">
+    <div class="ticket-head">
+      <span class="eyebrow">Ticket 3 of 3 · UCD + BackOffice · JomCheck</span>
+      <h2>EAINT-12412 · JomCheck: Split Invoice &amp; e-Invoice Charge</h2>
+      <div class="meta">
+        <span>BA / assignee Chee Mei Jia</span><span>Dev Sia Zhong Tai</span><span>SRD v1.0, 30/09/2026, PDF re-uploaded 09/10</span>
+        <span><a href="https://mfservices.atlassian.net/browse/EAINT-12412">Jira</a></span>
+      </div>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Line</th><th>Description</th><th class="num">Unit price</th><th class="num">SST 8%</th><th class="num">Total</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>JomCheck report</td><td class="num">18.00</td><td class="num">1.44</td><td class="num">19.44</td></tr>
+        <tr><td>2</td><td>JomCheck service charge</td><td class="num">2.00</td><td class="num">0.16</td><td class="num">2.16</td></tr>
+        <tr><td></td><td><b>Totals (unchanged)</b></td><td class="num"><b>20.00</b></td><td class="num"><b>1.60</b></td><td class="num"><b>21.60</b></td></tr>
+      </tbody>
+    </table></div>
+    <p class="src">Amounts in RM. Re-uploaded SRD v1.0 REQ-002 to REQ-004. Both e-Invoice lines use classification code 022 (REQ-006).</p>
+    <div class="two">
+      <div>
+        <h3>Rules</h3>
+        <ol>
+          <li><b>Cut-off is the approval date and time.</b> Approved after deployment: 2 lines. Approved before: 1 line, even if downloaded again, and the e-Invoice is not resubmitted. Created before but approved after: 2 lines. (REQ-001)</li>
+          <li>UCD and BackOffice invoices for the same transaction are identical. (REQ-005)</li>
+          <li>Screens stay as today ("RM20.00 + 8% Service Tax"). Revenue split stays eAuto RM6 / ezAUTO Asia RM14. Only the invoice and e-Invoice change. (SRD §2.1.1, §2.1.2; BA answers Q1, Q6)</li>
+          <li>e-Invoice to LHDN carries the same 2 lines, total RM21.60. (REQ-006)</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Settled since the 01/10 study</h3>
+        <ul>
+          <li><span class="pill ok">Settled</span> Line names: "JomCheck report" + "JomCheck service charge". The first v1.0 PDF had the old names; the 09/10 re-upload adds the v0.3 row "Renamed Both Invoice Line Items and Confirmed e-Invoice Classification Code".</li>
+          <li><span class="pill ok">Settled</span> Classification code 022 on both lines.</li>
+          <li><span class="pill warn">Stale</span> Jira summary and BA answer Q3 still say "eAuto Service Charge".</li>
+        </ul>
+        <h3>Still open</h3>
+        <ul>
+          <li>Testing environment: not stated anywhere.</li>
+          <li>Staging date: dev ETA was "Fri before EOD" (09/10, code review included). Jira not moved.</li>
+          <li>How QA sees the LHDN payload (MyInvois, BO response status, or the dev's sandbox only).</li>
+        </ul>
+      </div>
+    </div>
+    <details>
+      <summary>Teams trail, CR chat (01/10 to 09/10)</summary>
+      <ol>
+        <li>01/10 14:27, Mei Jia Chee: requestor gave the green light for SRD v1.0. Briefing moved to Mon 05/10 11:00.</li>
+        <li>05/10 11:01 to 11:09: briefing held and recorded; transcript in the chat.</li>
+        <li>06/10 11:03: Sia Zhong Tai named PIC, asked for an ETA.</li>
+        <li>07/10 09:42, Sia Zhong Tai: "will be done on Fri before EOD". 10:37: code review included.</li>
+        <li>09/10 09:41, Mei Jia Chee: "i reupload the PDF version for SRD v1.0".</li>
+      </ol>
+    </details>
+  </section>
+
+  <section id="portal">
+    <h2>QA Portal high-level test scope (read 15/10, nothing changed)</h2>
+    <p class="src">Portal at 10.30.10.214. All three tasks sit in "Studying ticket" under "20th October Morning Deployment Items". The 12412 scope is wider than its SRD; the extra items are marked.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Task</th><th>Portal state</th><th>High-level scope as written</th><th>Mandays</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>12107</b><br><span class="src">updated by Faiz, 17/09</span></td>
+          <td>QA PIC Azfar, so the task is <b>read-only for Faizuddin</b> ("Ask a Senior or Lead QA Automation Engineer to add you as cover"). Dev PIC Shane. Dev ETA 15/09. Own staging. TS xlsx linked on SharePoint. 4 required fields missing (test mode, code merge env, UAT, phase target date).</td>
+          <td>Payment method: ShopeePay (Installation + Full) unable to test in Fiuu sandbox; GrabPay full only. Transaction type: Payment OK, Payment Failed. Functional: CIBO filter and payment type. Regression E2E: Card, FPX.</td>
+          <td class="num">2</td>
+        </tr>
+        <tr>
+          <td><b>12327</b><br><span class="src">created 06/10 by Jira sync</span></td>
+          <td>No Dev PIC, no QA PIC, where-you-test unanswered. 8 required fields missing.</td>
+          <td>"Test together with EAINT-12107" and nothing else.</td>
+          <td class="num">0</td>
+        </tr>
+        <tr>
+          <td><b>12412</b><br><span class="src">updated by May Chin, 09/10</span></td>
+          <td>No Dev PIC, no QA PIC. Dev ETA for testing <b>12/10</b> (synced from Jira 09/10). Own staging. UAT skipped. 3 required fields missing.</td>
+          <td>
+            <ol>
+              <li>UCD and BO JomCheck Details: Invoice and e-Invoice in 2 lines.</li>
+              <li><span class="pill neutral">Extra</span> BO SST Payment Report: revenue split unchanged (eAuto RM6, ezAUTO Asia RM14).</li>
+              <li><span class="pill neutral">Extra</span> Wholesale: make payment, then check Invoice and e-Invoice in UCD and BO; ask the chatbot the price, must still say RM20, no split.</li>
+              <li><span class="pill neutral">Extra</span> MyInvois: 2 line items shown, same as the e-Invoice.</li>
+              <li>TS1 new transaction from UCD; TS2 new transaction from Wholesale; both verify UCD, BO and MyInvois.</li>
+              <li><span class="pill neutral">Extra</span> TS3: before deployment create a transaction that fails, after deployment resubmit from BO, expect 2 lines.</li>
+              <li>TS4 regression: approved before deployment, expect 1 line.</li>
+            </ol>
+            <p class="src">Portal still says classification "pending confirmation from Finance" and lists "eAuto Service Charge - 022-Others". The 09/10 SRD re-upload confirms 022 and the name "JomCheck service charge". Portal text is older.</p>
+          </td>
+          <td class="num">2</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="data">
+    <h2>Test data to line up before testing starts</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Need</th><th>For</th><th>Who</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td>One Secarang transaction per payment mode: TouchNGo, FPX, Card (BoldPay); ShopeePay full, SPayLater, GrabPay full, PayLater by Grab (Fiuu). Only GrabPay full can be paid live.</td><td>12107 groups 2 and 3, 12327 all 7 formats</td><td>Dev (Shane / Kasheng), data patching</td><td>Day 1 request</td></tr>
+        <tr><td>JomCheck transactions approved <b>before</b> the staging deploy, one created before but approved <b>after</b> it, and one <b>failed</b> before deploy for the BO resubmit case (portal TS3).</td><td>12412 REQ-001 Examples 2 and 3; portal TS3, TS4</td><td>QA, on staging, before the build lands</td><td>Before 12412 reaches staging</td></tr>
+        <tr><td>Wholesale chatbot access and a JomCheck purchase through it.</td><td>12412 portal TS2 and the chatbot price check</td><td>QA</td><td>Day 1 of 12412</td></tr>
+        <tr><td>MyInvois view of the submitted e-Invoice.</td><td>12412 portal MyInvois check (REQ-006)</td><td>QA, ask dev how</td><td>Day 1 of 12412</td></tr>
+        <tr><td>One insurer with a working Fiuu checkout on staging.</td><td>12107 E2E</td><td>QA</td><td>Day 1</td></tr>
+        <tr><td>CIBO login with Transaction Management and Payment Report access.</td><td>12107 functional, 12327</td><td>QA</td><td>Day 1</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="answer">
+    <h2>Answer to May Chin</h2>
+    <div class="verdict">
+      <p><b>Mandays:</b> 1 + 1 for 12107 (12327 inside it) and 1 + 1 for 12412 match the scopes. 4 mandays in total.</p>
+      <p><b>Date:</b> 12107 can start today. 12327 and 12412 have no staging build recorded. All three fit 20 Oct only if both builds and the patched data are on staging by Fri 16 Oct. 21 Oct adds one testing day. The morning slot is already agreed with Kasheng for 12107 and 12327.</p>
+      <p><b>Portal:</b> the 12107 task is read-only for Faizuddin while Azfar is QA PIC. A Senior or Lead QA has to add Faizuddin before the task can be updated. 12327 and 12412 have no QA PIC yet.</p>
+      <p><b>12412 scope note:</b> the portal adds Wholesale, the SST Payment Report, MyInvois and a failed-then-resubmit case on top of the SRD. 1 + 1 still fits if staging, Wholesale and MyInvois access are all ready on day 1.</p>
+    </div>
+  </section>
+
+  <section id="sources">
+    <h2>Sources</h2>
+    <ul>
+      <li>Jira EAINT-12107, 12327, 12412 fetched 15/10/2026 via the Atlassian connector (status, fields, comments, attachments, fix version).</li>
+      <li>SRD EAINT-12107 v1.1 (11/09), SRD EAINT-12327 v1.0 (17/09), SRD EAINT-12412 v1.0 PDF re-uploaded 09/10, all saved under <span class="mono">_reference/tickets/</span>.</li>
+      <li>QA Portal tasks for EAINT-12107, 12327 and 12412 (10.30.10.214), read 15/10/2026 without changing anything.</li>
+      <li>Teams: "eAuto QAs" (15/10 10:11), EAINT-12107 chat (15/09, 07/10), EAINT-12327 chat (18/09 to 01/10), EAINT-12412 chat (01/10 to 09/10).</li>
+      <li>Repo knowledge: <span class="mono">knowledge/eauto-payments.md</span>, <span class="mono">knowledge/flow-jomcheck.md</span> §9 and §9e, <span class="mono">lib/ticketStudies.ts</span>.</li>
+    </ul>
+  </section>
+</div>

@@ -13,7 +13,7 @@ import {
   BackupSettings, getBackupSettings, saveBackupSettings,
   DEFAULT_BACKUP_SETTINGS, BACKUP_SCHEDULE_LABELS, BackupSchedule,
 } from "@/lib/kanban";
-import { THEMES, DEFAULT_THEME, getTheme, applyTheme } from "@/lib/themes";
+import { THEMES, DEFAULT_THEME, getTheme, applyTheme, getUiStyle, setUiStyle, type UiStyle } from "@/lib/themes";
 import { GEMINI_KEY_STORE } from "@/components/SettingsModal";
 import { AiProvider, AI_PROVIDER_META, MODEL_OPTIONS, DEFAULT_MODELS, getAiSettings, saveAiSettings } from "@/lib/aiSettings";
 
@@ -43,6 +43,7 @@ export default function SettingsPage() {
 
   // Theme
   const [themeId, setThemeId] = useState(DEFAULT_THEME);
+  const [uiStyle, setUiStyleState] = useState<UiStyle>("normal");
 
   // Backup fields
   const [backup, setBackup] = useState<BackupSettings>(DEFAULT_BACKUP_SETTINGS);
@@ -52,6 +53,7 @@ export default function SettingsPage() {
   useEffect(() => {
     setBackup(getBackupSettings());
     setThemeId(localStorage.getItem("qa-theme") ?? DEFAULT_THEME);
+    setUiStyleState(getUiStyle());
     const ai = getAiSettings();
     setAiProvider(ai.provider);
     setAiKeys(ai.keys);
@@ -75,9 +77,14 @@ export default function SettingsPage() {
     }
   }
 
+  function handleStyleChange(style: UiStyle) {
+    setUiStyle(style);
+    setUiStyleState(style);
+  }
+
   function handleThemeChange(id: string) {
     const theme = getTheme(id);
-    applyTheme(theme);
+    if (uiStyle === "normal") applyTheme(theme);
     localStorage.setItem("qa-theme", id);
     setThemeId(id);
   }
@@ -439,8 +446,27 @@ export default function SettingsPage() {
         </Section>
 
         {/* ── Appearance ── */}
-        <Section title="Appearance" description="Choose a colour theme for the dashboard.">
-          <div className="space-y-4">
+        <Section title="Appearance" description="Choose a style and a colour theme for the dashboard.">
+          <div className="mb-5">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Style</p>
+            <div className="grid grid-cols-2 gap-2 max-w-md">
+              {([
+                { id: "normal", label: "Normal", hint: "The colour themes below" },
+                { id: "medieval", label: "Medieval", hint: "Cozy cottage, minimalist" },
+              ] as const).map(o => (
+                <button
+                  key={o.id}
+                  onClick={() => handleStyleChange(o.id)}
+                  className={clsx("rounded-xl border-2 px-3 py-2.5 text-left transition-all",
+                    uiStyle === o.id ? "border-blue-500 bg-slate-800" : "border-slate-700 hover:border-slate-600")}
+                >
+                  <p className="text-sm font-semibold text-slate-200">{o.label}</p>
+                  <p className="text-[11px] text-slate-500">{o.hint}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className={clsx("space-y-4", uiStyle === "medieval" && "opacity-50 pointer-events-none")} title={uiStyle === "medieval" ? "Colour themes apply in the Normal style" : undefined}>
             {(["dark", "light"] as const).map(type => (
               <div key={type}>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">

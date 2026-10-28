@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   Play, Loader2, CheckCircle2, XCircle, Monitor, MonitorOff,
   ChevronDown, ShoppingCart, Video, Clock, SkipForward,
-  AlertTriangle, ChevronRight, Check, X, Dot, FlaskConical, RotateCcw,
+  AlertTriangle, ChevronRight, Check, X, Dot, FlaskConical, RotateCcw, Square,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -182,6 +182,7 @@ interface RunSummary {
 }
 
 interface RunResult {
+  stopped?: boolean;
   exitCode: number;
   results: TestResult[];
   summary: RunSummary;
@@ -264,10 +265,9 @@ function TestStatusIcon({ status, size = 18 }: { status: string; size?: number }
 
 export default function ShoppingCartPage() {
   // The run lives in AppShell (hooks/useBackgroundRuns.ts) so it survives
-  // navigating away and back — this page has no live-log route and no Stop
-  // button (the route has no DELETE handler), so only running/result/error
-  // carry over.
-  const { runs, startRun } = useApp();
+  // navigating away and back. No live-log route; Stop calls the run route's
+  // DELETE, which kills the Playwright process tree.
+  const { runs, startRun, stopRun } = useApp();
   const bgRun = runs[RUN_KEY];
   const running = !!bgRun?.running;
   const orphaned = !!bgRun?.orphaned;
@@ -362,6 +362,7 @@ export default function ShoppingCartPage() {
 
     startRun<RunResult>(RUN_KEY, {
       url: "/api/eauto/shopping-cart/run",
+      stopUrl: "/api/eauto/shopping-cart/run",
       body: {
         scenarios: scenarioTitles,
         headless,
@@ -481,6 +482,15 @@ export default function ShoppingCartPage() {
 
           <div className="flex-1" />
 
+          {running ? (
+            <button
+              onClick={() => stopRun(RUN_KEY)}
+              disabled={bgRun?.stopping}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-red-700 text-white hover:bg-red-600 disabled:opacity-60 transition-colors"
+            >
+              <Square size={15} />{bgRun?.stopping ? "Stopping…" : "Stop"}
+            </button>
+          ) : (
           <button
             onClick={() => runTests()}
             disabled={running || !selected.size}
@@ -494,6 +504,7 @@ export default function ShoppingCartPage() {
             {running ? <Loader2 size={15} className="animate-spin" /> : <Play size={15} />}
             {running ? "Running…" : `Run ${totalSelected || ""} ${totalSelected === 1 ? "test" : "tests"}`.trim()}
           </button>
+          )}
         </div>
 
         {(needsUCD || needsBO || needsUCD2) && (
@@ -633,6 +644,8 @@ export default function ShoppingCartPage() {
           <span className="text-xs text-rose-300 leading-relaxed">{error}</span>
         </div>
       )}
+
+      {runResult?.stopped && <p className="text-sm text-amber-400">Run stopped.</p>}
 
       {/* Survived the page but not a full browser reload. */}
       {orphaned && !runResult && (

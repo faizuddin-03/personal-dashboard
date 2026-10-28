@@ -1,0 +1,163 @@
+<!--
+  URL: /uat1/view/jomcheck/enquiry (BackOffice "JOMCHECK Transaction Enquiry")
+  Page: BO JomCheck Transaction search form (complete, blank state) + the post-search
+  results table after applying From/To date and clicking "SEARCH Now" (42 records —
+  representative rows kept, rest dropped and declared below).
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: results table cut from 42 rows to 3 representative shapes (Approved+OK,
+  Approved+LHDN-Failed, Pending) — declared per house rule. Form itself kept complete.
+-->
+
+<!-- ============ STATE 1: blank search form ============ -->
+<body>
+<div id="container">
+<table width="100%">
+    <tbody><tr>
+        <td class="not-to-print">
+            <form id="search-form" style="margin-left:20px;">
+            <table style="width:100%">
+                <tbody><tr>
+                    <td style="padding-left:20px; white-space: nowrap;">
+                        <b>Company Name:</b>
+                        <input type="text" name="companyName" id="companyName" value="" size="30">&nbsp;
+                        <b>Vehicle No.:</b>
+                        <input type="text" name="vehicleNo" id="vehicleNo" value="" size="8">&nbsp;
+                        <b>Chassis No.:</b>
+                        <input type="text" name="chassisNo" id="chassisNo" size="30">&nbsp;
+                        <b>Transaction No.:</b>
+                        <input type="text" name="refNo" id="refNo" value="" size="10">&nbsp;
+                        <b>From</b><span class="required">*</span>:
+                        <input type="text" name="fromDate" id="fromDate" size="10" readonly="readOnly" class="hasDatepicker">
+                        <b>To</b><span class="required">*</span>:
+                        <input type="text" name="toDate" id="toDate" size="10" readonly="readOnly" class="hasDatepicker">
+                        <b>Filter by</b>
+                        <select name="status" id="to-filter" style="width:140px">
+                            <option value="">Transaction Status</option>
+                            <option value="New">New</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                        <br><br>
+                        <b>Company ROC:</b>
+                        <input type="text" name="companyRoc" id="companyRoc" value="" size="30">&nbsp;
+                        <b>Payment Method:</b>
+                        <select name="paymentMethod" style="width:140px">
+                            <option value="">All</option>
+                            <option value="DD">DD MBB</option>
+                            <option value="FPX">FPX</option>
+                            <option value="POB">POB</option>
+                            <option value="RHB">RHB</option>
+                        </select>
+                        <b>Payment From:</b>
+                        <input type="text" name="paymentFrom" id="paymentFrom" size="10" readonly="readOnly" class="hasDatepicker">
+                        <b>Payment To:</b>
+                        <input type="text" name="paymentTo" id="paymentTo" size="10" readonly="readOnly" class="hasDatepicker">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px 0px 0px 20px; white-space: nowrap;">
+                        <b>LHDN Response Status:</b>
+                        <select name="eInvoiceValidationStatus" style="width:140px">
+                            <option value="">All</option>
+                            <option value="OK">OK</option>
+                            <option value="Failed">Failed</option>
+                            <option value="New">-</option>
+                            <option value="N/A">N/A</option>
+                        </select>
+                        <div style="position: relative; top: -20px; float: right; display: inline-block;">
+                            <input type="submit" id="to-search" value="SEARCH Now" style="height: 35px;">
+                                <a class="to-reset" href="#">Reset</a>
+                                <a id="to-export" class="hidden" href="#">Export CSV</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top:10px; font-size:14px" class="center"><b>JOMCHECK Transaction Enquiry</b></td>
+                </tr>
+            </tbody></table>
+            <input type="hidden" name="pageNo" value="1">
+            </form>
+        </td>
+    </tr>
+    <tr><td id="result" colspan="2">&nbsp;</td></tr>
+</tbody></table>
+</div>
+</body>
+
+<!-- ============ STATE 2: after From/To date + SEARCH Now (42 record(s) in total) ============ -->
+<!--
+Columns: # | Company Name | Company ROC | Vehicle | Chassis No | Transaction No. | Created At |
+Method | Payment | Tx Status | LHDN Response Status | Remarks | Special Remarks | Action
+Method values seen: RHB, "-" (no payment attempted yet)
+Action link: /uat1/view/jomcheck/enquiry/view.do?id=<transactionId>&back=false (opens in new tab)
+-->
+<table style="width:100% !important">
+    <colgroup><col width="10px"><col width="250px"><col width="100px">
+    <col width="60px"><col width="110px"><col width="110px">
+    <col width="120px"><col width="60px"><col width="80px">
+    <col width="80px"><col width="80px"><col width="auto"><col width="50px"><col width="70px"></colgroup>
+    <thead>
+    <tr class="header">
+        <th>#</th><th>Company Name</th><th>Company ROC</th>
+        <th>Vehicle</th><th>Chassis No</th><th>Transaction No.</th>
+        <th>Created At</th><th>Method</th><th>Payment</th>
+        <th>Tx Status</th><th>LHDN Response Status</th><th>Remarks</th><th>Special Remarks</th><th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">FAIZUDDIN AUTO TEST</td>
+        <td class="center">1518238-K</td>
+        <td class="center">HXJ0001</td>
+        <td class="center">-</td>
+        <td class="center">J690008380</td>
+        <td class="center">30-09-2026 14:20</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center"><a href="/uat1/view/jomcheck/enquiry/view.do?id=0c0b5e6b-af90-4f9e-90a3-94eb81571c05&amp;back=false" target="_blank" title="to view J690008380">View</a></td>
+    </tr>
+    <tr class="even">
+        <td class="center">6</td>
+        <td class="center">RL COMPANY</td>
+        <td class="center">KT0522417-K</td>
+        <td class="center">TE123</td>
+        <td class="center">-</td>
+        <td class="center">J690008378</td>
+        <td class="center">29-09-2026 17:56</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td>TIN verification failed. Kindly provide correct TIN information to eAuto customer service.</td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center"><a href="/uat1/view/jomcheck/enquiry/view.do?id=9fd75c6b-1a05-4119-be48-3c824611c628&amp;back=false" target="_blank" title="to view J690008378">View</a></td>
+    </tr>
+    <tr class="odd">
+        <td class="center">3</td>
+        <td class="center">FAIZUDDIN AUTO TEST</td>
+        <td class="center">1518238-K</td>
+        <td class="center">WA0001</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">29-09-2026 18:00</td>
+        <td class="center">-</td>
+        <td class="center" style=""><b>-</b></td>
+        <td class="center" style="color:blue"><b>Pending</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center"><a href="/uat1/view/jomcheck/enquiry/view.do?id=e744888f-81ee-4f72-965e-60d6e8554b75&amp;back=false" target="_blank" title="to view null">View</a></td>
+    </tr>
+    <!-- rows 2,4,5,7-42 of the live capture repeat these 3 shapes (Approved+OK LHDN,
+         Approved+Failed LHDN with remark "TIN verification failed...", Pending/New
+         with no transaction no. yet) with different company/vehicle data — dropped here,
+         full 42-row set available in the session transcript if needed again. -->
+    </tbody>
+</table>

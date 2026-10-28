@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { spawn } from "child_process";
+import type { ChildProcess } from "child_process";
 import path from "path";
 import fs from "fs";
 import { organizeTestEvidence } from "@/lib/testEvidence";
+import {
+  killTree, runInProgressResponse, spawnPlaywrightCli, invalidScenarioTitles, grepFor,
+} from "@/lib/server/playwrightRun";
 
 export const maxDuration = 300;
+
+// One run at a time — a second POST gets a 409; DELETE (Stop) kills the
+// Playwright process tree. Same pattern as app/api/eauto-12107/run/route.ts.
+let currentChild: ChildProcess | null = null;
+let stopRequested = false;
+let forceResolveRun: (() => void) | null = null;
 
 interface RunRequest {
   scenarios: string[];
@@ -167,8 +176,14 @@ export async function POST(req: NextRequest) {
     const body: RunRequest = await req.json();
     const { scenarios, headless, baseUrl, ucdUser, ucdPass, boUser, boPass, ucd2User, ucd2Pass, detailed, publicHoliday, referenceNo } = body;
 
-    if (!scenarios.length) {
+    if (currentChild) return runInProgressResponse();
+
+    if (!scenarios?.length) {
       return NextResponse.json({ error: "No scenarios selected." }, { status: 400 });
+    }
+    const badTitles = invalidScenarioTitles(scenarios);
+    if (badTitles) {
+      return NextResponse.json({ error: `Unrecognised scenario title(s): ${badTitles.join(", ")}` }, { status: 400 });
     }
 
     const projectRoot = process.cwd();
@@ -192,7 +207,7 @@ export async function POST(req: NextRequest) {
     const jsonReportPath = path.join(runMetaDir, "report.json");
     const stepReportPath = path.join(runMetaDir, "steps.json");
 
-    const grepPattern = scenarios.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+    const grepPattern = grepFor(scenarios);
 
     const env: Record<string, string> = {
       ...process.env as Record<string, string>,
@@ -216,10 +231,11 @@ export async function POST(req: NextRequest) {
       EAUTO_REF_NO: referenceNo ?? "",
     };
 
-    const fullCmd = `npx playwright test --config "${configPath}" --grep "${grepPattern}"`;
+    // Argument array, no shell — scenario titles never reach cmd.exe.
+    const args = ["test", "--config", configPath, "--grep", grepPattern];
 
     const logs: string[] = [];
-    logs.push(`[CMD] ${fullCmd}`);
+    logs.push(`[CMD] playwright ${args.join(" ")}`);
     logs.push(`[CWD] ${projectRoot}`);
     logs.push(`[CONFIG EXISTS] ${fs.existsSync(configPath)}`);
     logs.push(`[GREP] ${grepPattern}`);
@@ -228,20 +244,44 @@ export async function POST(req: NextRequest) {
     logs.push(`[RECORD DIR] ${recordDir}`);
     logs.push(`[JSON REPORT] ${jsonReportPath}`);
 
+    stopRequested = false;
+
     return new Promise<NextResponse>((resolve) => {
-      const proc = spawn(fullCmd, {
-        cwd: projectRoot,
-        env,
-        shell: true,
-      });
+      const proc = spawnPlaywrightCli(projectRoot, args, { env });
+      currentChild = proc;
 
       let stdout = "";
       let stderr = "";
+      let settled = false;
 
-      proc.stdout.on("data", (d: Buffer) => { stdout += d.toString(); });
-      proc.stderr.on("data", (d: Buffer) => { stderr += d.toString(); });
+      proc.stdout?.on("data", (d: Buffer) => { stdout += d.toString(); });
+      proc.stderr?.on("data", (d: Buffer) => { stderr += d.toString(); });
+
+      // Stop pressed but the process never closed within 5s — answer anyway.
+      forceResolveRun = () => {
+        if (settled) return;
+        settled = true;
+        if (currentChild === proc) currentChild = null;
+        forceResolveRun = null;
+        resolve(NextResponse.json({
+          stopped: true,
+          exitCode: -1,
+          results: [],
+          summary: { total: 0, passed: 0, failed: 0, skipped: 0 },
+          recordDir: path.relative(projectRoot, recordDir),
+          recordings: [],
+          stderr: stderr.slice(-5000),
+          stdout: stdout.slice(-5000),
+          logs,
+          timestamp: ts,
+        }));
+      };
 
       proc.on("error", (err) => {
+        if (settled) return;
+        settled = true;
+        if (currentChild === proc) currentChild = null;
+        forceResolveRun = null;
         logs.push(`[SPAWN ERROR] ${err.message}`);
         resolve(NextResponse.json({
           exitCode: -1,
@@ -257,6 +297,10 @@ export async function POST(req: NextRequest) {
       });
 
       proc.on("close", (code) => {
+        if (currentChild === proc) currentChild = null;
+        forceResolveRun = null;
+        if (settled) return;
+        settled = true;
         logs.push(`[EXIT CODE] ${code}`);
         logs.push(`[STDOUT LENGTH] ${stdout.length}`);
         logs.push(`[STDERR LENGTH] ${stderr.length}`);
@@ -376,6 +420,7 @@ export async function POST(req: NextRequest) {
         const skipped = results.filter(r => r.status === "skipped").length;
 
         resolve(NextResponse.json({
+          ...(stopRequested && { stopped: true }),
           exitCode: code,
           results,
           summary: { total: results.length, passed, failed, skipped },
@@ -394,4 +439,16 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+/** Stop button — kills the Playwright process tree. Returns 200 either way. */
+export async function DELETE() {
+  if (currentChild) {
+    stopRequested = true;
+    killTree(currentChild);
+    const savedResolve = forceResolveRun;
+    setTimeout(() => { savedResolve?.(); }, 5000);
+    return NextResponse.json({ stopped: true });
+  }
+  return NextResponse.json({ stopped: false, message: "No run in progress." });
 }

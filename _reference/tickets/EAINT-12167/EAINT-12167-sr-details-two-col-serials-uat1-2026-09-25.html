@@ -1,0 +1,486 @@
+<!--
+  Captured: 2026-09-25, pasted directly by Faizuddin (not a live browser capture by Claude).
+  Environment: uat1 (staging.eauto.my/uat1, per asset paths).
+  Page: Service Request Details (BO/UCD Insurance-style detail view, id="ins-detail"),
+  SR#SR69001449 — Delivered status, 40-unit Biometric Device transaction,
+  Company: FAIZUDDIN AUTO TEST (ROC 1518238-K).
+  Includes BOTH the read-only Shipping Details serials block (#ins-detail .ins-serials,
+  two <div class="ins-serial-col"> blocks, 1-20 / 21-40) AND the full "Update Shipping
+  Details" popup markup (#op-ship-dialog, #op-ship-serial-grid, two
+  <div class="op-ship-serial-col op-ship-serial-col-l/-r"> blocks, same 1-20/21-40 split).
+  Forms not trimmed. Captured specifically to document a DOM-structure question: why a
+  40-device manual run renders serials in two sequential column blocks (1-20 | 21-40)
+  while automation runs have shown a single interleaved 2-per-row grid instead — see
+  knowledge/flow-device-purchase.md for the analysis and the 2026-09-22 capture this is
+  being compared against (EAINT-12167-bo-sr-details-update-shipping-details-popup-uat1-2026-09-22.html).
+-->
+<body>
+<div id="container">
+
+    <div id="ins-detail">
+        <table class="ins-topbar">
+            <tbody><tr>
+                <td>
+                    <span class="ins-title">Service Request #SR69001449</span>
+
+                </td>
+            </tr>
+        </tbody></table>
+
+
+        <table class="ins-info"><tbody><tr>
+            <td>
+                <table class="ins-kv">
+                    <tbody><tr><td class="k">Date Requested:</td><td>25-09-2026 02:45pm</td></tr>
+                    <tr><td class="k">Company Name:</td><td>FAIZUDDIN AUTO TEST</td></tr>
+                    <tr><td class="k">Company ROC:</td><td>1518238-K</td></tr>
+                </tbody></table>
+            </td>
+            <td style="padding-left:48px;">
+                <table class="ins-kv">
+                    <tbody><tr><td class="k">e-Invoice Submission Date:</td><td>25-09-2026 02:45pm</td></tr>
+
+                    <tr><td class="k">LHDN Response Status:</td><td><b style="color:#008E00;">OK</b></td></tr>
+                    <tr><td class="k">e-Invoice Validation Date:</td><td>25-09-2026 02:45pm</td></tr>
+                </tbody></table>
+            </td>
+            <td class="inv-cell">
+
+                <button type="button" class="btn-inv" onclick="opInvoice()"><img src="/uat1/images/icon-print.png"><span>INVOICE</span></button>
+
+
+                <button type="button" class="btn-inv" onclick="opEInvoice()"><img src="/uat1/images/icon-print.png"><span>e-INVOICE</span></button>
+
+
+                <button type="button" class="btn-inv" onclick="opDo()"><img src="/uat1/images/icon-print.png"><span>DO</span></button>
+
+            </td>
+            <td class="inv-spacer">&nbsp;</td>
+        </tr>
+        </tbody></table>
+        <hr>
+
+        <table class="ins-cols"><tbody><tr>
+
+            <td>
+                <div class="ins-h">Shipping Details</div>
+                <table class="ins-kv ins-ship">
+                    <tbody><tr><td class="k">Purchase Device:</td><td>1 unit(s)</td></tr>
+                    <tr><td class="k">Delivery Status:</td><td><b style="color:green;">Delivered</b></td></tr>
+                    <tr><td class="k">Delivery Date:</td><td>28-09-2026</td></tr>
+                    <tr><td class="k">Delivery Order Number:</td><td>20260926/DP-0003, 20260926/DP-0004</td></tr>
+                    <tr><td class="k">Consignment Number:</td><td>
+
+                        <a class="consign-link" href="https://www.citylinkexpress.com/tracking-result/?track0=790318741867" target="_blank" rel="noopener">790318741867</a>
+
+                    </td></tr>
+
+                    <tr><td class="k">Number of Device:</td><td>40</td></tr>
+                    <tr><td class="k">Device Serial No.:</td><td>
+
+                        <div class="ins-serials">
+
+                            <div class="ins-serial-col">
+
+                                <div>1. MUGLJYBRSM0</div>
+
+                                <div>2. MUGLJYBRSM1</div>
+
+                                <div>3. MUGLJYBRSM2</div>
+
+                                <div>4. MUGLJYBRSM3</div>
+
+                                <div>5. MUGLJYBRSM4</div>
+
+                                <div>6. MUGLJYBRSM5</div>
+
+                                <div>7. MUGLJYBRSM6</div>
+
+                                <div>8. MUGLJYBRSM7</div>
+
+                                <div>9. MUGLJYBRSM8</div>
+
+                                <div>10. MUGLJYBRSM9</div>
+
+                                <div>11. MUGLJYBRSM10</div>
+
+                                <div>12. MUGLJYBRSM11</div>
+
+                                <div>13. MUGLJYBRSM12</div>
+
+                                <div>14. MUGLJYBRSM13</div>
+
+                                <div>15. MUGLJYBRSM14</div>
+
+                                <div>16. MUGLJYBRSM15</div>
+
+                                <div>17. MUGLJYBRSM16</div>
+
+                                <div>18. MUGLJYBRSM17</div>
+
+                                <div>19. MUGLJYBRSM18</div>
+
+                                <div>20. MUGLJYBRSM19</div>
+
+                            </div>
+
+                            <div class="ins-serial-col">
+
+                                <div>21. MUGLJYBRSM20</div>
+
+                                <div>22. MUGLJYBRSM21</div>
+
+                                <div>23. MUGLJYBRSM22</div>
+
+                                <div>24. MUGLJYBRSM23</div>
+
+                                <div>25. MUGLJYBRSM24</div>
+
+                                <div>26. MUGLJYBRSM25</div>
+
+                                <div>27. MUGLJYBRSM26</div>
+
+                                <div>28. MUGLJYBRSM27</div>
+
+                                <div>29. MUGLJYBRSM28</div>
+
+                                <div>30. MUGLJYBRSM29</div>
+
+                                <div>31. MUGLJYBRSM30</div>
+
+                                <div>32. MUGLJYBRSM31</div>
+
+                                <div>33. MUGLJYBRSM32</div>
+
+                                <div>34. MUGLJYBRSM33</div>
+
+                                <div>35. MUGLJYBRSM34</div>
+
+                                <div>36. MUGLJYBRSM35</div>
+
+                                <div>37. MUGLJYBRSM36</div>
+
+                                <div>38. MUGLJYBRSM37</div>
+
+                                <div>39. MUGLJYBRSM38</div>
+
+                                <div>40. MUGLJYBRSM39</div>
+
+                            </div>
+
+                        </div>
+
+                    </td></tr>
+                    <tr><td class="k">Recipient Name:</td><td>Test Receiver</td></tr>
+                    <tr><td class="k">Shipping Address:</td><td><div class="ship-addr">24, JALAN SULAM EMPAT, 19/14D, SEKSYEN 19</div></td></tr>
+                    <tr><td class="k">Contact No:</td><td>0123456789</td></tr>
+                </tbody></table>
+
+            </td>
+
+
+
+        </tr></tbody></table>
+        <hr>
+
+        <div class="ins-h">Payment Details</div>
+        <ul class="pay-lines">
+
+
+
+
+
+
+
+
+
+    <li>1. 25-09-2026 02:45pm - RHB (SR20260925000003-1109700) - <b style="color:#008E00;">OK</b></li>
+
+
+        </ul>
+
+        <table class="ins-kv ins-pay" style="margin-top:8px;">
+
+
+            <tbody><tr><td class="k">Biometric Device:</td><td class="amt">RM 850.00</td></tr>
+
+
+
+        </tbody></table>
+
+        <div class="sr-title">Special Remark:</div>
+
+        <textarea id="ins-special-remark" maxlength="500"></textarea>
+
+        <div><button type="button" class="btn-update" onclick="opSaveRemark()">Update Special Remark</button></div>
+
+    </div>
+
+</div>
+
+<!-- Installation Failed modal -> fail.do (acts on the single appt) -->
+<div id="op-fail-dialog" title="Installation Failed" style="display:none;">
+    <div>Please select the reason causing the installation failed:</div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="Reappointment"> Reappointment</label></div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="LaptopIssue"> Laptop/PC Issues</label></div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="Other"> Other</label></div>
+
+    <div class="row" id="op-fail-other-wrap" style="display:none; margin-left:22px;">
+        <textarea id="op-fail-other" rows="3" style="width:100%; box-sizing:border-box; border:1px solid #ccc; padding:6px;" placeholder="Please specify the reason"></textarea>
+        <div id="op-fail-other-err" class="op-err">Reason must not exceed 100 characters.</div>
+    </div>
+</div>
+
+<!-- EAINT-11953: shipping concurrent-update dialog — same chrome as the other BO dialogs; OK refreshes the page. -->
+<div id="op-concurrent-dialog" title="Error" style="display:none;">
+    <div style="padding:4px 0;">Unable to proceed. This record was just updated by another user.</div>
+</div>
+
+<!-- EAINT-11953: installation-status concurrency dialog — another Ops user completed/failed the record (or it
+     expired/was cancelled) first; OK refreshes the page so the latest Installation Status is shown. -->
+<div id="op-installstate-dialog" title="Error" style="display:none;">
+    <div style="padding:4px 0;">Unable to proceed. This Service Request has been completed, failed, expired or cancelled.</div>
+</div>
+
+<!-- Update Shipping Details — jQuery UI dialog (same chrome/header as the BO cancel popup). -->
+<div id="op-ship-dialog" title="Update Shipping Details" style="display:none;">
+    <div class="row row-2col">
+        <div class="col col-l"><label class="k">Delivery Date<span style="color:red">*</span>:</label>
+            <input type="text" id="op-ship-date" readonly="readonly" tabindex="-1" value="28-09-2026" class="hasDatepicker">
+            <div id="op-ship-date-err" class="op-err">This field is required</div></div>
+        <div class="col col-r"><label class="k">Delivery Status<span style="color:red">*</span>:</label>
+
+            <select id="op-ship-status">
+                <option value="Arranged" selected="selected">Arranged</option>
+            </select>
+            <div id="op-ship-status-err" class="op-err">This field is required</div></div>
+    </div>
+    <div class="row"><label class="k">Consignment Number<span style="color:red">*</span>:</label>
+        <input type="text" id="op-ship-consign" value="790318741867">
+        <div id="op-ship-consign-err" class="op-err">This field is required</div></div>
+    <!-- Read-only device count; system-derived, shown as plain text. -->
+    <div class="row row-devcount"><span class="k">Number of Device:</span><span id="op-ship-devcount">40</span></div>
+
+    <!-- Two columns (1-20 left, 21-40 right), each field carrying its 1-based ordinal. DOM order
+         is the id ASC binding order the serials post in. A field locks as soon as its serial is stored. -->
+    <div id="op-ship-serials">
+        <label class="k">Device Serial No.<span style="color:red">*</span>:</label>
+        <div id="op-ship-serial-dup-err" class="op-err">Duplicate device serial number. Each serial number must be unique.</div>
+        <div id="op-ship-serial-grid">
+            <div class="op-ship-serial-col op-ship-serial-col-l">
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">1.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM0">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">2.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM1">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">3.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM2">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">4.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM3">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">5.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM4">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">6.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM5">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">7.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM6">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">8.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM7">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">9.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM8">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">10.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM9">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">11.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM10">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">12.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM11">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">13.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM12">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">14.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM13">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">15.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM14">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">16.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM15">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">17.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM16">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">18.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM17">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">19.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM18">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">20.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM19">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            </div>
+            <div class="op-ship-serial-col op-ship-serial-col-r">
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">21.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM20">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">22.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM21">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">23.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM22">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">24.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM23">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">25.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM24">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">26.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM25">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">27.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM26">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">28.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM27">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">29.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM28">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">30.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM29">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">31.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM30">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">32.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM31">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">33.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM32">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">34.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM33">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">35.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM34">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">36.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM35">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">37.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM36">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">38.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM37">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">39.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM38">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell">
+                <span class="op-ship-serial-no">40.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" value="MUGLJYBRSM39">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            </div>
+
+        </div>
+    </div>
+    <input type="hidden" id="op-ship-recipient" value="Test Receiver">
+    <input type="hidden" id="op-ship-address" value="24, JALAN SULAM EMPAT, 19/14D, SEKSYEN 19">
+    <input type="hidden" id="op-ship-contact" value="0123456789">
+</div>
+
+<div id="op-success-dialog" style="display:none;">Are you sure want to mark the installation appointment as completed?</div>
+</body>

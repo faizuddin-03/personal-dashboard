@@ -1,0 +1,49 @@
+/* Medieval style (cozy cottage): eauto-runners. Scoped to [data-style="medieval"]; see base.css and COTTAGE.md.
+   Pages: /eauto (catalog), 12107, 12153, 12166, 12257, 12412, jomcheck, flows.
+   Only page fixes the base cannot reach. Pass/fail/warn colours untouched. */
+
+/* ── Run logs: text colour and spacing come from eauto-tools.css (all eauto pages) ── */
+[data-style="medieval"]:is([data-page="eauto-12107"], [data-page="eauto-12153"], [data-page="eauto-12166"], [data-page="eauto-12257"], [data-page="eauto-12412"], [data-page="eauto-jomcheck"]) pre.max-h-96 {
+  border-top: 2px solid var(--m-crust);
+}
+
+/* ── Segmented toggles (catalog view, flows detail tabs): active = honey bar ── */
+[data-style="medieval"]:is([data-page="eauto"], [data-page="eauto-flows"]) button.rounded-md.bg-slate-800.text-slate-100 {
+  background-color: var(--m-oak-hi);
+  color: var(--m-cream-hi);
+  box-shadow: inset 0 -2px 0 var(--m-honey);
+}
+
+/* ── /eauto catalog: warm the indigo icon tile and "Open" link ── */
+[data-style="medieval"][data-page="eauto"] .bg-indigo-500\/15 {
+  background-color: rgba(232, 176, 74, .12);
+  color: var(--m-honey);
+  box-shadow: inset 0 0 0 1px rgba(232, 176, 74, .35);
+}
+[data-style="medieval"][data-page="eauto"] :is(.text-indigo-300, .text-indigo-400) { color: var(--m-honey); }
+[data-style="medieval"][data-page="eauto"] a.group.rounded-xl:hover {
+  border-color: var(--m-crust-hi);
+  background-color: var(--m-oak);
+}
+[data-style="medieval"][data-page="eauto"] .h-1\.5.bg-slate-800 > .bg-indigo-500 { background-color: var(--m-hearth); }
+
+/* ── Flows: honey instead of indigo for links, hovers and the flow node ── */
+[data-style="medieval"][data-page="eauto-flows"] :is(.text-indigo-200, .text-indigo-300, .text-indigo-400) { color: var(--m-honey); }
+[data-style="medieval"][data-page="eauto-flows"] .border-indigo-700\/50 { border-color: rgba(232, 176, 74, .45); }
+[data-style="medieval"][data-page="eauto-flows"] .hover\:bg-indigo-950:hover { background-color: var(--m-oak-hi); }
+[data-style="medieval"][data-page="eauto-flows"] .hover\:border-indigo-600\/60:hover { border-color: var(--m-honey); }
+[data-style="medieval"][data-page="eauto-flows"] .bg-indigo-600\/20.border-indigo-500\/60 {
+  background-color: var(--m-oak);
+  border-color: var(--m-honey);
+  box-shadow: inset 0 0 0 1px var(--m-honey), 2px 2px 0 rgba(0, 0, 0, .5);
+  font-family: var(--font-pixel-body), var(--font-geist-sans), sans-serif;
+}
+[data-style="medieval"][data-page="eauto-flows"] header .rounded-lg.border:focus-within {
+  border-color: var(--m-honey);
+}
+
+/* ── Quiet hints: readable muted text, no extra icon (calm) ── */
+[data-style="medieval"][data-page="eauto-flows"] p.mt-4.text-slate-500 { color: var(--m-muted); }
+[data-style="medieval"]:is([data-page="eauto-12107"], [data-page="eauto-12153"], [data-page="eauto-12257"], [data-page="eauto-12412"], [data-page="eauto-jomcheck"]) p.p-4.text-xs.text-slate-600 {
+  color: var(--m-muted);
+}

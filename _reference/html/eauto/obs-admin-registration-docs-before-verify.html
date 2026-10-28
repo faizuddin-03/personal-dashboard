@@ -1,0 +1,3140 @@
+<!--
+  URL: https://staging.eauto.my/obs/admin/form/edit-registration-doc/4b3d010f-5a7e-4e25-9ac2-190ddd82ccf8
+  Environment: staging BackOffice (obs admin, logged in as mfared via uat4)
+  Captured: 2026-10-21T07:40:08.850Z by Claude via Chrome
+  State: BO Registration Document page for NA60001190 (mfared), 6 docs submitted by UCD, before Verified
+  Trimmed: nothing
+-->
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Registration Document</title>
+    <link rel="icon" type="image/x-icon" href="/obs/favicon.ico">
+    <link href="/obs/tailwindcss.css" rel="stylesheet">
+    
+    <!-- Import Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    
+    <script src="/obs/js/jquery-2.2.4.min.js" type="text/javascript"></script>
+    <link href="/obs/jquery-ui-1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <script src="/obs/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    
+        
+        <style>
+            #overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            
+            .spinner {
+                border: 4px solid #f3f3f3; /* Light grey */
+                border-top: 4px solid #3498db; /* Blue */
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                animation: spin 1s linear infinite;
+            }
+
+            #payment-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .payment-loading-box {
+                background-color: white;
+                border-radius: 1px;
+                border: solid 2px #A6A6A6;
+                padding: 20px 30px;
+                display: block;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                width: 400px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .spinner-and-text {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 10px auto;
+                gap: 10px;
+            }
+
+            .payment-spinner {
+                border: 3px solid #E0E0E0; /* Light grey */
+                border-top: 3px solid #00BCD4; /* Cyan/turquoise color */
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                animation: spin 0.8s linear infinite;
+                flex-shrink: 0; /* Prevent spinner from shrinking */
+            }
+
+            .payment-loading-text {
+                font-size: 20px;
+                font-weight: bold;
+                color: #000000;
+                font-family: Inter, sans-serif;
+                white-space: nowrap;
+                line-height: 100%;
+            }
+
+            .overlay-description {
+                font-size: 13px;
+                color: #FF4000;
+                font-family: Inter, sans-serif;
+                white-space: wrap;
+                text-align:center;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    
+    
+        
+        <script>
+            $(document).ready(function() {
+                // Show overlay when any AJAX request starts
+                $(document).ajaxStart(function () {
+                    $("#overlay").fadeIn();
+                });
+
+                // Hide overlay when all AJAX requests complete
+                $(document).ajaxStop(function () {
+                    $("#overlay").fadeOut();
+                });
+            });
+
+            function showPaymentOverlay(){
+                $("#payment-overlay").fadeIn();
+            }
+
+            function hidePaymentOverlay(){
+                $("#payment-overlay").fadeOut();
+            }
+        </script>
+    
+    
+        
+        <style>
+
+            .ui-widget-overlay { 
+                background: #000000; 
+                opacity: .50;
+                filter: Alpha(Opacity=50); 
+            }
+
+            .ui-widget-content {
+                border: none !important;
+            }
+
+            .ui-dialog .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_222222_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-state-hover .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_454545_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-widget-header {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border:none !important;
+                color: #FFF;
+            }
+
+            .ui-dialog {
+                border-radius: 4px !important;
+                padding: 0 !important;
+                min-width:350px !important;
+            }
+
+            .ui-dialog * {
+                font-family: "Inter", sans-serif !important;
+                font-size: 14px !important;
+            }
+
+            .ui-dialog-title {
+                font-size: 16px !important;
+            }
+
+            .ui-dialog-titlebar {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border-bottom-left-radius: 0px !important;
+                border-bottom-right-radius: 0px !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog-titlebar-close {
+                display: flex;
+                align-items: center;
+                height: 38px;
+                background:#0B4C5F !important;
+                border: none !important;
+            }
+            
+            .ui-dialog-content {
+                font-size: 14px !important;
+                min-height: 23px !important;
+                padding: 13px !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog.notis-dialog {
+                top:20% !important;
+            }
+
+            .ui-dialog-buttonpane {
+                margin:0 !important;
+                min-height:54px;
+                padding: 0 15px 10px 6px !important;
+                display: flex;
+                align-items:center;
+                justify-content:flex-end;
+            }
+
+            .ui-button-text {
+                padding: 0px !important;
+            }
+            
+            #custom-dialog {
+                display: none;
+            }
+
+            #custom-dialog-content {
+                white-space: pre-line;
+            }
+
+            .custom-dialog-primary-btn {
+                border-radius:4px;
+                color: #FFF !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#0B4C5F !important;
+                background: #0B4C5F !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-primary-btn:hover{
+                background-color: #146478 !important;
+            }
+            .custom-dialog-primary-btn:active {
+                background-color: #0a4353 !important;
+                box-shadow: 0 0 2px #0A4335;
+            } 
+
+            .custom-dialog-secondary-btn {
+                border-radius:4px;
+                color: #0B4C5F !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#FFF !important;
+                background:unset !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-secondary-btn:hover {
+                background-color: #F7F7F7 !important;
+            }
+            .custom-dialog-secondary-btn:active {
+                background-color: #EFEFEF !important;
+                box-shadow: 0 0 2px #0A4335;
+            }
+
+            /* Checkbox Dialog Styles */
+            #checkbox-dialog {
+                display: none;
+            }
+
+            #checkbox-dialog-content {
+                margin-bottom: 8px;
+                font-weight: 400;
+                color: #000000;
+                font-size: 14px !important;
+                line-height: 1.5;
+            }
+
+            .checkbox-dialog-container {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                text-align: left;
+            }
+
+            .checkbox-dialog-label {
+                margin-bottom: 12px;
+                margin-top: 16px;
+                font-weight: 600;
+                color: #000000;
+            }
+
+            .checkbox-dialog-options {
+                display: flex;
+                flex-direction: column;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .checkbox-dialog-option {
+                display: flex;
+                align-items: center;
+                padding: 4px 8px;
+                margin-bottom: 0px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.2s;
+            }
+
+            .checkbox-dialog-option:hover {
+                background-color: #f5f5f5;
+            }
+
+            .checkbox-dialog-option input[type="checkbox"] {
+                margin-right: 10px;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+            }
+
+            .checkbox-dialog-option label {
+                cursor: pointer;
+                font-size: 14px !important;
+                color: #000000;
+                user-select: none;
+            }
+
+            .checkbox-dialog-select-all {
+                display: flex;
+                align-items: center;
+                padding: 6px 8px;
+                margin-bottom: 2px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.2s;
+                border-bottom: 1px solid #E0E0E0;
+                padding-bottom: 12px;
+                margin-bottom: 8px;
+            }
+
+            .checkbox-dialog-select-all:hover {
+                background-color: #f5f5f5;
+            }
+
+            .checkbox-dialog-select-all input[type="checkbox"] {
+                margin-right: 10px;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+            }
+
+            .checkbox-dialog-select-all label {
+                cursor: pointer;
+                font-weight: 600;
+                color: #0B4C5F;
+                user-select: none;
+            }
+
+            .checkbox-dialog-required-msg {
+                color: #dc3545;
+                font-size: 13px !important;
+                margin-top: 12px;
+                display: none;
+            }
+
+            .checkbox-dialog-others-container {
+                display: none;
+                margin-left: 24px;
+                margin-top: 4px;
+                margin-bottom: 8px;
+            }
+
+            .checkbox-dialog-others-textarea {
+                width: 100%;
+                min-height: 80px;
+                padding: 8px;
+                border: 1px solid #d0d0d0;
+                border-radius: 4px;
+                font-size: 13px !important;
+                font-family: "Inter", sans-serif;
+                resize: vertical;
+                box-sizing: border-box;
+            }
+
+            .checkbox-dialog-others-textarea:focus {
+                outline: none;
+                border-color: #0B4C5F;
+            }
+
+            .checkbox-dialog-others-textarea::placeholder {
+                color: #999;
+            }
+
+            .checkbox-dialog-others-textarea.error {
+                background-color: #FFF5F2;
+            }
+
+            .checkbox-dialog-others-required-msg {
+                color: #dc3545;
+                font-size: 13px !important;
+                margin-top: 4px;
+                display: none;
+            }
+        </style>
+    
+    
+
+        
+        <script>
+
+
+                /**
+                 * @typedef {Object} CustomDialogConfig
+                 * @property {string} title - The dialog's title
+                 * @property {string} content - The dialog's content
+                 * @property {string} height - The dialog's height
+                 * @property {string} width - The dialog's width
+                 * @property {string} confirmBtnName - confirm button name
+                 * @property {function} onConfirmHandler - function to invoke on confirm
+                 * @property {function} onConfirmCloseHandler - function to invoke on close after clicking confirm
+                 * @property {string} redirectPathOnConfirm - Path to redirect on confirm
+                 * @property {boolean} shouldHideConfirmBtn - hide confirm button
+                 * @property {string} cancelBtnName - cancel button name
+                 * @property {function} onCancelHandler - function to invoke on cancel
+                 * @property {function} onCancelCloseHandler - function to invoke on close after clicking cancel
+                 * @property {string} redirectPathOnCancel - Path to redirect on cancel
+                 * @property {boolean} shouldHideCancelBtn - hide cancel button
+                 * @property {function} onCloseButtonCloseHandler - function to invoke on close when not confirmed and not cancelled
+                 * @property {boolean} shouldReloadPageOnClose - Whether the dialog will reload page on close
+                 * @property {string} redirectPathOnClose - Path to redirect on close; only redirect when shouldReloadPageOnClose is false
+                 * @property {boolean} shouldHideCloseBtn - hide close button
+                 */
+
+                /**
+                 * Process a person's information
+                 * @param {CustomDialogConfig} config
+                 */
+                function openCustomDialog(config) {
+
+                    const handleOnClose = function(config) {
+                        if(config.shouldReloadPageOnClose) {
+                            location.reload();
+                        } else if (config.redirectPathOnClose != null){
+                            window.location.href = config.redirectPathOnClose;
+                        }
+                    }
+
+                    const confirmBtnName = config.confirmBtnName != null ? config.confirmBtnName : "OK";
+                    const cancelBtnName = config.cancelBtnName != null ? config.cancelBtnName : "Cancel";
+
+                    var isConfirmed  = false;
+                    var isCancelled = false;
+                    
+                    $("#custom-dialog-content").text(config.content)
+                    $("#custom-dialog").dialog({
+                        title: config.title,
+                        modal: true,
+                        width: config.width ? config.width : "480",
+                        height: config.height ? config.height: "auto",
+                        resizable: false,
+                        draggable: false,
+                        position: { my: "center", at: "center", of: window },
+                        closeOnEscape: false,
+                        close: function() {
+                            $(this).dialog("destroy");
+                            if(isConfirmed && config.onConfirmCloseHandler) {
+                                config.onConfirmCloseHandler();
+                            } else if(isCancelled && config.onCancelCloseHandler) {
+                                config.onCancelCloseHandler();
+                            } else if (!isConfirmed && !isCancelled && config.onCloseButtonCloseHandler) {
+                                config.onCloseButtonCloseHandler();
+                            }
+                            handleOnClose(config);
+                        },
+                        buttons:
+                        {
+                            [cancelBtnName]: function() {
+                                isCancelled = true;
+                                if(config.onCancelHandler) {
+                                    config.onCancelHandler();
+                                }
+
+                                if(config.redirectPathOnCancel) {
+                                    window.location.href = config.redirectPathOnCancel;
+                                }
+
+                                $(this).dialog("close");
+                            },
+                            [confirmBtnName]: function() {
+                                isConfirmed = true;
+                                if(config.onConfirmHandler) {
+                                    config.onConfirmHandler();
+                                }
+
+                                if(config.redirectPathOnConfirm) {
+                                    window.location.href = config.redirectPathOnConfirm;
+                                }
+
+                                $(this).dialog("close");
+                            }
+                        },
+                        open: function() {
+                            $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).addClass('custom-dialog-primary-btn');
+                            $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).addClass('custom-dialog-secondary-btn');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                            
+                            if(config.shouldHideConfirmBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).hide();
+                            if(config.shouldHideCancelBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).hide();
+                            if(config.shouldHideCloseBtn == true) $(".ui-dialog-titlebar-close").hide();
+                        }
+                    }).dialog("open");
+                }
+
+                /**
+                 * @typedef {Object} CheckboxOption
+                 * @property {string} id - Unique identifier for the checkbox
+                 * @property {string} label - Display label for the checkbox
+                 * @property {boolean} [checked] - Whether the checkbox is initially checked
+                 * @property {boolean} [disabled] - Whether the checkbox is disabled
+                 * @property {*} [value] - Optional value associated with the checkbox
+                 * @property {boolean} [isOthers] - Whether this is an "Others" option with textarea
+                 * @property {string} [othersPlaceholder] - Placeholder text for the Others textarea
+                 */
+
+                /**
+                 * @typedef {Object} CheckboxDialogConfig
+                 * @property {string} title - The dialog's title
+                 * @property {string} content - The dialog's content/description
+                 * @property {CheckboxOption[]} checkboxes - Array of checkbox options
+                 * @property {string} [height] - The dialog's height
+                 * @property {string} [width] - The dialog's width
+                 * @property {string} [confirmBtnName] - Confirm button name (default: "OK")
+                 * @property {function(string[])} [onConfirmHandler] - Function invoked on confirm with selected checkbox IDs
+                 * @property {function} [onConfirmCloseHandler] - Function invoked on close after clicking confirm
+                 * @property {string} [redirectPathOnConfirm] - Path to redirect on confirm
+                 * @property {boolean} [shouldHideConfirmBtn] - Hide confirm button
+                 * @property {string} [cancelBtnName] - Cancel button name (default: "Cancel")
+                 * @property {function} [onCancelHandler] - Function invoked on cancel
+                 * @property {function} [onCancelCloseHandler] - Function invoked on close after clicking cancel
+                 * @property {string} [redirectPathOnCancel] - Path to redirect on cancel
+                 * @property {boolean} [shouldHideCancelBtn] - Hide cancel button
+                 * @property {function} [onCloseButtonCloseHandler] - Function invoked on close when not confirmed/cancelled
+                 * @property {boolean} [shouldReloadPageOnClose] - Whether to reload page on close
+                 * @property {string} [redirectPathOnClose] - Path to redirect on close
+                 * @property {boolean} [shouldHideCloseBtn] - Hide close button
+                 * @property {boolean} [showSelectAll] - Show "Select All" checkbox (default: false)
+                 * @property {boolean} [requireAtLeastOne] - Require at least one checkbox selected (default: false)
+                 * @property {string} [requiredMessage] - Message shown when validation fails
+                 * @property {boolean} [requireOthersText] - Require text input when Others is selected (default: false)
+                 * @property {string} [othersRequiredMessage] - Message shown when Others text is required but empty
+                 * @property {string} [checkboxLabel] - Label shown above checkboxes (e.g., "Reason:")
+                 */
+
+                /**
+                 * Opens a custom dialog with dynamic checkboxes
+                 * @param {CheckboxDialogConfig} config
+                 */
+                function openCheckboxDialog(config) {
+                    const handleOnClose = function(config) {
+                        if (config.shouldReloadPageOnClose) {
+                            location.reload();
+                        } else if (config.redirectPathOnClose != null) {
+                            window.location.href = config.redirectPathOnClose;
+                        }
+                    };
+
+                    const getSelectedCheckboxes = function() {
+                        const selected = [];
+                        $('#checkbox-dialog-options input[type="checkbox"]:checked').each(function() {
+                            selected.push($(this).attr('id').replace('chk-', ''));
+                        });
+                        return selected;
+                    };
+
+                    const getSelectedValues = function() {
+                        const values = [];
+                        $('#checkbox-dialog-options input[type="checkbox"]:checked').each(function() {
+                            const id = $(this).attr('id').replace('chk-', '');
+                            const option = config.checkboxes.find(c => c.id === id);
+                            if (option) {
+                                const item = {
+                                    id: option.id,
+                                    label: option.label,
+                                    value: option.value !== undefined ? option.value : option.id
+                                };
+                                if (option.isOthers) {
+                                    item.othersText = $(`#chk-others-textarea-${option.id}`).val() || '';
+                                }
+                                values.push(item);
+                            }
+                        });
+                        return values;
+                    };
+
+                    const validateSelection = function() {
+                        // Clear all previous errors first
+                        $('#checkbox-dialog-required-msg').hide();
+                        $('.checkbox-dialog-others-textarea').removeClass('error');
+                        $('.checkbox-dialog-others-required-msg').hide();
+
+                        if (config.requireAtLeastOne) {
+                            const selected = getSelectedCheckboxes();
+                            if (selected.length === 0) {
+                                $('#checkbox-dialog-required-msg').show();
+                                return false;
+                            }
+                        }
+
+                        // Validate Others textarea if required
+                        if (config.requireOthersText) {
+                            let isValid = true;
+                            config.checkboxes.forEach(function(option) {
+                                if (option.isOthers && $(`#chk-${option.id}`).is(':checked')) {
+                                    const textarea = $(`#chk-others-textarea-${option.id}`);
+                                    const textareaVal = textarea.val();
+                                    if (!textareaVal || textareaVal.trim() === '') {
+                                        textarea.addClass('error');
+                                        $(`#chk-others-required-msg-${option.id}`).show();
+                                        isValid = false;
+                                    }
+                                }
+                            });
+                            if (!isValid) return false;
+                        }
+                        return true;
+                    };
+
+                    const buildCheckboxHtml = function() {
+                        let html = '';
+
+                        // Add label if provided
+                        if (config.checkboxLabel) {
+                            html += `<p class="checkbox-dialog-label">${config.checkboxLabel}</p>`;
+                        }
+                        
+                        if (config.showSelectAll && config.checkboxes.length > 1) {
+                            html += `
+                                <div class="checkbox-dialog-select-all">
+                                    <input type="checkbox" id="chk-select-all" />
+                                    <label for="chk-select-all">Select All</label>
+                                </div>
+                            `;
+                        }
+
+                        html += '<div id="checkbox-dialog-options" class="checkbox-dialog-options">';
+                        config.checkboxes.forEach(function(option) {
+                            const checked = option.checked ? 'checked' : '';
+                            const disabled = option.disabled ? 'disabled' : '';
+                            html += `
+                                <div class="checkbox-dialog-option">
+                                    <input type="checkbox" id="chk-${option.id}" ${checked} ${disabled} 
+                                        ${option.isOthers ? 'data-is-others="true"' : ''} />
+                                    <label for="chk-${option.id}">${option.label}</label>
+                                </div>
+                            `;
+                            if (option.isOthers) {
+                                const placeholder = option.othersPlaceholder || '';
+                                const containerDisplay = option.checked ? 'display: block;' : '';
+                                const othersReqMsg = config.othersRequiredMessage || 'This field is required';
+                                html += `
+                                    <div id="chk-others-container-${option.id}" 
+                                        class="checkbox-dialog-others-container" 
+                                        style="${containerDisplay}">
+                                        <textarea id="chk-others-textarea-${option.id}" 
+                                            class="checkbox-dialog-others-textarea" 
+                                            placeholder="${placeholder}"
+                                            maxlength="3000"></textarea>
+                                        <div id="chk-others-required-msg-${option.id}" 
+                                            class="checkbox-dialog-others-required-msg">${othersReqMsg}</div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        html += '</div>';
+
+                        const requiredMsg = config.requiredMessage || 'Select the reason by ticking the checkbox(s).';
+                        html += `<div id="checkbox-dialog-required-msg" class="checkbox-dialog-required-msg">${requiredMsg}</div>`;
+
+                        return html;
+                    };
+
+                    const confirmBtnName = config.confirmBtnName != null ? config.confirmBtnName : "OK";
+                    const cancelBtnName = config.cancelBtnName != null ? config.cancelBtnName : "Cancel";
+
+                    var isConfirmed = false;
+                    var isCancelled = false;
+
+                    $("#checkbox-dialog-content").text(config.content);
+                    $("#checkbox-dialog-checkboxes").html(buildCheckboxHtml());
+
+                    $("#checkbox-dialog").dialog({
+                        title: config.title,
+                        modal: true,
+                        width: config.width ? config.width : "480",
+                        height: config.height ? config.height : "auto",
+                        resizable: false,
+                        draggable: false,
+                        position: { my: "center", at: "center", of: window },
+                        closeOnEscape: false,
+                        close: function() {
+                            $(this).dialog("destroy");
+                            if (isConfirmed && config.onConfirmCloseHandler) {
+                                config.onConfirmCloseHandler();
+                            } else if (isCancelled && config.onCancelCloseHandler) {
+                                config.onCancelCloseHandler();
+                            } else if (!isConfirmed && !isCancelled && config.onCloseButtonCloseHandler) {
+                                config.onCloseButtonCloseHandler();
+                            }
+                            handleOnClose(config);
+                        },
+                        buttons: {
+                            [cancelBtnName]: function() {
+                                isCancelled = true;
+                                if (config.onCancelHandler) {
+                                    config.onCancelHandler();
+                                }
+                                if (config.redirectPathOnCancel) {
+                                    window.location.href = config.redirectPathOnCancel;
+                                }
+                                $(this).dialog("close");
+                            },
+                            [confirmBtnName]: function() {
+                                if (!validateSelection()) {
+                                    return;
+                                }
+                                isConfirmed = true;
+                                const selectedIds = getSelectedCheckboxes();
+                                const selectedValues = getSelectedValues();
+                                if (config.onConfirmHandler) {
+                                    config.onConfirmHandler(selectedIds, selectedValues);
+                                }
+                                if (config.redirectPathOnConfirm) {
+                                    window.location.href = config.redirectPathOnConfirm;
+                                }
+                                $(this).dialog("close");
+                            }
+                        },
+                        open: function() {
+                            $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`)
+                                .addClass('custom-dialog-primary-btn');
+                            $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`)
+                                .addClass('custom-dialog-secondary-btn');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+
+                            if (config.shouldHideConfirmBtn === true) {
+                                $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).hide();
+                            }
+                            if (config.shouldHideCancelBtn === true) {
+                                $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).hide();
+                            }
+                            if (config.shouldHideCloseBtn === true) {
+                                $(".ui-dialog-titlebar-close").hide();
+                            }
+
+                            // Select All functionality
+                            $('#chk-select-all').on('change', function() {
+                                const isChecked = $(this).is(':checked');
+                                $('#checkbox-dialog-options input[type="checkbox"]:not(:disabled)')
+                                    .prop('checked', isChecked);
+                                $('#checkbox-dialog-required-msg').hide();
+                            });
+
+                            // Update Select All state when individual checkboxes change
+                            $('#checkbox-dialog-options input[type="checkbox"]').on('change', function() {
+                                const total = $('#checkbox-dialog-options input[type="checkbox"]:not(:disabled)').length;
+                                const checked = $('#checkbox-dialog-options input[type="checkbox"]:checked').length;
+                                $('#chk-select-all').prop('checked', total === checked);
+                                $('#checkbox-dialog-required-msg').hide();
+                            });
+
+                            // Set initial Select All state
+                            if (config.showSelectAll) {
+                                const total = $('#checkbox-dialog-options input[type="checkbox"]:not(:disabled)').length;
+                                const checked = $('#checkbox-dialog-options input[type="checkbox"]:checked').length;
+                                $('#chk-select-all').prop('checked', total === checked && total > 0);
+                            }
+
+                            // Others textarea toggle
+                            $('#checkbox-dialog-options input[data-is-others="true"]').on('change', function() {
+                                const id = $(this).attr('id').replace('chk-', '');
+                                const container = $(`#chk-others-container-${id}`);
+                                const textarea = $(`#chk-others-textarea-${id}`);
+                                const reqMsg = $(`#chk-others-required-msg-${id}`);
+                                if ($(this).is(':checked')) {
+                                    container.slideDown(200);
+                                    textarea.focus();
+                                } else {
+                                    container.slideUp(200);
+                                    textarea.val('').removeClass('error');
+                                    reqMsg.hide();
+                                }
+                            });
+
+                            // Hide others required message and remove error style on input
+                            // Also auto-remove non-ASCII characters (Chinese, etc.) - allow alphanumeric and special characters only
+                            $('.checkbox-dialog-others-textarea').on('input', function() {
+                                const id = $(this).attr('id').replace('chk-others-textarea-', '');
+
+                                // Store cursor position before modification
+                                const cursorPos = this.selectionStart;
+                                const originalLength = $(this).val().length;
+
+                                // Remove non-ASCII characters (keeps alphanumeric and standard special characters)
+                                $(this).val($(this).val().replace(/[^\x00-\x7F]/g, ''));
+
+                                // Adjust cursor position after removing characters
+                                const newLength = $(this).val().length;
+                                const removedChars = originalLength - newLength;
+                                const newCursorPos = Math.max(0, cursorPos - removedChars);
+                                this.setSelectionRange(newCursorPos, newCursorPos);
+
+                                $(this).removeClass('error');
+                                $(`#chk-others-required-msg-${id}`).hide();
+                            });
+                        }
+                    }).dialog("open");
+                }
+        </script>
+    
+    
+        <style>
+            .dealer-app-tabs-container {
+                background: #DFE8EA;
+                border-radius: 8px 8px 0 0;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .dealer-app-tabs {
+                padding: 8px 12px 0;
+                display: flex;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .dealer-app-tab {
+                padding: 12px 24px;
+                cursor: pointer;
+                border-bottom: 3px solid transparent;
+                font-size: 14px;
+                font-weight: 600;
+                color: #666;
+                transition: all 0.2s;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            .dealer-app-tab.active {
+                background-color: #FFFFFF;
+                border-radius: 4px 8px 0 0;
+                color: black;
+                cursor: default;
+                pointer-events: none;
+            }
+
+            .dealer-app-tab:hover:not(.active):not(.disabled) {
+                color: #333;
+            }
+
+            .dealer-app-tab.disabled {
+                color: #999;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+        </style>
+    
+    
+        <style>
+            .site-header {
+                background-color: #FFFFFF;
+                position: relative;
+            }
+            
+            .header-container {
+                max-width: 100%;
+                padding: 2px 24px;
+                display: flex;
+                justify-content: flex-start;
+                gap: 20px;
+                align-items: center;
+            }
+            
+            .logo-img {
+                height: 40px;
+                width: auto;
+            }
+            
+            .header-title {
+                font-size: 16px;
+                font-weight: bold;
+                color: #0B4C5F;
+            }
+
+            .header-line-img {
+                width: 100%;
+                height: 10px;
+                display:block;
+            }
+
+            .header-action-btn {
+                position: absolute;
+                right: 24px;
+                bottom: 0px;
+                padding: 8px 20px;
+                background-color: #FFFFFF;
+                color: #0B4C5F;
+                border: 1px solid #0B4C5F;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                white-space: nowrap;
+                z-index: 10;
+            }
+
+            .header-action-btn:hover {
+                background-color: #0B4C5F;
+                color: #FFFFFF;
+            }
+
+            .header-action-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        </style>
+    
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: Inter, sans-serif;
+        font-size: 14px;
+        background-color: #FFFFFF;
+    }
+
+    #form-title-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: -10px -10px 15px -10px;
+        padding: 12px 24px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    #title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0B4C5F;
+    }
+
+    .form-section {
+        padding: 1.75rem 1rem 1.75rem 1rem;
+        background-color: #F7F9FA;
+    }
+    .field {
+        padding: 0 0 .75rem 0;
+    }
+    .form-section-pt {
+        padding-top: 0.75rem;
+    }
+    .form-section.sm {
+        padding-bottom: 0.25rem;
+    }
+
+    .section-header {
+        color: #0B4C5F;
+        font-size: 18px;
+        font-weight: 700;
+        width: 100%;
+        padding: 1rem 0 1rem 0;
+    }
+
+    .section-header.sm {
+        padding-bottom: 0.5rem;
+    }
+    
+    .outer-container {
+        background: #FFFFFF;
+        margin: 0 20px 10px 20px;
+        padding: 20px 0;
+        min-height: calc(100vh - 70px);
+    }
+    
+    .main-container {
+        background-color: #F7F9FA;
+        margin: 0 auto;
+    }
+    
+    .content-container {
+        padding: 20px;
+        border-radius: 0 0 8px 8px;
+        min-height: 600px;
+    }
+
+    .content-container.no-tabs {
+        border-radius: 8px;
+    }
+
+    #form-container {
+        background: #FFFFFF;
+        border-radius: 8px;
+    }
+
+    /* Grid Layout */
+    .grid-container {
+        display: flex;
+        gap: 20px;
+        margin: 0 auto;
+        width: fit-content;
+        max-width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    /* Sidebar */
+    .sidebar-panel {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        height: fit-content;
+        min-width: 280px;
+        max-width: 320px;
+    }
+
+    .sidebar-content {
+        padding: 20px 24px;
+    }
+
+    .sidebar-header {
+        background: #DBECFF;
+        padding: 18px 24px;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .sidebar-header-title {
+        font-size: 12px;
+        color: #666;
+        text-align: left;
+    }
+
+    .sidebar-header-value {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0B4C5F;
+    }
+
+    .sidebar-section {
+        margin-bottom: 20px;
+    }
+
+    .status-with-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .status-with-action .sidebar-value {
+        margin-bottom: 0;
+    }
+
+    .extend-btn {
+        padding: 8px 20px;
+        background-color: #FFFFFF;
+        color: #0B4C5F;
+        border: 1px solid #0B4C5F;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .extend-btn:hover {
+        background-color: #0B4C5F;
+        color: #FFFFFF;
+    }
+
+    .extend-btn:disabled {
+        color: #9CB8BF;
+        border-color: #9CB8BF;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .extend-wrap {
+        position: relative;
+        display: inline-block;
+    }
+
+    .extend-tip {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 286px;
+        box-sizing: border-box;
+        padding: 16px;
+        background: #FFFFFF;
+        border: 1px solid #808080;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 16.94px;
+        color: #000000;
+        text-align: left;
+        white-space: normal;
+        z-index: 20;
+    }
+
+    .extend-wrap:hover .extend-tip {
+        display: block;
+    }
+
+    .sidebar-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .sidebar-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 6px;
+    }
+
+    .sidebar-value {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 16px;
+    }
+
+    .sidebar-divider {
+        border-top: 1px solid #e0e0e0;
+        margin: 20px 0;
+    }
+
+    .submit-verified-btn {
+        width: 100%;
+        padding: 8px 16px;
+        background: #0B4C5F;
+        border-radius: 4px;
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .submit-verified-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 0;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .status-badge.pending, .status-badge.new, .status-badge.reevaluate {
+        color: #0000FF;
+    }
+
+    .status-badge.approved, .status-badge.completed {
+        color: #008E00;
+    }
+
+    .status-badge.rejected, .status-badge.expired {
+        color: #FF4000;
+    }
+
+    .tab-content {
+        background-color: #FFFFFF;
+        flex: 1;
+        max-width: 800px;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .action-divider {
+        border-top: 1px solid #e0e0e0;
+        margin: 20px -24px;
+    }
+
+    .custom-select {
+        position: relative;
+    }
+    .custom-select select {
+        -webkit-appearance:none;
+        -moz-appearance:none;
+        -ms-appearance:none;
+        appearance:none;
+        outline:0;
+        box-shadow:none;
+        background: white;
+        background-image: none;
+        border: 1px solid #CCCCCC;
+        border-radius: 4px;
+        height: 32px;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        cursor:pointer;
+        border-radius: 4px;
+        text-overflow: ellipsis;
+        width: 100%;
+        padding: 0 10px;
+    }
+    .custom-select select::-ms-expand {
+        display: none;
+    }
+    .custom-select .select {
+        position: relative;
+        display: flex;
+        height: 32px;
+        background: white;
+        overflow: hidden;
+        border: 1px solid #CCCCCC;
+    }
+    .custom-select::after {
+        content: '';
+        display: inline-block;
+        border-bottom: 1px solid #808080;
+        border-right: 1px solid #808080;
+        height: 5px;
+        width: 5px;
+        transform: rotate(45deg);
+        position: absolute;
+        top: 11px;
+        right: 10px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-reject {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-reject:hover {
+        background: #c82333;
+    }
+
+    .btn-approve {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-approve:hover {
+        background: #218838;
+    }
+
+    /* Registration Documents Fragment Styles */
+    .flex-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .flex-item {
+        vertical-align: middle;
+    }
+
+    .color-table-header {
+        background-color: #DFE8EA;
+    }
+
+    .odd {
+        background-color: #F7F9FA;
+    }
+
+    .text-subtitle {
+        color: #767676;
+        font-size: 12px;
+    }
+
+    .label.mandatory::after {
+        content: " *";
+        color: #FF4000;
+        font-weight: bold;
+    }
+
+    .upload-btn {
+        width: fit-content;
+        color: #0B4C5F;
+        border: 1px solid #0B4C5F;
+        background-color: white;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .text-danger {
+        color: #FF4000;
+    }
+
+    .filename-text {
+        color: #0B4C5F;
+        text-decoration: underline;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .primary-btn {
+        border: 1px solid #0B4C5F;
+        border-radius: 4px;
+        color: #0B4C5F;
+        background-color: #FFFFFF;
+        font-weight: 700;
+    }
+    .revert-btn {
+        border: 1px solid #FF4000;
+        border-radius: 4px;
+        color: #FF4000;
+        background-color: #FFFFFF;
+        font-weight: 700;
+    }
+
+
+    .declaration {
+        background-color: #F7F9FA;
+    }
+
+    /* Revert checkbox styling */
+    .revert-checkbox {
+        margin-right: 8px;
+        flex-shrink: 0;
+    }
+
+    .textarea-input {
+        border: 1px solid #CCCCCC;
+        border-radius: 4px;
+        padding: 10px 10px;
+        resize: none;
+    }
+
+    .invalid-marker {
+        background-color: #FFF5F2;
+    }
+
+    .custom-select select:disabled {
+        pointer-events: none;
+        background-color: rgba(239, 239, 239, 0.3);
+    }
+
+    .custom-select {
+        position: relative;
+    }
+
+    .custom-select select {
+        -webkit-appearance:none;
+        -moz-appearance:none;
+        -ms-appearance:none;
+        appearance:none;
+        outline:0;
+        box-shadow:none;
+        background: white;
+        background-image: none;
+        border: 1px solid #CCCCCC;
+        border-radius: 4px;
+        height: 32px;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        cursor:pointer;
+        border-radius: 4px;
+        text-overflow: ellipsis;
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    .custom-select select::-ms-expand {
+        display: none;
+    }
+
+    .custom-select .select {
+        position: relative;
+        display: flex;
+        height: 32px;
+        background: white;
+        overflow: hidden;
+        border: 1px solid #CCCCCC;
+    }
+
+    .custom-select::after {
+        content: '';
+        display: inline-block;
+        border-bottom: 1px solid #808080;
+        border-right: 1px solid #808080;
+        height: 5px;
+        width: 5px;
+        transform: rotate(45deg);
+        position: absolute;
+        top: 11px;
+        right: 10px;
+    }
+
+    .readonly-select {
+        pointer-events: none;
+        background-color: #F4F6F7 !important;
+    }
+
+    #assigneeUserId .selected {
+        color: #A6A6A6;
+    }
+
+    .btn-download {
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        border: 1px solid #0B4C5F;
+        border-radius: 4px;
+        color: #0B4C5F;
+        background-color: #FFFFFF;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 200px;
+    }
+
+    .btn-download:hover {
+        background: #f5f5f5;
+    }
+
+    .download-icon-btn {
+        width: 14px;
+        height: 14px;
+    }
+</style><script>
+    var contextPath = "\/obs\/";
+
+    // Step 4 Registration Documents
+    /** @type {ObsAttachmentDTO[] | undefined} */
+    var uploadedRhbOfferLetterList = [{"uuid":"d639758c-9af3-4c5c-b456-2672b7e6fdf2","linkUuid":"8013b6d9-5251-496c-bc6c-df2d5e83a6bf","fileName":"mva-receipt.pdf","fileType":"RHB_OFFER_LETTER","fileTypeDesc":null,"fileSize":728,"filePath":"\/opt\/obs\/upload\/application\/8013b6d9-5251-496c-bc6c-df2d5e83a6bf\/1792568275928_3fd5e710-2e9b-404e-b7cb-fe2bd3c3821f_mva-receipt.pdf.pdf","contentType":"application\/pdf"}];
+    /** @type {ObsAttachmentDTO[] | undefined} */
+    var uploadedRhbDirectDebitList = [{"uuid":"49814ea6-c35f-4f0f-98a1-1ea1f760dc41","linkUuid":"8013b6d9-5251-496c-bc6c-df2d5e83a6bf","fileName":"mva-receipt.pdf","fileType":"RHB_DIRECT_DEBIT","fileTypeDesc":null,"fileSize":728,"filePath":"\/opt\/obs\/upload\/application\/8013b6d9-5251-496c-bc6c-df2d5e83a6bf\/1792568275924_512a119c-6731-4ef2-9c8f-973bdefe316d_mva-receipt.pdf.pdf","contentType":"application\/pdf"}];
+    /** @type {ObsAttachmentDTO[] | undefined} */
+    var uploadedRhbBodResoList = [{"uuid":"520fadd0-b0b4-4581-ac5a-7f7847a67533","linkUuid":"8013b6d9-5251-496c-bc6c-df2d5e83a6bf","fileName":"mva-receipt.pdf","fileType":"RHB_BOD_RESO","fileTypeDesc":null,"fileSize":728,"filePath":"\/opt\/obs\/upload\/application\/8013b6d9-5251-496c-bc6c-df2d5e83a6bf\/1792568275924_b0eda4d2-cb56-418c-9b9e-ac479b04b323_mva-receipt.pdf.pdf","contentType":"application\/pdf"}];
+    /** @type {ObsAttachmentDTO[] | undefined} */
+    var uploadedEautoLoaList = [];
+    /** @type {ObsAttachmentDTO[] | undefined} */
+    var uploadedRhbBankStatementList = [{"uuid":"6c6b87db-cfb2-43a6-a0c0-1531e8213d34","linkUuid":"8013b6d9-5251-496c-bc6c-df2d5e83a6bf","fileName":"mva-receipt.pdf","fileType":"RHB_BANK_STATEMENT","fileTypeDesc":null,"fileSize":728,"filePath":"\/opt\/obs\/upload\/application\/8013b6d9-5251-496c-bc6c-df2d5e83a6bf\/1792568275925_0a176663-bf51-4e9b-8568-761d9570cb25_mva-receipt.pdf.pdf","contentType":"application\/pdf"}];
+    /** @type {ObsAttachmentDTO[] | undefined} */
+    var uploadedEautoBodResoList = [{"uuid":"d13fb772-5023-4fe5-bb2a-7c5cbb4ff3f6","linkUuid":"8013b6d9-5251-496c-bc6c-df2d5e83a6bf","fileName":"mva-receipt.pdf","fileType":"EAUTO_BOD_RESO","fileTypeDesc":null,"fileSize":728,"filePath":"\/opt\/obs\/upload\/application\/8013b6d9-5251-496c-bc6c-df2d5e83a6bf\/1792568275925_43047997-b439-4585-bc3c-c247017c2e3e_mva-receipt.pdf.pdf","contentType":"application\/pdf"}];
+    /** @type {ObsAttachmentDTO[] | undefined} */
+    var uploadedRhbLoaList = [];
+    /** @type {ObsAttachmentDTO[] | undefined} */
+    var uploadedLhdnTaxCertList = [{"uuid":"ec9529f9-b69e-486b-b051-c5b8ff92cd84","linkUuid":"8013b6d9-5251-496c-bc6c-df2d5e83a6bf","fileName":"mva-receipt.pdf","fileType":"LHDN_TAX_CERT","fileTypeDesc":null,"fileSize":728,"filePath":"\/opt\/obs\/upload\/application\/8013b6d9-5251-496c-bc6c-df2d5e83a6bf\/1792568315034_ec05c9a2-864c-4cd1-a033-120c979ff64a_mva-receipt.pdf.pdf","contentType":"application\/pdf"}];
+
+    // Track editable attachment UUIDs (for deferred deletion)
+    /** @type {string[]} */
+    var editableAttachmentUuids = ["d639758c-9af3-4c5c-b456-2672b7e6fdf2","49814ea6-c35f-4f0f-98a1-1ea1f760dc41","520fadd0-b0b4-4581-ac5a-7f7847a67533","6c6b87db-cfb2-43a6-a0c0-1531e8213d34","d13fb772-5023-4fe5-bb2a-7c5cbb4ff3f6","ec9529f9-b69e-486b-b051-c5b8ff92cd84"];
+
+
+
+    // Step 4 Constants
+    const maxFileSizeLimitStep4 = 10 * 1024 * 1024; // 10MB
+    const maxFileCountStep4 = 2;
+    const validFileTypesStep4 = ['image/jpg', 'image/png', 'image/jpeg', 'application/pdf'];
+
+    const ERROR_FILE_SIZE = 'FE_ERROR_FILE_SIZE';
+    const ERROR_FILE_TYPE = 'FE_ERROR_FILE_TYPE';
+    const ERROR_FILE_SIZE_AND_TYPE = 'FE_ERROR_FILE_SIZE_AND_TYPE';
+    const ERROR_NUM_OF_FILE = 'FE_ERROR_NUM_OF_FILE';
+
+    var step4ReadOnly = false || false;
+    var ssmType = true || false;
+    var isSdnBhd = true || false;
+
+    const linkedUuid = "8013b6d9-5251-496c-bc6c-df2d5e83a6bf";
+    const initialHardcopyStatus = null;
+
+    /**
+     * Remove a file UUID from the editable attachments tracking array
+     * @param {string} fileUuid
+     */
+    function removeItemFromEditableAttachmentUuids(fileUuid) {
+        var index = editableAttachmentUuids.indexOf(fileUuid);
+        if (index !== -1) {
+            editableAttachmentUuids.splice(index, 1);
+        }
+    }
+
+    /**
+     * Add a file UUID to the editable attachments tracking array
+     * @param {string} fileUuid
+     */
+    function addItemToEditableAttachmentUuids(fileUuid) {
+        var index = editableAttachmentUuids.indexOf(fileUuid);
+        if (index === -1) {
+            editableAttachmentUuids.push(fileUuid);
+        }
+    }
+
+    // Revert checkbox list for Registration Documents
+    const revertCheckboxIds = [
+        '#upload-rhb-offer-letter-checkbox',
+        '#upload-rhb-direct-debit-checkbox',
+        '#upload-rhb-bod-reso-checkbox',
+        '#upload-eauto-loa-checkbox',
+        '#upload-rhb-bank-statement-checkbox',
+        '#upload-eauto-bod-reso-checkbox',
+        '#upload-rhb-loa-checkbox',
+        '#upload-lhdn-tax-cert-checkbox'
+    ];
+
+    $(document).ready(function() {
+        const csrfToken = "8vyn2l27Qf1BlJfgQ2dbFkIInBoGcFQ4tC2l4kS7Hef91tyUwprDvGuLeclspvLSJUpvLyY_sSNiSTEV1hWQ1CXaLtfFs-yj";
+        const csrfHeader = "X-CSRF-TOKEN";
+
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            }
+        });
+
+        // Initialize file displays
+        if (uploadedRhbOfferLetterList && uploadedRhbOfferLetterList.length > 0) {
+            refreshStep4FileDisplay('rhb-offer-letter', uploadedRhbOfferLetterList, true);
+        }
+        if (uploadedRhbDirectDebitList && uploadedRhbDirectDebitList.length > 0) {
+            refreshStep4FileDisplay('rhb-direct-debit', uploadedRhbDirectDebitList, true);
+        }
+        if (uploadedRhbBodResoList && uploadedRhbBodResoList.length > 0) {
+            refreshStep4FileDisplay('rhb-bod-reso', uploadedRhbBodResoList, true);
+        }
+        if (uploadedEautoLoaList && uploadedEautoLoaList.length > 0) {
+            refreshStep4FileDisplay('eauto-loa', uploadedEautoLoaList, true);
+        }
+        if (uploadedRhbBankStatementList && uploadedRhbBankStatementList.length > 0) {
+            refreshStep4FileDisplay('rhb-bank-statement', uploadedRhbBankStatementList, true);
+        }
+        if (uploadedEautoBodResoList && uploadedEautoBodResoList.length > 0) {
+            refreshStep4FileDisplay('eauto-bod-reso', uploadedEautoBodResoList, true);
+        }
+        if (uploadedRhbLoaList && uploadedRhbLoaList.length > 0) {
+            refreshStep4FileDisplay('rhb-loa', uploadedRhbLoaList, true);
+        }
+        if (uploadedLhdnTaxCertList && uploadedLhdnTaxCertList.length > 0) {
+            refreshStep4FileDisplay('lhdn-tax-cert', uploadedLhdnTaxCertList, true);
+        }
+
+        // Setup upload handlers
+        setupStep4UploadHandler('rhb-offer-letter', 'RHB_OFFER_LETTER');
+        setupStep4UploadHandler('rhb-direct-debit', 'RHB_DIRECT_DEBIT');
+        setupStep4UploadHandler('rhb-bod-reso', 'RHB_BOD_RESO');
+        setupStep4UploadHandler('eauto-loa', 'EAUTO_LOA');
+        setupStep4UploadHandler('rhb-bank-statement', 'RHB_BANK_STATEMENT');
+        setupStep4UploadHandler('eauto-bod-reso', 'EAUTO_BOD_RESO');
+        setupStep4UploadHandler('rhb-loa', 'RHB_LOA');
+        setupStep4UploadHandler('lhdn-tax-cert', 'LHDN_TAX_CERT');
+
+        // ==================== REVERT TO UCD LOGIC ====================
+        $('#to-revert-ucd').click(function(e) {
+            e.preventDefault();
+
+            // Check if any revert checkbox is ticked
+            const isAnyChecked = revertCheckboxIds.some(function(id) {
+                return $(id).is(':checked');
+            });
+
+            if (!isAnyChecked) {
+                openCustomDialog({
+                    title: "Revert to UCD",
+                    content: "Please select at least a checkbox field that you want revert to the UCD.",
+                    confirmBtnName: "OK",
+                    shouldHideCancelBtn: true,
+                    onConfirmCloseHandler: function() {
+                        $('body').css('overflow', '');
+                    },
+                    onCloseButtonCloseHandler: function() {
+                        $('body').css('overflow', '');
+                    }
+                });
+                setTimeout(function() {
+                    $('body').css('overflow', 'hidden');
+                }, 10);
+                return;
+            }
+
+            openRevertToUcdDialog();
+        });
+
+        function openRevertToUcdDialog() {
+            $('#revert-ucd-remarks').val('');
+            $('#revert-ucd-remarks-error').addClass('hidden');
+            $('#revert-ucd-remarks').removeClass('invalid-marker');
+
+            $("#revert-ucd-dialog").dialog({
+                title: "Revert to UCD",
+                modal: true,
+                width: "480",
+                height: "auto",
+                resizable: false,
+                draggable: false,
+                position: { my: "center", at: "center", of: window },
+                closeOnEscape: false,
+                close: function() {
+                    $(this).dialog("destroy");
+                    $('body').css('overflow', '');
+                },
+                buttons: {
+                    "Cancel": function() {
+                        $(this).dialog("close");
+                        $('body').css('overflow', '');
+                    },
+                    "Revert": function() {
+                        var remarks = $('#revert-ucd-remarks').val().trim();
+                        if (!remarks) {
+                            $('#revert-ucd-remarks-error').removeClass('hidden');
+                            $('#revert-ucd-remarks').addClass('invalid-marker');
+                            return;
+                        }
+
+                        // Collect checked field names
+                        var revertedFields = [];
+                        revertCheckboxIds.forEach(function(id) {
+                            if ($(id).is(':checked')) {
+                                // Extract field name from checkbox id
+                                var fieldName = id.replace('#', '').replace('-checkbox', '');
+                                revertedFields.push(fieldName);
+                            }
+                        });
+
+                        // Submit to backend
+                        var formData = new FormData();
+                        formData.append('uuid', linkedUuid);
+                        formData.append('revertedFields', revertedFields.join(','));
+                        formData.append('remarks', remarks);
+
+                        $.ajax({
+                            url: contextPath + 'admin/form/edit/revert-registration-doc-to-ucd',
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function(response) {
+                                $("#revert-ucd-dialog").dialog("close");
+
+                                openCustomDialog({
+                                    title: "Success",
+                                    content: "Registration documents have been reverted to UCD successfully.",
+                                    confirmBtnName: "OK",
+                                    shouldHideCancelBtn: true,
+                                    shouldHideCloseBtn: true,
+                                    onConfirmHandler: function() {
+                                        location.reload();
+                                    }
+                                });
+                                setTimeout(function() {
+                                    $('body').css('overflow', 'hidden');
+                                }, 10);
+                            },
+                            error: function(xhr, status, error) {
+                                $("#revert-ucd-dialog").dialog("close");
+
+                                var errorMsg = "Failed to revert. Please try again.";
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMsg = xhr.responseJSON.message;
+                                }
+
+                                openCustomDialog({
+                                    title: "Unable to proceed",
+                                    content: errorMsg,
+                                    confirmBtnName: "OK",
+                                    shouldHideCancelBtn: true,
+                                    shouldHideCloseBtn: true,
+                                    onConfirmHandler: function() {
+                                        location.reload();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                },
+                open: function() {
+                    $('#revert-ucd-remarks').blur();
+                    $('.ui-dialog-buttonpane').find('button:contains("Revert")').addClass('custom-dialog-primary-btn');
+                    $('.ui-dialog-buttonpane').find('button:contains("Cancel")').addClass('custom-dialog-secondary-btn');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default ui-state-focus');
+                }
+            }).dialog("open");
+            setTimeout(function() {
+                $('body').css('overflow', 'hidden');
+            }, 10);
+        }
+
+        // Handle remarks input to clear error
+        $('#revert-ucd-remarks').on('input', function() {
+            if ($(this).val().trim()) {
+                $('#revert-ucd-remarks-error').addClass('hidden');
+                $(this).removeClass('invalid-marker');
+            }
+        });
+        // ==================== END REVERT TO UCD LOGIC ====================
+
+        // ==================== SAVE BUTTON HANDLERS ====================
+        $('#to-edit, #to-edit-final').click(function(e) {
+            e.preventDefault();
+
+            // Validation: Check if all required fields have files uploaded
+            const validationResult = isFormValid();
+            if (!validationResult.isValid) {
+                // const missingFieldsList = validationResult.missingFields.join(', ');
+                // openCustomDialog({
+                //     title: "Error",
+                //     content: `Please upload files for the following required fields: ${missingFieldsList}`,
+                //     confirmBtnName: "OK",
+                //     shouldHideCancelBtn: true,
+                //     shouldHideCloseBtn: true,
+                //     onConfirmHandler: function() {
+                //         $('body').css('overflow', '');
+                //     },
+                // });
+                // setTimeout(function() {
+                //     $('body').css('overflow', 'hidden');
+                // }, 10);
+                return;
+            }
+
+            // Save directly - uploads already done immediately when files selected
+            saveRegistrationDocuments();
+        });
+
+        function saveRegistrationDocuments() {
+            var formData = new FormData();
+            formData.append('uuid', linkedUuid);
+            formData.append('editableAttachmentUuids', editableAttachmentUuids.join(','));
+            formData.append('assigneeUserId', $("#assigneeUserIdHidden").val());
+
+            $.ajax({
+                url: `${contextPath}admin/form/edit/registration-documents`,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    openCustomDialog({
+                        title: "Success",
+                        content: "Registration documents have been saved successfully.",
+                        confirmBtnName: "OK",
+                        shouldHideCancelBtn: true,
+                        shouldHideCloseBtn: true,
+                        onConfirmHandler: function() {
+                            location.reload();
+                        }
+                    });
+                    setTimeout(function() {
+                        $('body').css('overflow', 'hidden');
+                    }, 10);
+                },
+                error: function(xhr, status, error) {
+                    var errorMsg = "Failed to save registration documents. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+
+                    openCustomDialog({
+                        title: "Unable to proceed",
+                        content: errorMsg,
+                        confirmBtnName: "OK",
+                        shouldHideCancelBtn: true,
+                        shouldHideCloseBtn: true,
+                        onConfirmHandler: function () {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        }
+
+        // ==================== END SAVE BUTTON HANDLERS ====================
+
+        // Submit Verified button handler
+        $('#to-submit-verified').click(function(e) {
+            e.preventDefault();
+
+            openCustomDialog({
+                title: "Verified - Post Documents",
+                content: "Ready for UCD to post the registration documents?",
+                confirmBtnName: "Yes",
+                onConfirmHandler: function() {
+                    $('body').css('overflow', '');
+
+                    $.ajax({
+                        url: `${contextPath}admin/form/edit/verify-softcopy-documents`,
+                        type: 'POST',
+                        data: { uuid: linkedUuid },
+                        contentType: 'application/x-www-form-urlencoded',
+                        success: function(response) {
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            var errorMsg = "Submission for verified failed";
+                            if(xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+
+                            openCustomDialog({
+                                title: "Unable to proceed",
+                                content: errorMsg,
+                                confirmBtnName: "OK",
+                                shouldHideCancelBtn: true,
+                                shouldHideCloseBtn: true,
+                                onConfirmHandler: function () {
+                                    location.reload();
+                                }
+                            });
+                        }
+                    });
+                },
+                cancelBtnName: "No",
+                shouldHideCloseBtn: false,
+                onCloseButtonCloseHandler: function() {
+                    $('body').css('overflow', '');
+                },
+                onCancelHandler: function() {
+                    $('body').css('overflow', '');
+                }
+            });
+
+            setTimeout(function() {
+                $('body').css('overflow', 'hidden');
+            }, 10);
+        });
+
+        // ==================== HARDCOPY STATUS UPDATE LOGIC ====================
+        // Hide update button initially
+        $('#update-hardcopy-status').hide();
+
+        // Remember the saved remarks so we can detect unsaved edits.
+        var initialHardcopyRemarks = $('#hardcopy-remarks').val();
+
+        function refreshHardcopyControls() {
+            var status = $('#hardcopyStatus').val() || initialHardcopyStatus;
+            var isIncompleteDocs = (status === 'PENDING_UCD_INCOMPLETE_DOCS');
+
+            // Optional Remarks, Resubmission list and Reverted Reason only for "Pending UCD - Incomplete Docs"
+            if (isIncompleteDocs) {
+                if ($('#hardcopy-remarks-section').is(':hidden')) {
+                    $('#hardcopy-remarks').val(initialHardcopyRemarks);
+                }
+                $('#hardcopy-remarks-section').show();
+                $('#hardcopy-resubmission-list').show();
+                $('#hardcopy-resubmission-remarks-display').show();
+            } else {
+                $('#hardcopy-remarks-section').hide();
+                $('#hardcopy-remarks').val('');
+                $('#hardcopy-resubmission-list').hide();
+                $('#hardcopy-resubmission-remarks-display').hide();
+            }
+
+            // Update button shows only when there is an unsaved change — either the status differs
+            // from its saved value, or (in incomplete-docs state) the remarks differ from saved.
+            // This way it disappears again after a successful Update (the page reloads).
+            var statusChanged = initialHardcopyStatus && status !== initialHardcopyStatus;
+            var remarksChanged = isIncompleteDocs && ($('#hardcopy-remarks').val() !== initialHardcopyRemarks);
+            if (statusChanged || remarksChanged) {
+                $('#update-hardcopy-status').show();
+            } else {
+                $('#update-hardcopy-status').hide();
+            }
+        }
+
+        $('#hardcopyStatus').change(refreshHardcopyControls);
+        $('#hardcopy-remarks').on('input', refreshHardcopyControls);
+        refreshHardcopyControls();
+
+        // Update hardcopy status button click handler
+        $('#update-hardcopy-status').click(function(e) {
+            e.preventDefault();
+
+            var newStatus = $('#hardcopyStatus').val();
+            if (!newStatus) {
+                openCustomDialog({
+                    title: "Error",
+                    content: "Please select a status.",
+                    confirmBtnName: "OK",
+                    shouldHideCancelBtn: true,
+                    shouldHideCloseBtn: true,
+                    onConfirmCloseHandler: function() {
+                        $('body').css('overflow', '');
+                    },
+                    onCloseButtonCloseHandler: function() {
+                        $('body').css('overflow', '');
+                    }
+                });
+                setTimeout(function() {
+                    $('body').css('overflow', 'hidden');
+                }, 10);
+                return;
+            }
+
+            $.ajax({
+                url: `${contextPath}admin/form/edit/update-hardcopy-status`,
+                type: 'POST',
+                data: {
+                    uuid: linkedUuid,
+                    status: newStatus,
+                    expectedCurrentStatus: initialHardcopyStatus,
+                    hardcopyRemarks: $('#hardcopy-remarks').val()
+                },
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    var errorMsg = "Failed to update hardcopy status. Please try again.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+
+                    openCustomDialog({
+                        title: "Unable to proceed",
+                        content: errorMsg,
+                        confirmBtnName: "OK",
+                        shouldHideCancelBtn: true,
+                        shouldHideCloseBtn: true,
+                        onConfirmHandler: function() {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        });
+        // ==================== END HARDCOPY STATUS UPDATE LOGIC ====================
+
+        // ==================== REQUEST HARDCOPY RESUBMISSION DIALOG ====================
+        // Uses the shared #custom-dialog (jQuery UI) so it matches the Cancel Pre-Application dialog.
+        var HARDCOPY_RESUBMISSION_DOCS = [
+            'RHB Offer Letter',
+            'RHB Direct Debit Application Form',
+            isSdnBhd ? 'RHB BoD Reso e-TukarMilik' : 'RHB LoA e-TukarMilik',
+            'eRHB Bank Statement Cover / RHB Welcome Letter',
+            isSdnBhd ? 'eAuto BoD Reso e-TukarMilik' : 'eAuto LoA e-TukarMilik',
+            'LHDN Company Tax Compliance Certificate'
+        ];
+
+        $('#request-hardcopy-resubmission').click(function() {
+            var checkboxesHtml = '';
+            HARDCOPY_RESUBMISSION_DOCS.forEach(function(doc) {
+                checkboxesHtml +=
+                    '<label class="hardcopy-doc-label">' +
+                        '<input type="checkbox" class="hardcopy-doc-checkbox" value="' + doc + '">' +
+                        '<span>' + doc + '</span>' +
+                    '</label>';
+            });
+
+            var styles =
+                '<style>' +
+                    '.hardcopy-doc-label{display:flex;align-items:center;padding:6px 8px;margin-bottom:2px;cursor:pointer;border-radius:4px;transition:background-color .2s;}' +
+                    '.hardcopy-doc-label:hover{background-color:#f5f5f5;}' +
+                    '.hardcopy-doc-label input[type="checkbox"]{margin-right:10px;cursor:pointer;width:16px;height:16px;}' +
+                    '.hardcopy-doc-label span{font-size:14px;color:#000000;}' +
+                '</style>';
+
+            var dialogHtml =
+                '<div style="text-align:left;">' +
+                    '<p style="margin-bottom:12px;color:#000000;font-size:14px;line-height:1.5;">' +
+                        'Please select the document(s) that require hardcopy resubmission. Once selected, click the "Confirm" button to notify the UCD via email for resubmission.' +
+                    '</p>' +
+                    '<div class="hardcopy-doc-reasons">' + checkboxesHtml + '</div>' +
+                    '<div class="mt-3">' +
+                        '<label class="font-bold label mandatory">Remarks:</label>' +
+                        '<textarea id="hardcopy-resubmission-remarks-input" class="textarea-input remove-non-ascii w-full mt-2" rows="4" maxlength="3000"></textarea>' +
+                        '<div id="hardcopy-resubmission-remarks-error" class="hidden">' +
+                            '<span class="text-danger">This field is required</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div id="hardcopy-doc-error" style="color:#dc3545;font-size:13px;margin-top:12px;display:none;">This field is required</div>' +
+                '</div>';
+
+            $('#custom-dialog-content').html(styles + dialogHtml);
+
+            $('#custom-dialog').dialog({
+                title: 'Request Hardcopy Resubmission',
+                modal: true,
+                width: '520',
+                height: 'auto',
+                resizable: false,
+                draggable: false,
+                position: { my: 'center', at: 'center', of: window },
+                closeOnEscape: false,
+                close: function() { $(this).dialog('destroy'); },
+                buttons: {
+                    'Cancel': function() {
+                        $(this).dialog('close');
+                    },
+                    'Confirm': function() {
+                        var $dlg = $(this);
+                        var selected = $('#custom-dialog-content .hardcopy-doc-checkbox:checked').map(function() {
+                            return $(this).val();
+                        }).get();
+
+                        if (selected.length === 0) {
+                            $('#hardcopy-doc-error').show();
+                            return;
+                        }
+                        $('#hardcopy-doc-error').hide();
+
+                        var remarks = $('#hardcopy-resubmission-remarks-input').val().trim();
+                        if (!remarks) {
+                            $('#hardcopy-resubmission-remarks-error').removeClass('hidden');
+                            $('#hardcopy-resubmission-remarks-input').addClass('invalid-marker');
+                            return;
+                        }
+                        $('#hardcopy-resubmission-remarks-error').addClass('hidden');
+                        $('#hardcopy-resubmission-remarks-input').removeClass('invalid-marker');
+
+                        $.ajax({
+                            url: contextPath + 'admin/form/edit/send-hardcopy-resubmission-email',
+                            type: 'POST',
+                            data: {
+                                uuid: linkedUuid,
+                                selectedDocs: selected.join('||'),
+                                remarks: remarks
+                            },
+                            contentType: 'application/x-www-form-urlencoded',
+                            success: function(response) {
+                                $dlg.dialog('close');
+                                // Reload so the green success banner and the persisted resubmission list render.
+                                var url = new URL(window.location.href);
+                                url.searchParams.set('hardcopyResubmissionSent', 'true');
+                                window.location.href = url.toString();
+                            },
+                            error: function(xhr) {
+                                var msg = 'Failed to send email. Please try again.';
+                                if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                                $('#hardcopy-doc-error').text(msg).show();
+                            }
+                        });
+                    }
+                },
+                open: function() {
+                    // Hide the title-bar close (X) for this dialog.
+                    $(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').hide();
+                    $('.ui-dialog-buttonpane').find('button:contains("Confirm")').addClass('custom-dialog-primary-btn');
+                    $('.ui-dialog-buttonpane').find('button:contains("Cancel")').addClass('custom-dialog-secondary-btn');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default ui-state-focus');
+                }
+            }).dialog('open');
+        });
+
+        // Clear the remarks required-error as soon as the user starts typing
+        $(document).on('input', '#hardcopy-resubmission-remarks-input', function() {
+            if ($(this).val().trim()) {
+                $('#hardcopy-resubmission-remarks-error').addClass('hidden');
+                $(this).removeClass('invalid-marker');
+            }
+        });
+        // ==================== END REQUEST HARDCOPY RESUBMISSION DIALOG ====================
+
+        // Create Account button handler
+        $('#create-account-btn').click(function(e) {
+            e.preventDefault();
+            var originalUrl = "https:\/\/staging.eauto.my\/uat4";
+            var applicationUuid = "4b3d010f-5a7e-4e25-9ac2-190ddd82ccf8";
+
+            openCustomDialog({
+                title: "Create Account",
+                content: "Are you sure you want to proceed for company account creation?",
+                confirmBtnName: "Yes",
+                cancelBtnName: "No",
+                shouldHideCloseBtn: false,
+                onConfirmHandler: function() {
+                    $('body').css('overflow', '');
+
+                    // Validate stage5Status before redirecting
+                    $.ajax({
+                        url: `${contextPath}admin/form/edit/validate-account-creation`,
+                        type: 'POST',
+                        data: { uuid: linkedUuid },
+                        contentType: 'application/x-www-form-urlencoded',
+                        success: function(response) {
+                            // Validation passed, proceed with account creation
+                            window.location.href = originalUrl + '/view/account/company-obs/new.do?id=' + applicationUuid;
+                        },
+                        error: function(xhr, status, error) {
+                            var errorMsg = "Action could not be completed because some details have changed. Please refresh and try again.";
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+
+                            openCustomDialog({
+                                title: "Unable to Proceed",
+                                content: errorMsg,
+                                confirmBtnName: "OK",
+                                shouldHideCancelBtn: true,
+                                shouldHideCloseBtn: true,
+                                onConfirmHandler: function() {
+                                    location.reload();
+                                }
+                            });
+                            setTimeout(function() {
+                                $('body').css('overflow', 'hidden');
+                            }, 10);
+                        }
+                    });
+                },
+                onCloseButtonCloseHandler: function() {
+                    $('body').css('overflow', '');
+                },
+                onCancelHandler: function() {
+                    $('body').css('overflow', '');
+                }
+            });
+
+            setTimeout(function() {
+                $('body').css('overflow', 'hidden');
+            }, 10);
+        });
+
+    });
+
+    // ==================== STEP 4 REGISTRATION DOCUMENTS FUNCTIONS ====================
+
+    function setupStep4UploadHandler(fieldId, fileType) {
+        const buttonId = `#upload-${fieldId}`;
+        const inputId = `#upload-${fieldId}-input`;
+
+        $(buttonId).click(_ => $(inputId).click());
+
+        $(inputId).change(e => {
+            const fileInputElement = e.currentTarget;
+            const fileList = fileInputElement.files;
+            const uploadedList = getStep4UploadedList(fieldId);
+            const existingCount = uploadedList ? uploadedList.length : 0;
+
+            const validationError = validateFilesWithExistingFileCount(
+                existingCount,
+                fileList,
+                maxFileSizeLimitStep4,
+                maxFileCountStep4,
+                validFileTypesStep4
+            );
+
+            $(`#upload-${fieldId}-error-container`).children().addClass("hidden");
+
+            if (!validationError) {
+                handleUploadStep4File(fieldId, fileType, fileList);
+            } else {
+                $(inputId).val("");
+                $(`#upload-${fieldId}-file-error`).removeClass("hidden");
+                $(`#upload-${fieldId}-file-error`).text(convertFileErrorToMessage(validationError));
+            }
+            e.currentTarget.value = '';
+        });
+    }
+
+    function getStep4UploadedList(fieldId) {
+        switch (fieldId) {
+            case 'rhb-offer-letter': return uploadedRhbOfferLetterList;
+            case 'rhb-direct-debit': return uploadedRhbDirectDebitList;
+            case 'rhb-bod-reso': return uploadedRhbBodResoList;
+            case 'eauto-loa': return uploadedEautoLoaList;
+            case 'rhb-bank-statement': return uploadedRhbBankStatementList;
+            case 'eauto-bod-reso': return uploadedEautoBodResoList;
+            case 'rhb-loa': return uploadedRhbLoaList;
+            case 'lhdn-tax-cert': return uploadedLhdnTaxCertList;
+            default: return [];
+        }
+    }
+
+    function setStep4UploadedList(fieldId, list) {
+        switch (fieldId) {
+            case 'rhb-offer-letter': uploadedRhbOfferLetterList = list; break;
+            case 'rhb-direct-debit': uploadedRhbDirectDebitList = list; break;
+            case 'rhb-bod-reso': uploadedRhbBodResoList = list; break;
+            case 'eauto-loa': uploadedEautoLoaList = list; break;
+            case 'rhb-bank-statement': uploadedRhbBankStatementList = list; break;
+            case 'eauto-bod-reso': uploadedEautoBodResoList = list; break;
+            case 'rhb-loa': uploadedRhbLoaList = list; break;
+            case 'lhdn-tax-cert': uploadedLhdnTaxCertList = list; break;
+        }
+    }
+
+    function refreshStep4FileDisplay(fieldId, fileList, firstTimeLoad = false) {
+        const containerId = `#${fieldId}-container`;
+        const uploadedContainerId = `#uploaded-${fieldId}`;
+        const errorId = `#upload-${fieldId}-error`;
+        const buttonId = `#upload-${fieldId}`;
+
+        $(uploadedContainerId).empty();
+
+        if (fileList && fileList.length > 0) {
+            const isFieldReadOnly = step4ReadOnly;
+            const deleteButtonHidden = isFieldReadOnly ? 'hidden' : '';
+            const cursorPointer = 'cursor-pointer';
+
+            fileList.forEach((file, index) => {
+                const uploadedFileDivString = `
+                <div class="bg-white py-2 px-3 flex space-x-2 border rounded items-center"
+                     id="${fieldId}-file-${index}">
+                    <input type="text"
+                           id="${fieldId}-file-uuid-${index}"
+                           class="hidden"
+                           value="${file.uuid}"/>
+                    <span onclick="handleReadFile('${file.uuid}')"
+                          id="${fieldId}-filename-${index}"
+                          class="filename-text ${cursorPointer}">${file.fileName}</span>
+                    <button type="button"
+                            class="underline text-danger ${deleteButtonHidden}"
+                            onclick="handleDeleteStep4File('${fieldId}', ${index})">
+                        Delete Attachment
+                    </button>
+                </div>
+            `;
+                $(uploadedContainerId).append(uploadedFileDivString);
+            });
+
+            $(buttonId).prop("disabled", fileList.length >= maxFileCountStep4 || isFieldReadOnly);
+            $(containerId).removeClass("hidden");
+            $(errorId).addClass("hidden");
+        } else {
+            $(containerId).addClass("hidden");
+            if (firstTimeLoad) {
+                $(errorId).addClass("hidden");
+            } else {
+                $(errorId).removeClass("hidden");
+            }
+            $(buttonId).prop("disabled", step4ReadOnly);
+        }
+    }
+
+    function handleUploadStep4File(fieldId, fileType, fileList) {
+        var formData = new FormData();
+        formData.append('type', fileType);
+        for (var i = 0; i < fileList.length; i++) {
+            formData.append('files', fileList[i]);
+        }
+
+        $.ajax({
+            url: `${contextPath}admin/upload/link/${linkedUuid}/registration-document/upload`,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                // Add newly uploaded files to the list
+                const currentList = getStep4UploadedList(fieldId) || [];
+                const newList = [...currentList, ...response];
+                setStep4UploadedList(fieldId, newList);
+                refreshStep4FileDisplay(fieldId, newList);
+
+                // Track newly uploaded file UUIDs
+                for (var i = 0; i < response.length; i++) {
+                    addItemToEditableAttachmentUuids(response[i].uuid);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(`Error uploading ${fieldId}:`, error);
+                $(`#upload-${fieldId}-file-error`).removeClass("hidden");
+                $(`#upload-${fieldId}-file-error`).text("Failed to upload file. Please try again.");
+            }
+        });
+    }
+
+    /**
+     * Handle deletion of Step 4 file - actual deletion happens on Save
+     * @param {string} fieldId
+     * @param {number} index
+     */
+    function handleDeleteStep4File(fieldId, index) {
+        const fileUuid = $(`#${fieldId}-file-uuid-${index}`).val();
+
+        // Update local list (UI only, no server call)
+        const currentList = getStep4UploadedList(fieldId) || [];
+        const newList = currentList.filter(file => file.uuid !== fileUuid);
+        setStep4UploadedList(fieldId, newList);
+        refreshStep4FileDisplay(fieldId, newList);
+
+        // Remove from editable attachments tracking
+        // Backend will delete files not in this list when Save is clicked
+        removeItemFromEditableAttachmentUuids(fileUuid);
+    }
+
+    const validateFilesWithExistingFileCount = (existingCount, fileList, maxFileSizeLimitInByte, maxNumOfFiles, validContentTypes) => {
+        if(fileList && (fileList.length) > 0 && (fileList.length + existingCount) <= maxNumOfFiles) {
+            for(var file of fileList) {
+                if(file.size > maxFileSizeLimitInByte && !validContentTypes.some(contentType => contentType === file.type)) {
+                    return ERROR_FILE_SIZE_AND_TYPE;
+                } else if (file.size > maxFileSizeLimitInByte) {
+                    return ERROR_FILE_SIZE;
+                } else if (!validContentTypes.some(contentType => contentType === file.type)) {
+                    return ERROR_FILE_TYPE;
+                }
+            }
+        } else {
+            return ERROR_NUM_OF_FILE;
+        }
+    }
+
+    const convertFileErrorToMessage = (fileError) => {
+        switch(fileError) {
+            case ERROR_FILE_SIZE_AND_TYPE: return "Invalid file type and size exceeded.";
+            case ERROR_FILE_SIZE: return "File size exceeded.";
+            case ERROR_FILE_TYPE: return "Invalid file type.";
+            case ERROR_NUM_OF_FILE: return "Number of file exceeded.";
+        }
+    }
+
+    function handleReadFile(fileUuid) {
+        const readFileApi = `${contextPath}admin/upload/link/${linkedUuid}/attachment/${fileUuid}`;
+        window.open(readFileApi, '_blank');
+    }
+
+    /**
+     * Validates that all required registration document fields have at least one file uploaded
+     * Required fields depend on isSdnBhd:
+     * - SSM (Sdn Bhd): RHB Offer Letter, RHB Direct Debit, RHB BoD Reso, RHB Bank Statement, eAuto BoD Reso, LHDN Tax Cert
+     * - Non-SSM (Sole Prop/Enterprise/LLP/Trading): RHB Offer Letter, RHB Direct Debit, eAuto LoA, RHB Bank Statement, RHB LoA, LHDN Tax Cert
+     * @returns {{isValid: boolean, missingFields: string[]}} Validation result with list of missing fields
+     */
+    function isFormValid() {
+        // Common fields for both SSM and non-SSM
+        const commonFields = [
+            { fieldId: 'rhb-offer-letter', label: 'RHB Offer Letter' },
+            { fieldId: 'rhb-direct-debit', label: 'RHB Direct Debit Application Form' },
+            { fieldId: 'rhb-bank-statement', label: 'RHB Bank Statement Cover / RHB Welcome Letter' },
+            { fieldId: 'lhdn-tax-cert', label: 'LHDN Company Tax Compliance Certificate' }
+        ];
+
+        // SdnBhd-only fields (Sdn Bhd)
+        const sdnBhdOnlyFields = [
+            { fieldId: 'rhb-bod-reso', label: 'RHB BoD Reso e-TukarMilik' },
+            { fieldId: 'eauto-bod-reso', label: 'eAuto BoD Reso e-TukarMilik' }
+        ];
+
+        // Non-SdnBhd-only fields (Sole Prop / Enterprise / LLP / Trading License)
+        const nonSdnBhdOnlyFields = [
+            { fieldId: 'eauto-loa', label: 'eAuto LoA e-TukarMilik' },
+            { fieldId: 'rhb-loa', label: 'RHB LoA e-TukarMilik' }
+        ];
+
+        // Determine required fields based on isSdnBhd
+        const requiredFields = isSdnBhd
+            ? [...commonFields, ...sdnBhdOnlyFields]
+            : [...commonFields, ...nonSdnBhdOnlyFields];
+
+        const missingFields = [];
+
+        requiredFields.forEach(function(field) {
+            const uploadedList = getStep4UploadedList(field.fieldId);
+            if (!uploadedList || uploadedList.length === 0) {
+                missingFields.push(field.label);
+                // Show error for this field
+                $(`#upload-${field.fieldId}-error`).removeClass('hidden');
+            } else {
+                // Hide error for this field
+                $(`#upload-${field.fieldId}-error`).addClass('hidden');
+            }
+        });
+
+        return {
+            isValid: missingFields.length === 0,
+            missingFields: missingFields
+        };
+    }
+
+    function inputTextReplacement(elem, replacer) {
+        var cursorPosition = elem.selectionStart;
+        var oldValue = $(elem).val();
+        var newValue = replacer(oldValue);
+
+        if (oldValue !== newValue) {
+            var beforeCursor = oldValue.substring(0, cursorPosition);
+            var processedBeforeCursor = replacer(beforeCursor);
+            var removedChars = beforeCursor.length - processedBeforeCursor.length;
+
+            $(elem).val(newValue);
+
+            var newCursorPosition = cursorPosition - removedChars;
+            elem.setSelectionRange(newCursorPosition, newCursorPosition);
+        }
+    }
+
+    $(document).on("input", ".remove-non-ascii", function(event) {
+        inputTextReplacement(this, (value) => value.replace(/[^\x00-\x7F]/g, ''));
+    });
+
+    function downloadInvoice(applicationNo) {
+        var downloadUrl = contextPath + 'f/download-invoice?applicationNo=' + applicationNo;
+        window.open(downloadUrl, '_blank');
+    }
+
+    function downloadEInvoice(eInvoiceUuid) {
+        var downloadUrl = contextPath + 'f/download-einvoice/' + eInvoiceUuid;
+        window.open(downloadUrl, '_blank');
+    }
+
+    $(function() {
+        $('#extend-application-btn').click(function() {
+            openExtendDialog();
+        });
+    });
+
+    function openExtendDialog() {
+        $('#extend-remarks').val('');
+        $('#extend-remarks-error').addClass('hidden');
+        $('#extend-remarks').removeClass('invalid-marker');
+
+        $("#extend-dialog").dialog({
+            title: "Extend Application Period",
+            modal: true,
+            width: "480",
+            height: "auto",
+            resizable: false,
+            draggable: false,
+            position: { my: "center", at: "center", of: window },
+            closeOnEscape: false,
+            close: function() {
+                $(this).dialog("destroy");
+            },
+            buttons: {
+                "Cancel": function() {
+                    $(this).dialog("close");
+                },
+                "Confirm": function() {
+                    var remarks = $('#extend-remarks').val().trim();
+                    if (!remarks) {
+                        $('#extend-remarks-error').removeClass('hidden');
+                        $('#extend-remarks').addClass('invalid-marker');
+                        return;
+                    }
+
+                    var formData = new FormData();
+                    formData.append('uuid', linkedUuid);
+                    formData.append('remarks', remarks);
+
+                    // Guard against double-submit while the request is in flight
+                    $('#extend-dialog').parent().find('.ui-dialog-buttonpane button').prop('disabled', true);
+
+                    $.ajax({
+                        url: contextPath + 'admin/form/extend',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            $("#extend-dialog").dialog("close");
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            $("#extend-dialog").dialog("close");
+
+                            var errorMsg = "Failed to extend application period. Please try again.";
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+
+                            openCustomDialog({
+                                title: "Unable to proceed",
+                                content: errorMsg,
+                                confirmBtnName: "OK",
+                                shouldHideCancelBtn: true,
+                                shouldHideCloseBtn: true,
+                                onConfirmHandler: function() {
+                                    location.reload();
+                                }
+                            });
+                        }
+                    });
+                }
+            },
+            open: function() {
+                $(this).dialog("widget").find(".ui-dialog-titlebar-close").hide();
+                $('.ui-dialog-buttonpane').find('button:contains("Confirm")').addClass('custom-dialog-primary-btn');
+                $('.ui-dialog-buttonpane').find('button:contains("Cancel")').addClass('custom-dialog-secondary-btn');
+                $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default ui-state-focus');
+            }
+        }).dialog("open");
+    }
+
+    $(document).on('input', '#extend-remarks', function() {
+        if ($(this).val().trim()) {
+            $('#extend-remarks-error').addClass('hidden');
+            $(this).removeClass('invalid-marker');
+        }
+    });
+</script></head>
+
+
+
+
+
+<body>
+    <div>
+    <div id="overlay" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+    <div id="payment-overlay" style="display: none;">
+        <div class="payment-loading-box">
+            <div class="spinner-and-text">
+                <div class="payment-spinner"></div>
+                <div class="payment-loading-text">Connecting...</div>
+            </div>
+            <div class="overlay-description">Please do not close the browser while connecting to payment gateway</div>
+        </div>
+    </div>
+</div>
+    <div>
+    <div id="custom-dialog">
+        <span id="custom-dialog-content"></span>
+    </div>
+</div>
+    <div>
+    <div id="checkbox-dialog">
+        <div class="checkbox-dialog-container">
+            <span id="checkbox-dialog-content"></span>
+            <div id="checkbox-dialog-checkboxes"></div>
+        </div>
+    </div>
+</div>
+
+    <!-- Revert to UCD Dialog -->
+    <div id="revert-ucd-dialog" style="display: none;">
+        <div class="w-full">
+            <div class="mb-4">
+                <span>Are you sure to revert the selected fields for UCD to edit?</span>
+            </div>
+            <div>
+                <label class="font-bold label mandatory">Remarks:</label>
+                <textarea id="revert-ucd-remarks" class="textarea-input remove-non-ascii w-full mt-2" rows="4" maxlength="3000"></textarea>
+                <div id="revert-ucd-remarks-error" class="hidden">
+                    <span class="text-danger">This field is required</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Extend Application Period Dialog -->
+    <div id="extend-dialog" style="display: none;">
+        <div class="w-full">
+            <div class="mb-4">
+                <span>Provide your remarks to extend the application period by 30 days.</span>
+            </div>
+            <div>
+                <label class="font-bold label mandatory">Remarks:</label>
+                <textarea id="extend-remarks" class="textarea-input remove-non-ascii w-full mt-2" rows="4" maxlength="3000"></textarea>
+                <div id="extend-remarks-error" class="hidden">
+                    <span class="text-danger">This field is required</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Section with Create Account Button -->
+    <div class="header-wrapper" style="position: relative;">
+        
+        <header class="site-header">
+            <img src="/obs/images/header.jpg" alt="header-line" class="header-line-img">
+            <div class="header-container">
+                <div class="logo">
+                    <img src="/obs/images/eauto-logo-tm.png" alt="Logo" class="logo-img">
+                </div>
+                <div class="header-title">Dealer Application - P261021/00889 / NA60001190 - UDIN ONBOARD TESTING SDN0001</div>
+            </div>
+        </header>
+    
+        <!-- Create Account Button (positioned in header) -->
+        
+    </div>
+    
+    <div class="outer-container">
+        <div class="main-container">
+            <!-- Tabs Section -->
+            
+        <div class="dealer-app-tabs-container">
+            <div class="dealer-app-tabs">
+                <!-- Pre-Application Tab -->
+                <a href="/obs/admin/preOnb/summary/795778e0-372a-4fb9-a018-f40b1fa17f6b" class="dealer-app-tab">
+                    Pre-Application
+                </a>
+
+                <!-- Application Tab -->
+                <a href="/obs/admin/form/edit/4b3d010f-5a7e-4e25-9ac2-190ddd82ccf8" class="dealer-app-tab">
+                    Application
+                </a>
+
+                <!-- Registration Documents Tab -->
+                <a href="#" class="dealer-app-tab active">
+                    Registration Documents
+                </a>
+
+            </div>
+        </div>
+    
+
+            <!-- Success banner: full-width strip directly below the tabs (per Figma) -->
+            
+
+            <!-- Content Container -->
+            <div class="content-container">
+                <input type="hidden" id="assigneeUserIdHidden" name="assigneeUserId" value="99000/QA121550735">
+                <div class="grid-container">
+                    <!-- Main Content -->
+                    <div class="tab-content">
+                        <div id="form-container">
+                            <div id="form-title-section">
+                                <div id="title">Registration Documents</div>
+
+                                <div class="flex items-center gap-2">
+                                    
+                                    <button class="revert-btn py-1 px-3" id="to-revert-ucd" type="button">Revert to UCD</button>
+                                    <button class="primary-btn py-1 px-3 w-[66px]" id="to-edit" type="button">Save</button>
+                                    
+                                </div>
+                            </div>
+                            <!-- step 4 start -->
+                            
+
+    <!-- step 4 start --->
+    <div class="form-section">
+        
+        
+
+        <div class="flex-container">
+
+            <!-- 1. RHB Offer Letter -->
+            <div class="flex-item flex w-full color-table-header py-5">
+                <div class="flex justify-center items-center pl-3 pr-5">
+                    
+                    <input type="checkbox" id="upload-rhb-offer-letter-checkbox" name="uploadRhbOfferLetterCheckbox" class="revert-checkbox">
+                </div>
+                <div class="flex flex-col items-start justify-center w-full">
+                    <span class="font-bold label mandatory">RHB Offer Letter</span>
+                    <div class="flex items-center">
+                        <span class="text-subtitle">Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB</span>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="flex-item w-full odd py-5">
+                <div id="rhb-offer-letter-container" class="flex mb-5">
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+
+                    <div id="uploaded-rhb-offer-letter" class="space-y-3 w-full">
+                <div class="bg-white py-2 px-3 flex space-x-2 border rounded items-center" id="rhb-offer-letter-file-0">
+                    <input type="text" id="rhb-offer-letter-file-uuid-0" class="hidden" value="d639758c-9af3-4c5c-b456-2672b7e6fdf2">
+                    <span onclick="handleReadFile('d639758c-9af3-4c5c-b456-2672b7e6fdf2')" id="rhb-offer-letter-filename-0" class="filename-text cursor-pointer">mva-receipt.pdf</span>
+                    <button type="button" class="underline text-danger " onclick="handleDeleteStep4File('rhb-offer-letter', 0)">
+                        Delete Attachment
+                    </button>
+                </div>
+            </div>
+
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-center space-x-2">
+                        <button id="upload-rhb-offer-letter" type="button" class="upload-btn py-1 px-2 disabled:opacity-50">Browse Files...</button>
+
+                        <input type="file" id="upload-rhb-offer-letter-input" name="rhbOfferLetter" class="hidden" accept="image/png,image/jpeg,application/pdf" multiple="">
+                    </div>
+
+                    <div class="w-full flex justify-center" id="upload-rhb-offer-letter-error-container">
+                        <div id="upload-rhb-offer-letter-error" class="text-danger hidden">Please upload the required document(s)</div>
+                        <div id="upload-rhb-offer-letter-file-error" class="text-danger hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. RHB Direct Debit Application Form -->
+            <div class="flex-item flex w-full bg-white py-5">
+                <div class="flex justify-center items-center pl-3 pr-5">
+                    
+                    <input type="checkbox" id="upload-rhb-direct-debit-checkbox" name="uploadRhbDirectDebitCheckbox" class="revert-checkbox">
+                </div>
+                <div class="flex flex-col items-start justify-center w-full">
+                    <span class="font-bold label mandatory">RHB Direct Debit Application Form</span>
+                    <div class="flex items-center">
+                        <span class="text-subtitle">Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB</span>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="flex-item w-full odd py-5">
+                <div id="rhb-direct-debit-container" class="flex mb-5">
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+
+                    <div id="uploaded-rhb-direct-debit" class="space-y-3 w-full">
+                <div class="bg-white py-2 px-3 flex space-x-2 border rounded items-center" id="rhb-direct-debit-file-0">
+                    <input type="text" id="rhb-direct-debit-file-uuid-0" class="hidden" value="49814ea6-c35f-4f0f-98a1-1ea1f760dc41">
+                    <span onclick="handleReadFile('49814ea6-c35f-4f0f-98a1-1ea1f760dc41')" id="rhb-direct-debit-filename-0" class="filename-text cursor-pointer">mva-receipt.pdf</span>
+                    <button type="button" class="underline text-danger " onclick="handleDeleteStep4File('rhb-direct-debit', 0)">
+                        Delete Attachment
+                    </button>
+                </div>
+            </div>
+
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-center space-x-2">
+                        <button id="upload-rhb-direct-debit" type="button" class="upload-btn py-1 px-2 disabled:opacity-50">Browse Files...</button>
+
+                        <input type="file" id="upload-rhb-direct-debit-input" name="rhbDirectDebit" class="hidden" accept="image/png,image/jpeg,application/pdf" multiple="">
+                    </div>
+
+                    <div class="w-full flex justify-center" id="upload-rhb-direct-debit-error-container">
+                        <div id="upload-rhb-direct-debit-error" class="text-danger hidden">Please upload the required document(s)</div>
+                        <div id="upload-rhb-direct-debit-file-error" class="text-danger hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. RHB BoD Reso e-TukarMilik (Sdn Bhd)-->
+            <div class="flex-item flex w-full color-table-header py-5">
+                <div class="flex justify-center items-center pl-3 pr-5">
+                    
+                    <input type="checkbox" id="upload-rhb-bod-reso-checkbox" name="uploadRhbBodResoCheckbox" class="revert-checkbox">
+                </div>
+                <div class="flex flex-col items-start justify-center w-full">
+                    <span class="font-bold label mandatory">RHB BoD Reso e-TukarMilik</span>
+                    <div class="flex items-center">
+                        <span class="text-subtitle">Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB</span>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="flex-item w-full odd py-5">
+                <div id="rhb-bod-reso-container" class="flex mb-5">
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+
+                    <div id="uploaded-rhb-bod-reso" class="space-y-3 w-full">
+                <div class="bg-white py-2 px-3 flex space-x-2 border rounded items-center" id="rhb-bod-reso-file-0">
+                    <input type="text" id="rhb-bod-reso-file-uuid-0" class="hidden" value="520fadd0-b0b4-4581-ac5a-7f7847a67533">
+                    <span onclick="handleReadFile('520fadd0-b0b4-4581-ac5a-7f7847a67533')" id="rhb-bod-reso-filename-0" class="filename-text cursor-pointer">mva-receipt.pdf</span>
+                    <button type="button" class="underline text-danger " onclick="handleDeleteStep4File('rhb-bod-reso', 0)">
+                        Delete Attachment
+                    </button>
+                </div>
+            </div>
+
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-center space-x-2">
+                        <button id="upload-rhb-bod-reso" type="button" class="upload-btn py-1 px-2 disabled:opacity-50">Browse Files...</button>
+
+                        <input type="file" id="upload-rhb-bod-reso-input" name="rhbBodReso" class="hidden" accept="image/png,image/jpeg,application/pdf" multiple="">
+                    </div>
+
+                    <div class="w-full flex justify-center" id="upload-rhb-bod-reso-error-container">
+                        <div id="upload-rhb-bod-reso-error" class="text-danger hidden">Please upload the required document(s)</div>
+                        <div id="upload-rhb-bod-reso-file-error" class="text-danger hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. RHB LoA e-TukarMilik (Sole Prop / Enterprise / LLP & Trading License)-->
+            
+
+            
+
+            <!-- 4. RHB Bank Statement Cover / RHB Welcome Letter -->
+            <div class="flex-item flex w-full bg-white py-5">
+                <div class="flex justify-center items-center pl-3 pr-5">
+                    
+                    <input type="checkbox" id="upload-rhb-bank-statement-checkbox" name="uploadRhbBankStatementCheckbox" class="revert-checkbox">
+                </div>
+                <div class="flex flex-col items-start justify-center w-full">
+                    <span class="font-bold label mandatory">RHB Bank Statement Cover / RHB Welcome Letter</span>
+                    <div class="flex items-center">
+                        <span class="text-subtitle">Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB</span>
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="flex-item w-full odd py-5">
+                <div id="rhb-bank-statement-container" class="flex mb-5">
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+
+                    <div id="uploaded-rhb-bank-statement" class="space-y-3 w-full">
+                <div class="bg-white py-2 px-3 flex space-x-2 border rounded items-center" id="rhb-bank-statement-file-0">
+                    <input type="text" id="rhb-bank-statement-file-uuid-0" class="hidden" value="6c6b87db-cfb2-43a6-a0c0-1531e8213d34">
+                    <span onclick="handleReadFile('6c6b87db-cfb2-43a6-a0c0-1531e8213d34')" id="rhb-bank-statement-filename-0" class="filename-text cursor-pointer">mva-receipt.pdf</span>
+                    <button type="button" class="underline text-danger " onclick="handleDeleteStep4File('rhb-bank-statement', 0)">
+                        Delete Attachment
+                    </button>
+                </div>
+            </div>
+
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-center space-x-2">
+                        <button id="upload-rhb-bank-statement" type="button" class="upload-btn py-1 px-2 disabled:opacity-50">Browse Files...</button>
+
+                        <input type="file" id="upload-rhb-bank-statement-input" name="rhbBankStatement" class="hidden" accept="image/png,image/jpeg,application/pdf" multiple="">
+                    </div>
+
+                    <div class="w-full flex justify-center" id="upload-rhb-bank-statement-error-container">
+                        <div id="upload-rhb-bank-statement-error" class="text-danger hidden">Please upload the required document(s)</div>
+                        <div id="upload-rhb-bank-statement-file-error" class="text-danger hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. eAuto BoD Reso e-TukarMilik (Sdn Bhd)-->
+            <div class="flex-item flex w-full color-table-header py-5">
+                <div class="flex justify-center items-center pl-3 pr-5">
+                    
+                    <input type="checkbox" id="upload-eauto-bod-reso-checkbox" name="uploadEautoBodResoCheckbox" class="revert-checkbox">
+                </div>
+                <div class="flex flex-col items-start justify-center w-full">
+                    <span class="font-bold label mandatory">eAuto BoD Reso e-TukarMilik</span>
+                    <div class="flex items-center">
+                        <span class="text-subtitle">Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB</span>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="flex-item w-full odd py-5">
+                <div id="eauto-bod-reso-container" class="flex mb-5">
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+
+                    <div id="uploaded-eauto-bod-reso" class="space-y-3 w-full">
+                <div class="bg-white py-2 px-3 flex space-x-2 border rounded items-center" id="eauto-bod-reso-file-0">
+                    <input type="text" id="eauto-bod-reso-file-uuid-0" class="hidden" value="d13fb772-5023-4fe5-bb2a-7c5cbb4ff3f6">
+                    <span onclick="handleReadFile('d13fb772-5023-4fe5-bb2a-7c5cbb4ff3f6')" id="eauto-bod-reso-filename-0" class="filename-text cursor-pointer">mva-receipt.pdf</span>
+                    <button type="button" class="underline text-danger " onclick="handleDeleteStep4File('eauto-bod-reso', 0)">
+                        Delete Attachment
+                    </button>
+                </div>
+            </div>
+
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-center space-x-2">
+                        <button id="upload-eauto-bod-reso" type="button" class="upload-btn py-1 px-2 disabled:opacity-50">Browse Files...</button>
+
+                        <input type="file" id="upload-eauto-bod-reso-input" name="eautoBodReso" class="hidden" accept="image/png,image/jpeg,application/pdf" multiple="">
+                    </div>
+
+                    <div class="w-full flex justify-center" id="upload-eauto-bod-reso-error-container">
+                        <div id="upload-eauto-bod-reso-error" class="text-danger hidden">Please upload the required document(s)</div>
+                        <div id="upload-eauto-bod-reso-file-error" class="text-danger hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. eAuto LoA e-TukarMilik (Sole Prop / Enterprise / LLP & Trading License)-->
+            
+
+            
+
+            <!-- 6. LHDN Company Tax Compliance Certificate -->
+            <div class="flex-item flex w-full bg-white py-5">
+                <div class="flex justify-center items-center pl-3 pr-5">
+                    
+                    <input type="checkbox" id="upload-lhdn-tax-cert-checkbox" name="uploadLhdnTaxCertCheckbox" class="revert-checkbox">
+                </div>
+                <div class="flex flex-col items-start justify-center w-full">
+                    <span class="font-bold label mandatory">LHDN Company Tax Compliance Certificate</span>
+                    <div class="flex items-center">
+                        <span class="text-subtitle">Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB</span>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="flex-item w-full odd py-5">
+                <div id="lhdn-tax-cert-container" class="flex mb-5">
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+
+                    <div id="uploaded-lhdn-tax-cert" class="space-y-3 w-full">
+                <div class="bg-white py-2 px-3 flex space-x-2 border rounded items-center" id="lhdn-tax-cert-file-0">
+                    <input type="text" id="lhdn-tax-cert-file-uuid-0" class="hidden" value="ec9529f9-b69e-486b-b051-c5b8ff92cd84">
+                    <span onclick="handleReadFile('ec9529f9-b69e-486b-b051-c5b8ff92cd84')" id="lhdn-tax-cert-filename-0" class="filename-text cursor-pointer">mva-receipt.pdf</span>
+                    <button type="button" class="underline text-danger " onclick="handleDeleteStep4File('lhdn-tax-cert', 0)">
+                        Delete Attachment
+                    </button>
+                </div>
+            </div>
+
+                    <div class="flex justify-center items-center pl-3 pr-5">
+                        <span class="w-[1.25rem] text-center"></span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-center space-x-2">
+                        <button id="upload-lhdn-tax-cert" type="button" class="upload-btn py-1 px-2 disabled:opacity-50">Browse Files...</button>
+
+                        <input type="file" id="upload-lhdn-tax-cert-input" name="lhdnTaxCert" class="hidden" accept="image/png,image/jpeg,application/pdf" multiple="">
+                    </div>
+
+                    <div class="w-full flex justify-center" id="upload-lhdn-tax-cert-error-container">
+                        <div id="upload-lhdn-tax-cert-error" class="text-danger hidden">Please upload the required document(s)</div>
+                        <div id="upload-lhdn-tax-cert-file-error" class="text-danger hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="declaration border-t border-[#CCCCCC] text-[13px] px-6 py-8">
+        <div class="font-bold">By submitting the required documents via the eAuto portal, I hereby confirm and agree that:</div>
+        <ol class="list-decimal pl-6 mt-2 mb-0">
+            <li class="mb-1">I am duly authorised to act on behalf of the company/entity named in this application.</li>
+            <li class="mb-1">All information and documents provided are true, accurate, complete, and up-to-date.</li>
+            <li class="mb-1">I understand that eAuto Sdn Bhd reserves the right to verify the submitted documents with relevant authorities, banks, or third parties, and to request additional documentation or clarification if deemed necessary.</li>
+            <li class="mb-1">I acknowledge that submission of documents does not guarantee approval of the application.</li>
+            <li class="mb-1">I accept that any false, misleading, or forged information may result in immediate rejection of the application, suspension, or termination of access to eAuto services, without prejudice to any legal action available to eAuto.</li>
+        </ol>
+    </div>
+
+
+                            <!-- step 4 end -->
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Panel -->
+                    <div class="sidebar-panel">
+                        <div class="sidebar-header">
+                            <div class="sidebar-header-title">Application No:
+                                <span class="sidebar-header-value">NA60001190</span>
+                            </div>
+                        </div>
+                        <div class="sidebar-content">
+                            <div class="sidebar-label">Assignee:</div>
+                            <div class="sidebar-value">
+                                <div class="custom-select">
+                                    <select id="assigneeUserId" onchange="document.getElementById('assigneeUserIdHidden').value = this.value;" class="readonly-select">
+                                        <option value="">Select</option>
+                                        <option value="99000/AzfarInt">Azfar</option>
+                                        <option value="99000/boruiluan">BO ruiluan</option>
+                                        <option value="99000/a0FnHhcUY">BO User bjGIQ</option>
+                                        <option value="99000/aaBBy">BO User bwvzW</option>
+                                        <option value="99000/akP6HM6">BO User GhFbw</option>
+                                        <option value="99000/bNJ71CsRT">BO User huWnF</option>
+                                        <option value="99000/biEX5Ju">BO User kbomK</option>
+                                        <option value="99000/bAT2NMC">BO User nPlkY</option>
+                                        <option value="99000/be2eao">BO User sxscg</option>
+                                        <option value="99000/axevXUzjSD">BO User sYRlw</option>
+                                        <option value="99000/bousertest1">BO user test 1</option>
+                                        <option value="99000/eautomie">BRANDON TEST MIE</option>
+                                        <option value="99000/charmaintest333">Charmain Ea Chiang</option>
+                                        <option value="99000/Charmaintest222">Charmain Ea Chiang</option>
+                                        <option value="99000/CharTest124">Charmain Ea Chiang</option>
+                                        <option value="99000/QAMM09041">Charmain Ea Chiang</option>
+                                        <option value="99000/CharTest123">Charmain Ea Chiang</option>
+                                        <option value="99000/CharTest125">Charmain Ea Chiang</option>
+                                        <option value="99000/BOChar">CHARMAIN EA CHIANG chg</option>
+                                        <option value="99000/QA121550011">CHARMAIN QA0011</option>
+                                        <option value="99000/QA121550013">CHARMAIN QA0013</option>
+                                        <option value="99000/QA121550015">CHARMAIN QA0015</option>
+                                        <option value="99000/QA121550017">CHARMAIN QA0017</option>
+                                        <option value="99000/QA121550058">CHARMAIN QA0058</option>
+                                        <option value="99000/QA121550059">CHARMAIN QA0059</option>
+                                        <option value="99000/QA121550063">CHARMAIN QA0063</option>
+                                        <option value="99000/QA121550065">CHARMAIN QA0065</option>
+                                        <option value="99000/QA121550101">CHARMAIN QA0101</option>
+                                        <option value="99000/QAMISMATCH0116">CHARMAIN QA0116</option>
+                                        <option value="99000/QA121550401">CHARMAIN QA0401</option>
+                                        <option value="99000/QA121550421">CHARMAIN QA0421</option>
+                                        <option value="99000/QA121550435">CHARMAIN QA0435</option>
+                                        <option value="99000/QA121550437">CHARMAIN QA0437</option>
+                                        <option value="99000/QA121550459">CHARMAIN QA0459</option>
+                                        <option value="99000/QA121550461">CHARMAIN QA0461</option>
+                                        <option value="99000/QA121550463">CHARMAIN QA0463</option>
+                                        <option value="99000/QA121550672">CHARMAIN QA0672</option>
+                                        <option value="99000/QA121550692">CHARMAIN QA0692</option>
+                                        <option value="99000/QA121550694">CHARMAIN QA0694</option>
+                                        <option value="99000/QA121550708">CHARMAIN QA0708</option>
+                                        <option value="99000/QA121550731">CHARMAIN QA0731</option>
+                                        <option value="99000/QA121550733">CHARMAIN QA0733</option>
+                                        <option value="99000/QA121550735" selected="selected" class="selected">CHARMAIN QA0735</option>
+                                        <option value="99000/QA121550882">CHARMAIN QA0882</option>
+                                        <option value="99000/QA121550884">CHARMAIN QA0884</option>
+                                        <option value="99000/QA121550886">CHARMAIN QA0886</option>
+                                        <option value="99000/QA121550902">CHARMAIN QA0902</option>
+                                        <option value="99000/QA121550906">CHARMAIN QA0906</option>
+                                        <option value="99000/QA121550908">CHARMAIN QA0908</option>
+                                        <option value="99000/QA121550928">CHARMAIN QA0928</option>
+                                        <option value="99000/QA121550932">CHARMAIN QA0932</option>
+                                        <option value="99000/QA121550940">CHARMAIN QA0940</option>
+                                        <option value="99000/QA121550948">CHARMAIN QA0948</option>
+                                        <option value="99000/QA121550956">CHARMAIN QA0956</option>
+                                        <option value="99000/QA121550960">CHARMAIN QA0960</option>
+                                        <option value="99000/QA121550964">CHARMAIN QA0964</option>
+                                        <option value="99000/QA121550972">CHARMAIN QA0972</option>
+                                        <option value="99000/QA121550978">CHARMAIN QA0978</option>
+                                        <option value="99000/QA121550982">CHARMAIN QA0982</option>
+                                        <option value="99000/QA121550986">CHARMAIN QA0986</option>
+                                        <option value="99000/QA121550994">CHARMAIN QA0994</option>
+                                        <option value="99000/QA121551002">CHARMAIN QA1002</option>
+                                        <option value="99000/QA121551010">CHARMAIN QA1010</option>
+                                        <option value="99000/QA121551017">CHARMAIN QA1017</option>
+                                        <option value="99000/QA121551039">CHARMAIN QA1039</option>
+                                        <option value="99000/QA121551043">CHARMAIN QA1043</option>
+                                        <option value="99000/QA121551047">CHARMAIN QA1047</option>
+                                        <option value="99000/QA121551463">CHARMAIN QA1463</option>
+                                        <option value="99000/QA121551503">CHARMAIN QA1503</option>
+                                        <option value="99000/QA121551548">CHARMAIN QA1548</option>
+                                        <option value="99000/QA121552023">CHARMAIN QA2023</option>
+                                        <option value="99000/QA121552027">CHARMAIN QA2027</option>
+                                        <option value="99000/QA121552029">CHARMAIN QA2029</option>
+                                        <option value="99000/QA121552032">CHARMAIN QA2032</option>
+                                        <option value="99000/QA121552034">CHARMAIN QA2034</option>
+                                        <option value="99000/QA121552036">CHARMAIN QA2036</option>
+                                        <option value="99000/QA121552037">CHARMAIN QA2039</option>
+                                        <option value="99000/QA121552043">CHARMAIN QA2043</option>
+                                        <option value="99000/QA121552248">CHARMAIN QA2248</option>
+                                        <option value="99000/QA121552250">CHARMAIN QA2250</option>
+                                        <option value="99000/mfyilink">LIM YI LINK</option>
+                                        <option value="99000/74937493">MUSIC SDN BHD</option>
+                                        <option value="99000/aCkZtt1239">sdtPhAPWEMhvmv</option>
+                                        <option value="99000/besAjEyDLi">SlcklBI</option>
+                                        <option value="99000/traze">traze</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="sidebar-label">
+                                <div id="assigneeUserId-error" class="hidden">
+                                    <div class="text-danger">This field is required</div>
+                                </div>
+                            </div>
+                            
+                            <div class="sidebar-section">
+                                <div class="sidebar-label">Application Status:</div>
+                                <div class="status-with-action">
+                                    <div class="sidebar-value">
+                                        <span class="status-badge approved">Approved</span>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                            <div class="sidebar-section">
+                                <div class="sidebar-label">Registration Documents Submission Date:</div>
+                                <div class="sidebar-value">
+                                    <span>2026-10-21 03:38pm</span>
+                                </div>
+                            </div>
+
+                            
+
+                            
+
+                            <button type="button" id="to-submit-verified" class="submit-verified-btn">
+                                Verified
+                            </button>
+
+                            
+
+                            
+
+                            
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body></html>

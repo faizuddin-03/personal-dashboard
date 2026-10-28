@@ -242,7 +242,7 @@ export default function CustomRunTab() {
               <span className="text-xs text-slate-300">Run the SRD checklist (details page, Yes-link, BO JPJ XML Log) if a Deregistration completes</span>
             </label>
             <p className="text-[11px] leading-snug text-slate-500">
-              Unlike the numbered TS cases on the "9306 TS" tab, this run has no
+              Unlike the numbered TS cases on the &quot;9306 TS&quot; tab, this run has no
               fixed pass/fail expectation — it reports whatever the app actually
               did for this exact combination.
             </p>

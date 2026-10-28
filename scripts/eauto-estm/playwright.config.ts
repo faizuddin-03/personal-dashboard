@@ -16,7 +16,8 @@ export default defineConfig({
     navigationTimeout: 60000,
     actionTimeout: 30000,
     screenshot: 'only-on-failure',
-    video: 'on',
+    // No recording — eAuto tool runs keep only their result (Faizuddin, 2026-10-21).
+    video: 'off',
 
     // slowMo is LOAD-BEARING, not a debugging nicety. It is the setting the
     // original script has always run under, and without it the payment step

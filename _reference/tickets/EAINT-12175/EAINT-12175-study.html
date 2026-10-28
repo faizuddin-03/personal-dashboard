@@ -1,0 +1,343 @@
+<title>EAINT-12175 Ticket Study</title>
+<style>
+  :root {
+    --bg: #f5f6f7;
+    --surface: #ffffff;
+    --surface-2: #eceff2;
+    --text: #1b2027;
+    --text-muted: #5b6472;
+    --border: #d9dee4;
+    --accent: #2b5f8a;
+    --accent-soft: #e3edf5;
+    --warn: #9a6a11;
+    --warn-soft: #faf1de;
+    --danger: #a83a2c;
+    --danger-soft: #f8e9e6;
+    --good: #2f6f4f;
+    --good-soft: #e6f0ea;
+    --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    --sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171b;
+      --surface: #1b1f24;
+      --surface-2: #23282e;
+      --text: #e7e9ec;
+      --text-muted: #9aa3ad;
+      --border: #323944;
+      --accent: #7fb0dd;
+      --accent-soft: #223140;
+      --warn: #e0b15e;
+      --warn-soft: #362a12;
+      --danger: #e0897a;
+      --danger-soft: #3a231f;
+      --good: #7fc79c;
+      --good-soft: #1e3227;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171b;
+    --surface: #1b1f24;
+    --surface-2: #23282e;
+    --text: #e7e9ec;
+    --text-muted: #9aa3ad;
+    --border: #323944;
+    --accent: #7fb0dd;
+    --accent-soft: #223140;
+    --warn: #e0b15e;
+    --warn-soft: #362a12;
+    --danger: #e0897a;
+    --danger-soft: #3a231f;
+    --good: #7fc79c;
+    --good-soft: #1e3227;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    margin: 0;
+    padding: 48px 24px 96px;
+    line-height: 1.55;
+  }
+  ::selection { background: var(--accent-soft); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  header.doc-head {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 28px 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    text-wrap: balance;
+    line-height: 1.25;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 24px;
+    font-size: 0.86rem;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  @media (max-width: 560px) { .meta-grid { grid-template-columns: 1fr; } }
+  .meta-row { display: flex; justify-content: space-between; gap: 12px; }
+  .meta-label { color: var(--text-muted); }
+  .meta-value { font-family: var(--mono); font-size: 0.82rem; text-align: right; }
+
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+  .pill.status { color: var(--warn); background: var(--warn-soft); border-color: transparent; }
+  .pill.good { color: var(--good); background: var(--good-soft); border-color: transparent; }
+  .pill.danger { color: var(--danger); background: var(--danger-soft); border-color: transparent; }
+
+  .flag {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--warn-soft);
+    border: 1px solid var(--warn);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 0.9rem;
+  }
+  .flag .mark { font-family: var(--mono); color: var(--warn); font-weight: 700; }
+
+  section.block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 28px;
+  }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .sec-num {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 0.95rem;
+    min-width: 1.6em;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    margin: 0;
+    text-wrap: balance;
+  }
+  p { margin: 0 0 10px; max-width: 65ch; }
+  p:last-child { margin-bottom: 0; }
+
+  ol.plain {
+    margin: 0;
+    padding-left: 1.4em;
+  }
+  ol.plain li { margin-bottom: 8px; }
+  ol.plain li:last-child { margin-bottom: 0; }
+  ol.lettered { list-style-type: lower-alpha; }
+
+  .req-table-wrap { overflow-x: auto; }
+  table.req {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.85rem;
+  }
+  table.req th, table.req td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  table.req th {
+    background: var(--surface-2);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  table.req td.id { font-family: var(--mono); font-size: 0.8rem; white-space: nowrap; }
+  table.req td.status-cell { white-space: nowrap; }
+
+  .quote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    border-left: 3px solid var(--accent);
+    padding-left: 14px;
+    margin: 10px 0;
+  }
+  .cite {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 4px;
+  }
+
+  footer.doc-foot {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding-top: 12px;
+  }
+</style>
+
+<div class="page">
+
+  <header class="doc-head">
+    <div class="eyebrow">Jira Ticket Study — EAINT-12175</div>
+    <h1>To Correct Insurer Name to Lonpac Insurance Bhd &amp; Update SDPA Policy Wording Link</h1>
+    <div class="meta-grid">
+      <div class="meta-row"><span class="meta-label">Type</span><span class="meta-value">Task</span></div>
+      <div class="meta-row"><span class="meta-label">Status</span><span class="meta-value"><span class="pill status">In Development</span></span></div>
+      <div class="meta-row"><span class="meta-label">Priority</span><span class="meta-value">Medium</span></div>
+      <div class="meta-row"><span class="meta-label">Fix version</span><span class="meta-value">S34.X-20261002</span></div>
+      <div class="meta-row"><span class="meta-label">Assignee</span><span class="meta-value">Shane</span></div>
+      <div class="meta-row"><span class="meta-label">Parent</span><span class="meta-value">—</span></div>
+      <div class="meta-row"><span class="meta-label">Environment</span><span class="meta-value"><span class="pill danger">Unassigned</span></span></div>
+      <div class="meta-row"><span class="meta-label">SRD read</span><span class="meta-value">v1.1, 23.09.2026</span></div>
+    </div>
+  </header>
+
+  <div class="flag">
+    <span class="mark">⚠</span>
+    <span>Environment: not specified on the ticket, comments, or SRD. Confirmed with user — none assigned yet. Do not schedule execution or write test scenarios against an environment until this is set.</span>
+  </div>
+
+  <section class="block">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Overview</h2></div>
+    <p>Lonpac flagged 5 urgent live issues on the Secarang website: wrong insurer name ("Lonpac Insurance Berhad" instead of "Lonpac Insurance Bhd") on the About Us, FAQ, Support and Confirmation pages, plus an outdated SDPA Policy Wording link on the Add-on page. These 5 fixes (REQ-001 to REQ-005) are already deployed to production, 11 August 2026.</p>
+    <p>In parallel, the eAuto insurance module was reviewed for the same naming issue. Most eAuto screens already show the correct name and need no change. Version 1.1 of the SRD (23 September 2026) added 4 new requirements to standardise the name in the Insurance Company filter dropdown and result table, on both UCD and BackOffice, which still showed the longer "Lonpac Insurance Berhad" through a shared plan-code label.</p>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Affected portal / module</h2></div>
+    <ol class="plain">
+      <li>Secarang website — already live, out of active scope.</li>
+      <li>eAuto, Insurance module — UCD Portal, BackOffice Portal, eSTM, Credit Portal (Service Portal).</li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Where the changes are</h2></div>
+    <p>Secarang, deployed: About Us, FAQ, Support, Add-on, Confirmation pages.</p>
+    <p>eAuto, no change needed, already correct: UCD Insurance Quote &amp; Optional Coverage, UCD Policy Detail, BackOffice Policy Detail, eSTM Transaction Detail, Credit Portal Insurance Enquiry, backend Receipt PDF.</p>
+    <p>eAuto, change needed (REQ-012 to REQ-015):</p>
+    <ol class="plain">
+      <li>BackOffice — Insurance Company filter dropdown, Insurance Enquiry search screen.</li>
+      <li>BackOffice — Insurance Company column in the result table.</li>
+      <li>UCD — Insurance Company filter dropdown, Insurance Enquiry and Payment Report screens.</li>
+      <li>UCD — Insurance Company column in the result table.</li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Why the change</h2></div>
+    <p>Stated in the SRD: request originated from Lonpac (Chan Lee Chuen, Sr Manager – Digital Business) by an "Urgent" email on the naming and link issue, live on production. eAuto was reviewed in parallel for naming consistency only — Lonpac did not flag eAuto directly.</p>
+    <div class="quote">"Flagged urgent by Lonpac as this is LIVE on production."
+      <span class="cite">Source: SRD_EAINT-12175_v1.1_20260923, Section 2.2.1, item 5</span>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="sec-num">05</span><h2>What's new / changed</h2></div>
+    <p>Changed, Secarang, done: insurer name string updated to "Lonpac Insurance Bhd" on 4 pages. SDPA Policy Wording link updated to <span style="font-family:var(--mono);font-size:0.85em;">lonpac.com/downloads/policywordings-eassistsmartdriver.pdf</span>.</p>
+    <p>Changed, eAuto, v1.1, REQ-012 to REQ-015: the shared plan-code label used by the Insurance Company filter dropdown and result table, on both UCD and BackOffice, standardised from "Lonpac Insurance Berhad" to "Lonpac Insurance Bhd". Selecting the new label must still return the correct Lonpac records.</p>
+    <p>No change: every other eAuto insurer-name display point — already correct.</p>
+    <div class="req-table-wrap">
+      <table class="req">
+        <thead>
+          <tr><th>Requirement ID</th><th>Item</th><th>Acceptance criteria</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="id">REQ-012</td><td>BackOffice filter — name standardisation</td><td>Filter dropdown displays "Lonpac Insurance Bhd"; selecting it returns Lonpac records.</td><td class="status-cell"><span class="pill status">Open</span></td></tr>
+          <tr><td class="id">REQ-013</td><td>BackOffice result table — name standardisation</td><td>Insurance Company column displays "Lonpac Insurance Bhd" for Lonpac records.</td><td class="status-cell"><span class="pill status">Open</span></td></tr>
+          <tr><td class="id">REQ-014</td><td>UCD filter — name standardisation</td><td>Filter dropdown displays "Lonpac Insurance Bhd"; selecting it returns Lonpac records.</td><td class="status-cell"><span class="pill status">Open</span></td></tr>
+          <tr><td class="id">REQ-015</td><td>UCD result table — name standardisation</td><td>Insurance Company column displays "Lonpac Insurance Bhd" for Lonpac records.</td><td class="status-cell"><span class="pill status">Open</span></td></tr>
+          <tr><td class="id">REQ-001–005</td><td>Secarang pages and SDPA link</td><td>See Section 2.2.4 of the SRD.</td><td class="status-cell"><span class="pill good">Deployed 11 Aug 2026</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Important for QA</h2></div>
+    <ol class="plain">
+      <li>Environment is unassigned. Flag before writing test scenarios or scheduling execution.</li>
+      <li>REQ-001 to REQ-005 are already live on production since 11 August. Regression-check only, not net-new testing.</li>
+      <li>REQ-012 to REQ-015 are the only items with acceptance criteria not yet verified. These are what need test cases written.</li>
+      <li>The filter dropdown and result table share the same plan-code label across UCD and BackOffice, per the SRD. Verify the fix does not silently affect other insurers sharing that label — confirm with Dev.</li>
+      <li>Confirm selecting "Lonpac Insurance Bhd" in the filter still correctly returns Lonpac records. Functional check, not cosmetic only.</li>
+      <li>Explicitly out of scope, do not raise as defects: Secarang PDS link (unchanged by design), Secarang PDF receipt (backend-generated, unchanged), CIBO Admin Portal / Serba Sentral API (flagged but not in this request), the "307414-T" registration-number format (pre-2016 Act format, unrelated), other insurers' naming — Tokio Marine, RHB, Chubb, Takaful (untouched).</li>
+      <li>A hidden-blast-radius page was found by tracing the shared plan-code label in code, not named in the SRD's Affected Pages table: BackOffice Payment Report (Pemaju), reached only through the separate Insurance Dashboard portal. See Section 08.</li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Open questions</h2></div>
+    <ol class="plain">
+      <li>Testing environment — not yet assigned.</li>
+      <li>The original ticket description names the Insurance Dashboard chart series label as using the same shared plan-code label, but the v1.1 SRD's requirement list (REQ-012 to REQ-015) covers only the filter and result table on UCD and BackOffice. The chart is not in the acceptance criteria. Confirm with Dev or PO whether the chart was dropped from scope or missed in the SRD update.</li>
+      <li>Portal conflict on UCD Insurance Quote &amp; Optional Coverage. A code-reading chatbot placed this screen on the BackOffice side (Insurance menu → Insurance Quote Enquiry). The SRD (Section 2.2.3, Affected Pages item 6) names it as eAuto — UCD. Resolve which portal actually owns it before writing a navigation path or a test case.</li>
+      <li>"Invoice PDF" found by the same chatbot may not be the same document as REQ-011's Receipt PDF. Reached via BackOffice → Insurance Transaction Listing → a Lonpac transaction's detail page → an "Invoice" button (Lonpac-specific wording). REQ-011 describes a Receipt PDF, already correct. Confirm whether these are one document or two before assuming REQ-011 already covers it.</li>
+    </ol>
+    <div class="quote">"eAuto findings verified via live test transactions on staging on 28.08.2026; 2 items pending decision (see SRD Section 2.2.5–2.2.6)."
+      <span class="cite">Source: Jira EAINT-12175, description, item 6 (Additional Note)</span>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Navigation — how to reach each page</h2></div>
+    <p>Sourced from a code-reading chatbot with access to eauto, prod, origin/prod/master, 25 September 2026. Navigation only, not yet verified against a live UI. Recorded in full in <span style="font-family:var(--mono);font-size:0.85em;">knowledge/flow-eauto-insurance-enquiry.md</span>.</p>
+    <ol class="plain">
+      <li>BackOffice Insurance Transaction Listing (REQ-012, REQ-013): BackOffice → Insurance menu → Insurance Transaction Listing. Filter dropdown in the top search panel; result table has an Insurance Company column. Click a row for its Policy Detail view.</li>
+      <li>UCD Transaction Listing (REQ-014, REQ-015): dealer/UCD portal → Motor Insurance → Transaction Listing tile. Filter dropdown appears in both the basic and advanced filter areas — check both.</li>
+      <li>UCD Report (REQ-014, REQ-015): dealer/UCD portal → Motor Insurance → Report tile. Same two-places-on-the-page filter pattern as Transaction Listing.</li>
+      <li>Insurance Dashboard portal — a separate login, not reachable from BackOffice's regular menu: <span style="font-family:var(--mono);font-size:0.85em;">/motorInsurance/login/</span>, insurance-user account. From the dashboard home: Payment Report (Pemaju) — the hidden-blast-radius page — and the Insurance Company / Agency Performance chart on the home page itself.</li>
+      <li>eSTM Transaction Detail: BackOffice → <span style="font-family:var(--mono);font-size:0.85em;">/view/estm/enquiry</span> → click into a transaction row.</li>
+      <li>Credit Portal Insurance Enquiry: not a menu item — open a Hire Purchase record with an insurance component, then its Insurance Enquiry tab.</li>
+    </ol>
+  </section>
+
+  <footer class="doc-foot">SRD_EAINT-12175_v1.1_20260923 · revised by Chee Mei Jia · Teams search not run this session</footer>
+
+</div>

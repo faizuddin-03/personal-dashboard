@@ -1,0 +1,79 @@
+/* Medieval style (cozy cottage): home. Scoped to [data-style="medieval"]; see base.css and COTTAGE.md.
+   Pages: home (/), daily-update, todo, kanban. Page fixes only; base.css carries the look. */
+
+/* ── Shared: quiet empty slots ──────────────────────────────────────
+   Dashed "Nothing waiting" / "Drop here" boxes: warm dashed crust edge,
+   no fill, readable muted text. */
+[data-style="medieval"]:is([data-page="home"], [data-page="todo"], [data-page="kanban"]) main .border-dashed:not(button, a, input, textarea) {
+  border-color: var(--m-crust);
+  border-style: dashed;
+  color: var(--m-muted);
+}
+
+/* Truncated header titles: give the line room so the 32px title icon
+   is not clipped by overflow: hidden. */
+[data-style="medieval"]:is([data-page="todo"], [data-page="kanban"], [data-page="daily-update"], [data-page="home"]) main header h1 {
+  line-height: 2rem;
+}
+[data-style="medieval"]:is([data-page="todo"], [data-page="kanban"], [data-page="daily-update"], [data-page="home"]) main header h1::before {
+  margin-top: 0;
+  margin-bottom: 0;
+  vertical-align: top;
+}
+
+/* ── home ──────────────────────────────────────────────────────────── */
+/* Dashboard subtitle (signed-in email) stays readable but quiet */
+[data-style="medieval"][data-page="home"] main header .text-slate-500 { color: var(--m-muted); }
+
+/* ── daily-update ──────────────────────────────────────────────────── */
+/* The post preview is Teams text, not code: keep it in Geist sans,
+   on a well so it reads like a sheet waiting by the hearth. */
+[data-style="medieval"][data-page="daily-update"] main pre.font-sans {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--m-well);
+  color: var(--m-cream);
+}
+[data-style="medieval"][data-page="daily-update"] main header p.italic { color: var(--m-muted); }
+
+/* ── todo ──────────────────────────────────────────────────────────── */
+/* Big empty states ("Nothing to do yet", "Nothing left to focus on"):
+   swap the lucide art for the bread loaf at 4x. */
+[data-style="medieval"][data-page="todo"] main .rounded-3xl.border.py-16.text-center > .w-16.h-16:first-child,
+[data-style="medieval"][data-page="todo"] main .rounded-3xl.border.py-16.text-center > svg:first-child {
+  display: none;
+}
+[data-style="medieval"][data-page="todo"] main .rounded-3xl.border.py-16.text-center::before {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: var(--m-page-ico) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+/* ── kanban ────────────────────────────────────────────────────────── */
+/* Tasks / CR Tickets switch: active segment reads clearly in honey */
+[data-style="medieval"][data-page="kanban"] main header .p-0\.5 > button.bg-slate-700 {
+  color: var(--m-honey);
+  background-color: var(--m-oak-hi);
+  box-shadow: inset 0 0 0 1px var(--m-crust-hi);
+}
+/* Column headers: flat oak shelf with a crust edge, small hard shadow */
+[data-style="medieval"][data-page="kanban"] main .w-72.shrink-0 > .rounded-xl.border:first-child {
+  box-shadow: inset 0 0 0 1px var(--m-crust), 2px 2px 0 rgba(0, 0, 0, .45);
+}
+/* Archive drawer empty state: one pie at 4x above the text */
+[data-style="medieval"][data-page="kanban"] p.text-center.py-12::before {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 14px;
+  background: var(--m-page-ico) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+[data-style="medieval"][data-page="kanban"] p.text-center.py-12 { color: var(--m-muted); }
+

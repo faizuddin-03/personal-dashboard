@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eAuto BackOffice — eMOVE Logistics (Draft)</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Verdana,Arial,sans-serif;font-size:13px;color:#222;background:#fff}
+
+  /* ---- Shell ---- */
+  .topbar{background:linear-gradient(90deg,#8a0010 0%,#c8102e 55%,#e0203c 100%);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 18px;font-size:13px}
+  .topbar .nav{display:flex;align-items:center;gap:14px}
+  .topbar .nav a{color:#fff;text-decoration:none;cursor:pointer}
+  .topbar .pending{color:#ffe08a;font-weight:bold}
+  .topbar .account b{color:#fff}
+  .brandrow{display:flex;align-items:center;padding:14px 18px 4px}
+  .logo{font-weight:bold;font-size:30px;color:#c8102e;letter-spacing:-1px}
+  .logo .my{color:#1a4b8c;font-size:16px;vertical-align:super}
+  .greeting{padding:6px 18px 4px;font-weight:bold;font-size:15px}
+
+  .menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:10px 18px 40px}
+  .menu-col h3{color:#7a1420;font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:6px}
+  .menu-col ul{list-style:none;margin:0;padding:0}
+  .menu-col li{margin:4px 0;line-height:1.35}
+  .menu-col li a{color:#1a3fd0;text-decoration:none;cursor:pointer}
+  .menu-col li a:hover{text-decoration:underline}
+  .menu-col li a.new{font-weight:bold}
+  .menu-col li a.new::after{content:" NEW";color:#fff;background:#2e9e4f;font-size:9px;padding:1px 4px;border-radius:3px;margin-left:4px;vertical-align:middle}
+  .arrow{color:#1a3fd0}
+  .bo-footer{border-top:1px solid #ddd;margin-top:20px;padding:14px 18px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px;color:#888;font-size:11px}
+  .bo-footer a{color:#1a3fd0;text-decoration:none;cursor:pointer}
+  .bo-footer .logo{font-weight:bold;color:#c8102e}
+
+  .page{display:none}
+  .page.active{display:block}
+  .crumb{padding:8px 18px;background:#f3f3f3;border-bottom:1px solid #ddd;font-size:12px}
+  .crumb a{color:#1a3fd0;text-decoration:none;cursor:pointer}
+  .report-wrap{padding:14px 18px 50px}
+  .report-title{color:#7a1420;font-size:20px;margin:0 0 4px}
+  .report-sub{color:#555;font-size:12px;margin:0 0 14px}
+
+  /* ---- Filters ---- */
+  .filters{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:#faf7f2;border:1px solid #e7ddcd;padding:10px 12px;border-radius:4px;margin-bottom:16px}
+  .filters label{display:block;font-size:11px;color:#666;margin-bottom:3px}
+  .filters input,.filters select{padding:5px 7px;border:1px solid #bbb;border-radius:3px;font-size:12px;font-family:inherit}
+  .filters input{width:130px}
+  .btn{background:#c8102e;color:#fff;border:none;padding:7px 16px;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold}
+  .btn.secondary{background:#6c757d}
+  .btn:hover{filter:brightness(.93)}
+
+  /* STMS-enquiry style filter */
+  .filters2{padding:8px 0 4px;margin-bottom:10px}
+  .filters2 .fld{display:inline-flex;align-items:center;gap:6px;margin:0 20px 12px 0}
+  .filters2 label{font-weight:bold;font-size:12px;color:#222;white-space:nowrap}
+  .filters2 .req{color:#c00;font-weight:bold}
+  .filters2 input,.filters2 select{padding:4px 6px;border:1px solid #999;font-size:12px;font-family:inherit;background:#fff}
+  .filters2 input[type=text]{width:150px}
+  .filters2 input[type=date]{width:150px}
+  .filter-actions{text-align:right;margin:6px 0 14px;border-bottom:1px solid #ddd;padding-bottom:14px}
+  .btn-grey{background:#e6e6e6;border:1px solid #adadad;color:#222;padding:7px 16px;font-size:12px;font-weight:bold;cursor:pointer}
+  .btn-grey:hover{background:#dcdcdc}
+  .link-reset{color:#1a3fd0;text-decoration:underline;cursor:pointer;font-size:12px;margin-left:14px}
+
+  .section-title{text-align:center;font-weight:bold;font-size:16px;color:#222;margin:20px 0 6px}
+  .rec-count{font-size:12px;color:#333;margin:4px 0}
+  .section-head{color:#fff;padding:7px 12px;font-size:14px;font-weight:bold;border-radius:3px 3px 0 0;margin-top:18px;display:flex;align-items:center;gap:8px}
+  .section-head .tag{background:rgba(255,255,255,.25);font-size:11px;padding:2px 7px;border-radius:10px;font-weight:normal}
+
+  /* ---- Listing table (STMS-style) ---- */
+  table.rpt{border-collapse:collapse;width:100%;font-size:12px}
+  table.rpt th,table.rpt td{border:1px solid #fff;padding:8px 8px}
+  table.rpt thead th{background:#5b9bd5;color:#fff;text-align:center;font-weight:bold;vertical-align:middle;white-space:nowrap}
+  table.rpt thead th.left{text-align:left}
+  table.rpt tbody td{background:#cfeaf6;text-align:center;vertical-align:middle}
+  table.rpt td.left{text-align:left}
+  table.rpt td.num{text-align:right;font-variant-numeric:tabular-nums}
+  table.rpt tbody tr:hover td{background:#b6ddef}
+  table.rpt tfoot td{background:#a9d5ea;font-weight:bold;text-align:right}
+  table.rpt tfoot td.left{text-align:left}
+  table.rpt a.view{color:#1a3fd0;font-weight:bold;text-decoration:none;cursor:pointer}
+  table.rpt a.view:hover{text-decoration:underline}
+  .tblscroll{overflow-x:auto}
+
+  /* ---- Status text ---- */
+  .st{font-weight:bold}
+  .st.green{color:#1a7a34}.st.red{color:#c0392b}.st.blue{color:#1f6390}.st.amber{color:#b06a00}.st.grey{color:#777}
+
+  /* ---- Details info grid ---- */
+  .info-wrap{border:1px solid #d6d6d6;border-top:none}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .info-grid .cell{display:flex;border-bottom:1px solid #eee;font-size:12px}
+  .info-grid .cell:nth-child(odd){border-right:1px solid #eee}
+  .info-grid .k{width:180px;background:#f6f8fa;padding:8px 10px;color:#555;font-weight:bold;flex-shrink:0}
+  .info-grid .v{padding:8px 10px;color:#222}
+  @media(max-width:800px){.info-grid{grid-template-columns:1fr}.info-grid .cell:nth-child(odd){border-right:none}}
+
+  .det-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 12px}
+  .det-head .plate{color:#c8102e;font-weight:bold;font-size:20px}
+  .det-head .trx{color:#333;font-size:14px}
+
+  /* ---- Details (reference layout) ---- */
+  .bo-det{padding-top:4px}
+  .bo-det hr{border:none;border-top:1px solid #d5d5d5;margin:12px 0}
+  .det-topline{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .det-topline .d-plate{color:#e8720d;font-weight:bold;font-size:22px}
+  .det-topline .d-deal{color:#333;font-size:13px;flex:1}
+  .det-topline .d-prog{font-weight:bold;font-size:18px}
+  .det-refline{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .det-refline .d-ref{font-weight:bold;font-size:15px;color:#222}
+  .det-refline .d-draft{font-weight:bold;font-size:15px}
+  .det-h{color:#1a3fd0;font-weight:bold;font-size:14px;margin:10px 0 8px}
+  .det-h.sub{font-size:13px;margin:8px 0 6px}
+  .det-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+  .det-2col{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+  @media(max-width:800px){.det-cols,.det-2col{grid-template-columns:1fr}}
+  .kv{display:flex;gap:12px;padding:3px 0;font-size:12px;align-items:baseline}
+  .kv .k{font-weight:bold;color:#222;min-width:170px;flex-shrink:0}
+  .kv .v{color:#222}
+  .link-b{color:#1a3fd0;text-decoration:none;cursor:pointer}
+  .link-b:hover{text-decoration:underline}
+  .remark-area{width:100%;height:100px;border:1px solid #999;padding:8px;font-family:inherit;font-size:12px;margin:4px 0 10px}
+
+  .note{font-size:11px;color:#888;margin-top:6px;font-style:italic}
+  .mock-flag{position:fixed;bottom:8px;right:10px;background:#c8102e;color:#fff;font-size:11px;padding:4px 10px;border-radius:3px;opacity:.85}
+  /* Photo viewer modal */
+  .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;align-items:center;justify-content:center;padding:20px}
+  .ov.on{display:flex}
+  .ovbox{background:#fff;border-radius:8px;max-width:820px;width:100%;max-height:88vh;overflow:auto;padding:18px 20px}
+  .ovbox .ovhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .ovbox .ovhead h3{color:#7a1420;font-size:16px}
+  .ovbox .ovclose{border:none;background:#e6e6e6;border-radius:4px;padding:6px 12px;font-weight:bold;cursor:pointer}
+  .pvgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:600px){.pvgrid{grid-template-columns:repeat(2,1fr)}}
+  .pvcell{border:1px solid #d6d6d6;border-radius:6px;height:110px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;background:linear-gradient(135deg,#eef2f4,#dfe7ea);color:#5c6a72;font-size:12px;text-align:center}
+  .pvcell .cam{font-size:26px;color:#8aa0ab}
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<div id="home" class="page active">
+  <div class="topbar">
+    <div class="nav"><a onclick="show('home')">Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+  <div class="brandrow"><span class="logo">eAuto<span class="my">.my&#8482;</span></span></div>
+  <div class="greeting">Good Afternoon, Adrian Tan</div>
+
+  <div class="menu-grid">
+    <div class="menu-col">
+      <h3><span>&#128101;</span> Account Management</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Manage Company Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Backoffice User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>View UCD User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Bank/Credit Company Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Bank/Credit Company User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Bank/Credit Company IP Whitelist</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company Account Listing (Limited Features For UCD To UCD)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage AATF/PBT Account</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage e-Invoice Setup Company Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage LKM Refund Amount (below RM30)</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128666;</span> Logistics Hub</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a class="new" onclick="show('charges')">Logistics Charges Matrix Setup</a></li>
+        <li><span class="arrow">&#9656;</span> <a class="new" onclick="show('hubs')">Hub Management</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> Reports</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Reports</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Account Balance Summary</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Account Balance Summary (Month / Year)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Account Deposit / Adjustment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company POB Balance Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>POB Payment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Statement of Account (UCD)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Transaction Summary Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Transaction Summary Report (State)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Vehicle Movement Report (UCD)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Interim Payment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Reset Payment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Inter-Branch Transfer History Report</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128197;</span> Insurance</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Permission Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance User Permission Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Endorsement</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Payment Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Upload Insurance e-Certificate</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Quote Enquiry</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Refer Risk Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Payment OTP Log</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128197;</span> Onboarding</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>UCD New Application</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Application Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Pre-Application Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Application Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Pre-Application Audit Log</a></li>
+      </ul>
+    </div>
+
+    <div class="menu-col">
+      <h3><span>&#128197;</span> Transactions Relevant</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>STMS Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>APT Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eSTM Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Deregistration Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Jomcheck Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>SSM Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eDereg Pre-Checking Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eMOVE Logistics Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company Business Document Listing</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128197;</span> eAuto Plus Relevant</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>BMK Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>RHB Payment Transaction (eAuto Plus)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>LKM Refund Status</a></li>
+        <li><span class="arrow">&#9656;</span> <a>LKM Refund Attachment Listing</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128295;</span> Support Tools</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>STMS Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Support Audit Log (STMS, APT &amp; eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Audit Trail Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company Account Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Backoffice User Account Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist Company ROC, MyKad No. &amp; Vehicle No. Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Pending/Failed APT Transaction Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Pending STMS, APT &amp; eSTM Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>RHB Reconciliation Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Hasil Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Resubmit Pending STMS, APT &amp; eSTM</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manual APT Trigger</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Pending/Failed APT Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eSTM Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Enquiry</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Enquiry (New)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk STMS Cancellation</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk STMS Cancellation Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Resubmit JPJ Final Submission (STMS)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Resubmit JPJ Final Submission (eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Resubmit JPJ Final Submission (eDereg Pre-Checking)</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> Proforma Invoice / e-Invoice</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Generate Proforma Invoice</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Proforma Invoice / e-Invoice Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Credit Note Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Biometric Device Purchase &amp; Software Installation Listing</a></li>
+      </ul>
+    </div>
+
+    <div class="menu-col">
+      <h3><span>&#9881;</span> Settings</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>RHB Payment Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>1 Layer Permission Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>2 Layer Permission Setup</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eLKM Permission Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eLKM Permission Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist Company ROC (STMS &amp; eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist MyKad No. (STMS &amp; eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist MyKad No. (UCD User)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist Vehicle No.</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128295;</span> Settings (Hub Admin)</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Manual Payment Processing (STMS, APT, eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (APT)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (STMS)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (ESTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (Deregistration)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (eDereg Pre-Checking)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (LKM Refund)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>SSM XML Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Generate Batch Invoice (STMS, APT, eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Estm User Permission Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Change Director Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Customize Display Message</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk Submission Setup (JPJ Enquiry, Payment)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk Submission Setup (JPJ Enquiry, Payment) Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk Submission Control for System Maintenance</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bypass Purchase SSM (STMS &amp; eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JomCheck Report Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bypass Purchase SSM (STMS &amp; eSTM) Audit Log</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> JPJ Reports</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>eAuto Reconciliation Summary Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto STMS, APT and eSTM Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto Reconciliation Summary Report (eAuto Plus)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto BMK, HTM dan eLKM Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto eDereg Pre-Checking Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto Reconciliation Summary Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Reconciliation Report (HASIL)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ eSTM Report (HASIL)</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> Wholesale</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Manage Wholesale Company Account</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Refund Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Vehicle Payment Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Rejection Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Payment Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Alternative Vehicle Maintenance</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Alternative Vehicle Maintenance Audit Log</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bo-footer">
+    <div>Best Compatible With Mozilla Firefox V36.0.4<br>Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br><a>Contact Us</a> | <a>Terms &amp; Conditions</a> | <a>Privacy</a></div>
+    <span class="logo" style="font-size:22px">eAuto<span class="my">.my&#8482;</span></span>
+  </div>
+</div>
+
+<!-- ============ LOGISTICS CHARGES MATRIX SETUP ============ -->
+<div id="charges" class="page">
+  <div class="topbar">
+    <div class="nav"><a onclick="show('home')">Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+  <div class="report-wrap">
+    <div class="det-h" style="font-size:18px">Logistics Charges Matrix Setup</div>
+    <p style="font-size:12px;color:#555;margin:2px 0 14px">Set the logistics price charged to UCD for each distance tier. The tier is decided by the distance range. Enter whole numbers only.</p>
+
+    <table class="rpt" style="max-width:760px">
+      <thead><tr><th>#</th><th class="left">Tier</th><th class="left">Distance Range (KM)</th><th>Suggested Base Rate (RM)</th><th>Ops Price (RM)</th><th>Effective Price (RM)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="left">Tier 1 (Base)</td><td class="left">&le; 250</td><td class="num">300.00</td><td><input id="rate1" type="text" inputmode="numeric" value="300" style="width:110px;padding:4px 6px;border:1px solid #999;text-align:right" maxlength="5" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onkeypress="return event.key&gt;='0'&amp;&amp;event.key&lt;='9'" onpaste="event.preventDefault();this.value=((event.clipboardData||window.clipboardData).getData('text')||'').replace(/[^0-9]/g,'').slice(0,5)" ondrop="return false"></td><td class="num" id="eff_rate1">300.00</td></tr>
+        <tr><td>2</td><td class="left">Tier 2 (Standard)</td><td class="left">251 &ndash; 400</td><td class="num">450.00</td><td><input id="rate2" type="text" inputmode="numeric" value="450" style="width:110px;padding:4px 6px;border:1px solid #999;text-align:right" maxlength="5" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onkeypress="return event.key&gt;='0'&amp;&amp;event.key&lt;='9'" onpaste="event.preventDefault();this.value=((event.clipboardData||window.clipboardData).getData('text')||'').replace(/[^0-9]/g,'').slice(0,5)" ondrop="return false"></td><td class="num" id="eff_rate2">450.00</td></tr>
+        <tr><td>3</td><td class="left">Tier 3 (Extended)</td><td class="left">401 &ndash; 600</td><td class="num">650.00</td><td><input id="rate3" type="text" inputmode="numeric" value="650" style="width:110px;padding:4px 6px;border:1px solid #999;text-align:right" maxlength="5" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onkeypress="return event.key&gt;='0'&amp;&amp;event.key&lt;='9'" onpaste="event.preventDefault();this.value=((event.clipboardData||window.clipboardData).getData('text')||'').replace(/[^0-9]/g,'').slice(0,5)" ondrop="return false"></td><td class="num" id="eff_rate3">650.00</td></tr>
+        <tr><td>4</td><td class="left">Tier 4 (Premium)</td><td class="left">&gt; 600</td><td class="num">1,000.00</td><td><input id="rate4" type="text" inputmode="numeric" value="1000" style="width:110px;padding:4px 6px;border:1px solid #999;text-align:right" maxlength="5" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onkeypress="return event.key&gt;='0'&amp;&amp;event.key&lt;='9'" onpaste="event.preventDefault();this.value=((event.clipboardData||window.clipboardData).getData('text')||'').replace(/[^0-9]/g,'').slice(0,5)" ondrop="return false"></td><td class="num" id="eff_rate4">1,000.00</td></tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:11px;color:#c8102e;font-style:italic;margin:12px 0 14px">* This pricing applies to both Wholesale and Standalone Logistics.</p>
+
+    <div style="max-width:760px;margin-bottom:12px">
+      <label style="font-weight:bold;font-size:12px;display:block;margin-bottom:4px">Reason / Remarks for this change <span style="color:#c00">*</span></label>
+      <textarea id="chgReason" rows="2" style="width:100%;border:1px solid #999;padding:6px;font-family:inherit;font-size:12px" placeholder="State the reason for the price change (required to save)"></textarea>
+    </div>
+
+    <button class="btn-grey" onclick="saveCharges()">Save Changes</button>
+    <button class="btn-grey" style="margin-left:8px" onclick="show('home')">Cancel</button>
+
+    <div class="det-h" style="margin-top:28px;font-size:16px">Change History</div>
+    <div id="pendingBox" style="display:none;max-width:1100px;border:1px solid #c8a200;background:#fff8dc;padding:10px 12px;margin:0 0 16px;font-size:12px"></div>
+    <div style="max-width:1100px;margin:0 0 22px">
+      <button class="btn-grey" onclick="runOvernight()">Run Scheduled Process (Demo)</button>
+      <span style="font-size:11px;color:#555;margin-left:8px">Simulates the midnight run. In production this is automatic.</span>
+      <div id="runResult" style="font-size:12px;margin-top:10px"></div>
+    </div>
+    <div class="rec-count" id="chgCount" style="display:block"></div>
+    <table class="rpt" id="chgHistory" style="max-width:1100px"></table>
+    <div id="chgPager" style="max-width:1100px"></div>
+  </div>
+</div>
+
+
+
+<!-- ============ HUB MANAGEMENT ============ -->
+<div id="hubs" class="page">
+  <div class="topbar">
+    <div class="nav"><a onclick="show('home')">Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+  <div class="report-wrap">
+    <div class="det-h" style="font-size:18px">Hub Management</div>
+    <p style="font-size:12px;color:#555;margin:2px 0 14px">Maintain the logistics hub records. Every address is verified through Google Maps before the record is saved. Sabah, Sarawak and Labuan hubs may be recorded here; the restriction applies on the UCD portal only.</p>
+
+    <div class="rec-count" id="hubCount" style="display:block"></div>
+    <table class="rpt" id="hubTable" style="max-width:1100px"></table>
+
+    <div class="det-h" style="margin-top:28px;font-size:16px">Add New Hub</div>
+    <div style="max-width:760px;margin-top:8px">
+      <label style="font-weight:bold;font-size:12px;display:block;margin-bottom:4px">Region <span style="color:#c00">*</span></label>
+      <select id="hubRegion" style="width:100%;border:1px solid #999;padding:6px;font-family:inherit;font-size:12px">
+        <option value="">-- Select Region --</option><option>KV</option><option>Southern</option><option>Northern</option><option>East Coast</option>
+      </select>
+      <label style="font-weight:bold;font-size:12px;display:block;margin:10px 0 4px">Branch Name <span style="color:#c00">*</span></label>
+      <input id="hubName" type="text" style="width:100%;border:1px solid #999;padding:6px;font-family:inherit;font-size:12px" placeholder="e.g. Kluang Hub">
+
+      <label style="font-weight:bold;font-size:12px;display:block;margin:10px 0 4px">State <span style="color:#c00">*</span></label>
+      <select id="hubState" style="width:100%;border:1px solid #999;padding:6px;font-family:inherit;font-size:12px"></select>
+
+      <label style="font-weight:bold;font-size:12px;display:block;margin:10px 0 4px">Address <span style="color:#c00">*</span></label>
+      <textarea id="hubAddr" rows="2" style="width:100%;border:1px solid #999;padding:6px;font-family:inherit;font-size:12px" placeholder="Full address including postcode"></textarea>
+
+      <label style="font-weight:bold;font-size:12px;display:block;margin:10px 0 4px">Simulate Google Maps response</label>
+      <select id="gmapMode" style="width:100%;border:1px solid #999;padding:6px;font-family:inherit;font-size:12px">
+        <option value="ok">Normal</option>
+        <option value="down">Service unavailable</option>
+        <option value="limit">Usage limit reached</option>
+        <option value="notfound">Address valid but not found</option>
+      </select>
+      <div id="hubVerify" style="font-size:12px;margin:10px 0;min-height:18px"></div>
+      <button class="btn-grey" onclick="verifyHub()">Verify Address</button>
+      <button class="btn-grey" style="margin-left:8px" onclick="saveHub()">Save Hub</button>
+    </div>
+  </div>
+</div>
+
+<!-- Photo viewer modal -->
+<script>
+/* ---------------- Data ---------------- */
+const addrByState={
+  'Selangor':'Shah Alam Hub — PT 626, Jalan Mandolin 33/5, Seksyen 27, 40400 Shah Alam, Selangor',
+  'Kuala Lumpur':'Chan Sow Lin Hub — Wisma Trax, Jalan Lima, Off Jalan Chan Sow Lin, 55200 Kuala Lumpur',
+  'Negeri Sembilan':'Seremban Hub — Pekan Bukit Kepayang, Daerah Seremban, 70300 Seremban, Negeri Sembilan',
+  'Melaka':'Melaka Hub — Jln PS3, Plaza Semabok, 75050 Melaka',
+  'Johor':'Johor Bahru Hub — Jalan Kempas Lama, Mukim Tebrau, 81200 Johor Bahru, Johor',
+  'Perak':'Ipoh Hub — Jalan Lahat, 30200 Ipoh, Perak',
+  'Penang':'Penang Hub — Medan Perniagaan Pauh Jaya, Jalan Baru, Taman Pauh Jaya, 13700 Perai, Penang',
+  'Kedah':'Alor Setar Hub — Sultan Abdul Halim Hwy, Lebuhraya Sultan Abdul Halim, 05400 Alor Setar, Kedah',
+  'Pahang':'Kuantan Hub — Jln Haji Ahmad 9, Kampung Lapang Besar, 25300 Kuantan, Pahang',
+  'Terengganu':'Kuala Terengganu Hub — Dataran Panji, Jalan Panji Alam, 21100 Kuala Terengganu, Terengganu',
+  'Kelantan':'Kota Bharu Hub — Persimpangan Kijang, 15050 Kota Bharu, Kelantan',
+  'Perlis':'Alor Setar (Kedah branch) — Sultan Abdul Halim Hwy, Lebuhraya Sultan Abdul Halim, 05400 Alor Setar, Kedah',
+  'Putrajaya':'Shah Alam (Selangor branch) — PT 626, Jalan Mandolin 33/5, Seksyen 27, 40400 Shah Alam, Selangor'
+};
+
+
+function two(n){return String(n).padStart(2,'0');}
+/* ID formats: Trx No = EM+Y+M+running(7) e.g. EM680000001 ; Payment ID = EM+yy+MM+DD+running(6) e.g. EM260805000001 */
+
+/* ---------------- Helpers ---------------- */
+function money(n){return Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+/* ---------------- Nav ---------------- */
+function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+/* ---------------- Charges Matrix — audit trail ---------------- */
+const chargeTiers=[{id:'rate1',name:'Tier 1 (Base)'},{id:'rate2',name:'Tier 2 (Standard)'},{id:'rate3',name:'Tier 3 (Extended)'},{id:'rate4',name:'Tier 4 (Premium)'}];
+let prevRates={rate1:'300.00',rate2:'450.00',rate3:'650.00',rate4:'1,000.00'};
+let chgLog=[
+  {dt:'02-08-2026 09:48',by:'Adrian Tan',tier:'Tier 1 (Base)',old:'280.00',nw:'300.00',reason:'Round up base rate after diesel price increase.'},
+  {dt:'28-07-2026 15:12',by:'Lim Wei Sheng',tier:'Tier 4 (Premium)',old:'950.00',nw:'1,000.00',reason:'Fuel surcharge adjustment for long-haul (>600km).'},
+  {dt:'21-07-2026 11:30',by:'Siti Aisyah',tier:'Tier 3 (Extended)',old:'600.00',nw:'650.00',reason:'Toll & handling cost revision for 401–600km band.'},
+  {dt:'12-07-2026 10:05',by:'Adrian Tan',tier:'Tier 2 (Standard)',old:'420.00',nw:'450.00',reason:'Align with vendor (MotoHub) revised rate card.'},
+  {dt:'30-06-2026 16:20',by:'Rajesh Kumar',tier:'Tier 4 (Premium)',old:'900.00',nw:'950.00',reason:'Initial premium-tier uplift approved by management.'},
+  {dt:'18-06-2026 14:02',by:'Siti Aisyah',tier:'Tier 1 (Base)',old:'250.00',nw:'280.00',reason:'Baseline correction after pilot run review.'}
+];
+/* additional historical entries so the 20-per-page control is demonstrable */
+(function(){
+  const seedUsers=['Adrian Tan','Lim Wei Sheng','Siti Aisyah','Rajesh Kumar'];
+  const seedTiers=[['Tier 1 (Base)',230,250],['Tier 2 (Standard)',390,420],['Tier 3 (Extended)',560,600],['Tier 4 (Premium)',860,900]];
+  const seedReasons=['Quarterly rate card review.','Vendor cost revision.','Diesel price adjustment.','Route mix rebalancing.','Annual contract renewal.'];
+  let d=new Date(2026,5,10,9,15);
+  for(let i=0;i<17;i++){
+    const t=seedTiers[i%4], u=seedUsers[i%4], r=seedReasons[i%5];
+    const p2=n=>String(n).padStart(2,'0');
+    chgLog.push({dt:p2(d.getDate())+'-'+p2(d.getMonth()+1)+'-'+d.getFullYear()+' '+p2(d.getHours())+':'+p2(d.getMinutes()),
+      by:u,tier:t[0],old:money(t[1]),nw:money(t[2]),reason:r});
+    d=new Date(d.getTime()-(1000*60*60*24*(3+(i%4))));
+  }
+})();
+function chgStamp(){const d=new Date();const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes());}
+const CHG_PAGE_SIZE=20;
+let chgPage=1;
+function chgPageCount(){ return Math.max(1, Math.ceil(chgLog.length/CHG_PAGE_SIZE)); }
+function gotoChgPage(n){ chgPage=Math.min(Math.max(1,n), chgPageCount()); renderChgHistory(); }
+function renderChgHistory(){
+  if(chgPage>chgPageCount()) chgPage=chgPageCount();
+  const start=(chgPage-1)*CHG_PAGE_SIZE, slice=chgLog.slice(start,start+CHG_PAGE_SIZE);
+  let h="<thead><tr><th>#</th><th class='left'>Date / Time</th><th class='left'>Changed By</th><th class='left'>Tier</th><th>Old Rate (RM)</th><th>New Rate (RM)</th><th class='left'>Reason</th></tr></thead><tbody>";
+  if(!chgLog.length){ h+="<tr><td colspan='7' style='padding:14px'>No changes recorded yet.</td></tr>"; }
+  else slice.forEach((e,k)=>{ const i=start+k; h+=`<tr><td>${i+1}</td><td class='left'>${e.dt}</td><td class='left'>${e.by}</td><td class='left'>${e.tier}</td><td class='num'>${e.old}</td><td class='num'>${e.nw}</td><td class='left'>${e.reason}</td></tr>`; });
+  h+="</tbody>";
+  document.getElementById('chgHistory').innerHTML=h;
+  document.getElementById('chgCount').innerHTML='<b>'+chgLog.length+'</b> change(s) recorded';
+  const pc=chgPageCount(), pg=document.getElementById('chgPager');
+  if(pg){
+    if(chgLog.length<=CHG_PAGE_SIZE){ pg.innerHTML=''; }
+    else{
+      let b='<div style="margin-top:8px;font-size:12px">';
+      b+=`<a style="cursor:pointer;color:${chgPage>1?'#0052a5':'#999'}" onclick="gotoChgPage(${chgPage-1})">&laquo; Prev</a>`;
+      for(let i=1;i<=pc;i++){
+        b+= i===chgPage
+          ? ` <b style="padding:2px 6px;border:1px solid #999;background:#e6e6e6">${i}</b>`
+          : ` <a style="cursor:pointer;color:#0052a5;padding:2px 6px" onclick="gotoChgPage(${i})">${i}</a>`;
+      }
+      b+=` <a style="cursor:pointer;color:${chgPage<pc?'#0052a5':'#999'}" onclick="gotoChgPage(${chgPage+1})">Next &raquo;</a>`;
+      b+=`<span style="margin-left:10px;color:#555">Showing ${(chgPage-1)*CHG_PAGE_SIZE+1} to ${Math.min(chgPage*CHG_PAGE_SIZE,chgLog.length)} of ${chgLog.length}</span></div>`;
+      pg.innerHTML=b;
+    }
+  }
+}
+/* --- scheduled overnight application of a price change --- */
+let pendingPrices={};
+function nextMidnight(){
+  const d=new Date(); d.setDate(d.getDate()+1);
+  const p2=n=>String(n).padStart(2,'0');
+  return p2(d.getDate())+'-'+p2(d.getMonth()+1)+'-'+d.getFullYear()+' 00:00';
+}
+function renderPending(){
+  const box=document.getElementById('pendingBox');
+  if(!box) return;
+  const keys=Object.keys(pendingPrices);
+  if(!keys.length){ box.style.display='none'; box.innerHTML=''; return; }
+  let h='<b>Price change saved. Not yet in effect.</b><br>';
+  h+='The following change(s) will be applied by the scheduled process at <b>'+pendingPrices[keys[0]].effective+'</b>:<ul style="margin:6px 0 0 18px">';
+  keys.forEach(k=>{ const e=pendingPrices[k]; h+='<li>'+e.tier+': '+e.old+' &rarr; '+e.nw+'</li>'; });
+  h+='</ul>';
+  box.innerHTML=h; box.style.display='block';
+}
+/* sample transactions used only to demonstrate the overnight run */
+const runSample=[
+  {no:'LG260009',tier:'Tier 1 (Base)',pay:'Failed'},
+  {no:'LG260015',tier:'Tier 1 (Base)',pay:'Pending'},
+  {no:'LG260005',tier:'Tier 1 (Base)',pay:'Approved'},
+  {no:'LG260021',tier:'Tier 2 (Standard)',pay:'Failed'},
+  {no:'LG260022',tier:'Tier 2 (Standard)',pay:'Pending'}
+];
+function runOvernight(){
+  const out=document.getElementById('runResult');
+  const keys=Object.keys(pendingPrices);
+  if(!keys.length){ out.innerHTML="<span style='color:#c00'>No price change is waiting to be applied.</span>"; return; }
+  const tiers=keys.map(k=>pendingPrices[k].tier);
+  const covered=runSample.filter(r=>tiers.indexOf(r.tier)>-1);
+  let h='<b>Scheduled process completed at '+pendingPrices[keys[0]].effective+'</b>';
+  h+='<table class="rpt" style="max-width:1100px;margin-top:8px"><thead><tr><th class="left">Transaction</th><th class="left">Tier</th><th class="left">Payment Status</th><th class="left">Outcome</th></tr></thead><tbody>';
+  covered.forEach(r=>{
+    let o;
+    if(r.pay==='Failed'||r.pay==='Pending') o='Payment reset. Bank instruction carrying the old amount cancelled. One time password expired, new one time password sent to main user. New price shown on resubmission.';
+    else o='No action taken. Amount already paid stands.';
+    h+=`<tr><td class="left">${r.no}</td><td class="left">${r.tier}</td><td class="left">${r.pay}</td><td class="left">${o}</td></tr>`;
+  });
+  h+='</tbody></table>';
+  /* apply the new prices */
+  keys.forEach(k=>{
+    prevRates[k]=pendingPrices[k].nw;
+    const el=document.getElementById(k); if(el) el.value=String(rateNum(pendingPrices[k].nw));
+    const ef=document.getElementById('eff_'+k); if(ef) ef.textContent=pendingPrices[k].nw;
+  });
+  pendingPrices={}; renderPending();
+  out.innerHTML=h;
+}
+const TIER_MIN={rate1:300,rate2:450,rate3:650,rate4:1000};
+const PRICE_MAX=10000;
+function rateNum(v){ return Number(String(v).replace(/,/g,'').trim()); }
+function fmtRate(v){ return money(rateNum(v)); }
+chargeTiers.forEach(t=>{
+  const el=document.getElementById(t.id);
+  el.addEventListener('blur',()=>{ const n=rateNum(el.value); if(el.value.trim()!=='' && Number.isInteger(n) && n>0) el.value=String(n); });
+});
+function saveCharges(){
+  for(const t of chargeTiers){
+    const el=document.getElementById(t.id), raw=el.value.trim(), n=rateNum(raw);
+    const wholeNumber=/^[0-9]+$/.test(raw);
+    if(!wholeNumber || isNaN(n) || n<TIER_MIN[t.id] || n>PRICE_MAX){
+      alert('Please enter a valid amount.'); el.focus(); return;
+    }
+  }
+  const changed=chargeTiers.filter(t=>rateNum(document.getElementById(t.id).value)!==rateNum(prevRates[t.id]));
+  if(!changed.length){ alert('No rate changes to save.'); return; }
+  const reason=(document.getElementById('chgReason').value||'').trim();
+  if(!reason){ alert('Reason / Remarks is required to save a rate change.'); document.getElementById('chgReason').focus(); return; }
+  const dt=chgStamp(), by='Adrian Tan';
+  changed.forEach(t=>{
+    const el=document.getElementById(t.id), nw=fmtRate(el.value);
+    chgLog.unshift({dt,by,tier:t.name,old:String(prevRates[t.id]),nw,reason});
+    pendingPrices[t.id]={tier:t.name, old:String(prevRates[t.id]), nw:nw, effective:nextMidnight()};
+  });
+  renderPending();
+  document.getElementById('chgReason').value='';
+  renderChgHistory();
+  alert(changed.length+' tier rate change(s) saved and logged to Change History. The new price takes effect at '+nextMidnight()+'.');
+}
+renderChgHistory();
+
+/* ---------------- Hub Management ---------------- */
+const EAST_MY=['Sabah','Sarawak','Labuan'];
+const ALL_STATES=Object.keys(addrByState).concat(EAST_MY);
+let hubRecords=[
+  {region:'KV',name:'Shah Alam',state:'Selangor',addr:'PT 626, Jalan Mandolin 33/5, Seksyen 27, 40400 Shah Alam, Selangor'},
+  {region:'KV',name:'Chan Sow Lin',state:'Kuala Lumpur',addr:'Wisma Trax, Jalan Lima, Off, Jalan Chan Sow Lin, 55200 Kuala Lumpur'},
+  {region:'Southern',name:'Seremban',state:'Negeri Sembilan',addr:'Pekan Bukit Kepayang Daerah Seremban, 70300 Seremban Negeri Sembilan.'},
+  {region:'Southern',name:'Melaka',state:'Melaka',addr:'Jln PS3, Plaza Semabok, 75050 Melaka, Malaysia'},
+  {region:'Southern',name:'Kulai',state:'Johor',addr:'Jalan Tropika Utama, Taman Tropika, 81000 Kulai, Johor'},
+  {region:'Southern',name:'Johor Bahru',state:'Johor',addr:'Jalan Kempas Lama, Mukim Tebrau, 81200 Johor Bahru, Johor Darul Ta\u2019zim'},
+  {region:'Southern',name:'Muar',state:'Johor',addr:'Jln Dato\u2019 Haji Kosai, Kampung Parit Keroma Darat, 84000 Muar, Johor Darul Ta\u2019zim'},
+  {region:'Southern',name:'Batu Pahat',state:'Johor',addr:'Taman Flora, 83000 Batu Pahat, Johor Darul Ta\u2019zim'},
+  {region:'Southern',name:'Kluang',state:'Johor',addr:'Jalan Besar, Kampung Yap Tau Sah, 86000 Kluang, Johor Darul Ta\u2019zim'},
+  {region:'Southern',name:'Pasir Gudang',state:'Johor',addr:'Jalan Mutiara 3, Taman Perindustrian Plentong, 81750 Masai, Johor Darul Ta\u2019zim'},
+  {region:'Southern',name:'Segamat',state:'Johor',addr:'Jalan Muhibbah 3, Taman Muhibbah, 85000 Segamat, Johor Darul Ta\u2019zim'},
+  {region:'Northern',name:'Ipoh',state:'Perak',addr:'Jalan Lahat, 30200 Ipoh, Perak'},
+  {region:'Northern',name:'Sitiawan',state:'Perak',addr:'Jalan Besar, Jln Lin Chen Mei, 32000 Sitiawan, Perak'},
+  {region:'Northern',name:'Penang',state:'Pulau Pinang',addr:'Medan Perniagaan Pauh Jaya, Jalan Baru, Taman Pauh Jaya, 13700 Perai, Penang, Malaysia'},
+  {region:'Northern',name:'Bayan Lepas',state:'Pulau Pinang',addr:'Jalan Sungai Tiram 2, Sungai Tiram, 11900 Bayan Lepas, Pulau Pinang'},
+  {region:'Northern',name:'Alor Setar',state:'Kedah',addr:'Sultan Abdul Halim Hwy, Lebuhraya Sultan Abdul Halim, 05400 Alor Setar, Kedah'},
+  {region:'East Coast',name:'Temerloh',state:'Pahang',addr:'Jalan Semantan Indah, Kampung Tok Embun, 28000 Temerloh, Pahang'},
+  {region:'East Coast',name:'Kuantan',state:'Pahang',addr:'Jln Haji Ahmad 9, Kampung Lapang Besar, 25300 Kuantan, Pahang'},
+  {region:'East Coast',name:'Kuala Terengganu',state:'Terengganu',addr:'Dataran Panji, Jalan Panji Alam, 21100 Kuala Terengganu, Terengganu'},
+  {region:'East Coast',name:'Kota Bharu',state:'Kelantan',addr:'Persimpangan Kijang, 15050 Kota Bharu, Kelantan'}
+];
+let hubVerified=false;
+
+function renderHubs(){
+  let h="<thead><tr><th>#</th><th class='left'>Region</th><th class='left'>Branch</th><th class='left'>State</th><th class='left'>Address</th><th class='left'>Action</th></tr></thead><tbody>";
+  if(!hubRecords.length){ h+="<tr><td colspan='6' style='padding:14px'>No hub recorded yet.</td></tr>"; }
+  else hubRecords.forEach((e,i)=>{
+    h+=`<tr><td>${i+1}</td><td class='left'>${e.region||''}</td><td class='left'>${e.name}</td><td class='left'>${e.state}</td><td class='left'>${e.addr}</td><td class='left'><a style="cursor:pointer;color:#0052a5" onclick="removeHub(${i})">Remove</a></td></tr>`;
+  });
+  h+="</tbody>";
+  document.getElementById('hubTable').innerHTML=h;
+  document.getElementById('hubCount').innerHTML='<b>'+hubRecords.length+'</b> hub(s) recorded';
+  const sel=document.getElementById('hubState');
+  if(sel && !sel.options.length){
+    sel.innerHTML='<option value="">-- Select State --</option>'+ALL_STATES.map(x=>`<option>${x}</option>`).join('');
+    sel.addEventListener('change',()=>{ hubVerified=false; document.getElementById('hubVerify').innerHTML=''; });
+  }
+}
+
+const MSG_GMAP_UNAVAILABLE='The address check is temporarily unavailable. Please try again in 10 minutes.';
+const MSG_GMAP_NOTFOUND='We could not find the address. Please check and try again, or contact support at 03-2779 8899.';
+function verifyHub(){
+  const st=document.getElementById('hubState').value;
+  const addr=(document.getElementById('hubAddr').value||'').trim();
+  const mode=(document.getElementById('gmapMode')||{value:'ok'}).value;
+  const box=document.getElementById('hubVerify');
+  hubVerified=false;
+  if(!st || !addr){ box.innerHTML="<span style='color:#c00'>State and address are required before verification.</span>"; return; }
+  /* service down or usage limit reached */
+  if(mode==='down' || mode==='limit'){
+    box.innerHTML="<span style='color:#c00'>"+MSG_GMAP_UNAVAILABLE+"</span>"; return;
+  }
+  /* address invalid, or valid but cannot be matched */
+  if(mode==='notfound' || addr.length<15){
+    box.innerHTML="<span style='color:#c00'>"+MSG_GMAP_NOTFOUND+"</span>"; return;
+  }
+  hubVerified=true;
+  box.innerHTML="<span style='color:#0a7a2f'>Address verified through Google Maps.</span>";
+}
+
+function saveHub(){
+  const name=(document.getElementById('hubName').value||'').trim();
+  const st=document.getElementById('hubState').value;
+  const addr=(document.getElementById('hubAddr').value||'').trim();
+  if(!name || !st || !addr){ alert('Hub name, state and address are required.'); return; }
+  if(!hubVerified){ alert('Please verify the address before saving.'); return; }
+  const rg=(document.getElementById('hubRegion')||{value:''}).value;
+  if(!rg){ alert('Region is required.'); return; }
+  hubRecords.push({region:rg,name:name,state:st,addr:addr});
+  document.getElementById('hubRegion').value='';
+  document.getElementById('hubName').value='';
+  document.getElementById('hubState').value='';
+  document.getElementById('hubAddr').value='';
+  document.getElementById('hubVerify').innerHTML='';
+  hubVerified=false;
+  renderHubs();
+  alert('Hub record saved.');
+}
+
+function removeHub(i){ hubRecords.splice(i,1); renderHubs(); }
+renderHubs();
+
+</script>
+</body>
+</html>

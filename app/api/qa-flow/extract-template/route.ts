@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import mammoth from "mammoth";
-import * as XLSX from "xlsx";
+import { readXlsx, sheetToCsv } from "@/lib/excelSheets";
 
-// Extracts plain text from an uploaded test-plan template (docx / xlsx / xls / txt / md)
+// Extracts plain text from an uploaded test-plan template (docx / xlsx / txt / md).
+// Legacy binary .xls is refused with a clear message: exceljs (which replaced
+// the CVE-affected SheetJS 0.18.5) reads only the .xlsx format.
 // so it can be stored client-side as a lightweight style reference instead of raw binary.
 
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -24,13 +26,15 @@ export async function POST(req: NextRequest) {
     let text: string;
     if (lower.endsWith(".docx")) {
       text = (await mammoth.extractRawText({ buffer: buf })).value;
-    } else if (lower.endsWith(".xlsx") || lower.endsWith(".xls")) {
-      const wb = XLSX.read(buf, { type: "buffer" });
-      text = wb.SheetNames.map(name => `--- Sheet: ${name} ---\n${XLSX.utils.sheet_to_csv(wb.Sheets[name])}`).join("\n\n");
+    } else if (lower.endsWith(".xlsx")) {
+      const wb = await readXlsx(buf);
+      text = wb.worksheets.map(ws => `--- Sheet: ${ws.name} ---\n${sheetToCsv(ws)}`).join("\n\n");
+    } else if (lower.endsWith(".xls")) {
+      return NextResponse.json({ error: "Legacy .xls files are not supported. Save the file as .xlsx and upload again." }, { status: 400 });
     } else if (lower.endsWith(".txt") || lower.endsWith(".md") || (mediaType ?? "").startsWith("text/")) {
       text = buf.toString("utf-8");
     } else {
-      return NextResponse.json({ error: "Unsupported template type. Use .docx, .xlsx, .xls, .txt, or .md." }, { status: 400 });
+      return NextResponse.json({ error: "Unsupported template type. Use .docx, .xlsx, .txt, or .md." }, { status: 400 });
     }
 
     text = text.trim();

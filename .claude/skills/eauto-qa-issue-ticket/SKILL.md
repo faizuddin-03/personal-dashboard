@@ -362,3 +362,23 @@ If not on hold, leave the ticket in its default "To Do" status and assign to the
 - Format reference (a hand-authored ticket to imitate exactly): **EAINT-11914**.
 - Examples produced with this skill: **EAINT-12129**, **EAINT-12136**, **EAINT-12144** — all under
   parent **EAINT-10937**, all with the purple panel, orange Staging Test IDs, and red/green columns.
+
+## Retest comment (DONE / REDEV)
+
+How the team signals a retest result on a QA-Issue (Faizuddin, 2026-10-22; reference: EAINT-12588 comment 57967). The `qa-issue-retest` skill does this end to end ("comment DONE / REDEV on EAINT-xxxxx"). Post it with `addCommentToJiraIssue`, `contentFormat: "adf"`:
+
+```json
+{"type":"doc","version":1,"content":[
+  {"type":"panel","attrs":{"panelType":"note"},"content":[
+    {"type":"paragraph","content":[
+      {"type":"text","text":"Status: ","marks":[{"type":"strong"}]},
+      {"type":"status","attrs":{"text":"DONE","color":"green","localId":"<new UUID>","style":"bold"}}
+    ]}
+  ]},
+  {"type":"paragraph","content":[{"type":"text","text":"<one short sentence: what the retest showed>"}]}
+]}
+```
+
+1. **Fixed:** status `DONE`, colour `green`.
+2. **Not fixed:** status `REDEV`, colour `blue`. **Attaching the evidence of the failed retest is MANDATORY** (screenshot or video, same attach methods as "Attaching test evidence"). Never post REDEV without it; ask for the evidence first if you don't have it.
+3. Use a fresh UUID for `localId` each time. Check the rendered page if unsure: the lozenge carries `data-color="green"` / `"blue"`.

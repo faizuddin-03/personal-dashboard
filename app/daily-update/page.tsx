@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Copy, Check, Plus, X, ChevronUp, ChevronDown, Sparkles, Loader2, SidebarOpen } from "lucide-react";
+import { Copy, Check, Plus, X, ChevronUp, ChevronDown, Sparkles, Loader2, SidebarOpen, History, Trash2, ChevronLeft, CalendarCheck, RotateCcw, Save } from "lucide-react";
 import { useApp } from "@/components/AppShell";
 import { getGeminiKey } from "@/components/SettingsModal";
 import { getKanbanState, KanbanCard } from "@/lib/kanban";
+import { fetchCompletedToday, fetchRaisedOn } from "@/lib/todayActivity";
 import clsx from "clsx";
 
 // ── TS Tracker types (duplicated to avoid a cross-page import) ────
@@ -65,6 +66,50 @@ function buildRows(cards: KanbanCard[], tsData: CREntry[]): CRRow[] {
       statusLines: "",
       progress:    tsProgress(c.jiraKey!, tsData),
     }));
+}
+
+// ── Local storage: draft + history ───────────────────────────────
+const DRAFT_KEY   = "daily_update_draft";
+const HISTORY_KEY = "daily_update_history";
+
+interface DraftState {
+  type: "todo" | "eod";
+  date: string;
+  hour: number;
+  min: number;
+  rows: CRRow[];
+}
+
+interface HistoryEntry {
+  id: string;
+  savedAt: string;          // ISO timestamp
+  date: string;             // DD-MM-YYYY, the post's own date
+  type: "todo" | "eod";
+  text: string;
+}
+
+function loadDraft(): DraftState | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw) as DraftState;
+    return Array.isArray(d?.rows) ? d : null;
+  } catch { return null; }
+}
+
+function saveDraft(d: DraftState) {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch { /* storage unavailable */ }
+}
+
+function loadHistory(): HistoryEntry[] {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(HISTORY_KEY) ?? "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch { return []; }
+}
+
+function saveHistory(items: HistoryEntry[]): boolean {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(items)); return true; } catch { return false; }
 }
 
 // ── Generate formatted Teams markdown ────────────────────────────
@@ -129,14 +174,104 @@ export default function DailyUpdatePage() {
   const [copied, setCopied] = useState(false);
   const [draftingId, setDraftingId] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+  const [message, setMessage] = useState<{ tone: "ok" | "error" | "info"; text: string } | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [inserting, setInserting] = useState(false);
+
+  // History
+  const [sideTab, setSideTab] = useState<"preview" | "history">("preview");
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [viewingId, setViewingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [copiedHistoryId, setCopiedHistoryId] = useState<string | null>(null);
 
   const name = creds?.email ? firstNameFromEmail(creds.email) : "Faizuddin";
 
-  useEffect(() => {
-    const cards  = getKanbanState().ongoing as KanbanCard[];
-    const tsData = loadTSData();
-    setRows(buildRows(cards, tsData));
+  const flash = useCallback((tone: "ok" | "error" | "info", text: string) => {
+    setMessage({ tone, text });
   }, []);
+
+  function rowsFromKanban(): CRRow[] {
+    try {
+      const cards = getKanbanState().ongoing as KanbanCard[];
+      return buildRows(cards, loadTSData());
+    } catch { return []; }
+  }
+
+  // Restore the saved draft, or start from the Kanban On-Going CR cards
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft) {
+      setType(draft.type === "eod" ? "eod" : "todo");
+      if (draft.date) setDate(draft.date);
+      if (Number.isFinite(draft.hour)) setHour(draft.hour);
+      if (Number.isFinite(draft.min)) setMin(draft.min);
+      setRows(draft.rows);
+    } else {
+      setRows(rowsFromKanban());
+    }
+    setHistory(loadHistory());
+    setDraftLoaded(true);
+  }, []);
+
+  // Persist the draft on every change (after the initial restore)
+  useEffect(() => {
+    if (!draftLoaded) return;
+    saveDraft({ type, date, hour, min, rows });
+  }, [draftLoaded, type, date, hour, min, rows]);
+
+  function resetFromKanban() {
+    setRows(rowsFromKanban());
+    setConfirmReset(false);
+    flash("info", "Rows reloaded from Kanban On-Going CR cards.");
+  }
+
+  async function insertTodayTickets() {
+    if (!creds) { flash("error", "Connect Jira in Settings first."); return; }
+    setInserting(true);
+    try {
+      const [completedRes, raisedRes] = await Promise.allSettled([fetchCompletedToday(creds), fetchRaisedOn(creds)]);
+      const errors: string[] = [];
+      if (completedRes.status === "rejected") errors.push(`Completed today: ${completedRes.reason instanceof Error ? completedRes.reason.message : "failed"}`);
+      if (raisedRes.status === "rejected") errors.push(`Raised today: ${raisedRes.reason instanceof Error ? raisedRes.reason.message : "failed"}`);
+      const completed = completedRes.status === "fulfilled" ? completedRes.value : [];
+      const raised    = raisedRes.status === "fulfilled" ? raisedRes.value : [];
+
+      const tsData = loadTSData();
+      const items: { key: string; summary: string; line: string }[] = [
+        ...completed.map(i => ({ key: i.key, summary: i.fields.summary, line: `Completed today - ${i.fields.status.name}` })),
+        ...raised.map(i => ({ key: i.key, summary: i.fields.summary, line: "Raised today" })),
+      ];
+      // Merge: an existing row for the key gets a status line; otherwise a new row
+      const newRows: CRRow[] = [];
+      const extraLines = new Map<string, string[]>();
+      for (const it of items) {
+        const k = it.key.toUpperCase();
+        const fresh = newRows.find(r => r.key.toUpperCase() === k);
+        if (fresh) { if (!fresh.statusLines.split("\n").includes(it.line)) fresh.statusLines += `\n${it.line}`; continue; }
+        if (rows.some(r => r.key.trim().toUpperCase() === k)) {
+          extraLines.set(k, [...(extraLines.get(k) ?? []), it.line]);
+          continue;
+        }
+        newRows.push({ id: crypto.randomUUID(), key: it.key, title: it.summary, statusLines: it.line, progress: tsProgress(it.key, tsData) });
+      }
+      setRows(prev => [
+        ...prev.map(r => {
+          const lines = (extraLines.get(r.key.trim().toUpperCase()) ?? [])
+            .filter(l => !r.statusLines.split("\n").some(x => x.trim() === l));
+          if (lines.length === 0) return r;
+          return { ...r, statusLines: [r.statusLines.trimEnd(), ...lines].filter(Boolean).join("\n") };
+        }),
+        ...newRows,
+      ]);
+      if (errors.length) flash("error", errors.join(" · "));
+      else if (items.length === 0) flash("info", "No tickets completed or raised today.");
+      else flash("ok", `Inserted ${completed.length} completed and ${raised.length} raised ticket(s).`);
+    } finally {
+      setInserting(false);
+    }
+  }
 
   const updateRow = useCallback((id: string, patch: Partial<CRRow>) => {
     setRows(prev => prev.map(r => r.id === id ? { ...r, ...patch } : r));
@@ -167,7 +302,7 @@ export default function DailyUpdatePage() {
 
   const draftWithAI = useCallback(async (r: CRRow) => {
     const key = getGeminiKey();
-    if (!key) { alert("Add your Gemini API key in Settings first."); return; }
+    if (!key) { flash("error", "Add your Gemini API key in Settings first."); return; }
     setDraftingId(r.id);
     try {
       const updateLabel = type === "todo" ? "To Do Plan (what I plan to do today)" : "EOD Update (what I accomplished today)";
@@ -196,22 +331,58 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
       const data = await res.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
       if (text) updateRow(r.id, { statusLines: text });
+      else flash("error", "Gemini returned no text.");
     } catch (e) {
-      alert(`Gemini error: ${e instanceof Error ? e.message : String(e)}`);
+      flash("error", `Gemini error: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setDraftingId(null);
     }
-  }, [type, updateRow]);
+  }, [type, updateRow, flash]);
 
   const timeStr = formatTime(hour, min);
   const preview = generateText(name, type, date, timeStr, rows);
 
+  /** Adds the current post to history. Skips an exact repeat of the newest entry. */
+  function saveToHistory(): boolean {
+    const current = loadHistory();
+    if (current[0]?.text === preview) { setHistory(current); return true; }
+    const entry: HistoryEntry = { id: crypto.randomUUID(), savedAt: new Date().toISOString(), date, type, text: preview };
+    const next = [entry, ...current];
+    const ok = saveHistory(next);
+    setHistory(ok ? next : current);
+    return ok;
+  }
+
   function copy() {
+    const saved = saveToHistory();
     navigator.clipboard.writeText(preview).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+      if (!saved) flash("error", "Copied, but could not save to history (storage unavailable).");
+    }).catch(() => flash("error", "Clipboard copy failed. Select the preview text and copy it manually."));
   }
+
+  function saveOnly() {
+    if (saveToHistory()) flash("ok", "Saved to history.");
+    else flash("error", "Could not save to history (storage unavailable).");
+  }
+
+  function copyHistory(h: HistoryEntry) {
+    navigator.clipboard.writeText(h.text).then(() => {
+      setCopiedHistoryId(h.id);
+      setTimeout(() => setCopiedHistoryId(null), 2000);
+    }).catch(() => flash("error", "Clipboard copy failed."));
+  }
+
+  function deleteHistory(id: string) {
+    const next = history.filter(h => h.id !== id);
+    if (!saveHistory(next)) { flash("error", "Could not delete (storage unavailable)."); return; }
+    setHistory(next);
+    setConfirmDeleteId(null);
+    if (viewingId === id) setViewingId(null);
+  }
+
+  const viewing = viewingId ? history.find(h => h.id === viewingId) ?? null : null;
 
   return (
     <div className="flex flex-col h-full">
@@ -235,7 +406,16 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
             Preview
           </button>
           <button
+            onClick={saveOnly}
+            title="Save this post to history without copying"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border bg-slate-800/60 text-slate-400 border-slate-700 hover:text-slate-200 hover:border-slate-500 transition-colors"
+          >
+            <Save size={13} />
+            <span className="hidden sm:inline">Save</span>
+          </button>
+          <button
             onClick={copy}
+            title="Copy to clipboard and save to history"
             className={clsx(
               "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
               copied
@@ -291,7 +471,50 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
                 className="w-8 text-xs bg-transparent text-slate-300 focus:outline-none text-center" />
               <span className="text-xs text-slate-500">{hour >= 12 ? "PM" : "AM"}</span>
             </div>
+
+            {/* Insert today's Jira activity */}
+            <button
+              onClick={insertTodayTickets}
+              disabled={inserting}
+              title="Add tickets you completed or raised today (same data as the home page widgets)"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 bg-slate-800 text-slate-300 hover:border-green-700/60 hover:text-green-300 disabled:opacity-50 transition-colors"
+            >
+              {inserting ? <Loader2 size={12} className="animate-spin" /> : <CalendarCheck size={12} />}
+              Insert today&apos;s tickets
+            </button>
+
+            {/* Reload rows from Kanban (inline confirm) */}
+            {confirmReset ? (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-amber-400">Replace all rows?</span>
+                <button onClick={resetFromKanban} className="px-2 py-1 rounded-lg border border-amber-700/60 text-amber-300 hover:bg-amber-900/20">Yes</button>
+                <button onClick={() => setConfirmReset(false)} className="px-2 py-1 rounded-lg border border-slate-700 text-slate-400 hover:text-slate-200">No</button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmReset(true)}
+                title="Rebuild rows from Kanban On-Going CR cards"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 bg-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-500 transition-colors"
+              >
+                <RotateCcw size={12} />
+                Reload from Kanban
+              </button>
+            )}
           </div>
+
+          {message && (
+            <div className={clsx(
+              "flex items-start gap-2 px-3 py-2 rounded-lg border text-xs",
+              message.tone === "error" ? "bg-red-950/30 border-red-800/50 text-red-300"
+                : message.tone === "ok" ? "bg-green-950/30 border-green-800/50 text-green-300"
+                : "bg-slate-800/60 border-slate-700 text-slate-300"
+            )}>
+              <span className="flex-1 break-words">{message.text}</span>
+              <button onClick={() => setMessage(null)} className="text-slate-500 hover:text-slate-200 shrink-0" aria-label="Dismiss">
+                <X size={12} />
+              </button>
+            </div>
+          )}
 
           {/* CR rows */}
           <div className="space-y-3">
@@ -381,12 +604,80 @@ Write 1–3 concise status bullet points for the "Status" field. Rules:
           "sm:w-80 sm:shrink-0",
           showPreview ? "flex-1" : "hidden sm:flex"
         )}>
-          <div className="px-4 py-3 border-b border-slate-800">
-            <p className="text-xs font-medium text-slate-400">Preview</p>
+          <div className="px-4 py-2 border-b border-slate-800 flex items-center gap-1">
+            {(["preview", "history"] as const).map(t => (
+              <button key={t} onClick={() => setSideTab(t)}
+                className={clsx(
+                  "flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md transition-colors",
+                  sideTab === t ? "bg-slate-800 text-slate-200 font-medium" : "text-slate-500 hover:text-slate-300"
+                )}>
+                {t === "history" && <History size={12} />}
+                {t === "preview" ? "Preview" : `History (${history.length})`}
+              </button>
+            ))}
           </div>
-          <pre className="flex-1 overflow-y-auto px-4 py-3 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
-            {preview || <span className="text-slate-600 italic">Add CR entries to see preview</span>}
-          </pre>
+
+          {sideTab === "preview" ? (
+            <pre className="flex-1 overflow-y-auto px-4 py-3 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">
+              {preview || <span className="text-slate-600 italic">Add CR entries to see preview</span>}
+            </pre>
+          ) : viewing ? (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="px-4 py-2 border-b border-slate-800 flex items-center gap-2">
+                <button onClick={() => { setViewingId(null); setConfirmDeleteId(null); }} className="p-1 text-slate-500 hover:text-slate-200 rounded" aria-label="Back to history">
+                  <ChevronLeft size={14} />
+                </button>
+                <span className="text-xs text-slate-300 flex-1 truncate">
+                  {viewing.type === "todo" ? "To Do Plan" : "EOD Update"} · {viewing.date}
+                </span>
+                <button onClick={() => copyHistory(viewing)}
+                  className="flex items-center gap-1 px-2 py-1 text-xs border border-slate-700 rounded-lg text-slate-400 hover:text-slate-200 hover:border-slate-500">
+                  {copiedHistoryId === viewing.id ? <><Check size={11} className="text-green-400" /><span className="text-green-400">Copied</span></> : <><Copy size={11} />Copy</>}
+                </button>
+                {confirmDeleteId === viewing.id ? (
+                  <>
+                    <button onClick={() => deleteHistory(viewing.id)} className="px-2 py-1 text-xs rounded-lg border border-red-800/60 text-red-300 hover:bg-red-950/40">Delete</button>
+                    <button onClick={() => setConfirmDeleteId(null)} className="px-2 py-1 text-xs rounded-lg border border-slate-700 text-slate-400">Cancel</button>
+                  </>
+                ) : (
+                  <button onClick={() => setConfirmDeleteId(viewing.id)} className="p-1 text-slate-600 hover:text-red-400" aria-label="Delete">
+                    <Trash2 size={13} />
+                  </button>
+                )}
+              </div>
+              <pre className="flex-1 overflow-y-auto px-4 py-3 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap font-sans">{viewing.text}</pre>
+            </div>
+          ) : (
+            <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1.5">
+              {history.length === 0 ? (
+                <p className="text-xs text-slate-600 italic px-1">No saved posts. Copy or Save a post to keep it here.</p>
+              ) : history.map(h => (
+                <div key={h.id} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
+                  <button onClick={() => { setViewingId(h.id); setConfirmDeleteId(null); }} className="flex-1 min-w-0 text-left">
+                    <p className="text-xs text-slate-200 font-medium">{h.type === "todo" ? "To Do Plan" : "EOD Update"} · {h.date}</p>
+                    <p className="text-xs text-slate-500">
+                      Saved {new Date(h.savedAt).toLocaleString("en-MY", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </button>
+                  {confirmDeleteId === h.id ? (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button onClick={() => deleteHistory(h.id)} className="px-2 py-0.5 text-xs rounded border border-red-800/60 text-red-300 hover:bg-red-950/40">Delete</button>
+                      <button onClick={() => setConfirmDeleteId(null)} className="px-2 py-0.5 text-xs rounded border border-slate-700 text-slate-400">Cancel</button>
+                    </div>
+                  ) : (
+                    <>
+                      <button onClick={() => copyHistory(h)} className="p-1 text-slate-500 hover:text-slate-200 shrink-0" aria-label="Copy">
+                        {copiedHistoryId === h.id ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+                      </button>
+                      <button onClick={() => setConfirmDeleteId(h.id)} className="p-1 text-slate-600 hover:text-red-400 shrink-0" aria-label="Delete">
+                        <Trash2 size={12} />
+                      </button>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

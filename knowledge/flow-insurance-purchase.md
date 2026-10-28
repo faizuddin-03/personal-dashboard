@@ -31,21 +31,34 @@ listing/search pattern, and the duplicate-id traps that apply here.
 
 `[from QA team, 2026-08-14]`
 
-So a scenario that only needs a *quotation* — EAINT-11864's reminder cases, quote
-comparison, expiry behaviour — skips eSTM creation entirely. Only the purchase leg
-requires one. See [eauto-insurance.md](eauto-insurance.md) and
+So a scenario that only needs a *quotation* — quote comparison, expiry behaviour
+— skips eSTM creation entirely. Only the purchase leg requires one.
+
+**Corrected 2026-10-15.** This section previously read *"So a scenario that only
+needs a quotation — EAINT-11864's reminder cases, quote comparison, expiry
+behaviour — skips eSTM creation entirely."* That was wrong for the reminder
+cases: the **system** quotes without an eSTM, but the reminder is only sent for
+a vehicle with an approved eSTM, so six of the seven runnable EAINT-11864 cases
+create one (only TS05 must not). `[verified: scripts/eauto-quotation-reminder/
+tests/quotation-reminder.spec.ts:22-33 · needsEstm; team script preconditions]`
+See [eauto-insurance.md](eauto-insurance.md) § An eSTM is required to PURCHASE,
+[flow-quotation-reminder.md](flow-quotation-reminder.md) and
 [flow-estm.md](flow-estm.md).
 
 ## Entry points
 
 | Entry | Status |
 |---|---|
-| Home tile `#insurance` → Insurance main → **Get a Free Quote** | **Verified live** |
-| **From an eSTM** — details page "buy insurance" dialog, or the 69E auto-redirect | See [flow-estm.md](flow-estm.md) § eSTM → insurance handoff |
-| **Banner on the eSTM details page** | The EAINT-11864 script's "Banner". **Lands on step 1**, skipping the quote form — see § Banner entry below |
-| Campaign banner on UCD home | `[unconfirmed]` — a rotating **marketing** overlay, not an entry point. It *intercepts* clicks rather than offering insurance; suppress it via the `home*` localStorage flags |
-| **69E auto-redirect** | **Confirmed working end to end, 2026-08-18** — lands on step 1 (`body#insurancePlan`) with an explicit "Skip, Return to eSerahan" escape, i.e. NOT a hard force. See [flow-estm.md](flow-estm.md) § CONFIRMED WORKING END TO END |
-| Link inside the reminder email | `[unconfirmed]` — EAINT-11864 TS08–TS12; cannot be automated as written |
+| Home tile `#insurance` → Insurance main → **Get a Free Quote** | **Verified live** — driven by `scripts/eauto-e2e` and `scripts/eauto-quotation-reminder/pages/QuoteFormPage.ts` |
+| **eSTM entry** — create an eSTM, untick eLKM on its Payment step, submit to Done; the auto-redirect lands on step 1 in the **same session** | **Verified live, 2026-08-19** — `scripts/eauto-quotation-reminder/pages/EstmHandoffPage.ts · enterInsurance()`; the eSTM is `Approved` afterwards (`_reference/html/eauto/estm-listing-with-approved-row.html`). The redirect fires after full completion, not on the untick. `[confirmed: Faizuddin, 2026-10-23]` Azfar/Miro Step 4→5 wording is the same behaviour as 'after eSTM completion', just more detailed. See [flow-estm.md](flow-estm.md) § eSTM → insurance handoff |
+| **Banner on the eSTM details page** — `#to-buy-insurance` ("GET FREE QUOTE FOR <plate>") → `#buy-insurance-dialog` → `#toProceed` | **Verified live, 2026-08-19** (`_reference/html/eauto/estm-details-with-buy-insurance-banner.html`). **Lands on step 1**, skipping the quote form — see § Banner entry below |
+| Campaign banner on UCD home | Not an entry point — a rotating **marketing** overlay that *intercepts* clicks. The `homemerdekacampaign`/`homerayacampaign` localStorage flags do **not** suppress it; click it closed with a `:visible`-filtered selector (`scripts/eauto-quotation-reminder/pages/BasePage.ts:9-18, 44-71`) |
+| **69E auto-redirect** | **Confirmed working end to end, 2026-08-18** — lands on step 1 (`body#insurancePlan`) with an explicit escape `button#estmBackBtn` "Skip, Return to eSerahan" in `div.action-row`, i.e. NOT a hard force (`_reference/html/eauto/insurance-step1-after-69e-redirect.html:462-471`). `EstmHandoffPage · completeEstmWithForcedInsurance()`. See [flow-estm.md](flow-estm.md) § CONFIRMED WORKING END TO END |
+| Link inside the reminder email ("Complete Purchase Now") | `[unconfirmed]` — EAINT-11864 TS08–TS12; not automated, no capture of the email exists |
+| **Resume from the Insurance Transaction Listing** — `a.to-payment` "Resubmit" on a `PENDING` row | **Verified live, 2026-08-18/19** — re-enters step 3 directly; see § Resuming an unpaid quotation below |
+
+The EAINT-11864 view of these entries, case by case, is in
+[flow-quotation-reminder.md](flow-quotation-reminder.md) § 3.
 
 ## URL map
 
@@ -82,7 +95,7 @@ details-page banner ends on **step 1** (the insurer cards). Whether the browser
 goes straight there or bounces through another URL first is unrecorded — and it
 does not matter, because the end point is the same. A spec that waits for a
 particular in-between URL will hang if that page is skipped. So wait for
-`body#insurancePlan` / `div#1.md-step.active` — "am I on the cards page yet?" —
+`body#insurancePlan` / `div[id="1"].md-step.active` — "am I on the cards page yet?" —
 which is true either way. `[unconfirmed which route it takes, 2026-08-17]`
 
 ⚠️ `scripts/eauto-e2e/pages/InsuranceQuotePage.ts:24` waits for
@@ -106,9 +119,25 @@ div.md-stepper-horizontal
   div#4.md-step  "Confirm"
 ```
 
-`div#2.md-step.active` is a cleaner arrival check than a URL regex. Bodies also
+The active-step check is a cleaner arrival test than a URL regex. Bodies also
 carry ids: `#insurancePlan`, `#coverage`, `#payment`.
-`[verified: live HTML, 2026-08-14]`
+`[verified: live HTML, 2026-08-14; stepper markup re-confirmed in
+_reference/html/eauto/insurance-step1-after-69e-redirect.html:60-88]`
+
+⚠️ **Write the stepper selector as `div[id="2"].md-step.active`, never
+`div#2.md-step.active`.** A CSS id selector cannot start with a digit, so
+`div#2` is a parse error, not a miss — it fails the *whole* comma-separated
+selector list, including the valid `body#coverage` beside it, with
+`SyntaxError: 'div#1.md-step.active' is not a valid selector`, and only after
+the full timeout. An earlier version of this section wrote the `div#N` form.
+`[verified: scripts/eauto-quotation-reminder/pages/InsuranceStepsPage.ts:16-21, 27-33]`
+
+**After arriving at step 3, settle before navigating away.** The step-3 row is
+committed by a call that can still be in flight when `body#payment` paints; a
+same-page `goto()` fired immediately cancels it and the listing shows nothing.
+`InsuranceStepsPage.expectStep(3)` waits `networkidle` (8 s cap) + 2 s.
+`[verified: scripts/eauto-quotation-reminder/pages/InsuranceStepsPage.ts:35-51;
+from Faizuddin, 2026-08-18]`
 
 ## Insurance main page
 
@@ -123,6 +152,13 @@ carry ids: `#insurancePlan`, `#coverage`, `#payment`.
 Use `#freeQuote`, not `text=GET A FREE QUOTE`: the DOM text is title-case
 ("Get a Free Quote") and the uppercase is CSS. Insurer contact popups are
 `img.dialog-btn[value="takaful-dialog"]` etc.
+
+Go **through the tile**, not straight to `quote.do`: `#freeQuote` runs
+`validateTransactionRestriction()` before navigating. `QuoteFormPage.open()`
+clicks the tile when present and only deep-links as a fallback, then waits for
+`form#tx-form` (30 s). `dismissBanners()` must run on this page too — the
+campaign dialog chain fires here as well as on home.
+`[verified: scripts/eauto-quotation-reminder/pages/QuoteFormPage.ts:19-32]`
 
 The permission dialog `#allow-insurance-dialog` hides its button pane until
 `input.terms` is ticked; `I Accept` → `/view/ucd/services/allow-insurance-director.do`.
@@ -162,7 +198,7 @@ Two consequences for a spec:
 
 - **Do not reuse the Get Free Quote page object here.** `#vehicleRegNo` /
   `#buyerRefIdCompanyROC` / `#to-show-result` never render on this path. Arrival is
-  `div#1.md-step.active` or `body#insurancePlan`, never `form#tx-form`.
+  `div[id="1"].md-step.active` or `body#insurancePlan`, never `form#tx-form`.
 - **TPFT may be absent by design.** A quote reached through the eSTM flow carries a
   non-blank `estmTransactionId`, and TPFT is hidden when `isHakMilik == true` — see
   [eauto-insurance.md](eauto-insurance.md). A missing TPFT card here is the Hak
@@ -271,6 +307,24 @@ button text. `[verified: live HTML, 2026-08-14]`
 Insurer classes seen live: `.Lonpac`, `.TokioMarine`, `.Takaful` (+ `.Takaful-TF`
 for TPFT), `.Chubb`, `.Rhb`. Corner ribbons: `.plan-label.cheapest`,
 `.cashback`, `.cheapestandcashback`.
+
+**Selecting a specific insurer by class:** `.plan-container.<planCode>
+button.select-plan-btn` (planCode = `Lonpac` / `TokioMarine` / `Chubb` /
+`Takaful` / `Rhb`), falling back to `button.select-plan-btn >> nth=0` with a
+warning when that insurer is not offered. **Which cards exist is decided by the
+e-simulator per vehicle**, not by anything the automation controls — the 69E
+capture shows exactly two cards (Chubb, Takaful) — so "first card" is the only
+assumption-free choice, and a preferred insurer must always have a fallback.
+`[verified: scripts/eauto-quotation-reminder/pages/InsuranceStepsPage.ts:86-106;
+_reference/html/eauto/insurance-step1-after-69e-redirect.html:307, 386;
+from Faizuddin, 2026-08-18]` Tokio Marine was reported disabled on staging at
+the time (`tests/quotation-reminder.spec.ts:45-48`) — `[from Faizuddin, 2026-08-18]`.
+
+The 69E capture also shows `plandetails` without the `allRiderAmount` /
+`totalBasic` / `vehicleMarketValue` / `vehicleUseCode` keys seen on the uat4
+sample, e.g. `{"planCode":"Chubb","sumInsured":45000.0,…,"isError":false,
+"isReferRisk":false,"vehicleCoverageCode":"CO"}` — parse keys defensively.
+`[verified: _reference/html/eauto/insurance-step1-after-69e-redirect.html:375]`
 
 ### Changing sum insured destroys your element handles
 
@@ -469,8 +523,28 @@ Status select is `select[name=status]`:
 `select[name=insuranceCompany]` values: `RHB`, `Takaful`, `Chubb`, `Lonpac`,
 `TokioMarine`. **Both selects carry `id="to-filter"`** — filter by `name`.
 
-**This is the definitive status vocabulary, and `DRAFT` = "Quotation" is the state
-EAINT-11864's reminder targets.** `[verified: live HTML, 2026-08-14]`
+**This is the definitive status vocabulary** `[verified: live HTML, 2026-08-14;
+re-confirmed _reference/html/eauto/insurance-listing-pending-payment-row.html:
+select[name=status]]`.
+
+**Corrected 2026-10-15.** This paragraph previously said *"`DRAFT` =
+"Quotation" is the state EAINT-11864's reminder targets."* A live capture of an
+unpaid step-3 transaction shows **`PENDING` ("Pending Payment")**, and no path
+that produces `DRAFT` has been observed. The reminder's actual backend criterion
+(a drop-off detector that also fires for step-1/2 stops, which leave no row at
+all) is not tied to a listing status that a tester can see. Treat `DRAFT` as a
+value the dropdown offers, `[unconfirmed]` as a state a run can reach. See
+§ Resuming an unpaid quotation and [eauto-insurance.md](eauto-insurance.md).
+
+Status cell markup, verbatim: `<td class="center status" style="color:blue"><b>Pending Payment</b></td>`;
+rows are `tr.odd` / `tr.even` inside `table.custom-table`, header row `tr.header`;
+before a search `#empty-state.table-empty-state` reads "Please apply search to
+show the record". `[verified: insurance-listing-pending-payment-row.html:200-299]`
+Row statuses are read with `table.custom-table tr.odd .status, table.custom-table
+tr.even .status` (`scripts/eauto-quotation-reminder/pages/InsuranceListingPage.ts:52`).
+`scripts/eauto-e2e` reaches the same listing at `/view/ucd/insurance/enquiry/main.jsp`
+and matches the row by a `td` equal to the vehicle number
+(`scripts/eauto-e2e/pages/TransactionEnquiryPage.ts:19-32`) — both URLs render it.
 
 ### Quotations expire after ~24 hours
 
@@ -484,6 +558,18 @@ still valid at the 07:00 cron run 7.5 hours later, so the scenario is viable. Bu
 it also means a run that stalls a day produces an expired quotation and a
 completely different expected result. Other observed remarks:
 `Invalid Quotation number`.
+
+**Known production defect (EAINT-8767, not fixed at 2026-10-26):** the expiry cron
+skips some unpaid rows. Jira, verbatim: "In prod, there are Insurance transaction are
+not updated to "Quotation Expired" when UCD did not make payment after transactions are
+created more than 24 hours As per checking by dev, all special char in [special remarks]
+will affect this cronjob to update status to "Quotation Expired"". Prod examples
+"B58005885", "B58005800". The ticket title also asks to "Allow Special Remarks Field to
+Accept Special Character". `[from ticket EAINT-8767, Jira description, no SRD, read 2026-10-26]`
+So a row with special characters in Special Remarks may stay unpaid past 24 hours
+instead of expiring. Where the Special Remarks field sits (UCD or BO details) is not
+captured in this repo. `[unconfirmed]` Older rule for which statuses expire:
+[business-rules-from-test-scenarios.md](business-rules-from-test-scenarios.md) (EAINT-9141).
 
 ### Listing columns
 
@@ -511,6 +597,17 @@ E-Certificate No/Policy No, Submission Status to JPJ, Date Issue, Insurance
 Company, Insurance Plan, Full Name, IC No, Email, Vehicle No, Vehicle Use,
 Capacity, Cover Type, Hire Purchase (User Submission), Sum Covered, Total Nett
 Contribution After Discount.
+
+**Receipt (EAINT-6673).** New transactions get a **[Receipt]** button and the file
+"Receipt_VehicleNo.pdf"; transactions from before the change keep **[Insurance
+Invoice]** and "Invoice.pdf" `[from SharePoint TS #051 EAINT-6673, sheet E2E TS, rows 4, 12]`.
+Receipt number "OR-{MMYY}-{0001}"; payment reference "{YYMMDD}0120{0001}-{VN}"
+`[from SharePoint TS #125 EAINT-6673 [OUTDATED], sheet Official Receipt, rows 10-12]`.
+
+**Hire purchase fields (EAINT-9617).** The details page shows "Hire Purchase: (User
+Submission)" and, when JPJ returns STMS 4K, "Hire Purchase: (Returned by JPJ)"; the
+e-Cert shows "HIRE PURCHASE OWNERS"; CIBO shows "Hire Purchase: (Claimed by)".
+`[from SharePoint TS #107 EAINT-9617, sheet E2E Scenarios, rows 3-6]`
 
 Both record pages **refresh and retry** — listing up to 4 attempts, details up to 3
 — because status and JPJ resolve progressively on staging.
@@ -641,11 +738,25 @@ This is the in-repo precedent to extend for multi-source comparison work — see
 `blocked` verdict distinct from fail, and contracts held as data rather than inline
 in the spec.
 
+A ready cross-surface check list from the EAINT-10044 script: the **selected sum
+insured and premium** must match on Step 4, the UCD Insurance Trx Listing, the BO
+Insurance Trx Listing, the BO CSV, the CIBO Insurance Trx Listing and the Service
+Portal Insurance tab. `[from SharePoint TS #004 EAINT-10044, sheet New Transactions, row 13]`
+
 ## What is NOT covered
 
-- **Step 4 (Confirm)** HTML — not captured yet.
+- **Step 4 (Confirm)** HTML — not captured yet. `scripts/eauto-e2e` reads it by
+  label adjacency: `Vehicle No`, `Confirmation of Payment`, `Payment Date`,
+  `Payment Amount`, e-cert via `FIELD_RX.eCert`, then clicks
+  `button:has-text("Done"), a:has-text("Done")`
+  (`scripts/eauto-e2e/pages/ConfirmationPage.ts`).
 - **Insurance details page** HTML — not captured; still regex-driven.
-- The banner and email-link entry points.
+- **Get Free Quote form, step 2 and step 3 HTML** — the selectors above carry
+  `[verified: live HTML from uat4, 2026-08-14]` but no file for those pages
+  exists under `_reference/html/eauto/`; the only step-1 capture is the 69E one.
+  Save them on the next run (standing rule).
+- ~~The banner entry point~~ — covered, verified 2026-08-19 (see § Entry points).
+  The **email-link** entry is still not covered.
 - ~~**The quotation-only stop.**~~ **ANSWERED 2026-08-17:** neither
   `#to-show-result` nor `.select-plan-btn` persists it — **the quotation is
   generated at step 3**. Stopping at step 1 or 2 leaves no listing row at all,
@@ -653,6 +764,40 @@ in the spec.
   UI. So the listing is not observable for those cases and **Mailtrap is the
   only validation**. See [eauto-insurance.md](eauto-insurance.md),
   "The quotation is generated at STEP 3". `[from QA team, 2026-08-17]`
-- BO-side and CIBO views — see [cibo.md](cibo.md).
+- BO-side and CIBO views — CIBO page-by-page flow in [flow-cibo.md](flow-cibo.md);
+  what CIBO is in [cibo.md](cibo.md).
 - Renewal, cancellation, refund, failed-payment paths.
 - Sub-UCD vs Main-UCD differences, which EAINT-11864 needs.
+
+
+## Additions from the 2026-10-23 flows study
+
+Source: lib/eautoFlows/modules/*.ts (data mirror for /eauto/flows). Only facts not already in this file.
+
+- Staging insurance runs on eSIM (simulated premiums); real API vs eSIM is switched per instance by dev only. [azfar: knowledge/_core/environments.md#Real API or eSim]
+- [unconfirmed] Planned: Chubb Address Line 1 under 3 characters gets 'NO.' in front (sent to Chubb only). [jira: EAINT-12424]
+- Alert recipients follow SRD EAINT-9117: JPJ Signal Rejected goes to one internal recipient only; Refer Risk Pending Approval, Over Insured, Duplicate Cover Note go to neither. [jira: EAINT-12342 2026-10-05]
+- Popup code order on login: websocket reminder, East Coast, Insurance-cancellation/LKM-refund poster, Merdeka, profile update, e-Invoice reminder, CNY, Raya. [askeauto: Q2 UCD login, homepage and popups prod code 2026-10-23]
+
+## Update 2026-10-27 from Charmain repo
+
+Source: read-only clone `_reference/codebases/eauto-qa-charmain/`, folder
+`intake/` (commit `0ab45d1`). Inventory: `script-inventory-team.md`.
+
+1. **Other QAs' scripts that drive this flow:**
+   a. Azfar, `tests/_explore/insurance-probe.spec.ts` — "insurance — map the module
+      from its own entry point"; `estm-insurance-divert.spec.ts` — "eSerahan —
+      VEL000069E mid-flow diverts to insurance". Both probes, deferred.
+      `[charmain-repo: intake/reports/azfar.md:29, 31]` `[charmain-repo: intake/reports/azfar.json]`
+   b. Charmain, `tools/macrokiosk-fixtures/flows/eauto-insurance-create.js`,
+      `eauto-insurance-listing.js`, `_lib/insurance.js` — data creators.
+      `[charmain-repo: intake/reports/charmain-macrokiosk.md:32, 46-48]`
+   c. Charmain, EAINT-12175 Lonpac — `probe-insurer-name.mjs`, `make-lonpac-fixture.mjs`,
+      `probe-pdf.mjs`, `compare-instances.mjs` (staging vs uat4).
+      `[charmain-repo: intake/reports/charmain-12175.md:29-45]`
+   d. Legacy load test "Load Test - UCD - Insurance Transaction" (17 tests) and
+      production "UCD_Insurance-TransactionListing" (9 tests, P1).
+      `[charmain-repo: intake/reports/legacy-shared.md:38, 118]`
+2. None of these assert the quote → payment → Insurance Created chain end to end
+   the way `scripts/eauto-quotation-reminder` and `scripts/eauto-e2e` do here; they
+   add coverage for listings, insurer labels and test data only.

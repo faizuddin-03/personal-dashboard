@@ -1,0 +1,502 @@
+Requirement             SYSTEM REQUIREMENT DOCUMENT (SRD)
+Version               [Secarang-Fiuu] Enhance Payment Gateway to Enable ShopeePay and GrabPay
+Latest Revision Date  Version 1.1
+                      11.09.2026 (Friday)
+                                                                              CONTENTS
+
+1.0 DOCUMENT INFORMATION..........................................................................................................3
+    1.1 Purpose................................................................................................................................ 3
+    1.2 Intended Audience.................................................................................................................3
+    1.3 Revision History....................................................................................................................3
+    1.4 Glossary of Terms.................................................................................................................. 4
+    1.5 Associated Document(s)........................................................................................................ 4
+
+2.0 REQUIREMENT........................................................................................................................... 5
+    2.1 High-Level Requirement Overview.......................................................................................... 5
+         2.1.1 Assumptions...................................................................................................................6
+    2.2 Key Highlights and Baseline Requirements.............................................................................7
+         2.2.1 Background.................................................................................................................... 7
+         2.2.2 Existing Issue & Expected Behaviour............................................................................... 8
+         2.2.3 Affected Pages............................................................................................................... 9
+         2.2.4 Payment Channel Selection...........................................................................................10
+         2.2.5 Payment Outcome Handling..........................................................................................13
+         2.2.6 Payment Flow...............................................................................................................15
+         2.2.7 Payment Channel Filter................................................................................................. 16
+         2.2.8 Eligibility of Testing in Sandbox Environment of Fiuu.....................................................17
+         2.2.9 Payment Reference ID................................................................................................... 18
+
+Appendix -- Requirement Change Log.............................................................................................20
+
+                                                                                                                                                                                                Page 2 of 22
+1.0 DOCUMENT INFORMATION
+1.1 Purpose
+The System Requirements Document outlines the agreed system specifications. Once approved, it becomes the
+baseline to ensure the system meets business goals. Sign-off is required for development to start, and any changes
+must follow the System Enhancement Management process.
+
+1.2 Intended Audience
+The intended audience for this document includes project stakeholders and any team members involved in
+defining, implementing, or validating the system requirements.
+
+1.3 Revision History
+This section records all modifications to the document until it reaches Version 1.0, at which point it is finalized and
+established as the baseline for future reference. Once baselined, any new changes will be assessed based on their
+severity -- significant changes may result in an addendum, while less critical updates may be handled through a
+formal change request.
+
+Version No  Date                Revised By                  Reason for Revision
+0.1         03.09.2026 (Thurs)  Lim Yi Link
+0.2         10.09.2026 (Thurs)  Lim Yi Link                 Initial Draft
+
+1.0         10.09.2026 (Thurs)  Lim Yi Link                 Updated Sections 2.1 to 2.2.5
+                                                            Added Section 2.2.6 Payment Flow
+1.1         11.09.2026 (Fri)    Lim Yi Link                 Added Section 2.2.7 Payment Channel Filter
+                                                            Added Section 2.2.8 Testing Eligibility
+
+                                                            Send out for external review
+
+                                                            Updated Section 2.2.3
+                                                            Added Section 2.2.9 Payment Reference ID
+
+Note: Update made to the document is highlighted in yellow
+
+                                                            Page 3 of 22
+1.4 Glossary of Terms
+
+#  Abbreviation / Term  Interpretation / Description
+
+1.5 Associated Document(s)                   Location / URL             Rationale for Relevance
+                                                                        Source enhancement request
+ # Item                                      https://                   for this document
+                                             mfservices.atlassian.net/
+ 1 EAINT-12107 -- [Secarang-Fiuu]            browse/EAINT-12107         Parent enhancement request
+          Enhance Payment Gateway to Enable                             raised by the requestor
+          ShopeePay and GrabPay
+                                                                        Change Control Board ticket
+2 ESI-323 -- To enchance on payment          https://                   for this enhancement
+        getaway for Secarang Fiuu            mfservices.atlassian.net/
+                                             browse/ESI-323
+
+3 CCB-858 -- ESI | Secarang Fiuu - To        https://
+
+   enable for SPay Later and GrabPay Later mfservices.atlassian.net/
+
+                                             browse/CCB-858
+
+                                                                        Page 4 of 22
+2.0 REQUIREMENT
+2.1 High-Level Requirement Overview
+
+#      Item                          Description
+
+2.1.1  Enhancement Overview          The existing Secarang Fiuu payment gateway shall be
+                                     enhanced to enable 2 additional payment channels, namely
+2.1.2  Key Value(s) Expected         ShopeePay and GrabPay.
+2.1.3  Additional Note(s)
+                                     Each channel offers a Full Amount option and a Buy Now Pay
+                                     Later (BNPL) monthly installment option.
+
+                                     Customers are given more payment channels to choose from
+                                     when paying for their insurance in Secarang, including the
+                                     option to pay by monthly installment.
+
+                                     SPayLater under ShopeePay carries an activation date of 26
+                                     May 2026 and PayLater by Grab under GrabPay carries an
+                                     activation date of 21 June 2026.
+
+                                     Both channels shall be released together.
+
+                                     Page 5 of 22
+2.1.1 Assumptions
+
+#  Assumption
+
+1  Fiuu has completed the merchant-side activation for both ShopeePay and GrabPay before deployment.
+
+2  The existing payment channels in Secarang remain unchanged.
+
+3  The monthly installment tenure and terms under SPayLater and PayLater by Grab are managed by
+
+   Shopee and Grab respectively, and are not verified in Secarang.
+
+                                                                    Page 6 of 22
+2.2 Key Highlights and Baseline Requirements
+The following key highlights and requirements were established during the initial sync-up sessions with the
+requestor. As this forms the baseline, any changes requested thereafter may result in adjustments to scope,
+timeline, or deliverables, for which the requestor will be responsible to review and confirm.
+
+2.2.1 Background   Description
+ # Affected Item   Secarang
+ 1 Project
+
+2 Portal           Secarang
+
+3 Module           Fiuu Payment
+
+4 Request          Enable ShopeePay and GrabPay as additional payment channels in the
+                   Secarang Fiuu payment gateway.
+
+                   Each channel offers a Full Amount option and a monthly installment
+                   option.
+
+5 Additional Note  To allow more payment options in Secarang.
+
+                                                               Page 7 of 22
+2.2.2 Existing Issue & Expected Behaviour
+
+# Item                        Description
+
+1 Existing Issue / Behaviour  The Secarang payment page offers 2 payment channels only, namely
+                              Credit or Debit Card and FPX Online banking.
+
+2 Expected New Handling /     ShopeePay
+        Behaviour             a. Full Amount
+                              b. SPayLater (monthly installment)
+
+                              GrabPay
+                              a. Full Amount
+                              b. PayLater by Grab (monthly installment)
+
+                                                                         Page 8 of 22
+2.2.3 Affected Pages          Description
+ # Affected Pages
+ 1 Secarang -- Payment        The payment channel selection page where the customer chooses
+                              how to pay.
+
+2 Fiuu Payment Gateway        The gateway page the customer is redirected to after selecting a
+                              payment channel.
+
+3 CIBO -- Payment Management  The Payment Channels filter used to filter payment records.
+
+4 CIBO -- Transaction Management The Transaction Details view within the Transaction Management
+                                                                 Listing.
+
+5 CIBO -- Payment Report      The Payment Report and its exported file.
+
+                                                                                           Page 9 of 22
+2.2.4 Payment Channel Selection
+
+#  Requirement Item              Description                        Acceptance Criteria
+
+   ID                            The existing payment channel       ShopeePay is displayed as a
+                                 handling shall remain unchanged.   selectable payment channel on the
+1  EAINT-12107- New Payment                                         payment page.
+                                 Upon reaching the payment page,
+   REQ-001  Channel --           the customer shall be able to      Selecting ShopeePay redirects the
+                                 select ShopeePay as a payment      customer to the Fiuu payment
+            ShopeePay            channel.                           gateway for ShopeePay.
+
+                                 Upon selecting ShopeePay, the      Full Amount and SPayLater are both
+                                 customer shall be able to pay by:  available under ShopeePay.
+                                 a. Full Amount
+                                 b. SPayLater (monthly
+                                 installment)
+
+                                                                    Page 10 of 22
+#  Requirement Item       Description                        Acceptance Criteria
+
+   ID
+
+2  EAINT-12107- New Payment The existing payment channel     GrabPay is displayed as a selectable
+
+   REQ-002  Channel --    handling shall remain unchanged. payment channel on the payment
+
+            GrabPay                                          page.
+
+                          Upon reaching the payment page,
+
+                          the customer shall be able to      Selecting GrabPay redirects the
+
+                          select GrabPay as a payment        customer to the Fiuu payment
+
+                          channel.                           gateway for GrabPay.
+
+                          Upon selecting GrabPay, the        Full Amount and PayLater by Grab
+                          customer shall be able to pay by:  are both available under GrabPay.
+                          a. Full Amount
+                          b. PayLater by Grab (monthly
+                          installment)
+
+3  EAINT-12107- Existing  The existing Credit or Debit Card  Credit or Debit Card and FPX Online
+                          and FPX Online banking channels    banking continue to work as they do
+   REQ-003  Payment       shall remain unchanged.            today after deployment.
+
+            Channels
+
+4  EAINT-12107- Transaction No minimum or maximum            A payment of any amount can be
+
+   REQ-004  Amount Limit transaction amount shall be         completed through ShopeePay and
+
+                          applied to ShopeePay or GrabPay. GrabPay without an amount-based
+
+                                                             restriction from Secarang.
+
+                                                                                         Page 11 of 22
+#  Requirement Item         Description                     Acceptance Criteria
+
+   ID
+
+5  EAINT-12107- Activation  ShopeePay and GrabPay shall be  ShopeePay and GrabPay appear on
+                            released together in a single   the payment page on the same date,
+   REQ-005                  deployment.                     and neither is released ahead of the
+                                                            other.
+
+                                                                                 Page 12 of 22
+2.2.5 Payment Outcome Handling
+
+#  Requirement Item             Description                       Acceptance Criteria
+
+   ID                           The existing successful payment   A successful payment through either
+                                handling shall remain unchanged.  new channel produces the same
+6  EAINT-12107- Successful                                        confirmation and policy issuance
+                                Upon a successful payment         outcome as an existing channel.
+   REQ-006  Payment             through ShopeePay or GrabPay,
+                                the system shall follow the same
+                                handling as the existing payment
+                                channels.
+
+7  EAINT-12107- Failed          The existing failed payment       A failed payment through either new
+                                handling shall remain unchanged.  channel returns the customer to the
+   REQ-007  Payment                                               payment page and allows another
+                                Upon a failed payment through     payment channel to be selected.
+                                ShopeePay or GrabPay, the
+                                system shall follow the same
+                                handling as the existing payment
+                                channels.
+
+                                                                  Page 13 of 22
+#  Requirement Item        Description                       Acceptance Criteria
+
+   ID
+
+8  EAINT-12107- Cancelled  The existing cancelled payment    Cancelling at either new channel
+                           handling shall remain unchanged.  returns the customer to the payment
+   REQ-008  Payment                                          page with the quotation retained.
+                           Upon the customer cancelling at
+                           the ShopeePay or GrabPay page,
+                           the system shall follow the same
+                           handling as the existing payment
+                           channels.
+
+                                                                                  Page 14 of 22
+2.2.6 Payment Flow
+
+#  Requirement Item               Description                       Acceptance Criteria
+
+   ID                             The existing payment redirection  The customer is directed to the
+                                  handling shall remain unchanged.  Shopee app and completes the
+9  EAINT-12107- ShopeePay                                           payment there.
+                                  Upon selecting ShopeePay, the
+   REQ-009          Payment Flow  customer shall complete the
+                                  payment inside the Shopee app.
+
+10 EAINT-12107- GrabPay           The existing payment redirection The customer approves the login
+
+   REQ-010          Payment Flow handling shall remain unchanged. request in the Grab app, returns to
+
+                                                                    the browser, and completes the
+
+                                  Upon selecting GrabPay, the       payment there.
+
+                                  customer shall:
+
+                                  a. Approve the browser login
+
+                                  from the Grab app
+
+                                  b. Return to the browser to
+
+                                  complete the payment
+
+                                                                                    Page 15 of 22
+2.2.7 Payment Channel Filter
+
+#  Requirement Item           Description                           Acceptance Criteria
+
+   ID
+
+11 EAINT-12107- New Filter    The existing Payment Channels         Fiuu - eWallet is displayed as an
+
+   REQ-011  Option -- Fiuu filter shall remain unchanged.           option in the Payment Channels
+
+            - eWallet                                               filter.
+
+                              Upon opening CIBO > Payment
+
+                              Management, the user shall be
+
+                              able to select Fiuu - eWallet in the
+
+                              Payment Channels filter.
+
+12 EAINT-12107- Default Sub- Upon ticking Fiuu - eWallet, the       Ticking Fiuu - eWallet ticks all 4 sub-
+                                                                    options.
+   REQ-012  Option            system shall tick the following
+
+            Selection         sub-options by default:
+
+                              a. GrabPay
+
+                              b. GrabPay - PayLater by Grab
+
+                              c. ShopeePay
+
+                              d. ShopeePay - SPayLater
+
+13 EAINT-12107- Unticking a   Upon ticking Fiuu - eWallet, the      Clicking a ticked sub-option unticks
+                              user shall be able to untick any      that sub-option only, and the
+   REQ-013  Sub-Option        individual sub-option.                remaining sub-options stay ticked.
+
+                                                                                         Page 16 of 22
+2.2.8 Eligibility of Testing in Sandbox Environment of Fiuu
+
+# Payment Option               Eligibility to Test           Remark
+                                                             Not available for testing in the
+1 ShopeePay -- Full Amount     Not able to test              sandbox environment of Fiuu
+
+2 ShopeePay -- SPayLater       Not able to test              Not available for testing in the
+                                                             sandbox environment of Fiuu
+3 GrabPay -- Full Amount       Able to test
+                                                             The only option QA is able to test
+4 GrabPay -- PayLater by Grab  Not able to test              in the sandbox environment of
+                                                             Fiuu
+
+                                                             Not available for testing in the
+                                                             sandbox environment of Fiuu
+
+                                                             Page 17 of 22
+2.2.9 Payment Reference ID
+
+#  Requirement Item         Description                         Acceptance Criteria
+
+   ID
+
+14 EAINT-12107- Payment     The existing Payment Reference      The Payment Reference ID of an e-
+                            ID handling shall remain            Wallet transaction carries the EW
+   REQ-014  Reference ID    unchanged.                          identifier.
+
+            for e-Wallet
+
+            Transactions
+
+                            Upon a payment made through an      Example: LON20260908SEW0002
+                            e-Wallet channel, the system shall
+                            use EW as the identifier in the
+                            Payment Reference ID.
+
+                            Example: LON20260908SEW0002
+
+                                                                                     Page 18 of 22
+#  Requirement Item         Description                      Acceptance Criteria
+
+   ID
+
+15 EAINT-12107- Display of  The existing Payment Reference The updated Payment Reference ID
+
+   REQ-015  Payment         ID display shall remain          is displayed in the Payment
+
+            Reference ID unchanged.                          Management Listing.
+
+                            Upon generating the Payment      The updated Payment Reference ID
+                            Reference ID, the system shall   is displayed in the exported Payment
+                            display the updated Payment      Management Listing file.
+                            Reference ID in:
+                            a. Payment Management Listing    The updated Payment Reference ID
+                            b. Exported Payment              is displayed in the Transaction
+                            Management Listing file          Details of the Transaction
+                            c. Transaction Details in the    Management Listing.
+                            Transaction Management Listing
+                            d. Payment Report                The updated Payment Reference ID
+                            e. Exported Payment Report file  is displayed in the Payment Report.
+
+                                                             The updated Payment Reference ID
+                                                             is displayed in the exported Payment
+                                                             Report file.
+
+                                                                                  Page 19 of 22
+Appendix -- Requirement Change Log
+
+#  SRD  Requiremen Status           Reason
+                                    New SPAY Later payment channel
+   Version t ID
+
+1  0.1  EAINT-12107- Added
+        REQ-001
+
+2  0.1  EAINT-12107- Added          New PayLater by Grab payment channel
+        REQ-002
+
+3  0.1  EAINT-12107- Added          Existing payment channels unchanged
+        REQ-003
+
+4  0.1  EAINT-12107- Added          No transaction amount limit
+        REQ-004
+
+5  0.1  EAINT-12107- Added          Both channels released together
+        REQ-005
+
+6  0.1  EAINT-12107- Added          Successful payment handling
+        REQ-006
+
+7  0.1  EAINT-12107- Added          Failed payment handling
+        REQ-007
+
+                                                                          Page 20 of 22
+#  SRD  Requiremen Status Reason
+
+   Version t ID
+
+8  0.1  EAINT-12107- Added  Cancelled payment handling
+        REQ-008
+
+9  0.2  EAINT-12107- Modified Channel changed to ShopeePay with Full Amount and SPayLater
+
+        REQ-001             options
+
+10 0.2  EAINT-12107- Modified Channel changed to GrabPay with Full Amount and PayLater by
+
+        REQ-002             Grab options
+
+11 0.2  EAINT-12107- Modified Channel names updated
+        REQ-004
+
+12 0.2  EAINT-12107- Modified Channel names updated
+        REQ-005
+
+13 0.2  EAINT-12107- Modified Channel names updated and pending confirmation resolved
+        REQ-006
+
+14 0.2  EAINT-12107- Modified Channel names updated and pending confirmation resolved
+        REQ-007
+
+15 0.2  EAINT-12107- Modified Channel names updated and pending confirmation resolved
+        REQ-008
+
+                                                        Page 21 of 22
+#  SRD  Requiremen Status Reason
+
+   Version t ID
+
+16 0.2  EAINT-12107- Added  ShopeePay payment flow
+        REQ-009
+
+17 0.2  EAINT-12107- Added  GrabPay payment flow
+        REQ-010
+
+18 0.2  EAINT-12107- Added  New Fiuu - eWallet payment channel filter option
+        REQ-011
+
+19 0.2  EAINT-12107- Added  Default sub-option selection
+        REQ-012
+
+20 0.2  EAINT-12107- Added  Unticking a sub-option
+        REQ-013
+
+21 1.1  EAINT-12107- Added  EW identifier for e-Wallet transactions in the Payment Reference ID
+        REQ-014
+
+22 1.1  EAINT-12107- Added  Display of the updated Payment Reference ID
+        REQ-015
+
+                                                                              Page 22 of 22
+

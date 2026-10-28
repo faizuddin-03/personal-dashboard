@@ -73,7 +73,8 @@ export function newScenario(): DraftScenario {
 // dashboard TS Tracker widget, and kanban card progress bars all pick up
 // the synced cases with zero changes to that page.
 
-import type { CREntry } from "@/app/tests/page";
+import type { CREntry } from "@/lib/tsTrackerModel";
+import { newCase } from "@/lib/tsTrackerModel";
 
 const TRACKER_KEY = "test_tracker_crs";
 
@@ -81,7 +82,9 @@ function loadTracker(): CREntry[] {
   if (typeof window === "undefined") return [];
   try { return JSON.parse(localStorage.getItem(TRACKER_KEY) ?? "[]"); } catch { return []; }
 }
-function saveTracker(data: CREntry[]) { localStorage.setItem(TRACKER_KEY, JSON.stringify(data)); }
+function saveTracker(data: CREntry[]) {
+  try { localStorage.setItem(TRACKER_KEY, JSON.stringify(data)); } catch { /* storage full or blocked */ }
+}
 
 /** Adds a new suite (one case per scenario) to the ticket's TS Tracker entry, creating the entry if needed. */
 export function syncPlanToTracker(issueKey: string, summary: string, plan: DraftTestPlan): { suiteTitle: string; tsNumbers: string[] } {
@@ -93,10 +96,10 @@ export function syncPlanToTracker(issueKey: string, summary: string, plan: Draft
   }
   const suiteTitle = plan.planTitle || `AI Draft — ${new Date().toLocaleDateString()}`;
   const tsNumbers: string[] = [];
-  const cases = plan.scenarios.map((_, i) => {
+  const cases = plan.scenarios.map((sc, i) => {
     const tsNumber = `AI-${i + 1}`;
     tsNumbers.push(tsNumber);
-    return { id: crypto.randomUUID(), tsNumber, status: null as null, dateTested: null as string | null };
+    return newCase(tsNumber, "import", { objective: sc.title || undefined }, "Synced from the AI test plan");
   });
   entry.suites.push({ id: crypto.randomUUID(), title: suiteTitle, cases });
   saveTracker(data);

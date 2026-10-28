@@ -1,0 +1,21 @@
+{
+  "name": "eauto-12028-association-payment-listing",
+  "version": "1.0.0",
+  "description": "BackOffice Association Payment Listing: summary, details, Drafter / Reviewer / Approver workflow, FMC / MMSDA Payment Request PDFs (EAINT-12028)",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.0",
+    "exceljs": "^4.4.0",
+    "pdf-parse": "^1.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/pdf-parse": "^1.1.5",
+    "typescript": "^5.3.0"
+  }
+}

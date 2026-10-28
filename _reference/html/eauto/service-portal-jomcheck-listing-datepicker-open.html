@@ -1,0 +1,180 @@
+<!--
+  URL: /uat1/credit/home/jomcheck-report-listing/main.do (Service Portal "JomCheck Report Listing")
+  Page: blank search form with the Shared Date From jQuery UI datepicker OPEN
+  (#ui-datepicker-div, showing Jan 2026, day 1 marked ui-datepicker-current-day).
+  Captured during an EAINT-12339 TS37-TS39 run where the automation "was unable to
+  pick a date in this page. the automation did not do anything" (Faizuddin).
+  Logged-in account: "Faizuddin", _userRole "Normal" (not the superadmin).
+  Widget: Prev/Next arrows (Next enabled here), month <select> Jan-Oct (max = current
+  month), year <select> 2016-2026, day cells carry onclick="DP_jQuery.datepicker._selectDay(...)"
+  on the <td>, with an <a class="ui-state-default"> inside. #ui-datepicker-div still
+  carries class "ui-helper-hidden-accessible" while display:block.
+  Env: uat1
+  Captured: 2026-10-05, by Faizuddin, pasted directly.
+  Trimmed: none.
+-->
+<body>
+
+<div id="container">
+<table width="100%">
+<tbody><tr>
+    <td class="not-to-print">
+    <form id="search-form" style="margin-left:20px;">
+        <table style="width:100%" border="0">
+        <colgroup><col width="10%"><col width="15%"><col width="10%"><col width="15%"><col width="10%"><col width="15%"><col width="10%"><col width="15%">
+        </colgroup><tbody><tr>
+            <td class="jc-filter-label">Vehicle No.:</td>
+            <td><input type="text" name="vehicleNo" id="vehicleNo" maxlength="255"></td>
+            <td class="jc-filter-label">Chassis No.:</td>
+            <td><input type="text" name="chassisNo" id="chassisNo" maxlength="255"></td>
+            <td class="jc-filter-label">Shared Date From<span class="required">*</span>:</td>
+            <td><input type="text" name="sharedDateFrom" id="sharedDateFrom" readonly="" class="hasDatepicker" style=""></td>
+            <td class="jc-filter-label">Shared Date To<span class="required">*</span>:</td>
+            <td><input type="text" name="sharedDateTo" id="sharedDateTo" readonly="" class="hasDatepicker" style=""></td>
+        </tr>
+        <tr>
+            <td class="jc-filter-label">Payment Date From:</td>
+            <td><input type="text" name="paymentDateFrom" id="paymentDateFrom" readonly="" class="hasDatepicker"></td>
+            <td class="jc-filter-label">Payment Date To:</td>
+            <td><input type="text" name="paymentDateTo" id="paymentDateTo" readonly="" class="hasDatepicker"></td>
+            <td colspan="4">
+                <div style="float:right;">
+                    <input type="button" id="to-search" value="Search Now">&nbsp;
+                    <a class="to-reset" href="#">Reset</a>
+
+                    &nbsp;<a id="to-export" href="javascript:void(0);" style="color:#007bff; text-decoration:underline; display:none;">Export</a>
+                </div>
+            </td>
+        </tr>
+        </tbody></table>
+        <input type="hidden" name="pageNo" value="1">
+    </form>
+    </td>
+</tr>
+<tr>
+    <td style="padding-top:10px; font-size:14px" class="center">
+        <b>JomCheck Report Listing</b>
+    </td>
+</tr>
+<tr>
+    <td id="result" colspan="2">&nbsp;</td>
+</tr>
+</tbody></table>
+</div>
+
+
+
+
+
+
+<script>
+$(document).ready(function() {
+
+    $("#header a.logout").click(function() {
+        if(confirm("Sure to logout?")) {
+            window.location.href = "/uat1/banker/logout.do";
+        }
+        return false;
+    });
+
+    $("#header #menu-link").click(function() {
+        var offset = $(this).offset();
+
+        $("#menu-bar").load(_contextPath + "/credit/home/menu.jsp?source=menuLink", function() {
+            $("#menu-bar").css({left: offset.left - 80, top: offset.top + 20}).slideToggle('fast');
+            $("#menu-bar div").hide();
+            var _userRole = "Normal";
+
+            if(_userRole.indexOf(",") != "-1") {
+                var roles = _userRole.split(",");
+
+                $(roles).each(function(i,role) {
+                    if(role != ""){
+                        $("div."+role).show();
+                    }
+                });
+            }
+            else {
+                $("div."+_userRole).show();
+            }
+        });
+
+        return false;
+    });
+
+    $("body").click(function() {
+        $("#menu-bar").slideUp();
+    });
+
+    LoginSessionTimer.startCountdown();
+});
+</script>
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar">
+                <ol class="inline">
+                    <li>
+                        <a href="/uat1/credit/home/" id="home-link">Home |</a>
+                    </li>
+                    <li><a href="#" id="menu-link">Menu <img src="/uat1/images/arrow_down.gif"></a></li>
+                </ol>
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">Faizuddin</span>,</li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+    <div id="menu-bar" class="hidden" style="position:absolute; width:800px;"></div>
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:20</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo" style="background-color: white;">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+
+
+
+
+<style>
+#footer {color: grey!important; height:60px !important; margin-top:15px !important;font-size:15px}
+#footer table tr td{color: grey!important;font-size:11px!important;}
+</style>
+
+
+<div id="footer">
+    <colspan width="10%">
+        <colspan width="50%">
+        <colspan width="auto">
+        </colspan></colspan></colspan><table border="0" width="100%">
+        <tbody><tr>
+            <td>&nbsp;</td>
+            <td>
+                Best Compatible With Mozilla Firefox V36.0.4 <br>
+                Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+                <a href="#" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a> |
+                <a href="#" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a> |
+                <a href="#" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </td>
+            <td class="right">
+                <img src="/uat1/images/eAuto_TM_logo.svg" width="98">
+            </td>
+        </tr>
+    </tbody></table>
+</div>
+
+
+
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible" style="position: absolute; top: 113px; left: 1128.19px; display: block;"><div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all"><a class="ui-datepicker-prev ui-corner-all" onclick="DP_jQuery.datepicker._adjustDate('#sharedDateFrom', -1, 'M');" title="Prev"><span class="ui-icon ui-icon-circle-triangle-w">Prev</span></a><a class="ui-datepicker-next ui-corner-all" onclick="DP_jQuery.datepicker._adjustDate('#sharedDateFrom', +1, 'M');" title="Next"><span class="ui-icon ui-icon-circle-triangle-e">Next</span></a><div class="ui-datepicker-title"><select class="ui-datepicker-month" onchange="DP_jQuery.datepicker._selectMonthYear('#sharedDateFrom', this, 'M');" onclick="DP_jQuery.datepicker._clickMonthYear('#sharedDateFrom');"><option value="0" selected="selected">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option></select><select class="ui-datepicker-year" onchange="DP_jQuery.datepicker._selectMonthYear('#sharedDateFrom', this, 'Y');" onclick="DP_jQuery.datepicker._clickMonthYear('#sharedDateFrom');"><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026" selected="selected">2026</option></select></div></div><table class="ui-datepicker-calendar"><thead><tr><th class="ui-datepicker-week-end"><span title="Sunday">Su</span></th><th><span title="Monday">Mo</span></th><th><span title="Tuesday">Tu</span></th><th><span title="Wednesday">We</span></th><th><span title="Thursday">Th</span></th><th><span title="Friday">Fr</span></th><th class="ui-datepicker-week-end"><span title="Saturday">Sa</span></th></tr></thead><tbody><tr><td class=" ui-datepicker-week-end ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td><td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td><td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td><td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td><td class="  ui-datepicker-current-day" onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default ui-state-active" href="#">1</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">2</a></td><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">3</a></td></tr><tr><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">4</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">5</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">6</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">7</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">8</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">9</a></td><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">10</a></td></tr><tr><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">11</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">12</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">13</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">14</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">15</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">16</a></td><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">17</a></td></tr><tr><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">18</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">19</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">20</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">21</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">22</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">23</a></td><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">24</a></td></tr><tr><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">25</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">26</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">27</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">28</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">29</a></td><td class=" " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">30</a></td><td class=" ui-datepicker-week-end " onclick="DP_jQuery.datepicker._selectDay('#sharedDateFrom',0,2026, this);return false;"><a class="ui-state-default" href="#">31</a></td></tr></tbody></table></div></body>

@@ -10,6 +10,8 @@ export type InstallationStatus =
   | "FAILED"
   | "CANCELLED";
 
+export type BoServiceType = "" | "SOFTWARE_INSTALLATION" | "BIOMETRIC_PURCHASE";
+
 /**
  * eAuto Back Office Portal > Biometric Device Purchase & Software
  * Installation Listing.
@@ -60,6 +62,8 @@ export class SoftwareInstallationListingPage extends BasePage {
   readonly appointmentDateFromInput = this.page.locator('input[name="appointmentDateFrom"]');
   readonly appointmentDateToInput = this.page.locator('input[name="appointmentDateTo"]');
   readonly installationStatusSelect = this.page.locator('select[name="status"]');
+  readonly deliveryStatusSelect = this.page.locator('select[name="deliveryStatus"]');
+  readonly serviceTypeSelect = this.page.locator('select[name="serviceType"]');
   readonly paymentStatusSelect = this.page.locator('select[name="paymentStatus"]');
   readonly lhdnStatusSelect = this.page.locator('select[name="lhdnStatus"]');
   readonly timeSlotMorningCheckbox = this.page.locator('input[name="timeSlot"][value="1000_1200"]');
@@ -88,12 +92,50 @@ export class SoftwareInstallationListingPage extends BasePage {
     await this.searchBtn.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
   }
 
-  /** Set a readonly datepicker input's value directly (bypasses the widget). */
+  /**
+   * Whether this account can actually reach the listing's own filter form
+   * (specifically the Date Requested From field) — confirmed live,
+   * 2026-09-24 (User Access Regression): some BO accounts land on
+   * `navigate()`'s target URL with the search button present, but WITHOUT
+   * this field, because they don't have permission to view this listing at
+   * all. Checking `.count()` directly (no wait) rather than letting a
+   * caller time out on a `setDateInput()`/`searchWithFilters()` call that
+   * was never going to succeed for that account.
+   */
+  async hasDateFilterFields(): Promise<boolean> {
+    return (await this.requestedFromInput.count()) > 0;
+  }
+
+  /**
+   * Set a readonly jQuery UI datepicker input via the widget's own
+   * `datepicker("setDate", ...)` API — NOT raw `.value` assignment.
+   *
+   * CONFIRMED 2026-09-24 (live TS05 run): setting `.value` directly and
+   * firing a generic 'change' event silently does nothing here — the search
+   * came back with the same unfiltered "latest 50" results regardless of
+   * what date range was requested, meaning the field's real value never
+   * reached the search at all. `datepicker("setDate", ...)` goes through the
+   * exact same code path a real click on a calendar day does (formats the
+   * value, fires the widget's own onSelect), which is what this filter
+   * actually depends on. Falls back to the raw-value approach only if
+   * jQuery/the datepicker instance isn't found (defensive — the whole page
+   * uses jQuery UI throughout, so this should never trigger in practice).
+   */
   private async setDateInput(input: Locator, value: string) {
-    await input.evaluate((el, v) => {
-      (el as HTMLInputElement).value = v as string;
-      el.dispatchEvent(new Event("change", { bubbles: true }));
-    }, value);
+    const [d, m, y] = value.split("-").map(Number);
+    await input.evaluate(
+      (el, [day, month, year]) => {
+        const w = window as unknown as { jQuery?: (el: Element) => { datepicker?: (cmd: string, date: Date) => unknown; data: (k: string) => unknown } };
+        const $el = w.jQuery?.(el);
+        if ($el?.data("datepicker")) {
+          $el.datepicker!("setDate", new Date(year, month - 1, day));
+          return;
+        }
+        (el as HTMLInputElement).value = `${String(day).padStart(2, "0")}-${String(month).padStart(2, "0")}-${year}`;
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      },
+      [d, m, y],
+    );
   }
 
   /**
@@ -111,33 +153,45 @@ export class SoftwareInstallationListingPage extends BasePage {
     installationStatus?: InstallationStatus;
     paymentStatus?: string;
     lhdnStatus?: string;
+    /** "" | "-" | "New" | "Arranged" | "Delivered" — Biometric Device Purchase records only. */
+    deliveryStatus?: string;
+    /** "" (All) | "SOFTWARE_INSTALLATION" | "BIOMETRIC_PURCHASE" — this listing combines both. */
+    serviceType?: BoServiceType;
   }) {
-    if (opts.referenceNo) await this.referenceNoInput.fill(opts.referenceNo);
-    if (opts.companyName) await this.companyNameInput.fill(opts.companyName);
-    if (opts.roc) await this.rocInput.fill(opts.roc);
-    if (opts.requestedFrom) await this.setDateInput(this.requestedFromInput, opts.requestedFrom);
-    if (opts.requestedTo) await this.setDateInput(this.requestedToInput, opts.requestedTo);
-    if (opts.appointmentDateFrom) await this.setDateInput(this.appointmentDateFromInput, opts.appointmentDateFrom);
-    if (opts.appointmentDateTo) await this.setDateInput(this.appointmentDateToInput, opts.appointmentDateTo);
-    if (opts.installationStatus !== undefined) await this.installationStatusSelect.selectOption(opts.installationStatus);
-    if (opts.paymentStatus) await this.paymentStatusSelect.selectOption(opts.paymentStatus);
-    if (opts.lhdnStatus) await this.lhdnStatusSelect.selectOption(opts.lhdnStatus);
+    await test.step(`BO listing: search with filters ${JSON.stringify(opts)}`, async () => {
+      if (opts.referenceNo) await this.referenceNoInput.fill(opts.referenceNo);
+      if (opts.companyName) await this.companyNameInput.fill(opts.companyName);
+      if (opts.roc) await this.rocInput.fill(opts.roc);
+      if (opts.requestedFrom) await this.setDateInput(this.requestedFromInput, opts.requestedFrom);
+      if (opts.requestedTo) await this.setDateInput(this.requestedToInput, opts.requestedTo);
+      if (opts.appointmentDateFrom) await this.setDateInput(this.appointmentDateFromInput, opts.appointmentDateFrom);
+      if (opts.appointmentDateTo) await this.setDateInput(this.appointmentDateToInput, opts.appointmentDateTo);
+      if (opts.installationStatus !== undefined) await this.installationStatusSelect.selectOption(opts.installationStatus);
+      if (opts.deliveryStatus !== undefined) await this.deliveryStatusSelect.selectOption(opts.deliveryStatus);
+      if (opts.serviceType !== undefined) await this.serviceTypeSelect.selectOption(opts.serviceType);
+      if (opts.paymentStatus) await this.paymentStatusSelect.selectOption(opts.paymentStatus);
+      if (opts.lhdnStatus) await this.lhdnStatusSelect.selectOption(opts.lhdnStatus);
 
-    // Search fires an AJAX GET to the listing API (#sc-filter-form →
-    // .../listing/list.*), not a full page navigation — waitForNav()'s
-    // networkidle can resolve before that fetch/render actually completes,
-    // since #sc-combined-tbl already exists (with the PREVIOUS search's rows)
-    // and so is already "visible" the instant we check. Wait for the actual
-    // list response before treating the search as done.
-    const [response] = await Promise.all([
-      this.page.waitForResponse((res) => /listing\/list/i.test(res.url()), { timeout: 15000 }).catch(() => null),
-      this.searchBtn.click(),
-    ]);
-    if (!response) {
-      // Endpoint didn't match what we expected — fall back to best-effort waits.
-      await this.waitForNav();
-    }
-    await this.resultsTable.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
+      // Search fires an AJAX GET to the listing API (#sc-filter-form →
+      // .../listing/list.*), not a full page navigation — waitForNav()'s
+      // networkidle can resolve before that fetch/render actually completes,
+      // since #sc-combined-tbl already exists (with the PREVIOUS search's rows)
+      // and so is already "visible" the instant we check. Wait for the actual
+      // list response before treating the search as done.
+      await this.demoHighlight(this.searchBtn);
+      const [response] = await Promise.all([
+        this.page.waitForResponse((res) => /listing\/list/i.test(res.url()), { timeout: 15000 }).catch(() => null),
+        this.searchBtn.click(),
+      ]);
+      if (!response) {
+        // Endpoint didn't match what we expected — fall back to best-effort waits.
+        await this.waitForNav();
+      }
+      await this.resultsTable.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
+      await this.demoPause();
+      const rowCount = await this.getResultRows();
+      await test.step(`BO listing: ${rowCount.length} row(s) returned`, async () => {});
+    });
   }
 
   async resetFilters() {
@@ -242,6 +296,18 @@ export class SoftwareInstallationListingPage extends BasePage {
     return "";
   }
 
+  async getRowServiceType(row: Locator): Promise<string> {
+    const byHeader = await this.cellTextByHeader(row, "Service Type");
+    if (byHeader) return byHeader;
+    return this.cellTextByBaseCol(row, SoftwareInstallationListingPage.COL.serviceType);
+  }
+
+  async getRowDateRequested(row: Locator): Promise<string> {
+    const byHeader = await this.cellTextByHeader(row, "Date Requested");
+    if (byHeader) return byHeader;
+    return this.cellTextByBaseCol(row, SoftwareInstallationListingPage.COL.dateRequested);
+  }
+
   async getRowCompanyName(row: Locator): Promise<string> {
     const byHeader = await this.cellTextByHeader(row, "Company Name");
     if (byHeader) return byHeader;
@@ -279,24 +345,31 @@ export class SoftwareInstallationListingPage extends BasePage {
 
   /** Click "View" → BO Software Installation Details Page. */
   async clickView(row: Locator) {
-    // The View link opens target="_blank" — a real new tab. Page objects in
-    // this suite hold a single fixed `page` reference (constructed once and
-    // reused, e.g. `new SoftwareInstallationDetailsPage(boPage)`), so a click
-    // that opens a *different* tab leaves `this.page` stuck on the listing
-    // forever, and every subsequent Details-page action times out waiting on
-    // an element that's actually on the other tab. Strip the target so the
-    // navigation happens in this same page instead.
-    const link = row.locator('a[href*="detail.do"]').first();
-    await link.evaluate((el) => el.removeAttribute("target"));
-    // waitForNav()'s networkidle can resolve before the details page has
-    // actually replaced the listing DOM (same premature-resolution pattern
-    // as searchWithFilters()) — wait for the URL to actually reach
-    // detail.do rather than trusting network idleness alone.
-    await Promise.all([
-      this.page.waitForURL(/detail\.do/, { timeout: 15000 }).catch(() => null),
-      link.click(),
-    ]);
-    await this.waitForNav();
+    const refNo = await this.getRowReferenceNo(row);
+    await test.step(`BO listing: click View on row ${refNo}`, async () => {
+      // The View link opens target="_blank" — a real new tab. Page objects in
+      // this suite hold a single fixed `page` reference (constructed once and
+      // reused, e.g. `new SoftwareInstallationDetailsPage(boPage)`), so a click
+      // that opens a *different* tab leaves `this.page` stuck on the listing
+      // forever, and every subsequent Details-page action times out waiting on
+      // an element that's actually on the other tab. Strip the target so the
+      // navigation happens in this same page instead.
+      const link = row.locator('a[href*="detail.do"]').first();
+      await link.evaluate((el) => el.removeAttribute("target"));
+      // Green — this is the row the test found and is about to open.
+      await this.demoHighlight(row, { color: "green" });
+      await this.demoHighlight(link);
+      // waitForNav()'s networkidle can resolve before the details page has
+      // actually replaced the listing DOM (same premature-resolution pattern
+      // as searchWithFilters()) — wait for the URL to actually reach
+      // detail.do rather than trusting network idleness alone.
+      await Promise.all([
+        this.page.waitForURL(/detail\.do/, { timeout: 15000 }).catch(() => null),
+        link.click(),
+      ]);
+      await this.waitForNav();
+      await this.demoPause();
+    });
   }
 
   /**

@@ -1,0 +1,144 @@
+/* Medieval style (cozy cottage): shell. Scoped to [data-style="medieval"]; see base.css and COTTAGE.md.
+   App chrome (sidebar, mobile bar, search, modals, loader, floating windows,
+   stats bar) plus /settings and /agents. Only fixes base.css cannot reach. */
+
+/* ── Sidebar: plum cottage wall, honey sign ─────────────────────── */
+[data-style="medieval"] aside > div:first-child { border-bottom-color: var(--m-crust); }
+[data-style="medieval"] aside > div:first-child > span.font-semibold,
+[data-style="medieval"] div.lg\:hidden.h-14 > span.font-semibold {
+  font-family: var(--font-pixel-title), var(--font-pixel-body), sans-serif;
+  font-weight: 400;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--m-honey);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .55);
+}
+[data-style="medieval"] aside > div:first-child > div.bg-blue-600 {
+  box-shadow: inset 0 0 0 2px var(--m-ember-edge), var(--m-px-shadow-sm);
+}
+[data-style="medieval"] aside > div:first-child > div.bg-blue-600 > span {
+  font-family: var(--font-pixel-label), sans-serif;
+  font-weight: 400;
+  color: var(--m-cream-hi);
+}
+/* Search box reads as a field (well), not a button */
+[data-style="medieval"] aside > div.px-2.pt-2 > button.bg-slate-800 {
+  background-color: var(--m-well);
+  border-color: var(--m-crust-hi);
+  box-shadow: none;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+[data-style="medieval"] aside :is(.text-slate-600, .text-slate-700) { color: var(--m-faint); }
+[data-style="medieval"] aside nav .border-l { border-left-color: var(--m-crust); }
+[data-style="medieval"] aside > div:last-child { border-top-color: var(--m-crust); box-shadow: inset 0 1px 0 var(--m-crust); }
+
+/* ── Mobile top bar ─────────────────────────────────────────────── */
+[data-style="medieval"] div.lg\:hidden.h-14.bg-slate-900 {
+  background-color: var(--m-plum);
+  border-bottom-color: var(--m-crust);
+  box-shadow: inset 0 -1px 0 var(--m-crust);
+}
+
+/* ── Global search, What's New, loader (all inside .fixed) ──────── */
+[data-style="medieval"] .fixed .max-h-80 > button.bg-slate-800 {
+  background-color: var(--m-oak);
+  box-shadow: inset 3px 0 0 var(--m-honey);
+}
+[data-style="medieval"] .fixed :is(.text-slate-600, .text-slate-700) { color: var(--m-faint); }
+[data-style="medieval"] .fixed kbd { border-color: var(--m-crust-hi); color: var(--m-muted); }
+[data-style="medieval"] .fixed.z-\[100\] h2.text-lg {
+  font-family: var(--font-pixel-title), var(--font-pixel-body), sans-serif;
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--m-honey);
+}
+[data-style="medieval"] .fixed.z-\[200\] .rounded-xl span { font-family: var(--font-pixel-body), sans-serif; }
+[data-style="medieval"] .fixed.z-\[200\] .text-indigo-400 { color: var(--m-honey); }
+
+/* ── Floating windows and dock (CSS-module classes) ─────────────── */
+[data-style="medieval"] [class*="floating-module__"][class*="__layer"] {
+  --fw-panel: var(--m-oak-deep);
+  --fw-elevated: var(--m-oak);
+  --fw-hover: var(--m-oak-hi);
+  --fw-border: var(--m-crust-hi);
+  --fw-text: var(--m-cream);
+  --fw-text-2: var(--m-oat);
+  --fw-muted: var(--m-wheat);
+  --fw-faint: var(--m-faint);
+  --fw-accent: var(--m-honey);
+}
+[data-style="medieval"] [class*="floating-module__"][class*="__win"] {
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px var(--fw-border), 5px 5px 0 rgba(0, 0, 0, .5);
+}
+[data-style="medieval"] [class*="floating-module__"][class*="__sheet"] { border-radius: 0; }
+[data-style="medieval"] [class*="floating-module__"]:is([class*="__titleIcon"], [class*="__titleBtn"], [class*="__tip"], [class*="__dockDot"]) { border-radius: 2px; }
+[data-style="medieval"] [class*="floating-module__"][class*="__titleText"] {
+  font-family: var(--font-pixel-body), sans-serif;
+  font-size: 13px;
+}
+[data-style="medieval"] [class*="floating-module__"][class*="__dock"]:not([class*="__dockBtn"]):not([class*="__dockDot"]):not([class*="__dockItems"]) {
+  border-radius: 2px;
+  box-shadow: var(--m-px-shadow);
+}
+[data-style="medieval"] [class*="floating-module__"][class*="__dockToggle"],
+[data-style="medieval"] [class*="floating-module__"][class*="__dockToggle"]:hover {
+  background: var(--m-ember);
+  color: var(--m-cream-hi);
+  box-shadow: inset 0 0 0 2px var(--m-ember-edge);
+}
+[data-style="medieval"] [class*="floating-module__"][class*="__win"] .text-\[34px\] {
+  font-family: var(--font-pixel-title), sans-serif;
+  font-weight: 400;
+  font-size: 44px;
+}
+
+/* ── StatsBar (jira): pixel numbers (status edges come from base.css) ─ */
+[data-style="medieval"][data-page="jira"] .rounded-xl.border > p.text-3xl {
+  font-family: var(--font-pixel-title), sans-serif;
+  font-weight: 400;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+[data-style="medieval"][data-page="jira"] .col-span-2 > p.text-slate-600 { color: var(--m-wheat); }
+
+/* ── Settings: calm sections, oak secondary buttons ─────────────── */
+[data-style="medieval"][data-page="settings"] main .rounded-2xl.p-6 > .mb-5 {
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--m-crust);
+}
+[data-style="medieval"][data-page="settings"] main .rounded-2xl.p-6 > .mb-5 > h2 { color: var(--m-cream-hi); }
+[data-style="medieval"][data-page="settings"] main button.border.border-slate-700:not([class*="bg-"]) {
+  background-color: var(--m-oak);
+  box-shadow: inset 0 0 0 1px var(--m-crust), var(--m-px-shadow-sm);
+}
+[data-style="medieval"][data-page="settings"] main button.border-2.bg-slate-800 {
+  border-color: var(--m-honey);
+  background-color: var(--m-oak);
+  box-shadow: var(--m-px-shadow-sm);
+}
+[data-style="medieval"][data-page="settings"] main code { background-color: var(--m-well); }
+[data-style="medieval"][data-page="settings"] main .text-slate-600 { color: var(--m-faint); }
+
+/* ── Agents: cards around the self-contained scene ──────────────── */
+[data-style="medieval"][data-page="agents"] .ag-room { box-shadow: inset 0 0 0 2px var(--m-crust-hi), var(--m-px-shadow); }
+/* Speech bubbles go dark (dark-surface rule); the scene art is untouched */
+[data-style="medieval"][data-page="agents"] .ag-bubble-box {
+  background: var(--m-oak-deep);
+  color: var(--m-cream);
+  box-shadow: 0 -2px 0 var(--m-crust-hi), 0 2px 0 var(--m-crust-hi), -2px 0 0 var(--m-crust-hi), 2px 0 0 var(--m-crust-hi), 0 4px 0 rgba(0, 0, 0, .35);
+}
+[data-style="medieval"][data-page="agents"] .ag-bubble-box.ag-bubble-err { background: #3a1512; color: #ffc2bc; }
+[data-style="medieval"][data-page="agents"] .ag-seg:not(.ag-seg-on) { background: var(--m-crust-hi); }
+/* Ticket keys in mono */
+[data-style="medieval"][data-page="agents"] li .text-sm > span.font-medium.shrink-0:first-child,
+[data-style="medieval"][data-page="agents"] .ag-bubble-box span.font-bold,
+[data-style="medieval"][data-page="agents"] p.text-sm > span.text-slate-400 > span.text-slate-200 {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+[data-style="medieval"][data-page="agents"] main ol.font-mono { background-color: var(--m-well); }
+[data-style="medieval"][data-page="agents"] main button.border.border-slate-700:not([class*="bg-"]) {
+  background-color: var(--m-oak);
+  box-shadow: inset 0 0 0 1px var(--m-crust), var(--m-px-shadow-sm);
+}

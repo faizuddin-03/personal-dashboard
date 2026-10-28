@@ -1,0 +1,184 @@
+<!--
+Fiuu card simulator — 3D Secure OTP page (popup after [Pay MYR …] on the Fiuu card form).
+URL host: Fiuu sandbox (bank simulator), from Secarang /ia staging, Credit or Debit Card.
+Captured 2026-10-20 by scripts/eauto-12107 12107_TS07 (VISA 4456 5300 0000 1096, 12/26). Nothing trimmed.
+Page text: "Enter One-Time Password (OTP)" / "For testing: use OTP 123456" / [PAY] [CANCEL].
+-->
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="lyDaSC1GBDbYIsEhSYxAJ2zOubXim96pyxgXjm6X">
+    <title>Card Payment Simulator - 3DS Challenge</title>
+    <link rel="shortcut icon" href="https://bank-simulator.fiuu.com/sandbox.png">
+    <link href="https://bank-simulator.fiuu.com/css/cil.css" rel="stylesheet">
+</head>
+<body>
+<!-- Blue Bar -->
+<div class="cil-blue-bar">
+    <img src="https://bank-simulator.fiuu.com/img/fiuuSimulator.png" alt="Fiuu">
+</div>
+
+<div class="cil-container">
+    <div class="cil-card cil-two-col">
+        <!-- Left Section: Branding + Transaction Details (desktop) -->
+        <div class="cil-left-section">
+            <div>
+                <div class="cil-left-header">
+                    <div class="secure-icon">
+                        <span class="lock">🔒</span>
+                    </div>
+                    <h2>3D Secure Authentication</h2>
+                    <p class="header-subtitle">Verified by Visa / Mastercard SecureCode</p>
+                </div>
+
+                <div class="cil-left-brand visa">
+                    <span class="card-brand">VISA</span>
+                    <span class="secure-text">Secure Payment</span>
+                </div>
+            </div>
+
+            <div class="cil-left-details">
+                <div class="cil-detail-row">
+                    <span class="cil-detail-label">Merchant</span>
+                    <span class="cil-detail-value">SB_newserbasentral</span>
+                </div>
+                <div class="cil-detail-row">
+                    <span class="cil-detail-label">Card</span>
+                    <span class="cil-detail-value">445653******1096</span>
+                </div>
+                <div class="cil-detail-row">
+                    <span class="cil-detail-label">Card Holder</span>
+                    <span class="cil-detail-value">MUHAMMAD FAIZUDDIN BIN BIDI</span>
+                </div>
+                <div class="cil-detail-row highlight">
+                    <span class="cil-detail-label">Amount</span>
+                    <span class="cil-detail-value">MYR 884.48</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section: Transaction Details (mobile) + OTP Form -->
+        <div class="cil-right-section">
+            <!-- Transaction details shown on mobile only (hidden on desktop) -->
+            <div class="cil-details">
+                <table aria-describedby="threedsTable" id="threedsTable" aria-label="Transaction Details" class="cil-table">
+                    <tbody><tr>
+                        <th>Merchant</th>
+                        <td><strong>SB_newserbasentral</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Card</th>
+                        <td><strong>445653******1096</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Card Holder</th>
+                        <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                    </tr>
+                    <tr>
+                        <th>Amount</th>
+                        <td class="amount"><strong>MYR 884.48</strong></td>
+                    </tr>
+                </tbody></table>
+            </div>
+
+            <div class="cil-otp-section">
+                <h3>Enter One-Time Password (OTP)</h3>
+                <p class="otp-hint">
+                    <strong>For testing: use OTP 123456</strong>
+                </p>
+
+                <form id="otpForm" method="POST" action="https://bank-simulator.fiuu.com/card/3ds-process">
+                    <input type="hidden" name="_token" value="lyDaSC1GBDbYIsEhSYxAJ2zOubXim96pyxgXjm6X">                    <input type="hidden" name="txnId" value="S199191">
+
+                    <div class="otp-input-container">
+                        <input type="text" name="otp" id="otpInput" class="otp-input" maxlength="6" placeholder="000000" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required="">
+                    </div>
+
+                    <div class="otp-timer">
+                        <span id="timer">Code expires in: <strong>05:00</strong></span>
+                    </div>
+
+                    <div class="cil-choice-section">
+                        <div class="choice-buttons">
+                            <button type="submit" class="cil-btn pay-btn">
+                                PAY
+                            </button>
+                            <button type="button" class="cil-btn cancel-btn" onclick="cancelTransaction()">
+                                CANCEL
+                            </button>
+                        </div>
+                        <p class="cancel-hint">Click <strong>CANCEL</strong> to leave transaction in Pending status for requery testing.</p>
+                    </div>
+                </form>
+
+                <div class="otp-resend">
+                    <button type="button" class="link-btn" onclick="resendOTP()">Resend OTP</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="cil-footer">
+            <p>Card Payment Simulator - 3D Secure</p>
+            <p class="cil-small-text">This is a test environment. No real payment will be processed.</p>
+        </div>
+    </div>
+
+    <div class="cil-powered-by">
+        <p>Powered by&nbsp;<img src="https://bank-simulator.fiuu.com/img/FiuuBlue.png" alt="Fiuu"></p>
+    </div>
+</div>
+
+<script>
+    // OTP Input - numbers only
+    document.getElementById('otpInput').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Countdown timer
+    var timeLeft = 300;
+    var timerElement = document.getElementById('timer');
+
+    var countdown = setInterval(function() {
+        timeLeft--;
+        var minutes = Math.floor(timeLeft / 60);
+        var seconds = timeLeft % 60;
+
+        timerElement.innerHTML = 'Code expires in: <strong>' +
+            String(minutes).padStart(2, '0') + ':' +
+            String(seconds).padStart(2, '0') + '</strong>';
+
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timerElement.innerHTML = '<span class="expired">Code expired - please resend</span>';
+        }
+    }, 1000);
+
+    function resendOTP() {
+        timeLeft = 300;
+        alert('A new OTP has been sent.\nFor testing, use: 123456');
+    }
+
+    function cancelTransaction() {
+        clearInterval(countdown);
+        document.getElementById('otpForm').style.display = 'none';
+        document.querySelector('.otp-resend').style.display = 'none';
+        document.querySelector('.cancel-hint').style.display = 'none';
+
+        var cancelMsg = document.createElement('div');
+        cancelMsg.className = 'cancel-message';
+        cancelMsg.innerHTML = '<div class="cancel-icon">&#10060;</div>'
+            + '<h3>Transaction Cancelled</h3>'
+            + '<p>This transaction is now in <strong>Pending</strong> status.</p>'
+            + '<p>You can test <strong>Requery API</strong> to update the status.</p>'
+            + '<p class="cancel-note">Close this page. Do NOT go back.</p>';
+        document.querySelector('.cil-otp-section').appendChild(cancelMsg);
+    }
+
+    // Auto-focus OTP input
+    document.getElementById('otpInput').focus();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;2c289d5631264377ad806da7050358cc&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+
+</body></html>

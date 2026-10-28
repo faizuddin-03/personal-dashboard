@@ -1,0 +1,163 @@
+<title>12107_TS06 Filter Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; each finding = source cards (TS, SRD, CIBO) stacked, screenshots full width. */
+:root {
+  --bg: #f5f7f9; --surface: #ffffff; --fg: #1b2530; --muted: #5a6876; --line: #d8dfe6;
+  --accent: #1f5f8b; --bad: #b42318; --bad-bg: #fdecea; --good: #146c43; --good-bg: #e7f5ee;
+  --quote-bg: #eef3f7;
+  --display: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a;
+  --quote-bg: #1f2b36; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a;
+  --quote-bg: #1f2b36; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 30px/1.15 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 700 22px/1.2 var(--display); margin: 0; text-wrap: balance; }
+h3 { font: 600 13px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.meta { color: var(--muted); font-size: 14px; }
+.status { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.pill { font: 600 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+.pill.good { background: var(--good-bg); color: var(--good); }
+section.finding { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px 20px; display: grid; gap: 20px; }
+.finding-head { display: grid; gap: 8px; border-left: 4px solid var(--bad); padding-left: 12px; }
+.source { display: grid; gap: 10px; min-width: 0; }
+blockquote { margin: 0; background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; font-size: 15px; white-space: pre-line; }
+blockquote cite { display: block; margin-top: 8px; font: 12px/1.4 var(--mono); color: var(--muted); font-style: normal; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+figcaption { font: 12px/1.4 var(--mono); color: var(--muted); }
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font: 13px/1.4 var(--mono); font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; }
+td.bad { color: var(--bad); font-weight: 600; }
+.ask { background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; display: grid; gap: 4px; }
+.ask strong { color: var(--accent); font-weight: 700; }
+ul.passed { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.grid2 { display: grid; gap: 20px; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">EAINT-12107 · CIBO › Payment Management</span>
+    <h1>12107_TS06: CIBO Payment Channel filter</h1>
+    <p class="meta">Dashboard run 20 Oct 2026, 16:22 (run 1792484526415) on staging CIBO. The filter itself works; the run failed on two data points below.</p>
+    <div class="status"><span class="pill bad">1 open issue</span><span class="pill good">Issue 1 answered: expected</span><span class="pill good">filter ticks and results correct</span></div>
+  </header>
+
+  <section class="finding" id="ew">
+    <div class="finding-head">
+      <span class="eyebrow">Issue 1 · answered: expected</span>
+      <h2>4 GrabPay transactions have no "EW" in the Payment Ref ID</h2>
+      <p>Filter = GrabPay. All 4 were paid on 07–08 Sep 2026, before the EW rule was added to the SRD on 11 Sep 2026. Likely old test data, not a defect.</p>
+    </div>
+
+    <div class="source">
+      <h3>What the TS says</h3>
+      <blockquote>Ensure listing &amp; excel only show transactions with Payment Channel = GrabPay
+Payment Reference ID of every row contains EW in listing &amp; excel<cite>Combined TS 20_10_26 · 12107_TS06 · steps 1–5, Expected Result</cite></blockquote>
+    </div>
+
+    <div class="source">
+      <h3>What the SRD says</h3>
+      <figure>
+        <img src="img/srd-2-2-9.png" alt="SRD 12107 v1.2 section 2.2.9 Payment Reference ID, REQ-014: The Payment Reference ID of an e-Wallet transaction carries the EW identifier. Example: LON20260908SEW0002">
+        <figcaption>SRD_EAINT-12107_v1.2_20261020.pdf · page 19 · §2.2.9 REQ-014</figcaption>
+      </figure>
+      <figure>
+        <img src="img/srd-revision.png" alt="SRD revision history: v1.1 on 11.09.2026 added Section 2.2.9 Payment Reference ID; v1.2 on 20.10.2026 updated Section 2.2.7">
+        <figcaption>Same SRD · page 4 · Revision History: v1.1, 11.09.2026, "Added Section 2.2.9 Payment Reference ID"</figcaption>
+      </figure>
+    </div>
+
+    <div class="source">
+      <h3>What CIBO shows</h3>
+      <figure>
+        <img src="img/grabpay-no-ew.png" alt="CIBO Payment Management, Payment Channel = GrabPay, rows 12 to 15 boxed in red: Payment Ref IDs LON20260908SFX0002, LON20260908SFX0001, LON20260907SFX0011, LON20260907SFX0009">
+        <figcaption>12107_TS06-GrabPay-no-EW-ISSUE.png · red boxes = Payment Ref IDs without "EW"</figcaption>
+      </figure>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Transaction Ref. No.</th><th>Payment Channel</th><th>Paid</th><th>Payment Reference ID</th></tr></thead>
+          <tbody>
+            <tr><td>BR69005758</td><td>Fiuu eWallet | GrabPay</td><td>08-09-2026 08:46</td><td class="bad">LON20260908SFX0002</td></tr>
+            <tr><td>BR69005757</td><td>Fiuu eWallet | GrabPay</td><td>08-09-2026 08:39</td><td class="bad">LON20260908SFX0001</td></tr>
+            <tr><td>BR69005756</td><td>Fiuu eWallet | GrabPay</td><td>07-09-2026 17:20</td><td class="bad">LON20260907SFX0011</td></tr>
+            <tr><td>BR69005754</td><td>Fiuu eWallet | GrabPay</td><td>07-09-2026 17:08</td><td class="bad">LON20260907SFX0009</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="meta">From the exported file 12107_TS06-GrabPay-export.csv (same 4 rows as the listing).</p>
+    </div>
+
+    <div class="ask"><strong>Dev answer (20 Oct 2026)</strong><span>"yes, existing data will not change. only new data will". Not a defect. The automation now checks EW only for payments from 11 Sep 2026 and logs these 4 as expected; the re-run passes this check.</span></div>
+  </section>
+
+  <section class="finding" id="paylater">
+    <div class="finding-head">
+      <span class="eyebrow">Issue 2 · confirm with dev</span>
+      <h2>The PayLater by Grab row shows plain "GrabPay" as its Payment Channel</h2>
+      <p>Filter = GrabPay - PayLater by Grab. The filter returns only BR60006259 (the transaction dev patched to PayLater by Grab), but its Payment Channel reads "Fiuu eWallet GrabPay".</p>
+    </div>
+
+    <div class="grid2">
+      <div class="source">
+        <h3>What the TS says</h3>
+        <blockquote>Ensure listing &amp; excel only show transactions with Payment Channel = GrabPay - PayLater by Grab<cite>12107_TS06 · steps 6–8, Expected Result</cite></blockquote>
+        <blockquote>3. Payment channel displaying Fiuu eWallet [Payment Method]<cite>12107_TS05 · CIBO Expected Result · Payment Management page</cite></blockquote>
+      </div>
+      <div class="source">
+        <h3>What CIBO shows</h3>
+        <blockquote>"BR60006259","Secarang","TEST1111UD","Fiuu eWallet | GrabPay","RM1,052.55","Paid","19-10-2026 16:32","LON20261019SEW0005"<cite>12107_TS06-GrabPay-PayLater-by-Grab-export.csv · the only row</cite></blockquote>
+      </div>
+    </div>
+
+    <div class="source">
+      <h3>What the SRD says</h3>
+      <p>Nothing on this. SRD 12107 v1.2 has no rule for the Payment Channel text in the results. §2.2.7 covers only how the filter ticks behave (see "Passed" below), so the expected text here comes from the TS alone.</p>
+    </div>
+
+    <div class="source">
+      <figure>
+        <img src="img/paylater-channel.png" alt="CIBO Payment Management, Payment Channel = GrabPay - PayLater by Grab, one row BR60006259 with Payment Channel Fiuu eWallet GrabPay boxed in red">
+        <figcaption>12107_TS06-GrabPay-PayLater-by-Grab-wrong-channel-ISSUE.png · red box = Payment Channel cell</figcaption>
+      </figure>
+    </div>
+
+    <div class="ask"><strong>Question for dev</strong><span>Should the Payment Channel column for a PayLater by Grab payment read "Fiuu eWallet GrabPay - PayLater by Grab"? Neither the SRD nor the TS fixes the exact text, so dev's answer settles it.</span></div>
+  </section>
+
+  <section class="finding" style="gap:16px">
+    <h2>Passed in the same run</h2>
+    <ul class="passed">
+      <li>GrabPay filter: 16 rows, every row "Fiuu eWallet GrabPay".</li>
+      <li>GrabPay - PayLater by Grab filter: 1 row (BR60006259).</li>
+      <li>ShopeePay filter: 12 rows, every row "Fiuu eWallet ShopeePay".</li>
+      <li>No separate "ShopeePay - SPayLater" option; only GrabPay, GrabPay - PayLater by Grab, ShopeePay.</li>
+      <li>Ticking "Fiuu - eWallet" ticks all 3 options under it (REQ-012); the list shows only Fiuu eWallet rows; export has 29 rows.</li>
+      <li>Unticking ShopeePay unticks only ShopeePay; GrabPay and GrabPay - PayLater by Grab stay ticked, and "Fiuu - eWallet" itself becomes unticked (REQ-013).</li>
+    </ul>
+    <div class="source">
+      <h3>SRD source for the filter behaviour</h3>
+      <figure>
+        <img src="img/srd-2-2-7.png" alt="SRD 12107 v1.2 section 2.2.7 Payment Channel Filter: REQ-011 Fiuu - eWallet option; REQ-012 ticking Fiuu - eWallet ticks all 3 sub-options, ShopeePay - SPayLater struck through; REQ-013 clicking a ticked sub-option unticks that sub-option only">
+        <figcaption>SRD_EAINT-12107_v1.2_20261020.pdf · page 17 · §2.2.7 REQ-011 to REQ-013 · how the filter ticks behave</figcaption>
+      </figure>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,431 @@
+<title>EAINT-12339 Study</title>
+<style>
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171c;
+      --surface: #1b1f26;
+      --surface-alt: #21262f;
+      --border: #2c323d;
+      --text: #e6e9ee;
+      --text-muted: #97a0ad;
+      --accent: #7bb0e8;
+      --accent-soft: #22364a;
+      --warn-bg: #3a2a18;
+      --warn-border: #6b4a22;
+      --warn-text: #e8c48a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171c;
+    --surface: #1b1f26;
+    --surface-alt: #21262f;
+    --border: #2c323d;
+    --text: #e6e9ee;
+    --text-muted: #97a0ad;
+    --accent: #7bb0e8;
+    --accent-soft: #22364a;
+    --warn-bg: #3a2a18;
+    --warn-border: #6b4a22;
+    --warn-text: #e8c48a;
+  }
+
+  :root {
+    --bg: #f3f4f6;
+    --surface: #ffffff;
+    --surface-alt: #ececf1;
+    --border: #d7dae1;
+    --text: #1b1f27;
+    --text-muted: #5c6470;
+    --accent: #2f6ba3;
+    --accent-soft: #e8f0f8;
+    --warn-bg: #fbf1de;
+    --warn-border: #e0c188;
+    --warn-text: #7a5410;
+
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+    --sans: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --sev-low: #4c8c5b;
+    --sev-medium: #8a8c34;
+    --sev-high: #c1832f;
+    --sev-severe: #c1602f;
+    --sev-critical: #ab3535;
+    --sev-catastrophic: #7a2a4d;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px 80px;
+  }
+  main {
+    width: 100%;
+    max-width: 760px;
+  }
+
+  a { color: var(--accent); }
+
+  header.doc-head {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 6px;
+  }
+  h1 {
+    font-family: var(--mono);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+    text-wrap: balance;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0 0 18px;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    font-size: 12.5px;
+  }
+  .meta-cell {
+    background: var(--surface);
+    padding: 8px 10px;
+  }
+  .meta-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .meta-value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rules-note {
+    margin-top: 16px;
+    padding: 9px 12px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  section.block {
+    margin-bottom: 30px;
+  }
+  .sec-num {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 13px;
+    margin-right: 8px;
+  }
+  h2 {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: baseline;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+  p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    margin: 0 0 10px;
+    max-width: 65ch;
+  }
+  p.tight { margin-bottom: 6px; }
+
+  ol, ul.lettered {
+    margin: 0 0 10px;
+    padding-left: 22px;
+  }
+  ol > li, ul.lettered > li {
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin-bottom: 6px;
+    max-width: 62ch;
+  }
+  ul.lettered { list-style-type: lower-alpha; }
+
+  code, .field {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .cite {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+
+  .callout {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    padding: 12px 14px;
+    margin: 12px 0;
+  }
+  .callout.warn {
+    border-left-color: var(--warn-border);
+    background: var(--warn-bg);
+    color: var(--warn-text);
+  }
+  .callout.warn p { color: var(--warn-text); }
+  .callout-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0 0 6px;
+  }
+  .callout.warn .callout-label { color: var(--warn-text); opacity: 0.85; }
+
+  table.spec {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 10px 0 16px;
+  }
+  table.spec th, table.spec td {
+    border: 1px solid var(--border);
+    padding: 7px 9px;
+    text-align: left;
+    vertical-align: top;
+  }
+  table.spec th {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    background: var(--surface-alt);
+  }
+  .table-wrap { overflow-x: auto; }
+
+  .sev-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 16px; }
+  .sev-chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #fff;
+    padding: 4px 9px;
+    white-space: nowrap;
+  }
+  .sev-chip small { opacity: 0.8; margin-left: 4px; }
+  .sev-low { background: var(--sev-low); }
+  .sev-medium { background: var(--sev-medium); }
+  .sev-high { background: var(--sev-high); }
+  .sev-severe { background: var(--sev-severe); }
+  .sev-critical { background: var(--sev-critical); }
+  .sev-catastrophic { background: var(--sev-catastrophic); }
+
+  .qmap { border: 1px solid var(--border); margin: 10px 0; }
+  .qmap-row { display: grid; grid-template-columns: 42px 1fr; border-top: 1px solid var(--border); }
+  .qmap-row:first-child { border-top: none; }
+  .qmap-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--surface-alt);
+    padding: 10px 8px;
+    border-right: 1px solid var(--border);
+  }
+  .qmap-body { padding: 10px 12px; }
+  .qmap-body p { margin: 0; }
+
+  footer {
+    margin-top: 36px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+</style>
+
+<main>
+
+  <header class="doc-head">
+    <p class="eyebrow">Jira ticket study — task</p>
+    <h1>EAINT-12339</h1>
+    <p class="subtitle">[eAuto-JomCheck] Upgrade JomCheck Gateway API Integration from v1.9 to v2.0</p>
+
+    <div class="meta-grid">
+      <div class="meta-cell"><span class="meta-label">Status</span><span class="meta-value">Req Gathering &amp; Analysis</span></div>
+      <div class="meta-cell"><span class="meta-label">Priority</span><span class="meta-value">Medium</span></div>
+      <div class="meta-cell"><span class="meta-label">Fix Version</span><span class="meta-value">S34.X-20261005</span></div>
+      <div class="meta-cell"><span class="meta-label">Deploy Date</span><span class="meta-value">05.10.2026 (Mon), 11:30pm</span></div>
+      <div class="meta-cell"><span class="meta-label">Assignee (Dev)</span><span class="meta-value">rui.luan</span></div>
+      <div class="meta-cell"><span class="meta-label">QA</span><span class="meta-value">Muhammad Amirul Azfar</span></div>
+      <div class="meta-cell"><span class="meta-label">BA / Reporter</span><span class="meta-value">Chee Mei Jia</span></div>
+      <div class="meta-cell"><span class="meta-label">Environment</span><span class="meta-value">Staging</span></div>
+    </div>
+
+    <div class="rules-note">
+      Format applied: numbered/lettered lists only. No bullets. Droid-style, factual, short paragraphs.
+      Sources cited verbatim with exact location. Q1/Q2 mapping used for open questions.
+    </div>
+  </header>
+
+  <section class="block">
+    <h2><span class="sec-num">01</span>Overview</h2>
+    <p>ezAuto, the JomCheck claims-history provider, is upgrading its Gateway API from v1.9 to v2.0. Three fields eAuto currently reads are deprecated and will return <code>"N/A"</code> or <code>null</code>. Two new fields are added. Severity expands from 4 bands to 6.</p>
+    <div class="callout warn">
+      <p class="callout-label">Date conflict</p>
+      <p>Jira ticket description states 20.09.2026. That date has passed. SRD v0.2 and v0.3 both state the deployment date is <strong>05.10.2026 (Monday) night, completing 11:30pm</strong>. Source: <span class="cite">SRD_EAINT-12339_v0.3_20260928.docx, §2.1.3</span>. Treat the SRD as authoritative. The ticket field is stale.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="sec-num">02</span>SRD version used</h2>
+    <p>Latest SRD is <code>v0.3</code>, attached 28 Sep 2026, 17:02. It supersedes v0.2 (25 Sep) and v0.1 (18 Sep).</p>
+    <p class="tight">Source: <span class="cite">Teams channel "EAINT-12339 [eAuto-JomCheck]...", Chee Mei Jia, 28 Sep 2026 17:02</span> — quoted verbatim:</p>
+    <div class="callout">
+      <p>"Everyone, just to share that srd v0.3 and mockup are ready yaaa. let me know if there is any feedback by tmr 10am. if nope i will send out srd v1.0 for external review ya"</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="sec-num">03</span>Affected portal / module</h2>
+    <ol type="a">
+      <li>eAuto BackOffice — JomCheck Report Listing and its Excel export.</li>
+      <li>eAuto Service Portal — Hire Purchase Ownership &gt; JomCheck Report Listing and export.</li>
+      <li>eAuto UCD — JomCheck Transaction Details report button.</li>
+    </ol>
+    <p>Module: JomCheck.</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="sec-num">04</span>What changed, by location</h2>
+
+    <p class="tight"><strong>BackOffice listing.</strong> Grows from 27 to 29 columns.</p>
+    <ol type="a">
+      <li>Odometer Reading re-sourced from <code>MileageRange</code>. Returns 10,000km bands. Above 300,000km displays <code>"More than 300,000 km"</code>. Null displays <code>"Not Specified"</code>.</li>
+      <li>Type of Claim re-sourced from <code>ClaimsType</code>. Numeric code mapped to description, code shown in brackets, e.g. <code>"Windscreen (WS)"</code>. Null displays <code>"-"</code>.</li>
+      <li>Total No. of Parts Approved re-sourced from <code>TotalPartsChanged</code>. 10-step bands. Above 100 displays <code>"More than 100 parts"</code>. Null displays <code>"No information available."</code>.</li>
+      <li>Two new columns added: Possible Total Loss, Possible BER. Both BackOffice-only. Vehicle-level flag is true if any claim on the vehicle qualifies.</li>
+    </ol>
+
+    <p class="tight"><strong>Service Portal listing.</strong> No column additions. Severity counters only.</p>
+
+    <div class="table-wrap">
+    <table class="spec">
+      <tr><th>Requirement</th><th>Existing</th><th>New</th></tr>
+      <tr><td>Severity counters</td><td>4 bands</td><td>6 bands</td></tr>
+      <tr><td>Possible Total Loss / BER</td><td>N/A</td><td>Not displayed on this portal</td></tr>
+      <tr><td>Type of Claim / Odometer / Parts</td><td>Not present</td><td>Not present — out of scope</td></tr>
+    </table>
+    </div>
+
+    <p class="tight"><strong>UCD.</strong> Report button downloads a report generated from API v2.0. No screen layout change.</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="sec-num">05</span>Severity scale (6 bands)</h2>
+    <p>Severity is the approved claim amount as a percentage of sum insured. Source: <span class="cite">SRD v0.3, REQ-006</span>.</p>
+    <div class="sev-row">
+      <span class="sev-chip sev-low">LOW <small>1–5%</small></span>
+      <span class="sev-chip sev-medium">MEDIUM <small>6–15%</small></span>
+      <span class="sev-chip sev-high">HIGH <small>16–30%</small></span>
+      <span class="sev-chip sev-severe">SEVERE <small>31–50%</small></span>
+      <span class="sev-chip sev-critical">CRITICAL <small>51–70%</small></span>
+      <span class="sev-chip sev-catastrophic">CATASTROPHIC <small>&gt;70%</small></span>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="sec-num">06</span>Critical behaviour: v0.3 reversed v0.2</h2>
+    <div class="callout warn">
+      <p class="callout-label">Highest-risk area for testing</p>
+      <p><strong>v0.2</strong> stated the 3 re-sourced columns collapse to a single value per vehicle, removing the numbered multi-claim display. Source: <span class="cite">SRD_EAINT-12339_v0.2_20260925.docx, REQ-001</span>.</p>
+      <p><strong>v0.3</strong> reverses this. The 3 columns now <strong>keep</strong> the existing numbered multi-claim display — 1 line per claim. Source: <span class="cite">SRD_EAINT-12339_v0.3_20260928.docx, §2.2.2 item 2, points 4–5</span>, quoted verbatim: "Column keeps the existing numbered multiple-claim display. Where a vehicle has more than 1 claim, 1 line is displayed per claim."</p>
+    </div>
+    <ol type="a">
+      <li>New handling applies to <strong>new transactions created after deployment only</strong>.</li>
+      <li>Transactions created before deployment display the value stored at the time. No change.</li>
+      <li>The same rule applies to the Excel export — confirmed consistent across REQ-001, REQ-002, REQ-003, REQ-007.</li>
+    </ol>
+    <p>Test data needed: one transaction created before 05.10.2026 deployment, one created after, both with 2+ claims on the vehicle.</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="sec-num">07</span>Explicitly out of scope</h2>
+    <ol type="a">
+      <li>JomCheck pricing and purchase flow.</li>
+      <li>JomCheck e-Invoice submission — handled under a separate Change Request.</li>
+      <li>Report sharing feature and permission control — delivered under EAINT-10089 and EAINT-10937.</li>
+      <li>Re-generation of reports purchased before deployment.</li>
+      <li>Column header label renames.</li>
+      <li>eAuto's own outbound JomCheck API. This also requires changes but is deferred to a future Change Request. Source: <span class="cite">SRD v0.3, §2.1.3</span>, added in this version.</li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <h2><span class="sec-num">08</span>Conflict found in a dev-side reference doc</h2>
+    <p>You supplied a dev-side reference doc (claude.ai artifact, pre-dates SRD v0.2). Two points from it do not match the current SRD.</p>
+    <div class="qmap">
+      <div class="qmap-row">
+        <div class="qmap-tag">C1</div>
+        <div class="qmap-body"><p>Dev doc states Service Portal is "unaffected — no changes required." SRD v0.3 §2.2.7 (REQ-008, REQ-010) explicitly expands Service Portal severity counters from 4 to 6. The SRD is authoritative — treat the dev doc as stale on this point.</p></div>
+      </div>
+      <div class="qmap-row">
+        <div class="qmap-tag">C2</div>
+        <div class="qmap-body"><p>Dev doc mentions a windscreen-claim Severity edge case: "NOT RELEVANT / NO SUM INSURED PROVIDED." This does not appear anywhere in SRD v0.3. Not confirmed either way.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="sec-num">09</span>Open questions</h2>
+    <div class="qmap">
+      <div class="qmap-row">
+        <div class="qmap-tag">Q1</div>
+        <div class="qmap-body"><p>Does Severity have a defined exception for windscreen claims with no sum insured, or does it just pass through unmapped as SRD §2.2.4 item 3 states? Not covered in SRD v0.3. Recommend confirming with Chee Mei Jia before writing Severity test cases.</p></div>
+      </div>
+      <div class="qmap-row">
+        <div class="qmap-tag">Q2</div>
+        <div class="qmap-body"><p>SRD v0.3 feedback window closes tomorrow 10am. After that, SRD v1.0 goes to external review. Should QA test-case drafting start against v0.3 now, or wait for v1.0? Deployment is 05.10.2026, so the runway is short either way.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Generated by an automated assistant. No opinions held, no emotions attached — findings only.<br>
+    Sources: Jira EAINT-12339 (Atlassian MCP) · SRD v0.1/v0.2/v0.3 (docx, read via Jira preview) · Teams channel "EAINT-12339 [eAuto-JomCheck]..." · dev-side reference doc (claude.ai artifact, user-supplied).
+  </footer>
+
+</main>

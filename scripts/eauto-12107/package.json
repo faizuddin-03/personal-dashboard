@@ -1,0 +1,23 @@
+{
+  "name": "eauto-12107-secarang-grabpay",
+  "version": "1.0.0",
+  "description": "EAINT-12107 + EAINT-12327 — Secarang ShopeePay/GrabPay payment channel E2E (GrabPay Full Amount OK / Failed, card and FPX regression) on the Fiuu sandbox",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/pngjs": "^6.0.5",
+    "exceljs": "^4.4.0",
+    "jsqr": "^1.4.0",
+    "pdf-parse": "^1.1.4",
+    "pngjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/pdf-parse": "^1.1.5",
+    "typescript": "^5.3.0"
+  }
+}

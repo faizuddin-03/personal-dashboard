@@ -16,7 +16,7 @@ export default function WhatsNewModal({ onClose }: { onClose: () => void }) {
         <div className="relative flex items-center justify-center px-5 py-5 border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-2.5">
             <Sparkles size={18} className="text-blue-400" />
-            <h2 className="text-lg font-semibold text-slate-100">What's New</h2>
+            <h2 className="text-lg font-semibold text-slate-100">What&apos;s New</h2>
             <span className="text-sm font-thin text-slate-500">{CURRENT_VERSION}</span>
           </div>
           <button

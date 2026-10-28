@@ -225,7 +225,7 @@ test("Debug reschedule full flow", async ({ page }) => {
 
     // Try clicking via JS
     console.log("  Trying siOpenSlot via JS...");
-    await page.evaluate((d: string) => (window as any).siOpenSlot(d), bookedDate);
+    await page.evaluate((d: string | null) => (window as any).siOpenSlot(d), bookedDate);
     await page.waitForTimeout(1000);
     await snap(page, "after-js-open-slot");
     const ovlNow = await overlay.isVisible().catch(() => false);

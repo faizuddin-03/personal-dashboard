@@ -1,0 +1,35 @@
+<!--
+  URL: /uat1/credit/home/jomcheck-report-listing/main.do -> click "View" ->
+  detail page embedding an <iframe> pointed at:
+  /uat1/api/credit/jomcheck-report-listing/print.do?transactionId=<id>#toolbar=1&navpanes=1&scrollbar=1
+  Page: Service Portal JomCheck Report Details — vehicle GTA0001, transactionId
+  afbdb405-b7d9-4ae1-976f-d794cbb9e5a6. PDF rendered inline via iframe, plus a
+  Print button.
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: none.
+-->
+<body>
+<div id="container">
+    <table style="width:100%;">
+        <tbody><tr>
+            <td style="width:70px; vertical-align:middle;">
+                <a href="/uat1/credit/home/jomcheck-report-listing/main.do" style="color:blue; text-decoration:underline;">« Back</a>
+            </td>
+            <td class="jc-title"><span class="jc-key">GTA0001</span> - JomCheck Report Details</td>
+        </tr>
+    </tbody></table>
+
+    <table class="jc-meta">
+        <colgroup><col width="180px"><col width="auto"></colgroup>
+        <tbody><tr><td><b>Date Created:</b></td><td>17-09-2026 11:33am</td></tr></tbody>
+    </table>
+    <div class="jc-pdf-box">
+        <button id="jc-print-btn" type="button" class="jc-print-btn"><img src="/uat1/images/icon-print.png" style="vertical-align:middle;"> Print</button>
+        <div style="clear:both;"></div>
+        <iframe class="jc-pdf-viewer" src="/uat1/api/credit/jomcheck-report-listing/print.do?transactionId=afbdb405-b7d9-4ae1-976f-d794cbb9e5a6#toolbar=1&amp;navpanes=1&amp;scrollbar=1" type="application/pdf">
+            <p>Your browser does not support PDFs. <a href="/uat1/api/credit/jomcheck-report-listing/print.do?transactionId=afbdb405-b7d9-4ae1-976f-d794cbb9e5a6">Download the PDF</a> instead.</p>
+        </iframe>
+    </div>
+</div>
+</body>

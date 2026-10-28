@@ -1,0 +1,446 @@
+/* Medieval style: shared base. VERSION 3 "Cozy Cottage" (2026-10-27).
+   Minimalist cottage-kitchen medieval: dark oak and hearth-brown surfaces,
+   cream and honey text, a few warm accents, one small pixel food icon per
+   page title. Design guide: COTTAGE.md in this folder. Active only when
+   <html data-style="medieval">; page sheets add [data-page="..."] on the
+   same element. Rules: dark surfaces only, 2px edges (existing 1px border
+   + 1px inset ring, no layout shift), small hard shadows, square corners,
+   no textures on panels. */
+
+/* ── Tokens ─────────────────────────────────────────────────────── */
+[data-style="medieval"] {
+  /* Surfaces (dark only) */
+  --m-night: #16110d;      /* page, behind everything */
+  --m-oak-deep: #221913;   /* panels, cards */
+  --m-oak: #31241a;        /* secondary buttons, table heads */
+  --m-oak-hi: #3f2e22;     /* hover */
+  --m-well: #120d0a;       /* inputs, code wells */
+  --m-plum: #1c1519;       /* sidebar */
+  --m-crust: #4a3526;      /* subtle border */
+  --m-crust-hi: #6e4a2e;   /* main border, input border */
+  /* Text (light colours only for text and small accents) */
+  --m-cream-hi: #fff6e2;
+  --m-cream: #f3e6cc;
+  --m-oat: #dccaa6;
+  --m-wheat: #c4ad85;
+  --m-muted: #b59e79;
+  --m-faint: #ac9774;
+  /* Accents */
+  --m-honey: #e8b04a;
+  --m-hearth: #e78a45;
+  --m-jam: #e0685f;
+  --m-herb: #8fbf6a;
+  /* Primary button fill (cream-hi on it = 5.7:1) */
+  --m-ember: #9c4a1c;
+  --m-ember-dark: #853e16;
+  --m-ember-edge: #5e2a0e;
+  /* Shadows: hard, small */
+  --m-px-shadow: 3px 3px 0 rgba(0, 0, 0, .45);
+  --m-px-shadow-sm: 2px 2px 0 rgba(0, 0, 0, .45);
+  /* Pixel icon set: 16x16 art, crispEdges. Show at 32px (2x) or 16px (1x),
+     64px (4x) for empty states. Names: bread soup pie mug candle cheese
+     apple jam honey herbs window spoon teapot. */
+  --m-ico-bread: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='4' y='5' width='8' height='1' fill='%231a120c'/><rect x='2' y='6' width='2' height='1' fill='%231a120c'/><rect x='4' y='6' width='9' height='1' fill='%23e9a55a'/><rect x='13' y='6' width='2' height='1' fill='%231a120c'/><rect x='1' y='7' width='1' height='1' fill='%231a120c'/><rect x='2' y='7' width='2' height='1' fill='%23e9a55a'/><rect x='4' y='7' width='1' height='1' fill='%23f3e6cc'/><rect x='5' y='7' width='2' height='1' fill='%23e9a55a'/><rect x='7' y='7' width='1' height='1' fill='%23f3e6cc'/><rect x='8' y='7' width='2' height='1' fill='%23e9a55a'/><rect x='10' y='7' width='1' height='1' fill='%23f3e6cc'/><rect x='11' y='7' width='3' height='1' fill='%23e9a55a'/><rect x='14' y='7' width='1' height='1' fill='%231a120c'/><rect x='0' y='8' width='1' height='1' fill='%231a120c'/><rect x='1' y='8' width='3' height='1' fill='%23e9a55a'/><rect x='4' y='8' width='1' height='1' fill='%23c27c3a'/><rect x='5' y='8' width='1' height='1' fill='%23f3e6cc'/><rect x='6' y='8' width='1' height='1' fill='%23e9a55a'/><rect x='7' y='8' width='1' height='1' fill='%23c27c3a'/><rect x='8' y='8' width='1' height='1' fill='%23f3e6cc'/><rect x='9' y='8' width='1' height='1' fill='%23e9a55a'/><rect x='10' y='8' width='1' height='1' fill='%23c27c3a'/><rect x='11' y='8' width='1' height='1' fill='%23f3e6cc'/><rect x='12' y='8' width='2' height='1' fill='%23e9a55a'/><rect x='14' y='8' width='1' height='1' fill='%238a4b22'/><rect x='15' y='8' width='1' height='1' fill='%231a120c'/><rect x='0' y='9' width='1' height='1' fill='%231a120c'/><rect x='1' y='9' width='1' height='1' fill='%23e9a55a'/><rect x='2' y='9' width='11' height='1' fill='%23c27c3a'/><rect x='13' y='9' width='2' height='1' fill='%238a4b22'/><rect x='15' y='9' width='1' height='1' fill='%231a120c'/><rect x='0' y='10' width='1' height='1' fill='%231a120c'/><rect x='1' y='10' width='12' height='1' fill='%23c27c3a'/><rect x='13' y='10' width='2' height='1' fill='%238a4b22'/><rect x='15' y='10' width='1' height='1' fill='%231a120c'/><rect x='0' y='11' width='1' height='1' fill='%231a120c'/><rect x='1' y='11' width='1' height='1' fill='%238a4b22'/><rect x='2' y='11' width='11' height='1' fill='%23c27c3a'/><rect x='13' y='11' width='2' height='1' fill='%238a4b22'/><rect x='15' y='11' width='1' height='1' fill='%231a120c'/><rect x='1' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='12' width='12' height='1' fill='%238a4b22'/><rect x='14' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='13' width='12' height='1' fill='%231a120c'/></svg>");
+  --m-ico-soup: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='4' y='1' width='1' height='1' fill='%23cdbfa6'/><rect x='8' y='1' width='1' height='1' fill='%23cdbfa6'/><rect x='12' y='1' width='1' height='1' fill='%23cdbfa6'/><rect x='3' y='2' width='1' height='1' fill='%23cdbfa6'/><rect x='7' y='2' width='1' height='1' fill='%23cdbfa6'/><rect x='11' y='2' width='1' height='1' fill='%23cdbfa6'/><rect x='4' y='3' width='1' height='1' fill='%23cdbfa6'/><rect x='8' y='3' width='1' height='1' fill='%23cdbfa6'/><rect x='12' y='3' width='1' height='1' fill='%23cdbfa6'/><rect x='3' y='4' width='1' height='1' fill='%23cdbfa6'/><rect x='7' y='4' width='1' height='1' fill='%23cdbfa6'/><rect x='11' y='4' width='1' height='1' fill='%23cdbfa6'/><rect x='0' y='6' width='16' height='1' fill='%231a120c'/><rect x='0' y='7' width='1' height='1' fill='%231a120c'/><rect x='1' y='7' width='3' height='1' fill='%23c8662f'/><rect x='4' y='7' width='1' height='1' fill='%23e8b04a'/><rect x='5' y='7' width='5' height='1' fill='%23c8662f'/><rect x='10' y='7' width='1' height='1' fill='%23e8b04a'/><rect x='11' y='7' width='3' height='1' fill='%23c8662f'/><rect x='14' y='7' width='1' height='1' fill='%236b4226'/><rect x='15' y='7' width='1' height='1' fill='%231a120c'/><rect x='0' y='8' width='1' height='1' fill='%231a120c'/><rect x='1' y='8' width='1' height='1' fill='%236b4226'/><rect x='2' y='8' width='7' height='1' fill='%23c8662f'/><rect x='9' y='8' width='1' height='1' fill='%23e8b04a'/><rect x='10' y='8' width='4' height='1' fill='%23c8662f'/><rect x='14' y='8' width='1' height='1' fill='%236b4226'/><rect x='15' y='8' width='1' height='1' fill='%231a120c'/><rect x='1' y='9' width='1' height='1' fill='%231a120c'/><rect x='2' y='9' width='12' height='1' fill='%236b4226'/><rect x='14' y='9' width='1' height='1' fill='%231a120c'/><rect x='1' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='10' width='12' height='1' fill='%236b4226'/><rect x='14' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='11' width='1' height='1' fill='%231a120c'/><rect x='3' y='11' width='10' height='1' fill='%236b4226'/><rect x='13' y='11' width='1' height='1' fill='%231a120c'/><rect x='3' y='12' width='1' height='1' fill='%231a120c'/><rect x='4' y='12' width='8' height='1' fill='%236b4226'/><rect x='12' y='12' width='1' height='1' fill='%231a120c'/><rect x='4' y='13' width='1' height='1' fill='%231a120c'/><rect x='5' y='13' width='6' height='1' fill='%233f2616'/><rect x='11' y='13' width='1' height='1' fill='%231a120c'/><rect x='4' y='14' width='8' height='1' fill='%231a120c'/></svg>");
+  --m-ico-pie: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='4' y='5' width='8' height='1' fill='%231a120c'/><rect x='2' y='6' width='2' height='1' fill='%231a120c'/><rect x='4' y='6' width='2' height='1' fill='%23e9a55a'/><rect x='6' y='6' width='1' height='1' fill='%23c27c3a'/><rect x='7' y='6' width='2' height='1' fill='%23e9a55a'/><rect x='9' y='6' width='1' height='1' fill='%23c27c3a'/><rect x='10' y='6' width='3' height='1' fill='%23e9a55a'/><rect x='13' y='6' width='2' height='1' fill='%231a120c'/><rect x='1' y='7' width='1' height='1' fill='%231a120c'/><rect x='2' y='7' width='2' height='1' fill='%23e9a55a'/><rect x='4' y='7' width='1' height='1' fill='%23b8323a'/><rect x='5' y='7' width='1' height='1' fill='%23e9a55a'/><rect x='6' y='7' width='1' height='1' fill='%23c27c3a'/><rect x='7' y='7' width='1' height='1' fill='%23b8323a'/><rect x='8' y='7' width='1' height='1' fill='%23e9a55a'/><rect x='9' y='7' width='1' height='1' fill='%23c27c3a'/><rect x='10' y='7' width='1' height='1' fill='%23b8323a'/><rect x='11' y='7' width='4' height='1' fill='%23e9a55a'/><rect x='15' y='7' width='1' height='1' fill='%231a120c'/><rect x='0' y='8' width='1' height='1' fill='%231a120c'/><rect x='1' y='8' width='1' height='1' fill='%23e9a55a'/><rect x='2' y='8' width='1' height='1' fill='%23c27c3a'/><rect x='3' y='8' width='2' height='1' fill='%23b8323a'/><rect x='5' y='8' width='1' height='1' fill='%23c27c3a'/><rect x='6' y='8' width='2' height='1' fill='%23b8323a'/><rect x='8' y='8' width='1' height='1' fill='%23c27c3a'/><rect x='9' y='8' width='2' height='1' fill='%23b8323a'/><rect x='11' y='8' width='1' height='1' fill='%23c27c3a'/><rect x='12' y='8' width='2' height='1' fill='%23b8323a'/><rect x='14' y='8' width='1' height='1' fill='%23e9a55a'/><rect x='15' y='8' width='1' height='1' fill='%231a120c'/><rect x='0' y='9' width='1' height='1' fill='%231a120c'/><rect x='1' y='9' width='14' height='1' fill='%23e9a55a'/><rect x='15' y='9' width='1' height='1' fill='%231a120c'/><rect x='0' y='10' width='1' height='1' fill='%231a120c'/><rect x='1' y='10' width='1' height='1' fill='%23e9a55a'/><rect x='2' y='10' width='2' height='1' fill='%238a4b22'/><rect x='4' y='10' width='1' height='1' fill='%23e9a55a'/><rect x='5' y='10' width='1' height='1' fill='%238a4b22'/><rect x='6' y='10' width='1' height='1' fill='%23e9a55a'/><rect x='7' y='10' width='1' height='1' fill='%238a4b22'/><rect x='8' y='10' width='1' height='1' fill='%23e9a55a'/><rect x='9' y='10' width='1' height='1' fill='%238a4b22'/><rect x='10' y='10' width='1' height='1' fill='%23e9a55a'/><rect x='11' y='10' width='1' height='1' fill='%238a4b22'/><rect x='12' y='10' width='1' height='1' fill='%23e9a55a'/><rect x='13' y='10' width='2' height='1' fill='%238a4b22'/><rect x='15' y='10' width='1' height='1' fill='%231a120c'/><rect x='0' y='11' width='1' height='1' fill='%231a120c'/><rect x='1' y='11' width='14' height='1' fill='%238a8590'/><rect x='15' y='11' width='1' height='1' fill='%231a120c'/><rect x='1' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='12' width='12' height='1' fill='%238a8590'/><rect x='14' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='13' width='12' height='1' fill='%231a120c'/></svg>");
+  --m-ico-mug: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='5' y='2' width='1' height='1' fill='%23cdbfa6'/><rect x='9' y='2' width='1' height='1' fill='%23cdbfa6'/><rect x='4' y='3' width='1' height='1' fill='%23cdbfa6'/><rect x='8' y='3' width='1' height='1' fill='%23cdbfa6'/><rect x='5' y='4' width='1' height='1' fill='%23cdbfa6'/><rect x='9' y='4' width='1' height='1' fill='%23cdbfa6'/><rect x='2' y='5' width='10' height='1' fill='%231a120c'/><rect x='2' y='6' width='1' height='1' fill='%231a120c'/><rect x='3' y='6' width='8' height='1' fill='%23f3e6cc'/><rect x='11' y='6' width='1' height='1' fill='%231a120c'/><rect x='2' y='7' width='1' height='1' fill='%231a120c'/><rect x='3' y='7' width='8' height='1' fill='%236b4226'/><rect x='11' y='7' width='3' height='1' fill='%231a120c'/><rect x='2' y='8' width='1' height='1' fill='%231a120c'/><rect x='3' y='8' width='1' height='1' fill='%236b4226'/><rect x='4' y='8' width='1' height='1' fill='%233f2616'/><rect x='5' y='8' width='2' height='1' fill='%236b4226'/><rect x='7' y='8' width='1' height='1' fill='%233f2616'/><rect x='8' y='8' width='3' height='1' fill='%236b4226'/><rect x='11' y='8' width='1' height='1' fill='%231a120c'/><rect x='13' y='8' width='1' height='1' fill='%231a120c'/><rect x='2' y='9' width='1' height='1' fill='%231a120c'/><rect x='3' y='9' width='1' height='1' fill='%236b4226'/><rect x='4' y='9' width='1' height='1' fill='%233f2616'/><rect x='5' y='9' width='2' height='1' fill='%236b4226'/><rect x='7' y='9' width='1' height='1' fill='%233f2616'/><rect x='8' y='9' width='3' height='1' fill='%236b4226'/><rect x='11' y='9' width='1' height='1' fill='%231a120c'/><rect x='14' y='9' width='1' height='1' fill='%231a120c'/><rect x='2' y='10' width='1' height='1' fill='%231a120c'/><rect x='3' y='10' width='1' height='1' fill='%236b4226'/><rect x='4' y='10' width='1' height='1' fill='%233f2616'/><rect x='5' y='10' width='2' height='1' fill='%236b4226'/><rect x='7' y='10' width='1' height='1' fill='%233f2616'/><rect x='8' y='10' width='3' height='1' fill='%236b4226'/><rect x='11' y='10' width='1' height='1' fill='%231a120c'/><rect x='14' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='11' width='1' height='1' fill='%231a120c'/><rect x='3' y='11' width='1' height='1' fill='%236b4226'/><rect x='4' y='11' width='1' height='1' fill='%233f2616'/><rect x='5' y='11' width='2' height='1' fill='%236b4226'/><rect x='7' y='11' width='1' height='1' fill='%233f2616'/><rect x='8' y='11' width='3' height='1' fill='%236b4226'/><rect x='11' y='11' width='1' height='1' fill='%231a120c'/><rect x='13' y='11' width='1' height='1' fill='%231a120c'/><rect x='2' y='12' width='1' height='1' fill='%231a120c'/><rect x='3' y='12' width='8' height='1' fill='%236b4226'/><rect x='11' y='12' width='3' height='1' fill='%231a120c'/><rect x='2' y='13' width='1' height='1' fill='%231a120c'/><rect x='3' y='13' width='8' height='1' fill='%238a8590'/><rect x='11' y='13' width='1' height='1' fill='%231a120c'/><rect x='2' y='14' width='10' height='1' fill='%231a120c'/></svg>");
+  --m-ico-candle: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='7' y='0' width='1' height='1' fill='%231a120c'/><rect x='6' y='1' width='1' height='1' fill='%231a120c'/><rect x='7' y='1' width='1' height='1' fill='%23f6d76b'/><rect x='8' y='1' width='1' height='1' fill='%231a120c'/><rect x='6' y='2' width='1' height='1' fill='%231a120c'/><rect x='7' y='2' width='1' height='1' fill='%23f6d76b'/><rect x='8' y='2' width='1' height='1' fill='%231a120c'/><rect x='5' y='3' width='1' height='1' fill='%231a120c'/><rect x='6' y='3' width='1' height='1' fill='%23e78a45'/><rect x='7' y='3' width='1' height='1' fill='%23f6d76b'/><rect x='8' y='3' width='1' height='1' fill='%23e78a45'/><rect x='9' y='3' width='1' height='1' fill='%231a120c'/><rect x='5' y='4' width='1' height='1' fill='%231a120c'/><rect x='6' y='4' width='1' height='1' fill='%23e78a45'/><rect x='7' y='4' width='1' height='1' fill='%23f6d76b'/><rect x='8' y='4' width='1' height='1' fill='%23e78a45'/><rect x='9' y='4' width='1' height='1' fill='%231a120c'/><rect x='6' y='5' width='1' height='1' fill='%231a120c'/><rect x='7' y='5' width='1' height='1' fill='%23e78a45'/><rect x='8' y='5' width='1' height='1' fill='%231a120c'/><rect x='7' y='6' width='1' height='1' fill='%233f2616'/><rect x='5' y='7' width='1' height='1' fill='%231a120c'/><rect x='6' y='7' width='3' height='1' fill='%23f3e6cc'/><rect x='9' y='7' width='1' height='1' fill='%231a120c'/><rect x='5' y='8' width='1' height='1' fill='%231a120c'/><rect x='6' y='8' width='2' height='1' fill='%23f3e6cc'/><rect x='8' y='8' width='1' height='1' fill='%23cdbfa6'/><rect x='9' y='8' width='1' height='1' fill='%231a120c'/><rect x='5' y='9' width='1' height='1' fill='%231a120c'/><rect x='6' y='9' width='2' height='1' fill='%23f3e6cc'/><rect x='8' y='9' width='1' height='1' fill='%23cdbfa6'/><rect x='9' y='9' width='1' height='1' fill='%231a120c'/><rect x='5' y='10' width='1' height='1' fill='%231a120c'/><rect x='6' y='10' width='2' height='1' fill='%23f3e6cc'/><rect x='8' y='10' width='1' height='1' fill='%23cdbfa6'/><rect x='9' y='10' width='1' height='1' fill='%231a120c'/><rect x='5' y='11' width='1' height='1' fill='%231a120c'/><rect x='6' y='11' width='2' height='1' fill='%23f3e6cc'/><rect x='8' y='11' width='1' height='1' fill='%23cdbfa6'/><rect x='9' y='11' width='1' height='1' fill='%231a120c'/><rect x='3' y='12' width='3' height='1' fill='%231a120c'/><rect x='6' y='12' width='2' height='1' fill='%23f3e6cc'/><rect x='8' y='12' width='1' height='1' fill='%23cdbfa6'/><rect x='9' y='12' width='3' height='1' fill='%231a120c'/><rect x='2' y='13' width='1' height='1' fill='%231a120c'/><rect x='3' y='13' width='9' height='1' fill='%238a8590'/><rect x='12' y='13' width='1' height='1' fill='%231a120c'/><rect x='3' y='14' width='9' height='1' fill='%231a120c'/></svg>");
+  --m-ico-cheese: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='11' y='4' width='3' height='1' fill='%231a120c'/><rect x='8' y='5' width='3' height='1' fill='%231a120c'/><rect x='11' y='5' width='2' height='1' fill='%23f6d76b'/><rect x='13' y='5' width='1' height='1' fill='%23e8b04a'/><rect x='14' y='5' width='1' height='1' fill='%231a120c'/><rect x='5' y='6' width='3' height='1' fill='%231a120c'/><rect x='8' y='6' width='5' height='1' fill='%23f6d76b'/><rect x='13' y='6' width='1' height='1' fill='%23e8b04a'/><rect x='14' y='6' width='1' height='1' fill='%231a120c'/><rect x='2' y='7' width='3' height='1' fill='%231a120c'/><rect x='5' y='7' width='8' height='1' fill='%23f6d76b'/><rect x='13' y='7' width='1' height='1' fill='%23e8b04a'/><rect x='14' y='7' width='1' height='1' fill='%231a120c'/><rect x='1' y='8' width='1' height='1' fill='%231a120c'/><rect x='2' y='8' width='12' height='1' fill='%23e8b04a'/><rect x='14' y='8' width='1' height='1' fill='%231a120c'/><rect x='1' y='9' width='1' height='1' fill='%231a120c'/><rect x='2' y='9' width='2' height='1' fill='%23e8b04a'/><rect x='4' y='9' width='1' height='1' fill='%238a4b22'/><rect x='5' y='9' width='6' height='1' fill='%23e8b04a'/><rect x='11' y='9' width='1' height='1' fill='%238a4b22'/><rect x='12' y='9' width='2' height='1' fill='%23e8b04a'/><rect x='14' y='9' width='1' height='1' fill='%231a120c'/><rect x='1' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='10' width='6' height='1' fill='%23e8b04a'/><rect x='8' y='10' width='1' height='1' fill='%238a4b22'/><rect x='9' y='10' width='5' height='1' fill='%23e8b04a'/><rect x='14' y='10' width='1' height='1' fill='%231a120c'/><rect x='1' y='11' width='1' height='1' fill='%231a120c'/><rect x='2' y='11' width='1' height='1' fill='%23e8b04a'/><rect x='3' y='11' width='1' height='1' fill='%238a4b22'/><rect x='4' y='11' width='10' height='1' fill='%23e8b04a'/><rect x='14' y='11' width='1' height='1' fill='%231a120c'/><rect x='1' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='12' width='9' height='1' fill='%23e8b04a'/><rect x='11' y='12' width='1' height='1' fill='%238a4b22'/><rect x='12' y='12' width='2' height='1' fill='%23e8b04a'/><rect x='14' y='12' width='1' height='1' fill='%231a120c'/><rect x='1' y='13' width='14' height='1' fill='%231a120c'/></svg>");
+  --m-ico-apple: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='8' y='1' width='1' height='1' fill='%231a120c'/><rect x='7' y='2' width='1' height='1' fill='%231a120c'/><rect x='8' y='2' width='1' height='1' fill='%233f2616'/><rect x='9' y='2' width='1' height='1' fill='%231a120c'/><rect x='11' y='2' width='3' height='1' fill='%231a120c'/><rect x='8' y='3' width='1' height='1' fill='%231a120c'/><rect x='9' y='3' width='1' height='1' fill='%233f2616'/><rect x='10' y='3' width='1' height='1' fill='%231a120c'/><rect x='11' y='3' width='2' height='1' fill='%238fbf6a'/><rect x='13' y='3' width='1' height='1' fill='%231a120c'/><rect x='3' y='4' width='4' height='1' fill='%231a120c'/><rect x='8' y='4' width='1' height='1' fill='%231a120c'/><rect x='9' y='4' width='1' height='1' fill='%233f2616'/><rect x='10' y='4' width='2' height='1' fill='%231a120c'/><rect x='2' y='5' width='1' height='1' fill='%231a120c'/><rect x='3' y='5' width='4' height='1' fill='%23c63a32'/><rect x='7' y='5' width='2' height='1' fill='%231a120c'/><rect x='9' y='5' width='4' height='1' fill='%23c63a32'/><rect x='13' y='5' width='1' height='1' fill='%231a120c'/><rect x='1' y='6' width='1' height='1' fill='%231a120c'/><rect x='2' y='6' width='1' height='1' fill='%23c63a32'/><rect x='3' y='6' width='2' height='1' fill='%23f3e6cc'/><rect x='5' y='6' width='9' height='1' fill='%23c63a32'/><rect x='14' y='6' width='1' height='1' fill='%231a120c'/><rect x='1' y='7' width='1' height='1' fill='%231a120c'/><rect x='2' y='7' width='1' height='1' fill='%23c63a32'/><rect x='3' y='7' width='1' height='1' fill='%23f3e6cc'/><rect x='4' y='7' width='10' height='1' fill='%23c63a32'/><rect x='14' y='7' width='1' height='1' fill='%231a120c'/><rect x='1' y='8' width='1' height='1' fill='%231a120c'/><rect x='2' y='8' width='11' height='1' fill='%23c63a32'/><rect x='13' y='8' width='1' height='1' fill='%237a1f25'/><rect x='14' y='8' width='1' height='1' fill='%231a120c'/><rect x='1' y='9' width='1' height='1' fill='%231a120c'/><rect x='2' y='9' width='11' height='1' fill='%23c63a32'/><rect x='13' y='9' width='1' height='1' fill='%237a1f25'/><rect x='14' y='9' width='1' height='1' fill='%231a120c'/><rect x='1' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='10' width='10' height='1' fill='%23c63a32'/><rect x='12' y='10' width='2' height='1' fill='%237a1f25'/><rect x='14' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='11' width='1' height='1' fill='%231a120c'/><rect x='3' y='11' width='8' height='1' fill='%23c63a32'/><rect x='11' y='11' width='2' height='1' fill='%237a1f25'/><rect x='13' y='11' width='1' height='1' fill='%231a120c'/><rect x='2' y='12' width='1' height='1' fill='%231a120c'/><rect x='3' y='12' width='7' height='1' fill='%23c63a32'/><rect x='10' y='12' width='3' height='1' fill='%237a1f25'/><rect x='13' y='12' width='1' height='1' fill='%231a120c'/><rect x='3' y='13' width='1' height='1' fill='%231a120c'/><rect x='4' y='13' width='3' height='1' fill='%23c63a32'/><rect x='7' y='13' width='2' height='1' fill='%231a120c'/><rect x='9' y='13' width='1' height='1' fill='%23c63a32'/><rect x='10' y='13' width='2' height='1' fill='%237a1f25'/><rect x='12' y='13' width='1' height='1' fill='%231a120c'/><rect x='4' y='14' width='3' height='1' fill='%231a120c'/><rect x='9' y='14' width='3' height='1' fill='%231a120c'/></svg>");
+  --m-ico-jam: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='4' y='2' width='8' height='1' fill='%231a120c'/><rect x='3' y='3' width='1' height='1' fill='%231a120c'/><rect x='4' y='3' width='1' height='1' fill='%23b8323a'/><rect x='5' y='3' width='1' height='1' fill='%23f3e6cc'/><rect x='6' y='3' width='2' height='1' fill='%23b8323a'/><rect x='8' y='3' width='1' height='1' fill='%23f3e6cc'/><rect x='9' y='3' width='2' height='1' fill='%23b8323a'/><rect x='11' y='3' width='1' height='1' fill='%23f3e6cc'/><rect x='12' y='3' width='1' height='1' fill='%231a120c'/><rect x='2' y='4' width='1' height='1' fill='%231a120c'/><rect x='3' y='4' width='2' height='1' fill='%23b8323a'/><rect x='5' y='4' width='1' height='1' fill='%23f3e6cc'/><rect x='6' y='4' width='2' height='1' fill='%23b8323a'/><rect x='8' y='4' width='1' height='1' fill='%23f3e6cc'/><rect x='9' y='4' width='2' height='1' fill='%23b8323a'/><rect x='11' y='4' width='1' height='1' fill='%23f3e6cc'/><rect x='12' y='4' width='1' height='1' fill='%23b8323a'/><rect x='13' y='4' width='1' height='1' fill='%231a120c'/><rect x='2' y='5' width='12' height='1' fill='%231a120c'/><rect x='3' y='6' width='1' height='1' fill='%231a120c'/><rect x='4' y='6' width='8' height='1' fill='%233f2616'/><rect x='12' y='6' width='1' height='1' fill='%231a120c'/><rect x='2' y='7' width='1' height='1' fill='%231a120c'/><rect x='3' y='7' width='1' height='1' fill='%23f3e6cc'/><rect x='4' y='7' width='9' height='1' fill='%23b8323a'/><rect x='13' y='7' width='1' height='1' fill='%231a120c'/><rect x='2' y='8' width='1' height='1' fill='%231a120c'/><rect x='3' y='8' width='1' height='1' fill='%23f3e6cc'/><rect x='4' y='8' width='9' height='1' fill='%23b8323a'/><rect x='13' y='8' width='1' height='1' fill='%231a120c'/><rect x='2' y='9' width='1' height='1' fill='%231a120c'/><rect x='3' y='9' width='2' height='1' fill='%23b8323a'/><rect x='5' y='9' width='6' height='1' fill='%23f3e6cc'/><rect x='11' y='9' width='2' height='1' fill='%23b8323a'/><rect x='13' y='9' width='1' height='1' fill='%231a120c'/><rect x='2' y='10' width='1' height='1' fill='%231a120c'/><rect x='3' y='10' width='2' height='1' fill='%23b8323a'/><rect x='5' y='10' width='1' height='1' fill='%23f3e6cc'/><rect x='6' y='10' width='4' height='1' fill='%23e8b04a'/><rect x='10' y='10' width='1' height='1' fill='%23f3e6cc'/><rect x='11' y='10' width='2' height='1' fill='%23b8323a'/><rect x='13' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='11' width='1' height='1' fill='%231a120c'/><rect x='3' y='11' width='2' height='1' fill='%23b8323a'/><rect x='5' y='11' width='6' height='1' fill='%23f3e6cc'/><rect x='11' y='11' width='2' height='1' fill='%23b8323a'/><rect x='13' y='11' width='1' height='1' fill='%231a120c'/><rect x='2' y='12' width='1' height='1' fill='%231a120c'/><rect x='3' y='12' width='9' height='1' fill='%23b8323a'/><rect x='12' y='12' width='1' height='1' fill='%237a1f25'/><rect x='13' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='13' width='1' height='1' fill='%231a120c'/><rect x='3' y='13' width='10' height='1' fill='%237a1f25'/><rect x='13' y='13' width='1' height='1' fill='%231a120c'/><rect x='3' y='14' width='10' height='1' fill='%231a120c'/></svg>");
+  --m-ico-honey: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='4' y='2' width='8' height='1' fill='%231a120c'/><rect x='3' y='3' width='1' height='1' fill='%231a120c'/><rect x='4' y='3' width='8' height='1' fill='%23e9a55a'/><rect x='12' y='3' width='1' height='1' fill='%231a120c'/><rect x='3' y='4' width='10' height='1' fill='%231a120c'/><rect x='4' y='5' width='1' height='1' fill='%231a120c'/><rect x='5' y='5' width='6' height='1' fill='%23e8b04a'/><rect x='11' y='5' width='1' height='1' fill='%231a120c'/><rect x='3' y='6' width='1' height='1' fill='%231a120c'/><rect x='4' y='6' width='1' height='1' fill='%23c27c3a'/><rect x='5' y='6' width='3' height='1' fill='%23e8b04a'/><rect x='8' y='6' width='1' height='1' fill='%23c27c3a'/><rect x='9' y='6' width='2' height='1' fill='%23e8b04a'/><rect x='11' y='6' width='1' height='1' fill='%23c27c3a'/><rect x='12' y='6' width='1' height='1' fill='%231a120c'/><rect x='2' y='7' width='1' height='1' fill='%231a120c'/><rect x='3' y='7' width='2' height='1' fill='%23c27c3a'/><rect x='5' y='7' width='1' height='1' fill='%23e8b04a'/><rect x='6' y='7' width='4' height='1' fill='%23c27c3a'/><rect x='10' y='7' width='1' height='1' fill='%23e8b04a'/><rect x='11' y='7' width='2' height='1' fill='%23c27c3a'/><rect x='13' y='7' width='1' height='1' fill='%231a120c'/><rect x='1' y='8' width='1' height='1' fill='%231a120c'/><rect x='2' y='8' width='12' height='1' fill='%23c27c3a'/><rect x='14' y='8' width='1' height='1' fill='%231a120c'/><rect x='1' y='9' width='1' height='1' fill='%231a120c'/><rect x='2' y='9' width='1' height='1' fill='%23c27c3a'/><rect x='3' y='9' width='10' height='1' fill='%23f3e6cc'/><rect x='13' y='9' width='1' height='1' fill='%23c27c3a'/><rect x='14' y='9' width='1' height='1' fill='%231a120c'/><rect x='1' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='10' width='1' height='1' fill='%23c27c3a'/><rect x='3' y='10' width='1' height='1' fill='%23f3e6cc'/><rect x='4' y='10' width='8' height='1' fill='%23e8b04a'/><rect x='12' y='10' width='1' height='1' fill='%23f3e6cc'/><rect x='13' y='10' width='1' height='1' fill='%23c27c3a'/><rect x='14' y='10' width='1' height='1' fill='%231a120c'/><rect x='1' y='11' width='1' height='1' fill='%231a120c'/><rect x='2' y='11' width='1' height='1' fill='%23c27c3a'/><rect x='3' y='11' width='10' height='1' fill='%23f3e6cc'/><rect x='13' y='11' width='1' height='1' fill='%23c27c3a'/><rect x='14' y='11' width='1' height='1' fill='%231a120c'/><rect x='1' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='12' width='12' height='1' fill='%23c27c3a'/><rect x='14' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='13' width='1' height='1' fill='%231a120c'/><rect x='3' y='13' width='1' height='1' fill='%238a4b22'/><rect x='4' y='13' width='9' height='1' fill='%23c27c3a'/><rect x='13' y='13' width='1' height='1' fill='%238a4b22'/><rect x='14' y='13' width='1' height='1' fill='%231a120c'/><rect x='3' y='14' width='10' height='1' fill='%231a120c'/></svg>");
+  --m-ico-herbs: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='4' y='1' width='1' height='1' fill='%238fbf6a'/><rect x='10' y='1' width='1' height='1' fill='%238fbf6a'/><rect x='3' y='2' width='1' height='1' fill='%238fbf6a'/><rect x='4' y='2' width='1' height='1' fill='%234f7a3a'/><rect x='5' y='2' width='1' height='1' fill='%238fbf6a'/><rect x='9' y='2' width='1' height='1' fill='%238fbf6a'/><rect x='10' y='2' width='1' height='1' fill='%234f7a3a'/><rect x='11' y='2' width='1' height='1' fill='%238fbf6a'/><rect x='2' y='3' width='1' height='1' fill='%238fbf6a'/><rect x='3' y='3' width='1' height='1' fill='%234f7a3a'/><rect x='4' y='3' width='1' height='1' fill='%238fbf6a'/><rect x='5' y='3' width='1' height='1' fill='%234f7a3a'/><rect x='6' y='3' width='1' height='1' fill='%238fbf6a'/><rect x='8' y='3' width='1' height='1' fill='%238fbf6a'/><rect x='9' y='3' width='1' height='1' fill='%234f7a3a'/><rect x='10' y='3' width='1' height='1' fill='%238fbf6a'/><rect x='11' y='3' width='1' height='1' fill='%234f7a3a'/><rect x='12' y='3' width='1' height='1' fill='%238fbf6a'/><rect x='3' y='4' width='1' height='1' fill='%238fbf6a'/><rect x='4' y='4' width='1' height='1' fill='%234f7a3a'/><rect x='5' y='4' width='1' height='1' fill='%238fbf6a'/><rect x='6' y='4' width='1' height='1' fill='%234f7a3a'/><rect x='7' y='4' width='1' height='1' fill='%238fbf6a'/><rect x='8' y='4' width='1' height='1' fill='%234f7a3a'/><rect x='9' y='4' width='1' height='1' fill='%238fbf6a'/><rect x='10' y='4' width='1' height='1' fill='%234f7a3a'/><rect x='11' y='4' width='1' height='1' fill='%238fbf6a'/><rect x='4' y='5' width='1' height='1' fill='%238fbf6a'/><rect x='5' y='5' width='1' height='1' fill='%234f7a3a'/><rect x='6' y='5' width='1' height='1' fill='%238fbf6a'/><rect x='7' y='5' width='1' height='1' fill='%234f7a3a'/><rect x='8' y='5' width='1' height='1' fill='%238fbf6a'/><rect x='9' y='5' width='1' height='1' fill='%234f7a3a'/><rect x='10' y='5' width='1' height='1' fill='%238fbf6a'/><rect x='2' y='6' width='1' height='1' fill='%238fbf6a'/><rect x='5' y='6' width='1' height='1' fill='%238fbf6a'/><rect x='6' y='6' width='1' height='1' fill='%234f7a3a'/><rect x='7' y='6' width='1' height='1' fill='%238fbf6a'/><rect x='8' y='6' width='1' height='1' fill='%234f7a3a'/><rect x='9' y='6' width='1' height='1' fill='%238fbf6a'/><rect x='12' y='6' width='1' height='1' fill='%238fbf6a'/><rect x='2' y='7' width='1' height='1' fill='%234f7a3a'/><rect x='3' y='7' width='1' height='1' fill='%238fbf6a'/><rect x='5' y='7' width='1' height='1' fill='%238fbf6a'/><rect x='6' y='7' width='1' height='1' fill='%234f7a3a'/><rect x='7' y='7' width='1' height='1' fill='%238fbf6a'/><rect x='8' y='7' width='1' height='1' fill='%234f7a3a'/><rect x='9' y='7' width='1' height='1' fill='%238fbf6a'/><rect x='11' y='7' width='1' height='1' fill='%238fbf6a'/><rect x='12' y='7' width='1' height='1' fill='%234f7a3a'/><rect x='3' y='8' width='1' height='1' fill='%234f7a3a'/><rect x='4' y='8' width='1' height='1' fill='%238fbf6a'/><rect x='5' y='8' width='1' height='1' fill='%234f7a3a'/><rect x='6' y='8' width='1' height='1' fill='%238fbf6a'/><rect x='7' y='8' width='1' height='1' fill='%234f7a3a'/><rect x='8' y='8' width='1' height='1' fill='%238fbf6a'/><rect x='9' y='8' width='1' height='1' fill='%234f7a3a'/><rect x='10' y='8' width='1' height='1' fill='%238fbf6a'/><rect x='11' y='8' width='1' height='1' fill='%234f7a3a'/><rect x='5' y='9' width='1' height='1' fill='%238fbf6a'/><rect x='6' y='9' width='1' height='1' fill='%234f7a3a'/><rect x='7' y='9' width='1' height='1' fill='%238fbf6a'/><rect x='8' y='9' width='1' height='1' fill='%234f7a3a'/><rect x='9' y='9' width='1' height='1' fill='%238fbf6a'/><rect x='5' y='10' width='1' height='1' fill='%231a120c'/><rect x='6' y='10' width='3' height='1' fill='%23b8323a'/><rect x='9' y='10' width='1' height='1' fill='%231a120c'/><rect x='6' y='11' width='1' height='1' fill='%234f7a3a'/><rect x='7' y='11' width='1' height='1' fill='%238fbf6a'/><rect x='8' y='11' width='1' height='1' fill='%234f7a3a'/><rect x='6' y='12' width='1' height='1' fill='%234f7a3a'/><rect x='7' y='12' width='1' height='1' fill='%238fbf6a'/><rect x='8' y='12' width='1' height='1' fill='%234f7a3a'/><rect x='6' y='13' width='1' height='1' fill='%234f7a3a'/><rect x='8' y='13' width='1' height='1' fill='%234f7a3a'/><rect x='5' y='14' width='1' height='1' fill='%234f7a3a'/><rect x='9' y='14' width='1' height='1' fill='%234f7a3a'/></svg>");
+  --m-ico-window: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='1' y='1' width='14' height='1' fill='%231a120c'/><rect x='1' y='2' width='1' height='1' fill='%231a120c'/><rect x='2' y='2' width='12' height='1' fill='%236b4226'/><rect x='14' y='2' width='1' height='1' fill='%231a120c'/><rect x='1' y='3' width='1' height='1' fill='%231a120c'/><rect x='2' y='3' width='1' height='1' fill='%236b4226'/><rect x='3' y='3' width='2' height='1' fill='%23f6d76b'/><rect x='5' y='3' width='3' height='1' fill='%23e8b04a'/><rect x='8' y='3' width='1' height='1' fill='%236b4226'/><rect x='9' y='3' width='2' height='1' fill='%23f6d76b'/><rect x='11' y='3' width='2' height='1' fill='%23e8b04a'/><rect x='13' y='3' width='1' height='1' fill='%236b4226'/><rect x='14' y='3' width='1' height='1' fill='%231a120c'/><rect x='1' y='4' width='1' height='1' fill='%231a120c'/><rect x='2' y='4' width='1' height='1' fill='%236b4226'/><rect x='3' y='4' width='1' height='1' fill='%23f6d76b'/><rect x='4' y='4' width='4' height='1' fill='%23e8b04a'/><rect x='8' y='4' width='1' height='1' fill='%236b4226'/><rect x='9' y='4' width='1' height='1' fill='%23f6d76b'/><rect x='10' y='4' width='3' height='1' fill='%23e8b04a'/><rect x='13' y='4' width='1' height='1' fill='%236b4226'/><rect x='14' y='4' width='1' height='1' fill='%231a120c'/><rect x='1' y='5' width='1' height='1' fill='%231a120c'/><rect x='2' y='5' width='1' height='1' fill='%236b4226'/><rect x='3' y='5' width='5' height='1' fill='%23e8b04a'/><rect x='8' y='5' width='1' height='1' fill='%236b4226'/><rect x='9' y='5' width='4' height='1' fill='%23e8b04a'/><rect x='13' y='5' width='1' height='1' fill='%236b4226'/><rect x='14' y='5' width='1' height='1' fill='%231a120c'/><rect x='1' y='6' width='1' height='1' fill='%231a120c'/><rect x='2' y='6' width='1' height='1' fill='%236b4226'/><rect x='3' y='6' width='5' height='1' fill='%23e8b04a'/><rect x='8' y='6' width='1' height='1' fill='%236b4226'/><rect x='9' y='6' width='4' height='1' fill='%23e8b04a'/><rect x='13' y='6' width='1' height='1' fill='%236b4226'/><rect x='14' y='6' width='1' height='1' fill='%231a120c'/><rect x='1' y='7' width='1' height='1' fill='%231a120c'/><rect x='2' y='7' width='12' height='1' fill='%236b4226'/><rect x='14' y='7' width='1' height='1' fill='%231a120c'/><rect x='1' y='8' width='1' height='1' fill='%231a120c'/><rect x='2' y='8' width='1' height='1' fill='%236b4226'/><rect x='3' y='8' width='1' height='1' fill='%23f6d76b'/><rect x='4' y='8' width='4' height='1' fill='%23e8b04a'/><rect x='8' y='8' width='1' height='1' fill='%236b4226'/><rect x='9' y='8' width='1' height='1' fill='%23f6d76b'/><rect x='10' y='8' width='3' height='1' fill='%23e8b04a'/><rect x='13' y='8' width='1' height='1' fill='%236b4226'/><rect x='14' y='8' width='1' height='1' fill='%231a120c'/><rect x='1' y='9' width='1' height='1' fill='%231a120c'/><rect x='2' y='9' width='1' height='1' fill='%236b4226'/><rect x='3' y='9' width='5' height='1' fill='%23e8b04a'/><rect x='8' y='9' width='1' height='1' fill='%236b4226'/><rect x='9' y='9' width='4' height='1' fill='%23e8b04a'/><rect x='13' y='9' width='1' height='1' fill='%236b4226'/><rect x='14' y='9' width='1' height='1' fill='%231a120c'/><rect x='1' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='10' width='1' height='1' fill='%236b4226'/><rect x='3' y='10' width='5' height='1' fill='%23e8b04a'/><rect x='8' y='10' width='1' height='1' fill='%236b4226'/><rect x='9' y='10' width='4' height='1' fill='%23e8b04a'/><rect x='13' y='10' width='1' height='1' fill='%236b4226'/><rect x='14' y='10' width='1' height='1' fill='%231a120c'/><rect x='1' y='11' width='1' height='1' fill='%231a120c'/><rect x='2' y='11' width='12' height='1' fill='%236b4226'/><rect x='14' y='11' width='1' height='1' fill='%231a120c'/><rect x='0' y='12' width='15' height='1' fill='%231a120c'/><rect x='0' y='13' width='1' height='1' fill='%231a120c'/><rect x='1' y='13' width='14' height='1' fill='%233f2616'/><rect x='15' y='13' width='1' height='1' fill='%231a120c'/><rect x='0' y='14' width='16' height='1' fill='%231a120c'/></svg>");
+  --m-ico-spoon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='11' y='1' width='3' height='1' fill='%231a120c'/><rect x='10' y='2' width='1' height='1' fill='%231a120c'/><rect x='11' y='2' width='2' height='1' fill='%23e9a55a'/><rect x='13' y='2' width='1' height='1' fill='%23c27c3a'/><rect x='14' y='2' width='1' height='1' fill='%231a120c'/><rect x='9' y='3' width='1' height='1' fill='%231a120c'/><rect x='10' y='3' width='2' height='1' fill='%23e9a55a'/><rect x='12' y='3' width='3' height='1' fill='%23c27c3a'/><rect x='15' y='3' width='1' height='1' fill='%231a120c'/><rect x='9' y='4' width='1' height='1' fill='%231a120c'/><rect x='10' y='4' width='1' height='1' fill='%23e9a55a'/><rect x='11' y='4' width='3' height='1' fill='%23c27c3a'/><rect x='14' y='4' width='1' height='1' fill='%238a4b22'/><rect x='15' y='4' width='1' height='1' fill='%231a120c'/><rect x='10' y='5' width='1' height='1' fill='%231a120c'/><rect x='11' y='5' width='1' height='1' fill='%23c27c3a'/><rect x='12' y='5' width='2' height='1' fill='%238a4b22'/><rect x='14' y='5' width='1' height='1' fill='%231a120c'/><rect x='9' y='6' width='1' height='1' fill='%231a120c'/><rect x='10' y='6' width='1' height='1' fill='%236b4226'/><rect x='11' y='6' width='3' height='1' fill='%231a120c'/><rect x='8' y='7' width='1' height='1' fill='%231a120c'/><rect x='9' y='7' width='1' height='1' fill='%236b4226'/><rect x='10' y='7' width='1' height='1' fill='%231a120c'/><rect x='7' y='8' width='1' height='1' fill='%231a120c'/><rect x='8' y='8' width='1' height='1' fill='%236b4226'/><rect x='9' y='8' width='1' height='1' fill='%231a120c'/><rect x='6' y='9' width='1' height='1' fill='%231a120c'/><rect x='7' y='9' width='1' height='1' fill='%236b4226'/><rect x='8' y='9' width='1' height='1' fill='%231a120c'/><rect x='5' y='10' width='1' height='1' fill='%231a120c'/><rect x='6' y='10' width='1' height='1' fill='%236b4226'/><rect x='7' y='10' width='1' height='1' fill='%231a120c'/><rect x='4' y='11' width='1' height='1' fill='%231a120c'/><rect x='5' y='11' width='1' height='1' fill='%236b4226'/><rect x='6' y='11' width='1' height='1' fill='%231a120c'/><rect x='3' y='12' width='1' height='1' fill='%231a120c'/><rect x='4' y='12' width='1' height='1' fill='%236b4226'/><rect x='5' y='12' width='1' height='1' fill='%231a120c'/><rect x='2' y='13' width='1' height='1' fill='%231a120c'/><rect x='3' y='13' width='1' height='1' fill='%236b4226'/><rect x='4' y='13' width='1' height='1' fill='%231a120c'/><rect x='2' y='14' width='2' height='1' fill='%231a120c'/></svg>");
+  --m-ico-teapot: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='7' y='3' width='2' height='1' fill='%231a120c'/><rect x='6' y='4' width='1' height='1' fill='%231a120c'/><rect x='7' y='4' width='2' height='1' fill='%234b6573'/><rect x='9' y='4' width='1' height='1' fill='%231a120c'/><rect x='4' y='5' width='8' height='1' fill='%231a120c'/><rect x='3' y='6' width='1' height='1' fill='%231a120c'/><rect x='4' y='6' width='8' height='1' fill='%237d9aa8'/><rect x='12' y='6' width='1' height='1' fill='%231a120c'/><rect x='0' y='7' width='2' height='1' fill='%231a120c'/><rect x='3' y='7' width='1' height='1' fill='%231a120c'/><rect x='4' y='7' width='1' height='1' fill='%237d9aa8'/><rect x='5' y='7' width='1' height='1' fill='%23f3e6cc'/><rect x='6' y='7' width='6' height='1' fill='%237d9aa8'/><rect x='12' y='7' width='1' height='1' fill='%231a120c'/><rect x='15' y='7' width='1' height='1' fill='%231a120c'/><rect x='0' y='8' width='1' height='1' fill='%231a120c'/><rect x='2' y='8' width='1' height='1' fill='%231a120c'/><rect x='3' y='8' width='1' height='1' fill='%237d9aa8'/><rect x='4' y='8' width='1' height='1' fill='%23f3e6cc'/><rect x='5' y='8' width='8' height='1' fill='%237d9aa8'/><rect x='13' y='8' width='1' height='1' fill='%231a120c'/><rect x='14' y='8' width='1' height='1' fill='%234b6573'/><rect x='15' y='8' width='1' height='1' fill='%231a120c'/><rect x='0' y='9' width='1' height='1' fill='%231a120c'/><rect x='2' y='9' width='1' height='1' fill='%231a120c'/><rect x='3' y='9' width='10' height='1' fill='%237d9aa8'/><rect x='13' y='9' width='1' height='1' fill='%234b6573'/><rect x='14' y='9' width='1' height='1' fill='%231a120c'/><rect x='0' y='10' width='1' height='1' fill='%231a120c'/><rect x='2' y='10' width='1' height='1' fill='%231a120c'/><rect x='3' y='10' width='10' height='1' fill='%237d9aa8'/><rect x='13' y='10' width='1' height='1' fill='%231a120c'/><rect x='1' y='11' width='2' height='1' fill='%231a120c'/><rect x='3' y='11' width='10' height='1' fill='%237d9aa8'/><rect x='13' y='11' width='1' height='1' fill='%231a120c'/><rect x='3' y='12' width='1' height='1' fill='%231a120c'/><rect x='4' y='12' width='1' height='1' fill='%234b6573'/><rect x='5' y='12' width='6' height='1' fill='%237d9aa8'/><rect x='11' y='12' width='1' height='1' fill='%234b6573'/><rect x='12' y='12' width='1' height='1' fill='%231a120c'/><rect x='4' y='13' width='8' height='1' fill='%231a120c'/></svg>");
+  /* Page-title icon: default, overridden per page below */
+  --m-page-ico: var(--m-ico-window);
+  scrollbar-color: var(--m-crust-hi) var(--m-night);
+}
+
+/* ── Page-to-icon map (COTTAGE.md) ───────────────────────────────── */
+[data-style="medieval"][data-page="home"] { --m-page-ico: var(--m-ico-window); }
+[data-style="medieval"][data-page="calendar"] { --m-page-ico: var(--m-ico-candle); }
+[data-style="medieval"][data-page="todo"] { --m-page-ico: var(--m-ico-bread); }
+[data-style="medieval"][data-page="kanban"] { --m-page-ico: var(--m-ico-pie); }
+[data-style="medieval"][data-page="notes"] { --m-page-ico: var(--m-ico-jam); }
+[data-style="medieval"][data-page="knowledge"] { --m-page-ico: var(--m-ico-honey); }
+[data-style="medieval"][data-page="jira"],
+[data-style="medieval"][data-page^="jira-"],
+[data-style="medieval"][data-page="tickets"] { --m-page-ico: var(--m-ico-cheese); }
+[data-style="medieval"][data-page="tests"] { --m-page-ico: var(--m-ico-apple); }
+[data-style="medieval"][data-page="qa-flow"] { --m-page-ico: var(--m-ico-herbs); }
+[data-style="medieval"][data-page="daily-update"] { --m-page-ico: var(--m-ico-mug); }
+[data-style="medieval"][data-page="settings"] { --m-page-ico: var(--m-ico-spoon); }
+[data-style="medieval"][data-page="agents"] { --m-page-ico: var(--m-ico-teapot); }
+[data-style="medieval"][data-page="music"] { --m-page-ico: var(--m-ico-candle); }
+/* eAuto: runners simmer (soup), tools are a quick cup (mug), flows = herbs */
+[data-style="medieval"][data-page="eauto"],
+[data-style="medieval"][data-page^="eauto-"] { --m-page-ico: var(--m-ico-soup); }
+[data-style="medieval"][data-page="eauto-estm"],
+[data-style="medieval"][data-page="eauto-estm-legacy"],
+[data-style="medieval"][data-page="eauto-esim"],
+[data-style="medieval"][data-page="eauto-bdp-creator"],
+[data-style="medieval"][data-page="eauto-preapp"],
+[data-style="medieval"][data-page="eauto-checker"],
+[data-style="medieval"][data-page="eauto-company-details-checker"],
+[data-style="medieval"][data-page="eauto-company-details-checker-prod-v-staging"],
+[data-style="medieval"][data-page="eauto-secarang-plate-checker"],
+[data-style="medieval"][data-page="eauto-insurance"],
+[data-style="medieval"][data-page="eauto-edereg-precheck"] { --m-page-ico: var(--m-ico-mug); }
+[data-style="medieval"][data-page="eauto-flows"] { --m-page-ico: var(--m-ico-herbs); }
+
+/* ── Page and body ───────────────────────────────────────────────── */
+[data-style="medieval"] body {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  color: var(--m-cream);
+  background-color: var(--m-night);
+}
+/* Behind content: one pixel-art scene per page group (SCENES.md, public/
+   medieval/scenes/*.png, 400x225 art scaled up). <main> is the scroll
+   container (AppShell), so the default background-attachment keeps the
+   scene still while content scrolls; nothing is drawn over the content.
+   Layers, top first: dark top band so headers and intros read, a light
+   overall scrim so text off-panel stays readable, then the scene. */
+[data-style="medieval"] main,
+[data-style="medieval"] main.bg-slate-950 {
+  background-color: var(--m-night);
+  background-image:
+    linear-gradient(to bottom,
+      rgb(18 12 16 / .92) 0,
+      rgb(18 12 16 / .55) 160px,
+      rgb(18 12 16 / 0) 45%),
+    linear-gradient(rgb(14 10 8 / var(--m-scrim, .22)), rgb(14 10 8 / var(--m-scrim, .22))),
+    var(--m-scene);
+  background-size: auto, auto, cover;
+  background-position: 0 0, 0 0, center bottom;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  image-rendering: pixelated;
+}
+
+/* ── Scene map (SCENES.md section 4). Default first, specific last. ── */
+[data-style="medieval"] { --m-scene: url("/medieval/scenes/firefly-hillside.png"); }
+[data-style="medieval"][data-page="home"] { --m-scene: url("/medieval/scenes/dusk-cottage.png"); }
+[data-style="medieval"][data-page="calendar"] { --m-scene: url("/medieval/scenes/autumn-village-evening.png"); }
+[data-style="medieval"][data-page^="jira"],
+[data-style="medieval"][data-page="tickets"] { --m-scene: url("/medieval/scenes/sunset-town-afterglow.png"); }
+[data-style="medieval"][data-page="notes"],
+[data-style="medieval"][data-page="todo"],
+[data-style="medieval"][data-page="daily-update"],
+[data-style="medieval"][data-page="kanban"] { --m-scene: url("/medieval/scenes/night-cafe.png"); }
+/* eAuto: tool pages and /eauto = market lane; ticket runners = lantern lake */
+[data-style="medieval"][data-page^="eauto"] { --m-scene: url("/medieval/scenes/market-lane-night.png"); }
+[data-style="medieval"][data-page="eauto-12107"],
+[data-style="medieval"][data-page="eauto-12153"],
+[data-style="medieval"][data-page="eauto-12166"],
+[data-style="medieval"][data-page="eauto-12257"],
+[data-style="medieval"][data-page="eauto-12412"],
+[data-style="medieval"][data-page="eauto-jomcheck"] { --m-scene: url("/medieval/scenes/lantern-forest-lake.png"); }
+[data-style="medieval"][data-page="eauto-flows"] { --m-scene: url("/medieval/scenes/firefly-hillside.png"); }
+/* Busier scenes get a heavier dimming layer: the village is dense with lit
+   windows and leaves; the cafe lamp sits behind centred empty-state text. */
+[data-style="medieval"][data-page="calendar"] { --m-scrim: .40; }
+[data-style="medieval"]:is([data-page="notes"], [data-page="todo"], [data-page="daily-update"], [data-page="kanban"]) { --m-scrim: .30; }
+
+/* ── UI over the scene ───────────────────────────────────────────── */
+/* Page headers: solid night, no blur (pixel style), 2px crust base line */
+[data-style="medieval"] main header.sticky,
+[data-style="medieval"] main header[class*="bg-slate-950"] {
+  background-color: var(--m-night);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: inset 0 -1px 0 var(--m-crust);
+}
+/* Bordered panels and cards: dark oak at 92% with a faint warm top edge */
+[data-style="medieval"] main :is(.rounded-lg, .rounded-xl, .rounded-2xl, .rounded-3xl).border.bg-slate-900:not(.fixed *) {
+  background-color: rgb(34 25 19 / .92);
+}
+/* Translucent bordered cards (bg-slate-900/40 etc.) would let the scene
+   through; lift them to the same near-solid oak. */
+[data-style="medieval"] main .border:is([class*="bg-slate-900/"], [class*="bg-slate-950/"]):not(header, input, select, textarea, .fixed *) {
+  background-color: rgb(34 25 19 / .92);
+}
+[data-style="medieval"] main :is(.rounded-xl, .rounded-2xl).border:is(.bg-slate-900, [class*="bg-slate-900/"]):not([class*="border-red-"]):not([class*="border-rose-"]):not([class*="border-amber-"]):not([class*="border-green-"]):not([class*="border-emerald-"]):not(.fixed *) {
+  box-shadow: inset 0 0 0 1px var(--m-crust), inset 0 2px 0 rgb(232 176 74 / .12), var(--m-px-shadow);
+}
+/* Dashed empty-state boxes ("Nothing on this day") have no fill */
+[data-style="medieval"] main .border-dashed:not([class*="bg-"]):not(.fixed *) {
+  background-color: rgb(28 20 15 / .9);
+}
+/* Side columns inside a page (notes library, eSTM form) have no fill of
+   their own, so the scene showed straight through behind form fields.
+   Give them the same near-solid oak. */
+[data-style="medieval"] main aside:not([class*="bg-"]):not(.fixed *) {
+  background-color: rgb(28 20 15 / .94);
+}
+/* Text that sits straight on the scene (section labels, intros) gets a
+   crisp 1px pixel drop shadow so it holds over lit windows and lanterns. */
+[data-style="medieval"] main { text-shadow: 0 1px 0 rgb(8 5 4 / .7); }
+[data-style="medieval"] main :is(input, textarea, select, pre, code) { text-shadow: none; }
+/* Modals (.fixed) are left out of the rules above and stay fully solid.
+   Scenes are static: no parallax or animation (reduced-motion safe). */
+[data-style="medieval"] img,
+[data-style="medieval"] svg image { image-rendering: pixelated; }
+[data-style="medieval"] ::selection { background: var(--m-honey); color: #1a120c; }
+[data-style="medieval"] * { scrollbar-color: var(--m-crust-hi) transparent; }
+[data-style="medieval"] :focus-visible { outline: 2px solid var(--m-honey); outline-offset: 1px; }
+
+/* ── Type ────────────────────────────────────────────────────────── */
+/* Body text: Geist sans (readable at text-xs). Pixel fonts: page titles
+   (Jersey 10), headings and buttons (Pixelify Sans), labels and table
+   heads (Silkscreen). Logs, code, ticket keys: Geist mono. */
+[data-style="medieval"] h1,
+[data-style="medieval"] h2,
+[data-style="medieval"] h3,
+[data-style="medieval"] h4 {
+  font-family: var(--font-pixel-body), var(--font-geist-sans), sans-serif;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+/* Page titles: the h1 in each page's sticky header */
+[data-style="medieval"] main header h1,
+[data-style="medieval"] main h1.tracking-tight {
+  font-family: var(--font-pixel-title), var(--font-pixel-body), sans-serif;
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1;
+  letter-spacing: .02em;
+  color: var(--m-honey);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .55);
+}
+[data-style="medieval"] .uppercase,
+[data-style="medieval"] th {
+  font-family: var(--font-pixel-label), var(--font-pixel-body), sans-serif;
+  letter-spacing: .02em;
+}
+[data-style="medieval"] .font-mono,
+[data-style="medieval"] code,
+[data-style="medieval"] pre,
+[data-style="medieval"] kbd,
+[data-style="medieval"] samp {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+[data-style="medieval"] .ProseMirror a { color: var(--m-honey); }
+
+/* ── Page-title icon ─────────────────────────────────────────────── */
+/* One small pixel icon before the header h1, from --m-page-ico. It replaces
+   the lucide icon that sat directly before the h1 (decorative, not a control). */
+[data-style="medieval"] main header svg:has(+ h1) { display: none; }
+[data-style="medieval"] main header h1::before,
+[data-style="medieval"] main h1.tracking-tight::before {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin: -8px 10px -8px 0;
+  vertical-align: middle;
+  background: var(--m-page-ico) center / 32px 32px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  [data-style="medieval"] main header h1,
+  [data-style="medieval"] main h1.tracking-tight { font-size: 1.3rem; }
+  [data-style="medieval"] main header h1::before,
+  [data-style="medieval"] main h1.tracking-tight::before {
+    width: 16px;
+    height: 16px;
+    margin: 0 6px 0 0;
+    background-size: 16px 16px;
+  }
+}
+/* Opt-in class hooks (only if code adds them): .m-ico inline icon,
+   .m-empty empty-state art at 4x. Pick the icon with --m-ico. */
+[data-style="medieval"] .m-ico {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background: var(--m-ico, var(--m-page-ico)) center / contain no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+[data-style="medieval"] .m-empty::before {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 12px;
+  background: var(--m-ico, var(--m-page-ico)) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+/* ── Corners: square. Pills 2px; dots, toggles, avatars stay round ── */
+[data-style="medieval"] .rounded,
+[data-style="medieval"] .rounded-sm,
+[data-style="medieval"] .rounded-md,
+[data-style="medieval"] .rounded-lg,
+[data-style="medieval"] .rounded-xl,
+[data-style="medieval"] .rounded-2xl,
+[data-style="medieval"] .rounded-3xl { border-radius: 0; }
+[data-style="medieval"] .rounded-full[class*="px-"] { border-radius: 2px; }
+
+/* ── Panels and cards ────────────────────────────────────────────── */
+/* Existing 1px border + 1px inset ring = a 2px edge with no layout shift. */
+[data-style="medieval"] .rounded-xl.border,
+[data-style="medieval"] .rounded-2xl.border,
+[data-style="medieval"] .rounded-lg.border.bg-slate-900,
+[data-style="medieval"] .rounded-xl.bg-slate-900,
+[data-style="medieval"] .rounded-2xl.bg-slate-900 {
+  border-color: var(--m-crust);
+  box-shadow: inset 0 0 0 1px var(--m-crust), var(--m-px-shadow);
+}
+/* Panels with a status-colour border keep it (pass / fail / warn / info) */
+[data-style="medieval"] :is(.rounded-xl, .rounded-2xl, .rounded-lg).border:is([class*="border-red-"], [class*="border-rose-"], [class*="border-green-"], [class*="border-emerald-"], [class*="border-amber-"], [class*="border-yellow-"], [class*="border-blue-"], [class*="border-indigo-"], [class*="border-violet-"], [class*="border-purple-"], [class*="border-fuchsia-"], [class*="border-pink-"], [class*="border-orange-"], [class*="border-teal-"], [class*="border-cyan-"], [class*="border-sky-"]) {
+  border-color: revert-layer;
+  box-shadow: var(--m-px-shadow-sm);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────── */
+[data-style="medieval"] aside.bg-slate-900 {
+  background-color: var(--m-plum);
+  box-shadow: inset -1px 0 0 var(--m-crust);
+}
+[data-style="medieval"] aside nav :is(a, button) {
+  font-family: var(--font-pixel-body), var(--font-geist-sans), sans-serif;
+}
+[data-style="medieval"] aside .bg-blue-600\/20 {
+  background-color: rgba(232, 176, 74, .12);
+  box-shadow: inset 3px 0 0 var(--m-honey);
+  color: var(--m-honey);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+[data-style="medieval"] button {
+  font-family: var(--font-pixel-body), var(--font-geist-sans), sans-serif;
+}
+/* Primary: hearth ember (distinct from fail red, which stays red) */
+[data-style="medieval"] .bg-blue-600,
+[data-style="medieval"] .bg-blue-700,
+[data-style="medieval"] .bg-indigo-600,
+[data-style="medieval"] .bg-indigo-700 { background-color: var(--m-ember); }
+[data-style="medieval"] .bg-blue-500,
+[data-style="medieval"] .bg-indigo-500 { background-color: #a24d1d; }
+[data-style="medieval"] .hover\:bg-blue-500:hover,
+[data-style="medieval"] .hover\:bg-blue-600:hover,
+[data-style="medieval"] .hover\:bg-blue-700:hover,
+[data-style="medieval"] .hover\:bg-indigo-500:hover,
+[data-style="medieval"] .hover\:bg-indigo-600:hover,
+[data-style="medieval"] .hover\:bg-indigo-700:hover { background-color: var(--m-ember-dark); }
+[data-style="medieval"] :is(button, a):is(.bg-blue-500, .bg-blue-600, .bg-blue-700, .bg-indigo-500, .bg-indigo-600, .bg-indigo-700) {
+  color: var(--m-cream-hi);
+  box-shadow: inset 0 0 0 2px var(--m-ember-edge), var(--m-px-shadow-sm);
+}
+/* Secondary: dark oak with a 2px crust ring */
+[data-style="medieval"] :is(button, a):is(.bg-slate-800, .bg-slate-700) {
+  box-shadow: inset 0 0 0 2px var(--m-crust), var(--m-px-shadow-sm);
+}
+/* Danger keeps its red; only the hard shadow is added */
+[data-style="medieval"] button:is([class*="bg-red-6"], [class*="bg-red-7"]) { box-shadow: var(--m-px-shadow-sm); }
+[data-style="medieval"] button:disabled { box-shadow: none; }
+[data-style="medieval"] button:not(:disabled):active { transform: translate(1px, 1px); }
+
+/* ── Inputs ──────────────────────────────────────────────────────── */
+/* Only fields that already draw a box get the dark well; bare inline
+   editors (transparent) stay as they are. */
+[data-style="medieval"] :is(input, select, textarea)[class*="bg-slate"] {
+  background-color: var(--m-well);
+  color: var(--m-cream);
+}
+[data-style="medieval"] :is(input, select, textarea).border { border-color: var(--m-crust-hi); }
+[data-style="medieval"] :is(input, select, textarea).border:focus {
+  border-color: var(--m-honey);
+  outline: 1px solid var(--m-honey);
+  outline-offset: 0;
+}
+[data-style="medieval"] input::placeholder,
+[data-style="medieval"] textarea::placeholder { color: var(--m-faint); opacity: 1; }
+[data-style="medieval"] option { background-color: var(--m-oak-deep); color: var(--m-cream); }
+[data-style="medieval"] input[type="checkbox"],
+[data-style="medieval"] input[type="radio"],
+[data-style="medieval"] input[type="range"],
+[data-style="medieval"] progress { accent-color: var(--m-hearth); }
+
+/* ── Tables ──────────────────────────────────────────────────────── */
+[data-style="medieval"] thead { background-color: var(--m-oak); }
+[data-style="medieval"] th {
+  color: var(--m-wheat);
+  font-weight: 400;
+  border-bottom: 2px solid var(--m-crust);
+}
+[data-style="medieval"] tbody tr:not([class*="bg-"]):hover { background-color: rgba(232, 176, 74, .05); }
+
+/* ── Dividers and code wells ─────────────────────────────────────── */
+[data-style="medieval"] hr { border: 0; height: 2px; background: var(--m-crust); }
+[data-style="medieval"] pre { background-color: var(--m-well); }
+
+/* ── Modals and overlays ─────────────────────────────────────────── */
+[data-style="medieval"] :is(.bg-black\/40, .bg-black\/50, .bg-black\/60, .bg-black\/70, .bg-black\/80) {
+  background-color: rgba(12, 8, 6, .78);
+}
+[data-style="medieval"] .fixed :is(.rounded-xl, .rounded-2xl).border:not([class*="border-red-"]):not([class*="border-amber-"]):not([class*="border-green-"]) {
+  border-color: var(--m-crust-hi);
+  box-shadow: inset 0 0 0 1px var(--m-crust-hi), 6px 6px 0 rgba(0, 0, 0, .5);
+}
+
+/* ── Readability fixes (medieval-check, 2026-10-27) ─────────────────
+   Found by the headless screenshot pass over every page at 1512x812 and
+   390x844 (data/pipeline/night/medieval-check.md). */
+
+/* 1. Card-like buttons (flow cards, study list, knowledge list, TS Tracker,
+   note templates) carry whole paragraphs. The button pixel font made that
+   small body text hard to read: body text inside a button goes back to
+   Geist sans (COTTAGE.md section 4: body text is Geist). Button labels,
+   labels (.uppercase) and mono keys are unchanged. */
+[data-style="medieval"] button :is(p, li, dd, dt, td, small, [class*="line-clamp"], .text-xs, .text-\[10px\], .text-\[11px\]):not(.font-mono, code, kbd, samp, .uppercase) {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+/* 2. Centred empty states sit straight on the scene, often over its
+   brightest part (sunset glow on Jira pages, cafe lamp on Notes). Give the
+   copy a 1px pixel outline and lift the dim slate-500/600 hint to oat. */
+[data-style="medieval"] main .text-center > :is(p, h2, h3) {
+  text-shadow:
+    1px 0 0 rgb(8 5 4 / .85), -1px 0 0 rgb(8 5 4 / .85),
+    0 1px 0 rgb(8 5 4 / .85), 0 -1px 0 rgb(8 5 4 / .85),
+    0 2px 0 rgb(8 5 4 / .6);
+}
+[data-style="medieval"] main .text-center > p:is(.text-slate-500, .text-slate-600, .text-slate-700),
+[data-style="medieval"] main .text-center.text-slate-500 > p { color: var(--m-oat); }
+
+/* 3. Inputs with a fixed width (w-32 / w-36 phone boxes) also carry w-full,
+   so they took the whole row and squeezed the name box beside them to
+   nothing (12107, 12153, 12257, preapp). Honour the fixed width. */
+[data-style="medieval"] main .flex > input.w-full.shrink-0.w-32 { width: 8rem; }
+[data-style="medieval"] main .flex > input.w-full.shrink-0.w-36 { width: 9rem; }
+
+/* 4. Long paths and keys in prose break instead of pushing the page sideways */
+[data-style="medieval"] main :is(p, li, dd, blockquote) { overflow-wrap: break-word; }
+
+/* 5. Phones */
+@media (max-width: 640px) {
+  /* Page headers: controls drop to a second line instead of running off
+     the right edge (eauto, tickets, kanban). Headers that fit keep 56px. */
+  [data-style="medieval"] main header.h-14 {
+    height: auto;
+    min-height: 3.5rem;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  /* Toolbars with a spacer (Test scenarios: Expand all / Collapse all /
+     Clear selection) wrap instead of breaking each button over two lines. */
+  [data-style="medieval"] main .flex.items-center:has(> .flex-1:empty) { flex-wrap: wrap; row-gap: 4px; }
+  [data-style="medieval"] main .flex.items-center:has(> .flex-1:empty) > button { white-space: nowrap; }
+  /* Underlined tab rows (Insurance Checker: 4 tabs) wrap, one label per line */
+  [data-style="medieval"] main .flex:has(> button.border-b-2.-mb-px) { flex-wrap: wrap; }
+  [data-style="medieval"] main .flex > button.border-b-2.-mb-px { white-space: nowrap; padding-left: .75rem; padding-right: .75rem; }
+  /* Fixed 3-column form grids (duitnow-qr, edereg-precheck test data)
+     squeezed each field to ~90px: stack them. Responsive grids untouched. */
+  [data-style="medieval"] main .grid.grid-cols-3:not([class*=":grid-cols-"]):has(input, select, textarea) { grid-template-columns: minmax(0, 1fr); }
+}

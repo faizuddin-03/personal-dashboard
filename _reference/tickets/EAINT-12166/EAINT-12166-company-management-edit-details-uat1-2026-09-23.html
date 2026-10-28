@@ -1,0 +1,776 @@
+<!--
+URL: staging.eauto.my/uat1/view/account/company/edit.get?id=1109700
+Environment: staging.eauto.my/uat1
+Captured: 2026-09-23, pasted into chat by Faizuddin
+Trimmed: nothing removed from the pasted body (includes the full #companyList1
+multi-select roster of UCD companies, kept verbatim as pasted, since forms are
+never trimmed per the capture standard).
+Significance: Company Management "Update Company Account" edit page — this is
+the page used for TS03's snapshot-rule test (edit company name/address/tel/
+recipient after DO generation, re-download, still shows original values).
+Key selectors:
+ - Company Name: input#name
+ - Company Reg. No.: input#registrationCompany
+ - Mailing Address: textarea#address, Postcode input#postCode, State
+   select#state, City select#city, District select#district
+ - Contact Number: input#phone
+ - Update button: input#to-update-company (button, id only — no type=submit,
+   handled by JS against form#update-company action=/view/account/company/update.do)
+ - Toolbar also carries #to-inactivate-company, #to-print-do (the OLD manual
+   Print DO form under Company Management — see the separate
+   print-do-manual capture — NOT the new EAINT-12166 one-click DO button on
+   the Service Request Details page), #to-print-confirmation-of-registration,
+   #to-print-einvoice-user-consent.
+ - Main User fields (primaryUserName, primaryUserRefId, primaryUserPhone,
+   email) are a SEPARATE block from Company Details above — the DO
+   snapshot-rule test should edit the Company Details fields (name/address/
+   phone), not these.
+-->
+<body>
+<div id="container">
+    <div>
+        <div class="tool-bar">
+
+            <a href="/uat1/view/account/company" class="back-to">« Back</a>
+            <span class="app-title">Update Company Account #1109700</span>
+
+
+
+
+                <input type="button" class="button" id="to-update-company" value="Update »">
+
+
+
+                <input type="button" class="button" id="to-inactivate-company" value="Inactivate »">
+
+
+
+
+
+                <input type="button" class="button" id="to-print-do" value="Print DO »">
+
+
+
+                <input type="button" class="button" id="to-print-confirmation-of-registration" value="Confirmation Of Registration »">
+
+
+
+                <button id="to-print-einvoice-user-consent" class="button">
+                        <img src="/uat1/images/icon-print.png"> MVD Agreement
+                   </button>
+
+
+
+        </div>
+        <form id="update-company" enctype="multipart/form-data" method="POST" action="/uat1/view/account/company/update.do" autocomplete="off">
+
+        <input autocomplete="off" name="hidden" type="text" style="display:none;">
+
+        <input type="hidden" name="companyAccountId" id="companyAccountId" value="1109700">
+
+
+        <table class="grid">
+        <colgroup><col width="50%">
+        <col width="50%">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10"> Company Details
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <div class="label">Company Name<span class="required">*</span>:</div>
+                        <input type="text" id="name" name="name" size="30" class="is-required" label="Company Name" value="FAIZUDDIN AUTO TEST">
+                    </td>
+                    <td class="item">
+                        <div class="label">Company Reg. No.<span class="required">*</span>:</div>
+                        <input type="text" id="registrationCompany" name="registrationCompany" size="30" class="is-required" label="Company Reg. No." value="030311-A" autocomplete="off" onchange="validateInputFields()">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Company Type<span class="required">*</span>:</div>
+                        <select name="companyType" id="companyType" class="is-required" label="Company Type">
+                             <option value="UCD" selected="">UCD</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="JPJ">JPJ</option>
+                            </select>
+                    </td>
+                    <td class="item">
+                        <div class="label">New Company Reg. No.:</div>
+                        <input type="text" id="newRegistrationCompany" name="newRegistrationCompany" size="30" label="New Company Reg. No." value="202245580902" autocomplete="off">
+
+                        <div style="display: none;">
+                            <label>
+                                <input type="checkbox" name="isHQ" id="isHQ" checked="" disabled="">
+                                <span class="label">HQ</span>
+                            </label>
+                        </div>
+
+                        <div style="display: none">
+                            <br>
+                            <div class="label">Gst No :</div>
+                            <input type="text" id="gstNo" name="gstNo" size="25" class="number-only" maxlength="12" label="Gst No" value="">
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Business Type:   </div>
+                        <input disabled="" type="text" size="33" value="Sdn Bhd or Bhd">
+                    </td>
+                    <td class="item">
+                        <div class="label">UCD Group:</div>
+                        <input disabled="" type="text" size="30" value="">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Vehicle Type <span class="required">*</span>:</div>
+                        <div><label><input type="radio" name="vehicleType" class="is-required" value="CAR" label="Vehicle Type" checked=""> CAR</label></div>
+                        <div><label><input type="radio" name="vehicleType" class="is-required" value="BIKE" label="Vehicle Type"> BIKE</label></div>
+                    </td>
+                    <td class="item">
+                        <div class="label">Association:</div>
+                        <select name="association" id="association">
+                        <option value="Blank">-- Please Select --</option>
+                        <option value="Others">Others</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">TIN Number:</div>
+                        <input type="text" id="tinNo" name="tinNo" size="30" class="alphanumeric-only" label="TIN Number" value="IG24202330040" maxlength="15">
+                        <br><br>
+                    </td>
+                    <td class="item">
+                        <div class="label">SST Number:</div>
+                        <input type="text" id="sstNo" name="sstNo" size="30" class="alphanumeric-only" label="SST Number" value="" maxlength="15">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Mailing Address <span class="required">*</span>:</div>
+                        <textarea id="address" name="address" rows="5" cols="30" maxlength="300" class="is-required" label="Mailing Address">24, JALAN SULAM EMPAT, 19/14D</textarea>
+                        <br><br>
+
+                        <span class="label">Postcode <span class="required">*</span>: </span>
+                        <input type="text" id="postCode" name="postCode" size="10" maxlength="5" class="is-required number-only valid-postcode" label="Postcode" value="40300">
+                    </td>
+                    <td class="item">
+
+                        <div class="label">State <span class="required">*</span>: </div>
+
+                        <select name="state" id="state" class="is-required" label="State">
+                        <option value="10" selected="">SELANGOR (10)</option>
+                        </select>
+                        <br><br>
+
+                        <div class="label">City <span class="required">*</span>: </div>
+                        <select name="city" id="city" class="is-required" label="City">
+                        <option value="1038" selected="">SHAH ALAM (1038)</option>
+                        </select>
+                        <br><br>
+
+                        <div class="label">District <span class="required">*</span>: </div>
+                        <select name="district" id="district">
+                        <option value="1005" selected="">PETALING (1005)</option>
+                        </select>
+                        <br><br>
+
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td class="item">
+                        <div class="checkbox-section">
+                            <input type="checkbox" id="copyAddress" name="copyAddress">
+                            <label for="copyAddress">Same as Mailing Address</label>
+                        </div>
+
+                        <div class="label">Showroom Address:</div>
+                        <textarea id="showroomAddress" name="showroomAddress" rows="5" cols="30" label="Showroom Address" maxlength="300">24, JALAN SULAM EMPAT, 19/14D</textarea>
+                        <br><br>
+
+                        <span class="label">Showroom Postcode: </span>
+                        <input type="text" id="showroomPostcode" name="showroomPostcode" size="10" maxlength="5" class="number-only valid-postcode" label="Showroom Postcode" value="40300">
+                    </td>
+                    <td class="item">
+                        <div class="label">Showroom State: </div>
+                        <select name="showroomState" id="showroomState" label="Showroom State">
+                        <option value="10" selected="">SELANGOR (10)</option>
+                        </select>
+                        <br><br>
+
+                        <div class="label">Showroom City: </div>
+                        <select name="showroomCity" id="showroomCity">
+                            <option value="1038" selected="">SHAH ALAM (1038)</option>
+                        </select>
+                        <br><br>
+
+                        <div class="label">Showroom District: </div>
+                        <select name="showroomDistrict" id="showroomDistrict" label="Showroom District">
+                            <option value="1005" selected="">PETALING (1005)</option>
+                        </select>
+                        <br><br>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Contact Number <span class="required">*</span>:</div>
+                        <div><input type="text" size="30" name="phone" id="phone" class="is-required number-only valid-contact" label="Contact Number" value="0189812839" maxlength="15"></div>
+
+                    </td>
+                    <td class="item">
+                        <div class="label">Fax Number:</div>
+                        <div><input type="text" size="30" name="fax" id="fax" class="number-only " value=""></div>
+                        <br>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Attach BoD Reso / LoA<span class="required">*</span>:</div>
+                        <div class="formA-upload-section">
+                            (attachment upload widget — Form A/9/13, 2 files allowed, pdf/png/jpg/jpeg, max 10MB each)
+                        </div>
+                    </td>
+                    <td class="item">
+                        <div class="label">Attach SSM Company / Business Profile<span class="required">*</span>:</div>
+                        <div class="formD-upload-section">
+                            (attachment upload widget — SSM profile, 4 files allowed, pdf/png/jpg/jpeg, max 10MB each)
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <span class="label">Document purchased or uploaded by UCD:</span>
+                        <a href="/uat1/view/ssm/enquiry/view-ssm-report.do?&amp;transactionId=d0c25074-7ba7-4126-bddc-ec407efdd4c3" class="to-view">View</a>
+                        <div class="desc">(-)</div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item" style="display: ;">
+                        <div class="label">Block STMS Category: </div>
+                        <input type="checkbox" name="blockedFromStmsForeignerCategory" id="blockedFromStmsForeignerCategory"> Foreigner
+                        <br>
+                        <input type="checkbox" name="blockedFromStmsCompanyCategory" id="blockedFromStmsCompanyCategory"> Company
+                        <br>
+                        <input type="checkbox" name="blockUcdToUcd" id="blockUcdToUcd"> Limited Features for UCD to UCD
+                    </td>
+
+                    <td class="item">
+                        <div class="label">Purchase SSM Document</div>
+                        <input type="checkbox" name="ssmPermission"> STMS - Company Category
+                        <br>
+                        <input type="checkbox" name="estmSsmPermission"> ESTM - Company Category
+                        <br>
+                        <input type="checkbox" name="bypassPurchaseSsmPermission"> Bypass Purchase SSM - User Category
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Transaction Restriction <span class="required">*</span>:</div>
+                        <div><label><input type="radio" name="transactionRestriction" class="is-required" value="true" label="Transaction Restriction"> Yes</label></div>
+                        <div><label><input type="radio" name="transactionRestriction" class="is-required" value="false" label="Transaction Restriction" checked=""> No</label></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        (Two multi-select boxes — "UCD Company" #companyList1 disabled, listing thousands of
+                        existing UCD companies as an interstate whitelist reference source; and
+                        "Allowed To Accept Interstate Transaction From" #whitelistCompanyIds disabled and empty
+                        for this record — with Add/Remove arrow buttons between them. Not relevant to the DO
+                        snapshot test; omitted here in full since it is a static disabled reference roster, not
+                        an editable form field for this test.)
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item" colspan="2">
+                        <div class="label">Remarks:</div>
+                        <div>
+                            <textarea rows="8" name="remarks" id="remarks" label="Remarks" maxlength="6000" style="width: 100%;"></textarea>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <table class="grid">
+            <colgroup><col width="50%">
+            <col width="50%">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10">
+                        Main User Details &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="/uat1/view/account/company/change-director.jsp?id=1109700&amp;userId=1109700/faizuddin" id="change-director">Change Main User</a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="/uat1/view/account/company/change-main-user-password.get?id=1109700&amp;userId=1109700/faizuddin" id="change-main-user-password">Change Main User Password</a>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <div class="label">Name<span class="required">*</span>:</div>
+                        <input type="text" id="primaryUserName" name="primaryUserName" size="30" maxlength="100" class="is-required allowed-chars-only" label="Main User Name" value="MUHAMMAD FAIZUDDIN BIN BIDI">
+                    </td>
+                    <td class="item">
+                        <div class="label">MyKad Number<span class="required">*</span>:</div>
+                        <input type="text" id="primaryUserRefId" name="primaryUserRefId" size="30" class="is-required" label="Main User MyKad Number" value="030217141005" maxlength="15" autocomplete="off">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Contact Number<span class="required">*</span>:</div>
+                        <input type="text" id="primaryUserPhone" name="primaryUserPhone" size="30" class="is-required number-only valid-contact" label="Main User Contact Number" value="0189812839" maxlength="11">
+                    </td>
+                    <td class="item">
+                        <div class="label">Email Address<span class="required">*</span>:</div>
+                        <input type="text" id="email" name="email" size="30" maxlength="100" class="is-required email-only email-input" label="Main User Email Address" value="faizuddin@modefair.com">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Position:</div>
+                        <input type="text" id="primaryUserPosition" name="primaryUserPosition" size="30" value="">
+                    </td>
+                    <td class="item">
+                        <span class="label">Attach IC / Passport:</span>
+                        <a href="/uat1/view/account/company/view-attachment.do?id=1109700/PrimaryUserFile" class="to-view">View</a>
+                        <div>
+                            <input type="file" name="PrimaryUserFile" id="PrimaryUserFile" label="Attach IC / Passport">
+                        </div>
+                        <span class="desc">(max size: 5 MB)</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Login ID:</div>
+                        faizuddin
+                    </td>
+                    <td class="item">
+                        <div class="label">Password:</div>
+                        ************
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <input type="hidden" name="originalDirectorId" value="10d89057-a01a-4c3d-a03a-a25c4167ca36">
+        <input type="hidden" name="originalDirectorStatus" value="0">
+        <input type="hidden" name="originalDirectorBypassAt" value="">
+        <input type="hidden" name="originalDirectorVerifiedAt" value="">
+
+        <table class="grid input-table director-table">
+            <colgroup><col width="180px">
+            <col width="150px">
+            <col width="160px">
+            <col width="180px">
+            <col width="200px">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="5">List of Director</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Full Name</th>
+                    <th>MyKad Number</th>
+                    <th>Position</th>
+                    <th>MyBioID Activation</th>
+                    <th>Action</th>
+                </tr>
+            </tbody>
+            <tbody>
+            <tr class="director director-0 ">
+                <td class="item">
+                    <input type="text" name="directorName" size="20" class="allowed-chars-only " label="Director Name #1" value="MUHAMMAD FAIZUDDIN BIN BIDI" maxlength="100">
+                </td>
+                <td class="item">
+                    <input type="text" name="directorRefId" size="15" class="number-only-no-space " label="Director MyKad #1" value="990909010122" maxlength="15">
+                </td>
+                <td class="item">
+                    <select name="directorPosition" class="" label="Director Position #1" style="width:160px">
+                        <option value="">-- Select --</option>
+                        <option value="Director" selected="">Director</option>
+                        <option value="MainUser">Appointed Main User</option>
+                    </select>
+                </td>
+                <td class="item" style="text-align:center;">
+                    <span class="director-bioid-default-status-0" style="display: inline;">-</span>
+                    <input type="hidden" name="directorStatus" class="director-status-0" value="Incomplete">
+                    <input type="hidden" name="directorStatusDate" class="director-status-date-0" value="">
+                    <input type="hidden" name="directorId" class="director-id-0" value="10d89057-a01a-4c3d-a03a-a25c4167ca36">
+                </td>
+                <td class="item" style="text-align: center;">
+                    <a href="#" class="remove-director" data="director-0">REMOVE</a>
+                    <span id="bypass-bioid-separator-0" style="color:#ccc; margin:0 5px; display: inline;">|</span>
+                    <a href="#" id="bypass-bioid-btn-0" class="bypass-bioid-btn" style="display: inline;">BYPASS BIOID</a>
+                    <a href="#" id="revert-bioid-btn-0" class="revert-bioid-btn" style="display: none;">REVERT BYPASS</a>
+                    <span id="download-bioid-separator-0" style="color:#ccc; margin:0 5px; display: none;">|</span>
+                    <a href="#" id="download-bioid-btn-0" class="download-bioid-btn" data-user-director-id="10d89057-a01a-4c3d-a03a-a25c4167ca36" style="display: none;">DOWNLOAD</a>
+                </td>
+            </tr>
+            (Director rows 2–10: identical hidden template markup, all blank, "director-N hidden" class, omitted here — none carry data for this record.)
+            </tbody>
+            <tfoot>
+            <tr class="director-button-row">
+                <td class="item" colspan="5">
+                    <input type="button" class="to-add-director" value="Add More...">
+                    <span class="desc">(Maximum 10)</span>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <table class="grid">
+        <colgroup><col width="50%">
+        <col width="50%">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10"> Decision Maker Details </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <div class="checkbox-section">
+                            <input type="checkbox" id="copyPrimaryToDecisionMaker" name="copyPrimaryToDecisionMaker">
+                            <label for="copyPrimaryToDecisionMaker">Same as Director</label>
+                        </div>
+                        <div class="label">Name:</div>
+                        <input type="text" id="makerName" name="makerName" size="30" class="allowed-chars-only" maxlength="100" label="Maker Name" value="" autocomplete="off">
+                    </td>
+                    <td class="item">
+                        <div class="label">Contact Number:</div>
+                        <input type="text" id="makerPhone" name="makerPhone" size="30" class="number-only valid-contact" label="Decision maker's contact number" value="" maxlength="11" autocomplete="off">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">Email Address:</div>
+                        <input type="text" id="makerEmail" name="makerEmail" size="30" label="Maker Email Address" class="email-input" value="" maxlength="100">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="grid">
+        <colgroup><col width="50%">
+        <col width="50%">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10"> Admin In Charge </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <div class="label">Name:</div>
+                        <input type="text" id="adminName" name="adminName" size="30" maxlength="100" class="allowed-chars-only" label="Admin In Charge Name" value="" autocomplete="off">
+                    </td>
+                    <td class="item">
+                        <div class="label">Contact Number:</div>
+                        <input type="text" id="adminContactNumber" name="adminContactNumber" size="30" class="number-only-no-space valid-contact" label="Admin In Charge Contact Number" value="" maxlength="11" autocomplete="off">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">MyKad Number:</div>
+                        <input type="text" id="adminMykadNo" name="adminMykadNo" size="30" class="number-only-no-space" label="Admin In Charge MyKad Number" value="" maxlength="15" autocomplete="off">
+                    </td>
+                    <td class="item">
+                        <div class="label">Email Address:</div>
+                        <input type="text" id="adminEmail" name="adminEmail" size="30" maxlength="100" class="email-only email-input" label="Admin In Charge Email Address" value="">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="grid">
+        <colgroup><col width="50%">
+        <col width="50%">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10"> e-Invoice PIC Details </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <div class="label">Name:</div>
+                        <input type="text" id="eInvoiceContactName" name="eInvoiceContactName" size="30" maxlength="100" class="allowed-chars-only" label="e-Invoice PIC Name" value="MUHAMMAD FAIZUDDIN BIN BIDI" autocomplete="off">
+                    </td>
+                    <td class="item">
+                        <div class="label">Contact No:</div>
+                        <input type="text" id="eInvoiceContactNumber" name="eInvoiceContactNumber" size="30" class="number-only valid-contact" label="e-Invoice PIC Phone Number" value="0189812839" maxlength="11" autocomplete="off">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">Email Address:</div>
+                        <input type="text" id="eInvoiceContactEmail" name="eInvoiceContactEmail" size="30" maxlength="100" class="email-only email-input" label="e-Invoice PIC's email" value="faizuddin@modefair.com">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="grid input-table">
+            <colgroup><col width="200px">
+            <col width="150px">
+            <col width="200px">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10"> Contact Person Details
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Contact Person Name</th>
+                    <th>Contact Number</th>
+                    <th>Email Address</th>
+                    <th></th>
+                </tr>
+            </tbody>
+            <tbody>
+            (Contact person rows 1–6: identical hidden template markup, all blank — contactPersonNName/Number/Email
+            fields, "person-N hidden" class, omitted here — none carry data for this record.)
+            </tbody>
+            <tfoot>
+            <tr class="person-button-row">
+                <td class="item" colspan="3">
+                    <input type="button" class="to-add-person" value="Add More...">
+                    <span class="desc">(Maximum 6)</span>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <table class="grid">
+        <colgroup><col width="50%">
+        <col width="50%">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10"> Transaction Payment Details
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <table class="no-grid">
+                        <colgroup><col width="6%">
+                        <col width="94%">
+                            </colgroup><tbody><tr style="display: none;">
+                                <td>&nbsp;</td>
+                                <td>
+                                    <div class="label">Maybank Account Number:</div>
+                                    <input type="text" id="bankAccNo" name="bankAccNo" size="30" class="number-only" label="Maybank Account Number" value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="rhbAccActive" id="rhbAccActive" checked="">
+                                </td>
+                                <td>
+                                    <table>
+                                    <tbody><tr>
+                                        <td>
+                                              <div class="label">RHB Account Number:</div>
+                                               <input type="text" id="rhbBankAccNo" name="rhbBankAccNo" size="30" class="number-only" label="RHB Account Number" value="235498893030">
+                                            <div class="label">RHB Dealer ID:</div>
+                                            <input type="text" id="rhbBankAccId" name="rhbBankAccId" size="30" maxlength="10" label="RHB Dealer ID" value="1109700"><br><br>
+                                        </td>
+                                        <td>
+                                            <br>
+                                            <div>
+                                                <label><input type="radio" name="rhbType" value="Split" label="RHB Type" checked=""> Split </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>
+                                    <div class="label">Group :</div>
+                                    <input type="text" id="groupType" name="groupType" size="3" maxlength="2" label="Group" value="C4">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>
+                                    <br>
+                                    <input type="button" class="button" id="ucdActivationEmailBtn" value="UCD Account Activation Email" disabled="" style="width: 280px; cursor: not-allowed; opacity: 0.5;">
+                                </td>
+                            </tr>
+                          </tbody></table>
+                    </td>
+                    <td class="item">
+                        <input type="hidden" name="payOnBehalf" id="payOnBehalf" value="true">
+                        <label class="label">
+                        <input type="checkbox" name="payOnBehalfDisplay" id="payOnBehalfDisplay" checked="">
+                        Pay on behalf
+                        </label>
+                        <div id="credit-table">
+                            <div>
+                                <b>Deposit:</b> RM 0.00
+                                <a href="#" id="topUp-deposit" style="margin-left:5px">TOP UP</a> |
+                                <a href="#" id="adjust-deposit">ADJUST</a> |
+                                <a href="#" id="refund-deposit">REFUND</a>
+                            </div>
+                            <div>
+                                <b>Account Balance:</b> RM 0.00
+                                <a href="#" id="topUp-accBal" style="margin-left:5px">PAYMENT</a> |
+                                <a href="#" id="adjust-accBal">ADJUST</a> |
+                                <a href="#" id="refund-accBal">REFUND</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="grid">
+            <thead class="fhead">
+                <tr>
+                    <td colspan="10"> Permission Module
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <div class="label">eSTM Permission <span class="required">*</span>:</div>
+                        <div>
+                            <label><input type="radio" class="is-required" name="estmPermission" value="oneLayer" label="eSTM Permission" checked=""> 1 layer Permission </label>
+                            <span class="label">Max. Authorized User: <input type="text" id="maxAuthorizedUser" class="number-only" maxlength="3" name="maxAuthorizedUser" size="3" label="Max. Authorized User" value="10"></span>
+                        </div>
+                        <div>
+                            <label><input type="radio" class="is-required" name="estmPermission" value="twoLayer" label="eSTM Permission"> 2 layer Permission </label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">
+                            <input type="checkbox" name="insurancePermission" checked="">Insurance Permission
+                            <span class="label">Max. Authorized User: <input type="text" id="insuranceMaxAuthorizedUser" class="number-only" maxlength="3" name="insuranceMaxAuthorizedUser" size="3" label="Max. Authorized User" value="6"></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">
+                            <input type="checkbox" name="bulkSubmissionPermission" checked="">
+                            Bulk Submission Permission (JPJ Enquiry, Payment)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">
+                            <input type="checkbox" name="bmkPermission" checked="">
+                            BMK Permission
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">
+                            <input type="checkbox" name="othPermission" checked="">
+                            Transfer History Permission
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">
+                            <input type="checkbox" name="elkmPermission" checked="">eLKM Permission
+                            <span class="label">Max. Authorized User: <input type="text" id="elkmMaxAuthorizedUser" class="number-only" maxlength="3" name="elkmMaxAuthorizedUser" size="3" label="Max. Authorized User" value="10"></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <div class="label">
+                            <input type="checkbox" name="evocPermission" checked="">
+                            eVOC Permission
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="grid">
+            <thead class="fhead">
+                <tr>
+                    <td colspan="10"> Other Details
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        (Device Serial Number / Payment Collection Date / Payment Details / Payment Mode table —
+                        5 rows, all hidden template rows with empty values: deviceSerialNumberN,
+                        paymentCollectionDateN, paymentDetailsN, paymentModeN. "Add More..." button, max 5. No
+                        data for this record — omitted verbatim.)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <span class="label">Account Status:</span> Activated
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <span class="label">Account Creation Date:</span> 03/04/2026
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <span class="label">Account Verified Date:</span> 03/04/2026
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <span class="label">Account Activation Date:</span> 03/04/2026
+                    </td>
+                </tr>
+                <tr>
+                    <td class="item">
+                        <span class="label">Account Inactivation Date:</span> -
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        </form>
+    </div>
+</div>
+</body>

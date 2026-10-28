@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
+import { killTree, runInProgressResponse } from "@/lib/server/playwrightRun";
+import { jsonAndSave } from "@/lib/server/savedResults";
+
+/** Last result saved on the server (lib/savedRunKeys.ts, 2026-10-21). */
+const SAVE_KEY = "eauto/estm";
 
 // Runs the eAuto eSTM (eSERAHAN) transfer flow (scripts/eauto-estm) and
 // returns its parsed PROGRESS:/RESULT: stdout.
@@ -9,22 +14,12 @@ export const maxDuration = 600;
 
 const SCRIPT_DIR = process.env.EAUTO_ESTM_SCRIPT_DIR
   ?? path.join(process.cwd(), "scripts", "eauto-estm");
-const PUBLIC_ART = path.join(process.cwd(), "public", "qa-artifacts", "eauto-estm");
 const TIMEOUT_MS = 10 * 60 * 1000;
 
 let currentChild: ChildProcess | null = null;
 let stopRequested = false;
 let forceResolveRun: ((r: { code: number; output: string }) => void) | null = null;
 let runOutputBuffer = "";
-
-function killTree(child: ChildProcess) {
-  if (!child.pid) return;
-  if (process.platform === "win32") {
-    try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); } catch { /* ignore */ }
-  } else {
-    try { process.kill(-child.pid, "SIGKILL"); } catch { try { child.kill("SIGKILL"); } catch { /* ignore */ } }
-  }
-}
 
 function parseStream(output: string) {
   const progress: { step: string; status: string; label?: string }[] = [];
@@ -36,31 +31,13 @@ function parseStream(output: string) {
   return { progress, result };
 }
 
-function publishVideo(): string | undefined {
-  const webBase = "/qa-artifacts/eauto-estm";
-  fs.mkdirSync(PUBLIC_ART, { recursive: true });
-  for (const f of fs.existsSync(PUBLIC_ART) ? fs.readdirSync(PUBLIC_ART) : []) {
-    try { fs.rmSync(path.join(PUBLIC_ART, f), { force: true }); } catch { /* ignore */ }
-  }
-  const tr = path.join(SCRIPT_DIR, "test-results");
-  if (!fs.existsSync(tr)) return undefined;
-  const vids: { p: string; t: number }[] = [];
-  const walk = (dir: string) => {
-    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-      const full = path.join(dir, e.name);
-      if (e.isDirectory()) walk(full);
-      else if (/\.webm$/i.test(e.name)) vids.push({ p: full, t: fs.statSync(full).mtimeMs });
-    }
-  };
-  walk(tr);
-  if (!vids.length) return undefined;
-  const newest = vids.sort((a, b) => b.t - a.t)[0].p;
-  try { fs.copyFileSync(newest, path.join(PUBLIC_ART, "run.webm")); return `${webBase}/run.webm`; } catch { return undefined; }
-}
 
 export async function POST(req: NextRequest) {
   // Mostly strings, but the add-on toggles arrive as booleans.
   const body = await req.json().catch(() => ({})) as Record<string, string | boolean | undefined>;
+
+  // One run at a time on this page (2026-10-21).
+  if (currentChild) return runInProgressResponse();
   const str = (k: string) => (typeof body[k] === "string" ? body[k] : "");
 
   if (!fs.existsSync(path.join(SCRIPT_DIR, "node_modules"))) {
@@ -113,12 +90,14 @@ export async function POST(req: NextRequest) {
   });
 
   const { progress, result: parsed } = parseStream(result.output);
-  const video = publishVideo();
+  // No recording since 2026-10-21 (eAuto tools keep only their result), so a
+  // stale run.webm from an older run must never be published as this one.
+  const video: string | undefined = undefined;
 
   if (stopRequested) {
-    return NextResponse.json({ stopped: true, progress, video, log: result.output });
+    return jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, { stopped: true, progress, video, log: result.output });
   }
-  return NextResponse.json({
+  return jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, {
     result: parsed ?? { status: result.code === 0 ? "SUCCESS" : "FAIL" },
     progress,
     video,

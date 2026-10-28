@@ -1,6 +1,5 @@
 import { test, expect } from "../fixtures/test-fixtures";
 import { ENV } from "../utils/config";
-import { openTrackedContext, closeTrackedContext } from "../utils/tracked-context";
 import { arrangeBdpReferenceViaUCD } from "../utils/arrange";
 import { SoftwareInstallationListingPage } from "../pages/bo/SoftwareInstallationListingPage";
 
@@ -142,12 +141,13 @@ test.describe("BO Calendar & Limits", () => {
     return dialog;
   }
 
-  test("SC_SCB_TS28: BO add beyond morning slot limit", async ({ boCalendarPage, browser }, testInfo) => {
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
+  test("SC_SCB_TS28: BO add beyond morning slot limit", async ({ page, loginPage, boCalendarPage }) => {
+    const ref = await arrangeBdpReferenceViaUCD(page);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
       return;
     }
+    await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
     await boCalendarPage.navigate();
     const booked = await boCalendarPage.addAppointment({ companyName: COMPANY, existingRecordRefNo: ref, slot: MORNING });
     if (!booked) {
@@ -159,12 +159,13 @@ test.describe("BO Calendar & Limits", () => {
     expect(await boCalendarPage.getSlotCount(booked, MORNING)).toBeGreaterThan(0);
   });
 
-  test("SC_SCB_TS30: BO add beyond afternoon slot limit", async ({ boCalendarPage, browser }, testInfo) => {
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
+  test("SC_SCB_TS30: BO add beyond afternoon slot limit", async ({ page, loginPage, boCalendarPage }) => {
+    const ref = await arrangeBdpReferenceViaUCD(page);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
       return;
     }
+    await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
     await boCalendarPage.navigate();
     const booked = await boCalendarPage.addAppointment({ companyName: COMPANY, existingRecordRefNo: ref, slot: AFTERNOON });
     if (!booked) {
@@ -175,15 +176,16 @@ test.describe("BO Calendar & Limits", () => {
     expect(await boCalendarPage.getSlotCount(booked, AFTERNOON)).toBeGreaterThan(0);
   });
 
-  test("SC_SCB_TS26: BO add beyond 6 days limit", async ({ boCalendarPage, browser }, testInfo) => {
+  test("SC_SCB_TS26: BO add beyond 6 days limit", async ({ page, loginPage, boCalendarPage }) => {
     // Add the appointment as CSE, then OBSERVE it in every location the SRD
     // lists. Email is checked via its on-screen proxy (the UCD Service Request
     // Listing), per the agreed approach.
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
+    const ref = await arrangeBdpReferenceViaUCD(page);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
       return;
     }
+    await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
 
     let booked: string | null = null;
     await test.step("CSE adds the appointment (beyond the 6/day cap)", async () => {
@@ -211,21 +213,16 @@ test.describe("BO Calendar & Limits", () => {
     });
 
     await test.step("Observe on UCD Service Request Listing (on-screen proxy for the email)", async () => {
-      const ucdCtx = await openTrackedContext(browser, testInfo);
-      const ucdPage = await ucdCtx.newPage();
-      try {
-        const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
-        const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
-        await ucdLogin.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
-        await ucdListing.navigate();
-        await ucdListing.searchByReferenceNo(ref);
-        const row = await ucdListing.findRowByRefNo(ref);
-        // Best-effort: only assert when this UCD account owns the reference.
-        if (row) {
-          expect((await ucdListing.getRowServiceType(row)).length).toBeGreaterThan(0);
-        }
-      } finally {
-        await closeTrackedContext(ucdCtx, testInfo, "UCD verifies listing");
+      // Last step of this test — logging the shared page back into UCD here
+      // is fine, nothing after this needs the BO session.
+      const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(page);
+      await loginPage.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
+      await ucdListing.navigate();
+      await ucdListing.searchByReferenceNo(ref);
+      const row = await ucdListing.findRowByRefNo(ref);
+      // Best-effort: only assert when this UCD account owns the reference.
+      if (row) {
+        expect((await ucdListing.getRowServiceType(row)).length).toBeGreaterThan(0);
       }
     });
   });

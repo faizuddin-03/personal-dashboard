@@ -1,5 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { syncRunToTracker } from "@/lib/tsTrackerSync";
+import { SAVED_RESULT_KEYS, isSavedResultKey } from "@/lib/savedRunKeys";
 
 /**
  * Runs that survive navigating away from the page that started them.
@@ -69,6 +71,24 @@ const POLL_MS = 2_000;
  */
 const KEEP_MS = 24 * 60 * 60 * 1000;
 
+/** How often a cut-off eAuto tool run checks the server for its saved result, and for how long. */
+const SAVED_POLL_MS = 15_000;
+const SAVED_POLL_FOR_MS = 6 * 60 * 60 * 1000;
+
+interface SavedResultResponse { saved: { key: string; runId: string; savedAt: string; payload: unknown } | null }
+
+/** A run rebuilt from the server's saved copy (lib/server/savedResults.ts). */
+function runFromSaved(key: string, saved: NonNullable<SavedResultResponse["saved"]>, meta: Record<string, unknown> = {}): BackgroundRun {
+  const payload = saved.payload as { error?: unknown } | null;
+  const error = payload && typeof payload.error === "string" ? payload.error : "";
+  return {
+    key, runId: saved.runId || `saved-${saved.savedAt}`,
+    running: false, stopping: false, orphaned: false,
+    startedAt: saved.savedAt, finishedAt: saved.savedAt,
+    liveLog: "", result: error ? null : saved.payload, error, meta,
+  };
+}
+
 function loadPersisted(): RunMap {
   if (typeof window === "undefined") return {};
   try {
@@ -78,7 +98,8 @@ function loadPersisted(): RunMap {
     const out: RunMap = {};
     for (const [key, run] of Object.entries(parsed)) {
       const anchor = run.finishedAt ?? run.startedAt;
-      if (now - new Date(anchor).getTime() > KEEP_MS) continue;
+      // eAuto tool results are kept until the next run replaces them.
+      if (!isSavedResultKey(key) && now - new Date(anchor).getTime() > KEEP_MS) continue;
       out[key] = run.running
         ? { ...run, running: false, stopping: false, orphaned: true }
         : run;
@@ -94,15 +115,28 @@ export function useBackgroundRuns() {
   // starting a run does not restart the polling effect mid-flight.
   const pollTargets = useRef<Record<string, { liveLogUrl?: string; runId: string }>>({});
   const stopTargets = useRef<Record<string, { stopUrl: string; runId: string }>>({});
+  // The newest runId started under each key. A resolution for any other runId
+  // is stale and is dropped.
+  const currentRunIds = useRef<Record<string, string>>({});
+  // eAuto tool runs cut off before their response arrived, still waiting for the
+  // server's saved result (lib/server/savedResults.ts).
+  const awaitingSaved = useRef<Record<string, { runId: string; until: number }>>({});
 
   const persist = useCallback((next: RunMap) => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch { /* full */ }
   }, []);
 
-  const update = useCallback((key: string, patch: Partial<BackgroundRun>) => {
+  /**
+   * Patches the run under `key` — but only while it is still the run with
+   * `runId`, when one is given. A key is reused by every run a page starts
+   * (queues, bulk panels), so an older run that resolves late must not
+   * overwrite the newer one (see app/eauto/edereg-precheck/BulkRunPanel.tsx).
+   */
+  const update = useCallback((key: string, patch: Partial<BackgroundRun>, runId?: string) => {
     setRuns(prev => {
       const cur = prev[key];
       if (!cur) return prev;
+      if (runId && cur.runId !== runId) return prev;
       const next = { ...prev, [key]: { ...cur, ...patch } };
       persist(next);
       return next;
@@ -111,6 +145,8 @@ export function useBackgroundRuns() {
 
   const startRun = useCallback(<T,>(key: string, opts: StartRunOptions) => {
     const runId = crypto.randomUUID();
+    currentRunIds.current[key] = runId;
+    const isCurrent = () => currentRunIds.current[key] === runId;
     pollTargets.current[key] = { liveLogUrl: opts.liveLogUrl, runId };
     stopTargets.current[key] = { stopUrl: opts.stopUrl ?? opts.url, runId };
 
@@ -122,7 +158,9 @@ export function useBackgroundRuns() {
           running: true, stopping: false, orphaned: false,
           startedAt: new Date().toISOString(),
           liveLog: "", result: null, error: "",
-          meta: opts.meta ?? {},
+          // `page` = where the run was started, so the sidebar's "Running now"
+          // list (components/RunningAutomations.tsx) can link back to it.
+          meta: { page: window.location.pathname + window.location.search, ...(opts.meta ?? {}) },
         },
       };
       persist(next);
@@ -138,23 +176,40 @@ export function useBackgroundRuns() {
     })
       .then(async (r) => {
         const data = await r.json().catch(() => ({}));
-        if (!r.ok && data?.error) throw new Error(data.error as string);
+        // A non-OK response is a failure even when the route sent no `error`
+        // field — previously that case was recorded as a successful result.
+        if (!r.ok) {
+          const msg = typeof data?.error === "string" && data.error ? data.error : `Request failed (HTTP ${r.status})`;
+          throw new Error(msg);
+        }
         return data as T;
       })
       .then((data) => {
+        if (!isCurrent()) return; // superseded by a newer run on this key
         delete pollTargets.current[key];
         update(key, {
           running: false, stopping: false,
           result: data, finishedAt: new Date().toISOString(),
-        });
+        }, runId);
+        // Feed TS Tracker. Must never break the run itself.
+        try { syncRunToTracker(key, data, opts.meta ?? {}); } catch { /* ignore */ }
       })
       .catch((e: unknown) => {
+        if (!isCurrent()) return;
         delete pollTargets.current[key];
+        // The request itself died (laptop asleep, network dropped) while the run
+        // may still be going on the server — wait for its saved result instead
+        // of reporting a failure. An HTTP error response is an Error, not a TypeError.
+        if (isSavedResultKey(key) && e instanceof TypeError) {
+          awaitingSaved.current[key] = { runId, until: Date.now() + SAVED_POLL_FOR_MS };
+          update(key, { running: false, stopping: false, orphaned: true }, runId);
+          return;
+        }
         update(key, {
           running: false, stopping: false,
           error: e instanceof Error ? e.message : "Run failed",
           finishedAt: new Date().toISOString(),
-        });
+        }, runId);
       });
 
     return runId;
@@ -168,8 +223,14 @@ export function useBackgroundRuns() {
   }, [update]);
 
   const clearRun = useCallback((key: string) => {
+    // A cleared tool result must not come back from the server copy on the next load.
+    if (isSavedResultKey(key)) {
+      delete awaitingSaved.current[key];
+      fetch(`/api/saved-results?key=${encodeURIComponent(key)}`, { method: "DELETE" }).catch(() => {});
+    }
     delete pollTargets.current[key];
     delete stopTargets.current[key];
+    delete currentRunIds.current[key];
     setRuns(prev => {
       const next = { ...prev };
       delete next[key];
@@ -187,13 +248,59 @@ export function useBackgroundRuns() {
         fetch(`${target.liveLogUrl}?runId=${target.runId}`)
           .then(r => r.json())
           .then((data: { log?: string }) => {
-            if (typeof data.log === "string") update(key, { liveLog: data.log });
+            if (typeof data.log === "string") update(key, { liveLog: data.log }, target.runId);
           })
           .catch(() => { /* next tick retries */ });
       }
     }, POLL_MS);
     return () => clearInterval(id);
   }, [update]);
+
+  /**
+   * eAuto tool results survive a closed laptop (Faizuddin, 2026-10-21): on boot,
+   * and every SAVED_POLL_MS while a cut-off run waits, read the server's saved
+   * result for each tool key and take it when it is the run this browser started,
+   * when this browser has none, or when it is newer than the one shown.
+   */
+  const syncSaved = useCallback(async (keys: string[]) => {
+    for (const key of keys) {
+      let saved: SavedResultResponse["saved"] = null;
+      try {
+        const r = await fetch(`/api/saved-results?key=${encodeURIComponent(key)}`);
+        saved = ((await r.json()) as SavedResultResponse).saved;
+      } catch { continue; }
+      if (!saved) continue;
+      const found = saved;
+      setRuns(prev => {
+        const cur = prev[key];
+        if (cur?.running) return prev; // a live run in this tab owns the key
+        const waiting = awaitingSaved.current[key];
+        const sameRun = !!cur && cur.runId === found.runId;
+        const newer = !cur || new Date(found.savedAt).getTime() > new Date(cur.finishedAt ?? cur.startedAt).getTime();
+        const take = sameRun ? (cur.orphaned || (!cur.result && !cur.error)) : !waiting && newer;
+        if (!take) return prev;
+        if (waiting && waiting.runId === found.runId) delete awaitingSaved.current[key];
+        const next = { ...prev, [key]: runFromSaved(key, found, cur?.meta) };
+        persist(next);
+        return next;
+      });
+    }
+  }, [persist]);
+
+  useEffect(() => {
+    // Boot: every orphaned tool run waits for its saved result; then sync all tool keys.
+    for (const [key, run] of Object.entries(loadPersisted())) {
+      if (isSavedResultKey(key) && run.orphaned) awaitingSaved.current[key] = { runId: run.runId, until: Date.now() + SAVED_POLL_FOR_MS };
+    }
+    syncSaved(SAVED_RESULT_KEYS);
+    const id = setInterval(() => {
+      const now = Date.now();
+      for (const [key, w] of Object.entries(awaitingSaved.current)) if (now > w.until) delete awaitingSaved.current[key];
+      const keys = Object.keys(awaitingSaved.current);
+      if (keys.length) syncSaved(keys);
+    }, SAVED_POLL_MS);
+    return () => clearInterval(id);
+  }, [syncSaved]);
 
   return { runs, startRun, stopRun, clearRun };
 }

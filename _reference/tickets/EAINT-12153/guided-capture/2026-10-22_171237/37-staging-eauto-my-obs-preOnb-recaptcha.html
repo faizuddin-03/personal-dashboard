@@ -1,0 +1,100 @@
+<!--
+  URL:      https://staging.eauto.my/obs/preOnb/recaptcha
+  Captured: 2026-10-22T09:18:39.105Z by the 12153 guided-capture run (page loaded)
+  Trimmed:  nothing
+-->
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="origin-trial" content="A7vZI3v+Gz7JfuRolKNM4Aff6zaGuT7X0mf3wtoZTnKv6497cVMnhy03KDqX7kBz/q/iidW7srW31oQbBt4VhgoAAACUeyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGUuY29tOjQ0MyIsImZlYXR1cmUiOiJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmczIiwiZXhwaXJ5IjoxNzU3OTgwODAwLCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ==">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify</title>
+    <meta name="_csrf" content="wab_wtkQYKP7sy-jcYL_JD_14x657S0KZ-7qYl2IW6hIrPX1oJeb-u9zUMfWixqbR6_LRwrMzn-B2RQnVIrZVD-7OZkqyMCU">
+    <meta name="_csrf_header" content="X-CSRF-TOKEN">
+
+    <script type="text/javascript" async="" charset="utf-8" src="https://www.gstatic.com/recaptcha/releases/NhfdZHzre16wrc2m6BxEdu7J/recaptcha__en.js" crossorigin="anonymous" integrity="sha384-LR3/YF3zO8t1fb2C/IzWuDXk1AauM4g7H6t4/YSoPOxpHIy5aJgy+UF7MKqkx56o"></script><script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&amp;render=explicit" async="" defer=""></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        h2 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+        }
+        #loading {
+            display: none;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Please verify you're human</h2>
+    <div id="recaptcha-div"><div style="width: 304px; height: 78px;"><div><iframe title="reCAPTCHA" width="304" height="78" role="presentation" name="a-w50ysu1t4ofc" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6Lf55hMsAAAAAGO6ItG3TXszKXcfsduvJc6s2VTv&amp;co=aHR0cHM6Ly9zdGFnaW5nLmVhdXRvLm15OjQ0Mw..&amp;hl=en&amp;v=NhfdZHzre16wrc2m6BxEdu7J&amp;size=normal&amp;anchor-ms=20000&amp;execute-ms=30000&amp;cb=kgwd8yuao8tm"></iframe></div><textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;"></iframe></div>
+    <div id="loading">✓ Verifying... Please wait.</div>
+</div>
+
+<script>
+    var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    var appUuid = null;
+    var siteKey = "6Lf55hMsAAAAAGO6ItG3TXszKXcfsduvJc6s2VTv";
+
+    function onloadCallback() {
+        grecaptcha.render('recaptcha-div', {
+            'sitekey': siteKey,
+            'callback': onCaptchaSuccess
+        });
+    }
+
+    function onCaptchaSuccess(token) {
+        document.getElementById('loading').style.display = 'block';
+        
+        var requestData = {
+            'g-recaptcha-response': token
+        };
+        
+        // Include appUuid if present
+        if (appUuid) {
+            requestData['appUuid'] = appUuid;
+        }
+        
+        $.ajax({
+            url: '/obs/preOnb/verify-captcha',
+            type: 'POST',
+            data: requestData,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            },
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = '/obs' + response.redirectUrl;
+                } else {
+                    alert(response.message || 'Verification failed. Please try again.');
+                    grecaptcha.reset();
+                    document.getElementById('loading').style.display = 'none';
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Verification failed. Please try again.');
+                grecaptcha.reset();
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+    }
+</script>
+
+
+
+</body></html>

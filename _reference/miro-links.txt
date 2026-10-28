@@ -1,0 +1,34 @@
+MIRO LINKS — every Miro board link Faizuddin has given, newest at the bottom.
+Rule: append each new Miro link here the moment it is given (AGENTS.md "Standing rule — save every Miro link").
+Format: date given | ticket(s) | what it is | link
+
+2026-10-22 | EAINT-8606, EAINT-8608 (Zurich) | Manual test scripts drawn on Miro before the automation shift | https://miro.com/app/board/uXjVGih1g4s=/?moveToWidget=3458764668996467748&cot=14
+2026-10-23 | EAINT-12028 | 12028 high-level flow / possible scenarios board (QA lead DM 04/09/2026, 18/09/2026; Faizuddin + QA manager 04/09/2026) | https://miro.com/app/board/uXjVHrYDgq8=/?share_link_id=681586431515
+2026-10-23 | XStar | "eAuto - XStar - Miro" (QA 02/07/2026; QA lead 30/06/2026 "add the TPTS to the existing XStar Miro board") | https://miro.com/app/board/uXjVJs2C7GU=/ (query string not captured; shown as link title)
+2026-10-23 | unknown | Shared by a QA in DM 03/06/2026, no context | https://miro.com/app/board/uXjVHUk5_XI=/?share_link_id=574371732467
+2026-10-23 | EAINT-9204 | "where's the TS for this ticket ... refer to this miro board" (eAuto QAs, QA lead 16/10/2026) | https://miro.com/app/board/uXjVJnrQeC8=/ (query string not captured; shown as link title)
+2026-10-23 | unknown | "Miro Board: ... (Please request access ya)" (eAuto QAs, QA manager 15/10/2026) | https://miro.com/app/board/uXjVEZuhFAk=/ (query string not captured; shown as link title)
+2026-10-23 | EAINT-12167, EAINT-10960 (Shopping Cart) | "Miro | EAINT-12167" TS draft (eAuto QAs 21/09/2026); Shopping Cart module board for 10960 ([QA] Shopping Cart Module, 08/07/2026) | https://miro.com/app/board/uXjVHAd4xoA=/ (query string not captured; shown as link title)
+2026-10-23 | EAINT-9306 | "Miro | 9306 - Updated requirements TS"; "Perakuan (Deregistration Step 2)" (eAuto QAs 10/09/2026; QA manager DM 11/09/2026; BA 23/06/2026) | https://miro.com/app/board/uXjVKZM9x0M=/ (query string not captured; shown as link title)
+2026-10-23 | none | QA resource planning miro (QA lead 04/08/2026; QA 03/08/2026) | https://miro.com/app/board/uXjVLqFnnAU=/ (query string not captured; shown as link title)
+2026-10-23 | unknown | Shared in group chat by a QA 08/06/2026; same board shared by QA manager in MODEFAIR QA + BA TEAM 28/03/2025 | https://miro.com/app/board/uXjVINpeNUk=/?share_link_id=508842080306
+2026-10-23 | Secarang E2E | QA colour assignment / Secarang E2E test scenarios / CIBO SnF (QA lead DM 26/05/2026) | https://miro.com/app/board/uXjVJ5lCjy4=/?moveToWidget=3458764673191617184&cot=14
+2026-10-23 | Secarang E2E | Debit/credit card section (QA lead DM 22/05/2026) | https://miro.com/app/board/uXjVJ5lCjy4=/?moveToWidget=3458764672091808754&cot=14
+2026-10-23 | Secarang E2E | CIBO related SnF (QA lead DM 21/05/2026) | https://miro.com/app/board/uXjVJ5lCjy4=/?moveToWidget=3458764648979053110&cot=14
+2026-10-23 | Secarang E2E | Board share link (QA lead DM 20/05/2026) | https://miro.com/app/board/uXjVJ5lCjy4=/?share_link_id=56362014707
+2026-10-23 | Web Socket v2.0 | "MIRO Board" for Web Socket v2.0 test plan ([QA] Web Socket v2.0, QA lead 15/04/2026) | https://miro.com/app/board/uXjVGih1g4s=/?share_link_id=322771276936
+2026-10-23 | Web Socket v2.0 | "here is the Miro board, Azfar is currently drafting the test plan" (QA lead DM 15/04/2026) | https://miro.com/app/board/uXjVGih1g4s=/?share_link_id=321795572028
+2026-10-23 | none | QA onboarding process (eAuto QA New Joiner chat, QA 01/04/2026) | https://miro.com/app/board/uXjVNDq5WqA=/?share_link_id=933568173844
+2026-10-23 | EAINT-8669 | MacroKiosk Business Messaging for Insurance (BA 03/09/2025) | https://miro.com/app/board/uXjVNi7Nu44=/?share_link_id=532395293087
+2026-10-23 | BMK | BO listing SnF for BMK, added 1 filter & column (MODEFAIR QA + BA TEAM, BA 12/06/2025) | https://miro.com/app/board/uXjVI5VpoXA=/?moveToWidget=3458764631195897680&cot=14
+2026-10-23 | unknown | "manage company acct module" (MODEFAIR QA + BA TEAM, BA 07/05/2025) | https://miro.com/app/board/uXjVISMR50c=/ (query string not captured; shown as link title)
+2026-10-23 | unknown | "you can refer here ya" (MODEFAIR QA + BA TEAM, BA 04/03/2025) | https://miro.com/app/board/uXjVL_lwFbw=/?moveToWidget=3458764616834959393&cot=14
+2026-10-23 | unknown | Shared by a QA (MODEFAIR QA + BA TEAM 29/10/2024) | https://miro.com/app/board/uXjVKmk0Zaw=/?moveToWidget=3458764598321812320&cot=10
+2026-10-23 | unknown | "Miro Link" (MODEFAIR QA + BA TEAM, BA 31/07/2024) | https://miro.com/app/board/uXjVNi2B0IY=/?moveToWidget=3458764595886145255&cot=14
+2026-10-23 | unknown | Shared by QA (MODEFAIR QA + BA TEAM 12/06/2024) | https://miro.com/app/board/uXjVNNd-M14=/?moveToWidget=3458764573682114070&cot=14
+2026-10-23 | EAINT-9208 | Board found in Jira (not Teams), passed on by coordinator | https://miro.com/app/board/uXjVJpuVD0s=/
+2026-10-23 | unknown (found in Jira; Azfar repo: Pre-Application & Application) | Board found in Jira, passed on by coordinator; already extracted in _reference/codebases/eauto-qa-azfar/cr/_boards/miro-preapp-application | https://miro.com/app/board/uXjVJBqvdBU=/
+2026-10-23 | unknown (found in Jira; Azfar repo: EAINT-12022 LKM Refund) | Board found in Jira, passed on by coordinator; already extracted in _reference/codebases/eauto-qa-azfar/cr/EAINT-12022/00-input/miro-lkm-tables | https://miro.com/app/board/uXjVJv2Y3G0=/
+2026-10-26 | unknown (future deployment tickets) | Board listing tickets to be deployed in the future; asked to study every ticket on it | https://miro.com/app/board/uXjVLqFnnAU=/?share_link_id=694056267956
+2026-10-26 | EAINT-12121 | Past team Miro board for 12121, found by a study agent in a QA colleague's repo branch origin/12121-past-miro-board (not given by Faizuddin, not opened) | https://miro.com/app/board/uXjVLpTBxtE=/?moveToWidgets=AQAJoezsiPuCgIAwAgGAAbyro5sBtsreRtuWvFSn8PUD49XSgQY
+2026-10-28 | EAINT-12028 | "this is miro link for the high level flow graph" (Faizuddin, dashboard chat to Scribe) | https://miro.com/app/board/uXjVHrYDgq8=/

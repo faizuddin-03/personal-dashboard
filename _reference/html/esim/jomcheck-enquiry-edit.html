@@ -1,0 +1,123 @@
+<!--
+  CAPTURE
+  url         https://172.30.202.114:9089/esim/jomcheck-enquiry-resp/20/edit
+  system      eSIM (eAuto Simulator) — VPN only
+  captured    2026-09-30
+  trimmed     the <aside class="sidebar"> nav — identical on every eSIM page,
+              captured once in app-shell.html. THE FORM ITSELF IS COMPLETE:
+              every field, id, name, type and required marker is present.
+  notes       Record #20, "HX" prefix. Faizuddin, 2026-09-30: "i want to
+              share with you the eSim pages for JomCheck Enquiry and
+              JomCheck Report." Fields: Vn Start With / Cn Start With
+              (prefix matching, same as every other entity), Result
+              (Yes/No — whether JomCheck returns a vehicle-found result at
+              all), Delay Milliseconds, Start Date / End Date (the record's
+              active window). No claim data here — that lives on the
+              separate JomCheck Report entity (jomcheck-report-edit.html).
+-->
+<body>
+  <div class="app-layout">
+    <div class="main-content">
+      <div class="top-bar">
+  <nav class="breadcrumb-nav">
+    <a href="/esim/">
+      <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    </a>
+    <span>
+      <span class="sep">/</span>
+      <a href="/esim/jomcheck-enquiry-resp">Jomcheck Enquiry Resps</a>
+    </span><span>
+      <span class="sep">/</span>
+      <span class="current">Edit #20</span>
+    </span>
+  </nav>
+  <div>
+    <span class="user-avatar">A</span>
+  </div>
+</div>
+      <div class="content-body">
+        <div class="page-header">
+          <div class="page-header-left">
+            <a href="/esim/jomcheck-enquiry-resp" class="btn-back" title="Back to list">
+              <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </a>
+            <h1 class="page-title page-title-sm">Edit Jomcheck Enquiry Resp #20</h1>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-header">
+            <span class="form-card-header-title">EDIT RECORD</span>
+          </div>
+          <div class="form-card-body">
+            <form action="/esim/jomcheck-enquiry-resp/save" method="post">
+              <input type="hidden" name="id" value="20">
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vnStartWith">
+                    <span>Vn Start With</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="vnStartWith" name="vnStartWith" value="HX" placeholder="Enter Vn Start With" required="required">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cnStartWith">
+                    <span>Cn Start With</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="cnStartWith" name="cnStartWith" value="HX" placeholder="Enter Cn Start With" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="result">
+                    <span>Result</span>
+                    <span class="required">*</span>
+                  </label>
+                  <select class="form-select" id="result" name="result" required="required">
+                    <option value="">-- Select --</option>
+                    <option value="Yes" selected="selected">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="delayMiliSeconds">
+                    <span>Delay Milliseconds</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="number" step="any" class="form-input" id="delayMiliSeconds" name="delayMiliSeconds" value="0" placeholder="Enter Delay Milliseconds" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="startDate">
+                    <span>Start Date</span>
+                  </label>
+                  <input type="datetime-local" class="form-input" id="startDate" name="startDate" value="">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="endDate">
+                    <span>End Date</span>
+                  </label>
+                  <input type="datetime-local" class="form-input" id="endDate" name="endDate" value="">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <a href="/esim/jomcheck-enquiry-resp" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

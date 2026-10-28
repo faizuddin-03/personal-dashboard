@@ -1,0 +1,312 @@
+<!--
+  URL: /uat1/view/admin/jomcheck/report-listing (BackOffice "JomCheck Report Listing")
+  Page: after searching by Vehicle No. VML4392 (1 record). Shows how the OTHER
+  filter is greyed out: #chassisNo carries the `disabled` attribute while the
+  Vehicle No. filter is in use. (The vehicleNo input's value="" is the HTML
+  attribute — the typed value lives in the DOM property, not the markup.)
+  Captured row is POST-push v2.0 data (Possible Total Loss / Possible BER = "No").
+  Env: uat1
+  Captured: 2026-10-04, by Faizuddin, pasted directly, for EAINT-12339 TS48.
+  Trimmed: none.
+  Not captured: the reverse state (Chassis No. in use, Vehicle No. disabled),
+  and whether `disabled` is applied on typing or only after SEARCH.
+-->
+<body>
+<div id="container">
+<table width="100%">
+    <tbody><tr>
+        <td class="not-to-print">
+            <form id="search-form" style="margin-left:20px;">
+            <table style="width:100%">
+                <tbody><tr>
+                    <td style="padding-left:20px; white-space: nowrap;">
+                        <b>Vehicle No.:</b>
+                        <input type="text" name="vehicleNo" id="vehicleNo" value="" size="15">&nbsp;
+                        <b>Chassis No.:</b>
+                        <input type="text" name="chassisNo" id="chassisNo" value="" size="30" disabled="">&nbsp;
+                        <input type="submit" id="to-search" value="SEARCH" style="height:35px;">
+                        <a href="#" id="to-reset">Reset</a>
+                        <a href="/uat1/download/admin/jomcheck/report-listing/export.do?vehicleNo=VML4392&amp;pageNo=1" id="to-export" style="">Export</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top:10px; font-size:14px" class="center">
+                        <b>JomCheck Report Listing</b>
+                    </td>
+                </tr>
+            </tbody></table>
+            <input type="hidden" name="pageNo" value="1">
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td id="result" colspan="2">
+
+
+
+
+
+
+
+
+
+
+<style>
+.col   { border: 1px solid white; padding: 4px; }
+.col-c { border: 1px solid white; padding: 4px; text-align: center; }
+tr.odd  { background: #A9E2F3; }
+tr.even { background: #CEF6F5; }
+</style>
+
+
+
+<div style="padding-left:20px; padding-top:8px; padding-bottom:8px;">
+    Note: Before 22 April 2026,
+    <div style="padding-left:15px;">
+        a. Avg. Market Value / Avg. Retail Price is displayed as Avg. Market Value.<br>
+        b. Approx. New Car Price / Recommended Trade Price is displayed as Approx. New Car Price.
+    </div>
+</div>
+
+<div id="result-summary" data-count="1">
+
+    1 record(s) in total
+
+</div>
+
+<div style="overflow-x: auto;">
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+    <tr class="header" style="background:#58ACFA; color:white;">
+        <th class="col" style="min-width:30px;">#</th>
+        <th class="col" style="min-width:80px;">Date &amp; Time</th>
+        <th class="col" style="min-width:80px;">Vehicle Number</th>
+        <th class="col" style="min-width:80px;">Chassis Number</th>
+        <th class="col" style="min-width:80px;">Transaction Number</th>
+        <th class="col" style="min-width:70px;">Total Loss History (Actual)</th>
+        <th class="col" style="min-width:70px;">Possible Total Loss</th>
+        <th class="col" style="min-width:70px;">Total Loss History (BER)</th>
+        <th class="col" style="min-width:70px;">Possible BER</th>
+        <th class="col" style="min-width:70px;">Make / Brand</th>
+        <th class="col" style="min-width:70px;">Model</th>
+        <th class="col" style="min-width:50px;">Year Make</th>
+        <th class="col" style="min-width:70px;">Variant</th>
+        <th class="col" style="min-width:60px;">Engine CC</th>
+        <th class="col" style="min-width:70px;">Transmission</th>
+        <th class="col" style="min-width:120px;">Avg. Market Value / Avg. Retail Price</th>
+        <th class="col" style="min-width:120px;">Approx. New Car Price / Recommended Trade Price</th>
+        <th class="col" style="min-width:50px;">Flood History</th>
+        <th class="col" style="min-width:60px;">Windscreen Claim</th>
+        <th class="col" style="min-width:80px;">Multiple Registration of Car Plate / Chassis No.</th>
+        <th class="col" style="min-width:70px;">Last Mileage Recorded</th>
+        <th class="col" style="min-width:60px;">Accident Record</th>
+        <th class="col" style="min-width:70px;">Date of Loss</th>
+        <th class="col" style="min-width:70px;">Date of Authorized</th>
+        <th class="col" style="min-width:70px;">Odometer Reading</th>
+        <th class="col" style="min-width:70px;">Type of Claim</th>
+        <th class="col" style="min-width:70px;">Total No. of Parts Approved for Change</th>
+        <th class="col" style="min-width:60px;">State in Malaysia</th>
+        <th class="col" style="min-width:70px;">Incidents Severity Scale</th>
+    </tr>
+    </thead>
+    <tbody>
+
+
+    <tr class="odd">
+        <td class="col-c">1</td>
+        <td class="col-c">01-10-2026 15:16</td>
+        <td class="col-c">VML4392</td>
+        <td class="col-c">-</td>
+        <td class="col-c">J600008387</td>
+        <td class="col-c">NO RECORD FOUND</td>
+        <td class="col-c">No</td>
+        <td class="col-c">NO RECORD FOUND</td>
+        <td class="col-c">No</td>
+        <td class="col-c">Perodua</td>
+        <td class="col-c">Myvi</td>
+        <td class="col-c">2024</td>
+        <td class="col-c">AV M800 Auto</td>
+        <td class="col-c">1496</td>
+        <td class="col-c">Continuously Variable (CVT)</td>
+        <td class="col-c">47901.0</td>
+        <td class="col-c">37308.0</td>
+        <td class="col-c">NO RECORD FOUND</td>
+        <td class="col-c">NO RECORD FOUND</td>
+        <td class="col-c">NO</td>
+        <td class="col-c">0</td>
+        <td class="col-c">0</td>
+        <td class="col">-</td>
+        <td class="col">-</td>
+        <td class="col">-</td>
+        <td class="col">-</td>
+        <td class="col">-</td>
+        <td class="col-c">-</td>
+        <td class="col">-</td>
+    </tr>
+
+    </tbody>
+</table>
+</div>
+
+
+</td>
+    </tr>
+</tbody></table>
+</div>
+
+
+
+
+
+
+
+<script>
+function doPendingTransactionCountQuery() {
+    // Do incomplete transaction notification check
+    $.ajax({
+        global: false,
+        type: "POST",
+        data: "",
+        url: "/uat1/ajax/support/incomplete-txn/notification.do",
+        success: function(response) {
+            if(/Pending Transaction/.test(response)) {
+                $("#incomplete-txn-notification-wrapper").html(response);
+            }
+        }
+    });
+}
+
+$(document).ready(function() {
+
+    $("#header a.logout").click(function() {
+        if(confirm("Sure to logout?")) {
+            window.location.href = "/uat1/user/logout.do";
+        }
+        return false;
+    });
+
+    $("#header #menu-link").click(function() {
+        var offset = $(this).offset();
+
+
+        $("#menu-bar").load(_contextPath + "/home/menu.jsp?source=menuLink", function() {
+
+
+            $("#menu-bar").css({left: offset.left - 80, top: offset.top + 20}).slideToggle('fast');
+            $("#menu-bar div").hide();
+            var _userRole = "HubAdmin";
+
+            if(_userRole.indexOf(",") != "-1") {
+                var roles = _userRole.split(",");
+
+                $(roles).each(function(i,role) {
+                    if(role != ""){
+                        $("div."+role).show();
+                    }
+                });
+            }
+            else {
+                $("div."+_userRole).show();
+            }
+        });
+
+        return false;
+    });
+
+    $("body").click(function() {
+        $("#menu-bar").slideUp();
+    });
+
+    LoginSessionTimer.startCountdown();
+
+    doPendingTransactionCountQuery();
+
+});
+</script>
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar" style="width: 350px !important;">
+                <ol class="inline">
+                    <li>
+                        <a href="/uat1/home/" id="home-link">Home |</a>
+                    </li>
+                    <li><a href="#" id="menu-link">Menu <img src="/uat1/images/arrow_down.gif"></a></li>
+                </ol>
+
+
+                <div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onclick="window.location='/uat1/view/support/incomplete-txn/';">
+
+
+
+
+
+
+
+<span>
+    7 Pending Transaction Found!
+</span>
+
+</div>
+
+
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">Jason Seah</span>,</li>
+                <li><a href="/uat1/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+    <div id="menu-bar" class="hidden" style="position:absolute; width:800px;"></div>
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:31</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo" style="background-color: white;">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+
+
+
+
+
+<style>
+#footer {color: grey!important; height:60px !important; margin-top:15px !important;font-size:15px}
+#footer table tr td{color: grey!important;font-size:11px!important;}
+</style>
+
+
+<div id="footer">
+    <colspan width="10%">
+        <colspan width="50%">
+        <colspan width="auto">
+        </colspan></colspan></colspan><table border="0" width="100%">
+        <tbody><tr>
+            <td>&nbsp;</td>
+            <td>
+                Best Compatible With Mozilla Firefox V36.0.4 <br>
+                Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+                <a href="#" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a> |
+                <a href="#" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a> |
+                <a href="#" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </td>
+            <td class="right">
+                <img src="/uat1/images/eAuto_TM_logo.svg" width="98">
+            </td>
+        </tr>
+    </tbody></table>
+</div>
+
+
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div></body>

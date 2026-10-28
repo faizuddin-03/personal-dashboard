@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIBO</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,"Segoe UI",Helvetica,Arial,sans-serif;color:#1f2937;background:#f3f4f6;font-size:15px}
+a{color:#1a73e8;text-decoration:none;cursor:pointer}a:hover{text-decoration:underline}
+.side{position:fixed;left:0;top:0;bottom:0;width:104px;background:#fff;display:flex;flex-direction:column;align-items:center;padding-top:40px;z-index:5}
+.av{width:58px;height:48px;border-radius:50%;background:#a8cdf5;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center}
+.side hr{width:46px;border:none;border-top:1px solid #e5e7eb;margin:38px 0 60px}
+.side .ic{margin:14px 0;color:#6b7280;width:26px;height:26px}
+.side .ic.on{color:#1c3f7a}
+.tog{position:fixed;left:82px;top:148px;width:44px;height:44px;border-radius:50%;background:#1c3f7a;color:#fff;display:flex;align-items:center;justify-content:center;z-index:6}
+.wrap{margin-left:104px;padding:40px 40px 60px}
+h1{font-size:36px;font-weight:500;margin:14px 0 28px;color:#1f2937}
+.hf{color:#1a73e8;font-size:17px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;user-select:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;max-width:1132px}
+.fld{position:relative;background:#fff;border:1px solid #d1d5db;border-radius:4px;min-height:62px;padding:8px 40px 8px 12px;cursor:pointer}
+.fld .lb{font-size:12px;color:#6b7280;display:block}
+.fld .ph{font-size:17px;color:#4b5563;line-height:44px}
+.fld .car{position:absolute;right:14px;top:26px;border:5px solid transparent;border-top:6px solid #6b7280}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{background:#e8efff;color:#1e3a8a;border-radius:4px;padding:3px 8px;font-size:14px;display:inline-flex;gap:6px;align-items:center}
+.chip b{font-weight:400;cursor:pointer}
+.dd{display:none;position:absolute;left:-1px;right:-1px;top:100%;background:#fff;border:1px solid #d1d5db;border-radius:0 0 4px 4px;z-index:10;max-height:260px;overflow:auto;box-shadow:0 6px 14px rgba(0,0,0,.08)}
+.fld.open .dd{display:block}
+.dd div{padding:10px 12px;font-size:15px}
+.dd div:hover{background:#f0f5ff}
+.dd div.sel{background:#e8efff;color:#1e3a8a}
+.dates{display:flex;padding:8px 12px;background:#fff;border:1px solid #d1d5db;border-radius:4px;min-height:62px}
+.dates>div{flex:1;display:flex;flex-direction:column}
+.dates>div+div{border-left:1px solid #e5e7eb;padding-left:12px}
+.dates input{border:none;font:inherit;font-size:17px;color:#1f2937;padding:4px 0;background:none;outline:none}
+.srow{display:flex;gap:18px;align-items:center;max-width:1132px;margin-top:12px}
+.sbox{flex:1;position:relative}
+.sbox input{width:100%;height:62px;border:1px solid #d1d5db;border-radius:4px;padding:0 44px 0 12px;font:inherit;font-size:17px;outline:none}
+.sbox svg{position:absolute;right:14px;top:19px}
+.btn{height:62px;padding:0 30px;background:#0a7cff;color:#fff;border:none;border-radius:4px;font:inherit;font-size:17px;cursor:pointer}
+.clr{font-size:17px;color:#1a73e8;cursor:pointer;margin-left:16px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:4px;margin-top:20px;padding:24px 24px 30px}
+.chd{display:flex;justify-content:space-between;align-items:center;padding-bottom:26px;border-bottom:1px solid #e5e7eb}
+.chd h2{font-size:24px;font-weight:500;margin:0}
+.ob{height:42px;padding:0 14px;border:1px solid #1a73e8;color:#1a73e8;background:#fff;border-radius:4px;font:inherit;font-size:17px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;margin-left:16px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;min-width:2050px;width:100%}
+th{font-weight:500;font-size:16px;text-align:left;vertical-align:bottom;padding:22px 10px 8px;border-bottom:1px solid #e5e7eb}
+td{vertical-align:top;padding:12px 10px;border-bottom:1px solid #e5e7eb;font-size:16px;line-height:1.5}
+.pb{display:inline-block;background:#dbeafe;color:#1e3a8a;font-size:12px;font-weight:600;padding:1px 6px;border-radius:3px}
+.paid{display:inline-block;background:#dcfce7;color:#15803d;font-size:12px;font-weight:600;padding:0 6px;border-radius:3px;margin-left:4px}
+.unpaid{display:inline-block;background:#fef3c7;color:#b45309;font-size:12px;font-weight:600;padding:0 6px;border-radius:3px;margin-left:4px}
+.sub{color:#6b7280;font-size:14px}
+.pg{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.pgb{display:flex}.pgb span{width:40px;height:44px;border:1px solid #d1d5db;display:flex;align-items:center;justify-content:center;color:#6b7280}
+.pgb span.on{background:#1c3f7a;color:#fff;border-color:#1c3f7a}
+select.pp{height:44px;border:1px solid #d1d5db;border-radius:4px;padding:0 12px;font:inherit;font-size:16px;color:#4b5563;background:#fff}
+.empty{padding:40px;text-align:center;color:#6b7280}
+/* details */
+.back{font-size:15px;display:inline-flex;gap:8px;align-items:center}
+.dcard{background:#fff;border:1px solid #e5e7eb;border-radius:4px;padding:20px 24px 24px;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:30px}
+.dtop{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-start}
+.dtop h2{font-size:21px;font-weight:500;margin:0}
+.st{display:inline-flex;align-items:center;gap:8px;padding:0 14px;height:36px;border-radius:4px;font-weight:600;font-size:15px}
+.st.ok{background:#dcfce7;color:#15803d}.st.warn{background:#fef3c7;color:#b45309}.st.bad{background:#fee2e2;color:#b91c1c}.st.grey{background:#e5e7eb;color:#4b5563}
+.gb{height:36px;padding:0 12px;border:1px solid #9ca3af;color:#4b5563;background:#fff;border-radius:4px;font:inherit;font-size:15px;margin-left:8px;cursor:pointer}
+.bb{height:36px;padding:0 12px;border:1px solid #1a73e8;color:#1a73e8;background:#fff;border-radius:4px;font:inherit;font-size:15px;margin-left:8px;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.sec h3{font-size:17px;font-weight:500;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:14px}
+.kv{display:grid;grid-template-columns:215px 1fr;row-gap:10px;font-size:14px;margin-bottom:24px}
+.kv .k{color:#6b7280}
+.tag{background:#17a2b8;color:#fff;font-size:11px;font-weight:600;padding:2px 10px;border-radius:3px}
+.box{background:#eff6ff;border-radius:4px;padding:16px 16px 12px;margin-bottom:24px}
+.box h3{font-size:17px;font-weight:500;margin:0 0 14px}
+.box .kv{grid-template-columns:178px 1fr;margin:0}
+.ibox{background:#f7f8fa;border-radius:4px;padding:20px 16px 20px}
+.logo{text-align:center;font-weight:700;font-size:17px;margin:6px 0 22px}
+.ibox .kv{grid-template-columns:178px 1fr;margin-bottom:0}
+.ln{border-top:1px solid #e5e7eb;margin:16px 0}
+.row{display:flex;justify-content:space-between;font-size:14px;margin:8px 0}
+.big{display:flex;justify-content:space-between;font-size:17px;font-weight:500;margin:4px 0}
+.tot{display:flex;justify-content:space-between;align-items:center;font-size:21px;font-weight:500}
+.tot span:last-child{font-size:27px}
+.pay{display:grid;grid-template-columns:178px 197px 152px 1fr;row-gap:6px;font-size:14px}
+.pay .k{color:#6b7280}
+.hide{display:none}
+.ov{position:fixed;inset:0;background:rgba(40,40,40,.75);z-index:50;overflow:auto;padding:24px 0 40px}
+.ovbar{max-width:794px;margin:0 auto 12px;display:flex;justify-content:flex-end;gap:10px}
+.ovbar button{height:36px;padding:0 14px;border:none;border-radius:4px;font:inherit;font-size:14px;cursor:pointer;background:#fff;color:#1f2937}
+.rc{width:794px;min-height:1060px;margin:0 auto;background:#fff;padding:34px 48px 30px;font-family:Helvetica,Arial,sans-serif;color:#222;position:relative;display:flex;flex-direction:column}
+.rc .or{position:absolute;right:46px;top:34px;color:#888;font-size:15px}
+.rc h1{font-family:Helvetica,Arial,sans-serif;font-weight:400;font-size:50px;margin:14px 0 40px;color:#111}
+.rc .cols{display:grid;grid-template-columns:330px 1fr;gap:40px}
+.rc h4{color:#1a8cff;font-weight:400;font-size:21px;margin:0 0 16px}
+.rc .l{color:#777;font-size:14px;margin-top:22px}.rc .l:first-of-type{margin-top:0}
+.rc .v{font-size:15px;margin-top:6px;line-height:1.25}
+.rc .sum{background:#f6f7f9;padding:18px 32px 60px 16px;min-height:760px;display:flex;flex-direction:column}
+.rc .r{display:flex;justify-content:space-between;font-size:15px;margin:12px 0 0}
+.rc .hr{border-top:1px solid #ddd;margin:14px 0 4px}
+.rc .ag{color:#666;font-size:12px;margin-top:60px;line-height:1.8}
+.rc .foot{border-top:1px solid #ddd;margin-top:30px;padding-top:24px;display:flex;justify-content:space-between;color:#666;font-size:15px;line-height:1.6}
+.rc .nsig{text-align:center;color:#666;font-size:15px;margin-top:auto;padding-top:60px}
+@media print{body>*:not(.ov){display:none!important}.ov{position:static;background:none;padding:0}.ovbar{display:none}}
+</style>
+</head>
+<body>
+<aside class="side">
+<div class="av">M</div>
+<hr>
+<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="8" r="3.5"/><circle cx="16.5" cy="8" r="3"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6M15 14c3.5 0 7 1.5 7 5"/></svg>
+<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="8" r="4"/><path d="M1 21c0-4.5 3.5-7 7-7s7 2.5 7 7z"/><rect x="16" y="6" width="7" height="1.5"/><rect x="16" y="10" width="7" height="1.5"/><rect x="16" y="14" width="7" height="1.5"/></svg>
+<svg class="ic on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M6 16l4-6 4 4 6-8"/></svg>
+<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 17v-3M12 17v-6M16 17v-8"/></svg>
+<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 2h10l4 4v16H5z"/><text x="6" y="18" font-size="6" fill="currentColor" stroke="none">CSV</text></svg>
+<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="17" rx="1"/><path d="M3 9h18M8 2v4M16 2v4M14 15H8m2-2l-2 2 2 2"/></svg>
+</aside>
+<div class="tog"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></div>
+
+<div class="wrap">
+<!-- LISTING -->
+<section id="list">
+<h1>Transaction Management</h1>
+<div class="hf" id="hf"><span id="hft">Hide Filters</span><svg id="hfa" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2"><path d="M5 9l7 7 7-7"/></svg></div>
+<div id="filters">
+<div class="grid">
+<div class="fld" data-f="platform" data-multi="1" data-label="Platform"></div>
+<div class="fld" data-f="insurer" data-multi="1" data-label="Insurance Company"></div>
+<div class="fld" data-f="dateType" data-label="Date Range Type"></div>
+<div class="dates"><div><span class="sub" style="font-size:12px">From</span><input type="date" id="from" value="2025-04-01"></div><div><span class="sub" style="font-size:12px">Till</span><input type="date" id="till" value="2025-07-31"></div></div>
+<div class="fld" data-f="status" data-multi="1" data-label="Transaction Status"></div>
+<div class="fld" data-f="jpj" data-multi="1" data-label="Submission to JPJ Status"></div>
+<div class="fld" data-f="roadTax" data-label="Road Tax"></div>
+<div class="fld" data-f="discount" data-multi="1" data-label="Discount Code"></div>
+</div>
+</div>
+<div class="srow">
+<div class="sbox"><input id="q" placeholder="Search"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M15 15l6 6"/></svg></div>
+<button class="btn" id="go">Search</button><span class="clr" id="clr">Clear all</span>
+</div>
+<div class="card">
+<div class="chd"><h2>Transaction Listing</h2><div><button class="ob"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1a73e8"><path d="M6 2h12v5H6zM4 8h16a2 2 0 012 2v7h-4v5H6v-5H2v-7a2 2 0 012-2zm4 8v4h8v-4z"/></svg>Print</button><button class="ob"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.6"><path d="M5 2h10l4 4v16H5z"/></svg>Export</button></div></div>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Transaction<br>Ref. No.</th><th>Transaction<br>Created Date</th><th>Insurance<br>Created Date</th><th>UCD</th><th>UCD<br>Name</th><th>Vehicle<br>No</th><th>Vehicle<br>Type</th><th>Insured</th><th>Payment</th><th>Payment<br>Mode</th><th>Discount<br>Code</th><th>Road<br>Tax</th><th>Ins. Co.</th><th>Transaction<br>Status</th><th>JPJ</th><th>Remark</th></tr></thead>
+<tbody id="rows"></tbody>
+</table></div>
+<div class="pg"><div class="pgb"><span>«</span><span class="on">1</span><span>»</span></div>
+<select class="pp"><option>20 items per page</option><option>40 items per page</option><option>60 items per page</option><option>80 items per page</option><option>100 items per page</option></select></div>
+</div>
+</section>
+
+<!-- DETAILS -->
+<section id="detail" class="hide"></section>
+</div>
+
+<script>
+var OPT={
+ platform:['Secarang','Secarang only','Secarang-MK','eAuto'],
+ insurer:['Chubb','RHB','Takaful Malaysia','Lonpac','TokioMarine','Zurich Takaful','Allianz','eTiqa'],
+ dateType:['Transaction Creation Date','Insurance Creation Date'],
+ status:['Cancelled','Failed','Insurance created','Pending approval','Pending payment','Quotation','Quotation expired'],
+ jpj:['Not available','Pending','Rejected','Accepted'],
+ roadTax:['Included','Exempted'],
+ discount:['SAVE10','MERDEKA15','RAYA10','WELCOME5']
+};
+var DEF={platform:['Secarang only','Secarang-MK'],insurer:['Allianz'],dateType:['Insurance Creation Date'],status:[],jpj:[],roadTax:[],discount:[]};
+var F=JSON.parse(JSON.stringify(DEF));
+var INS={
+ Allianz:{full:'Allianz General Insurance Company (Malaysia) Berhad',reg:' (735426-V)',logo:'<span style="color:#003781">Allianz <span style="display:inline-block;width:18px;height:18px;border:2px solid #003781;border-radius:50%;vertical-align:-3px;font-size:10px;line-height:14px">|||</span></span>',addon:'Allianz Road Rangers'},
+ Lonpac:{full:'Lonpac Insurance Bhd',logo:'<span style="color:#c8102e">LONPAC</span>',addon:'Lonpac Road Assist'},
+ TokioMarine:{full:'Tokio Marine Insurans (Malaysia) Berhad',logo:'<span style="color:#00843d">Tokio Marine</span>',addon:'Tokio Marine Road Assist'}
+};
+var T=[
+ {id:'BR55009001',plat:'Secarang',tc:'12-07-2025 10:02',ic:'12-07-2025 10:08',ucd:'-',ucdn:'-',veh:'WXY1234',type:'Car',name:'AHMAD FAIZAL BIN HASSAN',idno:'850312-10-5521',gender:'MALE',email:'ahmad.faizal@example.com',phone:'+60123456781',addr:'NO 12, JALAN MAWAR 3, TAMAN MELATI, 53100 KUALA LUMPUR, W.P. KUALA LUMPUR',amt:1245.60,paid:true,paidAt:'12-07-2025 10:08',mode:'Fiuu',disc:'SAVE10',rt:'',ins:'Allianz',st:'Insurance created',jpj:'Accepted',make:'PERODUA',model:'MYVI',yr:2019,cc:1496,trans:'4 SP AUTOMATIC',basic:1520.40,ncd:25,mv:38500},
+ {id:'BR55009002',plat:'Secarang-MK',tc:'05-07-2025 15:40',ic:'05-07-2025 15:44',ucd:'-',ucdn:'-',veh:'BKC5678',type:'Car',name:'TAN MEI LING',idno:'920708-14-6632',gender:'FEMALE',email:'meiling.tan@example.com',phone:'+60129876542',addr:'NO 8, JALAN SS2/24, 47300 PETALING JAYA, SELANGOR',amt:980.35,paid:true,paidAt:'05-07-2025 15:44',mode:'Fiuu',disc:'',rt:'Included',ins:'Allianz',st:'Insurance created',jpj:'Accepted',make:'HONDA',model:'CITY',yr:2017,cc:1497,trans:'CVT',basic:1310.20,ncd:30,mv:42000},
+ {id:'BR55009003',plat:'Secarang',tc:'28-06-2025 09:15',ic:'-',ucd:'-',ucdn:'-',veh:'JQR8899',type:'Car',name:'MUTHU A/L RAJAN',idno:'780225-01-7743',gender:'MALE',email:'muthu.rajan@example.com',phone:'+60167788993',addr:'NO 45, JALAN SERI AUSTIN 2, 81100 JOHOR BAHRU, JOHOR',amt:1602.18,paid:false,paidAt:'',mode:'-',disc:'MERDEKA15',rt:'',ins:'Allianz',st:'Pending payment',jpj:'Not available',make:'TOYOTA',model:'VIOS',yr:2020,cc:1496,trans:'CVT',basic:1880.00,ncd:20,mv:61000},
+ {id:'BR55009004',plat:'Secarang',tc:'19-06-2025 14:22',ic:'19-06-2025 14:30',ucd:'-',ucdn:'-',veh:'PKL3321',type:'Car',name:'NUR AISYAH BINTI ZAKARIA',idno:'990514-07-5118',gender:'FEMALE',email:'aisyah.z@example.com',phone:'+60134455664',addr:'NO 3, LORONG KENARI 7, 11900 BAYAN LEPAS, PULAU PINANG',amt:712.44,paid:true,paidAt:'19-06-2025 14:30',mode:'Fiuu',disc:'RAYA10',rt:'',ins:'Allianz',st:'Insurance created',jpj:'Pending',make:'PROTON',model:'SAGA',yr:2018,cc:1332,trans:'4 SP AUTOMATIC',basic:1075.10,ncd:38.33,mv:24800},
+ {id:'BR55009005',plat:'Secarang-MK',tc:'02-06-2025 11:05',ic:'-',ucd:'-',ucdn:'-',veh:'VBN4455',type:'Car',name:'LIM WEI JIAN',idno:'880930-08-6655',gender:'MALE',email:'weijian.lim@example.com',phone:'+60172233445',addr:'NO 21, JALAN TASEK 5, 31400 IPOH, PERAK',amt:1388.90,paid:false,paidAt:'',mode:'-',disc:'',rt:'',ins:'Allianz',st:'Quotation expired',jpj:'Not available',make:'MAZDA',model:'CX-5',yr:2016,cc:1998,trans:'6 SP AUTOMATIC',basic:1995.00,ncd:45,mv:55000},
+ {id:'BR55009006',plat:'Secarang',tc:'20-05-2025 16:48',ic:'20-05-2025 16:55',ucd:'-',ucdn:'-',veh:'QAA7788',type:'Car',name:'SITI HAJAR BINTI ISMAIL',idno:'910101-13-5890',gender:'FEMALE',email:'sitihajar@example.com',phone:'+60198877665',addr:'NO 7, JALAN BATU LINTANG, 93200 KUCHING, SARAWAK',amt:895.72,paid:true,paidAt:'20-05-2025 16:55',mode:'Fiuu',disc:'WELCOME5',rt:'Exempted',ins:'Allianz',st:'Insurance created',jpj:'Rejected',make:'PERODUA',model:'AXIA',yr:2021,cc:998,trans:'CVT',basic:1100.00,ncd:15,mv:28000},
+ {id:'BR55009007',plat:'Secarang',tc:'14-05-2025 08:30',ic:'-',ucd:'-',ucdn:'-',veh:'AKM2020',type:'Car',name:'WONG KAR HOE',idno:'830617-05-5037',gender:'MALE',email:'karhoe.wong@example.com',phone:'+60126655443',addr:'NO 18, JALAN BUNGA RAYA, 75100 MELAKA',amt:1050.00,paid:false,paidAt:'',mode:'Fiuu',disc:'',rt:'',ins:'Allianz',st:'Failed',jpj:'Not available',make:'NISSAN',model:'ALMERA',yr:2015,cc:1498,trans:'4 SP AUTOMATIC',basic:1400.00,ncd:25,mv:22000},
+ {id:'BR55009008',plat:'Secarang',tc:'09-07-2025 13:10',ic:'09-07-2025 13:14',ucd:'-',ucdn:'-',veh:'WDD6060',type:'Car',name:'FARAH NADIA BINTI OMAR',idno:'950822-10-6254',gender:'FEMALE',email:'farah.nadia@example.com',phone:'+60113344556',addr:'NO 9, JALAN PJU 1/43, 47301 PETALING JAYA, SELANGOR',amt:1133.26,paid:true,paidAt:'09-07-2025 13:14',mode:'Fiuu',disc:'',rt:'',ins:'Lonpac',st:'Insurance created',jpj:'Accepted',make:'HONDA',model:'HR-V',yr:2019,cc:1799,trans:'CVT',basic:1580.00,ncd:38.33,mv:68000},
+ {id:'BR55009009',plat:'Secarang-MK',tc:'25-06-2025 17:20',ic:'25-06-2025 17:26',ucd:'-',ucdn:'-',veh:'JTM1188',type:'Car',name:'RAJ KUMAR A/L SUBRAMANIAM',idno:'870403-01-5579',gender:'MALE',email:'rajkumar@example.com',phone:'+60145566778',addr:'NO 31, JALAN PERMAS 10, 81750 MASAI, JOHOR',amt:1478.40,paid:true,paidAt:'25-06-2025 17:26',mode:'Fiuu',disc:'SAVE10',rt:'Included',ins:'TokioMarine',st:'Insurance created',jpj:'Accepted',make:'TOYOTA',model:'COROLLA',yr:2018,cc:1798,trans:'CVT',basic:1990.00,ncd:30,mv:72000},
+ {id:'BR55009010',plat:'eAuto',tc:'17-06-2025 10:45',ic:'17-06-2025 10:52',ucd:'UCD00128',ucdn:'AUTO HUB SDN BHD',veh:'BNM9090',type:'Car',name:'CHONG KAI XIANG',idno:'900211-10-5361',gender:'MALE',email:'kaixiang@example.com',phone:'+60168899001',addr:'NO 2, JALAN KLANG LAMA, 58100 KUALA LUMPUR',amt:1210.55,paid:true,paidAt:'17-06-2025 10:52',mode:'Fiuu',disc:'',rt:'',ins:'Allianz',st:'Insurance created',jpj:'Accepted',make:'PROTON',model:'X50',yr:2021,cc:1477,trans:'7 SP DCT',basic:1620.00,ncd:25,mv:79000}
+];
+function money(n){return 'RM'+n.toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function toDate(s){if(!s||s==='-')return null;var p=s.split(' ')[0].split('-');return new Date(+p[2],+p[1]-1,+p[0]);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+
+// --- filter widgets
+function renderFld(el){
+ var f=el.dataset.f,sel=F[f],multi=!!el.dataset.multi,h='';
+ if(sel.length){h+='<span class="lb">'+el.dataset.label+'</span><div class="chips">'+sel.map(function(v){return '<span class="chip">'+(multi?'<b data-x="'+esc(v)+'">×</b>':'')+esc(v)+'</span>';}).join('')+'</div>';}
+ else h+='<span class="ph">'+el.dataset.label+'</span>';
+ h+='<span class="car"></span><div class="dd">'+OPT[f].map(function(o){return '<div data-o="'+esc(o)+'" class="'+(sel.indexOf(o)>-1?'sel':'')+'">'+esc(o)+'</div>';}).join('')+'</div>';
+ el.innerHTML=h;
+}
+function renderAll(){document.querySelectorAll('.fld').forEach(renderFld);}
+document.addEventListener('click',function(e){
+ var x=e.target.closest('[data-x]');
+ if(x){var el=x.closest('.fld');F[el.dataset.f]=F[el.dataset.f].filter(function(v){return v!==x.dataset.x;});renderFld(el);e.stopPropagation();return;}
+ var o=e.target.closest('[data-o]');
+ if(o){var el2=o.closest('.fld'),f=el2.dataset.f,v=o.dataset.o;
+  if(el2.dataset.multi){var i=F[f].indexOf(v);if(i>-1)F[f].splice(i,1);else F[f].push(v);}
+  else F[f]=(F[f][0]===v)?[]:[v];
+  renderFld(el2);el2.classList.add('open');return;}
+ var fld=e.target.closest('.fld');
+ document.querySelectorAll('.fld.open').forEach(function(d){if(d!==fld)d.classList.remove('open');});
+ if(fld)fld.classList.toggle('open');
+ var tl=e.target.closest('[data-tx]');
+ if(tl){e.preventDefault();showDetail(tl.dataset.tx);}
+ var rb=e.target.closest('[data-rc]');if(rb){showReceipt(rb.dataset.rc);return;}
+ if(e.target.closest('[data-close]')){document.getElementById('ov').remove();return;}
+ if(e.target.closest('[data-print]')){window.print();return;}
+ if(e.target.closest('#backlink')){e.preventDefault();showList();}
+});
+document.getElementById('hf').onclick=function(){
+ var fl=document.getElementById('filters'),h=fl.classList.toggle('hide');
+ document.getElementById('hft').textContent=h?'Show Filters':'Hide Filters';
+ document.getElementById('hfa').style.transform=h?'rotate(180deg)':'';
+};
+document.getElementById('go').onclick=renderRows;
+document.getElementById('q').addEventListener('keydown',function(e){if(e.key==='Enter')renderRows();});
+document.getElementById('clr').onclick=function(){F={platform:[],insurer:[],dateType:[],status:[],jpj:[],roadTax:[],discount:[]};document.getElementById('from').value='';document.getElementById('till').value='';document.getElementById('q').value='';renderAll();renderRows();};
+
+function match(t){
+ if(F.platform.length){var ok=F.platform.some(function(p){return p==='Secarang'?(t.plat==='Secarang'||t.plat==='Secarang-MK'):p==='Secarang only'?t.plat==='Secarang':t.plat===p;});if(!ok)return false;}
+ if(F.insurer.length&&F.insurer.indexOf(t.ins)<0)return false;
+ if(F.status.length&&F.status.indexOf(t.st)<0)return false;
+ if(F.jpj.length&&F.jpj.indexOf(t.jpj)<0)return false;
+ if(F.roadTax.length&&t.rt!==F.roadTax[0])return false;
+ if(F.discount.length&&F.discount.indexOf(t.disc)<0)return false;
+ var fr=document.getElementById('from').value,ti=document.getElementById('till').value;
+ if(fr||ti){var d=toDate(F.dateType[0]==='Insurance Creation Date'?t.ic:t.tc);if(!d)return false;
+  if(fr&&d<new Date(fr+'T00:00'))return false;if(ti&&d>new Date(ti+'T23:59'))return false;}
+ var q=document.getElementById('q').value.trim().toLowerCase();
+ if(q&&[t.id,t.veh,t.name,t.idno].join(' ').toLowerCase().indexOf(q)<0)return false;
+ return true;
+}
+function renderRows(){
+ var list=T.filter(match),b=document.getElementById('rows');
+ if(!list.length){b.innerHTML='<tr><td colspan="17" class="empty">No record found</td></tr>';return;}
+ b.innerHTML=list.map(function(t,i){
+  return '<tr><td>'+(i+1)+'</td><td><a data-tx="'+t.id+'" href="#">'+t.id+'</a><br><span class="pb">'+(t.plat==='eAuto'?'eAuto':t.plat==='Secarang-MK'?'Secarang-MK':'Secarang')+'</span></td><td>'+t.tc+'</td><td>'+t.ic+'</td><td>'+t.ucd+'</td><td>'+t.ucdn+'</td><td>'+t.veh+'</td><td>'+t.type+'</td><td>'+t.name+'<br>'+t.idno+'</td><td>'+money(t.amt)+(t.paid?'<span class="paid">Paid</span><br>'+t.paidAt:'<span class="unpaid">Unpaid</span>')+'</td><td>'+t.mode+'</td><td>'+(t.disc||'')+'</td><td>'+(t.rt||'')+'</td><td>'+t.ins+'<br><span class="sub">Serba Sentral</span></td><td>'+t.st+'</td><td>'+t.jpj+'</td><td></td></tr>';
+ }).join('');
+}
+
+// --- details
+function stCls(s){return s==='Insurance created'?'ok':(s==='Pending payment'||s==='Pending approval'||s==='Quotation')?'warn':s==='Failed'?'bad':'grey';}
+function jpjColor(s){return s==='Accepted'?'#16a34a':s==='Rejected'?'#dc2626':s==='Pending'?'#b45309':'#4b5563';}
+function showDetail(id){
+ var t=T.filter(function(x){return x.id===id;})[0],I=INS[t.ins];
+ var ncdAmt=+(t.basic*t.ncd/100).toFixed(2),drivers=20,after=+(t.basic-ncdAmt+drivers).toFixed(2),tax=+(after*0.08).toFixed(2),total=+(after+tax+10).toFixed(2);
+ var yr=+t.tc.split(' ')[0].split('-')[2],cov='14 '+['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][+t.tc.split('-')[1]-1];
+ var done=t.st==='Insurance created';
+ var kv=function(a){return a.map(function(p){return '<div class="k">'+p[0]+'</div><div>'+p[1]+'</div>';}).join('');};
+ document.getElementById('detail').innerHTML=
+ '<a class="back" id="backlink" href="#">← Transaction Management</a><h1 style="margin-top:6px">Transaction Details</h1>'+
+ '<div class="dcard"><div class="dtop"><div><h2>'+t.veh+' '+t.make+' '+t.model+'</h2><div style="font-size:11px;margin-top:4px">Ref. No: '+t.id+'</div></div><div style="display:flex;align-items:center">'+
+ '<span class="st '+stCls(t.st)+'">'+(done?'✓ ':'')+t.st+'</span>'+(done?'<button class="gb">e-Certificate</button><button class="bb" data-rc="'+t.id+'"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1a73e8"><path d="M6 2h12v5H6zM4 8h16a2 2 0 012 2v7h-4v5H6v-5H2v-7a2 2 0 012-2zm4 8v4h8v-4z"/></svg>Receipt</button>':'')+'</div></div>'+
+ '<div class="sec"><h3>Car Owner Details</h3><div class="kv">'+kv([['Full Name',t.name],['ID No',t.idno],['Gender',t.gender],['Email',t.email],['Mobile Phone No',t.phone],['Correspondence Address',t.addr],['Tax Identification Number (TIN)','-']])+'</div>'+
+ '<h3>Car Details <span class="tag">Private</span></h3><div class="kv">'+kv([['Plate No',t.veh],['Chassis No','PM2'+t.veh+'K0'+t.yr],['Engine No','EN'+t.idno.replace(/-/g,'').slice(0,9)],['Make',t.make],['Model',t.model],['Category <span style="color:#1a73e8">ⓘ</span>','Saloon'],['Year',t.yr],['Seat No','5'],['CC',t.cc],['Variant','-'],['Transmission',t.trans],['Vehicle Use','Private car Private Use (Drive to work or daily use)'],['Hire Purchase (Claimed by)','-'],['Hire Purchase (User Submission)','-'],['Hire Purchase (Returned by JPJ)','-']])+'</div>'+
+ '<h3>Payment Details</h3><div class="pay"><div class="k">Receipt No</div><div style="grid-column:2/-1">'+(t.paid?'25'+t.id.slice(4)+'00004':'-')+'</div>'+
+ '<div class="k">Payment History</div><div>'+(t.paid?t.paidAt:'-')+'</div><div class="k">Payment Method</div><div>'+(t.paid?t.mode+' <span class="paid">Paid</span>':'- <span class="unpaid">Unpaid</span>')+'</div>'+
+ '<div></div><div></div><div class="k">Payment Ref ID</div><div>'+(t.paid?'FIUU'+t.id.slice(2):'-')+'</div></div></div>'+
+ '<div><div class="box"><h3>More Info</h3><div class="kv">'+kv([['Platform',t.plat],['Agency','Serba Sentral'],['Agency No.','SC12562'],['Agency PIAM ID','195379-01'],['Last Update',t.ic!=='-'?t.ic:t.tc],['Cover Note Issuance Date',t.ic],['Submission status to JPJ','<span style="color:'+jpjColor(t.jpj)+'">'+t.jpj+'</span>']])+'</div></div>'+
+ '<div class="ibox"><div class="logo">'+I.logo+'</div><div class="kv">'+kv([['Insurer',I.full],['Plan','Comprehensive'],['Market Value Coverage',money(t.mv)],['Coverage Period',cov+' '+yr+' - '+(+cov.slice(0,2)-1)+cov.slice(2)+' '+(yr+1)],['Cover Note No',done?'CN'+t.id.slice(2):'-'],['Policy No',done?'PL'+t.id.slice(2):'-']])+'</div>'+
+ '<div class="ln"></div><div class="row"><span>Basic Premium</span><span>'+money(t.basic)+'</span></div><div class="row"><span>NCD '+t.ncd+'%</span><span>-'+money(ncdAmt)+'</span></div><div class="row"><span>All Drivers</span><span>'+money(drivers)+'</span></div>'+
+ '<div class="ln"></div><div class="big"><span>Premium After NCD</span><span>'+money(after)+'</span></div><div class="ln"></div>'+
+ '<div class="big" style="font-weight:500">Add-ons</div><div class="row"><span>'+I.addon+'</span><span>FREE</span></div><div class="big"><span>Gross Premium</span><span>'+money(after)+'</span></div>'+
+ '<div class="ln"></div><div class="row"><span>Service Tax 8%</span><span>'+money(tax)+'</span></div><div class="row"><span>Stamp Duty</span><span>RM10.00</span></div>'+
+ '<div class="ln"></div><div class="tot"><span>Total Premium</span><span>'+money(total)+'</span></div></div></div></div>';
+ document.getElementById('list').classList.add('hide');document.getElementById('detail').classList.remove('hide');window.scrollTo(0,0);
+}
+
+function rm(n){return 'RM '+n.toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function showReceipt(id){
+ var t=T.filter(function(x){return x.id===id;})[0],I=INS[t.ins];
+ var ncdAmt=+(t.basic*t.ncd/100).toFixed(2),after=+(t.basic-ncdAmt+20).toFixed(2),tax=+(after*0.08).toFixed(2),total=+(after+tax+10).toFixed(2);
+ var M=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+ var d=t.ic.split(' '),dp=d[0].split('-'),hh=+d[1].split(':')[0],mm=d[1].split(':')[1];
+ var pdate=dp[0]+' '+M[+dp[1]-1]+' '+dp[2]+' '+(hh%12||12)+':'+mm+' '+(hh<12?'AM':'PM');
+ var yr=+t.tc.split(' ')[0].split('-')[2],mon=M[+t.tc.split('-')[1]-1];
+ var rno='25'+t.id.slice(4)+'00004';
+ var o=document.createElement('div');o.className='ov';o.id='ov';
+ o.innerHTML='<div class="ovbar"><button data-print="1">Print</button><button data-close="1">✕ Close</button></div>'+
+ '<div class="rc"><span class="or">Official Receipt</span>'+
+ '<div style="display:flex;align-items:center;gap:10px"><svg width="64" height="72" viewBox="0 0 38 44" fill="none" stroke="#1d1d1f" stroke-width="1.6"><path d="M19 2 L35 8 V22 C35 32 28 39 19 42 C10 39 3 32 3 22 V8 Z"/><path d="M9 25 L12 19 H26 L29 25 Z" stroke="#2f7de1"/><circle cx="13" cy="27" r="2.5" stroke="#2f7de1"/><circle cx="25" cy="27" r="2.5" stroke="#2f7de1"/></svg><div><div style="font-size:24px;letter-spacing:7px;color:#111">SE<span style="color:#2f7de1">CAR</span>ANG</div><div style="font-size:10px;letter-spacing:1.5px;color:#2f7de1;margin-top:4px">Insure Your Vehicle Now</div></div></div>'+
+ '<h1>Thank you for your purchase!</h1><div class="cols"><div><h4>Purchase Details</h4>'+
+ '<div class="l">Receipt No.</div><div class="v" style="color:#1a8cff">'+rno+'</div>'+
+ '<div class="l">Purchase Date</div><div class="v">'+pdate+'</div>'+
+ '<div class="l">Payment Method</div><div class="v" style="min-height:62px">'+(t.mode==='-'?'':t.mode)+'</div>'+
+ '<div class="l">For</div><div class="v">'+t.name+'</div>'+
+ '<div class="l">Vehicle Plate No.</div><div class="v">'+t.veh+'</div>'+
+ '<div class="l">Ownership Type</div><div class="v">Private Car</div>'+
+ '<div class="l">Insurer</div><div class="v">'+I.full+(I.reg||'')+'</div>'+
+ '<div class="l">Coverage Type</div><div class="v">COMPREHENSIVE</div>'+
+ '<div class="l">Coverage Period</div><div class="v">14 '+mon+' '+yr+' - 13 '+mon+' '+(yr+1)+'</div></div>'+
+ '<div><h4>Receipt Summary</h4><div class="sum">'+
+ '<div class="r"><span>Basic Premium</span><span>'+rm(t.basic)+'</span></div>'+
+ '<div class="r"><span>NCD '+(+t.ncd).toFixed(1)+'%</span><span>- '+rm(ncdAmt)+'</span></div>'+
+ '<div class="r"><span>All Drivers</span><span>'+rm(20)+'</span></div><div class="hr"></div>'+
+ '<div class="r"><b>Premium after NCD</b><span>'+rm(after)+'</span></div>'+
+ '<div class="r" style="margin-top:22px"><b>Add-ons</b></div><div class="r"><span>'+I.addon+'</span><span style="padding-right:50px">FREE</span></div>'+
+ '<div style="flex:1;min-height:230px"></div><div class="hr"></div>'+
+ '<div class="r"><b>Gross Premium</b><span>'+rm(after)+'</span></div>'+
+ '<div class="r"><span>Service Tax 8%</span><span>'+rm(tax)+'</span></div>'+
+ '<div class="r"><span>Stamp Duty</span><span>'+rm(10)+'</span></div><div class="hr"></div>'+
+ '<div class="r"><b>Total Premium</b><span>'+rm(total)+'</span></div>'+
+ '<div class="ag">Exclusively by agent Serba Sentral Sdn Bhd<br>PIAM ID: 195379-01</div></div></div></div>'+
+ '<div class="foot"><div>Serba Sentral Sdn Bhd (201901032124 [1341454-A])<br>Level 15 Sunway Tower<br>Jalan Ampang 50450 Kuala Lumpur.</div><div style="padding-right:140px">www.secarang.com</div></div>'+
+ '<div class="nsig">This is a computer-generated document. No signature is required.</div></div>';
+ document.body.appendChild(o);
+}
+function showList(){document.getElementById('detail').classList.add('hide');document.getElementById('list').classList.remove('hide');window.scrollTo(0,0);}
+// payment amount = computed total, keep listing consistent
+T.forEach(function(t){var n=+(t.basic*t.ncd/100).toFixed(2),a=+(t.basic-n+20).toFixed(2);t.amt=+(a+ +(a*0.08).toFixed(2)+10).toFixed(2);});
+renderAll();renderRows();
+</script>
+</body>
+</html>

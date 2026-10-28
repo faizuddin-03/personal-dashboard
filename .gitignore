@@ -84,3 +84,26 @@ _reference/screenshots/**
 
 # .env.example files are documentation — keep them tracked despite .env* above
 !**/.env.example
+
+# SharePoint TS downloads: local only, some workbooks hold test passwords (Faizuddin, 2026-10-16)
+_reference/sharepoint/
+
+# eauto-12107 CIBO ref finder same-day cache
+scripts/eauto-12107/.cache/
+scripts/secarang-insurance/input-plates.json
+scripts/secarang-insurance/output-plates.json
+
+# Production deployment checklist: holds plain-text production logins (2026-10-20)
+_reference/excel/eAuto Deployment Checklist*.xlsx
+
+# eAuto tool results saved on the server (lib/server/savedResults.ts) — may hold company / vehicle data
+data/saved-results/
+data/agents/
+data/pipeline/
+data/onboarding/
+data/browser-profile/
+
+# Read-only clones of colleagues' repos (own .git; would be committed as
+# broken gitlinks). Re-clone from their remotes; see knowledge/charmain-qa-repo.md.
+_reference/codebases/eauto-qa-azfar/
+_reference/codebases/eauto-qa-charmain/

@@ -29,6 +29,7 @@ test('eSIM: update simulator record by vehicle prefix', async ({ page }) => {
 
   if (CONFIG.mode === 'read') {
     const fields = await edit.readAllFields();
+    const claimRecords = CONFIG.entity === 'jomcheck-report' ? await edit.readClaimRecords() : undefined;
     console.log(`[step] Read ${fields.length} fields — nothing was changed`);
     console.log('RESULT:' + JSON.stringify({
       status: 'SUCCESS',
@@ -36,11 +37,20 @@ test('eSIM: update simulator record by vehicle prefix', async ({ page }) => {
       entity: entity.label,
       prefix: CONFIG.prefix,
       fields,
+      ...(claimRecords && { claimRecords }),
     }));
     return;
   }
 
   const applied = await edit.applyChanges(CONFIG.changes);
+
+  // jomcheck-report only: clear and/or add claim records — see
+  // EsimPages.ts's "Claim Records" section for why these resolve
+  // differently from the top-level fields above.
+  let claimsRemoved = 0;
+  if (CONFIG.clearClaimRecords) claimsRemoved = await edit.removeAllClaimRecords();
+  if (CONFIG.claimRecords.length) await edit.addClaimRecords(CONFIG.claimRecords);
+
   await edit.save();
 
   // Saving lands on the record's view page, which lists every field — so the
@@ -57,5 +67,7 @@ test('eSIM: update simulator record by vehicle prefix', async ({ page }) => {
     entity: entity.label,
     prefix: CONFIG.prefix,
     applied: verified,
+    claimsRemoved,
+    claimsAdded: CONFIG.claimRecords.length,
   }));
 });

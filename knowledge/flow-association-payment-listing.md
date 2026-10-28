@@ -2,6 +2,13 @@
 
 `[from ticket EAINT-12028 — mockup HTML only, association-payment-listing-mockup_20260731.html, _reference/tickets/EAINT-12028/. NOT a live system yet — ticket is still Ready For Development. Every DOM handle below is the MOCKUP's own id/class, offered as the closest available reference; real build ids may differ once shipped and must be re-confirmed with a live capture at that point.]`
 
+**Status 2026-10-15: ON HOLD.** "MJ ytd updated us that 12028 need to on hold
+first as we got other higher priority tickets" (May Chin DM 2026-10-15 09:56);
+"not going to deploy on end of this month anymore" (Mei Jia, 2026-10-14
+12:03); dev Kasheng Liew. Supersedes the October deployment estimates in
+"Priority / scope discussion" and "UPDATE 2026-09-18" below.
+`[from Teams via memory digest]`
+
 ## Flow + roles artifact (browser reference)
 
 Published diagram combining the flow (steps 1–8, entry through PDF) with the login-ID → role
@@ -198,6 +205,19 @@ also calls `askDate()` before finalising.
   have data — a naive assertion on one fixed label text will break depending
   on which month range is being viewed.
 
+### Traps added 2026-10-28 (pipeline study + related history)
+
+1. **No-role user: menu visible or hidden is not settled.** The dev guide expects the menu link visible and the module to 403 (see **QA Test Guide**, test accounts, above). Past BO report tickets expected the opposite: ""JomCheck Report Listing" will be hidden for not authorized user" `[EAINT-8638 sheet "Authorized Users" R14, via _reference/tickets/Studying/EAINT-12028/EAINT-12028-related-history.md]`; "Bypass Purchase SSM (STMS & eSTM) Audit Log will be hidden for not authorized user" `[EAINT-9842 sheet "Permission" R6, same file]`. Do not copy the past **hidden** expectation into 12028 TS until the BA answers `[unconfirmed]`. `[source: pipeline EAINT-12028, Scribe related history, 2026-10-28]`
+2. **Cross-check report is Super Admin only.** REQ-004 — monthly figures checked against **Transaction Summary Report (State)**. Access table row: "Transaction Summary Report (State) | ✔ | ✘ | ✘" `[EAINT-10038 sheet "access ref" R23, via EAINT-12028-related-history.md]`. The cross-check likely needs a Super Admin login, not one of the five role logins `[unconfirmed]`. `[source: pipeline EAINT-12028, Scribe related history, 2026-10-28]`
+3. **Sample requisition xlsx is not the expected result; SRD v1.1 is.** Sample differs from SRD:
+   1. **Attn:** sample FMC "Attn: | Justin Ng" (R8) vs SRD v1.1 §2.2.10 row 4 "Attn | Fixed | Marie Ann"; revision log "Attn confirmed as "Marie Ann"" (Appendix rows 22-23).
+   2. **FMC account holder:** sample "FED OF MOTOR & CREDIT COMPANIES ASSO MSIA" (R20) vs SRD row 10 "FED OF MOTOR & CREDIT COMPANIES ASSO MSI (PPM-001-14-11041979)". Which text the PDF must show is open with the BA `[unconfirmed]`.
+   3. **Month language:** sample MMSDA "eAUTO PAYMENT TO MMSDA ⏎ MEI 2026" (R14, Malay) vs SRD §2.2.11 row 9 "The record month, English short form. Format: MON YYYY (e.g. MAY 2026)".
+   `[from ticket EAINT-12028: Sample ASSOCIATIONS PAYMENT REQUISITION_20260728-text.md; SRD v1.1 §2.2.10, §2.2.11, Appendix]` `[source: pipeline EAINT-12028, Scout study, 2026-10-28]`
+4. **Finance role existed only in SRD v0.1.** v0.1: "The Finance role (user ID: eautoaccount) can view the summary and details but has no workflow actions." `[SRD v0.1 §2.2.9 REQ-016 — Finance view-only]`. Removed in v0.2: "Removed Finance-related handling; refined details and renumbered Requirement IDs." `[SRD v1.1 §1.3 row 0.2]`. REQ-016 in v1.1 is a different requirement (download gating) — do not mix the two numbers. Whether the build still grants `eautoaccount` any access is unchecked; worth one negative check `[unconfirmed]`. `[source: pipeline EAINT-12028, Scout study, 2026-10-28]`
+5. **Closed month with zero transactions: "No data" or "0.00" is not settled.** SRD v1.1 §2.2.5 REQ-004 — monthly rows & amounts: "Months with no data show "No data"." `[from ticket EAINT-12028, SRD v1.1 text copy line 135]`. The dev guide (see **QA Test Guide** above) splits it: **"–" not yet closed** vs **"0.00" closed, no data**. The mockup shows "No data" in the Drafter Status cell only (see **Summary page — DOM and behaviour**). Hold the expected text until the BA answers `[unconfirmed]`. `[source: pipeline EAINT-12028, Elf scenarios, 2026-10-28]`
+6. **Signature once per role or once per person is not settled.** SRD v1.1 Assumption 3: "Each role signs once; the signature is stored and reused for all future approvals." REQ-014 — on-screen e-signature: "Capture an on-screen signature on a role's first approval; store and reuse it for future approvals." `[from ticket EAINT-12028, SRD v1.1 text copy lines 87, 153]`. The dev guide (see **QA Test Guide**, test accounts, above) says per person, and `mfizni` (all three roles) shows one signature in all three blocks. The case that tells them apart is `mfizni`: per role = pad 3 times, per person = pad once `[unconfirmed]` until the BA answers. `[source: pipeline EAINT-12028, Elf scenarios, 2026-10-28]`
+
 ## QA Test Guide (dev-authored, from MR !1's engineering review)
 
 `[source: dev/engineering-authored QA test guide, artifact shared 2026-09-04, saved verbatim at
@@ -372,3 +392,16 @@ fact.
 - MR !1's actual code/diff was not reviewed in this session — only the
   QA test guide's own summary of the engineering review. If deeper detail
   on the 10 blocking findings is needed, ask for the review itself.
+
+## Miro high-level flow board (added 2026-10-28)
+
+1. **Board:** `https://miro.com/app/board/uXjVHrYDgq8=/` — "this is miro link for the high level flow graph" `[Faizuddin, dashboard chat to Scribe, 2026-10-28]`. Also logged at `_reference/miro-links.txt` lines 6 and 34.
+2. **Capture:** `_reference/miro/uXjVHrYDgq8=-2026-10-28.md`. Header: "Items on board: 4 text, 2 frame, 2 mindmap, 1 table". Only the 4 text items were read; the **2 mindmaps and 1 table are not in the capture**, so the flow graph itself is still unread `[unconfirmed]` that the mindmaps hold the flow.
+3. **Board notes (open items written on the board), verbatim from capture line 4:** "Notes: / - To confirm the document format for the FMC Payment Request and MMSDA Payment Request / - To confirm how to crosscheck the total number of transactions for each month for each vehicle category (currently in system no direct way to check this value) / - To confirm how to simulate cronjob". Compare with **Traps added 2026-10-28** #2 (Transaction Summary Report (State) as the cross-check source) and the dev guide's manual month-close trigger above `[unconfirmed]` whether either settles these notes.
+4. **Sample frame text:** "🚗🏍 Vehicle Breakdown by State June 2026 / X record(s) in total" (capture line 3) — a heading wording seen on the board; not checked against the build `[unconfirmed]`.
+
+`[source: pipeline EAINT-12028, Faizuddin chat to Scribe + Miro capture, 2026-10-28]`
+
+5. **What the mind maps show:** "it basically shows the possible changes in the status. and also which user can change which status" `[Faizuddin, dashboard chat to Scribe, 2026-10-28]`. The same role × status rules are in SRD v1.1 REQ-003 (role by user ID), REQ-005 (workflow status columns) and REQ-009 to REQ-012 (sequence and per-role actions) `[source: pipeline EAINT-12028, Scribe related history, 2026-10-28]`. That the board matches the SRD exactly is not checked `[unconfirmed]`.
+6. **The board is not the full scope:** "btw, the miro is not complete, so we need more coverage. my lead estimates +-180 TS" `[Faizuddin, dashboard chat to Scribe, 2026-10-28]`. TS must cover all of SRD v1.1 REQ-001 to REQ-019 plus the **QA Test Guide** security, session and month-close checks above, not only the board `[source: pipeline EAINT-12028, Scribe related history, 2026-10-28]`.
+7. **TS depth for this module — one TS per role per check, negatives and edge cases included:** "Basically, we need to test all possible scenarios. even negative scenarios and edge cases. for example, "TS01-Approver cannot change ....." this is not considered a TS. it should be something like "TS01-Approver unable to change... ; TS02-Drafter unable to change..." same goes for the MSCA thing or other thing. every single thing, we need the TS to be detailed" `[Faizuddin, dashboard chat to Elf, 2026-10-28]`. So a role × status check is split into one TS per role, not one TS listing several roles. **MSCA thing** is his wording; likely the association/PDF items (FMC / MMSDA) `[unconfirmed]`. This overrides the general **Sizing** advice in `knowledge/test-scripts.md` for this ticket only.

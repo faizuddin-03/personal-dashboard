@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as XLSX from "xlsx";
+import { writeAoaXlsx, readXlsx, sheetToObjects } from "@/lib/excelSheets";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
+import { jsonAndSave } from "@/lib/server/savedResults";
+
+const SAVE_KEY = "insurance/eauto-availability";
 
 // ── Running-process registry ──────────────────────────────────
 let currentChild: ChildProcess | null = null;
@@ -49,7 +52,7 @@ function normalizeIdNumber(raw: string): string {
 }
 
 // Per-vehicle IC/SSM wins; otherwise the global field; otherwise DEFAULT_IC.
-function writeInputExcel(vehicles: VehicleEntry[], icNumber: string, postcode: string, vehicleCategory: string) {
+async function writeInputExcel(vehicles: VehicleEntry[], icNumber: string, postcode: string, vehicleCategory: string) {
   const fallbackIc = icNumber.trim() ? normalizeIdNumber(icNumber.trim()) : DEFAULT_IC;
   const rows = [
     ["Vehicle Number", "IC Number", "Postcode", "Vehicle Category"],
@@ -60,11 +63,7 @@ function writeInputExcel(vehicles: VehicleEntry[], icNumber: string, postcode: s
       vehicleCategory,
     ]),
   ];
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Vehicles");
-  const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
-  fs.writeFileSync(INPUT_XLSX, buffer);
+  fs.writeFileSync(INPUT_XLSX, await writeAoaXlsx("Vehicles", rows));
 }
 
 // ── Parse output-results.xlsx written by the Playwright script ──
@@ -76,15 +75,15 @@ interface InsuranceRow {
   status: string; errorMessage: string;
 }
 
-function readOutputExcel(): InsuranceRow[] {
+async function readOutputExcel(): Promise<InsuranceRow[]> {
   if (!fs.existsSync(OUTPUT_XLSX)) return [];
-  const wb = XLSX.read(fs.readFileSync(OUTPUT_XLSX));
+  const wb = await readXlsx(fs.readFileSync(OUTPUT_XLSX));
 
   // Successful rows from the Summary sheet
   const rows: InsuranceRow[] = [];
-  const ws = wb.Sheets["Summary"];
+  const ws = wb.getWorksheet("Summary");
   if (ws) {
-    const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
+    const raw = sheetToObjects(ws);
     for (const r of raw) {
       rows.push({
         vehicleNumber:  String(r["Vehicle Number"]  ?? ""),
@@ -106,9 +105,9 @@ function readOutputExcel(): InsuranceRow[] {
   }
 
   // Error / skipped rows from the Skipped Vehicles sheet
-  const sk = wb.Sheets["Skipped Vehicles"];
+  const sk = wb.getWorksheet("Skipped Vehicles");
   if (sk) {
-    const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(sk, { defval: "" });
+    const raw = sheetToObjects(sk);
     for (const r of raw) {
       rows.push({
         vehicleNumber: String(r["Vehicle Number"] ?? ""),
@@ -127,6 +126,8 @@ function readOutputExcel(): InsuranceRow[] {
 // ── Route handler ─────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   let body: {
+    /** Set only by the availability tab — the Secarang regression tab shares this route. */
+    saveKey?: string;
     vehicles: VehicleEntry[];
     icNumber?: string;
     postcode?: string;
@@ -139,6 +140,9 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: "Invalid JSON in request body." }, { status: 400 });
   }
+  // Last result saved on the server for the availability tab (lib/savedRunKeys.ts, 2026-10-21).
+  const respond = (payload: unknown, init?: ResponseInit) =>
+    body.saveKey === SAVE_KEY ? jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, payload, init) : NextResponse.json(payload, init);
 
   const { vehicles = [], icNumber = "", postcode = "", vehicleCategory = "individual", username = "", password = "", baseUrl = "", concurrency } = body;
 
@@ -160,7 +164,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Write input Excel
-  writeInputExcel(vehicles, icNumber, postcode, vehicleCategory);
+  await writeInputExcel(vehicles, icNumber, postcode, vehicleCategory);
 
   // Remove stale output
   if (fs.existsSync(OUTPUT_XLSX)) fs.unlinkSync(OUTPUT_XLSX);
@@ -198,17 +202,17 @@ export async function POST(req: NextRequest) {
 
   // If the run was stopped, return whatever partial results were flushed to disk
   if (stopRequested) {
-    const rows = readOutputExcel();
-    return NextResponse.json({ rows, log: result.output, stopped: true });
+    const rows = await readOutputExcel();
+    return respond({ rows, log: result.output, stopped: true });
   }
 
   // If test failed AND no output file was produced, surface the error
   if (result.code !== 0 && !fs.existsSync(OUTPUT_XLSX)) {
-    return NextResponse.json({ error: result.output || "Playwright test failed with no output." }, { status: 500 });
+    return respond({ error: result.output || "Playwright test failed with no output." }, { status: 500 });
   }
 
-  const rows = readOutputExcel();
-  return NextResponse.json({ rows, log: result.output });
+  const rows = await readOutputExcel();
+  return respond({ rows, log: result.output });
 }
 
 // ── Stop the in-flight run ────────────────────────────────────

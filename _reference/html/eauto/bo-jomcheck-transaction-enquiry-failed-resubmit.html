@@ -1,0 +1,467 @@
+<!--
+  URL: /eauto/view/jomcheck/enquiry  (context path "/eauto" in every link; the
+       earlier captures used "/uat1" — environment / base URL not stated)
+  Page: BackOffice JOMCHECK Transaction Enquiry, result state — 11 rows for
+        company FAIZUDDIN AUTO TEST, created 15-10-2026 15:41-16:08. Rows 6-10
+        are Payment OK / Tx Status Failed / LHDN "-" / Remarks "Failed to
+        retrieve report", and ONLY those rows carry a "Resubmit" link in the
+        Action column:
+          <a href="#" class="to-resubmit" txid="<transaction uuid>"
+             title="to resubmit <Transaction No.>">Resubmit</a>
+        Approved rows carry only "View". The Resubmit control is on this
+        LISTING, not on the Transaction Details page reached via "View"
+        (Faizuddin, 2026-10-15: "the resubmit button is here, not after BO
+        user click 'View'").
+  Logged-in user: "Ong Hong Kee", menu script role `_userRole = "HubAdmin"`.
+  Env: not stated (context path /eauto).
+  Captured: 2026-10-15, by Faizuddin, pasted directly.
+  Trimmed: result table cut to 4 of its 11 rows — row 1 (Approved, HXA0258A),
+           row 6 (Failed + Resubmit, HXA0253A), row 7 (Failed + Resubmit,
+           HXA0252A) and row 11 (Approved, HX000001). Rows 2-5 (Approved
+           HXA0257A-HXA0254A, J600008512-J600008509) and rows 8-10 (Failed +
+           Resubmit HXA0251A-HXA0249A, J600008506-J600008504) have the same
+           markup as row 1 / row 6 respectively. Search form, header, scripts
+           and datepicker are NOT trimmed.
+  What happens after clicking Resubmit (confirm dialog? ajax? status change?)
+  is NOT in this capture.
+-->
+<body>
+
+<div id="container">
+<table width="100%">
+    <tbody><tr>
+        <td class="not-to-print">
+            <form id="search-form" style="margin-left:20px;">
+            <table style="width:100%">
+                <tbody><tr>
+                    <td style="padding-left:20px; white-space: nowrap;">
+                        <b>Company Name:</b>
+                        <input type="text" name="companyName" id="companyName" value="" size="30">&nbsp;
+                        <b>Vehicle No.:</b>
+                        <input type="text" name="vehicleNo" id="vehicleNo" value="" size="8">&nbsp;
+                        <b>Chassis No.:</b>
+                        <input type="text" name="chassisNo" id="chassisNo" size="30">&nbsp;
+                        <b>Transaction No.:</b>
+                        <input type="text" name="refNo" id="refNo" value="" size="10">&nbsp;
+                        <b>From</b><span class="required">*</span>:
+                        <input type="text" name="fromDate" id="fromDate" size="10" readonly="readOnly" class="hasDatepicker">
+                        <b>To</b><span class="required">*</span>:
+                        <input type="text" name="toDate" id="toDate" size="10" readonly="readOnly" class="hasDatepicker">
+                        <b>Filter by</b>
+                        <select name="status" id="to-filter" style="width:140px">
+                            <option value="">Transaction Status</option>
+                            <option value="New">New</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                        <br><br>
+                        <b>Company ROC:</b>
+                        <input type="text" name="companyRoc" id="companyRoc" value="" size="30">&nbsp;
+                        <b>Payment Method:</b>
+                        <select name="paymentMethod" style="width:140px">
+                            <option value="">All</option>
+                            <option value="DD">DD MBB</option>
+                            <option value="FPX">FPX</option>
+                            <option value="POB">POB</option>
+                            <option value="RHB">RHB</option>
+                        </select>
+                        <b>Payment From:</b>
+                        <input type="text" name="paymentFrom" id="paymentFrom" size="10" readonly="readOnly" class="hasDatepicker">
+                        <b>Payment To:</b>
+                        <input type="text" name="paymentTo" id="paymentTo" size="10" readonly="readOnly" class="hasDatepicker">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px 0px 0px 20px; white-space: nowrap;">
+                        <b>LHDN Response Status:</b>
+                        <select name="eInvoiceValidationStatus" style="width:140px">
+                            <option value="">All</option>
+                            <option value="OK">OK</option>
+                            <option value="Failed">Failed</option>
+                            <option value="New">-</option>
+                            <option value="N/A">N/A</option>
+                        </select>
+                        <div style="position: relative; top: -20px; float: right; display: inline-block;">
+                            <input type="submit" id="to-search" value="SEARCH Now" style="height: 35px;">
+                                <a class="to-reset" href="#">Reset</a>
+
+                                    <a id="to-export" class="hidden" href="#" style="display: inline;">Export CSV</a>
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top:10px; font-size:14px" class="center">
+                        <b>JOMCHECK Transaction Enquiry</b>
+                    </td>
+                </tr>
+            </tbody></table>
+            <input type="hidden" name="pageNo" value="1">
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td id="result" colspan="2">
+
+    <div>11 record(s) in total</div>
+
+<table style="width:100% !important">
+    <colgroup><col width="10px">
+    <col width="250px">
+    <col width="100px">
+
+    <col width="60px">
+    <col width="110px">
+    <col width="110px">
+
+    <col width="120px">
+    <col width="60px">
+    <col width="80px">
+
+    <col width="80px">
+    <col width="80px">
+    <col width="auto">
+    <col width="50px">
+    <col width="70px">
+
+    </colgroup><thead>
+    <tr class="header">
+        <th>#</th>
+        <th>Company Name</th>
+        <th>Company ROC</th>
+
+        <th>Vehicle</th>
+        <th>Chassis No</th>
+        <th>Transaction No.</th>
+
+        <th>Created At</th>
+        <th>Method</th>
+        <th>Payment</th>
+
+        <th>Tx Status</th>
+        <th>LHDN Response Status</th>
+        <th>Remarks</th>
+        <th>Special Remarks</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+
+        <tr class="odd">
+            <td class="center">1</td>
+            <td class="center">FAIZUDDIN AUTO TEST</td>
+            <td class="center">1518238-K</td>
+
+            <td class="center">HXA0258A</td>
+            <td class="center">-</td>
+            <td class="center">J600008513</td>
+
+            <td class="center">15-10-2026 16:08</td>
+            <td class="center">RHB</td>
+
+
+
+            <td class="center" style="color:green">
+                <b>OK</b>
+            </td>
+            <td class="center" style="color:green">
+                <b>Approved</b>
+            </td>
+
+            <td class="center" style="color:green">
+                <b>OK</b>
+            </td>
+
+            <td>
+
+            </td>
+            <td class="center">
+
+                    <b style="color:blue">No</b>
+
+            </td>
+            <td class="center">
+                <a href="/eauto/view/jomcheck/enquiry/view.do?id=2edf481a-0174-45dc-a476-bd69e97ea8d5&amp;back=false" target="_blank" title="to view J600008513">View</a>
+
+            </td>
+        </tr>
+
+        <!-- rows 2-5 trimmed: Approved, same markup as row 1 -->
+
+        <tr class="even">
+            <td class="center">6</td>
+            <td class="center">FAIZUDDIN AUTO TEST</td>
+            <td class="center">1518238-K</td>
+
+            <td class="center">HXA0253A</td>
+            <td class="center">-</td>
+            <td class="center">J600008508</td>
+
+            <td class="center">15-10-2026 15:57</td>
+            <td class="center">RHB</td>
+
+
+
+            <td class="center" style="color:green">
+                <b>OK</b>
+            </td>
+            <td class="center" style="color:red">
+                <b>Failed</b>
+            </td>
+
+            <td class="center" style="color:black">
+                <b>-</b>
+            </td>
+
+            <td>
+
+                    Failed to retrieve report
+
+            </td>
+            <td class="center">
+
+                    <b style="color:blue">No</b>
+
+            </td>
+            <td class="center">
+                <a href="/eauto/view/jomcheck/enquiry/view.do?id=b324bfe6-7184-4813-9ddd-654dee346816&amp;back=false" target="_blank" title="to view J600008508">View</a>
+
+                    | <a href="#" class="to-resubmit" txid="b324bfe6-7184-4813-9ddd-654dee346816" title="to resubmit J600008508">Resubmit</a>
+
+            </td>
+        </tr>
+
+        <tr class="odd">
+            <td class="center">7</td>
+            <td class="center">FAIZUDDIN AUTO TEST</td>
+            <td class="center">1518238-K</td>
+
+            <td class="center">HXA0252A</td>
+            <td class="center">-</td>
+            <td class="center">J600008507</td>
+
+            <td class="center">15-10-2026 15:56</td>
+            <td class="center">RHB</td>
+
+
+
+            <td class="center" style="color:green">
+                <b>OK</b>
+            </td>
+            <td class="center" style="color:red">
+                <b>Failed</b>
+            </td>
+
+            <td class="center" style="color:black">
+                <b>-</b>
+            </td>
+
+            <td>
+
+                    Failed to retrieve report
+
+            </td>
+            <td class="center">
+
+                    <b style="color:blue">No</b>
+
+            </td>
+            <td class="center">
+                <a href="/eauto/view/jomcheck/enquiry/view.do?id=c2526ba7-15c7-4f05-849c-4856482be962&amp;back=false" target="_blank" title="to view J600008507">View</a>
+
+                    | <a href="#" class="to-resubmit" txid="c2526ba7-15c7-4f05-849c-4856482be962" title="to resubmit J600008507">Resubmit</a>
+
+            </td>
+        </tr>
+
+        <!-- rows 8-10 trimmed: Failed + Resubmit, same markup as rows 6-7
+             (HXA0251A J600008506 txid 71e44adb-8b92-44d0-bcc8-9976996fb824,
+              HXA0250A J600008505 txid d9e6c6e3-1837-474d-b419-e1c9dc135fe6,
+              HXA0249A J600008504 txid fc5e1788-8bf7-469d-bfbd-adfcbba5313f) -->
+
+        <tr class="odd">
+            <td class="center">11</td>
+            <td class="center">FAIZUDDIN AUTO TEST</td>
+            <td class="center">1518238-K</td>
+
+            <td class="center">HX000001</td>
+            <td class="center">-</td>
+            <td class="center">J600008503</td>
+
+            <td class="center">15-10-2026 15:41</td>
+            <td class="center">RHB</td>
+
+
+
+            <td class="center" style="color:green">
+                <b>OK</b>
+            </td>
+            <td class="center" style="color:green">
+                <b>Approved</b>
+            </td>
+
+            <td class="center" style="color:green">
+                <b>OK</b>
+            </td>
+
+            <td>
+
+            </td>
+            <td class="center">
+
+                    <b style="color:blue">No</b>
+
+            </td>
+            <td class="center">
+                <a href="/eauto/view/jomcheck/enquiry/view.do?id=8e03d5d6-baa8-422d-a86c-283b50bb863b&amp;back=false" target="_blank" title="to view J600008503">View</a>
+
+            </td>
+        </tr>
+
+    </tbody>
+
+</table>    </td>
+    </tr>
+</tbody></table>
+</div>
+
+<script>
+function doPendingTransactionCountQuery() {
+    // Do incomplete transaction notification check
+    $.ajax({
+        global: false,
+        type: "POST",
+        data: "",
+        url: "/eauto/ajax/support/incomplete-txn/notification.do",
+        success: function(response) {
+            if(/Pending Transaction/.test(response)) {
+                $("#incomplete-txn-notification-wrapper").html(response);
+            }
+        }
+    });
+}
+
+$(document).ready(function() {
+
+    $("#header a.logout").click(function() {
+        if(confirm("Sure to logout?")) {
+            window.location.href = "/eauto/user/logout.do";
+        }
+        return false;
+    });
+
+    $("#header #menu-link").click(function() {
+        var offset = $(this).offset();
+
+
+        $("#menu-bar").load(_contextPath + "/home/menu.jsp?source=menuLink", function() {
+
+
+            $("#menu-bar").css({left: offset.left - 80, top: offset.top + 20}).slideToggle('fast');
+            $("#menu-bar div").hide();
+            var _userRole = "HubAdmin";
+
+            if(_userRole.indexOf(",") != "-1") {
+                var roles = _userRole.split(",");
+
+                $(roles).each(function(i,role) {
+                    if(role != ""){
+                        $("div."+role).show();
+                    }
+                });
+            }
+            else {
+                $("div."+_userRole).show();
+            }
+        });
+
+        return false;
+    });
+
+    $("body").click(function() {
+        $("#menu-bar").slideUp();
+    });
+
+    LoginSessionTimer.startCountdown();
+
+    doPendingTransactionCountQuery();
+
+});
+</script>
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar" style="width: 350px !important;">
+                <ol class="inline">
+                    <li>
+                        <a href="/eauto/home/" id="home-link">Home |</a>
+                    </li>
+                    <li><a href="#" id="menu-link">Menu <img src="/eauto/images/arrow_down.gif"></a></li>
+                </ol>
+
+
+                <div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onclick="window.location='/eauto/view/support/incomplete-txn/';">
+
+<span>
+    7 Pending Transaction Found!
+</span>
+
+</div>
+
+
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">Ong Hong Kee</span>,</li>
+                <li><a href="/eauto/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+    <div id="menu-bar" class="hidden" style="position:absolute; width:800px;"></div>
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:31</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/eauto/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo" style="background-color: white;">
+    <img src="/eauto/images/eAuto_TM_logo.svg">
+</div>
+
+<style>
+#footer {color: grey!important; height:60px !important; margin-top:15px !important;font-size:15px}
+#footer table tr td{color: grey!important;font-size:11px!important;}
+</style>
+
+
+<div id="footer">
+    <colspan width="10%">
+        <colspan width="50%">
+        <colspan width="auto">
+        </colspan></colspan></colspan><table border="0" width="100%">
+        <tbody><tr>
+            <td>&nbsp;</td>
+            <td>
+                Best Compatible With Mozilla Firefox V36.0.4 <br>
+                Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+                <a href="#" onclick="window.open('/eauto/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a> |
+                <a href="#" onclick="window.open('/eauto/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a> |
+                <a href="#" onclick="window.open('/eauto/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </td>
+            <td class="right">
+                <img src="/eauto/images/eAuto_TM_logo.svg" width="98">
+            </td>
+        </tr>
+    </tbody></table>
+</div>
+
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible" style="position: absolute; top: 107px; left: 1294.28px; display: none;"><div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all"><a class="ui-datepicker-prev ui-corner-all ui-state-disabled" title="Prev"><span class="ui-icon ui-icon-circle-triangle-w">Prev</span></a><a class="ui-datepicker-next ui-corner-all ui-state-disabled" title="Next"><span class="ui-icon ui-icon-circle-triangle-e">Next</span></a><div class="ui-datepicker-title"><select class="ui-datepicker-month" onchange="DP_jQuery.datepicker._selectMonthYear('#toDate', this, 'M');" onclick="DP_jQuery.datepicker._clickMonthYear('#toDate');"><option value="9" selected="selected">Oct</option></select><select class="ui-datepicker-year" onchange="DP_jQuery.datepicker._selectMonthYear('#toDate', this, 'Y');" onclick="DP_jQuery.datepicker._clickMonthYear('#toDate');"><option value="2026" selected="selected">2026</option></select></div></div><table class="ui-datepicker-calendar"><thead><tr><th class="ui-datepicker-week-end"><span title="Sunday">Su</span></th><th><span title="Monday">Mo</span></th><th><span title="Tuesday">Tu</span></th><th><span title="Wednesday">We</span></th><th><span title="Thursday">Th</span></th><th><span title="Friday">Fr</span></th><th class="ui-datepicker-week-end"><span title="Saturday">Sa</span></th></tr></thead><tbody><tr><td class=" ui-datepicker-week-end ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td><td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td><td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td><td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">1</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">2</span></td><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">3</span></td></tr><tr><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">4</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">5</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">6</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">7</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">8</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">9</span></td><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">10</span></td></tr><tr><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">11</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">12</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">13</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">14</span></td><td class=" ui-datepicker-days-cell-over  ui-datepicker-current-day ui-datepicker-today" onclick="DP_jQuery.datepicker._selectDay('#toDate',9,2026, this);return false;"><a class="ui-state-default ui-state-highlight ui-state-active" href="#">15</a></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">16</span></td><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">17</span></td></tr><tr><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">18</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">19</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">20</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">21</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">22</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">23</span></td><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">24</span></td></tr><tr><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">25</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">26</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">27</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">28</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">29</span></td><td class=" ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">30</span></td><td class=" ui-datepicker-week-end ui-datepicker-unselectable ui-state-disabled "><span class="ui-state-default">31</span></td></tr></tbody></table></div></body>

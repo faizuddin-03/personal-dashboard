@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
+import { useTsPassState, TS_PASS_ROW, TS_PASS_TITLE } from "@/lib/tsPassState";
+import { DeploySoonHeader } from "@/lib/useDeployReminder";
 
 /** Registry key for this page's run in AppShell's background-run store — see
  *  hooks/useBackgroundRuns.ts. This ticket's own cases span up to ~2h15m
@@ -221,6 +223,8 @@ const AUTOMATION_BADGE: Record<Automation, { text: string; cls: string; icon: ty
 };
 
 export default function QuotationReminderPage() {
+  // TS rows tinted from the TS Tracker: light green = passed in automation, darker = passed by hand.
+  const passState = useTsPassState();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   // UAT1 — where the insurance code changes for EAINT-11864 are deployed. This
   // is the environment the ticket must be tested on; testing elsewhere tests
@@ -300,6 +304,7 @@ export default function QuotationReminderPage() {
       <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center gap-3">
         <Mail size={16} className="text-indigo-400" />
         <h1 className="text-sm font-semibold text-slate-200">11864</h1>
+        <DeploySoonHeader keys={["EAINT-11864"]} />
         <span className="text-xs text-slate-600 hidden md:block">
           Send Email Reminder to UCD for Generated Quotations Without Purchase · hourly cron 07:00–23:00
         </span>
@@ -433,10 +438,11 @@ export default function QuotationReminderPage() {
                 const badge = AUTOMATION_BADGE[s.automation];
                 const isManual = s.automation === "manual";
                 return (
-                  <label key={s.id}
+                  <label key={s.id} title={passState(s.title) ? TS_PASS_TITLE[passState(s.title)!] : undefined}
                     className={clsx(
                       "flex gap-3 px-4 py-2.5",
-                      isManual ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:bg-slate-800/40"
+                      isManual ? "opacity-60 cursor-not-allowed" : "cursor-pointer",
+                      passState(s.title) ? TS_PASS_ROW[passState(s.title)!] : !isManual && "hover:bg-slate-800/40"
                     )}>
                     <input type="checkbox" checked={selected.has(s.id)} disabled={isManual}
                       onChange={() => toggle(s.id)} className="mt-1 accent-indigo-600 shrink-0" />

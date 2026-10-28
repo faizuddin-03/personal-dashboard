@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as XLSX from "xlsx";
+import { writeAoaXlsx, readXlsx, sheetToObjects } from "@/lib/excelSheets";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
+import { jsonAndSave } from "@/lib/server/savedResults";
+
+const SAVE_KEY = "insurance/secarang-availability";
 
 const SCRIPT_DIR  = process.env.SECARANG_SCRIPT_DIR
   ?? path.join(process.cwd(), "scripts", "secarang-insurance");
@@ -54,7 +57,7 @@ function normalizeIdNumber(raw: string): string {
 }
 
 // ── Write input xlsx ──────────────────────────────────────────
-function writeInputExcel(
+async function writeInputExcel(
   vehicles: VehicleEntry[],
   icNumber: string,
   postcode: string,
@@ -73,23 +76,19 @@ function writeInputExcel(
       v.vehicleType || vehicleType,
     ]),
   ];
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Vehicles");
-  const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
-  fs.writeFileSync(INPUT_XLSX, buffer);
+  fs.writeFileSync(INPUT_XLSX, await writeAoaXlsx("Vehicles", rows));
 }
 
 // ── Parse output xlsx ─────────────────────────────────────────
-function readOutputExcel(): SecarangRow[] {
+async function readOutputExcel(): Promise<SecarangRow[]> {
   if (!fs.existsSync(OUTPUT_XLSX)) return [];
-  const wb = XLSX.read(fs.readFileSync(OUTPUT_XLSX));
+  const wb = await readXlsx(fs.readFileSync(OUTPUT_XLSX));
 
   // Read quotation rows (successful vehicles)
   const rows: SecarangRow[] = [];
-  const qs = wb.Sheets["Quotations"];
+  const qs = wb.getWorksheet("Quotations");
   if (qs) {
-    const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(qs, { defval: "" });
+    const raw = sheetToObjects(qs);
     for (const r of raw) {
       rows.push({
         vehicleNumber:    String(r["Vehicle Number"]  ?? ""),
@@ -110,9 +109,9 @@ function readOutputExcel(): SecarangRow[] {
 
   // Read error rows from the Vehicles sheet (status === ERROR) and add them
   // as synthetic rows so the UI can display the failure message
-  const vs = wb.Sheets["Vehicles"];
+  const vs = wb.getWorksheet("Vehicles");
   if (vs) {
-    const vraw = XLSX.utils.sheet_to_json<Record<string, unknown>>(vs, { defval: "" });
+    const vraw = sheetToObjects(vs);
     for (const r of vraw) {
       if (String(r["Status"] ?? "").toUpperCase() !== "ERROR") continue;
       rows.push({
@@ -138,6 +137,8 @@ function readOutputExcel(): SecarangRow[] {
 // ── POST — run the checker ────────────────────────────────────
 export async function POST(req: NextRequest) {
   let body: {
+    /** Set only by the availability tab — the Secarang regression tab shares this route. */
+    saveKey?: string;
     vehicles:      VehicleEntry[];
     icNumber?:     string;
     postcode?:     string;
@@ -151,6 +152,9 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: "Invalid JSON in request body." }, { status: 400 });
   }
+  // Last result saved on the server for the availability tab (lib/savedRunKeys.ts, 2026-10-21).
+  const respond = (payload: unknown, init?: ResponseInit) =>
+    body.saveKey === SAVE_KEY ? jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, payload, init) : NextResponse.json(payload, init);
 
   const {
     vehicles = [], icNumber = "", postcode = "55000",
@@ -175,7 +179,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 
-  writeInputExcel(vehicles, icNumber, postcode, vehicleType, ownerType);
+  await writeInputExcel(vehicles, icNumber, postcode, vehicleType, ownerType);
   if (fs.existsSync(OUTPUT_XLSX)) fs.unlinkSync(OUTPUT_XLSX);
 
   stopRequested = false;
@@ -207,16 +211,16 @@ export async function POST(req: NextRequest) {
   });
 
   if (stopRequested) {
-    const rows = readOutputExcel();
-    return NextResponse.json({ rows, log: result.output, stopped: true });
+    const rows = await readOutputExcel();
+    return respond({ rows, log: result.output, stopped: true });
   }
 
   if (result.code !== 0 && !fs.existsSync(OUTPUT_XLSX)) {
-    return NextResponse.json({ error: result.output || "Playwright test failed." }, { status: 500 });
+    return respond({ error: result.output || "Playwright test failed." }, { status: 500 });
   }
 
-  const rows = readOutputExcel();
-  return NextResponse.json({ rows, log: result.output });
+  const rows = await readOutputExcel();
+  return respond({ rows, log: result.output });
 }
 
 // ── DELETE — stop the run ─────────────────────────────────────

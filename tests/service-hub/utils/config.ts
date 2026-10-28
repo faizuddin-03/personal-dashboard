@@ -8,6 +8,11 @@ export const ENV = {
   boUsername: process.env.EAUTO_BO_USER || "",
   boPassword: process.env.EAUTO_BO_PASS || "",
 
+  // Second BO Hub Admin account — TS02's "Officer B" check (a different
+  // officer must see the same DO/Issued-by data, not their own name).
+  bo2Username: process.env.EAUTO_BO2_USER || "",
+  bo2Password: process.env.EAUTO_BO2_PASS || "",
+
   // Second UCD account for concurrency tests
   ucd2Username: process.env.EAUTO_UCD2_USER || "",
   ucd2Password: process.env.EAUTO_UCD2_PASS || "",
@@ -119,4 +124,12 @@ export const PATHS = {
   boSoftwareInstallationDetails: (txnId: string, apptId: string) =>
     `/view/bo/service-hub/detail.do?${txnId}&apptId=${apptId}`,
   boAppointmentCalendar: "/view/bo/service-hub/listing/main.do",
+  // Same detail.do endpoint serves both Software Installation and Biometric
+  // Device Purchase records — this is just a same-shape alias so the BDP
+  // page objects/specs read clearly instead of borrowing the SI name.
+  boDevicePurchaseDetails: (txnId: string, apptId: string) =>
+    `/view/bo/service-hub/detail.do?${txnId}&apptId=${apptId}`,
+  // Company Management (BO) — used by EAINT-12166 TS03's snapshot-rule test.
+  companyListing: "/view/account/company",
+  companyEdit: (companyAccountId: string) => `/view/account/company/edit.get?id=${companyAccountId}`,
 };

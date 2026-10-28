@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eAuto BackOffice — eMOVE Logistics (Draft)</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Verdana,Arial,sans-serif;font-size:13px;color:#222;background:#fff}
+
+  /* ---- Shell ---- */
+  .topbar{background:linear-gradient(90deg,#8a0010 0%,#c8102e 55%,#e0203c 100%);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 18px;font-size:13px}
+  .topbar .nav{display:flex;align-items:center;gap:14px}
+  .topbar .nav a{color:#fff;text-decoration:none;cursor:pointer}
+  .topbar .pending{color:#ffe08a;font-weight:bold}
+  .topbar .account b{color:#fff}
+  .brandrow{display:flex;align-items:center;padding:14px 18px 4px}
+  .logo{font-weight:bold;font-size:30px;color:#c8102e;letter-spacing:-1px}
+  .logo .my{color:#1a4b8c;font-size:16px;vertical-align:super}
+  .greeting{padding:6px 18px 4px;font-weight:bold;font-size:15px}
+
+  .menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:10px 18px 40px}
+  .menu-col h3{color:#7a1420;font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:6px}
+  .menu-col ul{list-style:none;margin:0;padding:0}
+  .menu-col li{margin:4px 0;line-height:1.35}
+  .menu-col li a{color:#1a3fd0;text-decoration:none;cursor:pointer}
+  .menu-col li a:hover{text-decoration:underline}
+  .menu-col li a.new{font-weight:bold}
+  .menu-col li a.new::after{content:" NEW";color:#fff;background:#2e9e4f;font-size:9px;padding:1px 4px;border-radius:3px;margin-left:4px;vertical-align:middle}
+  .arrow{color:#1a3fd0}
+  .bo-footer{border-top:1px solid #ddd;margin-top:20px;padding:14px 18px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px;color:#888;font-size:11px}
+  .bo-footer a{color:#1a3fd0;text-decoration:none;cursor:pointer}
+  .bo-footer .logo{font-weight:bold;color:#c8102e}
+
+  .page{display:none}
+  .page.active{display:block}
+  .crumb{padding:8px 18px;background:#f3f3f3;border-bottom:1px solid #ddd;font-size:12px}
+  .crumb a{color:#1a3fd0;text-decoration:none;cursor:pointer}
+  .report-wrap{padding:14px 18px 50px}
+  .report-title{color:#7a1420;font-size:20px;margin:0 0 4px}
+  .report-sub{color:#555;font-size:12px;margin:0 0 14px}
+
+  /* ---- Filters ---- */
+  .filters{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:#faf7f2;border:1px solid #e7ddcd;padding:10px 12px;border-radius:4px;margin-bottom:16px}
+  .filters label{display:block;font-size:11px;color:#666;margin-bottom:3px}
+  .filters input,.filters select{padding:5px 7px;border:1px solid #bbb;border-radius:3px;font-size:12px;font-family:inherit}
+  .filters input{width:130px}
+  .btn{background:#c8102e;color:#fff;border:none;padding:7px 16px;border-radius:3px;cursor:pointer;font-size:12px;font-weight:bold}
+  .btn.secondary{background:#6c757d}
+  .btn:hover{filter:brightness(.93)}
+
+  /* STMS-enquiry style filter */
+  .filters2{padding:8px 0 4px;margin-bottom:10px}
+  .filters2 .fld{display:inline-flex;align-items:center;gap:6px;margin:0 20px 12px 0}
+  .filters2 label{font-weight:bold;font-size:12px;color:#222;white-space:nowrap}
+  .filters2 .req{color:#c00;font-weight:bold}
+  .filters2 input,.filters2 select{padding:4px 6px;border:1px solid #999;font-size:12px;font-family:inherit;background:#fff}
+  .filters2 input[type=text]{width:150px}
+  .filters2 input[type=date]{width:150px}
+  .filter-actions{text-align:right;margin:6px 0 14px;border-bottom:1px solid #ddd;padding-bottom:14px}
+  .btn-grey{background:#e6e6e6;border:1px solid #adadad;color:#222;padding:7px 16px;font-size:12px;font-weight:bold;cursor:pointer}
+  .btn-grey:hover{background:#dcdcdc}
+  .link-reset{color:#1a3fd0;text-decoration:underline;cursor:pointer;font-size:12px;margin-left:14px}
+
+  .section-title{text-align:center;font-weight:bold;font-size:16px;color:#222;margin:20px 0 6px}
+  .rec-count{font-size:12px;color:#333;margin:4px 0}
+  .section-head{color:#fff;padding:7px 12px;font-size:14px;font-weight:bold;border-radius:3px 3px 0 0;margin-top:18px;display:flex;align-items:center;gap:8px}
+  .section-head .tag{background:rgba(255,255,255,.25);font-size:11px;padding:2px 7px;border-radius:10px;font-weight:normal}
+
+  /* ---- Listing table (STMS-style) ---- */
+  table.rpt{border-collapse:collapse;width:100%;font-size:12px}
+  table.rpt th,table.rpt td{border:1px solid #fff;padding:8px 8px}
+  table.rpt thead th{background:#5b9bd5;color:#fff;text-align:center;font-weight:bold;vertical-align:middle;white-space:nowrap}
+  table.rpt thead th.left{text-align:left}
+  table.rpt tbody td{background:#cfeaf6;text-align:center;vertical-align:middle}
+  table.rpt td.left{text-align:left}
+  table.rpt td.num{text-align:right;font-variant-numeric:tabular-nums}
+  table.rpt tbody tr:hover td{background:#b6ddef}
+  table.rpt tfoot td{background:#a9d5ea;font-weight:bold;text-align:right}
+  table.rpt tfoot td.left{text-align:left}
+  table.rpt a.view{color:#1a3fd0;font-weight:bold;text-decoration:none;cursor:pointer}
+  table.rpt a.view.cancel{color:#c0392b}
+  table.rpt a.view:hover{text-decoration:underline}
+  .tblscroll{overflow-x:auto}
+
+  /* ---- Status text ---- */
+  .st{font-weight:bold}
+  .st.green{color:#1a7a34}.st.red{color:#c0392b}.st.blue{color:#1f6390}.st.amber{color:#b06a00}.st.grey{color:#777}
+
+  /* ---- Details info grid ---- */
+  .info-wrap{border:1px solid #d6d6d6;border-top:none}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .info-grid .cell{display:flex;border-bottom:1px solid #eee;font-size:12px}
+  .info-grid .cell:nth-child(odd){border-right:1px solid #eee}
+  .info-grid .k{width:180px;background:#f6f8fa;padding:8px 10px;color:#555;font-weight:bold;flex-shrink:0}
+  .info-grid .v{padding:8px 10px;color:#222}
+  @media(max-width:800px){.info-grid{grid-template-columns:1fr}.info-grid .cell:nth-child(odd){border-right:none}}
+
+  .det-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 12px}
+  .det-head .plate{color:#c8102e;font-weight:bold;font-size:20px}
+  .det-head .trx{color:#333;font-size:14px}
+
+  /* ---- Details (reference layout) ---- */
+  .bo-det{padding-top:4px}
+  .bo-det hr{border:none;border-top:1px solid #d5d5d5;margin:12px 0}
+  .det-topline{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .det-topline .d-plate{color:#e8720d;font-weight:bold;font-size:22px}
+  .det-topline .d-deal{color:#333;font-size:13px;flex:1}
+  .det-topline .d-prog{font-weight:bold;font-size:18px}
+  .det-refline{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .det-refline .d-ref{font-weight:bold;font-size:15px;color:#222}
+  .det-refline .d-draft{font-weight:bold;font-size:15px}
+  .det-h{color:#1a3fd0;font-weight:bold;font-size:14px;margin:10px 0 8px}
+  .det-h.sub{font-size:13px;margin:8px 0 6px}
+  .det-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+  .det-2col{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+  @media(max-width:800px){.det-cols,.det-2col{grid-template-columns:1fr}}
+  .kv{display:flex;gap:12px;padding:3px 0;font-size:12px;align-items:baseline}
+  .kv .k{font-weight:bold;color:#222;min-width:170px;flex-shrink:0}
+  .kv .v{color:#222}
+  .link-b{color:#1a3fd0;text-decoration:none;cursor:pointer}
+  .link-b:hover{text-decoration:underline}
+  .remark-area{width:100%;height:100px;border:1px solid #999;padding:8px;font-family:inherit;font-size:12px;margin:4px 0 10px}
+
+  .note{font-size:11px;color:#888;margin-top:6px;font-style:italic}
+  .mock-flag{position:fixed;bottom:8px;right:10px;background:#c8102e;color:#fff;font-size:11px;padding:4px 10px;border-radius:3px;opacity:.85}
+  /* Photo viewer modal */
+  .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;align-items:center;justify-content:center;padding:20px}
+  .ov.on{display:flex}
+  .ovbox{background:#fff;border-radius:8px;max-width:820px;width:100%;max-height:88vh;overflow:auto;padding:18px 20px}
+  .ovbox .ovhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .ovbox .ovhead h3{color:#7a1420;font-size:16px}
+  .ovbox .ovclose{border:none;background:#e6e6e6;border-radius:4px;padding:6px 12px;font-weight:bold;cursor:pointer}
+  .pvgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:600px){.pvgrid{grid-template-columns:repeat(2,1fr)}}
+  .pvcell{border:1px solid #d6d6d6;border-radius:6px;height:110px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;background:linear-gradient(135deg,#eef2f4,#dfe7ea);color:#5c6a72;font-size:12px;text-align:center}
+  .pvcell .cam{font-size:26px;color:#8aa0ab}
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<div id="home" class="page active">
+  <div class="topbar">
+    <div class="nav"><a onclick="show('home')">Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+  <div class="brandrow"><span class="logo">eAuto<span class="my">.my&#8482;</span></span></div>
+  <div class="greeting">Good Afternoon, Adrian Tan</div>
+
+  <div class="menu-grid">
+    <div class="menu-col">
+      <h3><span>&#128101;</span> Account Management</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Manage Company Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Backoffice User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>View UCD User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Bank/Credit Company Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Bank/Credit Company User Accounts</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Bank/Credit Company IP Whitelist</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company Account Listing (Limited Features For UCD To UCD)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage AATF/PBT Account</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage e-Invoice Setup Company Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage LKM Refund Amount (below RM30)</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> Reports</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Reports</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Account Balance Summary</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Account Balance Summary (Month / Year)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Account Deposit / Adjustment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company POB Balance Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>POB Payment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Statement of Account (UCD)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Transaction Summary Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Transaction Summary Report (State)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Vehicle Movement Report (UCD)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Interim Payment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Reset Payment Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Inter-Branch Transfer History Report</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128197;</span> Insurance</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Permission Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance User Permission Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Endorsement</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Payment Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Upload Insurance e-Certificate</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Quote Enquiry</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Refer Risk Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Insurance Payment OTP Log</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128197;</span> Onboarding</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>UCD New Application</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Application Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Pre-Application Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Application Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>UCD Pre-Application Audit Log</a></li>
+      </ul>
+    </div>
+
+    <div class="menu-col">
+      <h3><span>&#128197;</span> Transactions Relevant</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>STMS Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>APT Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eSTM Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Deregistration Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Jomcheck Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>SSM Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eDereg Pre-Checking Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a class="new" onclick="openListing()">eMOVE Logistics Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company Business Document Listing</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128197;</span> eAuto Plus Relevant</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>BMK Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>RHB Payment Transaction (eAuto Plus)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>LKM Refund Status</a></li>
+        <li><span class="arrow">&#9656;</span> <a>LKM Refund Attachment Listing</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128295;</span> Support Tools</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>STMS Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Support Audit Log (STMS, APT &amp; eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Audit Trail Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Company Account Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Backoffice User Account Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist Company ROC, MyKad No. &amp; Vehicle No. Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Pending/Failed APT Transaction Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Pending STMS, APT &amp; eSTM Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>RHB Reconciliation Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Hasil Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Resubmit Pending STMS, APT &amp; eSTM</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manual APT Trigger</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Manage Pending/Failed APT Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eSTM Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Enquiry</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Enquiry (New)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk STMS Cancellation</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk STMS Cancellation Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Resubmit JPJ Final Submission (STMS)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Resubmit JPJ Final Submission (eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Resubmit JPJ Final Submission (eDereg Pre-Checking)</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> Proforma Invoice / e-Invoice</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Generate Proforma Invoice</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Proforma Invoice / e-Invoice Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Credit Note Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Biometric Device Purchase &amp; Software Installation Listing</a></li>
+      </ul>
+    </div>
+
+    <div class="menu-col">
+      <h3><span>&#9881;</span> Settings</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>RHB Payment Transaction</a></li>
+        <li><span class="arrow">&#9656;</span> <a>1 Layer Permission Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>2 Layer Permission Setup</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eLKM Permission Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eLKM Permission Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist Company ROC (STMS &amp; eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist MyKad No. (STMS &amp; eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist MyKad No. (UCD User)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Blacklist Vehicle No.</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128295;</span> Settings (Hub Admin)</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Manual Payment Processing (STMS, APT, eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (APT)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (STMS)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (ESTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (Deregistration)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (eDereg Pre-Checking)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ XML Log (LKM Refund)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>SSM XML Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Generate Batch Invoice (STMS, APT, eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Estm User Permission Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Change Director Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Customize Display Message</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk Submission Setup (JPJ Enquiry, Payment)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk Submission Setup (JPJ Enquiry, Payment) Audit Log</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bulk Submission Control for System Maintenance</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bypass Purchase SSM (STMS &amp; eSTM)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JomCheck Report Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Bypass Purchase SSM (STMS &amp; eSTM) Audit Log</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> JPJ Reports</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>eAuto Reconciliation Summary Report</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto STMS, APT and eSTM Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto Reconciliation Summary Report (eAuto Plus)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto BMK, HTM dan eLKM Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto eDereg Pre-Checking Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>eAuto Reconciliation Summary Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ Reconciliation Report (HASIL)</a></li>
+        <li><span class="arrow">&#9656;</span> <a>JPJ eSTM Report (HASIL)</a></li>
+      </ul>
+    </div>
+    <div class="menu-col">
+      <h3><span>&#128202;</span> Wholesale</h3>
+      <ul>
+        <li><span class="arrow">&#9656;</span> <a>Manage Wholesale Company Account</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Transaction Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Refund Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Vehicle Payment Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Rejection Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Wholesale Payment Listing</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Alternative Vehicle Maintenance</a></li>
+        <li><span class="arrow">&#9656;</span> <a>Alternative Vehicle Maintenance Audit Log</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bo-footer">
+    <div>Best Compatible With Mozilla Firefox V36.0.4<br>Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br><a>Contact Us</a> | <a>Terms &amp; Conditions</a> | <a>Privacy</a></div>
+    <span class="logo" style="font-size:22px">eAuto<span class="my">.my&#8482;</span></span>
+  </div>
+</div>
+
+<!-- ============ LISTING ============ -->
+<div id="listing" class="page">
+  <div class="topbar">
+    <div class="nav"><a onclick="show('home')">Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+
+  <div class="report-wrap">
+    <div class="filters2">
+      <div>
+        <span class="fld"><label>Company Name:</label><select id="f_dealer"><option value="">All</option></select></span>
+        <span class="fld"><label>Vehicle No.:</label><input type="text" id="f_veh"></span>
+        <span class="fld"><label>Vehicle Type:</label><select id="f_vtype"><option value="">All</option><option value="-">-</option><option>Sedan / Hatchback</option><option>SUV / MPV</option><option>Pickup / 4x4</option></select></span>
+        <span class="fld"><label>Transaction No.:</label><input type="text" id="f_trx"></span>
+      </div>
+      <div>
+        <span class="fld"><label>Date Created From<span class="req">*</span>:</label><input type="date" id="f_from" onkeydown="dateKey(event)" onpaste="return false"></span>
+        <span class="fld"><label>Date Created To:</label><input type="date" id="f_to" onkeydown="dateKey(event)" onpaste="return false"></span>
+        <span class="fld"><label>Pickup Date From:</label><input type="date" id="f_pfrom" onkeydown="dateKey(event)" onpaste="return false"></span>
+        <span class="fld"><label>Pickup Date To:</label><input type="date" id="f_pto" onkeydown="dateKey(event)" onpaste="return false"></span>
+        <span class="fld"><label>Cancelled Date From:</label><input type="date" id="f_cancfrom" onchange="onCancelledDate()" onkeydown="dateKey(event)" onpaste="return false"></span>
+        <span class="fld"><label>Cancelled Date To:</label><input type="date" id="f_cancto" onchange="onCancelledDate()" onkeydown="dateKey(event)" onpaste="return false"></span>
+      </div>
+      <div>
+        <span class="fld"><label>Service Type:</label><select id="f_svc"><option value="">All</option><option>Door-to-Door</option><option>Hub-to-Hub</option><option>Door Pickup / Hub Drop-off</option><option>Hub Pickup / Door Drop-off</option></select></span>
+        <span class="fld"><label>Payment Status:</label><select id="f_pay"><option value="">All</option><option>OK</option><option>Pending</option><option>Failed</option></select></span>
+        <span class="fld"><label>Tx Status:</label><select id="f_tx"><option value="">All</option><option>Completed</option><option>Pending</option><option>Failed</option></select></span>
+        <span class="fld"><label>LHDN Response Status:</label><select id="f_lhdn"><option value="">All</option><option>OK</option><option>Failed</option><option value="-">-</option></select></span>
+        <span class="fld"><label>Delivery Status:</label><select id="f_del"><option value="">All</option><option value="-">-</option><option>Pending Pick Up</option><option>In Transit</option><option>Delivered</option><option>Pickup Failed</option><option>Delivery Failed</option></select></span>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button class="btn-grey" onclick="applyFilter()">SEARCH Now</button>
+      <a class="link-reset" onclick="resetFilter()">Reset</a>
+    </div>
+
+    <div class="section-title">eMOVE Logistics Listing</div>
+    <div class="rec-count" id="recCount"></div>
+    <div class="tblscroll">
+      <table class="rpt" id="tbl-list"></table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DETAILS ============ -->
+<div id="details" class="page">
+  <div class="topbar">
+    <div class="nav"><a onclick="show('home')">Home</a> <span>|</span> <a>Menu &#9662;</a><span class="pending">2 Pending Transaction Found!</span></div>
+    <div class="account"><b>Adrian Tan</b>, My Account | Logout</div>
+  </div>
+  <div class="report-wrap">
+    <div class="bo-det">
+      <div class="det-refline" style="justify-content:space-between;align-items:center">
+        <span class="d-ref" style="font-size:18px"><span class="d-plate" id="d_plate" style="font-size:18px"></span> <span id="d_ref"></span> <span class="d-draft" id="d_draft" style="margin-left:24px;font-size:18px"></span></span>
+        <span style="white-space:nowrap">
+          <button class="btn-grey" onclick="alert('Opening Invoice (demo)')">Invoice</button>
+          <button class="btn-grey" style="margin-left:8px" onclick="alert('Opening e-Invoice (demo)')">e-Invoice</button>
+          <button class="btn-grey" style="margin-left:8px" onclick="alert('Opening Delivery Order (demo)')">Delivery Order</button>
+        </span>
+      </div>
+      <hr>
+      <div class="det-2col" style="margin-top:8px">
+        <div class="kv"><span class="k">Date Created:</span><span class="v" id="d_created"></span></div>
+        <div class="kv"><span class="k">Vehicle Make / Model:</span><span class="v" id="v_model"></span></div>
+        <div class="kv"><span class="k">Engine No:</span><span class="v" id="v_engine"></span></div>
+        <div class="kv"><span class="k">Manufacturing Year:</span><span class="v" id="v_year"></span></div>
+        <div class="kv"><span class="k">Chassis No:</span><span class="v" id="v_chassis"></span></div>
+        <div class="kv"><span class="k">Colour:</span><span class="v" id="v_colour"></span></div>
+        <div class="kv"><span class="k">Vehicle Type:</span><span class="v" id="v_vtype"></span></div>
+        <div class="kv"><span class="k">Vehicle Photos:</span><span class="v" id="d_photolinks"></span></div>
+      </div>
+      <hr>
+      <div class="det-h">e-Invoice (eMOVE)</div>
+      <div class="kv"><span class="k">e-Invoice Submission Date:</span><span class="v" id="d_einvsub"></span></div>
+      <div class="kv"><span class="k">LHDN Response Status:</span><span class="v" id="d_lhdn"></span></div>
+      <div class="kv"><span class="k">e-Invoice Validation Date:</span><span class="v" id="d_einvval"></span></div>
+      <hr>
+      <div class="det-cols">
+        <div>
+          <div class="det-h">Dealer (UCD)</div>
+          <div class="kv"><span class="k">Company Name:</span><span class="v" id="dl_name"></span></div>
+          <div class="kv"><span class="k">Company ROC:</span><span class="v" id="dl_roc"></span></div>
+          <div class="kv"><span class="k">Pickup Contact:</span><span class="v" id="dl_pcontact"></span></div>
+          <div class="kv"><span class="k">Drop-off Contact:</span><span class="v" id="dl_dcontact"></span></div>
+        </div>
+        <div>
+          <div class="det-h">Services &amp; Add-ons</div>
+          <div class="det-h sub">Logistic Details</div>
+          <div class="kv"><span class="k">Logistic Status:</span><span class="v" id="l_status"></span></div>
+          <div class="kv"><span class="k">Service Type:</span><span class="v" id="l_svc"></span></div>
+          <div class="kv"><span class="k">Preferred Pick Up Date:</span><span class="v" id="l_pick"></span></div>
+          <div class="kv"><span class="k">Pickup Address:</span><span class="v" id="l_pickaddr"></span></div>
+          <div class="kv"><span class="k">Pickup Remark:</span><span class="v" id="l_pickremark"></span></div>
+          <div class="kv"><span class="k">Drop-off Address:</span><span class="v" id="l_dropaddr"></span></div>
+          <div class="kv"><span class="k">Drop-off Remark:</span><span class="v" id="l_dropremark"></span></div>
+        </div>
+      </div>
+      <hr>
+      <div class="det-h">Delivery Tracking <span style="font-weight:normal;color:#888;font-size:11px">(driver QR scan · 12 photos at pickup &amp; drop-off)</span></div>
+      <table class="rpt" id="d_track"></table>
+      <div id="d_nextaction" style="font-size:12px;color:#c8102e;font-weight:bold;margin-top:8px"></div>
+      <hr>
+      <div class="det-h">Payment Details (Logistic):</div>
+      <div id="d_paylist" style="font-size:12px;padding:2px 0 10px;line-height:1.8"></div>
+      <div class="det-2col">
+        <div class="kv"><span class="k">Logistic Fee:</span><span class="v" id="d_logfee"></span></div>
+        <div class="kv"><span class="k">eAuto Fee:</span><span class="v">RM 0.00</span></div>
+        <div class="kv"><span class="k">Service Tax (8%):</span><span class="v">RM 0.00</span></div>
+        <div class="kv"><span class="k">Total Paid:</span><span class="v" id="d_total" style="color:#c8102e;font-weight:bold"></span></div>
+      </div>
+      <hr>
+      <div class="det-h">Special Remark:</div>
+      <textarea class="remark-area" placeholder="Enter special remark..."></textarea><br>
+      <button class="btn-grey" onclick="alert('Special remark updated (demo)')">Update Special Remark</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Photo viewer modal -->
+<div class="ov" id="photoOv">
+  <div class="ovbox">
+    <div class="ovhead"><h3 id="pvTitle">Photos</h3><button class="ovclose" onclick="closePhotos()">Close</button></div>
+    <div class="pvgrid" id="pvGrid"></div>
+    <p style="font-size:11px;color:#888;font-style:italic;margin-top:10px">Driver-uploaded photos (QR-scan capture). Placeholders shown in this prototype.</p>
+  </div>
+</div>
+
+<script>
+/* ---------------- Data ---------------- */
+const addrByState={
+  'Selangor':'Shah Alam Hub — PT 626, Jalan Mandolin 33/5, Seksyen 27, 40400 Shah Alam, Selangor',
+  'Kuala Lumpur':'Chan Sow Lin Hub — Wisma Trax, Jalan Lima, Off Jalan Chan Sow Lin, 55200 Kuala Lumpur',
+  'Negeri Sembilan':'Seremban Hub — Pekan Bukit Kepayang, Daerah Seremban, 70300 Seremban, Negeri Sembilan',
+  'Melaka':'Melaka Hub — Jln PS3, Plaza Semabok, 75050 Melaka',
+  'Johor':'Johor Bahru Hub — Jalan Kempas Lama, Mukim Tebrau, 81200 Johor Bahru, Johor',
+  'Perak':'Ipoh Hub — Jalan Lahat, 30200 Ipoh, Perak',
+  'Penang':'Penang Hub — Medan Perniagaan Pauh Jaya, Jalan Baru, Taman Pauh Jaya, 13700 Perai, Penang',
+  'Kedah':'Alor Setar Hub — Sultan Abdul Halim Hwy, Lebuhraya Sultan Abdul Halim, 05400 Alor Setar, Kedah',
+  'Pahang':'Kuantan Hub — Jln Haji Ahmad 9, Kampung Lapang Besar, 25300 Kuantan, Pahang',
+  'Terengganu':'Kuala Terengganu Hub — Dataran Panji, Jalan Panji Alam, 21100 Kuala Terengganu, Terengganu',
+  'Kelantan':'Kota Bharu Hub — Persimpangan Kijang, 15050 Kota Bharu, Kelantan',
+  'Perlis':'Alor Setar (Kedah branch) — Sultan Abdul Halim Hwy, Lebuhraya Sultan Abdul Halim, 05400 Alor Setar, Kedah',
+  'Putrajaya':'Shah Alam (Selangor branch) — PT 626, Jalan Mandolin 33/5, Seksyen 27, 40400 Shah Alam, Selangor'
+};
+function addrFor(s){return addrByState[s]||('No. 1, Jalan Utama, '+s);}
+const contacts=['Amshar Amin · 012-3456789','Farid Zainal · 019-8876543','Kumar Raj · 016-2234455','Siti Nurul · 013-7789900'];
+
+const DATA=[
+  {no:'EM670000027',dealer:'Skyline Motors Sdn Bhd',plate:'WNA3301',created:'02-07-2026 09:30',pick:'-',svc:'Hub-to-Hub',pickState:'Selangor',dropState:'Perak',pay:'Pending',del:'-',einv:'-',total:300.00,payref:'',driver:'—',expired:true,cancelledAt:'17-08-2026 02:00',cancelledBy:'99000/cronjob',remarks:'Transaction Expired',engine:'K13220991',chassis:'PRTXX220991',model:'Proton / Iriz',year:'2019'},
+  {no:'EM670000028',dealer:'AZ Motor Sdn Bhd',plate:'JPK7745',created:'28-06-2026 16:12',pick:'-',svc:'Door-to-Door',pickState:'Johor',dropState:'Melaka',pay:'Failed',del:'-',einv:'-',total:700.00,payref:'EM2606280000028-1040128',driver:'—',expired:true,cancelledAt:'13-08-2026 02:00',cancelledBy:'99000/cronjob',remarks:'Transaction Expired',engine:'DA16440210',chassis:'HYNXX440210',model:'Honda / Jazz',year:'2018'},
+  {no:'EM690000026',dealer:'Prima Auto Gallery',plate:'WKQ5512',created:'10-09-2026 11:05',pick:'13-09-2026',svc:'Hub Pickup / Door Drop-off',pickState:'Selangor',dropState:'Melaka',pay:'OK',del:'In Transit',einv:'OK',total:520.00,payref:'EM2609100000026-1040126',driver:'Faizal Bin Aziz · BKL221',engine:'K14550221',chassis:'PRTXX550221',model:'Proton / Persona',year:'2021'},
+  {no:'EM690000019',dealer:'Berjaya Mega Motors Enterprise',plate:'WMJ7742',created:'02-09-2026 09:15',pick:'04-09-2026',svc:'Door-to-Door',pickState:'Selangor',dropState:'Johor',pay:'OK',del:'Delivered',einv:'Failed',total:850.00,payref:'EM2609020000019-1040119',driver:'Rosli Bin Ahmad · WA1234',engine:'2NR4451120',chassis:'MHFXX445112',model:'Toyota / Vios 1.5 G',year:'2021',remarks:'TIN verification failed. Kindly provide correct TIN information to eAuto customer service.'},
+  {no:'EM690000020',dealer:'Meridian Auto Sdn Bhd',plate:'BQA1188',created:'03-09-2026 11:40',pick:'05-09-2026',svc:'Hub-to-Hub',pickState:'Penang',dropState:'Perak',pay:'OK',del:'In Transit',einv:'Failed',total:300.00,payref:'EM2609030000020-1040120',driver:'Kumar Samy · JQ8890',engine:'HR15334455',chassis:'PNVXX334455',model:'Nissan / Almera',year:'2019',remarks:'No TIN info has been provided.'},
+  {no:'EM690000021',dealer:'AZ Motor Sdn Bhd',plate:'JSK9021',created:'05-09-2026 14:05',pick:'08-09-2026',svc:'Door Pickup / Hub Drop-off',pickState:'Kuala Lumpur',dropState:'Melaka',pay:'OK',del:'Pending Pick Up',einv:'-',total:320.00,payref:'EM2609050000021-1040121',driver:'—',engine:'K14229088',chassis:'PRTXX229088',model:'Proton / Saga',year:'2022'},
+  {no:'EM690000022',dealer:'Sunrise Auto Trading',plate:'PKL4456',created:'08-09-2026 10:28',pick:'-',svc:'Door-to-Door',pickState:'Selangor',dropState:'Kelantan',pay:'Pending',del:'-',einv:'-',total:1050.00,payref:'',driver:'—',engine:'G16771203',chassis:'SZKXX771203',model:'Suzuki / Swift',year:'2018'},
+  {no:'EM690000023',dealer:'Skyline Motors Sdn Bhd',plate:'VBN6677',created:'09-09-2026 16:33',pick:'11-09-2026',svc:'Hub-to-Hub',pickState:'Johor',dropState:'Selangor',pay:'OK',del:'Pickup Failed',einv:'OK',total:450.00,payref:'EM2609090000023-1040123',driver:'Faizal Bin Aziz · BKL221',failReason:'Vehicle still with panel workshop; UCD confirmed release only next week.',engine:'K12B660077',chassis:'MA3XX660077',model:'Proton / X70 Premium',year:'2023'},
+  {no:'EM690000024',dealer:'Berjaya Mega Motors Enterprise',plate:'WTC8830',created:'11-09-2026 08:52',pick:'12-09-2026',svc:'Door-to-Door',pickState:'Selangor',dropState:'Penang',pay:'OK',del:'Delivery Failed',einv:'OK',total:850.00,payref:'EM2609110000024-1040124',driver:'Rosli Bin Ahmad · WA1234',failReason:'Buyer premise closed on arrival; no authorised person to receive vehicle.',engine:'DA17883012',chassis:'HYNXX883012',model:'Honda / City 1.5',year:'2022'},
+  {no:'EM690000025',dealer:'AZ Motor Sdn Bhd',plate:'BHT2204',created:'12-09-2026 15:10',pick:'-',svc:'Hub-to-Hub',pickState:'Selangor',dropState:'Negeri Sembilan',pay:'Failed',del:'-',einv:'-',total:300.00,payref:'EM2609120000025-1040125',driver:'—',engine:'M15990233',chassis:'JMBXX990233',model:'Mitsubishi / ASX',year:'2020'},
+  {no:'EM670000012',dealer:'Berjaya Mega Motors Enterprise',plate:'WXP1123',created:'28-07-2026 10:22',pick:'30-07-2026',svc:'Door-to-Door',pickState:'Selangor',dropState:'Penang',pay:'OK',del:'Delivered',einv:'OK',total:850.00,payref:'EM2607280000012-1040112',driver:'Rosli Bin Ahmad · WA1234',engine:'2NR1234567',chassis:'MHFXX1234567',model:'Toyota / Vios 1.5 G',year:'2020'},
+  {no:'EM670000011',dealer:'Meridian Auto Sdn Bhd',plate:'JHK4520',created:'27-07-2026 15:40',pick:'29-07-2026',svc:'Hub-to-Hub',pickState:'Johor',dropState:'Selangor',pay:'OK',del:'In Transit',einv:'OK',total:450.00,payref:'EM2607270000011-1040111',driver:'Kumar Samy · JQ8890',engine:'K12B998877',chassis:'MA3XX998877',model:'Proton / X70 Premium',year:'2023'},
+  {no:'EM670000010',dealer:'AZ Motor Sdn Bhd',plate:'BMT8891',created:'27-07-2026 09:05',pick:'28-07-2026',svc:'Door Pickup / Hub Drop-off',pickState:'Kuala Lumpur',dropState:'Melaka',pay:'OK',del:'Pending Pick Up',einv:'OK',total:500.00,payref:'EM2607270000010-1040110',driver:'—',engine:'M15A778812',chassis:'JMBXX778812',model:'Mitsubishi / ASX',year:'2019'},
+  {no:'EM670000009',dealer:'Sunrise Auto Trading',plate:'PGT2210',created:'26-07-2026 14:18',pick:'-',svc:'Hub-to-Hub',pickState:'Penang',dropState:'Perak',pay:'Pending',del:'-',einv:'-',total:300.00,payref:'',driver:'—',engine:'HR15112233',chassis:'PNVXX112233',model:'Nissan / Almera',year:'2018'},
+  {no:'EM670000008',dealer:'Skyline Motors Sdn Bhd',plate:'VCA5567',created:'25-07-2026 11:47',pick:'-',svc:'Door-to-Door',pickState:'Selangor',dropState:'Kelantan',pay:'Failed',del:'-',einv:'-',total:1050.00,payref:'EM2607250000008-1040108',driver:'—',engine:'G16556677',chassis:'SZKXX556677',model:'Suzuki / Swift',year:'2017'},
+  {no:'EM670000007',dealer:'Berjaya Mega Motors Enterprise',plate:'BJT3345',created:'24-07-2026 16:12',pick:'26-07-2026',svc:'Door-to-Door',pickState:'Selangor',dropState:'Johor',pay:'OK',del:'Delivered',einv:'OK',total:850.00,payref:'EM2607240000007-1040107',driver:'Faizal Bin Aziz · BKL221',engine:'DA17667788',chassis:'HYNXX667788',model:'Honda / City 1.5',year:'2021'},
+  {no:'EM670000006',dealer:'Prima Auto Gallery',plate:'KEN9902',created:'24-07-2026 09:33',pick:'25-07-2026',svc:'Door Pickup / Hub Drop-off',pickState:'Penang',dropState:'Johor',pay:'OK',del:'In Transit',einv:'OK',total:1200.00,payref:'EM2607240000006-1040106',driver:'Tan Wei Ming · PGZ556',engine:'ZR20443322',chassis:'MZDXX443322',model:'Mazda / CX-5',year:'2022'},
+  {no:'EM670000005',dealer:'Meridian Auto Sdn Bhd',plate:'WPQ1188',created:'23-07-2026 14:05',pick:'25-07-2026',svc:'Hub-to-Hub',pickState:'Selangor',dropState:'Melaka',pay:'OK',del:'Pending Pick Up',einv:'OK',total:300.00,payref:'EM2607230000005-1040105',driver:'—',engine:'EP30221100',chassis:'PRDXX221100',model:'Perodua / Bezza 1.3',year:'2020'},
+  {no:'EM680000004',dealer:'Prima Auto Gallery',plate:'JMT4402',created:'01-08-2026 08:20',pick:'03-08-2026',svc:'Door-to-Door',pickState:'Selangor',dropState:'Johor',pay:'OK',del:'Pickup Failed',einv:'OK',total:850.00,payref:'EM2608010000004-1040104',driver:'Rosli Bin Ahmad · WA1234',failReason:'Vehicle not ready at pickup (still under grooming). UCD to reschedule.',engine:'2NR9988776',chassis:'MHFXX998877',model:'Toyota / Vios 1.5 G',year:'2021'},
+  {no:'EM680000002',dealer:'AZ Motor Sdn Bhd',plate:'VKL3320',created:'02-08-2026 10:40',pick:'04-08-2026',svc:'Door-to-Door',pickState:'Kuala Lumpur',dropState:'Perak',pay:'OK',del:'Pickup Failed',einv:'OK',total:500.00,payref:'EM2608020000002-1040102',driver:'Kumar Samy · JQ8890',failReason:'Access denied at pickup location; gate locked and no PIC on site.',engine:'K12B443322',chassis:'PRTXX443322',model:'Proton / Persona',year:'2020'},
+  {no:'EM670000001',dealer:'Berjaya Mega Motors Enterprise',plate:'WTM7788',created:'31-07-2026 16:05',pick:'02-08-2026',svc:'Door-to-Door',pickState:'Johor',dropState:'Selangor',pay:'OK',del:'Pickup Failed',einv:'OK',total:850.00,payref:'EM2607310000001-1040101',driver:'Faizal Bin Aziz · BKL221',failReason:'Wrong pickup address provided; vehicle not at stated location.',engine:'DA55667788',chassis:'HYNXX556677',model:'Honda / City 1.5',year:'2022'},
+  {no:'EM670009998',dealer:'Sunrise Auto Trading',plate:'PJK9012',created:'30-07-2026 09:12',pick:'01-08-2026',svc:'Door-to-Door',pickState:'Penang',dropState:'Kedah',pay:'OK',del:'Pickup Failed',einv:'OK',total:500.00,payref:'EM2607300009998-1040198',driver:'Tan Wei Ming · PGZ556',failReason:'Vehicle condition dispute at pickup; scratches not matching listing.',engine:'HR15009988',chassis:'PNVXX009988',model:'Nissan / Almera',year:'2019'},
+  {no:'EM670000003',dealer:'Skyline Motors Sdn Bhd',plate:'BQT7781',created:'31-07-2026 13:15',pick:'02-08-2026',svc:'Door-to-Door',pickState:'Penang',dropState:'Kedah',pay:'OK',del:'Delivery Failed',einv:'OK',total:500.00,payref:'EM2607310000003-1040103',driver:'Kumar Samy · PGX556',failReason:'Recipient absent at drop-off address. Vehicle held at destination hub.',engine:'HR15221133',chassis:'PNVXX221133',model:'Nissan / Almera',year:'2019'},
+  {no:'EM680000013',dealer:'AZ Motor Sdn Bhd',plate:'WXY9088',created:'03-08-2026 08:35',pick:'05-08-2026',svc:'Door-to-Door',pickState:'Selangor',dropState:'Johor',pay:'OK',del:'Pending Pick Up',einv:'OK',total:850.00,payref:'EM2608030000013-1040113',driver:'—',engine:'DA556677',chassis:'HYNXX556677',model:'Honda / City',year:'2023'},
+  {no:'EM680000014',dealer:'Prima Auto Gallery',plate:'PGU5567',created:'02-08-2026 13:47',pick:'04-08-2026',svc:'Hub-to-Hub',pickState:'Penang',dropState:'Kedah',pay:'OK',del:'In Transit',einv:'OK',total:300.00,payref:'EM2608020000014-1040114',driver:'Faizal A · PGX556',engine:'MZ223344',chassis:'MZDXX223344',model:'Mazda / 3',year:'2022'},
+  {no:'EM680000015',dealer:'Sunrise Auto Trading',plate:'WVC3390',created:'01-08-2026 09:14',pick:'-',svc:'Door Pickup / Hub Drop-off',pickState:'Kuala Lumpur',dropState:'Melaka',pay:'Pending',del:'-',einv:'-',total:500.00,payref:'',driver:'—',engine:'K14778812',chassis:'PRTXX778812',model:'Proton / Saga',year:'2020'},
+  {no:'EM670000016',dealer:'Skyline Motors Sdn Bhd',plate:'BKE7712',created:'15-07-2026 15:22',pick:'17-07-2026',svc:'Door-to-Door',pickState:'Johor',dropState:'Selangor',pay:'OK',del:'Delivered',einv:'OK',total:850.00,payref:'EM2607150000016-1040116',driver:'Ganesh R · JBT771',engine:'HRV445566',chassis:'HNDXX445566',model:'Honda / HR-V',year:'2021'},
+  {no:'EM670000017',dealer:'Meridian Auto Sdn Bhd',plate:'PNT8845',created:'10-07-2026 11:30',pick:'12-07-2026',svc:'Hub-to-Hub',pickState:'Selangor',dropState:'Perak',pay:'OK',del:'Delivered',einv:'OK',total:300.00,payref:'EM2607100000017-1040117',driver:'Lim Chong · PKA330',engine:'2ZR889900',chassis:'THMXX889900',model:'Toyota / Corolla Altis',year:'2018'},
+  {no:'EM670000018',dealer:'Berjaya Mega Motors Enterprise',plate:'JKR2201',created:'05-07-2026 10:10',pick:'-',svc:'Door-to-Door',pickState:'Selangor',dropState:'Kelantan',pay:'Failed',del:'-',einv:'-',total:1050.00,payref:'EM2607050000018-1040118',driver:'—',engine:'A1234501',chassis:'BJKXX450012',model:'Perodua / Axia',year:'2019'}
+];
+
+/* Derived fields for the BackOffice listing */
+const rocByDealer={
+  'Berjaya Mega Motors Enterprise':'200401038456',
+  'Meridian Auto Sdn Bhd':'20231230501923',
+  'AZ Motor Sdn Bhd':'201901022334',
+  'Sunrise Auto Trading':'002233445-K',
+  'Skyline Motors Sdn Bhd':'202001099887',
+  'Prima Auto Gallery':'201801077665'
+};
+/* REQ-012  Vehicle Type value set. A dash is shown where no value is held. */
+const VEHICLE_TYPES=['Sedan / Hatchback','SUV / MPV','Pickup / 4x4','Motorcycle','Commercial / Lorry'];
+function vtypeOf(model){
+  const m=(model||'').toLowerCase();
+  if(!m) return '-';
+  if(/x70|asx|cx-5|hr-v|alza|veloz/.test(m)) return 'SUV / MPV';
+  if(/hilux|ranger|triton|navara|d-max/.test(m)) return 'Pickup / 4x4';
+  if(/lorry|canter|hicom|truck/.test(m)) return 'Commercial / Lorry';
+  return 'Sedan / Hatchback';
+}
+const COLS=['White','Silver','Black','Grey','Red','Blue','',' '];
+DATA.forEach((r,i)=>{ r.roc=rocByDealer[r.dealer]||'-'; r.vtype=vtypeOf(r.model); r.colour=(COLS[i%COLS.length]||'').trim(); if(!r.remarks) r.remarks = r.pay==='Failed'?'IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. 你的RHB银行余额不足.':''; });
+/* Newest created date first */
+function createdTs(s){
+  const m=String(s||'').trim().match(/^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2})$/);   // REQ-004  DD-MM-YYYY HH:mm
+  if(!m) return 0;
+  return new Date(+m[3],+m[2]-1,+m[1],+m[4],+m[5]).getTime();
+}
+DATA.sort((a,b)=>createdTs(b.created)-createdTs(a.created));
+/* sample: remarks a UCD keyed in at Step 1 (shown on details) */
+DATA[0].pickRemark='Please call before arrival at pickup'; DATA[0].dropRemark='Leave at guardhouse, contact Farid';
+function two(n){return String(n).padStart(2,'0');}
+/* SRD v0.3 ID formats
+   REQ-038  Trx No     = EMYM{7-digit running number}          e.g. EM670000012
+   REQ-039  Payment ID = EMYYMMDD{7-digit running number}      e.g. EM2607280000012
+   REQ-040  RHB Ref 1  = Payment ID + '-' + Company ID
+   REQ-041  RHB Ref 2  = EMOVE (fixed) */
+function fmtTrxNo(dt,run){ return 'EM'+(dt.getFullYear()%10)+(dt.getMonth()+1)+String(run).padStart(7,'0'); }
+function fmtPayId(dt,run){ return 'EM'+String(dt.getFullYear()).slice(-2)+two(dt.getMonth()+1)+two(dt.getDate())+String(run).padStart(7,'0'); }
+function fmtRhbRef1(payId,companyId){ return payId+'-'+companyId; }
+const RHB_REF2='EMOVE';
+
+/* ---------------- Helpers ---------------- */
+function money(n){return Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function txStatus(r){ if(r.expired)return'Expired'; if(r.cancelled)return'Cancelled'; if(r.pay==='Failed'||r.del==='Pickup Failed'||r.del==='Delivery Failed')return'Failed'; return (r.pay==='OK' && r.del==='Delivered')?'Completed':'Pending'; }
+
+/* Cancel is BackOffice only, for Tx Status Pending or Failed. Every BackOffice user may
+   cancel; each cancellation is written to an audit log holding the user, date and time. */
+const CURRENT_BO_USER='eautoadmin';
+const cancelAudit=[];
+function cancelTrx(no){
+  const r=DATA.find(x=>x.no===no); if(!r) return;
+  if(!['Pending','Failed'].includes(txStatus(r))){ alert('Only Pending or Failed transactions can be cancelled.'); return; }
+  /* REQ-146  Failed with payment made is BackOffice only, which this portal is. */
+  if(!confirm('Cancel logistics transaction '+no+'?')) return;
+  const when=stamp();
+  r.cancelled=true; r.del='-'; r.cancelledAt=when; r.cancelledBy=CURRENT_BO_USER;
+  r.remarks='CANCELLED BY '+CURRENT_BO_USER+' on '+when;
+  cancelAudit.push({trx:no, user:CURRENT_BO_USER, at:when});
+  applyFilter();
+  alert(no+' cancelled by '+CURRENT_BO_USER+' at '+when);
+}
+function stamp(){ const d=new Date(),p=n=>String(n).padStart(2,'0');
+  return p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes()); }
+function payCls(s){s=(s||'').toLowerCase();return s==='ok'?'green':s==='pending'?'blue':'red';}
+function txCls(s){s=(s||'').toLowerCase();return s==='completed'?'green':s==='failed'?'red':(s==='cancelled'||s==='expired')?'grey':'blue';}
+function delCls(s){s=(s||'').toLowerCase();return s==='delivered'?'green':s==='in transit'?'blue':s==='pending pick up'?'blue':(s==='pickup failed'||s==='delivery failed')?'red':'grey';}
+function einvCls(s){s=(s||'').toLowerCase();return s==='ok'?'green':s==='failed'?'red':'grey';}   // OK / Failed / - / N/A
+function stTxt(cls,txt){return `<span class="st ${cls}">${txt}</span>`;}
+
+/* ---------------- Listing ---------------- */
+function populateDealers(){
+  const set=[...new Set(DATA.map(r=>r.dealer))].sort();
+  document.getElementById('f_dealer').innerHTML='<option value="">All</option>'+set.map(d=>`<option>${d}</option>`).join('');
+}
+function parseDMY(s){const t=String(s||'').trim().split(' ')[0];const m=t.match(/^(\d{2})-(\d{2})-(\d{4})$/);return m?new Date(+m[3],+m[2]-1,+m[1]):null;}
+function inRange(dt,from,to){if(!dt)return false;if(from&&dt<new Date(from))return false;if(to){const t=new Date(to);t.setHours(23,59,59,999);if(dt>t)return false;}return true;}
+let lastRows=[];
+let searched=false;
+function dateKey(e){ if(e.key==='Enter'){ applyFilter(); } e.preventDefault(); }   // calendar-only, Enter searches
+function clearList(){ searched=false; lastRows=[]; document.getElementById('tbl-list').innerHTML=''; document.getElementById('recCount').innerHTML=''; }
+function isod(x){return `${x.getFullYear()}-${two(x.getMonth()+1)}-${two(x.getDate())}`;}
+function setupDates(){
+  const today=new Date(), tISO=isod(today);
+  // Date Created: no future dates
+  document.getElementById('f_from').max=tISO;
+  document.getElementById('f_to').max=tISO;
+  document.getElementById('f_to').removeAttribute('min');
+  // Pickup Date: free selection (past dates allowed); To limited to 1 month of From via onPFromChange
+  ['f_pfrom','f_pto'].forEach(id=>{const e=document.getElementById(id);e.removeAttribute('min');e.removeAttribute('max');});
+}
+function onPFromChange(){
+  const from=document.getElementById('f_pfrom').value, toEl=document.getElementById('f_pto');
+  if(from){ const f=new Date(from), oneM=new Date(f); oneM.setMonth(f.getMonth()+1); toEl.min=from; toEl.max=isod(oneM); if(toEl.value && (new Date(toEl.value)<f||new Date(toEl.value)>oneM)) toEl.value=isod(oneM); }
+  else { toEl.removeAttribute('min'); toEl.removeAttribute('max'); }
+}
+function onFromChange(){
+  const from=document.getElementById('f_from').value, toEl=document.getElementById('f_to'), today=new Date();
+  if(from){
+    const f=new Date(from), oneM=new Date(f); oneM.setMonth(f.getMonth()+1);
+    const maxTo = (oneM<today)?oneM:today;           // within 1 month, but never a future date
+    toEl.min=from; toEl.max=isod(maxTo);
+    if(toEl.value && (new Date(toEl.value)<f || new Date(toEl.value)>maxTo)) toEl.value=isod(maxTo);
+  } else { toEl.removeAttribute('min'); toEl.max=isod(today); }
+}
+/* REQ-048  Cancelled Date range is capped at 1 month and clears the other date filters. */
+function onCancelledDate(){
+  const f=document.getElementById('f_cancfrom'), t2=document.getElementById('f_cancto');
+  if(f.value||t2.value){ ['f_from','f_to','f_pfrom','f_pto'].forEach(id=>{const e=document.getElementById(id); if(e)e.value='';}); }
+  if(f.value && t2.value){
+    const a=new Date(f.value), b=new Date(t2.value), cap=new Date(a); cap.setMonth(cap.getMonth()+1);
+    if(b>cap){ alert('Cancelled Date range cannot exceed 1 month.'); t2.value=''; }
+  }
+}
+function applyFilter(){
+  const gv=id=>(document.getElementById(id).value||'').trim();
+  const dealer=gv('f_dealer'),veh=gv('f_veh').toUpperCase(),vtype=gv('f_vtype'),lhdn=gv('f_lhdn'),cfrom=gv('f_cancfrom'),cto=gv('f_cancto'),trx=gv('f_trx').toUpperCase(),svc=gv('f_svc'),pay=gv('f_pay'),txf=gv('f_tx'),del=gv('f_del'),from=gv('f_from'),to=gv('f_to'),pfrom=gv('f_pfrom'),pto=gv('f_pto');
+  const others=[dealer,veh,vtype,lhdn,trx,svc,pay,txf,del,pfrom,pto,cfrom,cto].some(v=>v);
+  if(!others && (!from||!to)){ alert('Please select From Date and To Date.'); return; }
+  searched=true;
+  lastRows=DATA.filter(r=>{
+    if(dealer && r.dealer!==dealer)return false;
+    if(veh && !r.plate.toUpperCase().includes(veh))return false;
+    if(vtype && (r.vtype||'-')!==vtype)return false;
+    if(lhdn && (r.einv||'-')!==lhdn)return false;
+    if(cfrom||cto){
+      const cd=parseDMY(r.cancelledAt); if(!cd)return false;
+      if(cfrom && cd < new Date(cfrom))return false;
+      if(cto && cd > new Date(cto))return false;
+    }
+    if(trx && !r.no.toUpperCase().includes(trx))return false;
+    if(svc && r.svc!==svc)return false;
+    if(pay && r.pay!==pay)return false;
+    if(txf && txStatus(r)!==txf)return false;
+    if(del && r.del!==del)return false;
+    if((from||to) && !inRange(parseDMY(r.created),from,to))return false;
+    if((pfrom||pto) && !inRange(parseDMY(r.pick),pfrom,pto))return false;
+    return true;
+  });
+  renderList();
+}
+function resetFilter(){['f_dealer','f_veh','f_vtype','f_lhdn','f_cancfrom','f_cancto','f_trx','f_svc','f_pay','f_tx','f_del','f_from','f_to','f_pfrom','f_pto'].forEach(id=>{const e=document.getElementById(id);if(e.tagName==='SELECT')e.selectedIndex=0;else e.value='';});setupDates();}
+function renderList(){
+  let h="<thead><tr><th>#</th><th class='left'>Company Name</th><th>Company ROC</th><th>Vehicle</th><th>Vehicle Type</th><th>Trx No</th><th>Created At</th><th class='left'>Service</th><th>Pickup</th><th>Drop Off</th><th>Payment</th><th>Delivery</th><th>Tx Status</th><th>Cancelled Date</th><th>Cancelled By</th><th>LHDN Response</th><th>Amount (RM)</th><th class='left'>Remarks</th><th>Action</th></tr></thead><tbody>";
+  if(!lastRows.length){ h+="<tr><td colspan='19' style='padding:18px'>No records found.</td></tr>"; }
+  else lastRows.forEach((r,i)=>{
+    const tx=txStatus(r);
+    h+=`<tr>
+      <td>${i+1}</td>
+      <td class='left'>${r.dealer}</td>
+      <td>${r.roc}</td>
+      <td>${r.plate}</td>
+      <td>${r.vtype}</td>
+      <td>${r.no}</td>
+      <td>${r.created}</td>
+      <td class='left'>${r.svc}</td>
+      <td>${r.pickState}</td>
+      <td>${r.dropState}</td>
+      <td>${stTxt(payCls(r.pay),r.pay)}</td>
+      <td>${stTxt(delCls(r.del),r.del)}</td>
+      <td>${stTxt(txCls(tx),tx)}</td>
+      <td>${r.cancelledAt||'-'}</td>
+      <td>${r.cancelledBy||'-'}</td>
+      <td>${stTxt(einvCls(r.einv),r.einv)}</td>
+      <td class='num'>${money(r.total)}</td>
+      <td class='left'>${r.remarks||'-'}</td>
+      <td><a class='view' onclick="openDetails('${r.no}')">View</a>${['Pending','Failed'].includes(txStatus(r))?` &middot; <a class='view cancel' onclick="cancelTrx('${r.no}')">Cancel</a>`:''}</td>
+    </tr>`;
+  });
+  h+="</tbody>";
+  document.getElementById('tbl-list').innerHTML=h;
+  document.getElementById('recCount').innerHTML = searched ? ("<b>"+lastRows.length+"</b> record(s) found") : "";
+}
+function openListing(){ clearList(); show('listing'); }
+
+/* ---------------- Details ---------------- */
+function openDetails(no){
+  const r=DATA.find(x=>x.no===no); if(!r)return;
+  const tx=txStatus(r), paid=r.pay==='OK';
+  const refno='S'+(674493500+(parseInt(r.no.slice(-3))||0));
+  document.getElementById('d_plate').textContent=r.plate;
+  document.getElementById('d_ref').textContent='(Ref No.: '+refno+') - Transaction Details';
+  document.getElementById('d_draft').innerHTML=stTxt(txCls(tx),tx);
+  document.getElementById('d_created').textContent=r.created;
+  // e-Invoice
+  document.getElementById('d_einvsub').textContent=paid?r.created:'-';
+  document.getElementById('d_lhdn').innerHTML=paid?'<b style="color:#1a7a34">OK</b>':'-';
+  document.getElementById('d_einvval').textContent=paid?r.created:'-';
+  // Vehicle (in Transaction Details block)
+  document.getElementById('v_model').textContent=r.model;
+  document.getElementById('v_engine').textContent=r.engine;
+  document.getElementById('v_chassis').textContent=r.chassis;
+  document.getElementById('v_year').textContent=r.year;
+  document.getElementById('v_colour').textContent=r.colour||'-';
+  document.getElementById('v_vtype').textContent=r.vtype||'-';
+  // Logistic details
+  document.getElementById('l_status').innerHTML=stTxt(delCls(r.del),r.del);
+  document.getElementById('l_svc').textContent=r.svc;
+  document.getElementById('l_pick').textContent=(r.pick&&r.pick!=='-')?r.pick:'-';
+  document.getElementById('l_pickaddr').textContent=r.pickState+' — '+addrFor(r.pickState);
+  document.getElementById('l_dropaddr').textContent=r.dropState+' — '+addrFor(r.dropState);
+  document.getElementById('l_pickremark').textContent=(((r.pickRemark||'')+'').trim())||'-';   // remark UCD keyed at Step 1
+  document.getElementById('l_dropremark').textContent=(((r.dropRemark||'')+'').trim())||'-';
+  // Photo links (driver-uploaded) by status
+  const plk=(t,n)=>`<a class="link-b" onclick="openPhotos('${t} — ${r.plate}',${n})">View ${t}</a>`;
+  const links=[];
+  if(r.del==='In Transit'||r.del==='Delivered'||r.del==='Delivery Failed') links.push(plk('Pickup Photos',12));
+  if(r.del==='Delivered') links.push(plk('Drop-off Photos',12));
+  if(r.del==='Pickup Failed'||r.del==='Delivery Failed') links.push(plk('Failure Evidence',3));
+  document.getElementById('d_photolinks').innerHTML = links.length ? links.join(' &nbsp;|&nbsp; ') : '<span style="color:#888">No photos uploaded yet</span>';
+  // Dealer (UCD)
+  document.getElementById('dl_name').textContent=r.dealer;
+  document.getElementById('dl_roc').textContent=r.roc;
+  document.getElementById('dl_pcontact').textContent=contacts[0];
+  document.getElementById('dl_dcontact').textContent=contacts[1];
+  // Payment (numbered attempt list)
+  document.getElementById('d_paylist').innerHTML = paid
+    ? ('1. '+r.created+' - RHB ('+r.payref+') - <b style="color:#1a7a34">OK</b>')
+    : (r.pay==='Failed'
+        ? '1. '+r.created+' - RHB ('+(r.payref||'-')+') - <b style="color:#c0392b">Failed</b> (IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. 你的RHB银行余额不足。)'
+        : 'No payment record yet.');
+  document.getElementById('d_logfee').textContent='RM '+money(r.total);   // eAuto Fee RM0 and SST RM0 in this phase
+  document.getElementById('d_total').textContent='RM '+money(r.total);
+
+  // Delivery tracking
+  const isPickFail=r.del==='Pickup Failed', isDropFail=r.del==='Delivery Failed';
+  const order={'Pending Pick Up':0,'In Transit':1,'Delivered':2};
+  let idx=paid?(order[r.del]!==undefined?order[r.del]:0):-1;
+  if(isPickFail) idx=0; if(isDropFail) idx=1;
+  const ptime=(r.pick&&r.pick!=='-')?r.pick:null;
+  const inTransitDT = ptime? (ptime+' 10:15am') : '—';
+  const failDT = ptime? (ptime+' 11:30am') : '—';
+  const deliveredDT = ptime? (ptime+' 04:40pm') : '—';
+  const fr = r.failReason || 'reason not stated';
+  const stages=[
+    ['Logistics Created','Done',r.created,'Job submitted by dealer'],
+    ['Payment Received',paid?'Done':(r.pay==='Failed'?'Failed':'Pending'),paid?r.created:(r.pay==='Failed'?'Payment failed':'Awaiting payment'),paid?('RM '+money(r.total)):'-'],
+    ['Pending Pick Up', !paid?'Pending':(isPickFail?'Failed':(idx>0?'Done':(idx===0?'Current':'Pending'))), (isPickFail?failDT:'—'), (isPickFail?('Pickup failed &mdash; '+fr+' (driver photo evidence uploaded)'):'Awaiting driver to collect')],
+    ['In Transit', isDropFail?'Done':(idx>1?'Done':(idx===1&&!isPickFail?'Current':'Pending')), ((idx>=1&&!isPickFail)?inTransitDT:'—'), 'Driver picked up · 12 photos uploaded at pickup'],
+    ['Delivered', idx>=2?'Done':(isDropFail?'Failed':'Pending'), (isDropFail?failDT:(idx>=2?deliveredDT:'—')), (isDropFail?('Delivery failed &mdash; '+fr+' (driver photo evidence uploaded)'):'Driver dropped off · 12 photos uploaded at drop-off')]
+  ];
+  const scls=s=>s==='Done'?'green':s==='Current'?'blue':s==='Failed'?'red':'grey';
+  let th="<thead><tr><th>#</th><th class='left'>Stage</th><th>Status</th><th>Date / Time</th><th class='left'>Remarks</th></tr></thead><tbody>";
+  stages.forEach((s,i)=>{ th+=`<tr><td>${i+1}</td><td class='left'>${s[0]}</td><td>${stTxt(scls(s[1]),s[1])}</td><td>${s[2]}</td><td class='left'>${s[3]}</td></tr>`; });
+  th+="</tbody>";
+  document.getElementById('d_track').innerHTML=th;
+  document.getElementById('d_nextaction').innerHTML = isPickFail
+    ? '&#9888; Next Action: Reschedule pickup (1st reschedule — no re-charge) or Cancel &amp; refund.'
+    : (isDropFail ? '&#9888; Next Action: Re-attempt delivery (may incur extra door charge), Hold at destination hub for UCD self-collection, or Return to origin (charged as new leg).' : '');
+
+  show('details');
+}
+function openPhotos(title,n){
+  document.getElementById('pvTitle').textContent=title;
+  const base=title.split(' —')[0];
+  let h=''; for(let i=1;i<=n;i++){ h+=`<div class="pvcell"><span class="cam">&#128247;</span>${base} ${i}</div>`; }
+  document.getElementById('pvGrid').innerHTML=h;
+  document.getElementById('photoOv').classList.add('on');
+}
+function closePhotos(){ document.getElementById('photoOv').classList.remove('on'); }
+
+/* ---------------- Nav ---------------- */
+function show(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+populateDealers();
+clearList();
+setupDates();
+document.getElementById('f_from').addEventListener('change',onFromChange);
+document.getElementById('f_pfrom').addEventListener('change',onPFromChange);
+document.querySelectorAll('#listing .filters2 input[type=text], #listing .filters2 select').forEach(el=>{
+  el.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); applyFilter(); } });
+});
+
+</script>
+</body>
+</html>

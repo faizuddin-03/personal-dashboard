@@ -1,0 +1,132 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/service-hub/biometric-purchase.do (or
+equivalent — UCD Service Hub, Biometric Device Purchase, step 1 "Selection"
+of the 4-step Selection → Payment → Appointment → Submission flow, EAINT-10960)
+Environment: staging.eauto.my/uat1
+Captured: 2026-09-23, pasted into chat by Faizuddin
+Trimmed: header/footer chrome, inline dialogs and scripts kept as pasted;
+nothing removed from the form body itself.
+Significance: first live capture of the UCD-side Biometric Device Purchase
+quantity/recipient form — needed for EAINT-12166 TS02 (40-unit quantity cap,
+41+ clamp) and TS06 (clearing/typing 0 in the quantity box corrects to 1).
+Real selectors:
+ - Quantity stepper: button#bio-qty-minus (onclick="bioStep(-1)"), input#qty
+   name="qty" (plain text input, not number type — value defaults to "1"),
+   button#bio-qty-plus (onclick="bioStep(1)"). oninput="bioQtyType(this)",
+   onchange="bioValidateQty()" — so the 40-cap / 0-correction logic likely
+   lives in bioQtyType()/bioValidateQty(), fired on typing and on blur/change
+   respectively. Error text renders in div#bio-stock-err (display:none by
+   default, no text captured yet since this capture is a clean/default state
+   — the 40-cap clamp message and its exact wording still need a live
+   capture of the ERROR state, not just this default page).
+ - Minus button starts disabled at qty=1 (disabled attribute present),
+   confirming the "-" stays disabled at the floor same as documented for the
+   "+" ceiling at 40.
+ - Recipient Name: input#authorizedReceiver (prefilled from account, e.g.
+   "MUHAMMAD FAIZUDDIN BIN BIDI"), error div#err-authorizedReceiver.
+ - Contact No: input#contactNo (inputmode="numeric", prefilled), error
+   div#err-contactNo.
+ - Shipping Address: checkbox#shipToShowroom (checked by default, "Ship to
+   showroom address"), textarea#deliveryAddress (class "bio-addr locked",
+   readonly — populated only when shipToShowroom is checked, toggled via
+   bioToggleShip()), error div#err-deliveryAddress.
+ - Helper text under the quantity field, confirms the free-install rule
+   already known from dev's guide: "Each biometric device purchase comes with
+   one free software installation" — no UI control for EXTRA installations
+   is visible on this step; that must live on a later step (Payment or
+   Appointment), not step 1. Needs its own capture once reached.
+ - Submit: button.bio-btn.next (type=submit), form posts to
+   /uat1/api/ucd/service-hub/purchase/create.do, client-side gated by
+   onsubmit="return bioSubmitCheck();".
+ - Back link: a.bio-btn.back → /uat1/view/ucd/service-hub/view.do (Service
+   Hub dashboard, not the listing).
+ - Page also carries a back/forward-navigation guard (pushState + popstate
+   listener redirecting to the Service Hub dashboard) — relevant only if
+   browser back-button behavior is ever tested on this flow, not otherwise.
+
+Still NOT captured from this flow: the 40-unit clamp validation message
+itself (need to actually type 41+ and capture the resulting DOM/error text),
+the 0-quantity-correct-to-1 result state, and steps 2–4 (Payment, Appointment,
+Submission) including wherever "extra installations" actually gets selected.
+-->
+<body onload="bioInit()">
+
+<div id="container" class="ucd-container">
+    <div>
+        <div class="bio-top">
+            <div class="bio-title">Biometric Device Purchase:</div>
+        </div>
+
+        <div class="flow-steps">
+            <div class="fs-step active"><div class="fs-num">1</div><div class="fs-lbl">Selection</div></div>
+            <div class="fs-arrow">→</div>
+            <div class="fs-step"><div class="fs-num">2</div><div class="fs-lbl">Payment</div></div>
+            <div class="fs-arrow">→</div>
+            <div class="fs-step"><div class="fs-num">3</div><div class="fs-lbl">Appointment</div></div>
+            <div class="fs-arrow">→</div>
+            <div class="fs-step"><div class="fs-num">4</div><div class="fs-lbl">Submission</div></div>
+        </div>
+
+        <form method="post" action="/uat1/api/ucd/service-hub/purchase/create.do" onsubmit="return bioSubmitCheck();">
+            <div class="bio-card">
+                <div class="bio-card-head">
+                    <img src="/uat1/images/dashboard/icon_biometric.svg" alt="biometric">
+                    <div class="bio-head-titles">
+                        <div class="t1">Biometric Device Purchase</div>
+                        <div class="t2">Purchase dermalog biometric device</div>
+                    </div>
+                </div>
+
+                <div class="bio-body">
+                    <div class="f-row">
+                        <div class="f-label">Purchase Device:<span class="req">*</span></div>
+                        <div class="f-field">
+                            <div class="bio-stepper">
+                                <button type="button" id="bio-qty-minus" onclick="bioStep(-1)" disabled="">−</button>
+                                <input type="text" id="qty" name="qty" class="bio-qty" value="1" oninput="bioQtyType(this)" onchange="bioValidateQty()">
+                                <button type="button" id="bio-qty-plus" onclick="bioStep(1)">+</button>
+                            </div>
+                            <span class="bio-helper">Each biometric device purchase comes with one free software installation</span>
+                            <div id="bio-stock-err" class="bio-stock-err" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <div class="f-row">
+                        <div class="f-label">Recipient Name:<span class="req">*</span></div>
+                        <div class="f-field">
+                            <input type="text" id="authorizedReceiver" name="authorizedReceiver" class="f-text" value="MUHAMMAD FAIZUDDIN BIN BIDI" oninput="bioClearErr('authorizedReceiver')">
+                            <div class="f-err" id="err-authorizedReceiver">This field is required</div>
+                        </div>
+                    </div>
+
+                    <div class="f-row">
+                        <div class="f-label">Contact No:<span class="req">*</span></div>
+                        <div class="f-field">
+                            <input type="text" id="contactNo" name="contactNo" class="f-text" inputmode="numeric" value="0189812839" oninput="bioClearErr('contactNo')">
+                            <div class="f-err" id="err-contactNo">This field is required</div>
+                        </div>
+                    </div>
+
+                    <div class="f-row">
+                        <div class="f-label">Shipping Address:<span class="req">*</span></div>
+                        <div class="f-field">
+                            <div class="bio-check">
+                                <input type="checkbox" id="shipToShowroom" name="shipToShowroom" value="Y" checked="" onclick="bioToggleShip()">
+                                <label for="shipToShowroom">Ship to showroom address</label>
+                            </div>
+                            <textarea id="deliveryAddress" name="deliveryAddress" class="bio-addr locked" oninput="bioClearErr('deliveryAddress')" readonly=""></textarea>
+                            <div class="f-err" id="err-deliveryAddress" style="display: none;">This field is required</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bio-divider"></div>
+                <div class="bio-actions">
+                    <a class="bio-btn back" href="/uat1/view/ucd/service-hub/view.do">Back</a>
+                    <button type="submit" class="bio-btn next">Next</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>

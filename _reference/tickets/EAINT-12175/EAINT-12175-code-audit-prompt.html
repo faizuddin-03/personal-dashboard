@@ -1,0 +1,319 @@
+<title>EAINT-12175 Code Audit Prompt</title>
+<style>
+  :root {
+    --bg: #f5f6f7;
+    --surface: #ffffff;
+    --surface-2: #eceff2;
+    --text: #1b2027;
+    --text-muted: #5b6472;
+    --border: #d9dee4;
+    --accent: #2b5f8a;
+    --accent-soft: #e3edf5;
+    --warn: #9a6a11;
+    --warn-soft: #faf1de;
+    --good: #2f6f4f;
+    --good-soft: #e6f0ea;
+    --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    --sans: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171b;
+      --surface: #1b1f24;
+      --surface-2: #23282e;
+      --text: #e7e9ec;
+      --text-muted: #9aa3ad;
+      --border: #323944;
+      --accent: #7fb0dd;
+      --accent-soft: #223140;
+      --warn: #e0b15e;
+      --warn-soft: #362a12;
+      --good: #7fc79c;
+      --good-soft: #1e3227;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171b;
+    --surface: #1b1f24;
+    --surface-2: #23282e;
+    --text: #e7e9ec;
+    --text-muted: #9aa3ad;
+    --border: #323944;
+    --accent: #7fb0dd;
+    --accent-soft: #223140;
+    --warn: #e0b15e;
+    --warn-soft: #362a12;
+    --good: #7fc79c;
+    --good-soft: #1e3227;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    margin: 0;
+    padding: 48px 24px 96px;
+    line-height: 1.55;
+  }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  header.doc-head {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 26px 28px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    text-wrap: balance;
+    line-height: 1.3;
+  }
+  .sub {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .panel-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-bar .label {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  button#copy-btn {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  button#copy-btn:hover { background: var(--accent); color: var(--surface); }
+  button#copy-btn.copied {
+    color: var(--good);
+    background: var(--good-soft);
+    border-color: var(--good);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    button#copy-btn { transition: none; }
+  }
+
+  pre#prompt-text {
+    margin: 0;
+    padding: 22px 24px;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text);
+    overflow-x: auto;
+  }
+  pre#prompt-text .h {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  footer.doc-foot {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding-top: 4px;
+  }
+
+  .sub {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    max-width: 64ch;
+  }
+  ol.plain { margin: 0; padding-left: 1.4em; font-size: 0.88rem; }
+  ol.plain li { margin-bottom: 6px; }
+  ol.plain li:last-child { margin-bottom: 0; }
+  .pill-good, .pill-warn {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .pill-good { color: var(--good); background: var(--good-soft); }
+  .pill-warn { color: var(--warn); background: var(--warn-soft); }
+</style>
+
+<div class="page">
+
+  <header class="doc-head">
+    <div class="eyebrow">EAINT-12175 — code-audit prompt</div>
+    <h1>Paste into the code-reading chatbot</h1>
+    <p class="sub">Identifies every page or file touching the shared plan-code label behind REQ-012 to REQ-015, and confirms the out-of-scope items stay untouched.</p>
+  </header>
+
+  <div class="panel">
+    <div class="panel-bar">
+      <span class="label">prompt.txt</span>
+      <button id="copy-btn" type="button" aria-live="polite">Copy</button>
+    </div>
+    <pre id="prompt-text">Ticket: EAINT-12175 — [Secarang &amp; eAuto-Insurance] To Correct Insurer Name to
+Lonpac Insurance Bhd &amp; Update SDPA Policy Wording Link
+SRD: SRD_EAINT-12175_v1.1_20260923, revised by Chee Mei Jia
+
+Context: Lonpac's display name is being standardised from "Lonpac Insurance
+Berhad" to "Lonpac Insurance Bhd". Secarang's 5 pages (REQ-001 to REQ-005)
+are already deployed to production. The remaining work is on eAuto: 4
+requirements (REQ-012 to REQ-015) added in SRD v1.1 to fix a SHARED
+plan-code label used by an Insurance Company filter dropdown and its
+result table, on both the UCD portal and the BackOffice portal.
+
+<span class="h">1. Requirement list to trace in code:</span>
+   a. REQ-012 — BackOffice Insurance Enquiry search screen, Insurance
+      Company filter dropdown. Label must read "Lonpac Insurance Bhd".
+   b. REQ-013 — BackOffice Insurance Enquiry, result table, Insurance
+      Company column. Must read "Lonpac Insurance Bhd" for Lonpac rows.
+   c. REQ-014 — UCD Insurance Enquiry AND Payment Report screens,
+      Insurance Company filter dropdown. Same label fix.
+   d. REQ-015 — UCD result table, Insurance Company column, on the same
+      two screens. Must read "Lonpac Insurance Bhd" for Lonpac rows.
+
+<span class="h">2. Find the shared label / lookup mechanism.</span>
+   a. The SRD calls it a "shared plan-code label" — find the single source
+      (constant, enum, lookup table, or database seed row) that maps the
+      insurer's plan code to its display name "Lonpac Insurance Berhad" /
+      "Lonpac Insurance Bhd".
+   b. List every screen, filter, dropdown, table column, report, or export
+      that reads from that same source. The SRD itself flags this risk on
+      REQ-012: "Any other screen using this shared label also displays
+      'Lonpac Insurance Bhd'" — confirm whether that is true, and name
+      every such screen, not only the 4 requirements above.
+
+<span class="h">3. Check the specific pages already confirmed correct</span> (no code change
+   expected, verify nothing else on these pages reads the same shared
+   label used in item 2):
+   a. UCD Insurance Quote &amp; Optional Coverage
+   b. UCD Policy Detail view
+   c. BackOffice Policy Detail view
+   d. eSTM Transaction Detail view
+   e. Credit Portal (hire-purchase/service portal) Insurance Enquiry
+   f. Backend-generated Receipt PDF
+
+<span class="h">4. Check one item the ticket leaves unresolved:</span> the original ticket
+   description named an "Insurance Dashboard" chart series label as also
+   using the shared plan-code label, but SRD v1.1's REQ-012 to REQ-015 do
+   not mention a chart. Find the Insurance Dashboard (menu location,
+   route, or component) and confirm whether its chart reads from the same
+   shared label. Report whether it needs the same fix or was correctly
+   dropped from scope.
+
+<span class="h">5. Explicitly out of scope</span> — do not flag these as needing the fix, but do
+   confirm they are NOT touched by whatever code change satisfies items 1
+   and 2 (a regression risk, not a new requirement):
+   a. Secarang PDS (Product Disclosure Sheet) link — stays on the old
+      pds-sdpa.pdf naming pattern by design.
+   b. Secarang PDF receipt (backend-generated) — separate service, out of
+      scope by design.
+   c. CIBO Admin Portal and Serba Sentral API — flagged inconsistent in
+      the impact assessment but explicitly not part of this request.
+   d. The "(307414-T)" company registration number format — unrelated,
+      separate compliance matter.
+   e. Other insurers' naming (Tokio Marine, RHB, Chubb, Takaful) — must
+      stay untouched.
+
+<span class="h">6. Output wanted:</span> a list of every file/page/component that (a) must
+   change to satisfy REQ-012 to REQ-015, (b) reads the same shared label
+   but isn't named in the SRD (the hidden-blast-radius check), and (c)
+   must be regression-checked to confirm it was NOT accidentally changed
+   (item 5). For each, name the file path and the specific string,
+   constant, or query that ties it to the shared label.</pre>
+  </div>
+
+  <div class="panel">
+    <div class="panel-bar"><span class="label">response received — 2026-09-25</span></div>
+    <div style="padding:20px 24px; display:flex; flex-direction:column; gap:14px;">
+      <p class="sub" style="margin:0;">The chatbot answered with navigation steps (how to reach each page through the UI), not the file paths and constants item 6 asked for. Findings folded into <span style="font-family:var(--mono);">knowledge/flow-eauto-insurance-enquiry.md</span> and the ticket study — resolved items below, open items still need an answer before automating them.</p>
+      <div>
+        <span class="pill-good">Resolved, folded into knowledge base</span>
+        <ol class="plain" style="margin-top:8px;">
+          <li>All 6 must-change pages (REQ-012 to REQ-015) — navigation confirmed.</li>
+          <li>Hidden blast radius found: BackOffice Payment Report (Pemaju), reached only via a separate Insurance Dashboard portal login (<span style="font-family:var(--mono);font-size:0.85em;">/motorInsurance/login/</span>) — not in the SRD's Affected Pages table.</li>
+          <li>Insurance Dashboard chart (item 4) — located, same portal as above.</li>
+          <li>4 of 6 regression-check pages confirmed with no conflict (UCD Policy Detail, BackOffice Policy Detail, eSTM Transaction Detail, Credit Portal Insurance Enquiry).</li>
+          <li>Out-of-scope items 5a to 5c confirmed unreachable from eAuto's own portals — separate codebases entirely.</li>
+        </ol>
+      </div>
+      <div>
+        <span class="pill-warn">Open — not folded in, do not automate yet</span>
+        <ol class="plain" style="margin-top:8px;">
+          <li>UCD Insurance Quote &amp; Optional Coverage — chatbot says BackOffice, SRD Section 2.2.3 says UCD. Contradicts an existing source.</li>
+          <li>"Invoice PDF" the chatbot found may not be REQ-011's Receipt PDF — two different documents, or a naming mismatch. Unconfirmed.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <footer class="doc-foot">Source: EAINT-12175 study, SRD v1.1 (23.09.2026) · _reference/tickets/EAINT-12175/</footer>
+
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copy-btn');
+    var pre = document.getElementById('prompt-text');
+    btn.addEventListener('click', function () {
+      var text = pre.innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1800);
+      });
+    });
+  })();
+</script>

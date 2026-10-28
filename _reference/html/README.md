@@ -142,3 +142,31 @@ matches on `.confirm-dialog-btn` and never on a label.
 Company Details Checker** (EAINT-12153 sub-function): the empty-vs-populated
 `<tbody>` under `#result` is the entire present/absent signal, cited from
 [knowledge/flow-ucd-company-listing.md](../../knowledge/flow-ucd-company-listing.md).
+
+### JomCheck (UCD, BackOffice, Service Portal) — EAINT-12339 automation source
+
+| File | Covers | Env | Captured |
+|---|---|---|---|
+| `ucd-jomcheck-report-menu.html` | UCD JomCheck Report menu — entry point, "Purchase"/"Transaction Listing" buttons | uat1 | 2026-09-30 |
+| `ucd-jomcheck-purchase-form.html` | UCD "Get JomCheck Reports" form, blank state, Vehicle No./Chassis No. radio | uat1 | 2026-09-30 |
+| `ucd-jomcheck-purchase-vehicle-found.html` | Same form after Submit, vehicle found, "Pay Now" + share-with-FI checkboxes | uat1 | 2026-09-30 |
+| `ucd-jomcheck-purchase-paid.html` | Same form after Pay Now — success state, "Download Report" / "Search Another Vehicle" | uat1 | 2026-09-30 |
+| `ucd-jomcheck-transaction-listing.html` | UCD JomCheck Transaction Listing — blank + post-search (17 rows, 3 shapes kept) | uat1 | 2026-09-30 |
+| `ucd-jomcheck-transaction-details.html` | UCD JomCheck Transaction Details — Invoice/e-Invoice/Report buttons, payment history | uat1 | 2026-09-30 |
+| `bo-jomcheck-transaction-enquiry.html` | BO JomCheck Transaction Enquiry — blank form + post-search (42 records, 3 shapes kept) | uat1 | 2026-09-30 |
+| `bo-jomcheck-transaction-details.html` | BO JomCheck Transaction Details — print buttons, Special Remark textarea | uat1 | 2026-09-30 |
+| `bo-jomcheck-report-listing.html` | **BO JomCheck Report Listing, 29-column table — the primary EAINT-12339 automation target** | uat1 | 2026-09-30 |
+| `bo-jomcheck-report-listing-vehicle-filter-active.html` | BO JomCheck Report Listing after a Vehicle No. search (VML4392, post-push row) — `#chassisNo` has `disabled` (TS48 grey-out) | uat1 | 2026-10-04 |
+| `service-portal-home-and-jomcheck-listing.html` | Service Portal home menu + JomCheck Report Listing (blank + 7-record results, Severity counters) | uat1 | 2026-09-30 |
+| `service-portal-jomcheck-listing-datepicker-open.html` | Service Portal JomCheck Report Listing — Shared Date From calendar open (Prev/Next, month + year selects 2016-2026) | uat1 | 2026-10-05 |
+| `service-portal-jomcheck-report-details.html` | Service Portal JomCheck Report Details — PDF rendered inline via `<iframe>` | uat1 | 2026-09-30 |
+| `service-portal-login.html` | Service Portal login page — `name="name"`/`name="pass"` fields, different from UCD/BO's `username`/`password` | uat1 | 2026-09-30 |
+| `bo-home-hub-admin.html` | BO home dashboard (Hub Admin, Jason Seah) — full category grid; confirms the click path into JomCheck screens ("Transactions Relevant" → Jomcheck Transaction; "Settings (Hub Admin)" → JomCheck Report Listing) | uat1 | 2026-09-30 |
+| `ucd-jomcheck-purchase-payment-confirm-dialog.html` | The jQuery UI "Payment" confirm dialog Pay Now opens — `.confirm-dialog-btn`/`.cancel-dialog-btn`, must be accepted for the purchase to complete | uat1 | 2026-10-02 |
+
+**`bo-jomcheck-report-listing.html`'s captured row is pre-v2.0-push data** —
+Possible Total Loss/Possible BER both show `N/A`, matching the "existing
+transaction" behaviour (TS20-TS24), not the new post-push behaviour (TS05-TS19).
+Re-capture a v2.0-connected transaction's row before writing locators that
+assert the new-value states. Cited from
+[knowledge/flow-jomcheck.md](../../knowledge/flow-jomcheck.md).

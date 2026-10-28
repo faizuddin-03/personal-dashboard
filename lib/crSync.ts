@@ -78,7 +78,7 @@ export function bugStats(bugs: ChildBug[] | undefined): { total: number; open: n
 const QA_FIELD_CACHE_KEY = "jira_qa_field_id";
 
 /** Finds the numeric id of the "QA" custom user-picker field (e.g. "10041"), cached in localStorage. */
-async function discoverQaFieldId(creds: JiraCredentials): Promise<string | null> {
+export async function discoverQaFieldId(creds: JiraCredentials): Promise<string | null> {
   const cached = localStorage.getItem(QA_FIELD_CACHE_KEY);
   if (cached) return cached;
   const res = await fetch("/api/jira/fields", {

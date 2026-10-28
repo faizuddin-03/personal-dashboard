@@ -1,0 +1,70 @@
+<!--
+  Fiuu ShopeePay Payment Simulator — the page the ShopeePay QR link opens.
+  URL: https://bank-simulator.fiuu.com/shopeepay/spsimulator?q=<token>. Captured 2026-10-20 by Claude (Playwright page.content()).
+  select#status_code: "✓ Success" (1) / "✗ Failed" (6); button#pay-btn "PROCEED TO PAY" posts to /shopeepay/sprequest.
+  After Pay this tab lands on Secarang /ia/auth/login?returnUrl=/payment/check/<receipt>; the QR popup closes and the main window shows payment-success.
+  Nothing trimmed.
+-->
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>ShopeePay Simulator</title>
+  <link rel="shortcut icon" href="https://bank-simulator.fiuu.com/sandbox.png?v=1792470364" type="image/png">
+  <link rel="icon" href="https://bank-simulator.fiuu.com/sandbox.png?v=1792470364" type="image/png">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link href="https://bank-simulator.fiuu.com/css/sp.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="blue-bar">
+    <img src="https://bank-simulator.fiuu.com/img/fiuuSimulator.png" alt="Fiuu Logo">
+  </div>
+
+  <div class="sp-container">
+    <form name="shopeepay_form" method="post" action="https://bank-simulator.fiuu.com/shopeepay/sprequest" class="sp-form">
+      <input type="hidden" name="_token" value="604xKwzurlvEomXCd4qxvk9iz6sqd9DZHIRgQvQJ">
+      <div class="sp-payment-card">
+        <div class="sp-logo-section">
+          <img src="https://bank-simulator.fiuu.com/img/shopeepay.png" alt="ShopeePay" class="sp-logo">
+        </div>
+        <div class="sp-card-header">
+          <h2 class="sp-title">Payment Simulator</h2>
+          <p class="sp-subtitle">Select payment status to simulate transaction</p>
+        </div>
+
+        <div class="sp-card-body">
+          <label for="status_code" class="sp-label">Payment Status</label>
+          <select class="sp-select" id="status_code" name="status">
+            <option value="1" selected="">✓ Success</option>
+            <option value="6">✗ Failed</option>
+          </select>
+
+          <button class="sp-btn-pay" id="pay-btn" type="submit">
+            <span class="sp-btn-text">Proceed to Pay</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sp-footer">
+        <p class="sp-powered-text">Powered By</p>
+        <img src="https://bank-simulator.fiuu.com/img/FiuuBlue.png" alt="Fiuu" class="sp-fiuu-logo">
+      </div>
+
+      <div id="credit_info">
+        <input type="hidden" name="q" value="15060b118e1989671092e2a918482fbbb3eecf1db3b294">
+        <input type="hidden" name="statusChanged" value="1">
+      </div>
+    </form>
+  </div>
+
+<script>
+  $("#status_code").on('change', function() {
+    console.log(this.value);
+    $('input[name="statusChanged"]').val(this.value);
+  });
+</script>
+
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;2c289d5631264377ad806da7050358cc&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+</body></html>

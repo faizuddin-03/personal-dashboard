@@ -1,5 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { ENV } from "../utils/config";
+import { ENV, PATHS } from "../utils/config";
 
 export class BasePage {
   readonly page: Page;
@@ -48,6 +48,27 @@ export class BasePage {
       if (value) return `${key}=${value}`;
     }
     return "";
+  }
+
+  /**
+   * The logged-in UCD account's own company name, read off the small bold
+   * header at the top of the UCD home page — navigates there to read it.
+   *
+   * CONFIRMED LIVE 2026-09-24 (pasted HTML capture, saved to
+   * _reference/html/eauto/ucd-home-page-uat1-2026-09-24.html): the span has
+   * no id/class of its own (`<span style="font-weight:700; color:
+   * #0B4C5F;">FAIZUDDIN AUTO TEST</span>`), but it sits inside `#container`
+   * — which the app reuses (NOT unique) elsewhere on the same page, so
+   * `.first()` is required; the target is confirmed to be the first
+   * occurrence in DOM order. Same value also appears in the Settings >
+   * Manage Branches table and its Company/Branch filter dropdown, per
+   * Faizuddin, 2026-09-24 — the home-page header is used here since it
+   * needs no extra navigation.
+   */
+  async getLoggedInCompanyName(): Promise<string> {
+    await this.goto(PATHS.ucdHome);
+    const span = this.page.locator('#container.ucd-container span[style*="font-weight:700"]').first();
+    return ((await span.textContent().catch(() => "")) ?? "").trim();
   }
 
   /** Accept the jQuery UI confirmation dialog (clicks the "Yes" button) */

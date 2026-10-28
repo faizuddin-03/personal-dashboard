@@ -154,8 +154,15 @@ popup open forever. `getByRole('button', { name: 'Next' })` misses `#to-payment`
 entirely (it's a `<div>`), so a naive fallback chain can click the page control
 twice and the dialog zero times.
 
-**Always confirm popups via `EstmSession.confirmDialog()`**, which scopes to
-`.ui-dialog:visible` and clicks by the portal's own class hooks. Those classes
+**For any NEW popup handling, confirm via `EstmSession.confirmDialog()`**
+(`scripts/eauto-estm/utils/session.ts:217`), which scopes to
+`.ui-dialog:visible` and clicks by the portal's own class hooks. Exception:
+`scripts/eauto-estm`'s own `PaymentPage.submitPayment()`
+(`pages/PaymentPage.ts:104-130`) does NOT use it — it is a verbatim port of the
+original script's label chain, restored 2026-08-17 after a `confirmDialog()`
+rewrite never got a transaction through; it works only under `slowMo: 600`
+(see § Code map below). Supersedes the earlier "always use confirmDialog()"
+wording. `[verified: scripts/eauto-estm/pages/PaymentPage.ts:79-103]` Those classes
 are applied in each dialog's `open:` handler and are consistent across the app —
 the logout dialog tags "Yes" the same way. One variant uses
 `.confirm-wfw-dialog-btn`; match both.
@@ -188,6 +195,12 @@ shouldSubmitLkm = true;  shouldSubmitEvoc = true;
 |---|---|---|
 | eLKM (road tax) | `#lkm-addson-checkbox` | RM200 + RM2.75 processing |
 | eVOC | `#evoc-addson-checkbox` | RM10 + tax |
+
+**Sub UCD eLKM cap.** "Maximum LKM Amount RM2,000.00 per transaction, unable to
+proceed." At RM2,000.01 the eLKM road-tax amount is struck through and removed and
+the transaction continues without eLKM; RM2,000.00 is allowed. The cap applies to
+the amount for the chosen renewal period (6 or 12 months). Main UCD is not capped.
+`[from SharePoint TS #064 EAINT-8534, sheet WEB, rows 8-13]`
 
 Both default **on** in the dashboard and the suite, to match. `ESTM_ELKM=0` /
 `ESTM_EVOC=0` untick them; an *unset* var means on, so a hand-run with a partial
@@ -233,9 +246,18 @@ Same flow, two generations of the same code. Know which one you are running.
 | Page | `/eauto/estm` | `/eauto/estm-legacy` |
 | Script | `scripts/eauto-estm` | `scripts/eauto-estm-legacy` |
 | Route | `/api/eauto-estm/run` | `/api/eauto-estm-legacy/run` |
-| Shape | page objects, fixture, session helper | one self-contained 459-line spec |
+| Shape | page objects, fixture, session helper | one self-contained 458-line spec |
 | Source | commit `c8a2f57` + working-tree changes | `_reference/automation code/eSTM Bypass/`, verbatim |
-| Extra inputs | bypass slot, eLKM, eVOC email | none — eVOC is hardcoded, slot falls back to `zzz/22` |
+| Extra inputs | eLKM, eVOC checkboxes, eVOC email field (prefilled `faizuddin@modefair.com`). The bypass slot is NOT a dashboard field (removed 2026-08-17); it is `CONFIG.bypassSlot` / `ESTM_BYPASS_SLOT` only — supersedes "bypass slot" listed here earlier | none — eVOC hardcoded to `nicholas.lim@modefair.com` (spec line 39), slot falls back to `zzz/22` (lines 301, 410) |
+
+`[verified: app/api/eauto-estm/run/route.ts:94-103; app/eauto/estm/page.tsx:25-40;
+scripts/eauto-estm-legacy/tests/estm-bypass-test.spec.ts:39,301,410]`
+
+The legacy copy is still byte-identical to the reference
+(`diff` of CR-stripped files is empty) `[verified: diff, 2026-10-16]`. Its
+sidebar entry is hidden (`components/Sidebar.tsx:52-53`); its own
+`README.md` still says it is listed in the sidebar as amber "Create eSTM
+(Original)" — the README is stale on that point, not the sidebar.
 
 **Not rival implementations** — ours is a page-object refactor of the original.
 The script in `_reference/automation code/eSTM (Nick's)/` is a third, separate
@@ -321,7 +343,7 @@ agreement — because normal navigation drops back to unbypassed URLs.
 
 | | Bypass 1 (after step 1 consent) | Bypass 2 (before step 4 agreement) |
 |---|---|---|
-| Call | `withSegment(url)` | plain literal `.replace()`, slot hardcoded |
+| Call | `withSegment(url)` | plain literal `.replace('/<env>/view/', '/<env>/<slot>/<env>/view/')` — slot is `CONFIG.bypassSlot` in `scripts/eauto-estm` (`pages/BuyerDetailsPage.ts:160`), hardcoded `zzz/22` only in the legacy copy (line 410) |
 | Idempotent? | **Yes** — returns the URL untouched if a segment is already present | **No** — re-asserts the segment unconditionally |
 
 Bypass 2 **must** re-inject even when a segment is already in the URL. Routing it
@@ -330,9 +352,13 @@ the flow: the guard returns the URL unchanged, no bypass is applied, the portal
 falls back to the real login identity, and step 4 dies on the popup
 **"Please use login user's mykad"**.
 
-The hardcoded `zzz/22` in bypass 2 therefore reads like a bug and isn't one worth
-"fixing" — the team shares slot 22 permanently, so the constant is never wrong in
-practice. `[verified live: broke it this exact way and reverted, 2026-08-13]`
+In the maintained suite bypass 2 reads `CONFIG.bypassSlot`, so changing
+`ESTM_BYPASS_SLOT` moves both bypasses together (supersedes "slot hardcoded in
+bypass 2", which is now true only of the legacy baseline). If the literal
+`/<env>/view/` is absent, the replace is a no-op and the suite logs
+`WARNING: bypass2 did not change the URL` (`BuyerDetailsPage.ts:161-165`) —
+the run then usually dies at step 3/4 on "Please use login user's mykad".
+`[verified live: broke it by routing through withSegment() and reverted, 2026-08-13]`
 
 ## The steps
 
@@ -524,6 +550,17 @@ handoff table below implied — though the button's own markup still hasn't
 appeared in either capture, so whether/when it actually renders here is still
 `[unconfirmed]`.
 
+The dialogs' verbatim text, from the captures:
+
+| Dialog | Text |
+|---|---|
+| `#insError` | "We're unable to retrieve an insurance quotation for this transaction. Kindly reach out to +6018-2884889 or insurance@eauto.my for assistance." |
+| `#insDoneBuy` | "This transaction cannot be processed. Insurance must be purchased through our platform for this vehicle." |
+| `#blockCase` | "You are unable to proceed with the eSerahan transaction for this vehicle. Please contact  at  for further info." (blank placeholders in the live markup) |
+| `#duplicate-transaction-msg` | "Transaksi yang sama untuk kenderaan dan pemilik ini telah direkod sebelum ini. Sila rujuk kepada eSTM transaction listing." |
+
+`[verified: _reference/html/eauto/estm-step4-jpj-check-submit-dialog.html:332-346; estm-step2-buyer-vehicle.html:381-384, 399-402]`
+
 ### eSTM → insurance handoff (the EAINT-11864 entry points)
 
 Three routes out of the Payment step into the insurance flow, all keyed on the
@@ -560,6 +597,10 @@ insurance follows once that finishes, not on the eLKM toggle itself. Do not
 read the handoff table's "automatically" as "instead of completing payment" —
 an early attempt tried to catch the redirect mid-toggle, skipping payment
 submission entirely, which is wrong for the 69E case.
+
+`[confirmed: Faizuddin, 2026-10-23]` Azfar/Miro Step 4→5 wording is the same
+behaviour as 'after eSTM completion', just more detailed. The /eauto/flows page
+now shows the Azfar/Miro wording; this section's automation guidance is unchanged.
 
 **That "TS02 redirects right on the untick" reading was wrong, and cost real
 manual clicking before it was caught — twice.** The untick only recalculates
@@ -635,27 +676,27 @@ eSTM-entry untick used by TS02/TS03).
   "select whichever insurer card is first" (no hardcoded name) is the right
   design for every case that reaches this page, not just a convenience.
 
-### Step 5 add-ons — eLKM and eVOC are ticked automatically
+### Step 5 add-ons — renewal period and defaults
 
-The Payment step renders an **Add-on Services** block and ticks **both** boxes on
-load, in `$(document).ready`:
+The add-on rules themselves are in § Step 5 add-ons — eLKM and eVOC above; this
+section only adds what that one lacks. (An earlier duplicate of that section
+stood here and said `scripts/eauto-estm` defaults eLKM **off** and that
+`#grandTotalAmount` changing is the signal to wait on — both superseded: eLKM
+and eVOC default **on** (`data/config.ts:46-47`, `ESTM_ELKM`/`ESTM_EVOC` = `"0"`
+is the only off value), and the wait is on the `addon-fee.get` response.)
+`[verified: scripts/eauto-estm/data/config.ts:35-47]`
 
-| Add-on | Checkbox | Default | Cost |
-|---|---|---|---|
-| eLKM (Road Tax) | `#lkm-addson-checkbox` | **ticked**, 12-month (`#renewalPeriod_12`) | ~RM200 + RM2.75 fee |
-| eVOC | `#evoc-addson-checkbox` | **ticked** | RM10 fee |
-
-**Unticking eLKM requires dispatching the native `change` event.** The page
-recalculates fees in a jQuery `change` handler (`doEstmAddonEnq()`), and that
-handler is what updates the `shouldSubmitLkm` flag and the payment total. Set
-`.checked = false` without firing `change` and the box *looks* unticked while the
-transaction still submits LKM and still charges for it. After dispatching, wait
-for the `addon-fee.get` AJAX to land — `#grandTotalAmount` changing is the signal.
-
-`scripts/eauto-estm` defaults eLKM **off** (`CONFIG.elkm` / `ESTM_ELKM=1` to keep
-it): EAINT-11864 TS02/TS03 need it unticked, LKM requires an active insurance
-the test data doesn't have, and it inflates every throwaway transaction.
-`[verified: live DOM from a sit2 run, 2026-08-13]`
+- eLKM renewal period is a pair of hidden radios `name="renewalPeriod"`:
+  `#renewalPeriod_6` (value `6`, label `#renewalPeriod_6_label` "6 Months")
+  and `#renewalPeriod_12`. The 2026-08-13 reading recorded 12-month as the
+  default; the page script also contains `$('#renewalPeriod_6').attr('checked', true)`
+  in one branch (capture line 481), so which is ticked depends on the
+  enquiry. `[unconfirmed: which branch sets 6 months]`
+  `[verified: _reference/html/eauto/estm-step5-payment-before-submit.html:481,802-803]`
+- eLKM/eVOC are still only needed when the scenario needs them; EAINT-11864
+  TS02/TS03 untick eLKM because LKM requires active insurance the test vehicle
+  lacks. The dashboard sends an explicit `"1"`/`"0"` for both on every run
+  (`app/api/eauto-estm/run/route.ts:102-103`).
 
 ### After completion
 
@@ -666,6 +707,32 @@ by title `to view <txn id>`, and the details page exposes **e-Invoice** (also
 popup + download).
 
 Transaction IDs look like **`E631940085`** — `E` followed by 9 digits.
+
+**Document formats (EAINT-4328).** New Butir-butir Hak Milik documents' eBAYARAN JPJ
+columns: "1 Bil 2 Kod Terimaan 3 Kod Terimaan JPJ 4 No. Rujukan 5 Keterangan 6
+Amaun(RM) The columns named "Dari" & "Hingga" is removed"; documents triggered before
+the change keep Dari and Hingga.
+`[from SharePoint TS #047 EAINT-4328, sheet Test Scenario, rows 3, 17]`
+Slip Pengesahan: "If eSTM transaction includes eLKM transaction, display the TEMPOH SAH
+LESEN KENDERAAN MOTOR table"; without eLKM it is not displayed. Date-based old
+formats: created before Nov 2025 → old format with the eBAYARAN JPJ page; Nov 2025 –
+Feb 2026 → old format without that page.
+`[from SharePoint TS #047 EAINT-4328, sheet Slip Pengesahan, rows 2-7]`
+
+**Hak Milik cronjob (EAINT-8523).** When Butir-butir Hak Milik generation fails, the
+BO eSTM listing shows a "[Hak Milik] hyperlink … on Action column"; clicking it gives
+"Upload failed. Please retry." The cronjob later "should pick up transaction to
+generate Butir-butir Hak Milik" and the link disappears.
+`[from SharePoint TS #062 EAINT-8523, sheet Sheet1, rows 4-6]`
+On the Service Portal listing, "Hak Milik = J" means the document was bought from JPJ
+by the cronjob (eSIM STMS Enquiry response code 4K); "Hak Milik = E" means it was
+bought in the eSTM flow. An eSTM without Butir-butir Hak Milik is "NOT listed" there.
+`[from SharePoint TS #080 EAINT-8699, sheet E2E Flow, rows 3, 9, 13]`
+
+**BO JPJ Enquiry (New) for eSTM (EAINT-3677).** New fields LKM, LKM Period, eVOC; LKM
+Yes/No; period 6 or 12 when Yes, 0 when No. The request XML ends with LKM Indicator ~
+LKM Duration ~ eVOC Indicator, e.g. "~Y~6~Y".
+`[from SharePoint TS #046 EAINT-3677, sheet Sheet1, rows 2-13]`
 
 ## The eSTM module pages — verified DOM
 
@@ -856,6 +923,186 @@ special characters), random mobile `01` + 7–9 digits, random email
 - Config sets `slowMo: 600` and the launcher forces
   `--project=chromium --headed --workers=1`.
 
+## Code map — `scripts/eauto-estm` (the maintained suite)
+
+Added 2026-10-16 from a full read of the suite, its run route and dashboard
+page. Every line `[verified: <file:line>]` as cited.
+
+### Configuration knobs (`data/config.ts`, `.env.example`)
+
+| Env var | Default | Meaning | Source |
+|---|---|---|---|
+| `ESTM_ENV_SEGMENT` | **required** (`.env.example` shows `sit3`; dashboard prefills `sit2`, datalist `sit2`/`sit3`/`uat2`) | the `<env>` path segment | `config.ts:56`; `app/eauto/estm/page.tsx:26,99` |
+| `ESTM_VEHICLE_REG_NO` | **required** | step 1 `#vehicleRegNo` | `config.ts:57` |
+| `ESTM_EMAIL_ADDRESS` | **required** (dashboard prefill `faizbidi03@gmail.com`) | buyer email (`Email Address` / `#buyerEmail`) | `config.ts:58`; `page.tsx:29` |
+| `ESTM_MOBILE_NO` | **required** | `Mobile No` / `#contactNo` | `config.ts:59` |
+| `ESTM_USERNAME` / `ESTM_PASSWORD` | `faizuddinsub2` / see file | login; must be patched to the slot's IC | `config.ts:18-19` |
+| `ESTM_ID_TYPE` | `1` | `1` = MyKad, `2` = MyPR; anything else throws `Invalid ESTM_ID_TYPE` | `config.ts:20,65-67` |
+| `ESTM_EVOC_EMAIL` | `faizuddin@modefair.com` | typed into the role-`Email` box and `Reconfirm eVOC Email` | `config.ts:22` |
+| `ESTM_BYPASS_SLOT` | `zzz/22` | bypass slot for both bypasses | `config.ts:34` |
+| `ESTM_ELKM` / `ESTM_EVOC` | on (`"0"` is the only off) | Payment add-ons | `config.ts:46-47` |
+| `ESTM_SKIP_PAUSE` | unset → `page.pause()` at the end | the run route always sets `1` | `config.ts:49`; route `:86` |
+| `EAUTO_ESTM_SCRIPT_DIR` | `scripts/eauto-estm` | run route override | route `:10` |
+
+Missing required vars throw `Missing required env vars: … Provide them via the
+dashboard eSTM form.` before the browser opens (`config.ts:61-64`). Base URL is
+`https://staging.eauto.my/<segment>` (`config.ts:50`).
+
+### Playwright config (`playwright.config.ts`)
+
+`timeout: 0` (the spec sets its own `test.setTimeout(8 * 60_000)`, `tests/estm.spec.ts:17`),
+`workers: 1`, `retries: 0`, project `estm`, **always headed** (`headless: false`
+at both levels), viewport 1920×1080, `navigationTimeout` 60 s, `actionTimeout`
+30 s, `video: 'on'` (bare string — so recordings are downscaled, the trap in
+flow-jomcheck §7g), and **`launchOptions: { slowMo: 600 }` (line 38) — load-bearing**:
+without it `clickNextButtonOrText()` counts dialog buttons before jQuery has
+rendered dialog 1 and clicks `#to-payment` twice. `[verified: playwright.config.ts:1-47]`
+
+### Flow order (`tests/estm.spec.ts:10-48`)
+
+fixture `loggedInPage` (adds `OVERLAY_INIT_SCRIPT`, builds `EstmSession`, logs
+in) → `session.closeBanners()` → `CreateTransactionPage.openAndCreate()` →
+`selectIdType()` → `BuyerDetailsPage.fillAndBypass()` →
+`PaymentPage.completePayment()` → prints `RESULT:{status,vehicleRegNo,envSegment,idType,emailAddress,mobileNo,finalUrl}`.
+
+### Handles per page object
+
+| Page object | Handle | Selector | file:line |
+|---|---|---|---|
+| `LoginPage` | username / password | `getByRole('textbox', { name: 'Username ' })` / `'Password '` (trailing space is real) | `pages/LoginPage.ts:9-10` |
+| | login button | `getByRole('button', { name: 'Login' })` | `:11` |
+| | arrival | `waitForURL(/\/<env>\/view\/ucd\/home(\.do)?/)`, 20 s | `:26-28` |
+| | window | CDP `Browser.setWindowBounds` → `maximized` | `:13-17` |
+| `CreateTransactionPage` | home tile | `getByRole('button', { name: 'eSERAHAN' })`, 4 attempts × 4 s with popup close between | `pages/CreateTransactionPage.ts:9,21-25` |
+| | create | `getByRole('button', { name: 'CREATE eSERAHAN TRANSACTION' })` | `:10` |
+| | modal close | `getByRole('button', { name: 'Close', exact: true })` | `:11` |
+| | identity | link `MALAYSIAN ( 马来西亚公民) ` (trailing space) / `MyPR - PEMASTAUTIN TETAP` | `:12-13` |
+| | confirm | `button.confirm-dialog-btn` has-text `Yes` → normal → force → JS click | `:14,38-43` |
+| `BuyerDetailsPage` | vehicle | `#vehicleRegNo` | `pages/BuyerDetailsPage.ts:13` |
+| | eVOC email | `getByRole('textbox', { name: 'Email' })` — role on purpose, see § The two email fields | `:22` |
+| | consent | `#buyer-consent` (setChecked force → `label[for="buyer-consent"]` → JS + `input`/`change`), then `toBeChecked()` | `:23,51-67` |
+| | reconfirm | `getByRole('textbox', { name: 'Reconfirm eVOC Email' })`, visible within 30 s | `:24,89-91` |
+| | buyer email / mobile | role `Email Address` (then JS `blur()`) / `Mobile No` | `:25-26,95-100` |
+| | same address | `ensureChecked('#to-same-address')` | `:104` |
+| | engine | role `Engine No` ← `*/ -1231Aa` | `:27,111` |
+| | chassis | `input[name="chassisNo"], #chassisNo` if `count()>0`, else role `Chassis No` ← `913821AA/* --` | `:118-122` |
+| | step submit | role button `Next`, 3 attempts, then optional role `Yes` (5 s) | `:125-134` |
+| | UCD consent | JS force on `#ucd-consent` (click + checked + events), then `ensureChecked` | `:138-148` |
+| | agree | `ensureChecked('#to-agree')` then `getByText('Next')` (10 s) | `:174-176` |
+| `PaymentPage` | buyer IC | `#refId` value → stdout `BUYER_IC:<ic>` (only exists on the payment page) | `pages/PaymentPage.ts:143-145` |
+| | add-on block present? | `#estm-adds-on` (no-op when absent) | `:66` |
+| | add-on toggle | JS set `.checked` + `change`, wait `addon-fee.get` response 12 s, re-read box and `#grandTotalAmount` | `:22-57` |
+| | add-on errors | `#lkm-error-msg:visible, #evoc-error-msg:visible` text logged | `:73-74` |
+| | submit chain | `clickYesAndWait` → `getByText('Make Payment')` → `clickYesAndWait` → dialog `Payment` role button `Next` if present else `clickNextButtonOrText` → `clickNextButtonOrText` → role button `OK` → `getByText('Done')` | `:104-130` |
+| | processing | `#dialog:visible` waited hidden up to 120 s | `:156-162` |
+| | left step 5? | `.header-element-active .txn-header-div` text ≠ `5`, 60 s — reported, never thrown | `:168-178` |
+
+### `EstmSession` (`utils/session.ts`) — no business selectors
+
+`progress(step,label)` prints `PROGRESS:{step,label,status}` (`:14-16`) — the
+run route parses these into the dashboard's step list (route `:33`). Step keys
+in order: `login`, `popup`, `eserahan`, `create_btn`, `id_type`, `vehicle_no`,
+`buyer_consent`, `bypass1`, `reconfirm_email`, `contact_details`,
+`engine_chassis`, `submit_step3`, `ucd_consent`, `bypass2`, `payment_page`,
+`addons`, `payment_submit`, `payment_submitted`, `payment_done`. Also:
+`active()` newest live page `?? fallback` (`:19-31`), `waitForActivePage(8000)`
+(`:34-45`), `logUrl(tag)` prints `URL [tag]: …` (`:51-54`), `closeBanners(8)`
+(`:62`), `ensureChecked()` 3 attempts then `toBeChecked` (`:164-187`),
+`confirmDialog(15000)` topmost `.ui-dialog:visible` → `button.confirm-dialog-btn,
+button.confirm-wfw-dialog-btn`, else exact-label fallback
+`/^(Next|Yes|OK|Ok|Proceed|Make Payment|I Accept)$/` scoped to the dialog
+(`:217-252`), `clickYesAndWait()` 10 s bounded (`:254-261`),
+`clickNextButtonOrText()` (`:263-268`).
+
+`utils/overlay.ts` pulses every clicked/focused/typed element with a
+`.pw-action-highlight` outline (`#ff2d55`, 650 ms) for the video.
+
+### Run route and dashboard
+
+- `POST /api/eauto-estm/run` spawns `npx playwright test --project=estm`, 10-minute
+  kill (`TIMEOUT_MS`, route `:13`), parses `PROGRESS:`/`RESULT:`, and copies the
+  newest `.webm` to `public/qa-artifacts/eauto-estm/run.webm`, **deleting every
+  earlier file there first** — only the latest run's video survives
+  (route `:39-60`).
+- Dashboard `/eauto/estm` (`RUN_KEY = "eauto/estm"`, background run via
+  `useApp()`): Environment, ID type, Vehicle Reg No*, Buyer email*, Buyer
+  mobile*, Username, Password, "eVOC email (fixed)", add-on checkboxes (both
+  on). `[verified: app/eauto/estm/page.tsx:13,25-40,90-136]`
+- Legacy route `/api/eauto-estm-legacy/run` passes `ESTM_USERNAME` defaulting
+  to `faizuddinsub2` (the spec's own fallback `nsub2abc` is therefore never
+  used from the dashboard), never passes `ESTM_EVOC_EMAIL`, and publishes to
+  `public/qa-artifacts/eauto-estm-legacy/` (route `:23,122-135`). So a legacy
+  run's eVOC goes to `nicholas.lim@modefair.com`, which breaks the "eVOC is
+  always `faizuddin@modefair.com`" rule — accepted, because the baseline must
+  stay unedited.
+
+### Nick's reference scripts (`_reference/automation code/eSTM (Nick's)/test1/`)
+
+- `tests/estm-test.spec.ts` (75 lines) is the **non-bypass** recording: logs in
+  as `nlim3`, closes `#dialog-raya-campaign` "×", fills `nicholas.lim@modefair.com`
+  as eVOC and `n128314812@gmail.com` as buyer, then waits for
+  `text=/thumbprint|biometric.*(success|verified)/i` (30 s) — unusable unattended.
+- `tests/estm-bypass-test.spec.ts` (398 lines) is an older generation than
+  `eSTM Bypass/estm-bypass-test.spec.ts` (458): its popup closer targets only
+  `#dialog-raya-campaign`, `[role="dialog"]`, `.modal`, `.swal2-container`,
+  `[class*="popup"]`, while the newer one uses `[id$="-campaign"]`,
+  `.modal-campaign`, `#eautoPopupOverlay`, `.modal.in`, `.modal.show` with a
+  3 s wait for late popups, and emits `PROGRESS:` lines.
+- `scripts/run-estm-bypass-interactive.cjs` prompts with `readline`, random
+  email `<10 chars>@test.com`, random mobile `01` + 7–9 digits, then spawns
+  `npx playwright test --project=chromium --headed --workers=1` with `ESTM_*`
+  vars. `package.json` scripts `estm_bypass`, `run-estm-bypass`,
+  `test:estm:ask` all run it.
+
+### Payment step DOM inventory (`_reference/html/eauto/estm-step5-payment-before-submit.html`)
+
+Ids present on the Payment page, useful for any future assertion:
+amounts `#paymentAmount`, `#fisAmount`, `#eautoAmount`, `#lkmAmount`,
+`#lkmEautoServiceFee`, `#evocEautoServiceFee`, `#taxAmount`,
+`#grandTotalAmount`, `#payment-summary-date`; eLKM block `#elkm-addson`
+(gets class `addon-disabled` on `hasRetryWithoutLkm`), `#lkm-body`,
+`#lkm-details-container`, `#lkm-effective-date`, `#lkm-expiry-date`,
+`#lkm-region`, `#lkm-amount`, `#lkmAmountExceedMaxError`; eVOC block
+`#evoc-adds-on`, `#evoc-price-info-section`; dialogs `#sure-to-submit-payment`
+(+ `-addon-container`, `-addon-pricing`, `-addon-selected`),
+`#fis-amount-different-dialog`, `#sure-to-continue`, `#sure-to-continue-later`,
+`#sure-to-retry`, `#sure-to-cancel`, `#confirm-retry`, `#confirm-reset-dialog`,
+`#transaction-approved-cancelled-dialog`, `#allow-insurance-dialog`,
+`#dialog-insurance-access-denied`, `#dialog-insurance-not-add-as-user`,
+`#custom-dialog`/`#custom-field`, `#session-timeout-dialog`,
+`#countdown-dialog-timeout`, `#popup-blocker-dialog`; the confirm popup's
+mirror fields all prefixed `pu-` (`#pu-grandTotalAmount`, `#pu-lkm-section`,
+`#pu-evoc-section`, …).
+
+**The add-on enquiry, verbatim shape** (capture lines 597-700):
+
+```
+GET /<env>/api/ucd/estm/transaction/addon-fee.get
+  transactionId, evocIndicator (bool), lkmDuration (checked renewalPeriod value),
+  lkmIndicator ("Y" or ""), retryWithoutLkmIfErr=true
+response: .code == "OK", .item = JSON
+  estmResponseCode == "VEL000069E" → getInsuranceQuote()
+  isFailedEstm → custom dialog "JPJ Enquiry Failed: <errorCodeDesc>" linking
+                 /<env>/view/ucd/estm/transaction/estm-enq.do?id=<transactionId>
+  errorMsg != null → error text into #lkm-error-msg / #evoc-error-msg,
+                     BOTH add-ons unticked, both submit flags false
+  hasRetryWithoutLkm → eLKM unticked and disabled
+  fields: paymentAmount, fisAmount, eautoAmount, lkmAmount, lkmEautoAmount,
+          evocAmount, serviceTax, grandTotal, requestAt, effectiveDate,
+          expiryDate, declarationArea
+```
+
+`shouldSubmitLkm` is reset to `false` at the start of every enquiry and set
+only from `data.lkmIndicator == "Y"` on an OK response. `getInsuranceQuote()`
+posts `/<env>/api/ucd/insurance/quote/process-quote.do?transactionId=<uuid>`
+and redirects to `/<env>/view/ucd/insurance/plan/view.do?transactionId=<insuranceTxnId>&isFirstTime=true`.
+`[verified: capture lines 585-700]`
+
+The step-5 captures each name their transaction: HX036 (dialog 1 open),
+HX037 (before submit), HX038 (dialog 2), HX061 (FIS-amount dialog). All use
+HX-prefixed vehicles, i.e. the shared HX eSIM prefix — set its eSTM Enquiry
+codes before each run (knowledge/esim.md standing rule).
+
 ## What is NOT covered
 
 - **Company (`SYARIKAT`) eSTMs.** The identity picker offers it; neither script
@@ -873,3 +1120,155 @@ special characters), random mobile `01` + 7–9 digits, random email
 - **BO-side views** of an eSTM.
 - **The insurance leg.** Picks up in
   [flow-insurance-purchase.md](flow-insurance-purchase.md).
+
+## The MyKad-emulator route (no URL bypass) — 2026-10-19
+
+Faizuddin, 2026-10-19: for EAINT-12412_TS12 "use the emulator method ...
+instead of changing the URL". The normal URL `/<env>/view/ucd/estm/transaction`
+shows two biometric screens, both the standard `mykad-websocket-v2.js` widget
+([mykad-emulator.md](mykad-emulator.md)):
+
+1. **Step 1 "Buyer Authentication"** — `_reference/html/eauto/estm-step1-buyer-mykad-auth.html`.
+   On load: `#vehicleRegNo` and `#email` readonly, `#buyer-consent` disabled,
+   "No card is detected. Please insert IC and click [Scan IC] to try again.",
+   `#readMyKadButton` "Scan IC". After "Verification Completed", `#continueButton`
+   "Next" posts the card to `/ucd/estm/transaction/wskad.do` and continues to
+   `/view/ucd/estm/transaction/data-entry.do`. `[verified: live HTML, uat1]`
+2. **Step 3 "Seller Authentication"** — `_reference/html/eauto/estm-step3-seller-mykad-auth.html`.
+   The UCD consent names the login user: "Saya, MUHAMMAD FAIZUDDIN BIN BIDI (No.
+   Kad Pengenalan: 030217141005), sebagai wakil sah FAIZUDDIN AUTO TEST 2
+   (030312-A)". `#ucd-consent` disabled until the card is read; Next continues
+   to `/view/ucd/estm/transaction/estm-enq.do` (step 4 JPJ Check). In that run
+   the buyer was the same identity (030217141005), so one card serves both
+   screens. `[verified: live HTML, uat1]`
+
+**Step 1 order:** enter the vehicle no. and the eVOC email first, then tick
+`#buyer-consent`, then insert the MyKad. "need to input 2 fields first, and then
+click the check box. and then can input using the emulator" `[from Faizuddin, 2026-10-19]`
+(The capture shows them readonly/disabled at load; they open before the card read.)
+Clicking `#buyer-consent` opens the MyKad box; a Playwright `check()` fails there
+("Clicking the checkbox did not change its state") because the page manages the tick —
+click it, wait for `#mykad-control-container`, then insert the card, same as the eDereg
+script. The emulator control panel is opened at the start of the run and kept open.
+`[verified: live run, uat1, 2026-10-19]` Automated
+in `scripts/eauto-jomcheck/pages/estm/` — a step-for-step COPY of `scripts/eauto-estm`
+(session, login, create, BuyerDetailsPage, PaymentPage) with only the two URL bypasses
+replaced by the eDereg `runMykadAuth` + emulator client (project `estm-emulator`: headed,
+slowMo 400, LNA-off flags, camera/mic/midi permission grant, same as eDereg). An earlier
+rebuild from captures broke repeatedly — Faizuddin, 2026-10-19: "follow the steps of the
+original eSTM flow other than the fingerprint bypass". `scripts/eauto-estm` (URL bypass)
+is unchanged.
+
+Emulator card for this UCD: IC **"030217-14-1005"**, name **"MUHAMMAD FAIZUDDIN BIN BIDI"** — typed with the dashes. `[from Faizuddin, 2026-10-19]`
+
+**First emulator purchase, 2026-10-19 (12412_TS12):** HX0006EX, Ref E601941728, Approved;
+JPJ, eVOC and eLKM final submissions Successful; buyer and dealer rep both 030217141005;
+dealer FAIZUDDIN AUTO TEST 2 (030312-A). All three e-Invoice sections showed **LHDN
+Response Status: Failed** and no e-Invoice button appeared — page note: "e-Invoices are only
+available for customers with a valid TIN." `[verified: live HTML —
+_reference/html/eauto/estm-details-approved-lhdn-failed.html]` LHDN can read Failed right after
+payment and turn OK later ("the e-Invoice will take time to display" `[from Faizuddin,
+2026-10-19]`), so TS12 waits the full e-Invoice window (10 min, like the JomCheck TS)
+regardless of a Failed status.
+Cause confirmed: the UCD account used for HX0006EX / HX0007EX (company FAIZUDDIN AUTO TEST 2,
+030312-A) had no TIN updated yet — "i havent update the TIN number for this account"
+`[from Faizuddin, 2026-10-19]`. Update the account's TIN before running TS12 on it.
+
+**12412_TS12 is back on the MyKad emulator (2026-10-20).** On 2026-10-20 morning the
+two auth screens were switched to a hand read (MyKad + finger on the reader, 10-min wait
+for Next). Same day Faizuddin: "for 12412, can you make the automation to use the
+emulator again". Restored exactly the 2026-10-19 emulator version: `BuyerDetailsPage`
+takes a `MykadEmulatorClient`, `runMykadAuth` waits for `#mykad-control-container`,
+`insertCard()`, then Next (30 s); the spec needs `JOMCHECK_12412_TS12_MYKAD_NRIC` /
+`_NAME`; dashboard fields "MyKad NRIC (login user)" (030217-14-1005) and "MyKad name
+(login user)" (MUHAMMAD FAIZUDDIN BIN BIDI) are back. Start the emulator at
+http://localhost:7878 before the run. `[user, 2026-10-20]`
+
+
+## Additions from the 2026-10-23 flows study
+
+Source: lib/eautoFlows/modules/*.ts (data mirror for /eauto/flows). Only facts not already in this file.
+
+- Other systems reading eSTM: eauto-elasticgateway (search index), eauto-einvoice (tax invoice), eauto-notification (email/WhatsApp), eauto-simulator on non-prod. [askeauto: Q6 eSTM / eSerahan prod code 2026-10-23]
+- Two permission layers: layer 1 company on/off set by eAuto Admin in BO; layer 2 given by the UCD Main user, max 10 people per company. [askeauto: Q6 prod code 2026-10-23]
+- Optional approver user approves transactions left in PendingApproval. [askeauto: Q6 prod code 2026-10-23]
+- Credit / hire-purchase companies view linked eSTM read only through a separate IP-whitelisted portal. [askeauto: Q6 prod code 2026-10-23]
+- Mobile app eSTM code is commented out in prod; app is not an entry point. Android app being aligned to web eSTM. [askeauto: Q6 prod code 2026-10-23] [jira: EAINT-12551] [jira: EAINT-12568]
+- Jobs: EstmJpjSubmissionJob (batch submit and commit of paid eSTM; also drives linked eLKM and eVOC), HirePurchaseExpiredJob (expires hire-purchase linkage), EstmPatchCommitJob / EstmCancelCommitJob (manual patch or reset-and-cancel of stuck commits), EstmHakmilikSubmissionJob and EstmHakMilikTriggerJob (hakmilik inserts). [askeauto: Q6 prod code 2026-10-23]
+- FI flow (69E path) shows all insurers; non-FI flow with Approved eSTM shows only the top two. [miro: uXjVGih1g4s=]
+- Kod Hasil on reconciliation: eLKM H0171105; eSTM H0272423. [azfar: cr/EAINT-10168/LEDGER.md]
+- BO JPJ Resubmission (eSTM) is the staff tool for stuck transactions; some BO admin pages are limited by hardcoded user lists. [askeauto: Q6 prod code 2026-10-23]
+
+## Update 2026-10-27 from Charmain repo
+
+Source: read-only clone `_reference/codebases/eauto-qa-charmain/`, folder
+`intake/` (commit `0ab45d1`). Test titles are tested expectations from other
+QAs' scripts, not verified behaviour. Inventory: `script-inventory-team.md`.
+
+### Legacy shared repo — the eSTM E2E failure-point taxonomy
+
+The team's legacy repo `eautoAutomation-Playwright` (branch `staging/sit2`) holds
+90 `ESTMUCDREG_*` E2E specs plus EAINT-4285 / 4323 / 5339. `[charmain-repo: intake/reports/legacy-shared.md:134-145]`
+Their titles name every failure point the eSTM flow has. Pattern:
+`<category> - <step> Negative Flow (<add-ons>) - <failure point> (due to <product>)`.
+`[charmain-repo: intake/reports/legacy-shared.json:7798-12634]`
+
+1. **Categories:** Individual (MyKad), Individual (MyPR), Company; vehicle Car or Bike.
+2. **Permission personas:** full, "eLKM Permission ONLY", "eVOC Permission ONLY",
+   "No Permissions". Login helpers `ucdE2ELogin`, `ucdElkmPermE2ELogin`,
+   `ucdEvocPermE2ELogin`, `ucdNoPermE2ELogin`. `[charmain-repo: intake/reports/legacy-shared.md:945-955]`
+3. **Failure points, in flow order:**
+   a. Step 4: "eSTM 1st JPJ Enquiry Failed".
+   b. Step 4 → 5: "Step 4 to Step 5 JPJ Enquiry Failed (due to eSTM | eLKM)".
+   c. Step 5: "[Hidden] JPJ Enquiry Failed (due to eSTM | eLKM | eVOC)".
+   d. Step 5: "<product> RHB Payment Enquiry Failed" (eSTM, eLKM, eVOC each).
+   e. Step 5: "eSTM 2nd JPJ Enquiry Failed (due to eSTM | eLKM | eVOC)".
+   f. Step 5: "eSTM Final JPJ Submission Failed (due to eSTM | eVOC)" and
+      "eLKM Final JPJ Submission Failed (due to eLKM)".
+4. **Happy flows:** eSTM only; eSTM + eLKM; eSTM + eVOC; eSTM + eLKM + eVOC;
+   EAINT-4323 adds "eLKM - 12 months" and "eLKM - 6 months" with eLKM Permission;
+   EAINT-4285 "With Prepopulated Address". `[charmain-repo: intake/reports/legacy-shared.json:7299-7469]`
+5. Use: the matrix for any eSTM regression or eSIM steering plan. Each failure point
+   maps to an eSIM response to steer (see `esim.md`).
+
+### Listing filters the legacy suites exercise
+
+1. BO eSTM Transaction listing (`ESTMBOPT_TS1-38`): Quick Search vs Search Now,
+   Company Name full / partial, Company ROC, Vehicle No full / partial, Transaction
+   No., Category Type (Company, Malaysian), Vehicle Type (Car), From / To date,
+   Payment From / To date, Transaction Status, "eLKM Payment Status", "eLKM Payment
+   'From' & 'To' Date", "eLKM JPJ Status", Export, View. `[charmain-repo: intake/reports/legacy-shared.json:855-892]`
+2. UCD eSTM listing (`ESTMUCDPT_TS1-28`): Transaction Status Pending / Failed /
+   Approved, Created and Payment date ranges, "Click 'Show Draft Trx Only'
+   checkbox", eLKM Payment Status OK / Pending / Failed, eLKM JPJ Status OK /
+   Pending / Failed. `[charmain-repo: intake/reports/legacy-shared.json:1347-1374]`
+3. Date-window rule seen in titles: "(1-Month Duration)" and "(1st up to
+   yesterday's date, less than a month)" — matches the one-month max rule in memory.
+
+### Other teams' eSTM scripts
+
+1. **Charmain `tools/macrokiosk-fixtures`** — data creators, not tests:
+   `flows/eauto-estm-create.js` (169 lines), `eauto-estm-listing.js`,
+   `eauto-estm.js`, shared `_lib/estm.js` (594), `_lib/thumbprint.js` (160),
+   `_lib/stms.js` (481), `eauto-stms-create.js`. "every QA needs eSTM and insurance
+   transactions to exist before testing anything". `[charmain-repo: intake/reports/charmain-macrokiosk.md:27-56]` `[charmain-repo: intake/sources.yaml:151]`
+   Before reusing, compare step for step with `scripts/eauto-estm` (memory rule:
+   copy working flows verbatim).
+2. **Charmain `backoffice-audit`** — `estm-user-permission-1-layer.js` (433 lines)
+   and `estm-user-permission-2-layer.js` (393): two browser contexts race Save on
+   the BO eSTM permission pages to see what the audit trail records. MyKad-gated in
+   part. `[charmain-repo: intake/reports/charmain-backoffice-audit.md:32-33]` `[charmain-repo: intake/sources.yaml:140]`
+   Matching legacy BO pages: "BO Setting - 1Layer Permission Listing", "BO Setting -
+   2Layer Permission Setup". `[charmain-repo: intake/reports/legacy-shared.json:3179, 3227]`
+3. **Azfar probes** — "eSerahan — VEL000069E mid-flow diverts to insurance" and
+   "eSerahan — walk the wizard and dump every step"; deferred, not migrated.
+   `[charmain-repo: intake/reports/azfar.md:29-30]` `[charmain-repo: intake/reports/azfar.json]`
+   Agrees with this file's 69E → insurance redirect (memory: fires after full
+   completion).
+4. **Charmain EAINT-8622** — `src/estm.js`, `src/jpjlog.js`, `src/esim.js` helpers
+   for the New BRN check. `[charmain-repo: intake/reports/charmain-8622.md]`
+5. **Legacy BO support pages for eSTM:** "BO Resubmit JPJ Final Submission (ESTM)",
+   "BO - Support Tools - eSTM Transaction", "BO - Settings (Hub Admin) - JPJ XML Log
+   (ESTM)", "BO - Settings (Hub Admin) - Manual Payment Processing (STMS,APT,eSTM)",
+   "BO - Settings (Hub Admin) - Generate Batch Invoice (STMS,APT,eSTM)".
+   `[charmain-repo: intake/reports/legacy-shared.json:4649, 4902, 4223, 3879]`

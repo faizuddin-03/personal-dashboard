@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page, type Locator, expect, test } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { PATHS } from "../utils/config";
 
@@ -51,9 +51,14 @@ export class ServiceRequestListingPage extends BasePage {
   }
 
   async searchByReferenceNo(refNo: string) {
-    await this.referenceNoInput.fill(refNo);
-    await this.searchBtn.click();
-    await this.waitForNav();
+    await test.step(`UCD listing: search by Reference No. = ${refNo}`, async () => {
+      await this.referenceNoInput.fill(refNo);
+      await this.demoHighlight(this.referenceNoInput);
+      await this.demoHighlight(this.searchBtn);
+      await this.searchBtn.click();
+      await this.waitForNav();
+      await this.demoPause();
+    });
   }
 
   async searchWithFilters(opts: {
@@ -65,15 +70,19 @@ export class ServiceRequestListingPage extends BasePage {
     paymentDateFrom?: string;
     paymentDateTo?: string;
   }) {
-    if (opts.referenceNo) await this.referenceNoInput.fill(opts.referenceNo);
-    if (opts.serviceType) await this.serviceTypeSelect.selectOption(opts.serviceType);
-    if (opts.status) await this.statusSelect.selectOption(opts.status);
-    if (opts.dateRequestedFrom) await this.dateRequestedFromInput.fill(opts.dateRequestedFrom);
-    if (opts.dateRequestedTo) await this.dateRequestedToInput.fill(opts.dateRequestedTo);
-    if (opts.paymentDateFrom) await this.paymentDateFromInput.fill(opts.paymentDateFrom);
-    if (opts.paymentDateTo) await this.paymentDateToInput.fill(opts.paymentDateTo);
-    await this.searchBtn.click();
-    await this.waitForNav();
+    await test.step(`UCD listing: search with filters ${JSON.stringify(opts)}`, async () => {
+      if (opts.referenceNo) await this.referenceNoInput.fill(opts.referenceNo);
+      if (opts.serviceType) await this.serviceTypeSelect.selectOption(opts.serviceType);
+      if (opts.status) await this.statusSelect.selectOption(opts.status);
+      if (opts.dateRequestedFrom) await this.dateRequestedFromInput.fill(opts.dateRequestedFrom);
+      if (opts.dateRequestedTo) await this.dateRequestedToInput.fill(opts.dateRequestedTo);
+      if (opts.paymentDateFrom) await this.paymentDateFromInput.fill(opts.paymentDateFrom);
+      if (opts.paymentDateTo) await this.paymentDateToInput.fill(opts.paymentDateTo);
+      await this.demoHighlight(this.searchBtn);
+      await this.searchBtn.click();
+      await this.waitForNav();
+      await this.demoPause();
+    });
   }
 
   async resetFilters() {
@@ -127,8 +136,16 @@ export class ServiceRequestListingPage extends BasePage {
 
   /** Click "View" action on a row → Service Request Details Page */
   async clickView(row: Locator) {
-    await row.getByText("View", { exact: false }).click();
-    await this.waitForNav();
+    const refNo = await this.getRowReferenceNo(row);
+    await test.step(`UCD listing: click View on row ${refNo}`, async () => {
+      // Green — this is the row the test found and is about to open, so a
+      // reviewer can see WHICH row (reference no., status, etc.) it picked.
+      await this.demoHighlight(row, { color: "green" });
+      await this.demoHighlight(row.getByText("View", { exact: false }));
+      await row.getByText("View", { exact: false }).click();
+      await this.waitForNav();
+      await this.demoPause();
+    });
   }
 
   /**

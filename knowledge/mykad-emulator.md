@@ -348,3 +348,192 @@ never performs, or (2) the two connections are tracked separately somehow —
 neither was confirmed, and it no longer matters for this suite's purposes
 now that the behaviour itself is verified. Leaving the theories here only in
 case a future multi-tab scenario needs the "why," not the "does it work."
+
+## Also used for eSTM (UCD) — 2026-10-19
+
+The UCD eSTM Buyer and Seller Authentication screens load the same widget, so
+EAINT-12412_TS12 uses the emulator there instead of the zzz/<slot> URL bypass
+— port in `scripts/eauto-jomcheck/utils/mykadEmulator.ts` (identity passed in,
+no video manifest), Chrome flags in that suite's `estm-emulator` project. See
+[flow-estm.md](flow-estm.md) § "The MyKad-emulator route". Not yet run live.
+
+## From Charmain's repo (eauto-qa-charmain, read 2026-10-27)
+
+Source: read-only clone at `_reference/codebases/eauto-qa-charmain/` (branch
+`consolidate-charmain`, commit 0ab45d1, 2026-10-13). Tags below are
+`[charmain-repo: <path>:<line>]`. Her repo carries the emulator itself, so
+several open points in this file now have an answer.
+
+### 1. What the emulator is and where it comes from
+
+1. Dev owns it. Source of truth is the eauto_v2 repo,
+   `.claude/skills/mykad-reader-emulator/`; Charmain's copy is byte-identical,
+   copied at eauto_v2 commit `1abaa1b`. Run:
+   `node tools/mykad-reader-emulator/scripts/server.js` (port `MYKAD_PORT`,
+   default 7878). The vendored `ws` module is committed, so no install step.
+   `[charmain-repo: tools/README.md:5-30]`
+2. **The "control panel" at `http://localhost:7878` is the same server's test
+   page** (`assets/mykad-emulator-test.html`), served on `/`. Any other HTTP path
+   is 404. `[charmain-repo: tools/mykad-reader-emulator/scripts/server.js:271-298]`
+3. Terminal client: `scripts/mykad-cmd.sh <COMMAND> [JSON]` (wraps `client.js`;
+   `MYKAD_WS_URL` overrides the socket).
+   `[charmain-repo: tools/mykad-reader-emulator/scripts/mykad-cmd.sh:1-17; scripts/client.js:10]`
+
+### 2. Protocol (full command list)
+
+1. Device commands the page sends: `GETTOTALSESSION`, `INIT`, `READCARD`, `LIVESCAN`.
+2. Card commands: `INSERTCARD:<json>`, `REMOVECARD`, `GETCARD`.
+3. Config: `SETDEVICE:<json>`, `SETCONFIG:<json>` (`sendVersion`, `matchResult`),
+   `GETDEVICE`, `GETCONFIG`, `RESETDEVICE`, `RESETCONFIG`, `RESETALL`, and the
+   shorthand `SET_VERSION__x`, `SET_DEVICENUMBER__x`, `SET_CARDREADER__x`,
+   `SET_SENDVERSION__true|false`, `SET_MATCHRESULT__<value>`.
+4. Happy path: `GETTOTALSESSION` → `TotalActiveSession "1"`; `INIT` → `Version`,
+   `Device Number`, `Smart Card Ready`; `READCARD` → waits silently until a card
+   is inserted → `Scanner Start` → `Fingerprint` → `MYKAD_DATA` (stringified JSON,
+   `DataTitle:"MYKAD"`) → `Template Quality` → `Matching Result`
+   (`{Result, MatchedPosition, NRIC, Time_Stamp}`) → card ejected.
+5. Card fields: `NRIC` (dashes included, as the real device sends), `GMPCName`,
+   `OriginalName`, `KPTName` (this spelling), `OldIC`, `OtherID`, `Gender`, `DOB`,
+   `POB`, `DateIssue`, `Citizenship`, `Race`, `Religion`, `Category`,
+   `Address1-3`, `Postcode`, `City`, `State`, hand codes, PR / green-card fields,
+   `Photo`. Missing fields fall back to built-in defaults (`MYKAD_NRIC`,
+   `MYKAD_NAME`… env vars read at start).
+6. `matchResult` values: `Identical` (default), `Not Identical`,
+   `Image quality too low` — this is how negative thumbprint paths are reached.
+
+`[charmain-repo: tools/mykad-reader-emulator/SKILL.md:46-202; scripts/server.js:520-600]`
+
+### 3. Answers to questions this file left open
+
+1. **Multi-session guard** (§ "Multi-session handling" above). The emulator
+   answers `GETTOTALSESSION` with a hard-coded `"1"`, whatever the real
+   connection count. That is why the AATF page's `hTotalActiveSession` guard never
+   fires when a second client (the control panel, or our `insertCard()`) connects.
+   `[charmain-repo: tools/mykad-reader-emulator/scripts/server.js:522-523]`
+2. **`INIT` wipes the inserted card.** Every `INIT` resets the channel's card
+   state. The page sends `INIT` when its socket opens, so a card inserted before
+   that is lost and the later `READCARD` parks forever. Insert only once the page
+   is reading: `#readMyKadButton` enabled and visible, or `#mykadReadingContainer`
+   without `d-none`. This is the mechanism behind our "wait for
+   `#mykad-control-container` BEFORE `insertCard()`" ordering.
+   `[charmain-repo: src/pages/wizard.page.ts:230-267; tools/mykad-reader-emulator/scripts/server.js:526-530]`
+3. **Channels.** The server keys card state by URL path: `/IDCard` = channel
+   `default`, `/IDCard/ch0` = `ch0`. eAuto pages hard-code `/IDCard`, so every
+   test must use the default channel, and reader specs must run with ONE worker.
+   Found 2026-09-22, when per-worker channels left the page reading "No card is
+   detected" forever.
+   `[charmain-repo: src/fixtures/mykad.ts:200-218; tools/mykad-reader-emulator/scripts/server.js:88-92]`
+4. **HMAC.** Every reply carries `HMAC = HMAC-SHA256(message, MYKAD_WS_SECRET_KEY)`.
+   Charmain's notes say the eAuto backend validates it against a **per-company**
+   secret in the `biometricsettings` table, plus a company allowlist kept by dev,
+   a 30-minute timestamp window and a one-use rule per signature (`biometriclog`).
+   A wrong key looks exactly like a broken reader: it connects, then every message
+   is rejected. `[charmain-repo: tools/README.md:47-77; env/env-default:52-55]`
+   `knowledge/flow-platform.md` still lists HMAC checking as `[unconfirmed]`;
+   this is the lead to confirm with dev.
+5. **`wsPublicKey`.** Newer reader builds require `?wsPublicKey=<DER SPKI P-256,
+   hex>` on the socket URL. Without it they answer every command with
+   `{"DataTitle":"Error","Message":"Public key empty."}` and keep the socket open,
+   which reads as a hang. Charmain's fixture mints a key per run.
+   `[charmain-repo: src/fixtures/mykad.ts:85-109]`
+
+### 4. Charmain's fixture — a different client shape from ours
+
+1. `src/fixtures/mykad.ts` talks to the emulator from the **Node test process**
+   with the `ws` module (`ws://127.0.0.1:<port>/IDCard?wsPublicKey=…`), one short
+   connection per command. It never opens a browser tab, so the "blank second
+   tab" trap above cannot happen. `[charmain-repo: src/fixtures/mykad.ts:107-135]`
+2. **Conflict:** this file says (§ "A real client must open
+   `http://localhost:7878`", 2026-08-24) that the panel page has to be opened for
+   a connection to exist. Charmain's fixture never opens that page and reports an
+   end-to-end STMS run working on 2026-09-22. Both are recorded; not reconciled.
+   Possible explanation `[unconfirmed]`: our failure was the emulator process not
+   running, and opening the page only exposed that.
+   `[charmain-repo: src/fixtures/mykad.ts:200-236]`
+3. **Start or adopt.** The fixture probes with a `GETCARD` round trip (not a bare
+   TCP check — the port accepts before the WebSocket upgrade works). If nothing
+   answers within 1.5 s it spawns `server.js` and waits up to 15 s. Teardown kills
+   the process only if it started it; a borrowed emulator gets `RESETCONFIG` only,
+   so a forced "Not Identical" never leaks into the next spec.
+   `[charmain-repo: src/fixtures/mykad.ts:137-169, 200-296]`
+4. **`insertCardForCurrentUser(page)`.** The portal refuses any card but the
+   signed-in user's: *"Please use login user, <NAME>'s MyKad."* The screen prints
+   the expected number in the PERAKUAN text — `(No. Kad Pengenalan: 880101-01-1234)`
+   — so the fixture reads it with
+   `/No\.?\s*Kad\s*Pengenalan\s*[:：]?\s*([0-9]{6}-[0-9]{2}-[0-9]{4})/i` and inserts
+   that. It stops with a message when no number is on screen.
+   `[charmain-repo: src/fixtures/mykad.ts:59-68, 176-184, 251-262; tools/README.md:79-88]`
+   Our rule is that identities are typed on the dashboard; reading the number off
+   the page is an option for screens that print it, not a replacement.
+5. **Success signal.** Wait for "Verification Passed" / "Verification Completed",
+   never for "Scanning IC" to go away (it does not, on success). On the STMS
+   wizard `#continueButton` stays `d-none` until verification passes, so its
+   visibility is the pass signal, and a `Not Identical` run never shows it.
+   `[charmain-repo: docs/runbooks/mykad-emulator.md:62-65; src/pages/wizard.page.ts:269-283]`
+6. Some screens (STMS seller) show "Scan IC" and wait; others (STMS buyer)
+   auto-read on Smart Card Ready and show "Scan IC" only after their own 10 s
+   no-card timeout. Handle both: insert once reading; if Next does not appear,
+   click Scan IC and insert again. `[charmain-repo: src/pages/wizard.page.ts:213-284]`
+
+### 5. Screens that load the reader (measured against eAuto source by Charmain)
+
+1. UCD: New e-SERAHAN (buyer + UCD auth, step 1, and the without-thumbprint
+   variant); New STMS (seller + buyer auth behind PERAKUAN PENJUAL / PEMBELI);
+   STMS wholesale leg; BMK purchase and consent; e-Invoice consent; wholesale
+   handover reject; Settings › Add User Account; director Account Activation;
+   eSTM permission grant, insurance user permission, UCD services.
+2. Public: Account Activation and consent, including the AATF one.
+3. AATF: New Deregistration and owner consent; Upload Certificate of
+   Destruction; Settings › user add and edit.
+4. BackOffice has no reader screen.
+5. The eSerahan declaration screen starts the reader by itself — no "Read MyKad"
+   button; the page sends `READCARD` on load and waits.
+
+`[charmain-repo: docs/runbooks/mykad-emulator.md:16-43]`
+
+### 6. "Update Required / use Firefox 36" gate — a second cause
+
+**Conflict:** § "Dermalog Biometric Device — Update Required" above found the
+cause to be Chrome's Local Network Access block, and records that real Chrome did
+NOT fix it (2026-08-22, AATF deregistration). Charmain's runbook says the gate on
+the **account-activation page** (`/public/activation/`) is a browser check that
+bundled Chromium fails and real Chrome passes, so her config pins
+`channel: "chrome"`. Her config ALSO carries the LNA flag
+(`--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests`,
+noted as "Chrome 138+"). Safe reading: use both — real Chrome AND the LNA flag.
+`[charmain-repo: docs/runbooks/mykad-emulator.md:101; playwright.config.ts:73-92]`
+
+Related trap: a fixture build that swaps the BO director IC forces a thumbprint
+re-verification, so the next UCD login diverts to `/public/activation/` and hits
+that gate, ending in a forced password reset. Whether every swap does this is
+`[unconfirmed]` in her notes.
+`[charmain-repo: .claude/skills/test-evidence-recording/references/eaint-12054.md:382-395]`
+
+### 7. Troubleshooting table (Charmain's runbook)
+
+| Symptom | Cause |
+|---|---|
+| Socket never connects, page console quiet | Chrome LNA block — launch flag |
+| Connects, every message rejected | wrong `MYKAD_WS_SECRET_KEY` for that environment |
+| Key right, step still fails | company not on the instance's emulator allowlist (dev keeps it) |
+| `READCARD` never completes | no card inserted (waits by design) |
+| Read OK, Next refuses | card is not the logged-in user's |
+| "Update Required / Firefox 36" on activation | bundled Chromium; use real Chrome |
+
+The first three look like a product defect. Check all three before raising one.
+`[charmain-repo: docs/runbooks/mykad-emulator.md:89-105]`
+
+### 8. Emulator versus URL bypass
+
+1. Emulator = the default; proves page, protocol and card-data handling.
+2. URL bypass (`zzz/<n>` segment, see [flow-estm.md](flow-estm.md)) = only where
+   the emulator cannot run; proves nothing about the reader; never in a spec
+   whose subject is the reader; the spec must say which it used. Her fixture
+   never falls back to the bypass by itself.
+3. Charmain's bypass helper inserts `BYPASS_U<n>` and the instance after the
+   instance segment: `/<inst>/view/…` → `/<inst>/<BYPASS_U<n>>/<inst>/view/…`.
+   Slot values come from env keys, never literals.
+4. Neither proves the physical device. A release that changes the reader
+   integration still needs one manual run on real hardware.
+
+`[charmain-repo: src/auth/thumbprint-bypass.ts:1-25; docs/runbooks/mykad-emulator.md:106-119; tools/README.md:89-98; src/fixtures/mykad.ts:18-26]`

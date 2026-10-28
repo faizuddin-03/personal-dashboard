@@ -1,0 +1,163 @@
+<title>TS06 and TS19 Findings</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; each finding = source cards (TS, SRD, CIBO) stacked, screenshots full width. */
+:root {
+  --bg: #f5f7f9; --surface: #ffffff; --fg: #1b2530; --muted: #5a6876; --line: #d8dfe6;
+  --accent: #1f5f8b; --bad: #b42318; --bad-bg: #fdecea; --good: #146c43; --good-bg: #e7f5ee;
+  --quote-bg: #eef3f7;
+  --display: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a;
+  --quote-bg: #1f2b36; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a;
+  --quote-bg: #1f2b36; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 30px/1.15 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 700 22px/1.2 var(--display); margin: 0; text-wrap: balance; }
+h3 { font: 600 13px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.meta { color: var(--muted); font-size: 14px; }
+.status { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.pill { font: 600 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+.pill.good { background: var(--good-bg); color: var(--good); }
+section.finding { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px 20px; display: grid; gap: 20px; }
+.finding-head { display: grid; gap: 8px; border-left: 4px solid var(--bad); padding-left: 12px; }
+.source { display: grid; gap: 10px; min-width: 0; }
+blockquote { margin: 0; background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; font-size: 15px; white-space: pre-line; }
+blockquote cite { display: block; margin-top: 8px; font: 12px/1.4 var(--mono); color: var(--muted); font-style: normal; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+figcaption { font: 12px/1.4 var(--mono); color: var(--muted); }
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font: 13px/1.4 var(--mono); font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; }
+td.bad { color: var(--bad); font-weight: 600; }
+.ask { background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; display: grid; gap: 4px; }
+.ask strong { color: var(--accent); font-weight: 700; }
+ul.passed { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.grid2 { display: grid; gap: 20px; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">EAINT-12107 + EAINT-12327 · staging CIBO</span>
+    <h1>12107_TS06 and 12327_TS19</h1>
+    <p class="meta">Dashboard runs 20 Oct 2026: 12107_TS06 at 16:47 (run 1792486033042), 12327_TS19 at 16:48 (run 1792486136162). Each failed on one check.</p>
+    <div class="status"><span class="pill good">TS06: answered, accepted as pass</span><span class="pill good">TS19: answered, existing behaviour</span><span class="pill good">EW check and filter ticks pass</span></div>
+  </header>
+
+  <section class="finding" id="ts06">
+    <div class="finding-head">
+      <span class="eyebrow">12107_TS06 · answered: accepted as pass</span>
+      <h2>The PayLater by Grab row shows plain "GrabPay" as its Payment Channel</h2>
+      <p>Payment Management, filter = GrabPay - PayLater by Grab. The filter returns only BR60006259 (the transaction dev patched to PayLater by Grab), but its Payment Channel reads "Fiuu eWallet GrabPay".</p>
+    </div>
+    <div class="grid2">
+      <div class="source">
+        <h3>What the TS says</h3>
+        <blockquote>Ensure listing &amp; excel only show transactions with Payment Channel = GrabPay - PayLater by Grab<cite>12107_TS06 · steps 6–8, Expected Result</cite></blockquote>
+        <blockquote>3. Payment channel displaying Fiuu eWallet [Payment Method]<cite>12107_TS05 · CIBO Expected Result · Payment Management page</cite></blockquote>
+      </div>
+      <div class="source">
+        <h3>What CIBO shows</h3>
+        <blockquote>"BR60006259","Secarang","TEST1111UD","Fiuu eWallet | GrabPay","RM1,052.55","Paid","19-10-2026 16:32","LON20261019SEW0005"<cite>12107_TS06-GrabPay-PayLater-by-Grab-export.csv · the only row</cite></blockquote>
+      </div>
+    </div>
+    <div class="source">
+      <h3>What the SRD says</h3>
+      <p>Nothing on this. SRD 12107 v1.2 has no rule for the Payment Channel text in the results; §2.2.7 covers only how the filter ticks behave (see "Passed"). The expected text comes from the TS.</p>
+    </div>
+
+    <div class="source">
+      <h3>Other sources (Teams CR chat, dev message)</h3>
+      <p>None of these states the Payment Channel text for a PayLater row. Together they say PayLater by Grab is a GrabPay payment told apart by a Fiuu indicator, not a separate channel.</p>
+      <blockquote>1. spay later and paylater by grab are not separate payment channels. / fiuu confirmed they are options inside the shopee and grab apps. on our / side we only add 2 channels, shopeepay and grabpay. … fiuu returns a field / grabpay_indicator (GPWALLET, POSTPAID, INSTALMENT_4), and our backend already reads this same block of data for card / payments. just need 1 new column.<cite>Teams, EAINT-12107 CR chat · 2026-09-03 19:06 · Kasheng Liew (dev)</cite></blockquote>
+      <blockquote>Hi Everyone To add on for CIBO &gt; Payment Management &gt; Payment Channels filter, here is the new filter name ya: [x] Fiuu - eWallet [x] GrabPay [x] GrabPay - PayLater by Grab [x] ShopeePay [x] ShopeePay - SPayLater Kindly take note that Shamini just need to know whether it is full payment or installment - no need to state instalment monts.<cite>Teams, EAINT-12107 CR chat · 2026-09-07 18:10 · Yi Link Lim (BA) · filter names only</cite></blockquote>
+      <blockquote>4. cibo - grabpay paylater filter is not in the dropdown yet because we can only check the indicator in production. will add it after we confirm fiuu does pass the indicator.<cite>Teams, EAINT-12107 CR chat · 2026-09-08 17:15 · Kasheng Liew (dev)</cite></blockquote>
+      <blockquote>3. ee435087-2054-4aa5-8fe6-753d7bfee06b - GrabPay PayLater (Instalment)<cite>Dev message relayed by Faizuddin · 2026-10-19 · the patch request for BR60006259</cite></blockquote>
+      <p class="meta">Reading: the filter finds BR60006259 through the patched indicator, while the Payment Channel column still names the channel, GrabPay. That fits "not separate payment channels", but no message confirms the column text, so the question to dev stands.</p>
+    </div>
+    <figure>
+      <img src="img/ts06-paylater-channel.png" alt="CIBO Payment Management, filter GrabPay - PayLater by Grab, one row BR60006259 with Payment Channel Fiuu eWallet GrabPay boxed in red">
+      <figcaption>12107_TS06-GrabPay-PayLater-by-Grab-wrong-channel-ISSUE.png · red box = Payment Channel cell</figcaption>
+    </figure>
+    <div class="ask"><strong>QA decision (20 Oct 2026)</strong><span>"we will accept this behaviour as pass" (Faizuddin), based on the dev note that PayLater by Grab is not a separate channel. The automation now accepts "Fiuu eWallet GrabPay" under this filter.</span></div>
+  </section>
+
+  <section class="finding" id="ts19">
+    <div class="finding-head">
+      <span class="eyebrow">12327_TS19 · answered: existing behaviour (pass)</span>
+      <h2>eAuto transaction shows "RHB" on the Payment Report page but "RHB – eAuto" in its export</h2>
+      <p>B22002806 (eAuto, paid 03-02-2022). Same value "RHB" on Transaction Listing, its export and the Payment Report page; only the Payment Report export differs. B24000169 (RMS) matches on all 4.</p>
+    </div>
+    <div class="source">
+      <h3>What the TS says</h3>
+      <blockquote>Ensure for each transaction:
+1. Payment Mode shows a value on the Transaction Listing
+2. Payment Mode shows the same value on the Exported Transaction Listing
+3. Payment Mode shows the same value on the Payment Report
+4. Payment Mode shows the same value on the Exported Payment Report<cite>12327_TS19 · CIBO Expected Result</cite></blockquote>
+    </div>
+    <div class="source">
+      <h3>What the SRD says</h3>
+      <figure>
+        <img src="img/srd-12327-2-2-6.png" alt="SRD 12327 v1.1 section 2.2.6 Payment Report: REQ-007 The exported file of Payment Report displays the same Payment Mode value as the Payment Report page">
+        <figcaption>SRD_EAINT-12327_v1.1_20261020.pdf (re-uploaded 20-10-2026 15:05) · page 14 · §2.2.6 REQ-007</figcaption>
+      </figure>
+    </div>
+    <div class="source">
+      <h3>What CIBO shows</h3>
+      <figure>
+        <img src="img/ts19-rhb-export.png" alt="CIBO Payment Report for B22002806, Payment Mode cell RHB boxed in red with caption Exported file shows RHB – eAuto">
+        <figcaption>12327_TS19-report-export-B22002806-ISSUE.png · red box = Payment Mode on the page; caption = value in the file</figcaption>
+      </figure>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Where</th><th>Transaction Ref. No.</th><th>Payment Mode</th><th>Platform</th></tr></thead>
+          <tbody>
+            <tr><td>Transaction Listing export</td><td>B22002806</td><td>RHB</td><td>eAuto</td></tr>
+            <tr><td>Payment Report page</td><td>B22002806</td><td>RHB</td><td>eAuto</td></tr>
+            <tr><td>Payment Report export</td><td>B22002806</td><td class="bad">RHB – eAuto</td><td>eAuto</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="meta">From 12327_TS19-txn-export-B22002806.csv and 12327_TS19-report-export-B22002806.csv. The export already has a separate Platform column ("eAuto").</p>
+    </div>
+    <div class="ask"><strong>QA decision (20 Oct 2026)</strong><span>"RHB - eAuto -- considered pass. this is the existing behaviour" (Faizuddin). The automation now accepts "RHB" or "RHB – eAuto" in this export.</span></div>
+  </section>
+
+  <section class="finding" style="gap:16px">
+    <h2>Passed in the same runs</h2>
+    <ul class="passed">
+      <li>TS06 GrabPay filter: 16 rows, all "Fiuu eWallet GrabPay"; the 4 old "SFX" rows (07–08 Sep) logged as expected, per dev.</li>
+      <li>TS06 ShopeePay filter: 13 rows, all "Fiuu eWallet ShopeePay".</li>
+      <li>TS06 options: GrabPay, GrabPay - PayLater by Grab, ShopeePay; no separate SPayLater.</li>
+      <li>TS06 ticking "Fiuu - eWallet" ticks all 3 (REQ-012); the list shows only Fiuu eWallet rows; export 30 rows.</li>
+      <li>TS06 unticking ShopeePay unticks only ShopeePay; "Fiuu - eWallet" becomes unticked; the other 2 stay ticked (REQ-013).</li>
+      <li>TS19 B24000169 (RMS): "RMS" on all 4 places.</li>
+    </ul>
+    <div class="grid2">
+      <figure>
+        <img src="img/ts06-shopeepay-unticked.png" alt="Payment Channel filter after unticking ShopeePay: Fiuu - eWallet unticked, GrabPay and GrabPay - PayLater by Grab ticked">
+        <figcaption>12107_TS06-shopeepay-unticked.png · step 17</figcaption>
+      </figure>
+      <figure>
+        <img src="img/srd-12107-2-2-7.png" alt="SRD 12107 v1.2 section 2.2.7 REQ-011 to REQ-013 filter tick behaviour">
+        <figcaption>SRD_EAINT-12107_v1.2_20261020.pdf · page 17 · §2.2.7 · filter tick behaviour</figcaption>
+      </figure>
+    </div>
+  </section>
+</div>

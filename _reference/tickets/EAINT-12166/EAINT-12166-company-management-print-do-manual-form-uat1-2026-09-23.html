@@ -1,0 +1,314 @@
+<!--
+URL: staging.eauto.my/uat1/view/account/user/print.do (reached via Company
+Management edit page's "Print DO »" button, #to-print-do)
+Environment: staging.eauto.my/uat1
+Captured: 2026-09-23, pasted into chat by Faizuddin (two states: the blank
+form, and the same form after clicking "Generate »" — the second paste says
+only "after filling in the mandatory details and clicking generate, it will
+download the pdf", no new HTML, so only the blank form is captured here).
+Trimmed: the two <script> blocks (jQuery datepicker init/validation, same
+allowed-chars/state-city-district AJAX pattern as the company edit page) are
+omitted as boilerplate; the form itself is NOT trimmed.
+Significance: THIS IS THE OLD MANUAL "Print DO (New Registration)" form under
+Company Management — dev's QA guide regression item R5 ("Company Management —
+Print DO (New Registration)... this old form is unchanged apart from where it
+reads the Report Engine URL from settings"). It is NOT the new EAINT-12166
+one-click [DO] button on the BO Service Request Details page for a Biometric
+Device Purchase transaction — that lives in a separate capture
+(EAINT-12166-bo-sr-details-arranged-do-assigned-uat1-2026-09-23.html) and still
+needs its own PDF/download verified once Report Engine is confirmed working.
+Confirms this old form still exists post-deploy and prefills from the company
+record (Company Name, Reg. No., Main User Name, Contact Number, Username,
+UserBioID block) — useful only for the R5 smoke-check regression pass, not for
+EAINT-12166's actual TS.
+
+Key fields on the blank form:
+ - Delivery Order Type select#orderType: "NEW REGISTRATION" (default,
+   selected) / "DEVICE PURCHASE" — the DEVICE PURCHASE option existing here is
+   notable: this manual form has ALWAYS had a Device Purchase mode, separate
+   from the new automated Service Request Details [DO] button. Worth flagging
+   to dev/QA whether this manual "DEVICE PURCHASE" option is a legacy/parallel
+   path that needs its own regression check, since neither the SRD nor dev's
+   guide mentions it.
+ - Delivery Order Number: input#deliveryOrderNo (free text, required, blank —
+   manually typed on this old form, unlike the new auto-generated
+   yyyyMMdd/DP-0001 numbering scheme)
+ - Yr. of Reg.: select#selectElementId name="yearOfReg" (2001–2026)
+ - Company Name/Reg. No.: input#companyName, input#registrationCompany
+   (prefilled from the company record)
+ - Main User Name: input#primaryUserName (prefilled)
+ - Contact Number: input#primaryBranchPhone (prefilled)
+ - Company Branch Address: textarea#companyAddress (rendered BLANK here even
+   though postcode/city/state hidden inputs are populated — worth a defect
+   check if this manual form is ever exercised for real)
+ - Username/Password: input#username (prefilled "faizuddin"), input#password
+   (blank, required — this old form asks for the account's actual password as
+   a printed field, a design difference from the new automated flow which
+   never surfaces a password anywhere)
+ - UserBioID block: up to 6 rows, select#userBioId1..6 (Main User/Sole
+   Prop./2nd User/Others), input#primaryUserName1..6, input#primaryBranchPhone1..6
+ - Number of Device: select#noOfDevice (1–10) — controls how many of the 10
+   possible input#deviceSerialNo1..10 fields are shown/required
+ - Additional Remarks: textarea#additionalRemarks (required)
+ - Issue By: input#issuedByName, input#issuedByDesignation, input#issuedByDate
+   (all required)
+ - Generate button: input#to-print-do (toolbar), value="Generate »" — posts to
+   form#print-form action=/view/account/user/print.do
+-->
+<body>
+<div id="container">
+    <div>
+        <div class="tool-bar">
+
+            <a href="/uat1/view/account/company/edit.get?id=1109700" class="back-to">« Back</a>
+
+            <span class="app-title">Print Delivery Order #1109700 </span>
+            <input type="button" class="button" id="to-print-do" value="Generate »">
+
+        </div>
+        <form id="print-form" method="POST" action="/uat1/view/account/user/print.do">
+
+        <input autocomplete="off" name="hidden" type="text" style="display:none;">
+
+        <input type="hidden" name="companyAccountId" id="companyAccountId" value="1109700">
+        <input type="hidden" id="primaryUserRefId" name="primaryUserRefId" size="30" class="is-required" label="Director / Owner MyKad Number" value="030217141005" maxlength="15">
+
+        <table class="grid">
+        <colgroup><col width="50%">
+        <col width="50%">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10"> Company Details
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <div class="label">Delivery Order Type<span class="required">*</span>:</div>
+                        <select id="orderType" name="orderType" class="is-required" label="Delivery Order Type">
+                            <option value="NEW REGISTRATION" selected="">NEW REGISTRATION</option>
+                            <option value="DEVICE PURCHASE">DEVICE PURCHASE</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Delivery Order Number<span class="required"></span><span class="required">*</span>:</div>
+                        <input type="text" id="deliveryOrderNo" name="deliveryOrderNo" size="30" class="is-required" label="Delivery Order Number" value="" autocomplete="off">
+                    </td>
+
+                    <td>
+                        <div class="label">Yr. of Reg.<span class="required">*</span>:</div>
+                            <select id="selectElementId" name="yearOfReg" class="is-required" label="Yr. of Reg.">
+                                <option value="2026" selected="">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                                <option value="2013">2013</option>
+                                <option value="2012">2012</option>
+                                <option value="2011">2011</option>
+                                <option value="2010">2010</option>
+                                <option value="2009">2009</option>
+                                <option value="2008">2008</option>
+                                <option value="2007">2007</option>
+                                <option value="2006">2006</option>
+                                <option value="2005">2005</option>
+                                <option value="2004">2004</option>
+                                <option value="2003">2003</option>
+                                <option value="2002">2002</option>
+                                <option value="2001">2001</option>
+                            </select>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Company Name<span class="required"></span><span class="required">*</span>:</div>
+                        <input type="text" id="companyName" name="companyName" size="30" class="is-required" label="companyName" value="FAIZUDDIN AUTO TEST" autocomplete="off">
+                    </td>
+                    <td>
+                        <div class="label">Main User Name:</div>
+                        <input type="text" id="primaryUserName" name="primaryUserName" size="30" label="Main Username" value="MUHAMMAD FAIZUDDIN BIN BIDI">
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Company Reg. No.<span class="required"></span><span class="required">*</span>:</div>
+                        <input type="text" id="registrationCompany" name="registrationCompany" size="30" class="is-required" label="Company Reg. No." value="030311-A" autocomplete="off">
+                    </td>
+                    <td>
+                    <div class="label">Contact Number:</div>
+                            <input type="text" id="primaryBranchPhone" name="primaryBranchPhone" size="20" class="number-only" value="0189812839">
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Company Branch Address<span class="required"></span><span class="required">*</span>:</div>
+                        <textarea id="companyAddress" name="companyAddress" rows="5" cols="30" class="is-required" label="Mailing Address"></textarea>
+                        <br><br>
+
+                        <input type="hidden" id="postcode" name="postcode" size="30" class="is-required" label="Postcode" value="40300" maxlength="15">
+                        <input type="hidden" id="city" name="city" size="30" class="is-required" label="City" value="1038" maxlength="15">
+                        <input type="hidden" id="state" name="state" size="30" class="is-required" label="State" value="10" maxlength="15">
+                    </td>
+                    <td class="username-password is-required">
+                            <div class="label">Username<span class="required">*</span>:</div>
+                            <input type="text" id="username" name="username" size="30" class="is-required" label="Username" value="faizuddin" autocomplete="off">
+                            <br><br>
+
+                            <div class="label">Password<span class="required">*</span>:</div>
+                            <input type="text" id="password" name="password" size="30" class="is-required" label="Password" value="" autocomplete="off">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="grid">
+            <colgroup><col width="50%">
+            <col width="50%">
+            </colgroup><tbody>
+                <tr class="userBioIdField is-required">
+                    <td class="item">
+                        <table class="input-table">
+                            <colgroup><col width="150px">
+                            <col width="100px">
+                            <col width="100px">
+                            <col width="100px">
+                            <col width="150px">
+                                </colgroup><thead>
+                                    <tr class="userBioIdTable">
+                                        <th></th><th></th><th>Name</th><th>Tel</th><th></th><th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="userBioId userbioid-1 ">
+                                    <td class="label" size="20">UserBioID's<span class="required">*</span>:</td>
+                                        <td class="item">
+                                            <select id="userBioId1" name="userBioId1" class="is-required" label="User Bio ID's">
+                                                <option selected="" value="Main User">Main User </option>
+                                                <option value="Sole Prop.">Sole Prop.</option>
+                                                <option value="2nd User">2nd User </option>
+                                                <option value="Others">Others </option>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" id="primaryUserName1" name="primaryUserName1" size="40" label="User Bio ID's Name" value="MUHAMMAD FAIZUDDIN BIN BIDI" class=" is-required"></td>
+                                        <td><input type="text" id="primaryBranchPhone1" name="primaryBranchPhone1" size="20" label="User Bio ID's Contact Number" value="0189812839" class=" is-required number-only"></td>
+                                        <td class="item" colspan="2">
+                                            <input type="button" class="add-more" value="Add More...">
+                                            <span class="desc">(Max 6)</span>
+                                        </td>
+                                    </tr>
+                                    (Rows userbioid-2 through userbioid-6: identical hidden template markup, blank
+                                    values, name/select suffixed 2..6 — omitted, no data for this record.)
+                                </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <table class="grid" id="deviceSerialTable">
+                <colgroup><col width="50%">
+                <col width="50%">
+                </colgroup><thead>
+                <tr>
+                    <td class="item">
+                        <div class="label">Number of Device<span class="required">*</span>:</div>
+                        <select id="noOfDevice" name="noOfDevice" class="is-required" label="Number of Device">
+                            <option value="1" selected="">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="item">
+                    <td class="item">
+                        <div class="label">Device Serial No. 1<span class="required">*</span>:</div>
+                        <div><input type="text" size="30" name="deviceSerialNo1" id="deviceSerialNo1" class="is-device-required" label="Device Serial Number 1" value="" maxlength="15"></div>
+                    </td>
+                    <td class="device deviceSerialNo6 hidden">
+                        <div class="label">Device Serial No. 6<span class="required">*</span>:</div>
+                        <div><input type="text" size="30" class="is-device-required hidden" name="deviceSerialNo6" id="deviceSerialNo6" label="Device Serial Number 6" value="" maxlength="15"></div>
+                    </td>
+                </tr>
+                (deviceSerialNo2..5 / 7..10: identical hidden template markup, blank, toggled visible/required by
+                the noOfDevice select — omitted, no data.)
+                </tbody>
+            </table>
+            <table class="grid">
+                <colgroup><col width="50%">
+                <col width="50%">
+                    </colgroup><tbody>
+                        <tr>
+                            <td class="item" colspan="2">
+                                <div class="label">Additional Remarks<span class="required"></span><span class="required">*</span>:</div>
+                                <div>
+                                    <textarea rows="3" name="additionalRemarks" id="additionalRemarks" label="Additional Remark" class="is-required ScrollStyle afterdevice" maxlength="1000" style="width: 100%;"></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+        <table class="grid">
+        <colgroup><col width="50%">
+        <col width="50%">
+            </colgroup><thead class="fhead">
+                <tr>
+                    <td colspan="10"> Issue By
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="item">
+                        <div class="label">Name<span class="required">*</span>:</div>
+                        <input type="text" id="issuedByName" name="issuedByName" size="30" class="is-required afterdevice" label="Name Issued By" value="" autocomplete="off">
+                    </td>
+
+                    <td class="item">
+                        <div class="label">Designation<span class="required">*</span>:</div>
+                        <input type="text" id="issuedByDesignation" name="issuedByDesignation" size="30" class="is-required afterdevice" label="Designation" value="">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="item">
+                        <div class="label">Date<span class="required">*</span>:</div>
+                        <input type="text" id="issuedByDate" name="issuedByDate" label="Date Issue By" class="is-required afterdevice hasDatepicker">
+                    </td>
+
+                </tr>
+
+            </tbody>
+        </table>
+
+        </form>
+
+    </div>
+</div>
+</body>

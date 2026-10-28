@@ -6,6 +6,10 @@ export interface Theme {
   vars: Record<string, string>;
 }
 
+// Contrast floor (WCAG 2.x, measured against both --bg-page and --bg-panel):
+// --text-secondary / --text-label / --text-muted >= 4.5:1, --text-faint >= 3:1.
+// Values that missed it were moved only in OKLCH lightness (same hue and
+// chroma), so each theme keeps its colour. Re-check after editing a palette.
 export const THEMES: Theme[] = [
   // ── Dark ─────────────────────────────────────────────────────
   {
@@ -22,8 +26,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#f1f5f9",
       "--text-secondary":"#cbd5e1",
       "--text-label":    "#94a3b8",
-      "--text-muted":    "#64748b",
-      "--text-faint":    "#475569",
+      "--text-muted":    "#718199",
+      "--text-faint":    "#57667b",
       // Neutral grey base — no clash to fix, keep the familiar blue accent.
       "--accent":        "#3b82f6",
       "--accent-hover":  "#2563eb",
@@ -43,8 +47,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#dce4ff",
       "--text-secondary":"#b0c4e8",
       "--text-label":    "#7a9cc0",
-      "--text-muted":    "#506a8e",
-      "--text-faint":    "#3d5270",
+      "--text-muted":    "#6782a7",
+      "--text-faint":    "#506685",
       // Navy base (hue ~225) — warm gold/amber is its near-complement,
       // a classic navy-and-gold pairing instead of blue-on-blue mush.
       "--accent":        "#f59e0b",
@@ -87,8 +91,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#f5f5f5",
       "--text-secondary":"#d4d4d4",
       "--text-label":    "#a3a3a3",
-      "--text-muted":    "#737373",
-      "--text-faint":    "#525252",
+      "--text-muted":    "#828282",
+      "--text-faint":    "#666666",
       // True neutral grey, no hue to complement — a cyan/teal accent
       // differentiates it from Slate's blue while staying unclashing.
       "--accent":        "#06b6d4",
@@ -131,8 +135,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#ffe4e6",
       "--text-secondary":"#fecdd3",
       "--text-label":    "#fb7185",
-      "--text-muted":    "#e11d48",
-      "--text-faint":    "#9f1239",
+      "--text-muted":    "#ec2d51",
+      "--text-faint":    "#b22a48",
       // Red base (hue ~350) — teal is red's classic complement (the exact
       // "blue button on a red page" clash the theme was picked to avoid).
       "--accent":        "#14b8a6",
@@ -154,7 +158,7 @@ export const THEMES: Theme[] = [
       "--text-secondary":"#b0e8ff",
       "--text-label":    "#38bdf8",
       "--text-muted":    "#0ea5e9",
-      "--text-faint":    "#0369a1",
+      "--text-faint":    "#0a6ca4",
       // Cyan/blue base (hue ~195) — warm coral/orange is its near-
       // complement, an "ocean sunset" pairing.
       "--accent":        "#fb923c",
@@ -199,8 +203,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#f5e2c2",
       "--text-secondary":"#e8cfa8",
       "--text-label":    "#cea273",
-      "--text-muted":    "#b3865c",
-      "--text-faint":    "#8a6845",
+      "--text-muted":    "#bb8e63",
+      "--text-faint":    "#93714d",
       "--accent":        "#cea273",
       "--accent-hover":  "#b3865c",
     },
@@ -221,8 +225,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#e6c3cf",
       "--text-secondary":"#e6b1c4",
       "--text-label":    "#c7a39b",
-      "--text-muted":    "#9c9f69",
-      "--text-faint":    "#838660",
+      "--text-muted":    "#a7aa73",
+      "--text-faint":    "#868963",
       "--accent":        "#e6b1c4",
       "--accent-hover":  "#d494ab",
     },
@@ -242,8 +246,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#0f172a",
       "--text-secondary":"#1e293b",
       "--text-label":    "#334155",
-      "--text-muted":    "#64748b",
-      "--text-faint":    "#94a3b8",
+      "--text-muted":    "#617188",
+      "--text-faint":    "#808fa4",
       // Neutral base — no clash to fix, keep the familiar blue accent.
       "--accent":        "#2563eb",
       "--accent-hover":  "#1d4ed8",
@@ -351,7 +355,7 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#2d1f0a",
       "--text-secondary":"#4a3319",
       "--text-label":    "#6b4c28",
-      "--text-muted":    "#8b6435",
+      "--text-muted":    "#896334",
       "--text-faint":    "#a07840",
       // Warm tan base (hue ~35) — complementary desert-sky blue.
       "--accent":        "#0369a1",
@@ -396,8 +400,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#5c2a00",
       "--text-secondary":"#7a3d0a",
       "--text-label":    "#9a5716",
-      "--text-muted":    "#c17a2e",
-      "--text-faint":    "#ffa43a",
+      "--text-muted":    "#a45f01",
+      "--text-faint":    "#cb7a00",
       "--accent":        "#29abd4",
       "--accent-hover":  "#1c8cb0",
     },
@@ -419,8 +423,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#5c1122",
       "--text-secondary":"#7d1f34",
       "--text-label":    "#a13a56",
-      "--text-muted":    "#c66f89",
-      "--text-faint":    "#dba1b3",
+      "--text-muted":    "#a5516c",
+      "--text-faint":    "#b1798b",
       "--accent":        "#6994dc",
       "--accent-hover":  "#4e76be",
     },
@@ -441,8 +445,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#6b1616",
       "--text-secondary":"#8f2323",
       "--text-label":    "#b3452f",
-      "--text-muted":    "#f38081",
-      "--text-faint":    "#f79977",
+      "--text-muted":    "#b5484d",
+      "--text-faint":    "#cb7150",
       "--accent":        "#4a90c2",
       "--accent-hover":  "#3a749e",
     },
@@ -462,9 +466,9 @@ export const THEMES: Theme[] = [
       "--text-brightest":"#5a2600",
       "--text-primary":  "#7a3200",
       "--text-secondary":"#9a4310",
-      "--text-label":    "#c05a1a",
-      "--text-muted":    "#fa9058",
-      "--text-faint":    "#d9b98a",
+      "--text-label":    "#b95410",
+      "--text-muted":    "#b75312",
+      "--text-faint":    "#a98a5d",
       "--accent":        "#4a8fe0",
       "--accent-hover":  "#3672bd",
     },
@@ -484,9 +488,9 @@ export const THEMES: Theme[] = [
       "--text-brightest":"#1a2e14",
       "--text-primary":  "#253d1c",
       "--text-secondary":"#3a5a2c",
-      "--text-label":    "#538376",
-      "--text-muted":    "#6f9d86",
-      "--text-faint":    "#9ec0eb",
+      "--text-label":    "#437366",
+      "--text-muted":    "#46735d",
+      "--text-faint":    "#6989b2",
       "--accent":        "#d4638a",
       "--accent-hover":  "#b84a70",
     },
@@ -506,9 +510,9 @@ export const THEMES: Theme[] = [
       "--text-brightest":"#0d3b3d",
       "--text-primary":  "#144a4d",
       "--text-secondary":"#1f6265",
-      "--text-label":    "#2a7e82",
-      "--text-muted":    "#36c9d1",
-      "--text-faint":    "#7fd6da",
+      "--text-label":    "#1c7478",
+      "--text-muted":    "#00757a",
+      "--text-faint":    "#399397",
       "--accent":        "#f0917e",
       "--accent-hover":  "#d97862",
     },
@@ -528,8 +532,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#3d2c16",
       "--text-secondary":"#5c4322",
       "--text-label":    "#7a5a30",
-      "--text-muted":    "#a07d58",
-      "--text-faint":    "#c7a97a",
+      "--text-muted":    "#876641",
+      "--text-faint":    "#a38658",
       "--accent":        "#dd716b",
       "--accent-hover":  "#c25852",
     },
@@ -550,8 +554,8 @@ export const THEMES: Theme[] = [
       "--text-primary":  "#3a4552",
       "--text-secondary":"#5c4046",
       "--text-label":    "#8a5a62",
-      "--text-muted":    "#a8b58a",
-      "--text-faint":    "#a9b7c6",
+      "--text-muted":    "#6b764e",
+      "--text-faint":    "#83909f",
       "--accent":        "#2d3a47",
       "--accent-hover":  "#1c2530",
     },
@@ -571,9 +575,9 @@ export const THEMES: Theme[] = [
       "--text-brightest":"#2a2d52",
       "--text-primary":  "#3d3f66",
       "--text-secondary":"#5c63a4",
-      "--text-label":    "#7d6f96",
-      "--text-muted":    "#8b7fac",
-      "--text-faint":    "#acb0cc",
+      "--text-label":    "#706288",
+      "--text-muted":    "#6e628d",
+      "--text-faint":    "#80849e",
       "--accent":        "#c9825a",
       "--accent-hover":  "#a8683f",
     },
@@ -593,9 +597,9 @@ export const THEMES: Theme[] = [
       "--text-brightest":"#2b1a52",
       "--text-primary":  "#3d2766",
       "--text-secondary":"#543787",
-      "--text-label":    "#4f9aa3",
-      "--text-muted":    "#4f9aa3",
-      "--text-faint":    "#feb737",
+      "--text-label":    "#196b74",
+      "--text-muted":    "#2b7982",
+      "--text-faint":    "#bb8100",
       "--accent":        "#543787",
       "--accent-hover":  "#3d2766",
     },
@@ -616,6 +620,49 @@ export function applyTheme(theme: Theme) {
 
 export function loadAndApplyTheme() {
   const id = localStorage.getItem("qa-theme") ?? DEFAULT_THEME;
-  applyTheme(getTheme(id));
+  if (getUiStyle() === "medieval") applyTheme(MEDIEVAL_THEME);
+  else applyTheme(getTheme(id));
+  document.documentElement.setAttribute("data-style", getUiStyle());
   return id;
+}
+
+// ── UI style: Normal (the colour themes above) or Medieval ──────
+// Medieval sets data-style="medieval" on <html> and uses its own cozy-cottage
+// palette; the look itself lives in app/styles/medieval/*.css, scoped to
+// [data-style="medieval"]. The chosen colour theme is kept and comes back
+// when switching to Normal (Faizuddin, 2026-10-27).
+export type UiStyle = "normal" | "medieval";
+export const UI_STYLE_KEY = "qa-style";
+
+export const MEDIEVAL_THEME: Theme = {
+  // Cozy cottage (2026-10-27): dark oak surfaces, cream text, honey accent.
+  // Every surface stays dark; app/styles/medieval/COTTAGE.md has the guide.
+  id: "medieval", name: "Medieval", type: "dark",
+  preview: { page: "#16110d", panel: "#221913", text: "#dccaa6" },
+  vars: {
+    "--bg-page":      "#16110d",
+    "--bg-panel":     "#221913",
+    "--bg-elevated":  "#31241a",
+    "--bg-hover":     "#3f2e22",
+    "--border-subtle": "#4a3526",
+    "--border-main":  "#6e4a2e",
+    "--text-brightest": "#fff6e2",
+    "--text-primary": "#f3e6cc",
+    "--text-secondary": "#dccaa6",
+    "--text-label":   "#c4ad85",
+    "--text-muted":   "#b59e79",
+    "--text-faint":   "#ac9774",
+    "--accent":       "#e8b04a",
+    "--accent-hover": "#c9922f",
+  },
+};
+
+export function getUiStyle(): UiStyle {
+  try { return localStorage.getItem(UI_STYLE_KEY) === "medieval" ? "medieval" : "normal"; }
+  catch { return "normal"; }
+}
+
+export function setUiStyle(style: UiStyle) {
+  try { localStorage.setItem(UI_STYLE_KEY, style); } catch {}
+  loadAndApplyTheme();
 }

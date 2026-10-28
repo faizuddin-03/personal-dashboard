@@ -12,22 +12,45 @@ export function sanitizeForFilename(title: string): string {
 }
 
 /**
- * Pull the test-script ID off the front of a title:
- * "SC_SCB_TS11: Book for current day" → "SC_SCB_TS11".
+ * Pull the test-script ID off the front of a title. Two shapes in the wild:
+ *  - "SC_SCB_TS11: Book for current day" → "SC_SCB_TS11" (colon-separated,
+ *    submodule segment is 1–6 letters)
+ *  - "12166_67_E2E_TS01" / "12166_67_E2E_TS03 — snapshot rule: ..." →
+ *    "12166_67_E2E_TS01" / "12166_67_E2E_TS03" (this ticket's own scheme —
+ *    segments can be digits too, e.g. the bare "_67", and the ID may be the
+ *    WHOLE title with no trailing separator at all, or followed by an
+ *    em-dash rather than a colon)
  *
- * The shape is <TICKET-or-MODULE>_<SUBMODULE>_TS<NN>, where the submodule part is
- * optional and runs 1–6 letters. Numbers come from the title, never a counter, so
- * gaps are preserved when a scenario is manual-only (…TS01, TS03).
- * Returns null for a title that carries no ID.
+ * The id always ends at the first `:`, `—`, or end of string — never
+ * mid-description, so a colon appearing later in a description (e.g.
+ * "...snapshot rule: editing...") doesn't get swallowed into the id.
+ * Numbers come from the title, never a counter, so gaps are preserved when a
+ * scenario is manual-only (…TS01, TS03). Returns null for a title that
+ * carries no ID at all.
  */
 export function testIdFromTitle(title: string): string | null {
-  return title.match(/^\s*([A-Z0-9]{2,}(?:_[A-Z]{1,6})*_TS\d{1,3})\s*:/)?.[1] ?? null;
+  return title.match(/^\s*([A-Za-z0-9]{2,}(?:_[A-Za-z0-9]{1,6})*_TS\d{1,3})(?:\s*:|\s*—|\s*$)/)?.[1] ?? null;
 }
 
-/** The human half of the title: "SC_SCB_TS11: Book for current day" → "Book for current day". */
+/**
+ * The human half of the title, if the id is colon-separated:
+ * "SC_SCB_TS11: Book for current day" → "Book for current day".
+ *
+ * Returns "" (no description suffix at all) when the id is followed by
+ * anything other than a colon — an em-dash, or nothing (the id IS the whole
+ * title) — rather than guessing at a description from free-form text after
+ * it. This is what keeps this ticket's own evidence naming to a clean bare
+ * id (e.g. "12166_67_E2E_TS01"), per Faizuddin's 2026-09-24 request — any
+ * collision between two sub-scenarios sharing one id (e.g. TS03's two
+ * variants) is handled by uniquePath()'s own "(2)"/"(3)" numbering in
+ * organizeTestEvidence(), not by a synthesized description.
+ */
 export function scenarioNameFromTitle(title: string): string {
   const id = testIdFromTitle(title);
-  return sanitizeForFilename(id ? title.slice(title.indexOf(":") + 1) : title);
+  if (!id) return sanitizeForFilename(title);
+  const rest = title.slice(title.indexOf(id) + id.length);
+  const colonMatch = rest.match(/^\s*:\s*(.+)$/);
+  return colonMatch ? sanitizeForFilename(colonMatch[1]) : "";
 }
 
 /** Append " (2)", " (3)" … until the path is free, so one run never clobbers its own evidence. */

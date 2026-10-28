@@ -1,0 +1,11 @@
+<!--
+  URL:         https://bank-simulator.fiuu.com/faq  (section "FPX B2B — Online Banking (Business)")
+  Environment: Fiuu sandbox bank simulator
+  Captured:    2026-10-22 by Claude (browser)
+  Trimmed:     only the FPX B2B section; the tail after the checker step was cut by the tool and is given as text below.
+-->
+<div class="info-block"><h3>What is it?</h3><p>Simulates FPX B2B (business-to-business) payments for corporate banking: ABB (Affin Bank), ABBM (Affin Bank Multi-Bank), and HLB (Hong Leong Bank).</p></div>
+<div class="info-block"><h3>Test Credentials</h3><p>No login required. FPX B2B uses a real <strong>maker/checker</strong> approval flow (two separate decisions by two different people, mirroring how corporate bank accounts actually work) - the simulator reproduces both steps.</p></div>
+<div class="info-block"> <h3>How to Test</h3> <ol class="steps"> <li>Initiate an FPX B2B payment from the merchant side.</li> <li>You will be redirected to the simulator payment page.</li> <li>Click <strong>Authorize</strong> (the maker's decision) or <strong>Reject</strong>.</li> </ol> <div class="note-box"> <strong>If you click Authorize:</strong> the browser redirects back to the merchant return page showing <code>status=22</code> (pending). This does <strong>not</strong> finalize the payment - a separate checker still needs to Approve or Reject it. </div> <ol class="steps" start="4"> <li>Open <strong>Pending Checker Decisions</strong> on the simulator's main page (or go to <code>/fpx-b2b/pending</code> directly).</li> <li>Click <strong>Approve</strong> or <strong>Reject</strong> for that order - this is the checker's decision, and it happens independently of the customer's browser session (a real checker logs in separately, possibly much later).</li> </ol>
+<!-- remaining text (read as plain text): "Note: Only the checker's decision produces a final captured/failed status and triggers the merchant's webhook/IPN. If you click Reject at the maker step instead, the flow ends immediately with no checker step - same as production. If /fpx-b2b/pending returns 401: this environment has SIMULATOR_TOKEN configured. Ask whoever manages this simulator's environment for the current token, then open /fpx-b2b/pending?sim_token=<token> once - it sets a cookie so you won't need to repeat this for subsequent visits." -->
+</div>

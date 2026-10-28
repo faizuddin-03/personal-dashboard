@@ -195,7 +195,7 @@ export default function MentionsPage() {
               <Bell size={22} className="text-slate-700" />
             </div>
             <p className="text-slate-400 text-sm font-medium">No mentions found</p>
-            <p className="text-slate-600 text-xs mt-1">When someone @mentions you in a JIRA comment, it'll show up here</p>
+            <p className="text-slate-600 text-xs mt-1">When someone @mentions you in a JIRA comment, it&apos;ll show up here</p>
           </div>
         )}
 

@@ -1,0 +1,33 @@
+<!--
+  URL: /uat1/view/ucd/jomcheck/transaction/ (same page as ucd-jomcheck-purchase-vehicle-found.html, after clicking "Pay Now")
+  Page: UCD "Get JomCheck Reports" — the #do-payment-dialog jQuery UI confirm
+  dialog, populated and shown on Pay Now click (was an empty hidden shell in
+  the earlier vehicle-found capture). Vehicle HXA001R, RHB payment method.
+  Env: uat1
+  Captured: 2026-10-02, by Faizuddin, pasted directly, in response to a TS05/17
+  automation failure caused by not handling this dialog (payNow() clicked
+  through without confirming, so the page never advanced past "Vehicle number
+  found.").
+  Trimmed: none — only the dialog-relevant excerpt of the page needed for this
+  capture; full page chrome (header/footer/scripts) kept as-is from the same
+  page's earlier full capture.
+  Dialog buttons: same `.confirm-dialog-btn` ("Yes") / `.cancel-dialog-btn`
+  ("No") convention already used elsewhere in this codebase (see
+  tests/service-hub/pages/BasePage.ts's acceptConfirmDialog/dismissConfirmDialog)
+  — not a one-off, this pattern is standard jQuery UI dialog markup title
+  "Payment" across this app for anything requiring a Yes/No confirm.
+-->
+<div class="ui-widget-overlay" style="z-index: 1001;"></div>
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-do-payment-dialog" style="display: block; position: absolute; z-index: 1002; width: 480px;">
+  <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" unselectable="on">
+    <span class="ui-dialog-title" id="ui-dialog-title-do-payment-dialog" unselectable="on">Payment</span>
+    <a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" unselectable="on"><span class="ui-icon ui-icon-closethick" unselectable="on">close</span></a>
+  </div>
+  <div id="do-payment-dialog" class="ui-dialog-content ui-widget-content">
+    <span id="do-payment-field">Are you sure you want to proceed with this payment? Please ensure that there is sufficient fund in your RHB account.<br><br>Anda pasti ingin meneruskan dengan pembayaran ini? Sila pastikan wang di dalam RHB anda mencukupi.<br><br>您确定支付吗？请确保您的RHB户口有足够的余额。</span>
+  </div>
+  <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+    <button type="button" class="ui-corner-all cancel-dialog-btn">No</button>
+    <button type="button" class="ui-corner-all confirm-dialog-btn">Yes</button>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page, type Locator, expect, test } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { PATHS } from "../utils/config";
 
@@ -26,6 +26,15 @@ export class ServiceRequestDetailsPage extends BasePage {
 
   // 4. Payment Details
   readonly paymentDetailsSection = this.page.locator("[class*='payment'], .sr-payment").first();
+
+  // Shipping Details block — Biometric Device Purchase records only.
+  // Verified live: _reference/tickets/EAINT-12166/EAINT-12166-ucd-service-request-details-arranged-uat1-2026-09-23.html
+  // (.rec-sec > h4 "Shipping Details", rows as .rec-row > .k / .v spans).
+  // NAMING NOTE, 2026-09-23: this whole page used to be called "the UCD
+  // Receipt page" in earlier notes/tickets — there is no separate Receipt
+  // page. This IS that page (reached from receipt.do), just renamed for
+  // clarity; every "UCD Receipt" mention elsewhere means this class.
+  readonly shippingSection = this.page.locator(".rec-sec", { has: this.page.locator("h4", { hasText: "Shipping Details" }) });
 
   // 5. Fee Summary
   readonly feeSummarySection = this.page.locator("[class*='fee'], .sr-fee").first();
@@ -80,6 +89,30 @@ export class ServiceRequestDetailsPage extends BasePage {
 
   async getFeeSummary(): Promise<string> {
     return (await this.feeSummarySection.textContent())?.trim() ?? "";
+  }
+
+  /** One "Shipping Details" row's value by its label (e.g. "Delivery Order Number:"). */
+  private async shippingRow(label: string): Promise<string> {
+    const row = this.shippingSection.locator(".rec-row", { has: this.page.locator(".k", { hasText: label }) });
+    const value = ((await row.locator(".v").textContent()) ?? "").trim();
+    // Green — this row is DATA the test just read/checked, so a reviewer
+    // sees exactly where that value (e.g. the DO Number) lives on the page.
+    await this.demoHighlight(row, { color: "green" });
+    await test.step(`UCD Service Request Details: read "${label}" = "${value}"`, async () => {});
+    return value;
+  }
+
+  /** "-" until shipped; once Arranged, the assigned DO number(s), comma-separated for split orders. */
+  async getDeliveryOrderNumber(): Promise<string> {
+    return this.shippingRow("Delivery Order Number:");
+  }
+
+  async getDeliveryStatus(): Promise<string> {
+    return this.shippingRow("Delivery Status:");
+  }
+
+  async getConsignmentNumber(): Promise<string> {
+    return this.shippingRow("Consignment Number:");
   }
 
   /**

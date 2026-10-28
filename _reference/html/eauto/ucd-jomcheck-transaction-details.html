@@ -1,0 +1,95 @@
+<!--
+  URL: /uat1/view/ucd/jomcheck/enquiry/view.do?id=<transactionId>
+  Page: UCD JomCheck Transaction Details (after clicking "View" from the listing) —
+  vehicle HXJ0001, ref J690008380, Approved. Invoice/e-Invoice/Report buttons,
+  share-with-FI checkboxes (disabled, read-only view), payment history line.
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: none.
+  Note: clicking the "Report" (id="to-print-report") button downloads the PDF report
+  directly — no further HTML state to capture for that action.
+-->
+<body>
+<div id="container" class="ucd-container">
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <a onclick="window.location='/uat1/view/ucd/jomcheck/view.do'">JomCheck Report</a>
+        <div class="separator">/</div>
+        <a onclick="window.location='/uat1/view/ucd/jomcheck/enquiry'">JomCheck Transaction Listing</a>
+        <div class="separator">/</div>
+        <div class="page-name">HXJ0001</div>
+    </div>
+
+    <div class="trx-details-row">
+        <div class="flex">
+            <div class="flex flex-row">
+                <button class="btn-blue-outline" style="font-size: 13px; margin: 4.5px 0; padding: 5px 15px;" onclick="window.location='/uat1/view/ucd/jomcheck/enquiry/'">« Back</button>
+                <h1 class="title-id">HXJ0001</h1>
+                <h6 class="ref-no">(Ref No: J690008380)</h6>
+            </div>
+            <div class="flex flex-row">
+                <div class="flex flex-row"><h3 class="trx-details-status approved"> Approved</h3></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content" style="margin-bottom: 50px;">
+        <input type="hidden" name="transactionId" id="transactionId" value="0c0b5e6b-af90-4f9e-90a3-94eb81571c05">
+
+        <div class="flex justify-content-between trx-details-header">
+            <div><h3 class="main-title">Transaction Details</h3></div>
+            <div class="flex flex-row">
+                <button id="to-print-invoice" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 116px; height: 40px;">
+                    <div class="flex justify-content-center"><div class="flex items-center"><img class="icon" src="/uat1/images/file-money-icon.png"><div>Invoice</div></div></div>
+                </button>
+                <button type="button" id="to-print-e-invoice" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 116px; height: 40px;">
+                    <div class="flex justify-content-center"><div class="flex items-center"><img class="icon" src="/uat1/images/file-money-icon.png"><div>e-Invoice</div></div></div>
+                </button>
+                <button id="to-print-report" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 106px; height: 40px; cursor: default;">
+                    <div class="flex justify-content-center"><div class="flex items-center"><img class="icon" src="/uat1/images/file-tick-icon.png"><div>Report</div></div></div>
+                </button>
+            </div>
+        </div>
+
+        <div class="box-container justify-content-between" style="margin-top: 20px;">
+            <div class="box">
+                <div class="flex flex-row"><h6 class="trx-details-label w-40">Date Created:</h6><h6 class="data w-60">30-09-2026 02:20pm</h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-40">e-Invoice Submission Date:</h6><h6 class="data w-60">30-09-2026 02:20pm</h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-40">LHDN Response Status:</h6><h6 class="data w-60"><b><span style="color:#008E00">OK</span></b></h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-40">e-Invoice Validation Date:</h6><h6 class="data w-60">30-09-2026 02:20pm</h6></div>
+            </div>
+        </div>
+        <div class="enquiry-header" style="padding-left: 15px;">
+            <div class="flex justify-content-between">
+                <div class="flex flex-row"><h6 style="font-size: 20px;">Further enquiry please contact 012-7823796 (ezAUTO Asia Sdn Bhd).</h6></div>
+            </div>
+        </div>
+
+        <div class="line"></div>
+        <div class="box-container justify-content-between payment-details">
+            <div class="payment-detail-box">
+                <h3 class="subtitle" style="margin-bottom:0;">Share Report with Financial Institution (Bank and Credit Company) <span style="font-weight:normal; font-style:italic; font-size:12px; color:#696969;">(Optional)</span></h3>
+                <p class="desc-font" style="margin-top:5px;">You are allowed to share your JomCheck report with other banks or credit companies by ticking the checkbox until 29 October 2026.</p>
+                <div id="share-company-list" style="margin-top:12px;">
+                    <div style="margin-bottom:4px;"><input type="checkbox" class="share-cc" value="76167371-5307-4368-a4e3-c57f1ae45ee6"> mfxstar</div>
+                    <div style="margin-bottom:4px;"><input type="checkbox" class="share-cc" value="9ab094bf-a3f4-48a6-b2a5-782a3e1d1499"> YI LINK TEST SDN BHD</div>
+                </div>
+                <input type="hidden" id="jcShareVersion" value="0">
+                <div style="margin-top:12px;"><button type="button" id="to-share" class="btn-blue submit-btn" style="height: 36px; width: 120px; display: none;">Share</button></div>
+            </div>
+        </div>
+
+        <div class="line"></div>
+        <div class="box-container justify-content-between payment-details">
+            <div class="payment-detail-box">
+                <div><h3 class="subtitle">Payment Details</h3></div>
+                <div class="flex">
+                    <h6 class="data" style="min-width:20px;">1.</h6>
+                    <h6 class="data">30-09-2026 02:20pm - RHB (JOM260930000002-HXJ0001) - <span style="color:#008E00"><b>OK</b></span></h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>

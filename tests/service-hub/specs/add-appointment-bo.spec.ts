@@ -41,12 +41,15 @@ test.describe("Add Appointment (BO)", () => {
 
   // SC_APBO_TS01: "Add Appointment - Existing Record Free Booking" — CSE books
   // for a UCD who already purchased (via BDP) but hasn't booked yet.
-  test("SC_APBO_TS01: Add Appointment - Existing Record Free Booking", async ({ boCalendarPage, browser }, testInfo) => {
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
+  test("SC_APBO_TS01: Add Appointment - Existing Record Free Booking", async ({ page, loginPage, boCalendarPage }) => {
+    const ref = await arrangeBdpReferenceViaUCD(page);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
       return;
     }
+    // arrangeBdpReferenceViaUCD logs the shared page in as UCD — beforeEach's
+    // BO session is gone, so log back in before touching boCalendarPage.
+    await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
 
     await boCalendarPage.navigate();
     // No appointmentDate given: addAppointment()'s datepicker fallback picks
@@ -71,12 +74,13 @@ test.describe("Add Appointment (BO)", () => {
 
   // SC_APBO_TS02: "Morning Slot Full Booking - Add Appointment" — CSE is not
   // bound by the UCD-facing 6/day cap; numbering continues past "Full".
-  test("SC_APBO_TS02: Morning Slot Full Booking - Add Appointment", async ({ boCalendarPage, browser }, testInfo) => {
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
+  test("SC_APBO_TS02: Morning Slot Full Booking - Add Appointment", async ({ page, loginPage, boCalendarPage }) => {
+    const ref = await arrangeBdpReferenceViaUCD(page);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
       return;
     }
+    await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
 
     await boCalendarPage.navigate();
 
@@ -104,12 +108,13 @@ test.describe("Add Appointment (BO)", () => {
 
   // SC_APBO_TS03: "Afternoon Slot Full Booking - Add Appointment" — same as
   // APBO_2 but the afternoon session.
-  test("SC_APBO_TS03: Afternoon Slot Full Booking - Add Appointment", async ({ boCalendarPage, browser }, testInfo) => {
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
+  test("SC_APBO_TS03: Afternoon Slot Full Booking - Add Appointment", async ({ page, loginPage, boCalendarPage }) => {
+    const ref = await arrangeBdpReferenceViaUCD(page);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
       return;
     }
+    await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
 
     await boCalendarPage.navigate();
 
@@ -135,12 +140,13 @@ test.describe("Add Appointment (BO)", () => {
 
   // SC_APBO_TS04: "Full date booking" — the WHOLE day (both sessions) already
   // fully booked; CSE can still add, and the numbering continues.
-  test("SC_APBO_TS04: Full date booking", async ({ boCalendarPage, browser }, testInfo) => {
-    const ref = await arrangeBdpReferenceViaUCD(browser, testInfo);
+  test("SC_APBO_TS04: Full date booking", async ({ page, loginPage, boCalendarPage }) => {
+    const ref = await arrangeBdpReferenceViaUCD(page);
     if (!ref) {
       test.skip(true, "Could not arrange a fresh Biometric Device Purchase reference via UCD.");
       return;
     }
+    await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
 
     await boCalendarPage.navigate();
 

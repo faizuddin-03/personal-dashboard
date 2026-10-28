@@ -1,0 +1,560 @@
+"TS No.","Priority","User","Module","Item","Specification","Expected Behavior","","Tested By (QA)","Test Result","Remarks","","","","","","","","","","","","","","","","","",""
+"LOGIN PAGE","","","","","","","","","","","","","","","","","","","","","","","","","","","",""
+"APP_UCDREG_LOGINFUNC_TS1","P3","UCD","Login Page","Logo & App Version
+","- Text","","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_UCDREG_LOGINFUNC_TS2","P2","UCD","","Username
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Limit: Compare with Web for existing limit
+- Blank field validation message  ""Login Error Please check your login name or password and try again.""
+","01/17/2025","Nadhirah","PASS","Have confirm with ZK in web doesnt have limit for username ","","","","","","","","","","","","","","","","","",""
+"APP_UCDREG_LOGINFUNC_TS3","P2","UCD","","Password
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical & symbol characters
+- Limit: Compare with Web for existing limit
+- Blank field validation message ""Login Error Please check your login name or password and try again.""
+","01/17/2025","Nadhirah","PASS","Have confirm with ZK in web doesnt have limit for password","","","","","","","","","","","","","","","","","",""
+"STMS MODULE","","","","","","","","","","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS1","P3","UCD","STMS Step 1 
+- Seller Authentication","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS2","P3","UCD","","Biometric Verification","- Thumbprint detection","Successful Verification
+- Show ""Verification Passed""
+
+Unsuccessful Verification
+- MyKad not inserted
+- Invalid MyKad
+- Invalid Fingerprint
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS3","P3","UCD","STMS Step 2 
+- Seller & Vehicle Details","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS4","P3","UCD","","(Company Category)
+Company Name
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Allowed special characters as per physical keyboard
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS5","P3","UCD","","(Company Category)
+Company Reg No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Allowed special characters as per physical keyboard
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS6","P3","UCD","","(Company Category)
+Type of Business
+","- Radio Button","- Selectable (only one)","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS7","P3","UCD","","(Company Category)
+- SSM Company Profile
+- SSM Business Profile","- File Input
+","File size & format:
+- 5 MB
+- PDF only
+
+Validation messages:
+- No file uploaded, ""This field is required""
+- Exceed file size upload, ""File exceeded the file size limit of 5MB. Please try again.""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS8","P3","UCD","","(Company Category)
+- Company Board Resolution
+- Authorisation Letter
+- Staff Employment Pass & MyKad","- File Input
+","File size & format:
+- 5 MB
+- PDF / JPEG / PNG
+
+Validation messages:
+- No file uploaded, ""This field is required""
+- Exceed file size upload, ""File exceeded the file size limit of 5MB. Please try again.""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS9","P2","UCD","","Mobile No
+","- Textfield
+- Mandatory
+- Editable
+","- Numerical characters only
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS10","P2","UCD","","Email Address
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters- Allowed special characters: period (.), underscore (_), hyphen (-), at (@; once only)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+- Invalid format validation message, ""Sorry, invalid email format. Only letters (a-z), numbers (0-9), dot (.), underscore (_) and hypen (-) are allowed.""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS11","P3","UCD","","Address
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS12","P2","UCD","","Vehicle No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS13","P2","UCD","","Engine No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS14","P2","UCD","","Chassis No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS15","P3","UCD","","Vehicle Make / Model
+","- Dropdown
+- Mandatory
+- Editable
+","- Selectable option
+- Blank field validation message, ""This field is required""","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS16","P3","UCD","","Manufacturing Year
+","- Dropdown
+- Scroll select
+- Mandatory
+- Editable
+","- Selectable option
+- Blank field validation message, ""This field is required""","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS17","P3","UCD","STMS Step 3 
+- Buyer Authentication","(Company Category)
+Seller Consent
+","- Text","- Ensure all the information showing correctly","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS18","P3","UCD","","(Company Category)
+Buyer Consent
+","- Text
+","- Ensure all the information showing correctly","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS19","P3","UCD","","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS20","P3","UCD","","Biometric Verification","- Thumbprint detection","Successful Verification
+- Show ""Verification Passed""
+
+Unsuccessful Verification
+- MyKad not inserted
+- Invalid MyKad
+- Invalid Fingerprint
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS21","P3","UCD","STMS BEFORE JPJ Check, 
+Step 4 - Submission (JPJ Checking)
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS22","P2","UCD","","Engine No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS23","P2","UCD","","Chassis No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS24","P3","UCD","STMS JPJ Failed, 
+Step 4 - Submission (JPJ Checking)
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS25","P2","UCD","","Engine No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS26","P2","UCD","","Chassis No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS27","P3","UCD","STMS JPJ SUCCESS, 
+Step 4 - Submission (JPJ Checking)
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS28","P3","UCD","STMS BEFORE Payment, 
+Step 5 - Payment
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS29","P3","UCD","","View Transaction Details","- Popup
+- Text
+","Selectable tabs
+- Seller Details
+- Dealer Details
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS30","P3","UCD","STMS Payment Failed, 
+Step 5 - Payment
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS31","P3","UCD","","View Transaction Details","- Popup
+- Text
+","Selectable tabs
+- Seller Details
+- Dealer Details
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS32","P3","UCD","","Payment History, Show All","- Popup
+- Text
+","- Ensure to show all payment record","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS33","P3","UCD","STMS Submission Failed, 
+Step 6 - JPJ Transfer
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_STMSUCDREG_FUNC_TS34","P3","UCD","Trx Approved, Step 6
+- JPJ Transfer
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"eSTM MODULE","","","","","","","","","","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS1","P3","UCD","eSTM Step 1 
+- Buyer Authentication","Buyer Consent
+","- Text","- Ensure all the information showing correctly","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS2","P2","UCD","","Vehicle No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS3","P2","UCD","","Email Address
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters- Allowed special characters: period (.), underscore (_), hyphen (-), at (@; once only)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+- Invalid format validation message, ""Sorry, invalid email format. Only letters (a-z), numbers (0-9), dot (.), underscore (_) and hypen (-) are allowed.""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS4","P3","UCD","","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS5","P3","UCD","","Biometric Verification","- Thumbprint detection","Successful Verification
+- Show ""Verification Passed""
+
+Unsuccessful Verification
+- MyKad not inserted
+- Invalid MyKad
+- Invalid Fingerprint
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS6","P3","UCD","eSTM Step 2 
+- Buyer & Vehicle Details","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS7","P2","UCD","","(Company Category)
+Company Name
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Allowed special characters as per physical keyboard
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS8","P2","UCD","","(Company Category)
+Company Reg No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Allowed special characters as per physical keyboard
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS9","P3","UCD","","(Company Category)
+- Form A / 9 / 13
+- Form D / 49
+- Company Resolution / Letter of Authorization","- File Input
+","File size & format:
+- 5 MB
+- PDF / JPEG / PNG
+
+Validation messages:
+- No file uploaded, ""This field is required""
+- Exceed file size upload, ""File exceeded the file size limit of 5MB. Please try again.""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS10","P2","UCD","","Reconfirm eVOC Email
+","- Textfield
+- Mandatory
+- Editable
+","- Must be the same as the email in Step 1
+- Alphanumerical characters- Allowed special characters: period (.), underscore (_), hyphen (-), at (@; once only)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+- Invalid format validation message, ""Sorry, invalid email format. Only letters (a-z), numbers (0-9), dot (.), underscore (_) and hypen (-) are allowed.""
+- Different email error message, """"
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS11","P2","UCD","","Email Address
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters- Allowed special characters: period (.), underscore (_), hyphen (-), at (@; once only)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+- Invalid format validation message, ""Sorry, invalid email format. Only letters (a-z), numbers (0-9), dot (.), underscore (_) and hypen (-) are allowed.""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS12","P2","UCD","","Mobile No
+","- Textfield
+- Mandatory
+- Editable
+","- Numerical characters only
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS13","P3","UCD","","Latest Address
+","- Multi-textfields
+- Mandatory: Field 1
+- Optional: Field 2 & 3
+- Editable
+","- Alphanumerical characters
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS14","P3","UCD","","Postcode","- Textfield
+- Mandatory
+- Editable
+","- Numerical characters only
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS15","P3","UCD","","State","- Dropdown
+- Mandatory
+- Editable
+","- Selectable option
+- Blank field validation message, ""This field is required""","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS16","P3","UCD","","City","- Dropdown
+- Mandatory
+- Editable
+","- Selectable option
+- Blank field validation message, ""This field is required""
+- When state is not selected, show ""Please choose a state before selecting a city.""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS17","P2","UCD","","Engine No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS18","P2","UCD","","Chassis No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS19","P3","UCD","eSTM Step 3 
+- Seller Authentication","Dealer Consent
+","- Text","- Ensure all the information showing correctly","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS20","P3","UCD","","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS21","P3","UCD","","Biometric Verification","- Thumbprint detection","Successful Verification
+- Show ""Verification Passed""
+
+Unsuccessful Verification
+- MyKad not inserted
+- Invalid MyKad
+- Invalid Fingerprint
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS22","P3","UCD","eSTM BEFORE JPJ Check, 
+Step 4 - JPJ Check
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS23","P2","UCD","","Engine No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS24","P2","UCD","","Chassis No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS25","P3","UCD","eSTM JPJ Failed, 
+Step 4 - JPJ Check
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS26","P2","UCD","","Engine No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS27","P2","UCD","","Chassis No
+","- Textfield
+- Mandatory
+- Editable
+","- Alphanumerical characters
+- Special characters only include hyphen (-), space ( ), asterisk (*), forward slash (/)
+- Limit: Compare with Web for existing limit
+- Blank field validation message, ""This field is required""
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS28","P3","UCD","eSTM JPJ SUCCESS, 
+Step 4 - JPJ Check
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS29","P3","UCD","eSTM BEFORE Payment, 
+Step 5 - Payment
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS30","P3","UCD","","View Transaction Details","- Popup
+- Text
+","Selectable tabs
+- Buyer Details
+- Dealer Details
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS31","P3","UCD","eSTM Payment Failed, 
+Step 5 - Payment
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS32","P3","UCD","","View Transaction Details","- Popup
+- Text
+","Selectable tabs
+- Buyer Details
+- Dealer Details
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS33","P3","UCD","","Payment History, Show All","- Popup
+- Text
+","- Ensure to show all payment record","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS34","P3","UCD","eSTM Submission Failed, 
+Step 6 - JPJ Transfer
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_FUNC_TS35","P3","UCD","eSTM Trx Approved, 
+Step 6 - JPJ Transfer
+","Progress Bar","- Clickable","- Show current progress
+","01/17/2025","Nadhirah","PASS","","","","","","","","","","","","","","","","","","",""
+"APP INTERRUPTION TEST","","","","","","","","","","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS1","P3","UCD","LOGIN & HOMEPAGE","Login Page
+","","To test on the scenarios below:
+1. Incoming phone call / message / notifications
+    - Remain on the page
+
+2. Rotate phone screen
+    - Remain as potrait view
+
+3. Navigate with Home button on phone & reopen app
+    - Remain on the page
+
+4. Navigate with Overview button on phone & reopen app
+    - Remain on the page
+
+5. Navigate with Back button on phone
+    - Should behave the same as In-App Back button
+      (Back in login page / homepage will kill the app)
+
+6. No connection
+    - Remain on the page
+    - Will show toast message, ""No internet connection""
+
+7. Lock screen then proceed to unlock
+    - Remain on the page
+
+8. Kill and reopen the app
+    - Launch from Homepage (Login page will remain)","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS2","P3","UCD","","Homepage
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS3","P3","UCD","STMS","STMS Module Dashboard
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS4","P3","UCD","","STMS Transaction Listing page
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS5","P3","UCD","","STMS Transaction Details page
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS6","P3","UCD","","STMS Category Selection page
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS7","P3","UCD","","STMS Step 1
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS8","P3","UCD","","STMS Step 2
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS9","P3","UCD","","STMS Step 3
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS10","P3","UCD","","STMS Step 4 - Before Enquiry
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS11","P3","UCD","","STMS Step 4 - JPJ Success
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS12","P3","UCD","","STMS Step 4 - JPJ Failed
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS13","P3","UCD","","STMS Step 5 - Before Payment
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS14","P3","UCD","","STMS Step 5 - Payment Failed
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS15","P3","UCD","","STMS Step 6 - Approved
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS16","P3","UCD","","STMS Step 6 - Submission Failed
+","","","","Charmain","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS17","P3","UCD","eSTM","eSTM Module Dashboard
+","","","","Dura","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS18","P3","UCD","","eSTM Transaction Listing page
+","","","","Dura","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS19","P3","UCD","","eSTM Transaction Details page
+","","","","Dura","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS20","P3","UCD","","eSTM Category Selection page
+","","","","Dura","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS21","P3","UCD","","eSTM Step 1
+","","","","Johnes","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS22","P3","UCD","","eSTM Step 2
+","","","","Johnes","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS23","P3","UCD","","eSTM Step 3
+","","","","Johnes","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS24","P3","UCD","","eSTM Step 4 - Before Enquiry
+","","","","Johnes","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS25","P3","UCD","","eSTM Step 4 - JPJ Success
+","","","","Johnes","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS26","P3","UCD","","eSTM Step 4 - JPJ Failed
+","","","","Johnes","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS27","P3","UCD","","eSTM Step 5 - Before Payment
+","","","","Johnes","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS28","P3","UCD","","eSTM Step 5 - Payment Failed
+","","","","Dura","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS29","P3","UCD","","eSTM Step 6 - Approved
+","","","","Dura","PASS","","","","","","","","","","","","","","","","","","",""
+"APP_eSTMUCDREG_INTERRUPT_TS30","P3","UCD","","eSTM Step 6 - Submission Failed
+","","","","Dura","PASS","","","","","","","","","","","","","","","","","","",""

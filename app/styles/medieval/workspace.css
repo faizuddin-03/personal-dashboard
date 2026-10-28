@@ -1,0 +1,70 @@
+/* Medieval style (cozy cottage): workspace. Scoped to [data-style="medieval"]; see base.css and COTTAGE.md.
+   Pages: knowledge, music, qa-flow, tests, tickets; components/MarkdownLite.tsx. */
+
+/* Selected item in a list (knowledge file, qa-flow CR, tests CR card):
+   warm honey tint and a 3px honey bar on the left, never a cold blue. */
+[data-style="medieval"][data-page="knowledge"] main .border.bg-blue-600\/10,
+[data-style="medieval"][data-page="qa-flow"] main .border.bg-indigo-950\/50,
+[data-style="medieval"][data-page="tests"] main .border.bg-blue-950\/30 {
+  background-color: rgba(232, 176, 74, .10);
+  border-color: rgba(232, 176, 74, .55);
+  box-shadow: inset 3px 0 0 var(--m-honey), var(--m-px-shadow-sm);
+}
+
+/* Empty states: the lucide tile becomes the page icon at 4x */
+[data-style="medieval"]:is([data-page="knowledge"], [data-page="music"], [data-page="qa-flow"], [data-page="tests"], [data-page="tickets"]) main :is(.text-center, .items-center) > :is(.w-14, .w-16).rounded-2xl:has(> svg) {
+  width: 64px;
+  height: 64px;
+  border: 0;
+  box-shadow: none;
+  background: var(--m-page-ico) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+}
+[data-style="medieval"]:is([data-page="knowledge"], [data-page="music"], [data-page="qa-flow"], [data-page="tests"], [data-page="tickets"]) main :is(.text-center, .items-center) > :is(.w-14, .w-16).rounded-2xl > svg { display: none; }
+
+/* Bare-icon empty states (tests: "No CRs tracked yet", "Nothing tested on ...") */
+[data-style="medieval"][data-page="tests"] main .flex.flex-col.items-center.py-20 > svg:first-child { display: none; }
+[data-style="medieval"][data-page="tests"] main .flex.flex-col.items-center.py-20:has(> svg:first-child)::before {
+  content: "";
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+  background: var(--m-page-ico) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+/* Soft, readable empty-state text (slate-600/700 is too dim on oak) */
+[data-style="medieval"]:is([data-page="knowledge"], [data-page="qa-flow"], [data-page="tests"], [data-page="music"]) main :is(p, div).text-center:is(.text-slate-600, .text-slate-700) {
+  color: var(--m-muted);
+}
+
+/* Import drop zone (tests): dashed crust edge, honey on hover */
+[data-style="medieval"][data-page="tests"] .border-dashed.border-2.border-slate-700 { border-color: var(--m-crust-hi); background-color: var(--m-well); }
+[data-style="medieval"][data-page="tests"] .border-dashed.border-2.border-slate-700:hover,
+[data-style="medieval"][data-page="tests"] .border-dashed.border-2.border-blue-500 { border-color: var(--m-honey); }
+
+/* Music: the now-playing progress / volume sliders stay hearth */
+[data-style="medieval"][data-page="music"] main .h-full.bg-blue-500 { background-color: var(--m-hearth); }
+
+/* MarkdownLite (knowledge reader): code wells, honey bullets, wheat table heads */
+[data-style="medieval"][data-page="knowledge"] main .rounded-lg.bg-slate-950.border.overflow-x-auto {
+  background-color: var(--m-well);
+  border-color: var(--m-crust);
+  box-shadow: inset 0 0 0 1px var(--m-crust);
+}
+[data-style="medieval"][data-page="knowledge"] main .text-\[11px\].font-mono.bg-slate-800 {
+  background-color: var(--m-well);
+  border-color: var(--m-crust);
+  color: var(--m-honey);
+}
+[data-style="medieval"][data-page="knowledge"] main .flex.gap-2 > .text-slate-600.shrink-0.select-none { color: var(--m-honey); }
+[data-style="medieval"][data-page="knowledge"] main table th.font-semibold {
+  color: var(--m-wheat);
+  border-bottom: 2px solid var(--m-crust);
+}
+
+/* medieval-check 2026-10-27: the knowledge reader column had no fill, so
+   tables and prose sat straight on the hillside scene (tree and fireflies
+   behind table rows). Same near-solid oak as other side columns. */
+[data-style="medieval"][data-page="knowledge"] main div.flex-1.min-w-0.py-5 { background-color: rgb(28 20 15 / .94); }

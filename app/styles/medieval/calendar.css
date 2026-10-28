@@ -1,0 +1,60 @@
+/* Medieval style (cozy cottage): calendar. Scoped to [data-style="medieval"]; see base.css and COTTAGE.md.
+   Page fixes only. Event, leave and holiday colours are inline styles and are never touched. */
+
+/* ── Title row ─────────────────────────────────────────────────────── */
+/* The month title is truncated (overflow hidden): give the line room so
+   the 32px candle is not clipped. */
+[data-style="medieval"][data-page="calendar"] main header h1 { line-height: 2rem; }
+[data-style="medieval"][data-page="calendar"] main header h1::before {
+  margin-top: 0;
+  margin-bottom: 0;
+  vertical-align: top;
+}
+/* The lucide calendar glyph sits before the Today button, not the h1,
+   so base.css does not hide it. One icon per page: hide it here. */
+[data-style="medieval"][data-page="calendar"] main header > div > div:first-child > svg:first-child {
+  display: none;
+}
+
+/* ── Accent fills (today marker, primary button) ───────────────────── */
+/* These use bg-[var(--accent)] + text-white: honey fill with white text
+   is a light surface at about 2:1. Make them ember with cream text (5.7:1),
+   like every other primary in this style. */
+[data-style="medieval"][data-page="calendar"] [class*="bg-[color:var(--accent,"].text-white {
+  background-color: var(--m-ember);
+  color: var(--m-cream-hi);
+  box-shadow: inset 0 0 0 1px var(--m-ember-edge), 2px 2px 0 rgba(0, 0, 0, .45);
+}
+[data-style="medieval"][data-page="calendar"] button[class*="bg-[color:var(--accent,"].text-white:not(:disabled):hover {
+  background-color: var(--m-ember-dark);
+}
+/* Today's date number: a thin honey ring so "today" is found at a glance */
+[data-style="medieval"][data-page="calendar"] .rounded-full[class*="bg-[color:var(--accent,"].text-white {
+  box-shadow: inset 0 0 0 1px var(--m-honey), 2px 2px 0 rgba(0, 0, 0, .45);
+}
+
+/* ── View switch (Month / Week / Day / Agenda) ─────────────────────── */
+[data-style="medieval"][data-page="calendar"] main header .p-0\.5 > button.bg-slate-700 {
+  color: var(--m-honey);
+  background-color: var(--m-oak-hi);
+  box-shadow: inset 0 0 0 1px var(--m-crust-hi);
+}
+
+/* ── Empty states ──────────────────────────────────────────────────── */
+/* Quiet dashed slots ("Nothing on this day") */
+[data-style="medieval"][data-page="calendar"] main .border-dashed:not(button, a) {
+  border-color: var(--m-crust);
+  color: var(--m-muted);
+}
+/* Agenda with nothing ahead: the candle at 4x replaces the lucide art */
+[data-style="medieval"][data-page="calendar"] main .border-dashed.py-16 > svg:first-child { display: none; }
+[data-style="medieval"][data-page="calendar"] main .border-dashed.py-16::before {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+  background: var(--m-page-ico) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}

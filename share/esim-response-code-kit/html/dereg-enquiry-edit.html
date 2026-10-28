@@ -1,0 +1,207 @@
+<!--
+  URL: /esim/dereg-enquiry-resp/57/edit
+  Env: eSIM (VPN-only simulator), env instance not stated by user
+  Captured: 2026-08-21
+  Trimmed: none — full form kept complete per the "never trim a form" rule.
+  Purpose: shows the exact editable fields behind a Dereg Enquiry response
+  record (Vn Start With / Response Code / Delay Milliseconds / Remark) — this
+  is how a JPJ Dereg Enquiry response code (e.g. GLB000000I, VEL000045E) gets
+  set/steered for EAINT-9306 testing, per the same shape as flow-esim.md's
+  other *-enquiry-edit captures.
+  Used by: knowledge/flow-edereg.md, knowledge/flow-esim.md
+-->
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+  <a class="sidebar-brand" href="/esim/">
+    <span class="sidebar-brand-icon">
+      <svg viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-2-2.2-3.2C12.9 5.6 11.4 5 10 5H5.2C3.4 5 2 6.4 2 8.2V14c0 1.1.9 2 2 2h1"></path><circle cx="7" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle><path d="M14 17H9"></path></svg>
+    </span>
+    <span class="sidebar-brand-text">eAuto Sim</span>
+  </a>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-label">Entities</div>
+
+  <ul class="sidebar-nav">
+    <li class="sidebar-nav-item sidebar-group" id="group-stms">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-stms')">
+        <span>STMS / eSTM</span>
+      </button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/stms-enquiry-resp"><span>STMS Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/stms-submission-resp"><span>STMS Submission</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/estm-enquiry-resp"><span>eSTM Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/estm-submission-resp"><span>eSTM Submission</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/estm-cancel-submission-resp"><span>eSTM Cancel</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/apt-submission-resp"><span>APT Submission</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group open" id="group-dereg">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-dereg')">
+        <span>Deregistration</span>
+      </button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item active"><a href="/esim/dereg-enquiry-resp"><span>Dereg Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/dereg-submission-resp"><span>Dereg Submission</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/dereg-decomposition-resp"><span>Dereg Decomposition</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/dereg-precheck-enquiry-resp"><span>Dereg Precheck</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-rhb">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-rhb')"><span>RHB</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/rhb-enquiry-resp"><span>RHB Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/rhb-transfer-resp"><span>RHB Transfer</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/service-hub-resp"><span>Service Hub</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/rhb-account-info"><span>RHB Account Info</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-lkm">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-lkm')"><span>LKM</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/lkm-enquiry-resp"><span>LKM Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/lkm-submission-resp"><span>LKM Submission</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-lkm-refund">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-lkm-refund')"><span>LKM Refund</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/lkm-refund-ocr-document-resp"><span>Refund OCR Doc</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/lkm-refund-inquiry-resp"><span>Refund Inquiry</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-bmk">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-bmk')"><span>BMK</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/bmk-enquiry-resp"><span>BMK Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/bmk-submission-resp"><span>BMK Submission</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-insurance">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-insurance')"><span>Insurance</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/insurance-api-resp"><span>Insurance API</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/insurance-quotation-control"><span>Insurance Quotation</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-jomcheck">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-jomcheck')"><span>Jomcheck</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/jomcheck-enquiry-resp"><span>JomCheck Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/jomcheck-report-resp"><span>JomCheck Report</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-ssm">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-ssm')"><span>SSM</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/ssm-enquiry-resp"><span>SSM Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/ssm-rob-submission-resp"><span>SSM ROB</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/ssm-roc-submission-resp"><span>SSM ROC</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/ssm-llp-submission-resp"><span>SSM LLP</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-payments">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-payments')"><span>Payments</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/bold-pay-response"><span>BoldPay Responses</span></a></li>
+      </ul>
+    </li>
+
+    <li class="sidebar-nav-item sidebar-group" id="group-oth">
+      <button class="sidebar-group-toggle" onclick="toggleGroup('group-oth')"><span>OTH</span></button>
+      <ul class="sidebar-group-items">
+        <li class="sidebar-nav-item"><a href="/esim/oth-enquiry-resp"><span>OTH Enquiry</span></a></li>
+        <li class="sidebar-nav-item"><a href="/esim/oth-submission-resp"><span>OTH Submission</span></a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <a href="/esim/logout"><span>Sign Out</span></a>
+  </div>
+</aside>
+    <div class="main-content">
+      <div class="top-bar">
+  <nav class="breadcrumb-nav">
+    <a href="/esim/">home</a>
+    <span><span class="sep">/</span><a href="/esim/dereg-enquiry-resp">Dereg Enquiry Resps</a></span><span><span class="sep">/</span><span class="current">Edit #57</span></span>
+  </nav>
+  <div><span class="user-avatar">A</span></div>
+</div>
+      <div class="content-body">
+
+        <div class="page-header">
+          <div class="page-header-left">
+            <a href="/esim/dereg-enquiry-resp" class="btn-back" title="Back to list">back</a>
+            <h1 class="page-title page-title-sm">Edit Dereg Enquiry Resp #57</h1>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-header">
+            <span class="form-card-header-title">EDIT RECORD</span>
+          </div>
+          <div class="form-card-body">
+            <form action="/esim/dereg-enquiry-resp/save" method="post">
+              <input type="hidden" name="id" value="57">
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vnStartWith">
+                    <span>Vn Start With</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="vnStartWith" name="vnStartWith" value="HX" placeholder="Enter Vn Start With" required="required">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="responseCode">
+                    <span>Response Code</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" class="form-input" id="responseCode" name="responseCode" value="GLB000000I" placeholder="Enter Response Code" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="delayMiliSeconds">
+                    <span>Delay Milliseconds</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="number" step="any" class="form-input" id="delayMiliSeconds" name="delayMiliSeconds" value="0" placeholder="Enter Delay Milliseconds" required="required">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="remark">
+                    <span>Remark</span>
+                  </label>
+                  <input type="text" class="form-input" id="remark" name="remark" value="Faiz - GLB000000I, GLB000003E" placeholder="Enter Remark">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <a href="/esim/dereg-enquiry-resp" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="/esim/js/app.js"></script>
+</body>

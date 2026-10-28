@@ -1,6 +1,5 @@
 import { test, expect } from "../fixtures/test-fixtures";
 import { ENV } from "../utils/config";
-import { openTrackedContext, closeTrackedContext } from "../utils/tracked-context";
 
 const MORNING = 0;
 const AFTERNOON = 1;
@@ -294,17 +293,14 @@ test.describe("Reschedule & Handling", () => {
 
   // ────────────────────────────────────────────────────────────
   // Cross-portal (BO acts, then UCD checks) — deliberately OUTSIDE the "UCD"
-  // describe above: these tests manage their own BO/UCD logins entirely via
-  // openTrackedContext(), so they never touch the default page/context. If
-  // they inherited the "UCD" describe's beforeEach login, that default
-  // context would still get a video recorded for it — showing nothing but
-  // "login → home page" — which is confusing noise. The real recordings are
-  // the two tracked-context videos ("... - BO ....webm" / "... - UCD ....webm").
+  // describe above: these tests manage their own BO/UCD logins on the
+  // shared page rather than inheriting the "UCD" describe's beforeEach
+  // login. BO acts first, then UCD checks — always sequential, never
+  // concurrent, so one browser/one recording covers the whole flow (per
+  // Faizuddin, 2026-09-23).
   // ────────────────────────────────────────────────────────────
   test.describe("Cross-Portal", () => {
-    test("SC_RH_TS04: Reschedule Cancelled Installation", async ({
-      browser,
-    }, testInfo) => {
+    test("SC_RH_TS04: Reschedule Cancelled Installation", async ({ page, loginPage }) => {
       // Scenario: UCD has multiple appointments (e.g. 20th and 21st).
       // BO cancels one. When UCD opens listing, the cancelled appointment
       // should NOT show Reschedule. Only the active ones should.
@@ -313,27 +309,20 @@ test.describe("Reschedule & Handling", () => {
       // Installation Listing ("Cancel" action + "Sure to cancel?" popup).
 
       // ── Step 1: BO cancels a request via the BO SI Listing ──
-      const boContext = await openTrackedContext(browser, testInfo);
-      const boPage = await boContext.newPage();
-      const boLogin = new (await import("../pages/LoginPage")).LoginPage(boPage);
-      const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(boPage);
+      const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(page);
 
-      await boLogin.loginAsBO(ENV.boUsername, ENV.boPassword);
+      await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
       await boListing.navigate();
       await boListing.searchWithFilters({ installationStatus: "PENDING" });
       const boRows = await boListing.getResultRows();
       if (boRows.length > 0) {
         await boListing.cancelRequest(boRows[0], true);
       }
-      await closeTrackedContext(boContext, testInfo, "BO cancels request");
 
       // ── Step 2: UCD checks the listing ──
-      const ucdContext = await openTrackedContext(browser, testInfo);
-      const ucdPage = await ucdContext.newPage();
-      const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
-      const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
+      const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(page);
 
-      await ucdLogin.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
+      await loginPage.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
       await ucdListing.navigate();
       await ucdListing.searchBtn.click();
       await ucdListing.waitForNav();
@@ -361,13 +350,9 @@ test.describe("Reschedule & Handling", () => {
         }
       }
       expect(hasReschedulable).toBe(true);
-
-      await closeTrackedContext(ucdContext, testInfo, "UCD checks listing");
     });
 
-    test("SC_RH_TS05: Reschedule Failed Installation", async ({
-      browser,
-    }, testInfo) => {
+    test("SC_RH_TS05: Reschedule Failed Installation", async ({ page, loginPage }) => {
       // Scenario: BO marks an appointment as Failed.
       // UCD listing should NOT show Reschedule for that appointment.
       // Only remaining active appointments should be reschedulable.
@@ -375,13 +360,10 @@ test.describe("Reschedule & Handling", () => {
       // ── Step 1: BO marks a request Failed via the BO SI Details page ──
       // Per SRD 2.3.2.6 #7, "Installation Failed »" opens a reason popup
       // (Reappointment / Laptop-PC Issues / Other) → Yes sets status Failed.
-      const boContext = await openTrackedContext(browser, testInfo);
-      const boPage = await boContext.newPage();
-      const boLogin = new (await import("../pages/LoginPage")).LoginPage(boPage);
-      const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(boPage);
-      const boDetails = new (await import("../pages/bo/SoftwareInstallationDetailsPage")).SoftwareInstallationDetailsPage(boPage);
+      const boListing = new (await import("../pages/bo/SoftwareInstallationListingPage")).SoftwareInstallationListingPage(page);
+      const boDetails = new (await import("../pages/bo/SoftwareInstallationDetailsPage")).SoftwareInstallationDetailsPage(page);
 
-      await boLogin.loginAsBO(ENV.boUsername, ENV.boPassword);
+      await loginPage.loginAsBO(ENV.boUsername, ENV.boPassword);
       await boListing.navigate();
       await boListing.searchWithFilters({ installationStatus: "PENDING" });
       const boRows = await boListing.getResultRows();
@@ -389,15 +371,11 @@ test.describe("Reschedule & Handling", () => {
         await boListing.clickView(boRows[0]);
         await boDetails.markFailed("Reappointment");
       }
-      await closeTrackedContext(boContext, testInfo, "BO marks failed");
 
       // ── Step 2: UCD checks the listing ──
-      const ucdContext = await openTrackedContext(browser, testInfo);
-      const ucdPage = await ucdContext.newPage();
-      const ucdLogin = new (await import("../pages/LoginPage")).LoginPage(ucdPage);
-      const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(ucdPage);
+      const ucdListing = new (await import("../pages/ServiceRequestListingPage")).ServiceRequestListingPage(page);
 
-      await ucdLogin.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
+      await loginPage.loginAsUCD(ENV.ucdUsername, ENV.ucdPassword);
       await ucdListing.navigate();
       await ucdListing.searchBtn.click();
       await ucdListing.waitForNav();
@@ -425,8 +403,6 @@ test.describe("Reschedule & Handling", () => {
         }
       }
       expect(hasReschedulable).toBe(true);
-
-      await closeTrackedContext(ucdContext, testInfo, "UCD checks listing");
     });
   });
 

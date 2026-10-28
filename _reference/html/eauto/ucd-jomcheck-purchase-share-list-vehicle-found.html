@@ -1,0 +1,547 @@
+<!--
+  URL: /uat1/view/ucd/jomcheck/transaction/ (UCD "Get JomCheck Reports", transactionId 570b2fd8-f189-4874-9fe5-6ba0af96c5e8)
+  Env: uat1, UCD user MUHAMMAD FAIZUDDIN BIN BIDI (company 1109700)
+  Captured: 2026-10-05, pasted by Faizuddin
+  State: vehicle no. HXB0001 submitted, "Vehicle number found. Pay now (RM20.00 +
+         8% Service Tax) to purchase the report." shown, Pay Now (#to-pay) visible,
+         NOT yet paid. Inputs are readonly/disabled after Submit.
+  Why kept: the "Share Report with Financial Institution (Bank and Credit Company)"
+         block (#jomcheck-share-payment) with the PRE-payment checkboxes
+         `input.share-cc-pay` (value = company id) and the three companies on
+         uat1: "mfxstar", "X STAR TECHNOLOGY MALAYSIA SDN BHD", "YI LINK TEST SDN BHD".
+         Faizuddin, 2026-10-05, for TS37-TS39: "Automation will need to select
+         'X STAR TECHNOLOGY MALAYSIA SDN BHD'. only after that can it make payment".
+  Trimmed: nothing. Form, share list, result block, header, footer and inline
+         scripts are verbatim. External CSS/JS not included (not in the paste).
+-->
+<body>
+<div id="do-payment-dialog" style="display:none;" title="Payment">
+    <span id="do-payment-field"></span>
+</div>
+
+<div id="sure-to-retry"></div>
+
+<div id="container" class="ucd-container">
+    <!-- breadcrumb -->
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <a onclick="window.location='/uat1/view/ucd/jomcheck/view.do'">JomCheck Report</a>
+        <div class="separator">/</div>
+        <div class="page-name">Get JomCheck Reports</div>
+    </div>
+
+    <div class="common-header-container">
+        <div class="common-header">
+            <h1 style="font-weight:bold; font-size:20px; color: #000000;">Get JomCheck Reports</h1>
+        </div>
+    </div>
+
+    <table id="maintable">
+    <colgroup><col width="80%">
+    <col width="20%">
+        </colgroup><tbody><tr>
+            <td class="maintable-td">
+                <div class="mainContent">
+                    <form id="tx-form" enctype="multipart/form-data" method="POST" action="/uat1/ajax/ucd/jomcheck/transaction/save.do">
+                        <input type="hidden" name="transactionId" value="570b2fd8-f189-4874-9fe5-6ba0af96c5e8">
+                        <div class="container container-input">
+                            <table class="jomcheck-input">
+                            <colgroup><col width="20%">
+                            <col width="80%">
+                                </colgroup><tbody><tr>
+                                    <td colspan="2" id="jomcheck-title">
+                                        <span class="title"><b>JomCheck Vehicle Report</b></span><br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="label">
+                                        <input type="radio" name="selectedInput" id="vehicleNoRadio" class="radio-item" value="vehicleNo" checked="" disabled="">
+                                        Vehicle Number:&nbsp;
+                                    </td>
+                                    <td class="input" style="text-align: left;">
+                                        <input type="text" id="vehicleRegNo" name="vehicleRegNo" class="is-required form-control" title="Vehicle Number" value="HXB0001" readonly="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div style="text-align:left;width:95%; margin-top:-5px; margin-left:5px;">
+                                            <span class="is-invalid-vehicleRegNo is-invalid" style="display:none; width:95%">This field is required</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="label"><input type="radio" id="chassisNoRadio" class="radio-item" name="selectedInput" value="chassisNo" disabled="">
+                                    Chassis Number:&nbsp;
+                                    </td>
+                                    <td class="input" style="text-align: left;">
+                                        <input type="text" maxlength="30" id="vehicleChassisNo" name="vehicleChassisNo" class="is-required form-control field-disabled" title="Chassis Number" value="" readonly="" disabled="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div style="text-align:left;width:95%; margin-top:-5px; margin-left:5px;">
+                                            <span class="is-invalid-vehicleChassisNo is-invalid" style="display:none; width:95%">This field is required</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div class="is-chassis-selected" style="display:none; color:red; margin-left:5px;">
+                                            <span style="font-weight: bold;">Please enter valid Chassis Number to purchase the JomCheck Report.</span> <br>
+                                            <span style="font-style: italic">Payments are strictly non-refundable if the report cannot be generated due to an invalid Chassis Number.</span>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <div class="jomcheck-action">
+                                            <button type="submit" id="to-check-vehicle" class="btn-blue submit-btn" style="cursor: default;">Submit</button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            </tbody></table>
+                        </div>
+                    </form>
+                </div>
+            </td>
+            <td class="maintable-td supportInfo" rowspan="3">
+                <div class="mainContent container support-info">
+                    <span class="title" style="font-weight:500;"><br><b>Support Info&nbsp;</b>
+                    <br><br>JomCheck Vehicle Report <br>Support &amp; Helpline<br></span>
+                    <span id="info">
+                        <span class="desc-font">
+                        (Managed by ezAUTO Asia Sdn Bhd)
+                        </span>
+                        <br><br>
+                        <span style="font-size:13px;">WhatsApp/Call: </span><br><span style="font-weight:500;">+6012 7823 796</span>
+                        <br><br>
+                        <span style="font-size:13px;">Email Address: </span><br><a href="mailto:admin@ezauto.my" style="font-weight:500;">admin@ezauto.my</a>
+                        <br><br>
+                        <span class="desc-font" style="font-size:13px;">
+                        Our JomCheck customer support is<br>
+                        available every <b>Monday - Friday</b>, from<br>
+                        <b>9AM to 6PM</b>, excluding public holidays.
+                        </span>
+                    </span>
+                </div>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td class="maintable-td" style="padding:20px 25px;">
+                <div id="jomcheck-share-payment">
+                    <p class="title" style="margin-bottom:0;"><b>Share Report with Financial Institution (Bank and Credit Company)</b> <span class="desc-font" style="font-weight:normal; font-style:italic; font-size:12px;">(Optional)</span></p>
+                    <p class="desc-font" style="margin-top:5px;">You are allowed to share your JomCheck report with other banks or credit companies by ticking the checkbox.</p>
+                    <div id="share-company-list-payment" style="margin-top:15px;">
+
+                            <div style="margin-bottom:4px;">
+                                <input type="checkbox" class="share-cc-pay" value="76167371-5307-4368-a4e3-c57f1ae45ee6">
+                                mfxstar
+                            </div>
+
+                            <div style="margin-bottom:4px;">
+                                <input type="checkbox" class="share-cc-pay" value="0e501860-7f3b-4748-a5f5-da36ce2a9fa4">
+                                X STAR TECHNOLOGY MALAYSIA SDN BHD
+                            </div>
+
+                            <div style="margin-bottom:4px;">
+                                <input type="checkbox" class="share-cc-pay" value="9ab094bf-a3f4-48a6-b2a5-782a3e1d1499">
+                                YI LINK TEST SDN BHD
+                            </div>
+
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+
+            <td class="maintable-td">
+                <div class="container container-result flex flex-row">
+                    <div class="jomcheck-result">
+                        <p class="title">
+                            <b>Result&nbsp;</b>
+                        </p>
+                        <p>
+                            <span id="result" style="color: rgb(0, 142, 0);">Vehicle number found.</span><span id="desc" class="desc-font">&nbsp;Pay now (RM20.00 + 8% Service Tax) to purchase the report.</span>
+                        </p>
+                    </div>
+                    <div class="jomcheck-action flex items-center justify-content-end">
+
+
+                                    <button type="submit" id="to-pay" class="btn-blue submit-btn">Pay Now</button>
+
+
+
+
+
+
+                    </div>
+                </div>
+                <br><br><br>
+            </td>
+        </tr>
+    </tbody></table>
+    <div id="jomcheck-footer">
+        <p class="desc-font"><b>Note(s):&nbsp;</b></p>
+        <p>
+            <span id="disclaimer" class="desc-font">
+                The JomCheck Report is furnished by Motordata Research Consortium Sdn Bhd and distributed through eAuto Sdn Bhd platform in collaboration with ezAUTO Asia Sdn Bhd.
+                <br><br>
+                DISCLAIMER: The contents of this JomCheck Vehicle Report are intended solely for informational purposes. While the information is offered with the best of intentions, we do not guarantee or warrant, either explicitly or implicitly, its accuracy, sufficiency, validity, reliability, availability, or&nbsp;completeness.
+            </span>
+        </p>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/uat1/view/ucd/home/screen.css">
+<script>
+$(document).ready(function() {
+    $("#common-bar .page-title").text($("head title").text());
+    $("#header a.logout").click(function() {
+            $("#logout-confirmation").dialog({
+                modal: true,
+                width: "300",
+                minHeight: "150",
+                resizable: false,
+                draggable: false,
+                position: "center",
+                closeOnEscape: false,
+                close: function() {
+                    $(this).dialog("destroy");
+                },
+                buttons:
+                {
+                    "No": function() {
+                        $(this).dialog("close");
+                        $(this).dialog("destroy");
+                    },
+                    "Yes": function() {
+                        window.location.href = "/uat1/user/logout.do";
+                    }
+                },
+                open: function() {
+                    $('.ui-dialog-buttonpane').find('button:contains("No")').addClass('cancel-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button:contains("Yes")').addClass('confirm-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                }
+        }).dialog("open");
+        return false;
+    });
+
+    LoginSessionTimer.startCountdown();
+
+    $("#deposit-info").click(function() {
+        window.location.href = "/uat1/view/ucd/deposit/generate.do?companyAccountId=" + 1109700;
+        return false;
+    });
+
+    $("#payment-history").click(function() {
+        window.location.href = "/uat1/view/ucd/topup-pob/payment-history.do?companyId=" + 1109700;
+        return false;
+    });
+
+    $(":button, :submit").mouseenter(function() {
+        $(this).css({'cursor': 'pointer'});
+    }).mouseleave(function() {
+        $(this).css({'cursor': 'default'});
+    });
+
+    $("#settings-link").click(function() {
+
+
+            window.location="/uat1/view/ucd/settings/view.do";
+
+
+    });
+
+    $("#reports-link").click(function() {
+
+            window.location="/uat1/view/ucd/report/view.do";
+
+    });
+
+    $("#insurance-link").click(function() {
+        window.location="/uat1/view/ucd/insurance";
+    });
+
+    $("#econtract").live("click", function() {
+        var conf = "width=800,height=450,scrollbars=yes,location=no,menubar=no,status=no,toolbar=no,directories=no";
+        popup_window = window.open("/uat1/view/ucd/insurance/enquiry/generate-econtract-page.do","",conf);
+
+    });
+});
+
+function openAccessDeniedDialog() {
+    $("#access-denied").dialog({
+        modal: true,
+        width: "300",
+        minHeight: "150",
+        resizable: false,
+        draggable: false,
+        position: "center",
+        closeOnEscape: false,
+        close: function() {
+            $(this).dialog("destroy");
+        },
+        buttons:
+        {
+            "Ok": function() {
+                $(this).dialog("close");
+                $(this).dialog("destroy");
+            }
+        },
+        open: function() {
+            $('.ui-dialog-buttonpane').find('button:contains("Ok")').addClass('confirm-dialog-btn');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+        }
+    }).dialog("open");
+}
+</script>
+
+<!--[if lte IE 8]>
+<style>
+.tab-button1{ padding-left: 10px; padding-right: 10px; margin-left: 5px;}
+#home-bar{margin: 20px 0px 0 0 !important}
+</style>
+<!--<![endif]-->
+
+<style>
+a#deposit-log {text-decoration:underline !important; color:#FF4000!important;}
+.new {
+    position: absolute;
+    top: 10px;
+    color: #FF4000;
+    font-weight:bold;
+    font-size:16px;
+    margin-left:30px;
+}
+
+.terms {padding: 3px; width: 10px;}
+</style>
+<div id="header">
+
+    <div id="home-bar">
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/home'" id="home-link">HOME</button>
+
+    <button class="tab-button1" onclick="" id="insurance-link">INSURANCE</button>
+
+    <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+    <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/user-guide'" id="user-guide-link">USER GUIDE</button>
+
+
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/download'" id="download-link">DOWNLOAD</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/contact'" id="contact-link">CONTACT US</button>
+
+
+    </div>
+
+    <table id="common-bar">
+    <tbody><tr>
+    <td class="page-title" nowrap="">Online Services - JomCheck Report</td>
+    <!--td class="scroll-message"><marquee behavior="scroll" direction="left" scrollamount="3"  width="70%"><div id="scroll-message" name="scroll-message">You have 5 of APT transactions pending for Payment. Please make payment to complete APT process. Thank you.</div></marquee></td-->
+    <td>
+    <ol class="inline">
+
+        <li>
+            <img src="/uat1/images/icon_user.gif" style="position:relative; top:4px">
+            <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI  </span>
+        </li>
+        <li>
+            &nbsp;|&nbsp;
+        </li>
+        <li><a href="#" class="logout" style="position:relative; top:-1px">Logout</a></li>
+    </ol>
+    </td>
+    </tr>
+    </tbody></table>
+
+
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:43</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+<div id="allow-insurance-dialog" style="display:none;color:#FF4000">
+    <div>
+        <form id="checkboxForm" style="color:black">
+            <div class="flex flex-row">
+                <input type="checkbox" class="terms" value="1" style="padding: 3px; width: 10px;">
+                <span>By clicking this checkbox and the "I Accept" button below, you agree to participate in our Insurance Programme.</span>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="dialog-insurance-not-add-as-user" style="display: none">
+Anda belum dibenarkan menggunakan Insurance. Sila rujuk User Guide (<a href="/uat1/view/ucd/user-guide/Add_New_Insurance1.pdf" target="_new"><b>sini</b></a>) untuk mengetahui cara <b>Main user/Director</b> menambah
+<br>pengguna Insurance. <br>Support Hotline: 1700-816-186.
+<br><br>
+您还未被授权使用 Insurance 。请参阅用户指南 (<a href="/uat1/view/ucd/user-guide/Add_New_Insurance1.pdf" target="_new"><b>此处</b></a>) 以了解 <b>主要用户</b> 如何增加 Insurance 用户。 <br>Support Hotline: 1700-816-186 。
+</div>
+<div id="dialog-insurance-access-denied" style="display:none;color:#FF4000">
+    <form id="checkboxForm" style="color:black"><br>
+            This user named MUHAMMAD FAIZUDDIN BIN BIDI will be chosen to participate in Insurance<br>
+            05/10/2026 <br>
+        <br>
+        <input type="checkbox" class="terms" value="1" style="padding: 3px; width: 10px;">By clicking this checkbox and the "I Accept" button below, you agree to participate in our Insurance Programme.
+    </form>
+</div>
+
+<div id="logout-confirmation" style="display:none;" title="Logout Confirmation">
+    Sure to logout?
+</div>
+
+<div id="access-denied" style="display:none;">
+    Sorry, access denied.
+</div>
+
+
+
+
+
+<style>
+    .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 60px;
+        border-top: 1px solid #CCCCCC;
+    }
+
+    .footer .footer-container {
+        height: 60px;
+    }
+
+    .footer .footer-container .footer-row {
+        height: 20px;
+    }
+
+    .ucd-container, .aatf-container {
+        min-height: calc(100vh - 221px);
+    }
+    @media screen and (max-width: 693px) {
+      .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 90px;
+        border-top: 1px solid #CCCCCC;
+      }
+
+      .ucd-container, .aatf-container {
+        min-height: calc(100vh - 251px);
+      }
+
+      .footer .footer-container {
+        height: 90px;
+      }
+
+      .footer .footer-container .footer-row {
+        height: auto;
+      }
+    }
+
+
+    @media screen and (max-width: 500px) {
+      .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 131px;
+        border-top: 1px solid #CCCCCC;
+      }
+
+      .ucd-container, .aatf-container {
+        min-height: calc(100vh - 292px);
+      }
+
+      .footer .footer-container {
+        height: 131px;
+      }
+
+      .footer .footer-container .footer-row {
+        height: auto;
+      }
+    }
+
+    .footer a {
+        color:#0B4C5F!important;
+        font-weight:500;
+    }
+    .footer .separator {
+        color:#CCC;
+    }
+    #footer table tr td{font-size:11px!important;}
+</style>
+
+<!-- <script>
+    $(document).ready(function() {
+        setInterval(function() {
+            if($(".ui-dialog").length > 0) {
+                $("body").css("overflow","hidden");
+            } else {
+                $("body").css("overflow","auto");
+            }
+        }, 1000);
+    })
+</script> -->
+
+
+<div class="footer">
+    <div class="footer-container" style="display:flex;align-items:flex-end;width:63%;justify-content:space-between;">
+        <div style="display:flex;flex-direction:column;">
+            <div class="footer-row" style="display:flex;">
+                <a href="#" style="padding-right:10px;" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding:0 10px" ;="" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding-left:10px" ;="" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </div>
+            <div class="footer-row" style="color:#808080;">Best Compatible With Mozilla Firefox V36.0.4</div>
+            <div class="footer-row" style="color:#808080;">Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+        </div>
+    </div>
+
+    <div style="text-align:right;">
+        <img src="/uat1/images/eAuto_TM_logo.svg" width="126" height="52">
+    </div>
+
+
+</div>
+
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div></body>

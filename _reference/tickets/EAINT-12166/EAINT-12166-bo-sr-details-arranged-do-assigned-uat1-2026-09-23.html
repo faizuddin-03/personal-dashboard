@@ -1,0 +1,195 @@
+<!--
+URL: staging.eauto.my/uat1/view/bo/service-hub/detail.do (Service Request #SR69001394)
+Environment: staging.eauto.my/uat1
+Captured: 2026-09-23, pasted into chat by Faizuddin
+Trimmed: nothing removed from the pasted body.
+Significance: first live capture of the SR Details page AFTER Delivery Status
+has been set to Arranged for a Biometric Device Purchase. Confirms:
+ - The [DO] button (onclick="opDo()") replaces INVOICE/e-INVOICE's sibling
+   slot next to them once Arranged — button markup: <button type="button"
+   class="btn-inv" onclick="opDo()"><img ...><span>DO</span></button>.
+ - Delivery Order Number is already assigned at this point ("20260923/DP-0004")
+   even before the user reported an error clicking [DO] — matches dev's guide
+   rule that the DO number/status/serials are assigned at the shipping SAVE,
+   independent of whether the stored PDF actually generates.
+ - The Update Shipping Details popup, once Arranged, shows Delivery Date,
+   Consignment Number and every .op-ship-serial input as readonly with a
+   "ship-locked" class added (new selector, not seen in the New-status capture
+   from 2026-09-22) — Delivery Status <select> now has a single "Delivered"
+   option instead of "Arranged", confirming the state machine only ever
+   offers the single legal next transition.
+ - "Device Serial No.:" in the static (non-popup) Shipping Details table shows
+   only ONE serial ("SNSFG23T3D") despite Number of Device = 2 and the popup
+   grid correctly showing both serials (SNSFG23T3D, AS2GW45HSB) — worth a
+   defect check: the static summary table may not be joining multiple serials
+   the way the popup does.
+ - Faizuddin reported "unable to generate DO" when clicking [DO] manually
+   against this same record — this capture is the state at/around that
+   attempt, but does NOT itself show the error dialog/message text, only the
+   page as loaded. See knowledge/flow-device-purchase.md for the
+   Report-Engine-outage vs incomplete-data distinction this points to.
+-->
+<body>
+<div id="container">
+
+    <div id="ins-detail">
+        <table class="ins-topbar">
+            <tbody><tr>
+                <td>
+                    <span class="ins-title">Service Request #SR69001394</span>
+
+                </td>
+            </tr>
+        </tbody></table>
+
+
+        <table class="ins-info"><tbody><tr>
+            <td>
+                <table class="ins-kv">
+                    <tbody><tr><td class="k">Date Requested:</td><td>23-09-2026 10:42am</td></tr>
+                    <tr><td class="k">Company Name:</td><td>FAIZUDDIN AUTO TEST</td></tr>
+                    <tr><td class="k">Company ROC:</td><td>030311-A</td></tr>
+                </tbody></table>
+            </td>
+            <td style="padding-left:48px;">
+                <table class="ins-kv">
+                    <tbody><tr><td class="k">e-Invoice Submission Date:</td><td>-</td></tr>
+
+                    <tr><td class="k">LHDN Response Status:</td><td><b style="color:#FF4000;">Failed</b></td></tr>
+                    <tr><td class="k">e-Invoice Validation Date:</td><td>-</td></tr>
+                </tbody></table>
+            </td>
+            <td class="inv-cell">
+
+                <button type="button" class="btn-inv" onclick="opInvoice()"><img src="/uat1/images/icon-print.png"><span>INVOICE</span></button>
+
+
+
+                <button type="button" class="btn-inv" onclick="opDo()"><img src="/uat1/images/icon-print.png"><span>DO</span></button>
+
+            </td>
+            <td class="inv-spacer"><div class="einv-note">e-Invoices are only available for customers with a valid TIN.<br>e-Invoices can only be issued for transactions within the current calendar month.</div></td>
+        </tr>
+        </tbody></table>
+        <hr>
+
+        <table class="ins-cols"><tbody><tr>
+
+            <td>
+                <div class="ins-h">Shipping Details</div>
+                <table class="ins-kv ins-ship">
+                    <tbody><tr><td class="k">Purchase Device:</td><td>1 unit(s)</td></tr>
+                    <tr><td class="k">Delivery Status:</td><td><b style="color:blue;">Arranged</b></td></tr>
+                    <tr><td class="k">Delivery Date:</td><td>23-09-2026</td></tr>
+                    <tr><td class="k">Delivery Order Number:</td><td>20260923/DP-0004</td></tr>
+                    <tr><td class="k">Consignment Number:</td><td>
+
+                        <a class="consign-link" href="https://www.citylinkexpress.com/tracking-result/?track0=GW34VT4BGSDF" target="_blank" rel="noopener">GW34VT4BGSDF</a>
+
+                    </td></tr>
+
+                    <tr><td class="k">Number of Device:</td><td>2</td></tr>
+                    <tr><td class="k">Device Serial No.:</td><td>SNSFG23T3D</td></tr>
+                    <tr><td class="k">Recipient Name:</td><td>Test Receiver</td></tr>
+                    <tr><td class="k">Shipping Address:</td><td><div class="ship-addr">24, JALAN SULAM EMPAT, 19/14D</div></td></tr>
+                    <tr><td class="k">Contact No:</td><td>0123456789</td></tr>
+                </tbody></table>
+                <div><button type="button" class="btn-update" style="font-weight:normal;" onclick="opShipOpen()">Update Shipping Details</button></div>
+            </td>
+
+
+
+        </tr></tbody></table>
+        <hr>
+
+        <div class="ins-h">Payment Details</div>
+        <ul class="pay-lines">
+            <li>1. 23-09-2026 10:42am - RHB (SR20260923000001-1109700) - <b style="color:#008E00;">OK</b></li>
+        </ul>
+
+        <table class="ins-kv ins-pay" style="margin-top:8px;">
+            <tbody><tr><td class="k">Biometric Device:</td><td class="amt">RM 850.00</td></tr>
+        </tbody></table>
+
+        <div class="sr-title">Special Remark:</div>
+
+        <textarea id="ins-special-remark" maxlength="500"></textarea>
+
+        <div><button type="button" class="btn-update" onclick="opSaveRemark()">Update Special Remark</button></div>
+
+    </div>
+
+</div>
+
+<!-- Installation Failed modal -> fail.do (acts on the single appt) -->
+<div id="op-fail-dialog" title="Installation Failed" style="display:none;">
+    <div>Please select the reason causing the installation failed:</div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="Reappointment"> Reappointment</label></div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="LaptopIssue"> Laptop/PC Issues</label></div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="Other"> Other</label></div>
+
+    <div class="row" id="op-fail-other-wrap" style="display:none; margin-left:22px;">
+        <textarea id="op-fail-other" rows="3" style="width:100%; box-sizing:border-box; border:1px solid #ccc; padding:6px;" placeholder="Please specify the reason"></textarea>
+        <div id="op-fail-other-err" class="op-err">Reason must not exceed 100 characters.</div>
+    </div>
+</div>
+
+<!-- EAINT-11953: shipping concurrent-update dialog — same chrome as the other BO dialogs; OK refreshes the page. -->
+<div id="op-concurrent-dialog" title="Error" style="display:none;">
+    <div style="padding:4px 0;">Unable to proceed. This record was just updated by another user.</div>
+</div>
+
+<!-- EAINT-11953: installation-status concurrency dialog — another Ops user completed/failed the record (or it
+     expired/was cancelled) first; OK refreshes the page so the latest Installation Status is shown. -->
+<div id="op-installstate-dialog" title="Error" style="display:none;">
+    <div style="padding:4px 0;">Unable to proceed. This Service Request has been completed, failed, expired or cancelled.</div>
+</div>
+
+<!-- Update Shipping Details — jQuery UI dialog (same chrome/header as the BO cancel popup). -->
+<div id="op-ship-dialog" title="Update Shipping Details" style="display:none;">
+    <div class="row row-2col">
+        <div class="col col-l"><label class="k">Delivery Date<span style="color:red">*</span>:</label>
+            <input type="text" id="op-ship-date" readonly="readonly" tabindex="-1" class="ship-locked" value="23-09-2026">
+            <div id="op-ship-date-err" class="op-err">This field is required</div></div>
+        <div class="col col-r"><label class="k">Delivery Status<span style="color:red">*</span>:</label>
+
+            <select id="op-ship-status">
+                <option value="Delivered" selected="selected">Delivered</option>
+            </select>
+            <div id="op-ship-status-err" class="op-err">This field is required</div></div>
+    </div>
+    <div class="row"><label class="k">Consignment Number<span style="color:red">*</span>:</label>
+        <input type="text" id="op-ship-consign" readonly="readonly" class="ship-locked" value="GW34VT4BGSDF">
+        <div id="op-ship-consign-err" class="op-err">This field is required</div></div>
+    <!-- Read-only device count; system-derived, shown as plain text. -->
+    <div class="row row-devcount"><span class="k">Number of Device:</span><span id="op-ship-devcount">2</span></div>
+
+    <!-- REQ-010: a 2-per-row grid filled left to right, each field carrying its 1-based ordinal. DOM order
+         is the id ASC binding order the serials post in. A field locks as soon as its serial is stored. -->
+    <div id="op-ship-serials">
+        <label class="k">Device Serial No.<span style="color:red">*</span>:</label>
+        <div id="op-ship-serial-grid">
+            <div class="op-ship-serial-cell op-ship-serial-cell-l">
+                <span class="op-ship-serial-no">1.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial ship-locked" maxlength="12" placeholder="type serial number" readonly="readonly" value="SNSFG23T3D">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+            <div class="op-ship-serial-cell op-ship-serial-cell-r">
+                <span class="op-ship-serial-no">2.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial ship-locked" maxlength="12" placeholder="type serial number" readonly="readonly" value="AS2GW45HSB">
+                <div class="op-err op-ship-serial-err">This field is required</div></div></div>
+
+        </div>
+    </div>
+    <input type="hidden" id="op-ship-recipient" value="Test Receiver">
+    <input type="hidden" id="op-ship-address" value="24, JALAN SULAM EMPAT, 19/14D">
+    <input type="hidden" id="op-ship-contact" value="0123456789">
+</div>
+
+<div id="op-success-dialog" style="display:none;">Are you sure want to mark the installation appointment as completed?</div>
+
+</body>

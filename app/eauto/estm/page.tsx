@@ -76,7 +76,7 @@ export default function EstmPage() {
       <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center gap-3">
         <ArrowLeftRight size={16} className="text-indigo-400" />
         <h1 className="text-sm font-semibold text-slate-200">Create eSTM</h1>
-        <span className="text-xs text-slate-600 hidden sm:block">Automated eSERAHAN vehicle-transfer transaction (with video)</span>
+        <span className="text-xs text-slate-600 hidden sm:block">Automated eSERAHAN vehicle-transfer transaction</span>
         {/* Azfar's unmodified version runs the same flow at /eauto/estm-legacy.
             Named here so it's clear which page you're on. */}
         <Link href="/eauto/estm-legacy" className="ml-auto text-xs text-slate-600 hover:text-amber-400 transition-colors">
@@ -88,9 +88,16 @@ export default function EstmPage() {
         <aside className="border-r border-slate-800 p-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div><label className={label}>Environment</label>
-              <select value={form.envSegment} onChange={e => set("envSegment", e.target.value)} className={field}>
-                {["sit2", "sit3", "uat2"].map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
+              <input
+                list="estm-env-options"
+                value={form.envSegment}
+                onChange={e => set("envSegment", e.target.value)}
+                placeholder="sit2"
+                className={field}
+              />
+              <datalist id="estm-env-options">
+                {["sit2", "sit3", "uat2"].map(o => <option key={o} value={o} />)}
+              </datalist>
             </div>
             <div><label className={label}>ID type</label>
               <select value={form.idType} onChange={e => set("idType", e.target.value)} className={field}>

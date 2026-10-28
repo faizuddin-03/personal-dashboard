@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
+import { killTree, runInProgressResponse } from "@/lib/server/playwrightRun";
 
 // Runs the EAINT-11864 quotation-reminder suite (scripts/eauto-quotation-reminder)
 // and returns Playwright's JSON report plus the run recording.
@@ -108,15 +109,6 @@ let stopRequested = false;
 let forceResolveRun: ((r: { code: number; output: string }) => void) | null = null;
 let runOutputBuffer = "";
 
-function killTree(child: ChildProcess) {
-  if (!child.pid) return;
-  if (process.platform === "win32") {
-    try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); } catch { /* ignore */ }
-  } else {
-    try { process.kill(-child.pid, "SIGKILL"); } catch { try { child.kill("SIGKILL"); } catch { /* ignore */ } }
-  }
-}
-
 /** Flatten Playwright's nested JSON report into one row per test. */
 function extractResults(suites: JsonSuite[]): { title: string; status: string; duration: number; error: string }[] {
   const out: { title: string; status: string; duration: number; error: string }[] = [];
@@ -209,6 +201,9 @@ function publishVideo(sinceMs: number): string | undefined {
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({})) as Partial<RunRequest>;
+
+  // One run at a time on this page (2026-10-21).
+  if (currentChild) return runInProgressResponse();
 
   if (!fs.existsSync(SCRIPT_DIR)) {
     return NextResponse.json({

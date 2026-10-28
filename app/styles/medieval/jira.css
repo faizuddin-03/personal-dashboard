@@ -1,0 +1,108 @@
+/* Medieval style (cozy cottage): jira. Scoped to [data-style="medieval"]; see base.css and COTTAGE.md.
+   Pages: jira, jira-key, jira-filter, jira-mentions, jira-studies; IssueCard, AdfRenderer. */
+
+/* jira-filter: "Issue Filter" sits outside a <header>; give it the page-title look */
+[data-style="medieval"][data-page="jira-filter"] main h1.text-xl.mb-4 {
+  font-family: var(--font-pixel-title), var(--font-pixel-body), sans-serif;
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--m-honey);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .55);
+}
+/* jira-key: the header shows the ticket key (mono) instead of an h1;
+   the cheese replaces the lucide ticket icon before it */
+[data-style="medieval"][data-page="jira-key"] main header svg:has(+ span.font-mono) { display: none; }
+[data-style="medieval"][data-page="jira-filter"] main h1.text-xl.mb-4::before,
+[data-style="medieval"][data-page="jira-key"] main header span.font-mono::before {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin: -8px 10px -8px 0;
+  vertical-align: middle;
+  background: var(--m-page-ico) center / 32px 32px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  [data-style="medieval"][data-page="jira-filter"] main h1.text-xl.mb-4 { font-size: 1.3rem; }
+  [data-style="medieval"][data-page="jira-filter"] main h1.text-xl.mb-4::before,
+  [data-style="medieval"][data-page="jira-key"] main header span.font-mono::before {
+    width: 16px; height: 16px; margin: 0 6px 0 0; background-size: 16px 16px;
+  }
+}
+
+/* jira-filter tabs: the open tab is a dark folder tab with a honey top edge */
+[data-style="medieval"][data-page="jira-filter"] main .rounded-t-lg.border-b-0.bg-slate-950 {
+  background-color: var(--m-oak-deep);
+  border-color: var(--m-crust-hi);
+  color: var(--m-cream-hi);
+  box-shadow: inset 0 2px 0 var(--m-honey);
+}
+
+/* jira: Assigned / Reported switch, active side gets a honey underline */
+[data-style="medieval"][data-page="jira"] main .rounded-xl.p-1 > button.bg-slate-700 {
+  color: var(--m-honey);
+  box-shadow: inset 0 0 0 1px var(--m-crust-hi), inset 0 -2px 0 var(--m-honey);
+}
+
+/* Selected study (jira-studies) and unread mention (jira-mentions) */
+[data-style="medieval"][data-page="jira-studies"] main .border.bg-blue-600\/10 {
+  background-color: rgba(232, 176, 74, .10);
+  border-color: rgba(232, 176, 74, .55);
+  box-shadow: inset 3px 0 0 var(--m-honey), var(--m-px-shadow-sm);
+}
+[data-style="medieval"][data-page="jira-mentions"] main .border.bg-blue-600\/5 {
+  background-color: rgba(232, 176, 74, .05);
+  box-shadow: inset 3px 0 0 var(--m-honey), var(--m-px-shadow-sm);
+}
+
+/* IssueCard: lifts a pixel on hover with a hard shadow (stale amber cards keep amber) */
+[data-style="medieval"][data-page^="jira"] main .cursor-pointer.rounded-xl.border.bg-slate-900:hover {
+  border-color: var(--m-crust-hi);
+  box-shadow: inset 0 0 0 1px var(--m-crust-hi), 4px 4px 0 rgba(0, 0, 0, .45);
+}
+
+/* Empty states: lucide tile or bare icon becomes the 4x cheese */
+[data-style="medieval"][data-page^="jira"] main :is(.text-center, .items-center) > :is(.w-14, .w-16).rounded-2xl:has(> svg, > span) {
+  width: 64px;
+  height: 64px;
+  border: 0;
+  box-shadow: none;
+  background: var(--m-page-ico) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+}
+[data-style="medieval"][data-page^="jira"] main :is(.text-center, .items-center) > :is(.w-14, .w-16).rounded-2xl > :is(svg, span) { display: none; }
+[data-style="medieval"][data-page^="jira"] main .flex.flex-col.items-center:is(.py-12, .p-8) > svg:first-child { display: none; }
+[data-style="medieval"][data-page^="jira"] main .flex.flex-col.items-center:is(.py-12, .p-8):has(> svg:first-child)::before {
+  content: "";
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+  background: var(--m-page-ico) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+[data-style="medieval"][data-page^="jira"] main :is(p, div).text-center:is(.text-slate-600, .text-slate-700),
+[data-style="medieval"][data-page^="jira"] main .flex-col.items-center.text-slate-600 { color: var(--m-muted); }
+
+/* AdfRenderer (ticket description, comments) */
+[data-style="medieval"][data-page^="jira"] main .rounded-lg.bg-slate-950.border.font-mono {
+  background-color: var(--m-well);
+  border-color: var(--m-crust);
+  box-shadow: inset 0 0 0 1px var(--m-crust);
+}
+[data-style="medieval"][data-page^="jira"] main .bg-slate-800.text-pink-300.font-mono {
+  background-color: var(--m-well);
+  color: var(--m-honey);
+}
+[data-style="medieval"][data-page^="jira"] main .border-l-2.border-slate-600.italic {
+  border-left-color: var(--m-crust-hi);
+  color: var(--m-oat);
+}
+
+/* medieval-check 2026-10-27: the sunset glow sits right behind the centred
+   "Connect Jira" / "JIRA not connected" empty states; dim the scene a little
+   more (base default .22, calendar .40). */
+[data-style="medieval"][data-page^="jira"] { --m-scrim: .32; }

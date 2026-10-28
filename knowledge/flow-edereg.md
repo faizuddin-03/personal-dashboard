@@ -7,8 +7,13 @@ two sources: the dev's QA test guide (Claude artifact, `[from dev, shared
 `_reference/tickets/EAINT-9306/[eAuto - AATF] Deregistration - Test Plan (2).pdf`
 `[from Faizuddin, 2026-08-21]`, which also carries Faizuddin's own coverage
 notes embedded in it ("Faiz's Notes" section). The AATF-side URL map and DOM
-handles (§3, §4) were added 2026-08-21 from live HTML captures; the
-Back-Office side is still not captured (see §9).
+handles (§3, §4) were added 2026-08-21 from live HTML captures. The
+Back-Office side (URL map, listing DOM, both JPJ XML Log pages, statuses)
+is in §45–§46, written 2026-10-15 from the five BO captures under
+`_reference/codebases/AATF/EAINT-9306-bo-*.html` (supersedes "the
+Back-Office side is still not captured (see §9)"). The SRD version delta
+is §47, the automation config/env-var reference is §48, the TS11/TS12
+Part 2 live-run record is §49, and the consolidated gap list is §50.
 
 ## 1. Why this matters
 
@@ -96,9 +101,10 @@ Deregistration transaction (view/listing):
 - `/uat1/view/aatf/dereg/photo/view.do?id=<refNo>%2FPhoto1` — uploaded vehicle
   photo viewer
 
-**Not yet captured**: the JPJ XML Log (Deregistration Pre-Checking) screen and
-every Back-Office-side page listed in §6 — only the AATF-side pages above have
-live HTML behind them so far.
+Back-Office side: see §45 (URL map + listing DOM) and §46 (both JPJ XML Log
+pages). Supersedes "Not yet captured: the JPJ XML Log (Deregistration
+Pre-Checking) screen and every Back-Office-side page listed in §6" — all five
+were captured 2026-08-24/27 and are now distilled.
 
 ## 4. The real DOM handles
 
@@ -257,6 +263,12 @@ refresh will start back from beginning, does not save the details." Treat any
 mid-flow refresh as resetting Step 2's in-progress pre-check attempt, not as
 resuming it.
 
+Business-level status names as given by the team: eDereg pre-check —
+**Active, Approved, Failed - Vehicle Not Exist, Failed - JPJ Error Code,
+Expired (after 6 months)**; Dereg — **Active, Expired (after 6 months)**.
+`[from Teams DM Charmain Ea Chiang]` (undated). `[unconfirmed]` how "Active"
+maps to the captured `select#status` values (§45.4), which have no "Active".
+
 ### 5.5 Expiry — two different mechanisms, don't conflate them
 
 - **6-month SRD expiry**: an *Approved* pre-check becomes ineligible once its
@@ -351,6 +363,32 @@ verified in the test plan:
   succeeding, and the system "pre-searches" the transaction in the listing
   afterward so the user lands on the current state, not a stale view.
 
+### 5.7 Invoice / e-Invoice outcome by TIN and payment (EAINT-8655/9043)
+
+The eDereg Pre-Checking transaction issues an Invoice and an e-Invoice for a
+successfully paid transaction (from 1 Nov 2025). The outcome branches on the
+TIN and on the payment. These are tested expectations from the CR's test
+script, not verified against the running system. `[from SharePoint TS #075
+EAINT-8655 & 9043, sheet E2E Flow, rows 3-13]`
+
+1. **Valid TIN:** AATF "e-Invoice Status = OK", BO "LHDN Response Status = OK",
+   both [e-Invoice] and [Invoice] shown `[row 3]`.
+2. **Invalid TIN:** both statuses "Failed", remark "TIN verification failed.
+   Kindly provide correct TIN information to eAuto customer service.",
+   [Invoice] only `[row 4]`.
+3. **Cancelled or failed payment:** status "-", no documents `[row 5]`.
+4. **LHDN resubmission cronjob:** picks up the failed rows after the TIN is
+   corrected `[rows 12-13]`.
+5. eSIM vehicle numbers the script used for the branches: `GLB000000I`
+   success; `VEL000100E` failed; `ENF000013E` cancelled; `VEL000102E` final
+   submission failed `[rows 3-9]`.
+6. e-Invoice buyer block (same workbook, sheet Functional Testing (e-Invoice)):
+   blank SST number prints "n/a" `[row 9]`; blank e-Invoice PIC contact falls
+   back to the company contact number `[row 12]`; blank PIC email falls back to
+   the Director/Owner email `[row 14]`; vehicle number printed with spaces,
+   "WU 4444", "WUU 1234 D", "PUTRAJAYA 12" `[rows 15-17]`.
+   `[from SharePoint TS #075 EAINT-8655 & 9043, sheet Functional Testing (e-Invoice)]`
+
 ## 6. UI locations affected (compliance banner / gate / new fields)
 
 `[from dev guide, 2026-08-21]`:
@@ -372,10 +410,21 @@ verified in the test plan:
   the Vehicle No. field auto-filled from the details page, showing **all**
   existing transactions for that vehicle (not filtered to one).
 - **Back-office eDereg Pre-Checking listing** — gains a vehicle-number search
-  field.
+  field (`#vehicleNo`, §45.3) and, per the dev guide, "auto-searches when
+  arrived at from the link above" `[from dev guide, 2026-08-21]`.
 - **JPJ XML Log (Deregistration Pre-Checking)** — searchable by **Vehicle No.**
   or **Transaction Ref. ID** (OF_TS5 exercises this directly, including
   cross-referencing a Trx Ref No. obtained from the pre-check listing page).
+- **AATF Payment Report** (EAINT-9715) — transaction types "All - DEREG -
+  Deregistration - eDereg Pre- Checking" (source spacing kept); Payment Date
+  range limited to 30 days; export file name
+  "AATF_Payment_Report_{Date Generated}_{Time Generated}".
+  `[from SharePoint TS #111 EAINT-9715, sheet Filter, rows 4, 6, 12]`
+- **Thumbprint (MyKad) pages on AATF** — Dereg Step 1 Owner ("Please use
+  Owner's MyKad."), Step 3 AATF ("Please use login user's MyKad"), Upload COD
+  Step 1, Manage Users add/update, Create New AATF Company Account. Bypass
+  emulator: [mykad-emulator.md](mykad-emulator.md). `[from SharePoint TS #121 List of Modules and Pages that requires
+  Thumbprint (UCD & AATF), sheet AATF, rows 3-15]`
 
 Full list of pages the QA plan says to remember for coverage: Figma
 (UI/UX — see link below), AATF eDereg Pre-Checking Enquiry Steps, AATF eDereg
@@ -405,6 +454,13 @@ Figma design reference (UI/UX only, not automatable):
   prior architecture note. Confirmed applicable here: CPC_E2E_TS4–6 and
   CPC_E2E_TS10–12 (the "Expired (After 6 Months)" scenario blocks) all require
   this patch.
+- **Owner email on a Dereg transaction must not be an @modefair.com
+  address** when the run goes through to payment: "EXCEPT for Deregistration
+  because email will be sent from JPJ upon payment successful, so Dereg
+  CANNOT use modefair email". Disposable addresses are banned too ("DO NOT use
+  @yopmail.com or any other disposable email"). Note the suite's own default
+  `DPC_OWNER_EMAIL` is `faizuddin@modefair.com` (§48.2).
+  `[from Notion export, QA Home/Email for Testing.pdf]`
 - Result-icon convention for this ticket's test scripts, per the QA plan:
   ✅ Pass, ❌ Failed, 🚧 In Progress — put this icon at the TS title, not just
   in a results column.
@@ -415,7 +471,8 @@ Figma design reference (UI/UX only, not automatable):
 - **This round's scope, confirmed 2026-08-21**: get the automation completing
   the AATF-side eDereg flow end-to-end first (Pre-Checking → Deregistration →
   JPJ Deregistration success) — Back-Office verification is explicitly phase 2
-  and out of scope for now (no BO HTML captured at all yet, see §9). Within
+  and out of scope for now (supersedes "no BO HTML captured at all yet" —
+  five BO pages were captured 2026-08-24/27, see §45). Within
   that, start with **one happy-path case** before attempting the rest of the
   38-case script — `CPC_E2E_TS1` or `CPC_E2E_TS2` are the obvious first picks
   (see `lib/ticketStudies.ts`'s `automation.groups`, both already assessed as
@@ -523,7 +580,8 @@ Figma design reference (UI/UX only, not automatable):
   identical to "the click did nothing." Fixed by wrapping the
   `#to-continue` click in `this.session.withNativeConfirm()`.
 
-## 9. What is NOT covered yet
+## 9. Build log of the automation (was "What is NOT covered yet" — the
+current gap list is §50)
 
 - **CONFIRMED LIVE END-TO-END, 2026-08-24.** `scripts/eauto-edereg-precheck`
   runs the full happy path in one continuous run: login → AATF home → eDEREG
@@ -4628,6 +4686,19 @@ No-ops cleanly when the field isn't present (retries/resubmits, or the
 'closed-direct' reshow shape), so it's safe to call unconditionally rather
 than needing to know in advance whether the declaration will show.
 
+**The STANDALONE entry point carries the same declaration under a DIFFERENT
+field id** `[from Session-Handoff-2026-09-17-9306.md, thread 6 of 2026-09-11 —
+observed live via a DOM read, NO HTML capture was saved, so per flows.md this
+is not "verified"]`: the standalone "eDereg Pre-Checking Enquiry" Step 1 screen
+(`.../precheck/transaction/main.do` per that note) also shows the "PERAKUAN
+eDEREG PRE-CHECKING - AATF" text, but reuses the pre-existing
+`#jpjReceiptEmail` field (prepopulated from the company record, editable),
+not `#dpc-consent-email`. `PrecheckEnquiryPage.fillVehicleAndConsent()`
+(`pages/PrecheckEnquiryPage.ts:51-56`) still works only because the id did
+not change. The handoff asked for the capture to be saved as
+`_reference/html/edereg/precheck-standalone-perakuan-declaration.html` —
+it does not exist as of 2026-10-15 (§50).
+
 **Not yet updated for this SRD change:** `utils/repurchaseProbe.ts` and
 `utils/jpjCodeProbe.ts` click the same dialog's "Next" independently (their
 own copy of the shape-detection block, not routed through
@@ -4684,7 +4755,12 @@ them were previously tagged with Teams provenance in this file.
   general-chat reading from 2026-09-09 15:57 (that the field was
   backend-only/blank-by-default) is superseded by this, not wrong so much
   as answered more precisely once written down.
-  `(source: Teams, Mei Jia Chee, 2026-09-10)`
+  `(source: Teams, Mei Jia Chee, 2026-09-10)` What still stands from the
+  15:57 message: the value comes from the backend field
+  `deregPrecheckCompanyEmail` and is **blank for new AATF accounts**
+  `[from Teams eAuto QAs, 2026-09-09 15:57, May Chin Mei Theng]`. The AATF
+  company email itself is set in **BackOffice > Manage AATF/PBT Account**
+  `[from Teams EAINT-12348, 2026-10-14 15:43, Sia Zhong Tai]`.
 - **BA confirmed directly that the perakuan declaration applies ONLY to
   first-time-purchase transactions, never to resubmit or RE (RHB-reset)
   cases**: "perakuan we just wan to apply to those first time purchase ya.
@@ -4777,6 +4853,11 @@ Teams chat:
 
 `(source: Teams, Faizuddin/Goh Kai Jiaeh, "EAINT-9306 EAUTO" chat, 2026-09-15)`
 
+Release record: fix version **S33.6-20260915**; **8 QA man-days**; regression
+evidence on SharePoint in the folder `20260915 - 15th September Morning
+Deployment`. `[from appraisal proof pack 2026-10-15 §A]` The RHB `ER`
+~12-minute cooldown found the day before is recorded in §49.
+
 No further 9306 activity found in Teams after 2026-09-15 09:08 (checked "This
 week" filter across all chats as of 2026-09-17 — nothing from 9/16 or 9/17).
 This means: the automation rebuild/re-run work described in the
@@ -4796,3 +4877,693 @@ as not currently active — the TS11/TS12 retest gap in
 [[eaint-9306-ts11-ts12-need-retest]] is still open, but nobody is working it
 right now. `(source: Teams, folder placement + daily To-Do Plan posts,
 "eAuto QAs" chat, 2026-09-18)`
+
+## 45. Back-Office side — URL map, listing DOM, statuses [written 2026-10-15
+from the five BO captures of 2026-08-24/27 + the BO page objects]
+
+Everything here is read from `_reference/codebases/AATF/EAINT-9306-bo-*.html`
+(pasted live by Faizuddin; the env segment in the captures is one run's
+value, not a rule) and from `scripts/eauto-edereg-precheck/pages/Bo*.ts` /
+`JpjXmlLogPage.ts`. Provenance per line.
+
+### 45.1 Login and home
+
+- Same `/<segment>/public/login/` page as the AATF account; a BO/Hub Admin
+  account lands on `/<segment>/home/` (the AATF account lands on
+  `/view/aatf/home`). `[verified: pages/BoLoginPage.ts:20-29 · waitForURL
+  /<segment>/home/?$]` `[verified: EAINT-9306-bo-home-menu.html · #home-link
+  href="/uat1/home/"]`. BO login has worked live on every run that reached
+  `runJpjXmlLogChecklist()` or MU_TS9's BO cancel (§27, 2026-08-27).
+- Default BO account `faizuddinBO1` / `password` (`CONFIG.boUsername` /
+  `boPassword`, env `DPC_BO_USERNAME` / `DPC_BO_PASSWORD`)
+  `[verified: data/config.ts]` `[from Faizuddin, 2026-08-24]`.
+- Login handles: `getByRole('textbox', { name: 'Username ' })`,
+  `getByRole('textbox', { name: 'Password ' })`, `getByRole('button', { name:
+  'Login' })` — note the trailing space in both textbox names
+  `[verified: pages/BoLoginPage.ts:15-17]`.
+- Home menu (`#home-menu`, blocks with class `Admin HubAdmin`) —
+  ticket-relevant links `[verified: EAINT-9306-bo-home-menu.html]`:
+
+| Menu category | Link text | Path (after `/<segment>`) |
+|---|---|---|
+| Transactions Relevant | Deregistration Transaction | `/view/dereg/enquiry/main.do` |
+| Transactions Relevant | eDereg Pre-Checking Transaction | `/view/dereg/precheck/enquiry/main.do` |
+| Settings (Hub Admin) | JPJ XML Log (Deregistration) | `/view/dereg/jpj/log` |
+| Settings (Hub Admin) | JPJ XML Log (eDereg Pre-Checking) | `/view/dereg/precheck/jpj/log/main.do` |
+| Support Tools | Resubmit JPJ Final Submission (eDereg Pre-Checking) | `/view/dereg/precheck/enquiry/resubmission/view.do` — never captured |
+| Reports | Reset Payment Report | `/view/report/reset-payment-report` — never captured; plausibly where OF_TS4's dev "reset payment" is visible `[unconfirmed]` |
+| Settings | RHB Payment Transaction | `/view/payment/rhb-payment-transaction` — never captured |
+| Settings (Hub Admin) | Sibling logs: APT `/view/apt/jpj/log`, STMS `/view/stms/jpj/log`, ESTM `/view/estm/jpj/log`, BMK `/view/bmk/jpj/log`, SSM `/view/ssm/xml-log` | see [jpj-xml-log.md](jpj-xml-log.md) |
+
+- BO pages carry the UCD-style header: `#home-link` ("Home |"),
+  `#menu-link`, `#incomplete-txn-notification-wrapper` ("N Pending
+  Transaction Found!", onclick → `/view/support/incomplete-txn/`),
+  `.user-name`, `a.my-account`, `a.logout`
+  `[verified: EAINT-9306-bo-precheck-transaction-listing.html · #header]`.
+- BO routes drop the `/aatf/` segment: AATF
+  `/view/aatf/dereg/precheck/enquiry/main.do` ↔ BO
+  `/view/dereg/precheck/enquiry/main.do`; AATF `/view/aatf/dereg/enquiry/
+  main.do` ↔ BO `/view/dereg/enquiry/main.do`. Both BO listing paths are
+  confirmed by the home-menu hrefs; the "View" links' hrefs
+  (`/view/dereg/precheck/enquiry/view.do?id=<uuid>`,
+  `/view/dereg/enquiry/view.do?id=<uuid>`) give the details paths. The
+  precheck listing path has been driven live (MU_TS9/MU_TS10 cancels,
+  2026-08-27, §27/§29); the dereg one never has.
+
+### 45.2 BO "eDereg Pre-Checking Transaction Listing" — `/view/dereg/precheck/enquiry/main.do`
+
+Page heading `<b>eDereg Pre-Checking Transaction Listing</b>` (centred cell
+under the form). Page object `BoPrecheckTransactionListingPage`
+`[verified: pages/BoPrecheckTransactionListingPage.ts:62-65]`.
+
+Search form `#search-form` (hidden `pageNo=1`)
+`[verified: the capture, STATE 1]`:
+
+| Field | Handle | Values / notes |
+|---|---|---|
+| Company Name | `#companyName` (text, size 30) | |
+| Vehicle No. | `#vehicleNo` (text, size 8) | |
+| Transaction No. | `#refNo` (text, size 10) | the `PC…` ref |
+| Date Created (From) `*` | `#fromDate` readonly `.hasDatepicker` | jQuery UI datepicker, widget `#ui-datepicker-div`, today = `.ui-datepicker-today a` |
+| Date Created (To) `*` | `#toDate` readonly `.hasDatepicker` | both marked required |
+| Company ROC | `#companyRoc` (text, size 30) | |
+| Trx Status | `select#status` (name `status`) | `""`=All, `Approved`, `Failed`, `Pending`, `Cancelled`, `Expired` — id is `#status`, NOT `#to-filter` as on the Dereg listing |
+| Payment Status | `select#paymentStatus` | `""`=All, value `Paid` label "OK", `Pending`, `Failed`, value `New` label "-" — label and value differ |
+| Payment Date (From/To) | `#paymentFrom` / `#paymentTo` readonly datepickers | |
+| LHDN Response Status | `select[name=eInvoiceValidationStatus]` (no id) | `""`=All, `OK`, `Failed`, `New`="-", `N/A` |
+| Search | `input#to-search[type=submit]` "Search Now" | AJAX, not a reload — trap 1 below |
+| Reset / Export | `a.to-reset`, `a#to-export.hidden` (shown after a search) | |
+
+Result table `#result table` (`#result` holds `&nbsp;` before any search),
+header `tr.header`, rows `tr.odd`/`tr.even`. 13 columns, in order
+`[verified: the capture, STATE 2 <th> row + rows 1-4]`:
+
+| Idx | Column | Cell shape |
+|---|---|---|
+| 0 | # | |
+| 1 | Company Name | e.g. `FAIZUDDIN AATF ACC` |
+| 2 | Company ROC | e.g. `202208153901` |
+| 3 | Vehicle | |
+| 4 | Transaction No. | `PC########` |
+| 5 | Created At | `yyyy-MM-dd HH:mm` (e.g. `2026-08-27 11:08`) — a different format from the Dereg listing's `dd-MM-yyyy HH:mm` |
+| 6 | Payment | `<b>` + inline colour: green `OK`, red `Failed`, blue `-` |
+| 7 | JPJ Pre-Checking | green `OK`, blue `-` |
+| 8 | Trx Status | green `Approved`, red `Failed`, blue `Pending`; `Expired`/`Cancelled` colours not in the trimmed rows `[unconfirmed]` |
+| 9 | LHDN Response Status | `#FF4000` `Failed`, black `-` |
+| 10 | Remarks | `<div class="remarks"><div>…</div></div>` — verbatim decline/JPJ text, e.g. `IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. 你的RHB银行余额不足.`, `No TIN info has been provided.`, `REV000001E - REV000001E`, `VEL000100E - VEHICLE RECORD NOT EXIST`, `Transaction Expired` |
+| 11 | Special Remarks | `<b style="color:blue">No</b>` on every captured row; meaning never stated |
+| 12 | Action | `View` (`a[target=_blank][title="to view PC…"]` → `/view/dereg/precheck/enquiry/view.do?id=<uuid>`) plus, on Pending/Failed rows only, ` | <a href="#" class="to-cancel" txid="<uuid>" title="to cancel PC…">Cancel</a>` |
+
+`readRows()` maps `td` 1..11 to `companyName…specialRemarks`
+`[verified: pages/BoPrecheckTransactionListingPage.ts:119-146]`.
+
+**Cancel** — `a.to-cancel` is on every Pending/Failed row and absent from
+every Approved/Expired row (all 39 captured rows checked)
+`[verified: the capture]`. Clicking it raised a native dialog reading
+**"Succesfully cancel."** (sic) `[verified live: MU_TS9 run 1, 2026-08-27,
+§27]`. Whether a confirm fires BEFORE cancelling, and whether the row
+refreshes by AJAX or reload, is still unobserved —
+`cancelFirstMatchingRow()` accepts any dialog then waits
+`domcontentloaded` best-effort `[verified: :155-172]`.
+`cancelAllMatchingRows(vehicleRegNo, maxRows = 5)` re-searches between
+cancels for the two-company case `[verified: :186-198]`.
+
+**Traps** (all confirmed across MU_TS9's four live runs, §27):
+1. `#to-search` is AJAX — `waitForLoadState('domcontentloaded')` returns
+   at once and rows get read under the `blockUI` "Working…" overlay. Wait
+   for `#result table a` with text `View` instead `[verified: :106-113]`.
+2. Both dates are set to today via the datepicker, and
+   `selectDateToday()` throws if `inputValue()` is empty afterwards
+   `[verified: :84-96]`. Only today is ever selected — a record created on
+   an earlier day is invisible to this page object.
+3. A manually created BO context is not the fixture page — Playwright's
+   failure screenshot shows the AATF page. MU_TS9 screenshots `boPage`
+   itself on failure (`test-results/mu-ts9-bo-failure.png`) (§27).
+4. This BO page lists ALL companies (rows from `FAIZUDDIN AATF ACC` and
+   `AZFARAATF, A` appear together in the BO captures) — the only vantage
+   point that shows both companies' records for one vehicle, which no
+   AATF-side listing can (§21) `[verified: both BO listing captures]`.
+
+### 45.3 BO "Deregistration Transaction Enquiry" — `/view/dereg/enquiry/main.do`
+
+Page heading `<b>Deregistration Transaction Enquiry</b>`. Page object
+`BoDeregTransactionListingPage` — real capture, real class, **wired into no
+test** (pasted by mistake for MU_TS9, kept)
+`[verified: pages/BoDeregTransactionListingPage.ts header]`.
+
+Search form `[verified: EAINT-9306-bo-dereg-transaction-listing.html STATE 1]`:
+
+| Field | Handle | Values / notes |
+|---|---|---|
+| Company Name / Vehicle No. / Transaction No. | `#companyName`, `#vehicleNo` (size 8), `#refNo` | |
+| From `*` / To `*` | `#fromDate`, `#toDate` readonly datepickers | only "From" is enforced `[from Faizuddin, 2026-08-27]`; markup marks both |
+| Filter by | `select#to-filter` (name `status`) | `""`="Transaction Status", `Approved`, `Failed`, `Pending`, `Cancelled`, `Expired` |
+| Company ROC | `#companyRoc` | |
+| Payment Method | `select[name=paymentMethod]` | `""` All, `DD`="DD MBB", `FPX`, `POB`, `RHB` |
+| Payment From / To | `#paymentFrom`, `#paymentTo` | |
+| Category Type | `select[name=categoryType]` | `4` Company, `9` Foreigner, `5` Government, `1` Malaysian, `3` Military, `S` MyKas, `0` Pemastautin Tetap, `2` Police, `6` Statutory Body |
+| COD | `select#to-cod` (name `isJpjDecApproved`) | `""`, `true` Yes, `false` No |
+| PBT | `select#to-pbt` (name `pbtCompanyId`) | `INDIVIDU` + PBT company ids (`5020001`…`5140001`) |
+| LHDN Response Status | `select[name=eInvoiceValidationStatus]` | as 45.2 |
+| Includes Draft Trx | `input#includeDraft[type=checkbox]` | effect untested |
+| Search / Reset / Export | `input#to-search` "SEARCH Now", `a.to-reset`, `a#to-export` "Export CSV" (hidden until a search) | |
+
+Result table, 16 columns `[verified: STATE 2 <th> row]`: `#`, Company Name,
+Company ROC, Vehicle, Transaction No. (`D#########`), Owner Name, Created At
+(`dd-MM-yyyy HH:mm`), Method (`RHB`), JPJ Enquiry, Payment, JPJ Dereg (each
+green `OK` in the capture), Tx Status (green `Approved`), COD
+(`<b style="color:red">No</b>`), LHDN Response Status (`#FF4000` `Failed` /
+black `-`), Remarks (plain text), Action (`View` →
+`/view/dereg/enquiry/view.do?id=<uuid>`, `target=_blank`). Reader maps
+`td` 1..14 `[verified: pages/BoDeregTransactionListingPage.ts:120-146]`.
+
+Unknowns: the Cancel control on a Pending row (never captured —
+`cancelFirstRow()` guesses a link named "Cancel"); what `#includeDraft`
+surfaces; and whether `#to-search` reloads (assumed, by analogy with the
+AATF Dereg listing — §27's lesson says not to trust that) `[unconfirmed]`.
+
+**SRD requirement on this page's DETAILS view (never captured):** SRD
+§2.3.2.3 "eAuto BO Portal > Deregistration Transaction Listing Details"
+adds an `eDereg Pre-Checking` item — `Yes` ("Hyperlink: User is navigated
+to eDereg Pre-Checking Listing for all transactions for that vehicle
+number") or `-` (no record) — identical in V1.0, V1.1, V1.2
+`[verified: SRD V1.2 pdftotext §2.3.2.3]`. The dev guide adds that `Yes`
+shows if the vehicle has ANY precheck record, successful or failed, any
+age, and that the BO precheck listing "auto-searches when arrived at from
+the link" `[from dev guide, 2026-08-21]`. The BO link target is presumably
+`/view/dereg/precheck/enquiry/main.do?vehicleNo=<VN>&autoSearch=true` by
+analogy with the AATF link `[unconfirmed]`.
+
+### 45.4 Status vocabulary, BO side
+
+| Field | Values (verbatim) | Source |
+|---|---|---|
+| Trx Status (precheck) | `Approved`, `Failed`, `Pending`, `Cancelled`, `Expired` | `select#status` `[verified]`; `Cancelled` reached live via BO cancel (§27), `Expired` via cronjob (§5.5) |
+| Payment (precheck) | `OK` (value `Paid`), `Pending`, `Failed`, `-` (value `New`) | `select#paymentStatus` `[verified]` |
+| JPJ Pre-Checking | `OK`, `-` seen; the JPJ-rejected cell value is not in the trimmed rows | `[unconfirmed]` for the Failed value |
+| LHDN Response Status | `OK`, `Failed`, `-` (`New`), `N/A` | every captured test row: `Failed` + "No TIN info has been provided." |
+| Tx Status (dereg) | same five values | `select#to-filter` `[verified]` |
+| COD (dereg) | `Yes` / `No` (`isJpjDecApproved`) | `[verified]` |
+
+AATF payment references, as described by dev — the dev hedged it ("i think
+its like this oh"), so treat as `[unconfirmed]`:
+`[from Teams EAINT-12348, 2026-10-12 09:27, Sia Zhong Tai]`
+
+1. Dereg: TransType `DRG`, Ref 1 `DRG<yymmdd><6>-<VN>`, Ref 2 `DRG`.
+2. Pre-check: TransType `DPC`, Ref 1 `DPC<yymmdd><6>-<VN>`, Ref 2
+   `DPC<yymmdd><6>`. Consistent with the captured transaction number shape
+   `DPC260824000051` (§46.3).
+
+**PBT numbers — EAINT-12348 (FUTURE, not built; added 2026-10-26).** Status
+"REQ REVIEW IN PROGRESS - EAUTO"; SRD v1.1 (23.10.2026) sent for requestor
+review, not read in this repo.
+
+1. **Receipt No fixed code for PBT = "0810".** Chosen because "0809" is
+   taken by Insurance Cancellation. [source: Jira EAINT-12348 SRD version
+   table, v0.9 (19.10.2026) remark, read 2026-10-26: "Receipt No fixed number
+   for PBT confirmed as 0810"] [source: Teams EAINT-12348 CR group, Mei Jia
+   Chee (BA), 2026-10-19 08:19: "okkkies, if that the case i believe for the
+   PBT version we will use \"0810\" ya. thanks Jin Siang Boo"] [source: Teams
+   EAINT-12348 CR group, Jin Siang Boo (dev lead), 2026-10-15 21:28: "I think
+   should be Insurance cancellation \"0809\""]
+2. **CONFLICT — PBT transaction number format `[unconfirmed]`, pending SRD
+   v1.1.**
+   1. Jira description: "dedicated running transaction number for PBT
+      transactions in format PBT0000001". "Existing AATF numbering sequence
+      remains unchanged." [source: Jira EAINT-12348 description rows 3 and 5,
+      read 2026-10-26]
+   2. Teams proposal for Pre-Checking: "Existing is PC69001611 (PC + Y+M+ 6
+      digits running number). Can help to check if we can have PBTPC69000001"
+      [source: Teams EAINT-12348 CR group, BA, 2026-10-07 14:32]
+   3. Not stated: whether `PBT0000001` covers Dereg, Pre-Checking or both,
+      and how it sits beside the `DRG` / `DPC` payment refs above.
+      [source: _reference/tickets/Studying/EAINT-12348/EAINT-12348-study.md
+      §10 #3, #4]
+3. **Existing PBT accounts in production** (before EAINT-12348 — PBT as
+   eDereg users): "5040001 | Majlis Bandaraya Melaka Bersejarah", "5040002 |
+   Majlis Perbandaran Jasin", "5050001 | Majlis Bandaraya Seremban", "5100001
+   | Majlis Perbandaran Kajang". [from ticket EAINT-12348, SRD v1.0 §2.2.4.1
+   "Existing PBT Records in Production"]
+4. **Existing AATF Dereg transaction number:** "D followed by year, month and
+   a 7 digit running number, for example D690000638". "Year is the last digit
+   of the year." Month: "January to September: 1 to 9", "October: 0",
+   "November: N", "December: D". [from ticket EAINT-12348, SRD v1.0 REQ-016
+   Existing; REQ-019 Existing]
+5. **Existing AATF Pre-Checking transaction number:** "PC followed by year,
+   month and a 6 digit running number, for example PC69001611". [from ticket
+   EAINT-12348, SRD v1.0 REQ-019 Existing]
+6. **Pre-Checking Receipt No (JPJ payload field 4):** "a. YYMMDD, for example
+   260924 ⏎ b. Fixed number: 0807 for AATF, 0810 for PBT ⏎ c. 4 digit running
+   number, for example 0003"; examples "26092408070003" (AATF) and
+   "26092408100003" (PBT). [from ticket EAINT-12348, SRD v1.0 §2.2.5.3, Receipt
+   No row]
+7. **No daily Pre-Checking limit (existing):** "The earlier limit of 5 eDereg
+   Pre-Checking enquiries per user per day for different vehicle numbers has
+   been removed, as confirmed by the developer." [from ticket EAINT-12348, SRD
+   v1.0 REQ-037 Existing]
+8. **e-Invoice tests need a real TIN:** "Note: To use real valid TIN Number to
+   allow successful generation of eInvoice". [from SharePoint TS EAINT-8655 &
+   9043 — eDereg Pre-Checking e-Invoice, sheet Functional Testing (e-Invoice),
+   R6] [source: pipeline EAINT-12348, Scribe related history, 2026-10-27]
+9. **BO Cancel remark (EAINT-12348, PBT rows):** "follow the existing
+   cancellation remark format, for example CANCELLED BY [BackOffice user] on
+   [DD-MM-YYYY HH:MM]." Name: "i. BackOffice Deregistration Transaction
+   Enquiry: the BackOffice login ID ii. Any other place: eauto". Examples:
+   "CANCELLED BY eauto on 13-09-2026 10:15" (pre-check), "CANCELLED BY
+   eautoadmin on 13-09-2026 10:20" (dereg). Cancel shows for "Pending or
+   Failed, including when Payment is OK"; not for "Approved, Cancelled or
+   Expired". [from ticket EAINT-12348, SRD v1.1 REQ-025, via Scout study item
+   29] [source: pipeline EAINT-12348, Scout study, 2026-10-27]
+10. **Today a PBT has no eDereg login.** "A PBT is not able to log in to the
+    eDereg Portal and is not able to create a deregistration transaction."
+    [from ticket EAINT-12348, SRD §2.2.2 #1 item 3, via Scout study] The
+    change: "Enable a PBT organisation to log in to eDereg and create
+    deregistration transactions in the same way as an AATF organisation."
+    [from ticket EAINT-12348, SRD v1.0 §2.2.1 #4]
+11. **PBT and AATF use the same eDereg pages.** The developer: "pbt and aatf
+    are sharing the same page actually, so technically can do either both
+    also see or i add a condition to hide it for aatf." [from Teams
+    EAINT-12348, 2026-10-12 10:04, the developer, via Scout study] So any
+    PBT change on a shared page needs an AATF regression run on that page
+    [unconfirmed]. [source: pipeline EAINT-12348, Scribe chat, 2026-10-28]
+12. **PBT flow differences from AATF (future, not built).** PBT runs
+    Pre-Checking and Create Deregistration "exactly as an AATF user does"
+    (REQ-010 — PBT runs the full flow). PBT-only parts:
+    1. **Step 2 AATF dropdown** (REQ-040 — PBT picks the AATF): "When the
+       logged-in user is a PBT, Step 2 displays an additional mandatory
+       dropdown labelled AATF"; default "-- Select AATF --"; "lists AATF
+       company accounts with an active Company Account Status only". AATF
+       user: "The AATF dropdown is not displayed." [from ticket EAINT-12348,
+       SRD v1.1 p.32–33, via Scout study item 12]
+    2. **JPJ submission** (REQ-015 — PBT identifier): sends "the eAuto
+       Company ID of the PBT account, which starts with 5"; "The PBT Name
+       field carries the PBT Shortform". [from ticket EAINT-12348, SRD REQ-015,
+       via Scout study item 16]
+    3. **COD email** (REQ-022 — PBT uploads COD): "Sender Email: ~~mppkm@eauto.my~~
+       dereg@eauto.my"; recipients include "Company Email of the PBT selected
+       at Step 2" and "DOE Email of the PBT selected at Step 2, or
+       azlan@doe.gov.my when INDIVIDU - INDIVIDU is selected". [from ticket
+       EAINT-12348, SRD v1.1 REQ-022, via Scout study item 25] Whether the
+       sender change also applies to AATF COD emails is [unconfirmed].
+    4. **Module access** (REQ-027 — PBT modules): "STMS, UCD to UCD, APT,
+       e-Serahan (eSTM), eClassified, Insurance and User Guides are not
+       accessible to a PBT user." [from ticket EAINT-12348, SRD REQ-027, via
+       Scout study item 31]
+    5. **Shared change that hits AATF too** (REQ-012 — Step 5 Payment
+       Summary, PBT and AATF): "eAuto Service Fee: RM 35.00", "Service Tax 8%:
+       RM 2.80", "Total Amount Payable (inclusive of Service Tax 8%): RM
+       37.80", no JPJ Fee line. [from ticket EAINT-12348, SRD REQ-012, via
+       Scout study item 13]
+    [source: pipeline EAINT-12348, Scribe chat, 2026-10-28]
+
+### 45.5 AATF-side listing handles the earlier sections never spelled out
+
+`[verified: EAINT-9306-precheck-details-and-listing.html and
+EAINT-9306-dereg-details-and-listing.html, 2026-08-21]`:
+- AATF Pre-Checking listing (`/view/aatf/dereg/precheck/enquiry/main.do`):
+  form ids `#vehicleNo`, `#refNo`, `#fromDate`, `#toDate`, `#status`,
+  `#paymentStatus`, `#paymentFrom`, `#paymentTo`, `#to-search`; 10 columns
+  `#`, Vehicle, Transaction No., Created At, Payment, JPJ Pre-Checking, Trx
+  Status, e-Invoice Status, Remarks, Action (`View`, plus `Resubmit` on
+  Pending/Failed rows only — §26/§29/§30). Reader indices 4/5/6/8
+  `[verified: pages/PrecheckEnquiryPage.ts:357-360]`. **Correction:** that
+  capture's header calls the listing `listing.do (inferred route)` — wrong;
+  the live "Yes" link and every automation lookup use `main.do`
+  `[verified: EAINT-9306-dereg-details-and-listing.html:36]`.
+- AATF Deregistration listing (`/view/aatf/dereg/enquiry/main.do`): ids
+  `#vehicleNo`, `#refNo`, `#fromDate`, `#toDate`, `#to-filter`, `#to-cod`,
+  `#to-pbt`, `#paymentFrom`, `#paymentTo`, `#not-draft`, `#openAll`,
+  `#to-export`, `#to-search`; 14 columns `#`, Vehicle, Transaction No.,
+  Owner Name, Created At, Method, JPJ Enquiry, Payment, JPJ Dereg, Tx
+  Status, COD, e-Invoice Status, Remarks, Action. `#to-search` IS a full
+  reload here `[verified live: §19, 2026-08-26]`.
+- **Correction to §6/§10:** the Dereg Details "eDereg Pre-Checking:" label
+  is NOT in the "e-Invoice Validation Date:" row; it is the right-hand
+  pair of the NEXT row, beside "Manufacturing Year:" — i.e. visually below
+  e-Invoice Validation Date (supersedes "positioned directly under
+  'e-Invoice Validation Date:' in the same row grid"). The `Yes` is a bare
+  `<a>` with no id `[verified: EAINT-9306-dereg-details-and-listing.html:33-37]`.
+
+## 46. BO JPJ XML Log pages — Deregistration and eDereg Pre-Checking
+[written 2026-10-15; the cross-module format reference is
+[jpj-xml-log.md](jpj-xml-log.md)]
+
+Two separate BO pages, both captured 2026-08-24
+(`EAINT-9306-bo-jpj-xml-log-dereg.html`, `EAINT-9306-bo-jpj-xml-log-
+precheck.html`), both driven by `JpjXmlLogPage(page, basePath)`
+`[verified: pages/JpjXmlLogPage.ts]`, and used by every TS that reaches
+`runJpjXmlLogChecklist()` (`utils/srdChecklist.ts`).
+
+### 46.1 Shared search form (identical on both) `[verified: both captures]`
+
+```
+form#search-form
+  input#type[type=radio][name=type][value=vehicleNo] checked  <b>Vehicle No.:</b>         input#vehicleNo (size 15)
+  input#type[type=radio][name=type][value=refNo]               <b>Transaction Ref No.:</b> input#refNo (size 30)
+  input#to-search[type=submit] value="SEARCH Now"
+td#result  -> "&nbsp;" until a search runs, then <table>, header tr.header, rows tr.odd/tr.even
+```
+- **Duplicate id `#type`** on both radios — target by value,
+  `#type[value="vehicleNo"]` / `#type[value="refNo"]`, then `.check()`
+  `[verified: pages/JpjXmlLogPage.ts:43-55]`.
+- Heading differs: the Dereg log shows `<b>DEREG Transaction Enquiry</b>`
+  to the right of the form; the Pre-Checking log shows `<b>eDereg
+  Pre-Checking Transaction Enquiry</b>` centred under it and adds a hidden
+  `pageNo=1` `[verified: both captures]`.
+- `open()` waits `domcontentloaded` + 2 s before input: Faizuddin saw the
+  Pre-Checking log switch to "DEREG Transaction Enquiry" when a vehicle no.
+  was typed too early `[verified: pages/JpjXmlLogPage.ts:31-39]`
+  `[from Faizuddin, 2026-09-02]`. The fix is not yet confirmed live (§33b).
+- `readRows()` waits only `domcontentloaded`, then treats "no table" as
+  zero rows `[verified: :60-66]` — whether this page's search is AJAX (like
+  the BO precheck listing, §45.2 trap 1) is not established, and a too-early
+  read would explain §33(c)'s zero-rows-by-ref result `[unconfirmed]`.
+- Search by Transaction Ref No. takes the human ref (`PC68001153`,
+  `D680000566`), not the uuid `[verified: utils/srdChecklist.ts]`.
+- Rows are newest-first `[verified: both captures, row 1 has the later
+  time]`.
+- Row detail pages `/view/dereg/jpj/log/view.do?id=<uuid>` and
+  `/view/dereg/precheck/jpj/log/view.do?id=<uuid>` (the bold Transaction
+  No. link) are never captured and never opened by automation.
+
+### 46.2 JPJ XML Log (Deregistration) — `/view/dereg/jpj/log`
+
+8 columns `[verified: EAINT-9306-bo-jpj-xml-log-dereg.html STATE 2]`: `#`,
+Vehicle, Transaction No. (link, `D…`), Type, Submitted At
+(`dd-MM-yyyy HH:mm`), Request Data, Responded At, Response Data. One
+completed Deregistration (`D680000566`, HXA021) wrote FOUR rows in the same
+minute, newest first: `Submission`, `SecondEnquiry`, `Enquiry`, `Enquiry`.
+
+| Type | Request Data (verbatim) | Response Data (verbatim) |
+|---|---|---|
+| Enquiry (×2) | `HXA021~030217141005~0~CHS55249419~ENG55249419` | `GLB000000I~030217141005~0~HXA021` |
+| SecondEnquiry | same shape as Enquiry | same |
+| Submission | `030217141005~0~HXA021~CHS55249419~ENG55249419~faizuddin@modefair.com~faizuddin@modefair.com~4100020~FAIZUDDIN AATF ACC~INDIVIDU` | `GLB000000I~030217141005~0~HXA021` |
+
+No splitter sheet covers this log, so the suite only counts rows
+`[verified: utils/srdChecklist.ts:34-40]`. Readable by eye: vehicle, owner
+NRIC, a category digit (`0` here although the transaction was category
+MyKad/`1` — meaning `[unconfirmed]`), chassis, engine, two emails, a
+numeric code `4100020`, AATF company name, PBT (`INDIVIDU`). Field names
+are `[unconfirmed]`. Which `Enquiry` row is Step 4 "JPJ Check" is also
+`[unconfirmed]`.
+
+### 46.3 JPJ XML Log (eDereg Pre-Checking) — `/view/dereg/precheck/jpj/log/main.do`
+
+9 columns `[verified: EAINT-9306-bo-jpj-xml-log-precheck.html STATE 2]`: `#`,
+Vehicle, Transaction No. (link, `PC…`), **Search By** (the AATF user's full
+name, e.g. `MUHAMMAD FAIZUDDIN BIN BIDI`), Type (`PrecheckEnquiry` on every
+row seen), Submitted At, Request Data, Responded At, Response Data.
+`readRows()` detects 9 vs 8 cells and shifts by one
+`[verified: pages/JpjXmlLogPage.ts:74-85]`.
+
+Request Data, decoded by `decodePrecheckRequestData()`
+(`utils/jpjXmlLogDecode.ts:47-55`), against the live row
+`HXA021~2026-08-24 15:07:40.000~DPC260824000051~26082408070026~72404~2910002~E~5.00~202208153901~~systemtest@eauto.my`:
+
+| Pos | Decoder field | Live value | Splitter sheet " 🟧eDEREG PRE-CHECKING - JPJ EN", row 2 header / row 3 rule |
+|---|---|---|---|
+| 1 | `vehicleNo` | `HXA021` | Registration Number — `{vehicle_no} from Step 1` |
+| 2 | `eftDateTime` | `2026-08-24 15:07:40.000` | EFT Date Time — `{payment_date_time(yyyy-mm-dd_HH:mm:ss.sss)}` |
+| 3 | `receiptNo` | `DPC260824000051` | Receipt No — `{receipt_no} {yymmdd}{0807}{0001}`; C1 note "Added on latest IDD and swapped sequence with EFT Reference Number" |
+| 4 | `eftReferenceNo` | `26082408070026` | EFT Reference Number — `{rhb_payment_id} auto-generated, can refer in: Trnx Details > Payment Details, Slip Pengesahan` |
+| 5 | `agCode` | `72404` | AG Code — `{ag_code} 72404` |
+| 6 | `jpjRevenueCode` | `2910002` | JPJ Revenue Code — `{jpj_revenue_code} 2910002` |
+| 7 | `paymentMode` | `E` | Payment Mode — `{payment_method} E` |
+| 8 | `eftAmount` | `5.00` | EFT Amount / Amount Paid — `{jpj_fee}`; H1 note "Latest IDD updated length to 6 from 9.2" |
+| 9 | `ssmOrCompanyNo` | `202208153901` | SSM No / Company No — `{new_roc} / {old_roc}`, "System will auto inherit old roc no if new roc no is blank" |
+| 10 | `companyEmail` | blank (older row: `faizuddin@modefair.com`) | Company email / Email1 — `dereg@eauto.my`, `edereg@carmedic.com.my` |
+| 11 | `emailCc` | `systemtest@eauto.my` | Email cc / Email2 — `receipt@eauto.my` (live value differs) |
+
+`eftAmount` is the JPJ fee only; the popup charges RM10.40 = JPJ Fee 5.00 +
+eAuto Service Fee 5.00 + Service Tax 8% 0.40
+`[verified: EAINT-9306-precheck-payment-and-result.html:34-40]`.
+
+**Naming trap `[unconfirmed]`:** the sheet says the `{yymmdd}{0807}{seq}`
+shape is the Receipt No and the `DPC…`-style id is the RHB payment id / EFT
+Reference. The live row has `DPC…` at position 3 and the `{yymmdd}0807…`
+value at position 4, and the decoder names position 3 `receiptNo`. So with
+the swap applied, position 3 holds what the sheet calls the EFT Reference
+and position 4 the Receipt No — the decoder's two field NAMES look swapped
+even though its positional order is right. Nothing asserts on either field
+today; settle it (open a row's detail page, or compare with Slip
+Pengesahan) before anyone reads `receiptNo` as the slip number. §10's
+"do not revert to the sheet's original column order" is about position and
+still stands.
+
+Response Data, decoded by `decodePrecheckResponseData()` (`:57-68`), against
+`GLB000000I~Y~Y~Y~Y~N~N~N~N~N~N~2026082483685479`:
+
+| Pos | Field | Rule (sheet "🟧eDEREG PRE-CHECKING - JPJ ENQ", row 3, verbatim) |
+|---|---|---|
+| 1 | `responseCode` | `{jpj_response_code}` |
+| 2 | `vehicleRecord` | "Y - If vehicle record exists / N - If vehicle record not exist" |
+| 3 | `vehicleStatus` | "Y - If vehicle status active / N - If vehicle status not active / NA - Unable to check" |
+| 4 | `verifiedStatus` | "Y - If Verified Status (0, 1, 2, 3, 4, 5) / N - If Verified Status (6, 7, 8, 9) / NA"; E1 note "Latest IDD sequence remain (moved from last column in this sheet to this position)" |
+| 5 | `usageCode` | "Y - if AA, AB, AD / N - if ≠ AA, AB, AD / NA" |
+| 6 | `blacklistJpj` | Y exist / N not exist / NA |
+| 7 | `blacklistJsj` | Y / N / NA (H1: "Added on latest IDD") |
+| 8 | `blacklistAgency` | Y / N / NA |
+| 9 | `claimOwnership` | Y / N / NA |
+| 10 | `vehicleInInvestigation` | Y / N / NA |
+| 11 | `vehicleCondition` | Y / N / NA |
+| 12 | `trailingUnknown` | not in the sheet's "11 FIELDS" group; every live row has a 16-digit `yyyyMMdd########` value. The sheet also lists a separate "3 FIELDS" group (Response Code, Registration Number, JPJ System Code `-`); whether position 12 is a system/reference code is `[unconfirmed]` |
+
+These 11 fields line up 1:1 with the result popup's `#vehicleRecord`…
+`#vehicleCondition` (§39) and the eSIM Dereg Precheck entity's Y/N/NA fields
+(esim.md § Dereg Precheck).
+
+What the checklist asserts: `responseCodeMatches` = any row found by
+vehicle no. decodes to the expected code; ref-no searches only count rows;
+the Dereg log is searched only if a `deregRefNo` exists
+`[verified: utils/srdChecklist.ts:72-131]`.
+
+## 47. SRD version delta — V1.0 → V1.1 → V1.2 [verified: pdftotext of the
+three PDFs in `_reference/tickets/EAINT-9306/`, diffed 2026-10-15]
+
+| Version | Date, author | What changed (revision table + text diff) |
+|---|---|---|
+| 0.1 / 0.2 / 1.0 | 29.12.2025, 02.01.2026 — Batrisyia Hasanah Nursyamsi | 0.2 "To add announcement for eDereg Pre-Checking"; 1.0 "To send out for external review". Baseline content: §2.1 overview; §2.2.1 workflow; §2.2.2 Step-2 outcomes (Approved → "This vehicle is allowed to create eDereg transaction"; Failed / none → "Approved eDereg Pre-Checking within 6 months is required to proceed" + payment popup; "Failed eDereg Pre-Checking will not allow AATF user to proceed to Step 3"); §2.2.3 six-month validity ("exceeded the 6 months (Successful/Failed), AATF users must do the eDereg Pre-Checking again"); §2.3.1 portals (BO Deregistration Listing Details; AATF Home, Deregistration home, New Deregistration page, Step 2, Listing); §2.3.2.1 Vehicle Number (mandatory, alphabet + digit, min length 3) with Scenarios 1–3; §2.3.2.2/§2.3.2.3 the `Yes`/`-` item on AATF and BO Deregistration details. V1.0's revision table mis-dates 0.2/1.0 as `02.01.2025`, and its TOC omits §2.2.2/§2.2.3 though both exist in the body. |
+| 1.1 | 01.09.2026 — Batrisyia | "Updated Section 2.3.2.1": **Scenario 4 added** — "Done eDereg Pre-Checking (Payment Successful) & JPJ Enquiry Failed": Step 1 → Step 2 Payment successful → Step 3 Result, JPJ Pre-Checking Status = Failed; Close clears the Vehicle Number field; "If user enters the same vehicle number again: The eDereg Pre-Checking Enquiry popup will be shown again, displaying the same JPJ Pre-Checking Status = Failed result"; remark under the field "Your eDereg Pre-Checking is unsuccessful. Kindly contact our Customer Service at 03-27798899". Also: TOC gains §2.2.2/§2.2.3, date typos fixed, "anoouncement"/"numbe" typos fixed. Nothing else differs. This is the reshow rule (§33–§38); it states no per-code exception (§40). |
+| 1.2 | 10.09.2026 — Chee Mei Jia | Adds §2.2.4 REQ-001…006 (declaration above Payment Summary; wording per §2.2.5; vehicle number read-only; email prepopulated from the AATF company DB record and editable, blank → user must key in; email held in DB only, BO Company Details does not show it, dev patches it until a separate enhancement ticket — production example Car Medic `edereg@carmedic.com.my`; Next records acceptance and submits payment, Cancel returns to Step 2); §2.2.5 the four-clause Malay "PERAKUAN eDEREG PRE-CHECKING - AATF" text (clause 3 sends the JPJ receipt to `[email address]` with a copy to `receipt@eauto.my`) + English confirmation statement + placeholders `[AATF user full name]`, `[AATF company name]`, `[AATF Company Old BRN]`, `[vehicle number]`, `[email address]`; §2.2.6 REQ-007 "displayed 1 time only, on a new transaction where the RHB payment status is Pending… not displayed again when the payment is resubmitted"; §1.5 adds the HTML mockup `EAINT-9306_AATF_Dereg_Step2_20260910.html`; new Appendix "Requirement Change Log" (7 rows, all "Added"). V1.2 changes are "highlighted in blue". |
+
+Not in any SRD version: the email format rule (letters, digits, `.`, `_`,
+`-`; max 100 characters) `[from Session-Handoff-2026-09-17-9306.md,
+2026-09-10 §2 — dev artifact 2]`, and "no perakuan on RE" `[from Teams, BA,
+2026-09-10]` (§42). The test plan PDF predates all three of V1.1's and
+V1.2's changes in its wording (TS2/TS3 rows still read "Observe Vehicle No.
+field is blank").
+
+## 48. Automation configuration reference — `scripts/eauto-edereg-precheck`
+and `app/eauto/edereg-precheck` [verified against the files, 2026-10-15]
+
+### 48.1 `playwright.config.ts` (327 lines)
+
+| Knob | Value | Reason |
+|---|---|---|
+| `testDir` | `./tests` | |
+| `timeout` | `0` | each spec sets `test.setTimeout()` (9–25 min); the route's kill timer is the ceiling |
+| `retries` / `workers` | `0` / `1` | one run at a time; shared eSIM prefix |
+| `reporter` | `[['list']]` | the route parses `PROGRESS:` / `RESULT:` stdout lines |
+| `use.headless` | `false` (repeated in every project) | MyKad emulator + LNA path proven headed only |
+| `use.viewport` | `1920×1080` | matched by every manual `recordVideo.size` |
+| `navigationTimeout` / `actionTimeout` | `60000` / `30000` | |
+| `screenshot` / `video` | `only-on-failure` / `on` | video is per PAGE; manual contexts must pass `recordVideo` (§11) |
+| `launchOptions.slowMo` | `400` | lets jQuery UI dialogs render |
+| `launchOptions.args` | `--disable-blink-features=AutomationControlled`; `--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessChecks,PrivateNetworkAccessSendPreflights,PrivateNetworkAccessRespectPreflightResults,BlockInsecurePrivateNetworkRequests` | masks `navigator.webdriver`; the LNA fix that lets the page reach `ws://localhost:7878` (mykad-emulator.md) |
+| `ignoreDefaultArgs` | `['--enable-automation']` | |
+| `projects` | 52 entries, one spec each via `testMatch`, all `{ ...devices['Desktop Chrome'], headless: false }` | one test per run so the route's single-result parsing holds |
+| `edereg-precheck-jpj-codes` only | `video: 'off'` | multi-hour sweep |
+
+Projects: `edereg-precheck` (TS1); `-vehicle-not-exist` (TS2);
+`-rhb-api-down` (no TS number, hidden); `-ts3`; `-step2-first-approved`
+(TS7); `-step2-first-vehicle-not-exist` (TS8); `-step2-first-retry-approved`
+(TS9); `-ts{4,5,6,10,11,12}-part{1,2}`; `-am`; `-of`; `-of-ts5`; `-of-ts4`;
+`-mu-ts1`…`-mu-ts12` + `-mu-ts9b`; `-cj-ts{1..5}-part{1,2}`;
+`-ec-ts{1,2,4,5}`; `-custom`; `-jpj-codes`. No `outputDir` override — the
+route passes `--output test-results-<runId>`.
+
+### 48.2 Environment variables
+
+| Env var | Read by | Default / meaning |
+|---|---|---|
+| `DPC_ENV_SEGMENT` | `CONFIG.envSegment` | `uat1` default; the dashboard field overrides it per run |
+| `DPC_VEHICLE_REG_NO` | `getRequiredInputs()` | required |
+| `DPC_JPJ_RECEIPT_EMAIL` | `getRequiredInputs()` | required; fills standalone `#jpjReceiptEmail` |
+| `DPC_USERNAME` / `DPC_PASSWORD` | main AATF login | `faizuddinAATF` / `password` |
+| `DPC_SUB_USERNAME` / `DPC_SUB_PASSWORD` | User B, same company | `faizAATFsub2` / `password` |
+| `DPC_SUB2_USERNAME` / `DPC_SUB2_PASSWORD` | User C, different company | `AzfarAATF` / `abcd1234` |
+| `DPC_MYKAD_NRIC` / `DPC_MYKAD_NAME` | `MykadEmulatorClient` | `030217141005` / `MUHAMMAD FAIZUDDIN BIN BIDI` |
+| `DPC_MYKAD_NRIC_SUB` / `DPC_MYKAD_NAME_SUB` | User B card | `030117-14-1005` / `MUHAMMAD FAIZUDDIN SUB2` |
+| `DPC_MYKAD_NRIC_SUB2` / `DPC_MYKAD_NAME_SUB2` | User C card | `020406081081` / `23 , 24,25` |
+| `DPC_BO_USERNAME` / `DPC_BO_PASSWORD` | `BoLoginPage` | `faizuddinBO1` / `password` |
+| `DPC_SKIP_PAUSE` | `CONFIG.skipPause` | route always sets `1` |
+| `DPC_DETAILS_PAUSE_MS` | `CONFIG.detailsPauseMs` | `4000` (§12) |
+| `DPC_CONTACT_NO`, `DPC_OWNER_EMAIL`, `DPC_VEHICLE_ENGINE_NO`, `DPC_VEHICLE_CHASSIS_NO`, `DPC_VEHICLE_ENGINE_SUFFIX`, `DPC_VEHICLE_MAKE`, `DPC_VEHICLE_MODEL`, `DPC_VEHICLE_YEAR` | `getDeregVehicleInputs()` | `0123456789`, `faizuddin@modefair.com`, `ENG<last 8 of Date.now()>`, `CHS<same>`, `Proton`, `Automation Test`, `2020`; the route never sets these |
+| `DPC_ESIM_SCRIPT_DIR` | `utils/esim.ts` | default `../eauto-esim`; spawns `npx playwright test --project=esim` there with `ESIM_ENTITY`, `ESIM_PREFIX`, `ESIM_MODE=write`, `ESIM_CHANGES={"Response Code":…}` (5-min kill) |
+| `DPC_RUN_ID` | `utils/pauseSignal.ts`, `utils/videoManifest.ts` | scopes `.run-signals/pause-status-<id>.json` / `continue-signal-<id>.json` and `test-results-<id>/`; unscoped names when unset |
+| `DPC_CUSTOM_ENTRY` (`inline`\|`standalone`), `DPC_CUSTOM_JPJ_CODE` (`GLB000000I`), `DPC_CUSTOM_RHB_CODE` (`OK`), `DPC_CUSTOM_CONTINUE_FULL` (`1`), `DPC_CUSTOM_RUN_SRD` (`1`) | `edereg-precheck-custom.spec.ts` | Custom Run tab |
+| `DPC_JPJ_CODES` (JSON array), `DPC_JPJ_FRESH` (non-empty discards `jpj-code-results.json`) | `edereg-precheck-jpj-code-checker.spec.ts` | start vehicle must end in digits; series must keep one 2-char eSIM prefix |
+| `EAUTO_EDEREG_PRECHECK_SCRIPT_DIR` | `run/route.ts` | overrides the script folder |
+
+eSIM constants (`utils/esim.ts`): Dereg Precheck `GLB000000I` OK,
+`VEL000100E` vehicle not exist, `VEL000045E` JPJ error; RHB Transfer `OK`,
+`RE` (6-min reset timer), `IF` (insufficient funds), `ER` (API down; ~12-min
+cooldown between genuine attempts, §49). `vehiclePrefix()` = first two
+characters, upper-cased. `.env.example` lists only `DPC_ENV_SEGMENT`,
+`DPC_VEHICLE_REG_NO`, `DPC_JPJ_RECEIPT_EMAIL`, `DPC_USERNAME`,
+`DPC_PASSWORD`, `DPC_SKIP_PAUSE` — stale against the table above.
+
+### 48.3 Dashboard route and panel
+
+- `POST /api/eauto-edereg-precheck/run` body: `runId`, `testCase` (key of
+  `PROJECTS`; unknown → `edereg-precheck`), `vehicleRegNo` and
+  `jpjReceiptEmail` (required, 400 if missing), `envSegment`, `username`,
+  `password`, `subUsername`, `subPassword`, `mykadNric`, `mykadName`,
+  `mykadNricSub`, `mykadNameSub`, `subUsername2`, `subPassword2`,
+  `mykadNricSub2`, `mykadNameSub2`, `customEntry`, `customJpjCode`,
+  `customRhbCode`, `customContinueFull`, `customRunSrd`, `jpjCodes`,
+  `jpjFresh` — each non-empty value becomes its `DPC_*` var. Returns 500
+  with an install hint if `node_modules` is missing. `DELETE ?runId=` stops
+  a run (`taskkill /T /F` on Windows, 5-s forced resolve). Timers:
+  `TIMEOUT_MS` 40 min, `JPJ_CODES_TIMEOUT_MS` 4 h, `maxDuration` 14400 s.
+  Videos publish to `public/qa-artifacts/eauto-edereg-precheck/<runId>/`
+  (`main-N.webm`, `sub-N-<label>.webm`), pruned to 60 run folders; the
+  per-run `test-results-<runId>` folder is deleted afterwards
+  `[verified: run/route.ts]`.
+- Sibling routes: `live-log`, `pause-status`, `continue`, `wait-status`,
+  `download-videos`, `trim-video`, `jpj-codes/download`, plus
+  `artifactPath.ts` and `runState.ts` (`Map<runId, RunEntry>`).
+- `shared.ts`: `TEST_CASES` groups E2E, Announcement Message, Other
+  Functions, Multiple Users, Cronjob, Extra Coverage; `skipVpnGate` on `am`
+  and `of`; `multiUser: "same" | "different"` decides whether User B or
+  User C fields show; `VPN_GATE_SKIP_TEST_CASES` = the five
+  `cj-ts*-part2`; `RE_WAIT_TEST_CASES` = `ts5-part2`, `mu-ts3`;
+  `CONTINUATIONS_KEY = "edereg_precheck_continuations"`. Hidden but working:
+  `rhb-api-down`, `mu-ts9b`.
+- Fixture `fixtures/sessionFixture.ts`: resets video manifest, wait status
+  and pause signal; adds `OVERLAY_INIT_SCRIPT` and
+  `TIMESTAMP_OVERLAY_INIT_SCRIPT`; grants `camera`, `microphone`, `midi`,
+  `midi-sysex` for the portal origin; logs in. Manual contexts (User B/C,
+  BO) must add the init script and `recordVideo` themselves.
+
+## 49. TS11 / TS12 Part 2 — live-run record [verified 2026-10-15 against
+§37, both spec headers and Session-Handoff-2026-09-17-9306.md]
+
+- **CPC_E2E_TS11 Part 2** — one live run, 2026-09-03, FAILED on the reshow
+  rule (second attempt `closed-direct`); rewritten the same day to assert
+  the reshow; 2026-09-11 added the Details-page and JPJ XML Log reads.
+  **Never re-run in the rewritten form.**
+- **CPC_E2E_TS12 Part 2** — two live runs, 2026-09-14, both FAILED. Run 1
+  (single ER decline): the listing still offered "Resubmit", so "one
+  decline auto-cancels" was not shown. Run 2 (5-round resubmit loop): every
+  round's native dialog read **"ER - Sila TUNGGU 12 minit kemudian klik
+  'Resubmit'..."** — RHB `ER` has an undocumented ~12-minute cooldown
+  between genuine attempts, separate from `RE`'s 6-minute timer. Same-day
+  rebuild: loop removed, pass condition is
+  `getListingStatusForVehicle().trxStatus === 'Cancelled'` read directly
+  after the single decline, Resubmit presence logged only, timeout back to
+  9 min. **Never run in this form.** This supersedes §9's TS12 note
+  ("asserts `resubmitLinkFound === false`").
+- The memory note `eaint-9306-ts11-ts12-need-retest` is partly stale: its
+  index line says "TS12 P2 still never run" and its body describes the
+  5-round loop as current — both superseded by the 2026-09-14 runs and
+  rebuild (routed to addenda, not edited here).
+- Both need dev to patch Part 1's precheck to Expired before they can run.
+  Still unaudited against the reshow rule: CPC_E2E_TS4/TS5/TS6 Part 2.
+
+## 50. What is NOT covered — consolidated gap list, 2026-10-15
+
+Supersedes the gap claims spread through §7 and §9.
+
+1. **BO Deregistration DETAILS view** (`/view/dereg/enquiry/view.do?id=`) —
+   never captured; the SRD §2.3.2.3 `eDereg Pre-Checking` row and its BO
+   link target are unverified; dev-guide scenario 10's BO half is unbuilt.
+2. **BO eDereg Pre-Checking DETAILS view**
+   (`/view/dereg/precheck/enquiry/view.do?id=`) and the "eDereg
+   Pre-Checking Slip Pengesahan (AATF & BO)" from the test plan's coverage
+   list — never captured.
+3. **JPJ XML Log row detail pages** (`.../jpj/log/view.do?id=`) — never
+   opened.
+4. **Resubmit JPJ Final Submission (eDereg Pre-Checking)**, **Reset Payment
+   Report**, **RHB Payment Transaction** — menu links only.
+5. **BO Dereg listing** — Cancel control, `#includeDraft` effect,
+   reload-vs-AJAX search; the page object is used by no test.
+6. **BO Precheck listing** — whether Cancel confirms first; `Expired` /
+   `Cancelled` colours; a JPJ-rejected row's "JPJ Pre-Checking" value; any
+   date other than today.
+7. **JPJ XML Log** — Dereg log field meanings (no splitter sheet); the
+   Pre-Checking request field 3/4 naming (§46.3); response position 12;
+   whether the JPJ log search is AJAX; §33(c)'s 0-rows-by-ref result.
+8. **Standalone perakuan declaration** — observed live 2026-09-11 but no
+   capture saved; `fillVehicleAndConsent()`, `repurchaseProbe.ts` and
+   `jpjCodeProbe.ts` not updated (§42).
+9. **MyPR owner-auth widget** — still assumed identical to MyKad (§9).
+10. **OF_TS2 blank-Vehicle-No validation markup** — never captured (§16).
+11. **Dev artifact 2 ("Extra requirements")** and the V1.2 HTML mockup —
+    no local copies.
+12. **Never run live in current form** (as of the 2026-09-17 handoff): TS11
+    Part 2, TS12 Part 2, TS2/TS3/TS9 checklist additions, TS2/TS8
+    three-phase repurchase, MU_TS5/MU_TS6 (still asserting the reshow on
+    `VEL000100E`, §40), MU_TS9/TS10/TS12 after the consent-email fix,
+    EC_TS2 (rebuilt), EC_TS4, EC_TS5, `custom`, the multi-select picker.
+13. The test plan PDF stays unreadable past its E2E page (scrambled
+    columns); Faizuddin's pasted text (§5.5, §15–§32) is the legible source.
+
+
+## Additions from the 2026-10-23 flows study
+
+Source: lib/eautoFlows/modules/*.ts (data mirror for /eauto/flows). Only facts not already in this file.
+
+- A vehicle and owner may have only one Dereg transaction ("Transaksi yang sama..."). [azfar: knowledge/cross-portal/deregistration.md]
+- JPJ Hasil account sees menus "Laporan Ringkasan Penyamaan Penyata eAuto" and "Senarai Transaksi STMS, APT dan ESTM eAuto". [miro: uXjVKZM9x0M=]
+
+## Update 2026-10-27 from Charmain repo
+
+Source: read-only clone `_reference/codebases/eauto-qa-charmain/`, folder
+`intake/` (commit `0ab45d1`). Test titles are tested expectations, not verified
+behaviour. Inventory: `script-inventory-team.md`.
+
+1. **Charmain's AATF / Dereg automation** (`by-module/backoffice-audit`, two-context
+   audit-trail racer): `aatf-first-time-login.js` (169 lines),
+   `aatf-user-account.js` (412), `dereg-company-account.js` (264). AATF login ID
+   used: `aatfprochar`. Last run on UAT3 per its README. MyKad emulator needed for
+   both AATF modules. `[charmain-repo: intake/reports/charmain-backoffice-audit.md:27-31]`
+   `[charmain-repo: intake/briefs/charmain.md:53, 65, 78, 132-134]`
+2. Conflict: the registry calls it "THE ONLY AATF AUTOMATION ON THE TEAM, and the
+   repo's aatf slice is empty" `[charmain-repo: intake/sources.yaml:140]`. This repo
+   has `scripts/eauto-edereg-precheck` (AATF eDereg Pre-Checking, happy path
+   confirmed live 2026-08-24, see the top of this file). Both are true in their own
+   scope: ours was never registered with the team repo (`faizuddin-edereg` is
+   mentioned in `sources.yaml:56` but has no entry or report). If the team needs
+   AATF coverage, offer ours.
+3. **Legacy shared repo — AATF / Dereg coverage** (all `eautoAutomation-Playwright`):
+   a. AATF portal (`aatfLogin()`): "UCD_Dereg-TransactionListing" (10 tests, P1),
+      "UCD_eDeregPreChecking-TransactionListing" (8, P1); load test
+      "UCD_DeregTransaction-LoadTest" (22, P1). `[charmain-repo: intake/reports/legacy-shared.md:41, 124-125]`
+   b. BackOffice: "BO Deregistration Transaction", "BO eDereg Pre-Checking
+      Transaction", "BO Resubmit JPJ Final Submission (eDereg Pre-Checking)", "BO -
+      Settings (Hub Admin) - JPJ XML Log (eDereg Pre-Checking)", "... JPJ XML Log
+      (Deregistration)", "BO - JPJ Reports - eAuto eDereg Pre-Checking Transaction
+      Listing". `[charmain-repo: intake/reports/legacy-shared.json:5141, 5217, 4602, 4049]`
+      `[charmain-repo: intake/reports/legacy-shared.md:64, 82-83, 93, 103-104]`
+   c. JPJ Hasil: "JPJ_SenaraiTransaksiEDeregPreChecking". `[charmain-repo: intake/reports/legacy-shared.md:114]`
+   d. Staging support tool "BO_JPJEnquiryNewDereg" (6 tests, `skipTestInProd`). `[charmain-repo: intake/reports/legacy-shared.md:131]`
+4. **BO Manage AATF/PBT Account** search fields (legacy `MAPABOSF_TS1-12`): Company
+   Name, Company ROC, New Company ROC, AATF/PBT ID, Email Address, Login ID, MyKad
+   No., Contact Person Name, State, Company Type, multi-filter with Export.
+   `[charmain-repo: intake/reports/legacy-shared.json:1639-1650]` `[charmain-repo: intake/reports/legacy-shared.md:44]`
+   Relevant to EAINT-12348 PBT as eDereg users (future #24): PBT accounts live on
+   this page, so its filter set is the regression list for that CR.
+5. **BO AATF/PBT Account Listing Export CSV leaves out Decision Maker
+   details.** Expected result: "Should NOT show any Decision Maker Details".
+   [from SharePoint TS EAINT-8781 — Decision Maker filters and columns,
+   8781_CAL_TS10, R64] [source: pipeline EAINT-12348, Scribe related history,
+   2026-10-27]
+6. **BO AATF/PBT Account Listing Email Address search is a known existing
+   quirk.** "Found existing issue related to 'Email Address' field where some
+   return result, but some don't ⏎ As checked with dev, it is an existing query
+   logic". Do not raise it as a new QA-Issue without checking this first.
+   [from SharePoint TS EAINT-8781 — Decision Maker filters and columns,
+   8781_SNF_TS39 — multi-search and filters, R50, Remarks] [source: pipeline
+   EAINT-12348, Scribe related history, 2026-10-27]

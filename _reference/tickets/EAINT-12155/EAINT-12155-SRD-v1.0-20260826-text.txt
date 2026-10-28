@@ -1,0 +1,1173 @@
+
+===== PAGE 1 =====
+SYSTEM REQUIREMENT DOCUMENT (SRD) 
+Requirement 
+ 
+[eAuto] New UCD: Enforce 12-Character Password Complexity Across All Portals with 
+uppercase, lowercase, number & special character 
+ 
+Version 
+ 
+Version 1.0 
+ 
+Latest Revision Date 
+ 
+26.08.2026 (Wednesday) 
+ 
+
+===== PAGE 2 =====
+CONTENTS 
+1.0  DOCUMENT INFORMATION .................................................................................................................................................... 3 
+1.1  Purpose ............................................................................................................................................................................... 3 
+1.2  Intended Audience ............................................................................................................................................................... 3 
+1.3  Revision History ................................................................................................................................................................... 3 
+1.4  Glossary of Terms ............................................................................................................................................................... 4 
+1.5  Associated Document(s) ...................................................................................................................................................... 5 
+2.0  REQUIREMENT ........................................................................................................................................................................ 6 
+2.1  High-Level Requirement Overview ....................................................................................................................................... 6 
+2.1.1  Assumptions ..................................................................................................................................................................... 8 
+2.1.2  Out-of-Scope .................................................................................................................................................................... 9 
+2.2  Key Highlights and Baseline Requirements ........................................................................................................................ 11 
+2.2.1  Background ................................................................................................................................................................. 11 
+2.2.2  Existing Issue & Expected Behaviour ............................................................................................................................ 12 
+2.2.3  Affected Pages ............................................................................................................................................................ 13 
+2.2.4  Password Policy Rules ................................................................................................................................................. 14 
+2.2.5  UCD Portal — Password Change Pages ........................................................................................................................ 15 
+2.2.6  BackOffice Portal — Password Change and Reset Pages ............................................................................................. 16 
+2.2.7  System-Generated Passwords ..................................................................................................................................... 17 
+2.2.8  Bank and Insurance Portals ......................................................................................................................................... 18 
+2.2.9  Password Field Validation Specification ...................................................................................................................... 19 
+2.2.10  Error Handling ........................................................................................................................................................... 22 
+APPENDIX — REQUIREMENT CHANGE LOG ................................................................................................................................. 24 
+ 
+
+===== PAGE 3 =====
+1.0  DOCUMENT INFORMATION 
+ 
+1.1  Purpose 
+The System Requirements Document outlines the agreed system specifications. Once approved, it becomes the baseline to ensure 
+the system meets business goals. Sign-off is required for development to start, and any changes must follow the System 
+Enhancement Management process. 
+ 
+1.2  Intended Audience 
+The intended audience for this document includes project stakeholders and any team members involved in defining, implementing, 
+or validating the system requirements. 
+ 
+1.3  Revision History 
+This section records all modifications to the document until it reaches Version 1.0, at which point it is finalized and established as 
+the baseline for future reference. Once baselined, any new changes will be assessed based on their severity — significant changes 
+may result in an addendum, while less critical updates may be handled through a formal change request. 
+Version No 
+Date 
+Revised By 
+Reason for Revision 
+0.1 
+24.08.2026 (Mon) 
+Lim Yi Link 
+Initial Draft 
+1.0 
+26.08.2026 (Wed) 
+Lim Yi Link 
+Send out for external reference 
+
+===== PAGE 4 =====
+1.4  Glossary of Terms 
+# 
+Abbreviation / Term 
+Interpretation / Description 
+1 
+ 
+UCD 
+ 
+Used Car Dealer 
+ 
+2 
+ 
+BO 
+ 
+BackOffice 
+ 
+3 
+ 
+AATF 
+ 
+Authorised Automotive Treatment Facility 
+ 
+4 
+ 
+Main User 
+ 
+The primary account holder of a UCD company, able to manage sub-user accounts 
+ 
+5 
+ 
+Sub User 
+ 
+A secondary user account created by the Main User under the same company 
+ 
+6 
+ 
+MD5 
+ 
+The hashing algorithm applied by the browser before the password is submitted 
+on selected pages 
+ 
+7 
+ 
+ASCII 
+ 
+The standard printable English character set 
+ 
+8 
+ 
+Special Character 
+ 
+A character from the approved set: ! @ # $ % ^ & * ( ) _ + - = 
+ 
+ 
+
+===== PAGE 5 =====
+1.5  Associated Document(s) 
+# 
+Item 
+Location / URL 
+Rationale for Relevance 
+1 
+ 
+EAINT-12155 — Enforce 12-Character 
+Password Complexity Across All Portals with 
+uppercase, lowercase, number & special 
+character 
+ 
+https://mfservices.atlassian.net/br
+owse/EAINT-12155 
+ 
+Source enhancement request for 
+this SRD 
+ 
+2 
+ 
+CCB-899 — EAUTO | To Enforce 12-Character 
+Password Complexity Across All Portals 
+(uppercase, lowercase, number & special 
+character) 
+ 
+https://mfservices.atlassian.net/br
+owse/CCB-899 
+ 
+Change Control Board ticket for 
+this enhancement 
+ 
+3 
+ 
+EAINT-12220 — Password-reset endpoints 
+have no server-side role check 
+ 
+https://mfservices.atlassian.net/br
+owse/EAINT-12220 
+ 
+Related security defect on the 
+same password-reset endpoints; 
+handled separately 
+ 
+
+===== PAGE 6 =====
+2.0  REQUIREMENT 
+ 
+2.1  High-Level Requirement Overview 
+# 
+Item 
+Description 
+2.1.1 
+ 
+Enhancement Overview 
+ 
+Strengthen the eAuto password policy and apply it to newly created 
+accounts across all portals. Every password set for a new account, 
+whether entered by an administrator or system-generated, must be at 
+least 12 characters and must contain an uppercase letter, a lowercase 
+letter, a number, and a special character. 
+ 
+2.1.2 
+ 
+Key Value(s) Expected 
+ 
+1. Reduce the risk of account compromise caused by weak or short 
+passwords. 
+2. Remove the inconsistent password rules currently duplicated across 
+multiple classes. 
+3. Close the flows that today accept a password without any server-side 
+validation. 
+4. Replace weak system-generated passwords with policy-compliant 
+ones. 
+ 
+
+===== PAGE 7 =====
+# 
+Item 
+Description 
+2.1.3 
+ 
+Additional Note(s) 
+ 
+The policy applies to accounts created on or after the deployment date 
+only. 
+ 
+Existing accounts are exempt. Stored passwords remain valid, no forced 
+password migration is performed, and an existing user is never required 
+to change a password that does not meet the new policy. 
+ 
+
+===== PAGE 8 =====
+2.1.1  Assumptions 
+# 
+Assumption 
+1 
+ 
+Existing stored passwords remain valid after deployment. No forced password migration is carried out for current users, 
+and an existing user is never prompted to change a non-compliant password. 
+ 
+2 
+ 
+A single validation utility is introduced as the source of truth for the password policy, and all server-side call sites 
+delegate to it. 
+ 
+3 
+ 
+The My Account password change and the Change Main User Password pages hash the password in the browser before 
+submission, so the server never receives the plaintext. Client-side validation is the accepted enforcement point for these 
+two pages. 
+ 
+4 
+ 
+All other password flows submit the plaintext password to the server and can therefore be validated server-side. 
+ 
+5 
+ 
+The client-side and server-side hashing implementations agree only on printable ASCII input, so non-ASCII characters 
+must be blocked to avoid permanent lockout. 
+ 
+6 
+ 
+The system can distinguish a newly created account from an existing account, so that the policy is applied to new 
+accounts only. The mechanism for this distinction is to be confirmed with the development team. 
+ 
+ 
+
+===== PAGE 9 =====
+2.1.2  Out-of-Scope 
+# 
+Item 
+Reason 
+1 
+ 
+Password expiry and rotation policy 
+ 
+Not requested under this enhancement 
+ 
+2 
+ 
+Password history check to block reuse of previous 
+passwords 
+ 
+Not requested under this enhancement 
+ 
+3 
+ 
+Server-side role check on the password-reset 
+endpoints 
+ 
+Handled separately under EAINT-12220 
+ 
+4 
+ 
+Migration of existing non-compliant passwords 
+ 
+Accounts existing before the deployment date are exempt by 
+agreed business decision 
+ 
+5 
+ 
+Two-factor authentication 
+ 
+Not part of this requirement 
+ 
+6 
+ 
+Password change pages used by existing users, 
+covering My Account, Update User Account, Change 
+Main User Password and Change Director Password 
+ 
+The policy applies to newly created accounts only. Existing 
+accounts retain the current password rules. 
+ 
+7 
+ 
+Password reset of an existing BackOffice user by an 
+administrator 
+ 
+The reset issues a password to an existing account, which is 
+exempt from the new policy. 
+ 
+
+===== PAGE 10 =====
+# 
+Item 
+Reason 
+8 
+ 
+Forgot password temporary password for an existing 
+user 
+ 
+The temporary password is issued to an existing account, which 
+is exempt from the new policy. 
+ 
+
+===== PAGE 11 =====
+2.2  Key Highlights and Baseline Requirements 
+The following key highlights and requirements were established during the initial sync-up sessions with the requestor. As this forms 
+the baseline, any changes requested thereafter may result in adjustments to scope, timeline, or deliverables, for which the requestor 
+will be responsible to review and confirm. 
+ 
+2.2.1  Background 
+# 
+Affected Item 
+Description 
+1 
+ 
+Project 
+ 
+eAuto 
+ 
+2 
+ 
+Portal 
+ 
+UCD, BackOffice, JPJ, AATF, Bank and Insurance 
+ 
+3 
+ 
+Module 
+ 
+User Account and Password Management 
+ 
+4 
+ 
+Request 
+ 
+Enforce a single 12-character password policy across all portals whenever a 
+password is set, changed, or generated. 
+ 
+5 
+ 
+Additional Note 
+ 
+Accounts existing before the deployment date are exempt. The policy applies to 
+accounts created on or after that date. 
+ 
+
+===== PAGE 12 =====
+2.2.2  Existing Issue & Expected Behaviour 
+# 
+Item 
+Description 
+1 
+ 
+Existing Issue / Behaviour 
+ 
+1. The minimum length is 6 characters, and 8 for AATF and Insurance. No uppercase, 
+lowercase, number or special character is required. 
+2. The rule is duplicated across several classes and two copies contain a logic error 
+that lets almost any password pass. 
+3. Several flows have no server-side validation, including company creation and the 
+AATF company pages. 
+4. System-generated passwords are weaker than the policy itself. 
+5. A password containing & = + % # corrupts the login request parameter. 
+ 
+2 
+ 
+Expected New Handling / 
+Behaviour 
+ 
+1. One policy applies to every portal: minimum 12 characters with at least one 
+uppercase letter, one lowercase letter, one number and one special character. 
+2. Spaces are rejected and only printable English characters are accepted. 
+3. A single validation utility is introduced and every server-side flow delegates to it. 
+4. System-generated passwords comply with the policy. 
+5. A password containing special characters is accepted correctly at login. 
+ 
+
+===== PAGE 13 =====
+2.2.3  Affected Pages 
+# 
+Affected Pages 
+Description 
+1 
+ 
+UCD Portal — Login 
+ 
+Accepts a password containing special characters without corrupting the 
+request parameter 
+ 
+2 
+ 
+UCD Portal — First-Time Login 
+Password Change 
+ 
+Enforces the new policy when a newly created user sets the first password 
+ 
+3 
+ 
+UCD Portal — Settings > User Accounts 
+Listing > Add User Account 
+ 
+Enforces the new policy when the Main User creates a new sub-user account 
+ 
+4 
+ 
+BackOffice — Manage BackOffice User 
+Account > Add User 
+ 
+Enforces the new policy when a new BackOffice user account is created 
+ 
+5 
+ 
+BackOffice — Company Account 
+Creation 
+ 
+Enforces the new policy on the initial director password of a newly created 
+company 
+ 
+6 
+ 
+BackOffice — AATF Company Create 
+ 
+Enforces the new policy when a new AATF company account is created 
+ 
+7 
+ 
+Service Portal — Login 
+ 
+Accepts a password containing special characters without corrupting the 
+request parameter 
+ 
+
+===== PAGE 14 =====
+# 
+Affected Pages 
+Description 
+8 
+ 
+Service Portal — First-Time Login 
+ 
+Enforces the new policy when a newly created Service Portal user sets the first 
+password 
+ 
+ 
+2.2.4  Password Policy Rules 
+The rules in this section apply when a password is set for a newly created account. Accounts existing before the deployment date 
+are exempt. 
+ 
+# 
+Requirement ID 
+Item 
+Description 
+Acceptance Criteria 
+1 
+ 
+EAINT-12155-
+REQ-001 
+ 
+Existing Account 
+Exemption 
+ 
+The password policy shall apply to 
+accounts created on or after the 
+deployment date only. The existing 
+stored passwords shall remain 
+unchanged. Upon login, an existing 
+user shall be able to sign in with the 
+current password even if it does not 
+meet the new policy, and shall not be 
+prompted to change it. 
+ 
+An existing account with a legacy 
+password logs in successfully after 
+deployment, is not forced to change the 
+password, and is not shown any policy 
+message. 
+ 
+ 
+
+===== PAGE 15 =====
+2.2.5  UCD Portal — Password Change Pages 
+# 
+Requirement ID 
+Item 
+Description 
+Acceptance Criteria 
+1 
+ 
+EAINT-12155-
+REQ-002 
+ 
+First-Time Login 
+Password Change 
+ 
+The existing forced password change 
+on first login shall remain unchanged. 
+Upon a newly created UCD user setting 
+the first password, the system shall 
+enforce the new password policy. 
+ 
+A non-compliant password is rejected 
+with the relevant per-rule messages. A 
+compliant password is accepted and the 
+user can log in again with it, including 
+when it contains special characters. 
+ 
+2 
+ 
+EAINT-12155-
+REQ-003 
+ 
+Confirm Password 
+Match 
+ 
+The existing confirm password field 
+shall remain unchanged. Upon the 
+Confirm Password value not matching 
+the new password, the system shall 
+reject the change. 
+ 
+A mismatched Confirm Password value is 
+rejected and the password is not updated. 
+ 
+3 
+ 
+EAINT-12155-
+REQ-004 
+ 
+Policy Hint Text 
+ 
+The existing password hint text shall 
+be replaced. Every page on which a 
+password is set for a new account 
+shall display the new policy. 
+ 
+Every password field used to set a 
+password for a new account displays the 
+12-character policy. Pages used by 
+existing users are unchanged. 
+ 
+ 
+
+===== PAGE 16 =====
+2.2.6  BackOffice Portal — Password Change and Reset Pages 
+# 
+Requirement ID 
+Item 
+Description 
+Acceptance Criteria 
+1 
+ 
+EAINT-12155-
+REQ-005 
+ 
+Company Account 
+Creation 
+ 
+The existing company creation flow 
+shall remain unchanged. Upon the 
+initial director password of a newly 
+created company being submitted, the 
+system shall enforce the password 
+policy. 
+ 
+A non-compliant initial director password 
+is rejected and the company account is 
+not created. 
+ 
+2 
+ 
+EAINT-12155-
+REQ-006 
+ 
+Per-User Create 
+and Update 
+ 
+The existing user creation flow shall 
+remain unchanged. Upon a password 
+for a newly created user account being 
+submitted, the system shall enforce 
+the password policy. The update flow 
+for an existing user account is 
+excluded. 
+ 
+A non-compliant password for a new user 
+account is rejected and the user record is 
+not saved. An existing user account is not 
+affected. 
+ 
+3 
+ 
+EAINT-12155-
+REQ-007 
+ 
+Deregistration and 
+AATF Company 
+Pages 
+ 
+The existing AATF company create 
+flow shall remain unchanged. Upon a 
+password for a newly created AATF 
+company being submitted, the system 
+shall enforce the password policy. The 
+update flow for existing deregistration 
+account are excluded. 
+ 
+A non-compliant password submitted 
+from the AATF company create page is 
+rejected. 
+ 
+
+===== PAGE 17 =====
+# 
+Requirement ID 
+Item 
+Description 
+Acceptance Criteria 
+4 
+ 
+EAINT-12155-
+REQ-008 
+ 
+Server-Side 
+Enforcement 
+ 
+Upon a password being submitted 
+directly to the server without the 
+browser validation running, the system 
+shall apply the same policy and reject 
+a non-compliant password. 
+ 
+A direct submission with a non-compliant 
+password is rejected on every server-
+validated page. The My Account and 
+Change Main User Password pages are 
+excluded, as the server receives only the 
+hashed value. 
+ 
+ 
+2.2.7  System-Generated Passwords 
+# 
+Requirement ID 
+Item 
+Description 
+Acceptance Criteria 
+1 
+ 
+EAINT-12155-
+REQ-009 
+ 
+Forced Change for 
+Generated 
+Password 
+ 
+The existing forced password change 
+on first login shall remain unchanged. 
+Upon logging in with a generated 
+password, the sub-user shall be 
+required to set a new compliant 
+password. 
+ 
+The sub-user cannot access any other 
+page until a compliant password is set. 
+ 
+ 
+
+===== PAGE 18 =====
+2.2.8  Bank and Insurance Portals 
+# 
+Requirement ID 
+Item 
+Description 
+Acceptance Criteria 
+1 
+ 
+EAINT-12155-
+REQ-010 
+ 
+Bank Portal First-
+Time Change 
+ 
+The existing Bank portal first-time 
+password change shall remain 
+unchanged. Upon a new password 
+being submitted, the system shall 
+validate it on the server against the 
+new policy. 
+ 
+A non-compliant password is rejected on 
+the Bank portal first-time change page. 
+ 
+2 
+ 
+EAINT-12155-
+REQ-011 
+ 
+Insurance Portal 
+First-Time Change 
+ 
+The existing Insurance portal first-time 
+password change shall remain 
+unchanged. Upon a new password 
+being submitted, the system shall 
+validate it on the server against the 
+new policy. 
+ 
+A non-compliant password is rejected on 
+the Insurance portal first-time change 
+page. 
+ 
+3 
+ 
+EAINT-12155-
+REQ-012 
+ 
+Insurance 
+Minimum Length 
+Alignment 
+ 
+The existing Insurance minimum 
+length of 8 characters shall be 
+replaced by the common 12-character 
+policy for newly created Insurance 
+accounts. 
+ 
+An Insurance password of 8 to 11 
+characters set for a newly created 
+account is rejected after deployment. 
+ 
+ 
+ 
+ 
+
+===== PAGE 19 =====
+2.2.9  Password Field Validation Specification 
+The Password and Confirm Password input fields on every affected page shall follow the specification below. 
+ 
+# 
+Spec 
+Value 
+1 
+ 
+Min Length 
+ 
+12 characters 
+ 
+2 
+ 
+Max Length 
+ 
+30 characters 
+ 
+3 
+ 
+Alphanumeric 
+ 
+Yes — at least one uppercase letter, one lowercase letter and one number 
+ 
+4 
+ 
+Space 
+ 
+Not allowed 
+ 
+5 
+ 
+Special Character 
+ 
+Yes — at least one from ! @ # $ % ^ & * ( ) _ + - = 
+ 
+6 
+ 
+Only Allow English 
+ 
+Yes 
+ 
+7 
+ 
+Mandatory / Optional 
+ 
+Mandatory when a password is set for a new account 
+ 
+ 
+The following table lists the validation scenarios and the message displayed to the user. 
+ 
+
+===== PAGE 20 =====
+# 
+Scenario 
+Expected Behaviour 
+Error Message 
+1 
+ 
+Below 12 characters on 
+save 
+ 
+Password is not saved 
+ 
+Password must be at least 12 characters long. 
+ 
+2 
+ 
+30 characters reached 
+ 
+No additional character allowed to enter 
+ 
+— 
+ 
+3 
+ 
+No uppercase letter 
+ 
+Password is not saved 
+ 
+Password must contain at least one uppercase 
+letter (A–Z). 
+ 
+4 
+ 
+No lowercase letter 
+ 
+Password is not saved 
+ 
+Password must contain at least one lowercase 
+letter (a–z). 
+ 
+5 
+ 
+No number 
+ 
+Password is not saved 
+ 
+Password must contain at least one number 
+(0–9). 
+ 
+6 
+ 
+No special character 
+ 
+Password is not saved 
+ 
+Password must contain at least one special 
+character ( ! @ # $ % ^ & * ( ) _ + - = ). 
+ 
+7 
+ 
+Space or non-English 
+character entered 
+ 
+Password is not saved 
+ 
+Password must not contain spaces and must 
+use English characters only. 
+ 
+
+===== PAGE 21 =====
+# 
+Scenario 
+Expected Behaviour 
+Error Message 
+8 
+ 
+Confirm Password does 
+not match 
+ 
+Password is not saved 
+ 
+Confirm Password does not match the new 
+password. 
+ 
+9 
+ 
+All rules met 
+ 
+Password is saved and a green tick is 
+displayed beside the field 
+ 
+— 
+ 
+ 
+
+===== PAGE 22 =====
+2.2.10  Error Handling 
+# 
+Requirement ID 
+Item 
+Description 
+Acceptance Criteria 
+1 
+ 
+EAINT-12155-
+REQ-013 
+ 
+Non-Compliant 
+Password 
+ 
+Upon a password failing one or more 
+policy rules, the system shall display a 
+message for each failed rule and shall 
+not save the change. 
+ 
+Example 1: Password shorter than 12 
+characters 
+→ Password must be at least 12 
+characters long. 
+ 
+Example 2: Password missing an 
+uppercase letter 
+→ Password must contain at least one 
+uppercase letter. 
+ 
+Example 3: Password missing a special 
+character 
+→ Password must contain at least one 
+special character. 
+ 
+2 
+ 
+EAINT-12155-
+REQ-014 
+ 
+Confirm Password 
+Mismatch 
+ 
+Upon the Confirm Password value not 
+matching the new password, the 
+system shall display a mismatch 
+message and shall not save the 
+change. 
+ 
+The message Confirm Password does not 
+match the new password is displayed and 
+the password is not updated. 
+ 
+
+===== PAGE 23 =====
+# 
+Requirement ID 
+Item 
+Description 
+Acceptance Criteria 
+3 
+ 
+EAINT-12155-
+REQ-015 
+ 
+Invalid Character 
+Entered 
+ 
+Upon a space or a non-English 
+character being entered, the system 
+shall reject the password and display 
+the character restriction message. 
+ 
+The message Password must not contain 
+spaces and must use English characters 
+only is displayed and the password is not 
+updated. 
+ 
+
+===== PAGE 24 =====
+APPENDIX — REQUIREMENT CHANGE LOG 
+ 
+# 
+SRD 
+Version 
+Requirement ID 
+Status 
+Reason 
+1 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-001 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+2 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-002 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+3 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-003 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+4 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-004 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+5 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-005 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+6 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-006 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+
+===== PAGE 25 =====
+# 
+SRD 
+Version 
+Requirement ID 
+Status 
+Reason 
+7 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-007 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+8 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-008 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+9 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-009 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+10 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-010 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+11 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-011 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+12 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-012 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+13 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-013 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+
+===== PAGE 26 =====
+# 
+SRD 
+Version 
+Requirement ID 
+Status 
+Reason 
+14 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-014 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+15 
+ 
+0.1 
+ 
+EAINT-12155-
+REQ-015 
+ 
+Added 
+ 
+Initial requirement for SRD v0.1 
+ 
+ 

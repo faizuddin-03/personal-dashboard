@@ -1,0 +1,1321 @@
+<!--
+  URL: https://staging.eauto.my/obs/admin/preOnb/enquiry
+  Environment: staging BackOffice (obs admin, logged in as mfared via uat4)
+  Captured: 2026-10-21T07:24:01.405Z by Claude via Chrome
+  State: BO UCD Pre-Application Listing, default load (no search)
+  Trimmed: nothing
+-->
+<!DOCTYPE html>
+<html><head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    
+    
+        <title>UCD Pre-Application Listing - Pre-Onboarding</title>
+    <link rel="icon" type="image/x-icon" href="/obs/favicon.ico">
+
+    
+    
+        
+        <style>
+            #overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            
+            .spinner {
+                border: 4px solid #f3f3f3; /* Light grey */
+                border-top: 4px solid #3498db; /* Blue */
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                animation: spin 1s linear infinite;
+            }
+
+            #payment-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .payment-loading-box {
+                background-color: white;
+                border-radius: 1px;
+                border: solid 2px #A6A6A6;
+                padding: 20px 30px;
+                display: block;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                width: 400px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .spinner-and-text {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 10px auto;
+                gap: 10px;
+            }
+
+            .payment-spinner {
+                border: 3px solid #E0E0E0; /* Light grey */
+                border-top: 3px solid #00BCD4; /* Cyan/turquoise color */
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                animation: spin 0.8s linear infinite;
+                flex-shrink: 0; /* Prevent spinner from shrinking */
+            }
+
+            .payment-loading-text {
+                font-size: 20px;
+                font-weight: bold;
+                color: #000000;
+                font-family: Inter, sans-serif;
+                white-space: nowrap;
+                line-height: 100%;
+            }
+
+            .overlay-description {
+                font-size: 13px;
+                color: #FF4000;
+                font-family: Inter, sans-serif;
+                white-space: wrap;
+                text-align:center;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    
+    
+    
+        
+        <style>
+
+            .ui-widget-overlay { 
+                background: #000000; 
+                opacity: .50;
+                filter: Alpha(Opacity=50); 
+            }
+
+            .ui-widget-content {
+                border: none !important;
+            }
+
+            .ui-dialog .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_222222_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-state-hover .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_454545_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-widget-header {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border:none !important;
+                color: #FFF;
+            }
+
+            .ui-dialog {
+                border-radius: 4px !important;
+                padding: 0 !important;
+                min-width:350px !important;
+            }
+
+            .ui-dialog * {
+                font-family: "Inter", sans-serif !important;
+                font-size: 14px !important;
+            }
+
+            .ui-dialog-title {
+                font-size: 16px !important;
+            }
+
+            .ui-dialog-titlebar {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border-bottom-left-radius: 0px !important;
+                border-bottom-right-radius: 0px !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog-titlebar-close {
+                display: flex;
+                align-items: center;
+                height: 38px;
+                background:#0B4C5F !important;
+                border: none !important;
+            }
+            
+            .ui-dialog-content {
+                font-size: 14px !important;
+                min-height: 23px !important;
+                padding: 13px !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog.notis-dialog {
+                top:20% !important;
+            }
+
+            .ui-dialog-buttonpane {
+                margin:0 !important;
+                min-height:54px;
+                padding: 0 15px 10px 6px !important;
+                display: flex;
+                align-items:center;
+                justify-content:flex-end;
+            }
+
+            .ui-button-text {
+                padding: 0px !important;
+            }
+            
+            #custom-dialog {
+                display: none;
+            }
+
+            #custom-dialog-content {
+                white-space: pre-line;
+            }
+
+            .custom-dialog-primary-btn {
+                border-radius:4px;
+                color: #FFF !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#0B4C5F !important;
+                background: #0B4C5F !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-primary-btn:hover{
+                background-color: #146478 !important;
+            }
+            .custom-dialog-primary-btn:active {
+                background-color: #0a4353 !important;
+                box-shadow: 0 0 2px #0A4335;
+            } 
+
+            .custom-dialog-secondary-btn {
+                border-radius:4px;
+                color: #0B4C5F !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#FFF !important;
+                background:unset !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-secondary-btn:hover {
+                background-color: #F7F7F7 !important;
+            }
+            .custom-dialog-secondary-btn:active {
+                background-color: #EFEFEF !important;
+                box-shadow: 0 0 2px #0A4335;
+            }
+        </style>
+    
+    
+    <link rel="stylesheet" href="/obs/tailwindcss.css">
+    <link rel="stylesheet" href="/obs/layout.css">
+    <link rel="stylesheet" href="/obs/jquery-ui-1.11.4/themes/smoothness/jquery-ui.css">
+    
+    
+        <link href="/obs/pagination.css" rel="stylesheet">
+        <style>
+            body {
+                font-family: Inter, sans-serif; /* Default font */
+                font-size: 14px;
+            }
+
+            .custom-container {
+                flex: 1;
+            }
+
+            .text-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 240px;
+                padding: 0 8px;
+            }
+
+            .date-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 160px;
+                padding: 0 8px;
+            }
+
+            .dropdown-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 160px;
+                padding: 0 8px;
+            }
+
+            .custom-container {
+                width: 95%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 20px;
+            }
+
+            .search-btn {
+                width: 120px;
+                height: 40px;
+                padding: 10px 40px;
+                background: #EFEFEF;
+                border: 1px solid #000000;
+            }
+
+            .hyperlink-text {
+                color: #0000EE;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+
+            .hyperlink-text:hover {
+                color: #132659 !important;
+            }
+
+            .custom-select select:disabled {
+                pointer-events: none;
+                background-color: rgba(239, 239, 239, 0.3);
+            }
+
+            .custom-select {
+                position: relative;
+            }
+            .custom-select select {
+                -webkit-appearance:none;
+                -moz-appearance:none;
+                -ms-appearance:none;
+                appearance:none;
+                outline:0;
+                box-shadow:none;
+                background: white;
+                background-image: none;
+                border: 1px solid #767676;
+                height: 32px;
+                width:160px;
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                cursor:pointer;
+                text-overflow: ellipsis;
+                padding: 0 8px;
+            }
+            .custom-select select::-ms-expand {
+                display: none;
+            }
+            .custom-select .select {
+                position: relative;
+                display: flex;
+                height: 32px;
+                background: white;
+                overflow: hidden;
+                border: 1px solid #767676
+            }
+            .custom-select::after {
+                content: '';
+                display: inline-block;
+                border-bottom: 1px solid #808080;
+                border-right: 1px solid #808080;
+                height: 5px;
+                width: 5px;
+                transform: rotate(45deg);
+                position: absolute;
+                top: 11px;
+                right: 10px;
+            }
+
+            a:hover {
+                color: #132659 !important;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            #listing-table td, #listing-table th {border:1px solid white !important;}
+            #listing-table tr.header {background: #58ACFA; color:white;}
+            #listing-table tr.odd {background: #A9E2F3}
+            #listing-table tr.even {background: #CEF6F5}
+
+            .header-text {
+                font-size: 16px;
+                font-weight: 700;
+                margin: 15px 0;
+            }
+
+            .approved, .ok {
+                color:#008E00;
+                font-weight:700;
+            }
+
+            .rejected, .failed {
+                color: #FF4000;
+                font-weight: 700;
+            }
+
+            .pending, .new {
+                color: #0000FF;
+                font-weight: 700;
+            }
+
+            .kiv, .draft {
+                color: #000000;
+                font-weight: 700;
+            }
+
+            .cancelled {
+                color: #000000;
+                font-weight: 700;
+            }
+
+            .text-wrap {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: normal;
+                white-space: normal;
+            }
+        </style>
+        <link href="/obs/datepicker.css" rel="stylesheet">
+    
+
+    
+    <script src="/obs/js/jquery-2.2.4.min.js" type="text/javascript"></script>
+    <script src="/obs/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    <script src="/obs/js/url-utils.js"></script>
+    
+
+        
+        <script>
+            $(document).ready(function() {
+                // Show overlay when any AJAX request starts
+                $(document).ajaxStart(function () {
+                    $("#overlay").fadeIn();
+                });
+
+                // Hide overlay when all AJAX requests complete
+                $(document).ajaxStop(function () {
+                    $("#overlay").fadeOut();
+                });
+            });
+
+            function showPaymentOverlay(){
+                $("#payment-overlay").fadeIn();
+            }
+
+            function hidePaymentOverlay(){
+                $("#payment-overlay").fadeOut();
+            }
+        </script>
+    
+
+
+
+        
+        <script>
+
+
+                /**
+                 * @typedef {Object} CustomDialogConfig
+                 * @property {string} title - The dialog's title
+                 * @property {string} content - The dialog's content
+                 * @property {string} height - The dialog's height
+                 * @property {string} width - The dialog's width
+                 * @property {string} confirmBtnName - confirm button name
+                 * @property {function} onConfirmHandler - function to invoke on confirm
+                 * @property {function} onConfirmCloseHandler - function to invoke on close after clicking confirm
+                 * @property {string} redirectPathOnConfirm - Path to redirect on confirm
+                 * @property {boolean} shouldHideConfirmBtn - hide confirm button
+                 * @property {string} cancelBtnName - cancel button name
+                 * @property {function} onCancelHandler - function to invoke on cancel
+                 * @property {function} onCancelCloseHandler - function to invoke on close after clicking cancel
+                 * @property {string} redirectPathOnCancel - Path to redirect on cancel
+                 * @property {boolean} shouldHideCancelBtn - hide cancel button
+                 * @property {function} onCloseButtonCloseHandler - function to invoke on close when not confirmed and not cancelled
+                 * @property {boolean} shouldReloadPageOnClose - Whether the dialog will reload page on close
+                 * @property {string} redirectPathOnClose - Path to redirect on close; only redirect when shouldReloadPageOnClose is false
+                 * @property {boolean} shouldHideCloseBtn - hide close button
+                 */
+
+                /**
+                 * Process a person's information
+                 * @param {CustomDialogConfig} config
+                 */
+                function openCustomDialog(config) {
+
+
+                    const handleOnClose = function(config) {
+                        if(config.shouldReloadPageOnClose) {
+                            location.reload();
+                        } else if (config.redirectPathOnClose != null){
+                            window.location.href = config.redirectPathOnClose;
+                        }
+                    }
+
+                    const confirmBtnName = config.confirmBtnName != null ? config.confirmBtnName : "OK";
+                    const cancelBtnName = config.cancelBtnName != null ? config.cancelBtnName : "Cancel";
+
+                    var isConfirmed  = false;
+                    var isCancelled = false;
+
+                    $("#custom-dialog-content").text(config.content)
+                    $("#custom-dialog").dialog({
+                        title: config.title,
+                        modal: true,
+                        width: config.width ? config.width : "480",
+                        height: config.height ? config.height: "auto",
+                        resizable: false,
+                        draggable: false,
+                        position: { my: "center", at: "center", of: window },
+                        closeOnEscape: false,
+                        close: function() {
+                            $(this).dialog("destroy");
+                            if(isConfirmed && config.onConfirmCloseHandler) {
+                                config.onConfirmCloseHandler();
+                            } else if(isCancelled && config.onCancelCloseHandler) {
+                                config.onCancelCloseHandler();
+                            } else if (!isConfirmed && !isCancelled && config.onCloseButtonCloseHandler) {
+                                config.onCloseButtonCloseHandler();
+                            }
+                            handleOnClose(config);
+                        },
+                        buttons:
+                        {
+                            [cancelBtnName]: function() {
+                                isCancelled = true;
+                                if(config.onCancelHandler) {
+                                    config.onCancelHandler();
+                                }
+
+                                if(config.redirectPathOnCancel) {
+                                    window.location.href = config.redirectPathOnCancel;
+                                }
+
+                                $(this).dialog("close");
+                            },
+                            [confirmBtnName]: function() {
+                                isConfirmed = true;
+                                if(config.onConfirmHandler) {
+                                    config.onConfirmHandler();
+                                }
+
+                                if(config.redirectPathOnConfirm) {
+                                    window.location.href = config.redirectPathOnConfirm;
+                                }
+
+                                $(this).dialog("close");
+                            }
+                        },
+                        open: function() {
+                            $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).addClass('custom-dialog-primary-btn');
+                            $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).addClass('custom-dialog-secondary-btn');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+
+                            if(config.shouldHideConfirmBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).hide();
+                            if(config.shouldHideCancelBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).hide();
+                            if(config.shouldHideCloseBtn == true) $(".ui-dialog-titlebar-close").hide();
+                        }
+                    }).dialog("open");
+                }
+        </script>
+    
+
+<script>
+    var contextPath = "\/obs\/";
+    var originalUrl = "https:\/\/staging.eauto.my\/uat4";
+</script>
+
+
+    <script>
+        $(document).ready(function() {
+            var error = null;
+            if (error) {
+                removeParameterAndUpdateUrl('error');
+                alert(error);
+            }
+
+            var oldBRN = document.getElementById('oldBRN');
+            var newBRN = document.getElementById('newBRN');
+            var businessTrading = document.getElementById('businessTrading');
+            var checkboxes = {
+                SDN_BHD : document.getElementById('type-SDN_BHD'),
+                SOLE_PROPRIETORSHIP_PARTNERSHIP : document.getElementById('type-SOLE_PROPRIETORSHIP_PARTNERSHIP'),
+                LLP : document.getElementById('type-LLP'),
+                TRADING_SABAH: document.getElementById('type-TRADING_SABAH'),
+                TRADING_SARAWAK: document.getElementById('type-TRADING_SARAWAK')
+            };
+
+            function handleBrnInput() {
+                if (oldBRN.value || newBRN.value) {
+                    checkboxes.TRADING_SABAH.checked = checkboxes.TRADING_SARAWAK.checked = false;
+                    checkboxes.TRADING_SABAH.disabled = checkboxes.TRADING_SARAWAK.disabled = true;
+                    businessTrading.value = '';
+                    if(checkboxes.SDN_BHD.disabled) {
+                        checkboxes.SDN_BHD.checked = true;
+                        checkboxes.SDN_BHD.disabled = false;
+                    }
+
+                    if(checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.disabled) {
+                        checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.checked = true;
+                        checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.disabled = false;
+                    }
+
+                    if(checkboxes.LLP.disabled) {
+                        checkboxes.LLP.checked = true;
+                        checkboxes.LLP.disabled = false;
+                    }
+                } else if (!businessTrading.value) {
+                    for (var key in checkboxes) {
+                        checkboxes[key].checked = true;
+                        checkboxes[key].disabled = false;
+                    }
+                }
+            }
+
+            function handleTradingInput() {
+                if (businessTrading.value) {
+                    checkboxes.SDN_BHD.checked = checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.checked = checkboxes.LLP.checked = false;
+                    checkboxes.SDN_BHD.disabled = checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.disabled = checkboxes.LLP.disabled = true;
+                    oldBRN.value = newBRN.value = '';
+                    if(checkboxes.TRADING_SABAH.disabled) {
+                        checkboxes.TRADING_SABAH.checked = true;
+                        checkboxes.TRADING_SABAH.disabled = false;
+                    }
+
+                    if(checkboxes.TRADING_SARAWAK.disabled) {
+                        checkboxes.TRADING_SARAWAK.checked = true;
+                        checkboxes.TRADING_SARAWAK.disabled = false;
+                    }
+                } else if (!oldBRN.value && !newBRN.value) {
+                    for (var key in checkboxes) {
+                        checkboxes[key].checked = true;
+                        checkboxes[key].disabled = false;
+                    }
+                }
+            }
+
+            oldBRN.addEventListener('input', handleBrnInput);
+            newBRN.addEventListener('input', handleBrnInput);
+            businessTrading.addEventListener('input', handleTradingInput);
+
+            $("input[name='submissionDateFrom'], input[name='submissionDateTo']").keydown(function(e) {
+                // backspace or delete
+                if(e.keyCode == 8 || e.keyCode == 46){
+                    $(this).val("");
+                }
+                e.preventDefault();
+            });
+
+            var yearRange = 10;
+            var d = new Date();
+            var now = d.getFullYear();
+
+            $("input[name='submissionDateFrom']")
+                .val('')
+                .datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: parseInt(now - yearRange) + ":" + now,
+                maxDate: '0',
+                minDate: '-' + yearRange + 'Y'
+            });
+
+            $("input[name='submissionDateTo']")
+                .val('')
+                .datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: parseInt(now - yearRange) + ":" + now,
+                minDate: '0',
+                maxDate: '0'
+            });
+
+            $("input[name='submissionDateFrom']").change(function(){
+                var fromDate = $("input[name='submissionDateFrom']").datepicker('getDate');
+                var toDate = new Date(fromDate);
+                var today = new Date();
+                
+                // Calculate 1 month from the selected date
+                var oneMonthEndDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 2, 0);
+                var oneMonthEndDay = oneMonthEndDate.getDate();
+                var fromDateDay = fromDate.getDate();
+                var oneMonthSameDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 1, fromDateDay);
+
+                // Handle edge case where fromDate day exceeds days in next month
+                if(fromDateDay > oneMonthEndDay){
+                    toDate = oneMonthEndDate;
+                } else {
+                    toDate = oneMonthSameDate;
+                }
+
+                // Cap at today if 1 month ahead exceeds current date
+                if(toDate > today){
+                    toDate = today;
+                }
+
+                $("input[name='submissionDateTo']").datepicker('option','minDate', fromDate);
+                $("input[name='submissionDateTo']").datepicker('option','maxDate', toDate);
+                $("input[name='submissionDateTo']").datepicker('setDate', toDate);
+            });
+
+            $("#to-reset").click(function() {
+                $("#search-form")[0].reset();
+                for (var key in checkboxes) {
+                    checkboxes[key].disabled = false;
+                }
+            });
+
+            $("#to-export").click(function() {$
+                if(!confirm("Sure to export?")) {
+                    return false;
+                }
+
+                const formData = $('#search-form').serialize();
+
+                window.open(`${contextPath}admin/preOnb/form/enquiry/export?${formData}`, "_blank")
+
+                return true;
+            });
+
+            $("#to-search").click(function() {
+
+                var submissionDateFilterPass = validateDateFilter('submissionDateFrom','submissionDateTo','Submission Date (From)', 'Submission Date (To)');
+                if(!submissionDateFilterPass) {
+                    return false;
+                }
+
+                search();
+                return true;
+            });
+
+            const validateDateFilter = (fromDateId, toDateId, fromDateTitle, toDateTitle) => {
+                var fromDate = $('#'+fromDateId).val().trim();
+                var toDate = $('#'+toDateId).val().trim();
+                var incompleteDate = (!fromDate && toDate) || (fromDate && !toDate)
+                if (incompleteDate) {
+                    var errorTitle = "";
+
+                    if (!fromDate) {
+                        errorTitle += fromDateTitle;
+                    }
+
+                    if (!toDate) {
+                        if(errorTitle != ""){
+                            errorTitle += " and ";
+                        }
+                        errorTitle += toDateTitle;
+                    }
+
+                    if (errorTitle != "") {
+                        alert("Please input valid " + errorTitle);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            const search = () => {
+                const formData = $('#search-form').serialize();
+
+                $.ajax({
+                    url: contextPath + 'admin/preOnb/form/enquiry/search',
+                    method: 'GET',
+                    data: formData,
+                    success: function(response) {
+                        if(response.errorMsg) {
+                            alert(response.errorMsg);
+                            return false;
+                        } else {
+                            $('#count-container').addClass('hidden');
+                            if(response.totalRecords > 0) {
+                                $('#to-export').removeClass("hidden");
+                                $('#listing-count').text(response.totalRecords);
+                                $('#count-container').removeClass('hidden');
+                            } else {
+                                $('#to-export').addClass("hidden");
+                            }
+                            displayResults(response);
+                            if(response.totalPages > 1){
+                                initPagination(response);
+                                $(".pagination").removeClass("hidden");
+                            } else {
+                                $(".pagination").addClass("hidden");
+                            }
+                            $('#listing-table').removeClass('hidden');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Search failed. Please try again.');
+                    }
+                });
+            }
+
+            const displayResults = (response) => {
+                $('#listing-body').empty();
+
+                if (response.records.length === 0) {
+                    $('#listing-body').append(`
+                        <tr>
+                            <td colspan="100%" class="text-center py-3">
+                                <div>
+                                    No records found matching your search criteria
+                                </div>
+                            </td>
+                        </tr>
+                    `);
+
+                    return;
+                }
+
+                var startIndex = (response.currentPageNo - 1) * response.maxRecordsPerPage;
+                response.records.forEach((record, i) => {
+                    var index = startIndex + i + 1;
+                    var theme = index % 2 === 0 ? "even" : "odd";
+                    const applicationRow = `
+                    <tr id="${record.uuid}" class="${theme}">
+                        <td class="text-center">${index}</td>
+                        <td class="text-center">${record.submittedAt ? formatDate(escapeHtml(record.submittedAt)) : ''}</td>
+                        <td class="text-center">${record.preOnboardingNumber ? escapeHtml(record.preOnboardingNumber) : ''}</td>
+                        <td class="text-center text-wrap">${record.companyName ? escapeHtml(record.companyName) : ''}</td>
+                        <td class="text-center">${escapeHtml(record.typeOfBusiness)}</td>
+                        <td class="text-center text-wrap">${record.companyRoc ? escapeHtml(record.companyRoc) : '-'}</td>
+                        <td class="text-center text-wrap">${record.newCompanyRoc ? escapeHtml(record.newCompanyRoc) : '-'}</td>
+                        <td class="text-center text-wrap">${record.tradingLicenceNo ? escapeHtml(record.tradingLicenceNo) : '-'}</td>
+                        <td class="text-center obs-status ${record.ssmStatus ? record.ssmStatus.toLowerCase() : ""}">${record.ssmStatus ? escapeHtml(record.ssmStatus) : '-'}</td>
+                        <td class="text-center obs-status ${record.lhdnStatus ? record.lhdnStatus.toLowerCase() : ""}">${record.lhdnStatus === 'N/A' ? '<b>' + escapeHtml(record.lhdnStatus) + '</b>' : escapeHtml(record.lhdnStatus)}</td>
+                        <td class="text-center obs-status ${record.status ? record.status.toLowerCase() : ""}">${escapeHtml(record.status)}</td>
+                        <td class="text-center">${record.approvedAt ? formatDate(escapeHtml(record.approvedAt)) : '-'}</td>
+                        <td class="text-center">${record.turnAroundTimeDays != null ? escapeHtml(String(record.turnAroundTimeDays)) : '-'}</td>
+                        <td class="text-left text-wrap">${record.remark ? escapeHtml(record.remark) : '-'}</td>
+                        <td class="text-center">${record.specialRemark ? 'Yes' : 'No'}</td>
+                        <td class="text-center">
+                            <a href="${contextPath + 'admin/preOnb/summary/' + record.uuid}" target="_blank" class="to-edit hyperlink-text">View</a>
+                        </td>
+                    </tr>
+                `;
+                    $('#listing-body').append(applicationRow);
+                });
+            }
+
+            const escapeHtml = (unsafe) => {
+                return $('<div>').text(unsafe).html();
+            }
+
+            const initPagination = (response) => {
+                $(".pagination").pagination(response.totalRecords, {
+                    items_per_page: response.maxRecordsPerPage,
+                    current_page: response.currentPageNo - 1,
+                    num_edge_entries: 2,
+                    num_display_entries: 8,
+                    callback: function(page, jq) {
+                        $("#search-form input[name='pageNo']").val(page + 1);
+                        search();
+                        $("#search-form input[name='pageNo']").val(1);
+                        return false;
+                    }
+                });
+            }
+
+            const formatDate = (dateString) => {
+                if (!dateString) return '';
+
+                const date = new Date(dateString);
+
+                // Check if date is valid
+                if (isNaN(date.getTime())) return dateString;
+
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+
+                return `${day}-${month}-${year} ${hours}:${minutes}`;
+            }
+
+            var preOnboardingNoParam = null;
+            if (preOnboardingNoParam) {
+                $('#preOnboardingNo').val(preOnboardingNoParam);
+                search();
+            }
+
+        });
+
+        $(document).on('input', '.alphanumeric-and-specialchar-validation', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^a-zA-Z0-9-_/]/g, "").toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+        $(document).on('input', '.business-name-validation', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^a-zA-Z0-9,&'<>().\-\s]/g, "").toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        function getCaretPosition(ctrl) {
+            var CaretPos = 0;
+            // IE Support
+            if (document.selection) {
+                ctrl.focus();
+                var Sel = document.selection.createRange();
+                Sel.moveStart('character', -ctrl.value.length);
+                CaretPos = Sel.text.length;
+            }
+            // Firefox support
+            else if (ctrl.selectionStart || ctrl.selectionStart == '0') {
+                CaretPos = ctrl.selectionStart;
+            }
+
+            return CaretPos;
+        }
+
+        function setCaretPosition(ctrl, pos) {
+            // IE Support
+            if (ctrl.setSelectionRange) {
+                ctrl.focus();
+                ctrl.setSelectionRange(pos,pos);
+            }
+            // Firefox support
+            else if (ctrl.createTextRange) {
+                var range = ctrl.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', pos);
+                range.moveStart('character', pos);
+                range.select();
+            }
+        }
+
+    </script>
+
+
+
+        <link href="/obs/pagination.css" rel="stylesheet">
+        <style>
+            body {
+                font-family: Inter, sans-serif; /* Default font */
+                font-size: 14px;
+            }
+
+            .custom-container {
+                flex: 1;
+            }
+
+            .text-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 240px;
+                padding: 0 8px;
+            }
+
+            .date-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 160px;
+                padding: 0 8px;
+            }
+
+            .dropdown-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 160px;
+                padding: 0 8px;
+            }
+
+            .custom-container {
+                width: 95%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 20px;
+            }
+
+            .search-btn {
+                width: 120px;
+                height: 40px;
+                padding: 10px 40px;
+                background: #EFEFEF;
+                border: 1px solid #000000;
+            }
+
+            .hyperlink-text {
+                color: #0000EE;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+
+            .hyperlink-text:hover {
+                color: #132659 !important;
+            }
+
+            .custom-select select:disabled {
+                pointer-events: none;
+                background-color: rgba(239, 239, 239, 0.3);
+            }
+
+            .custom-select {
+                position: relative;
+            }
+            .custom-select select {
+                -webkit-appearance:none;
+                -moz-appearance:none;
+                -ms-appearance:none;
+                appearance:none;
+                outline:0;
+                box-shadow:none;
+                background: white;
+                background-image: none;
+                border: 1px solid #767676;
+                height: 32px;
+                width:160px;
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                cursor:pointer;
+                text-overflow: ellipsis;
+                padding: 0 8px;
+            }
+            .custom-select select::-ms-expand {
+                display: none;
+            }
+            .custom-select .select {
+                position: relative;
+                display: flex;
+                height: 32px;
+                background: white;
+                overflow: hidden;
+                border: 1px solid #767676
+            }
+            .custom-select::after {
+                content: '';
+                display: inline-block;
+                border-bottom: 1px solid #808080;
+                border-right: 1px solid #808080;
+                height: 5px;
+                width: 5px;
+                transform: rotate(45deg);
+                position: absolute;
+                top: 11px;
+                right: 10px;
+            }
+
+            a:hover {
+                color: #132659 !important;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            #listing-table td, #listing-table th {border:1px solid white !important;}
+            #listing-table tr.header {background: #58ACFA; color:white;}
+            #listing-table tr.odd {background: #A9E2F3}
+            #listing-table tr.even {background: #CEF6F5}
+
+            .header-text {
+                font-size: 16px;
+                font-weight: 700;
+                margin: 15px 0;
+            }
+
+            .approved, .ok {
+                color:#008E00;
+                font-weight:700;
+            }
+
+            .rejected, .failed {
+                color: #FF4000;
+                font-weight: 700;
+            }
+
+            .pending, .new {
+                color: #0000FF;
+                font-weight: 700;
+            }
+
+            .kiv, .draft {
+                color: #000000;
+                font-weight: 700;
+            }
+
+            .cancelled {
+                color: #000000;
+                font-weight: 700;
+            }
+
+            .text-wrap {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: normal;
+                white-space: normal;
+            }
+        </style>
+        <link href="/obs/datepicker.css" rel="stylesheet">
+    
+    
+        <script src="/obs/js/jquery.pagination.js"></script>
+    
+
+</head><body class="min-h-screen flex flex-col">
+    
+    <div>
+    <div id="overlay" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+    <div id="payment-overlay" style="display: none;">
+        <div class="payment-loading-box">
+            <div class="spinner-and-text">
+                <div class="payment-spinner"></div>
+                <div class="payment-loading-text">Connecting...</div>
+            </div>
+            <div class="overlay-description">Please do not close the browser while connecting to payment gateway</div>
+        </div>
+    </div>
+</div>
+
+    
+    <div>
+    <div id="custom-dialog">
+        <span id="custom-dialog-content"></span>
+    </div>
+</div>
+
+    <div id="header">
+        <div id="custom-header">
+            <div class="flex flex-row">
+                <a class="text-white font-bold no-underline" onclick="window.open(originalUrl + '/home/', '_self');">
+                    Back to Backoffice
+                </a>
+            </div>
+        </div>
+        <div id="logo-container" class=" w-[140px] relative mt-[2px] ml-[2px]">
+            <img src="/obs/images/eauto-logo-tm-white-bg.png" class="w-[140px] h-[75px]">
+        </div>
+    </div>
+
+    
+    <div class="flex-grow">
+        <div class="flex flex-col">
+    <div class="custom-container">
+        
+        <div class="w-full">
+            <form id="search-form">
+                <input type="hidden" name="pageNo" value="1">
+                <div class="flex flex-col w-full space-y-3">
+                    <div id="filter-row-1" class="flex flex-row space-x-3">
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Pre-Application No:</span>
+                            <input title="Pre-Application No" type="text" class="text-filter alphanumeric-and-specialchar-validation" id="preOnboardingNo" name="preOnboardingNo">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Company Name:</span>
+                            <input title="Company Name" type="text" class="text-filter business-name-validation" id="companyName" name="companyName">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Submission Date From:</span>
+                            <div class="pr-2"><input type="text" id="submissionDateFrom" name="submissionDateFrom" class="date-filter hasDatepicker" readonly=""></div>
+                            <span class="font-bold pr-2 flex">To:</span>
+                            <input type="text" id="submissionDateTo" name="submissionDateTo" class="date-filter hasDatepicker" readonly="">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Pre-Application Status:</span>
+                            <div class="custom-select">
+                                <select id="status" name="status" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="NEW">New</option>
+                                    <option value="APPROVED">Approved</option>
+                                    <option value="REJECTED">Rejected</option>
+                                    <option value="CANCELLED">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="filter-row-2" class="flex flex-row space-x-3">
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">SSM Status:</span>
+                            <div class="custom-select">
+                                <select id="ssmStatus" name="ssmStatus" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="OK">OK</option>
+                                    <option value="FAILED">Failed</option>
+                                    <option value="PENDING">-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Old BRN:</span>
+                            <input title="Old BRN" type="text" id="oldBRN" name="oldBRN" class="text-filter alphanumeric-and-specialchar-validation" size="20">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">New BRN:</span>
+                            <input title="New BRN" type="text" id="newBRN" name="newBRN" class="text-filter alphanumeric-and-specialchar-validation" size="20">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Business Trading License Number:</span>
+                            <input title="Business Trading License Number" type="text" id="businessTrading" name="businessTrading" class="text-filter alphanumeric-and-specialchar-validation" size="20">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">LHDN Response Status:</span>
+                            <div class="custom-select">
+                                <select id="lhdnStatus" name="lhdnStatus" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="OK">OK</option>
+                                    <option value="Failed">Failed</option>
+                                    <option value="New">-</option>
+                                    <option value="Pending">N/A</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="filter-row-3" class="flex flex-row space-x-3">
+                        <div class="flex flex-row">
+                            <span class="font-bold pr-2 flex items-center">Business Type:</span>
+                            <div class="flex flex-row space-x-4">
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="SDN_BHD" id="type-SDN_BHD" checked="">
+                                    <label class="pl-1 type-of-business" for="type-SDN_BHD">Sdn Bhd / Bhd</label>
+                                </div>
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="SOLE_PROPRIETORSHIP_PARTNERSHIP" id="type-SOLE_PROPRIETORSHIP_PARTNERSHIP" checked="">
+                                    <label class="pl-1 type-of-business" for="type-SOLE_PROPRIETORSHIP_PARTNERSHIP">Sole Proprietorship / Partnership</label>
+                                </div>
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="LLP" id="type-LLP" checked="">
+                                    <label class="pl-1 type-of-business" for="type-LLP">LLP</label>
+                                </div>
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="TRADING_SABAH" id="type-TRADING_SABAH" checked="">
+                                    <label class="pl-1 type-of-business" for="type-TRADING_SABAH">Business Trading (Sabah)</label>
+                                </div>
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="TRADING_SARAWAK" id="type-TRADING_SARAWAK" checked="">
+                                    <label class="pl-1 type-of-business" for="type-TRADING_SARAWAK">Business Trading (Sarawak)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="button-row" class="flex flex-row justify-end space-x-4 items-center">
+                        <input type="button" id="to-search" value="Search" class="search-btn cursor-pointer">
+                        <a id="to-reset" class="hyperlink-text">Reset</a>
+                        <a id="to-export" class="hyperlink-text hidden">Export</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-center items-center header-text">
+            <span>UCD Pre-Application Listing</span>
+        </div>
+
+        <div id="count-container" class="hidden">
+            <span id="listing-count">0</span> record(s) in total
+        </div>
+
+        
+        <table id="listing-table" class="w-full hidden">
+            <colgroup>
+                <col class="w-[4%]">
+                <col class="w-[6%]">
+                <col class="w-[7%]">
+                <col class="w-[8%]">
+                <col class="w-[7%]">
+                <col class="w-[4%]">
+                <col class="w-[7%]">
+                <col class="w-[8%]">
+                <col class="w-[5%]">
+                <col class="w-[5%]">
+                <col class="w-[7%]">
+                <col class="w-[6%]">
+                <col class="w-[8%]">
+                <col class="w-[8%]">
+                <col class="w-[6%]">
+                <col class="w-[4%]">
+            </colgroup>
+            <thead>
+            <tr class="header">
+                <th>#</th>
+                <th>Submission Date</th>
+                <th>Pre-Application No</th>
+                <th>Company Name</th>
+                <th>Business Type</th>
+                <th>Old BRN</th>
+                <th>New BRN</th>
+                <th>Business Trading License Number</th>
+                <th>SSM Status</th>
+                <th>LHDN Response Status</th>
+                <th>Pre-Application Status</th>
+                <th>Approved Date</th>
+                <th>Turn Around Time (Days)</th>
+                <th>Remarks</th>
+                <th>Special Remarks</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="listing-body">
+            </tbody>
+        </table>
+        <div class="pagination mt-1 hidden"></div>
+    </div>
+</div>
+    </div>
+
+    <div id="footer">
+        <div class="flex justify-between items-end footer">
+            <div class="flex items-end justify-between">
+                <div class="flex flex-col">
+                    <div>Best Compatible With Mozilla Firefox V36.0.4</div>
+                    <div>Copyright © <span>2026</span> eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+                    <div class="flex">
+                        <a class="pr-[10px]" onclick="window.open(originalUrl + '/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+                        <span class="separator">|</span>
+                        <a class="px-[10px]" onclick="window.open(originalUrl + '/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a>
+                        <span class="separator">|</span>
+                        <a class="pl-[10px]" onclick="window.open(originalUrl + '/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <img src="/obs/images/eauto-logo-tm.png" width="98" height="40">
+            </div>
+        </div>
+    </div>
+
+<div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div></body></html>

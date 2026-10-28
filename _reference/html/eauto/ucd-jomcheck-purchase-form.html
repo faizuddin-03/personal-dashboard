@@ -1,0 +1,141 @@
+<!--
+  URL: /uat1/view/ucd/jomcheck/transaction/ (Get JomCheck Reports form, initial state)
+  Page: UCD "Get JomCheck Reports" — Vehicle No./Chassis No. radio input, complete form.
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: none — form kept complete per house rule.
+-->
+<body>
+<div id="do-payment-dialog" style="display:none;" title="Payment">
+    <span id="do-payment-field"></span>
+</div>
+
+<div id="sure-to-retry"></div>
+
+<div id="container" class="ucd-container">
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <a onclick="window.location='/uat1/view/ucd/jomcheck/view.do'">JomCheck Report</a>
+        <div class="separator">/</div>
+        <div class="page-name">Get JomCheck Reports</div>
+    </div>
+
+    <div class="common-header-container">
+        <div class="common-header">
+            <h1 style="font-weight:bold; font-size:20px; color: #000000;">Get JomCheck Reports</h1>
+        </div>
+    </div>
+
+    <table id="maintable">
+    <colgroup><col width="80%"><col width="20%"></colgroup>
+    <tbody>
+        <tr>
+            <td class="maintable-td">
+                <div class="mainContent">
+                    <form id="tx-form" enctype="multipart/form-data" method="POST" action="/uat1/ajax/ucd/jomcheck/transaction/save.do">
+                        <input type="hidden" name="transactionId" value="null">
+                        <div class="container container-input">
+                            <table class="jomcheck-input">
+                            <colgroup><col width="20%"><col width="80%"></colgroup>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" id="jomcheck-title">
+                                        <span class="title"><b>JomCheck Vehicle Report</b></span><br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="label">
+                                        <input type="radio" name="selectedInput" id="vehicleNoRadio" class="radio-item" value="vehicleNo" checked="">
+                                        Vehicle Number:&nbsp;
+                                    </td>
+                                    <td class="input" style="text-align: left;">
+                                        <input type="text" id="vehicleRegNo" name="vehicleRegNo" class="is-required form-control" title="Vehicle Number" value="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div style="text-align:left;width:95%; margin-top:-5px; margin-left:5px;">
+                                            <span class="is-invalid-vehicleRegNo is-invalid" style="display:none; width:95%">This field is required</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="label"><input type="radio" id="chassisNoRadio" class="radio-item" name="selectedInput" value="chassisNo">
+                                    Chassis Number:&nbsp;
+                                    </td>
+                                    <td class="input" style="text-align: left;">
+                                        <input type="text" maxlength="30" id="vehicleChassisNo" name="vehicleChassisNo" class="is-required form-control field-disabled" title="Chassis Number" value="" disabled="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div style="text-align:left;width:95%; margin-top:-5px; margin-left:5px;">
+                                            <span class="is-invalid-vehicleChassisNo is-invalid" style="display:none; width:95%">This field is required</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div class="is-chassis-selected" style="display:none; color:red; margin-left:5px;">
+                                            <span style="font-weight: bold;">Please enter valid Chassis Number to purchase the JomCheck Report.</span> <br>
+                                            <span style="font-style: italic">Payments are strictly non-refundable if the report cannot be generated due to an invalid Chassis Number.</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <div class="jomcheck-action">
+                                            <button type="submit" id="to-check-vehicle" class="btn-blue submit-btn">Submit</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+                    </form>
+                </div>
+            </td>
+            <td class="maintable-td supportInfo" rowspan="2">
+                <div class="mainContent container support-info">
+                    <span class="title" style="font-weight:500;"><br><b>Support Info&nbsp;</b>
+                    <br><br>JomCheck Vehicle Report <br>Support &amp; Helpline<br></span>
+                    <span id="info">
+                        <span class="desc-font">(Managed by ezAUTO Asia Sdn Bhd)</span>
+                        <br><br>
+                        <span style="font-size:13px;">WhatsApp/Call: </span><br><span style="font-weight:500;">+6012 7823 796</span>
+                        <br><br>
+                        <span style="font-size:13px;">Email Address: </span><br><a href="mailto:admin@ezauto.my" style="font-weight:500;">admin@ezauto.my</a>
+                    </span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="maintable-td">
+                <div class="container container-result flex flex-row">
+                    <div class="jomcheck-result">
+                        <p class="title"><b>Result&nbsp;</b></p>
+                        <p>
+                            <span id="result"></span><span id="desc" class="desc-font">Enter either vehicle number or chassis number to retrieve JomCheck report.</span>
+                        </p>
+                    </div>
+                    <div class="jomcheck-action flex items-center justify-content-end"></div>
+                </div>
+            </td>
+        </tr>
+    </tbody></table>
+    <div id="jomcheck-footer">
+        <p class="desc-font"><b>Note(s):&nbsp;</b></p>
+        <p>
+            <span id="disclaimer" class="desc-font">
+                The JomCheck Report is furnished by Motordata Research Consortium Sdn Bhd and distributed through eAuto Sdn Bhd platform in collaboration with ezAUTO Asia Sdn Bhd.
+                <br><br>
+                DISCLAIMER: The contents of this JomCheck Vehicle Report are intended solely for informational purposes.
+            </span>
+        </p>
+    </div>
+</div>
+</body>

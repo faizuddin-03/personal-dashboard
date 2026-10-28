@@ -1,0 +1,158 @@
+<!--
+  URL:      https://staging.eauto.my/obs/preOnb/landing/1d166297-9c46-485a-bbec-3d7d43cfcee2/FPX_M2E
+  Captured: 2026-10-22T09:13:37.244Z by the 12153 guided-capture run (new tab or window)
+  Trimmed:  nothing
+-->
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Processing</title>
+    
+    <!-- Load jQuery FIRST before RMS Seamless script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0B4C5F;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+    </style>
+<script type="text/javascript" src="https://sandbox-payment.fiuu.com/RMS/API/seamless/latest/js/MOLPay_seamless_sandbox.deco.js"></script></head>
+<body>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <h3 id="statusText">Processing payment...</h3>
+        <p id="statusDetail">Please wait, do not close this window.</p>
+        <p class="error-message" id="errorMessage" style="display: none;"></p>
+    </div>
+
+    <!-- Hidden button for Fiuu Seamless with all data attributes -->
+    <button type="button" id="payButton" data-toggle="molpayseamless" style="display: none;" data-mpsmerchantid="SB_SB_eauto" data-mpschannel="FPX_M2E" data-mpsamount="108.00" data-mpsorderid="1d166297-9c46-485a-bbec-3d7d43cfcee2" data-mpsbill_name="MUHAMMAD FAIZUDDIN BIN BIDI" data-mpsbill_email="qa.fz.12153guideb2b.mvjbjb09@testingz.com" data-mpsbill_mobile="0137428615" data-mpsbill_desc="UDIN ONBOARD TESTING SDN0019" data-mpscountry="MY" data-mpsreturnurl="https://staging.eauto.my/obs/preOnb/payment/check/1d166297-9c46-485a-bbec-3d7d43cfcee2" data-mpscallbackurl="https://staging.eauto.my/obs/preOnb/payment/callback/1d166297-9c46-485a-bbec-3d7d43cfcee2" data-mpsnotifyurl="https://staging.eauto.my/obs/preOnb/payment/notification/1d166297-9c46-485a-bbec-3d7d43cfcee2" data-mpsvcode="a8a85376aaa759fc1557485a60cf86d4">
+        Pay Now
+    </button>
+
+    <!-- Payment Initialization Script -->
+    <script>
+        /*<![CDATA[*/
+        
+        // Payment option from backend
+        var fiuuOption = {"mpslangcode":"en","mpsbill_name":"MUHAMMAD FAIZUDDIN BIN BIDI","mpsamount":"108.00","mpscallbackurl":"https:\/\/staging.eauto.my\/obs\/preOnb\/payment\/callback\/1d166297-9c46-485a-bbec-3d7d43cfcee2","mpsmerchantid":"SB_SB_eauto","mpsbill_desc":"UDIN ONBOARD TESTING SDN0019","mpsorderid":"1d166297-9c46-485a-bbec-3d7d43cfcee2","mpscountry":"MY","mpsvcode":"a8a85376aaa759fc1557485a60cf86d4","mpsbill_mobile":"0137428615","mpsnotifyurl":"https:\/\/staging.eauto.my\/obs\/preOnb\/payment\/notification\/1d166297-9c46-485a-bbec-3d7d43cfcee2","mpschannel":"FPX_M2E","mpsreturnurl":"https:\/\/staging.eauto.my\/obs\/preOnb\/payment\/check\/1d166297-9c46-485a-bbec-3d7d43cfcee2","mpsbill_email":"qa.fz.12153guideb2b.mvjbjb09@testingz.com"};
+        var fiuuSeamlessUrl = "https:\/\/sandbox-payment.fiuu.com\/RMS\/API\/seamless\/latest\/js\/MOLPay_seamless_sandbox.deco.js";
+        
+        // Wait for document ready
+        $(document).ready(function() {
+            // Load the Fiuu script
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = fiuuSeamlessUrl;
+            
+            script.onload = function() {
+                
+                // Check all window properties
+                var molPayProps = Object.keys(window).filter(k => 
+                    k.toLowerCase().includes('mol') || 
+                    k.toLowerCase().includes('pay') || 
+                    k.toLowerCase().includes('seamless') ||
+                    k.toLowerCase().includes('rms') ||
+                    k.toLowerCase().includes('razer')
+                );
+                // Check jQuery.fn
+                var jqueryPayProps = Object.keys($.fn).filter(k => 
+                    k.toLowerCase().includes('mol') || 
+                    k.toLowerCase().includes('pay') || 
+                    k.toLowerCase().includes('seamless')
+                );
+
+                // Try multiple initialization methods
+                // Method 1: Try jQuery plugin if available
+                if (typeof $.fn.molpayseamless === 'function') {
+                    try {
+                        $('#payButton').molpayseamless(fiuuOption);
+                        setTimeout(function() {
+                            $('#payButton').click();
+                        }, 1000);
+                    } catch (e) {
+                        console.error('Method 1 failed:', e);
+                    }
+                }
+                // Method 2: Try data-toggle auto-initialization
+                else {
+                    setTimeout(function() {
+                        $('#payButton').trigger('click');
+                    }, 1000);
+                }
+
+            };
+            
+            script.onerror = function() {
+                console.error('Failed to load Fiuu script from:', fiuuSeamlessUrl);
+                showError('Failed to load payment gateway script.');
+            };
+
+            document.head.appendChild(script);
+        });
+        
+        function showError(message) {
+            document.getElementById('statusText').textContent = 'Payment Error';
+            document.getElementById('statusDetail').textContent = 'Unable to initialize payment gateway.';
+            var errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            document.querySelector('.spinner').style.display = 'none';
+        }
+        
+        /*]]>*/
+    </script>
+
+
+</body></html>

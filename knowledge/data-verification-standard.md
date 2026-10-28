@@ -99,10 +99,19 @@ Two operational facts that follow:
   it in place. Copy only what the session needs — `Local State`, the profile's
   `Preferences` and `Network\Cookies` — rather than the whole tree, which runs to
   hundreds of MB and makes every run pay a slow disk copy.
+  The implementation copies `Local State`, `Preferences`, `Network\Cookies` and
+  `Cookies` (see below).
 - **An expired Mailtrap sign-in surfaces as `blocked`, not as a failure.** That is
   correct behaviour, and the fix is to sign in again in Chrome — nothing in the
   automation changes. Word the message so it reads as a sign-in prompt rather than
   a broken selector.
+
+**Implemented as `scripts/eauto-quotation-reminder/utils/mailtrap.ts`.**
+`stageProfile()` copies `Local State`, `Preferences`, `Network\Cookies`,
+`Cookies`; `launchPersistentContext` runs headed with `channel: 'chrome'`; a
+signed-out URL regex → `blocked`. Its row selectors are unverified — no Mailtrap
+capture exists. Full write-up: [mailtrap.md](mailtrap.md).
+`[verified: scripts/eauto-quotation-reminder/utils/mailtrap.ts]`
 
 The API details below still describe the reference tool accurately, and matter if
 anyone ever does wire it up — but do not reach for them by default.
@@ -266,6 +275,7 @@ request. `[status as of 2026-08-14]`
 | Insurance Checker | `scripts/eauto-insurance/` | `POST /api/insurance/check` | ☐ |
 | Secarang Insurance Checker | `scripts/secarang-insurance/` | `POST /api/secarang/check` | ☐ |
 | Secarang regression | `scripts/secarang-insurance/` | `POST /api/secarang/regression` | ☐ |
+| eAuto quotation reminder | `scripts/eauto-quotation-reminder/` | `POST /api/eauto-quotation-reminder/run` | ☐ (partial: blocked verdict + count assertion done; no contract module, no body match) |
 | WA Blaster | `scripts/WA-Blaster/` | `POST /api/wa-blaster/run` | ☐ |
 | WA Blaster Beta | `scripts/WA-Blaster-Beta/` | `POST /api/wa-blaster-beta/run` | ☐ |
 
@@ -281,3 +291,43 @@ Only the architecture transfers. The Playwright suites already have a partial
 parallel of the harness in their step reporter
 (see [automation-playbook.md](automation-playbook.md)), so adopting this means
 converging with it, not bolting a second harness alongside.
+
+## From Charmain's repo (eauto-qa-charmain, read 2026-10-27)
+
+Read-only clone at `_reference/codebases/eauto-qa-charmain/` (commit 0ab45d1).
+
+1. **One assertion vocabulary, one file.** `config/assertions.yaml` defines the row
+   types a plan may assert — `element` (a control named as a QA says it, never a
+   selector), `row` (a listing row found by a value in a named column; the most
+   common eAuto check), `page` (where the user now is: heading / breadcrumb),
+   `download` (a file the action produced), `message` (a message AND the field it
+   is attached to) — each with the Playwright call that implements it.
+   `[charmain-repo: config/assertions.yaml:17-73]`
+2. **States are defined by what a reviewer agrees to:** `visible`, `hidden`,
+   `absent` (`toHaveCount(0)` — the permission-test claim), `enabled`, `disabled`
+   (often `pointer-events:none`, so hover needs a raw mouse move), `readonly` (not
+   the same as disabled), `checked`, `unchecked`, `selected`, `text` (exact),
+   `contains`, `value` (an input's value, not its placeholder), `count`, `focused`.
+   `[charmain-repo: config/assertions.yaml:75-92]`
+3. **Quoted wording needs a source:** `code` (fixed string in eAuto source, must
+   cite), `run` (read off a live page, must cite), `spec` (obligation only, no
+   wording claimed). "I composed it" is not a source.
+   `[charmain-repo: config/assertions.yaml:94-100]`
+4. **Exports: match on the whole row, fail on ambiguity.** `findRow(rows, match)`
+   requires every given column to agree and throws on 0 or more than 1 hit (one
+   export had 243 duplicated references). Assert the header set of an export —
+   that catches a dropped or renamed column. `[charmain-repo: src/utils/downloads.ts:48-95]`
+5. **An `.xlsx` is a zip**: a text search of the file finds nothing. Parse it
+   (`xlsx` library) or say plainly that contents were not checked.
+   `[charmain-repo: .claude/skills/test-evidence-recording/references/eaint-12131.md:838-842]`
+6. **An unauthorised eAuto request returns the login page with HTTP 200** — a
+   status code alone is never a pass/fail signal for access checks.
+   `[charmain-repo: .claude/skills/test-evidence-recording/references/eaint-12131.md:524-529]`
+7. **DOM list vs what is visible:** `allInnerTexts()` on a jQuery dialog returned
+   `Close, Cancel, Confirm` while the screen showed two buttons (the titlebar close
+   is `display:none`). Assert the visible set exactly, and keep "what the markup
+   holds" out of captions. A defect was filed and withdrawn over this.
+   `[charmain-repo: .claude/skills/test-evidence-recording/SKILL.md:257]`
+8. **Absence needs two proofs** for permission checks: the menu entry is missing
+   AND a direct URL to the module is refused. A hidden menu item is not access
+   control. `[charmain-repo: .claude/skills/test-evidence-recording/references/eaint-12131.md:899-901]`

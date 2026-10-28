@@ -1,0 +1,43 @@
+<!--
+  URL:         https://bank-simulator.fiuu.com/fpx-b2b/pending
+  Environment: Fiuu sandbox bank simulator (used by eAuto staging /obs, EAINT-12153 FPX B2B)
+  Captured:    2026-10-22, pasted by Faizuddin ("this is the simulator for B2B")
+  State:       first open, no tranID entered (empty lookup)
+  Trimmed:     <head> not supplied; <body> as pasted, nothing removed. Form kept whole.
+-->
+<body>
+    <div class="blue-bar">
+        <img src="https://bank-simulator.fiuu.com/img/fiuuSimulator.png" alt="Fiuu Logo">
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Pending Checker Decisions - FPX B2B</h1>
+            <button type="button" class="refresh-btn" onclick="window.location.reload()">Refresh</button>
+        </div>
+        <p style="color: #666;">
+            FPX B2B transactions the maker has already authorized (status 22) and that are now
+            waiting on a checker's Approve/Reject decision, mirroring production's real maker/checker flow.
+            Look up a specific transaction by its own transaction number (tranID) - the one you received
+            right after authorizing it.
+        </p>
+
+
+        <form method="GET" action="https://bank-simulator.fiuu.com/fpx-b2b/pending" style="margin-bottom: 20px; display: flex; gap: 8px; align-items: center;">
+            <label for="tranId" style="font-size: 14px; color: #444;">Your Transaction No. (tranID):</label>
+            <input type="text" id="tranId" name="tranId" value="" placeholder="e.g. 1005277" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px;">
+
+            <button type="submit" class="refresh-btn">Look up my order</button>
+        </form>
+
+                    <div class="empty">Enter your transaction number (tranID) above to look up its checker decision.</div>
+            </div>
+
+    <div class="powered-by">
+        <p>Powered by&nbsp;<img src="https://bank-simulator.fiuu.com/img/FiuuBlue.png" alt="Fiuu Logo"></p>
+    </div>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;2c289d5631264377ad806da7050358cc&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+
+
+</body>

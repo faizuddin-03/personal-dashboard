@@ -3,15 +3,19 @@ import { useEffect, useState, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import {
   ExternalLink, Loader2, RefreshCw, ChevronLeft, Plus, Rocket, Ticket,
+  BookOpen, Bot, ClipboardList, LayoutGrid,
 } from "lucide-react";
+import Link from "next/link";
 import { JiraCredentials, JiraIssue, JiraComment, statusColor, priorityColor } from "@/lib/jira";
 import { getKanbanState, saveKanbanState, KanbanCard, ColumnId, Priority, COLUMN_META } from "@/lib/kanban";
-import { getDeployments, saveDeployments, Deployment, DEPLOYMENT_ENVIRONMENTS } from "@/lib/deployments";
+import { getDeployments, saveDeployments, Deployment, DEPLOYMENT_ENVIRONMENTS, DEPLOYMENT_STATUS_META, DEPLOYMENT_TYPE_META } from "@/lib/deployments";
+import { getTicketHubData, TicketHubData } from "@/lib/ticketHub";
 import AdfRenderer from "@/components/AdfRenderer";
 import { useApp } from "@/components/AppShell";
 import clsx from "clsx";
 
 type ActionPanel = "kanban" | "deployment" | null;
+type AdfNodeProp = React.ComponentProps<typeof AdfRenderer>["node"];
 
 const PRIORITY_OPTIONS: Priority[] = ["urgent", "high", "medium", "low"];
 const COLUMN_OPTIONS: ColumnId[] = ["urgent", "todo", "ongoing", "on-hold", "finished"];
@@ -41,6 +45,10 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
   const [depNotes, setDepNotes]     = useState("");
   const [depSuccess, setDepSuccess] = useState(false);
 
+  // Linked dashboard data (study, automation, TS Tracker, deployments, Kanban)
+  const [hub, setHub] = useState<TicketHubData | null>(null);
+  const refreshHub = useCallback(() => { setHub(getTicketHubData(issueKey)); }, [issueKey]);
+
   const fetchIssue = useCallback(async () => {
     if (!creds) return;
     setLoading(true);
@@ -55,8 +63,9 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
       setError("Network error");
     } finally {
       setLoading(false);
+      refreshHub(); // local data is read after the first await, so it never runs during render
     }
-  }, [creds, issueKey]);
+  }, [creds, issueKey, refreshHub]);
 
   useEffect(() => { fetchIssue(); }, [fetchIssue]);
 
@@ -86,6 +95,7 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
     state[kanbanCol] = [...state[kanbanCol], card];
     saveKanbanState(state);
     setKanbanSuccess(true);
+    refreshHub();
   }
 
   function scheduleDeployment() {
@@ -104,8 +114,9 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
       status: "planned",
       createdAt: new Date().toISOString(),
     };
-    saveDeployments([...getDeployments(), dep]);
+    try { saveDeployments([...getDeployments(), dep]); } catch { /* storage unavailable */ }
     setDepSuccess(true);
+    refreshHub();
   }
 
   const comments: JiraComment[] = issue?.fields.comment?.comments ?? [];
@@ -163,7 +174,15 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
           <Loader2 size={28} className="animate-spin text-blue-500" />
         </div>
       ) : error ? (
-        <div className="flex-1 flex items-center justify-center py-24 text-red-400 text-sm">{error}</div>
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+            <div className="flex items-center justify-center gap-3 py-10 text-sm">
+              <span className="text-red-400">{error}</span>
+              <button onClick={fetchIssue} className="px-2.5 py-1 text-xs border border-slate-700 rounded-lg text-slate-300 hover:border-slate-500">Retry</button>
+            </div>
+            {hub && <HubSection hub={hub} />}
+          </div>
+        </div>
       ) : issue ? (
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
@@ -340,6 +359,9 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
               </div>
             )}
 
+            {/* Linked dashboard data */}
+            {hub && <HubSection hub={hub} />}
+
             {/* Two-column layout: meta + description side by side */}
             <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
 
@@ -381,7 +403,7 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
                   <div>
                     <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Description</h3>
                     <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-5">
-                      <AdfRenderer node={issue.fields.description as Record<string, unknown>} />
+                      <AdfRenderer node={issue.fields.description as unknown as AdfNodeProp} />
                     </div>
                   </div>
                 )}
@@ -412,7 +434,7 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
                               {new Date(c.created).toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit" })}
                             </span>
                           </div>
-                          <AdfRenderer node={c.body as Record<string, unknown>} />
+                          <AdfRenderer node={c.body as unknown as AdfNodeProp} />
                         </div>
                       ))}
                       {(issue.fields.comment?.total ?? 0) > (issue.fields.comment?.comments?.length ?? 0) && (
@@ -428,6 +450,118 @@ export default function JiraIssuePage({ params }: { params: Promise<{ key: strin
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function fmtDate(d: string) {
+  return new Date(d + "T12:00:00").toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function HubCard({ icon, title, href, linkLabel, children }: { icon: React.ReactNode; title: string; href?: string; linkLabel?: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center gap-2">
+          {icon}
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{title}</p>
+        </div>
+        {href && (
+          <Link href={href} className="text-xs text-blue-400 hover:text-blue-300 transition-colors">{linkLabel ?? "Open"}</Link>
+        )}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function NoneLine() {
+  return <p className="text-xs text-slate-600">None</p>;
+}
+
+function HubSection({ hub }: { hub: TicketHubData }) {
+  const { study, automations, tracker, deployments, kanbanCards } = hub;
+  return (
+    <div>
+      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">On this dashboard</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <HubCard icon={<BookOpen size={13} className="text-indigo-400" />} title="Ticket study" href={study ? "/jira/studies" : undefined} linkLabel="Open studies">
+          {study ? (
+            <div className="space-y-1">
+              <p className="text-xs text-slate-200 line-clamp-2">{study.title}</p>
+              <p className="text-xs text-slate-500">
+                Studied {fmtDate(study.studiedAt)} · {study.decisions.length} decisions · {study.openItems.length} open items
+                {study.srd ? ` · SRD ${study.srd.version}` : ""}
+              </p>
+            </div>
+          ) : <NoneLine />}
+        </HubCard>
+
+        <HubCard icon={<Bot size={13} className="text-sky-400" />} title="Automation">
+          {automations.length === 0 ? <NoneLine /> : (
+            <div className="space-y-1.5">
+              {automations.map(a => (
+                <Link key={a.href} href={a.href} className="block px-2.5 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{a.href}</span>
+                    <span className="text-xs text-slate-500 ml-auto shrink-0">{a.status}{a.coverage ? ` · ${a.coverage.automated}/${a.coverage.total} TS` : ""}</span>
+                  </div>
+                  <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{a.summary}</p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </HubCard>
+
+        <HubCard icon={<ClipboardList size={13} className="text-amber-400" />} title="TS Tracker" href={tracker ? "/tests" : undefined} linkLabel="Open tracker">
+          {tracker ? (
+            tracker.total === 0 ? <p className="text-xs text-slate-600">Entry exists, no test cases yet</p> : (
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-3 text-xs">
+                  <span className="text-slate-400">{tracker.total} cases · {tracker.suites} suites</span>
+                  <span className="text-green-400">{tracker.pass} pass</span>
+                  <span className="text-red-400">{tracker.fail} fail</span>
+                  {tracker.wip > 0 && <span className="text-amber-400">{tracker.wip} wip</span>}
+                  <span className="text-slate-500">{tracker.pending} pending</span>
+                </div>
+                <div className="flex h-1.5 rounded-full overflow-hidden bg-slate-700">
+                  <div className="h-full bg-green-500" style={{ width: `${(tracker.pass / tracker.total) * 100}%` }} />
+                  <div className="h-full bg-amber-500" style={{ width: `${(tracker.wip / tracker.total) * 100}%` }} />
+                  <div className="h-full bg-red-500" style={{ width: `${(tracker.fail / tracker.total) * 100}%` }} />
+                </div>
+              </div>
+            )
+          ) : <NoneLine />}
+        </HubCard>
+
+        <HubCard icon={<Rocket size={13} className="text-purple-400" />} title="Deployments" href={deployments.length ? "/calendar" : undefined} linkLabel="Open calendar">
+          {deployments.length === 0 ? <NoneLine /> : (
+            <div className="space-y-1">
+              {deployments.map(d => (
+                <div key={d.id} className="flex items-center gap-2 text-xs">
+                  <span className="text-slate-300">{fmtDate(d.date)} {d.time}</span>
+                  <span className={DEPLOYMENT_TYPE_META[d.type]?.text ?? "text-slate-400"}>{d.environment}</span>
+                  <span className={clsx("ml-auto", DEPLOYMENT_STATUS_META[d.status]?.color ?? "text-slate-500")}>{DEPLOYMENT_STATUS_META[d.status]?.label ?? d.status}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </HubCard>
+
+        <HubCard icon={<LayoutGrid size={13} className="text-blue-400" />} title="Kanban" href={kanbanCards.length ? "/kanban" : undefined} linkLabel="Open board">
+          {kanbanCards.length === 0 ? <NoneLine /> : (
+            <div className="space-y-1">
+              {kanbanCards.map(c => (
+                <div key={c.id} className="flex items-center gap-2 text-xs">
+                  <span className="text-slate-300 truncate flex-1">{c.title}</span>
+                  <span className="text-slate-500 shrink-0">{c.boardType === "cr" ? "CR" : "Task"}</span>
+                  <span className="text-slate-400 shrink-0">{COLUMN_META[c.columnId]?.label ?? c.columnId}{c.archived ? " (archived)" : ""}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </HubCard>
+      </div>
     </div>
   );
 }

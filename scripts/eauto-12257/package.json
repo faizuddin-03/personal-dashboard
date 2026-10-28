@@ -1,0 +1,20 @@
+{
+  "name": "eauto-12257-duitnow-qr",
+  "version": "1.0.0",
+  "description": "EAINT-12257 — UCD onboarding (Pre-Application + Application) DuitNow QR payment channel, plus FPX / card / B2B regression. Official TS: QATeam SharePoint v19 (12257_TS1–TS9, TS11). Copied from scripts/eauto-12153 (same onboarding chain) on 2026-10-21.",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "check": "tsc -p tsconfig.json",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.0",
+    "pdf-parse": "^1.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pdf-parse": "^1.1.5",
+    "typescript": "^5.3.0"
+  }
+}

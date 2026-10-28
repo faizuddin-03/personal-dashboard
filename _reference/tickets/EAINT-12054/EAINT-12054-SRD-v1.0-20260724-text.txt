@@ -1,0 +1,360 @@
+
+SYSTEM REQUIREMENT DOCUMENT (SRD)
+Requirement
+ | [eAuto-STMS] Enhancement On STMS Bulk Payment - Add in SSM Checking
+ |
+---
+Version
+ | Version 1.0
+ |
+---
+Latest Revision Date
+ | 24.07.2026 (Friday)
+ |
+---
+
+CONTENTS
+	TOC \h \o "1-3" \t "Heading1,1,Heading2,2,Heading3,3"1.0  DOCUMENT INFORMATION	 PAGEREF _Toc235805411 \h 3
+	1.1  Purpose	 PAGEREF _Toc235805412 \h 3
+	1.2  Intended Audience	 PAGEREF _Toc235805413 \h 3
+	1.3  Revision History	 PAGEREF _Toc235805414 \h 3
+	1.4  Glossary of Terms	 PAGEREF _Toc235805415 \h 4
+	1.5  Associated Document(s)	 PAGEREF _Toc235805416 \h 4
+	2.0  REQUIREMENT	 PAGEREF _Toc235805417 \h 5
+	2.1  High-Level Requirement Overview	 PAGEREF _Toc235805418 \h 5
+	2.1.1  Assumptions	 PAGEREF _Toc235805419 \h 6
+	2.1.2  Out-of-Scope	 PAGEREF _Toc235805420 \h 6
+	2.2  Key Highlights and Baseline Requirements	 PAGEREF _Toc235805421 \h 7
+	2.2.1  Background	 PAGEREF _Toc235805422 \h 7
+	2.2.2  Existing Issue & Expected Behaviour	 PAGEREF _Toc235805423 \h 8
+	2.2.3  Affected Pages	 PAGEREF _Toc235805424 \h 9
+	2.2.4  Required Documents by Business Type	 PAGEREF _Toc235805425 \h 9
+	2.2.5  STMS Bulk Payment – SSM Validation	 PAGEREF _Toc235805426 \h 10
+	Appendix — Requirement Change Log	 PAGEREF _Toc235805427 \h 14
+
+1.0  DOCUMENT INFORMATION
+1.1  Purpose
+The System Requirements Document outlines the agreed system specifications. Once approved, it becomes the baseline to ensure the system meets business goals. Sign-off is required for development to start, and any changes must follow the System Enhancement Management process.
+1.2  Intended Audience
+The intended audience for this document includes project stakeholders and any team members involved in defining, implementing, or validating the system requirements.
+1.3  Revision History
+This section records all modifications to the document until it reaches Version 1.0, at which point it is finalized and established as the baseline for future reference. Once baselined, any new changes will be assessed based on their severity — significant changes may result in an addendum, while less critical updates may be handled through a formal change request.
+Version No
+ | Date
+ | Revised By
+ | Reason for Revision
+ |
+---
+0.1
+ | 23.07.2026 (Thurs)
+ | Chee Mei Jia
+ | Initial Draft
+ |
+---
+1.0
+ | 24.07.2026 (Fri)
+ | Chee Mei Jia
+ | This is the baseline of this Change Request.
+ |
+---
+Note: Update made to the document is highlighted in blue
+1.4  Glossary of Terms
+#
+ | Abbreviation / Term
+ | Interpretation / Description
+ |
+---
+ |  |  |
+---
+1.5  Associated Document(s)
+#
+ | Item
+ | Location / URL
+ | Rationale for Relevance
+ |
+---
+1
+ | EAINT-12054 — Enhancement On STMS Bulk Payment - Add in SSM Checking
+ | https://mfservices.atlassian.net/browse/EAINT-12054
+ | Main internal enhancement ticket for this SRD
+ |
+---
+2
+ | CCB-866 — EAUTO | Enhancement On STMS Bulk Payment
+ | https://mfservices.atlassian.net/browse/CCB-866
+ | Change Control Board ticket
+ |
+---
+3
+ | EAUTO-990 — Enhancement On STMS Bulk Payment
+ | https://mfservices.atlassian.net/browse/EAUTO-990
+ | Source enhancement request
+ |
+---
+2.0  REQUIREMENT
+2.1  High-Level Requirement Overview
+#
+ | Item
+ | Description
+ |
+---
+2.1.1
+ | Enhancement Overview
+ | Introduce SSM validation checking during the STMS bulk payment process, based on the user's SSM bypass permission and the transaction's Seller Category (Company).
+ |
+---
+2.1.2
+ | Key Value(s) Expected
+ | Prevent STMS bulk payments from proceeding when the required SSM documents have not been purchased, ensuring SSM compliance before payment.
+ |
+---
+2.1.3
+ | Additional Note(s)
+ |  |
+---
+2.1.1  Assumptions
+#
+ | Assumption
+ |
+---
+1
+ | The existing SSM validation logic for STMS transactions remains in place and is reused within the bulk payment flow.
+ |
+---
+2
+ | “3 required documents” refers to the existing set of SSM documents already defined in the system.
+ |
+---
+3
+ | SSM bypass permission is an existing, configurable user-level permission.
+ |
+---
+4
+ | Seller Category “Company” is an existing attribute available on STMS transactions.
+ |
+---
+2.1.2  Out-of-Scope
+#
+ | Item
+ | Reason
+ |
+---
+1
+ | Single (non-bulk) STMS payment flow
+ | This SRD covers the STMS bulk payment flow only.
+ |
+---
+2
+ | Changes to the SSM document purchase flow itself
+ | Only the validation performed before payment is covered.
+ |
+---
+3
+ | Seller Categories other than Company
+ | Not affected by this enhancement.
+ |
+---
+2.2  Key Highlights and Baseline Requirements
+The following key highlights and requirements were established during the initial sync-up sessions with the requestor. As this forms the baseline, any changes requested thereafter may result in adjustments to scope, timeline, or deliverables, for which the requestor will be responsible to review and confirm.
+2.2.1  Background
+#
+ | Affected Item
+ | Description
+ |
+---
+1
+ | Project
+ | eAuto
+ |
+---
+2
+ | Portal
+ | UCD
+ |
+---
+3
+ | Module
+ | STMS – Bulk Payment
+ |
+---
+4
+ | Request
+ | Validate the user's SSM bypass permission during the STMS bulk payment process, for STMS transactions where the Seller Category is Company.
+ |
+---
+5
+ | Additional Note
+ |  |
+---
+2.2.2  Existing Issue & Expected Behaviour
+#
+ | Item
+ | Description
+ |
+---
+1
+ | Existing Issue / Behaviour
+ | Currently the system does not validate the user's SSM bypass permission during the STMS bulk payment process.
+As a result, STMS payments can be processed even when the required SSM documents have not been purchased.
+ |
+---
+2
+ | Expected New Handling / Behaviour
+ | Scenario 1 — UCD with SSM bypass purchase: on bulk payment submission, the system ensures the transaction has all 3 required documents uploaded before allowing the STMS payment to proceed.
+Scenario 2 — UCD without SSM bypass purchase: on bulk payment submission, the system proceeds with transactions that fulfil the requirements.
+If the SSM docs are no longer valid, the system shows the affected transaction numbers on a popup.
+UCD must resubmit the transaction from the STMS transaction listing to purchase the SSM docs.
+ |
+---
+2.2.3  Affected Pages
+#
+ | Affected Pages
+ | Description
+ |
+---
+1
+ | STMS Bulk Payment
+ | Bulk payment submission screen where the SSM validation is triggered.
+ |
+---
+2
+ | STMS Transaction Listing
+ | Where UCD resubmits affected transactions to purchase the SSM docs.
+ |
+---
+2.2.4  Required Documents by Business Type
+Under Company Details, the required documents differ based on the selected Type of Business and whether the user has purchased the SSM bypass. A user with SSM bypass purchase must upload all 3 documents; a user without SSM bypass purchase only needs to upload the Board Resolution / Authorisation Letter.
+#
+ | Type of Business
+ | With SSM Bypass Purchase (all 3 mandatory)
+ | Without SSM Bypass Purchase (mandatory)
+ |
+---
+1
+ | Sdn Bhd / Bhd
+ | 1. SSM Company Profile
+2. Company Board Resolution
+3. Staff Employment Pass & MyKad
+ | Company Board Resolution
+ |
+---
+2
+ | Sole Proprietorship or Partnership
+ | 1. SSM Business Profile
+2. Authorisation Letter
+3. Staff Employment Pass & MyKad
+ | Authorisation Letter
+ |
+---
+3
+ | Limited Liability Partnership (LLP)
+ | 1. LLP Profile
+2. Authorization Letter
+3. Staff Employment Pass & MyKad
+ | Authorization Letter
+ |
+---
+2.2.5  STMS Bulk Payment – SSM Validation
+#
+ | Requirement ID
+ | Item
+ | Description
+ | Acceptance Criteria
+ |
+---
+1
+ | EAINT-12054-REQ-001
+ | SSM Bypass Permission Check
+ | The system validates the user's SSM bypass permission during the STMS bulk payment process, for STMS transactions where the Seller Category is Company.
+ | On bulk payment submission, the system checks the user's SSM bypass permission before processing STMS transactions with Seller Category = Company.
+ |
+---
+2
+ | EAINT-12054-REQ-002
+ | Validation — With Bypass Permission
+ | If the user has SSM bypass permission, the transaction must have all 3 required documents uploaded (as listed in Section 2.2.4, based on the Type of Business) before the STMS payment can proceed.
+ | A transaction under a user with bypass permission proceeds only when all 3 required documents for the applicable business type are uploaded; otherwise the payment is blocked.
+Example 1: Sdn Bhd/Bhd
+Payment proceeds only when SSM Company Profile, Company Board Resolution, and Staff Employment Pass & MyKad are all uploaded; otherwise the payment is blocked.
+Example 2: Sole Proprietorship / Partnership
+Payment proceeds only when SSM Business Profile, Authorisation Letter, and Staff Employment Pass & MyKad are all uploaded; otherwise the payment is blocked.
+Example 3: LLP
+Payment proceeds only when LLP Profile, Authorization Letter, and Staff Employment Pass & MyKad are all uploaded; otherwise the payment is blocked.
+ |
+---
+3
+ | EAINT-12054-REQ-003
+ | Validation — Without Bypass Permission
+ | If the user does not have SSM bypass permission, the system performs the following checks in sequence:
+1. Check whether the Board Resolution / Authorisation Letter (the applicable document per business type in Section 2.2.4) is uploaded.
+2. If uploaded, check whether the SSM documents are still valid.
+3. If the SSM documents are still valid, the transaction proceeds; otherwise, the transaction is blocked.
+If the Board Resolution / Authorisation Letter is not uploaded, the transaction is blocked.
+ | For a transaction under a user without bypass permission: when the Board Resolution / Authorisation Letter is uploaded and the SSM documents are still valid, the payment proceeds; if the letter is missing or the SSM documents are no longer valid, the payment is blocked.
+Example 1: Sdn Bhd / Bhd
+Payment proceeds only when the Company Board Resolution is uploaded and the SSM documents are still valid; if the Company Board Resolution is missing or the SSM documents are no longer valid, the payment is blocked.
+Example 2: Sole Proprietorship / Partnership
+Payment proceeds only when the Authorisation Letter is uploaded and the SSM documents are still valid; if the Authorisation Letter is missing or the SSM documents are no longer valid, the payment is blocked.
+Example 3: LLP
+Payment proceeds only when the Authorization Letter is uploaded and the SSM documents are still valid; if the Authorization Letter is missing or the SSM documents are no longer valid, the payment is blocked.
+ |
+---
+4
+ | EAINT-12054-REQ-004
+ | Proceed Qualifying Transactions
+ | On bulk payment submission, the system proceeds with the transactions that fulfil the SSM requirements.
+ | Transactions meeting all SSM requirements are processed within the bulk payment; non-qualifying transactions are not processed.
+ |
+---
+5
+ | EAINT-12054-REQ-005
+ | Invalid SSM Docs Popup
+ | If the SSM documents are no longer valid, the system displays the affected transaction numbers on a popup. UCD must resubmit those transactions from the STMS transaction listing to purchase the SSM docs.
+Suggested error message:
+“SSM documents for the following transaction(s) are no longer valid: [Transaction No]. Please resubmit the transaction(s) from the STMS Transaction Listing to purchase the SSM documents before proceeding with payment.”
+ | When SSM docs are invalid, a popup lists the affected transaction numbers with the above message, and those transactions are not processed until resubmitted from the STMS transaction listing.
+ |
+---
+Appendix — Requirement Change Log
+#
+ | SRD Version
+ | Requirement ID
+ | Status
+ | Reason
+ |
+---
+1
+ | 1.0
+ | EAINT-12054-REQ-001
+ | Added
+ | New requirement — SSM bypass permission check
+ |
+---
+2
+ | 1.0
+ | EAINT-12054-REQ-002
+ | Added
+ | New requirement — validation with bypass permission
+ |
+---
+3
+ | 1.0
+ | EAINT-12054-REQ-003
+ | Added
+ | New requirement — validation without bypass permission
+ |
+---
+4
+ | 1.0
+ | EAINT-12054-REQ-004
+ | Added
+ | New requirement — proceed qualifying transactions
+ |
+---
+5
+ | 1.0
+ | EAINT-12054-REQ-005
+ | Added
+ | New requirement — invalid SSM docs popup
+ |
+---

@@ -1,0 +1,135 @@
+<!--
+  URL: https://bank-simulator.fiuu.com/duitnow/viewqr
+  Environment: Fiuu bank simulator (public sandbox page the TS says to "Open on phone")
+  Captured: 2026-10-21T08:52:03Z by Claude via curl (raw server HTML, no JS run)
+  State: initial page — "Launch Scanner" (#launchScannerButton), html5-qrcode scanner in #reader, hidden #paymentModal with Approve (submitPayment(1)) / Reject (submitPayment(2)), form #payment-form POST /duitnow/process-qr-data. _token is a per-session CSRF value, expired.
+  Trimmed: nothing
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DuitNowQR Online Simulator</title>
+    <link rel="shortcut icon" href="https://bank-simulator.fiuu.com/sandbox.png">
+    <link href="https://bank-simulator.fiuu.com/css/duitnowQRonline.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.4/lottie.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://bank-simulator.fiuu.com/js/html5-qrcode.min.js"></script>
+</head>
+
+<body>
+    <div class="banner">
+        <img src="https://bank-simulator.fiuu.com/img/fiuuSimulator.png" alt="Fiuu_simulator" style="width: 150px;">
+    </div>
+    <div class="container">
+        <div class="header">DuitNowQR Online Simulator</div>
+        <div id="scan-container"></div>
+        <div id="reader" style="display: none;"></div>
+        <button id="launchScannerButton" class="btn-launchScanner" onclick="toggleScanner()">Launch Scanner</button>
+    </div>
+    <div class="footer">
+        Powered by <img src="https://bank-simulator.fiuu.com/img/FiuuBlue.png" alt="Fiuu Logo">
+    </div>
+
+    <!-- Modal for Payment Confirmation -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <h3>Approval</h3>
+            <p>Amount: <span id="amountDisplay"></span></p>
+            <div class="modal-buttons">
+                <button class="modal-button reject-button" onclick="submitPayment('2')">Reject</button>
+                <button class="modal-button approve-button" onclick="submitPayment('1')">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <form id="payment-form" method="POST" action="https://bank-simulator.fiuu.com/duitnow/process-qr-data">
+        <input type="hidden" name="_token" value="kkSQ6toKqUIFozPu98ZkfWkBP0y96QtHCPZSoju0">        <input type="hidden" id="hiddenqrData" name="qrData" value="">
+        <input type="hidden" id="hiddenAmount" name="amount" value="">
+        <input type="hidden" id="hiddenUserChoice" name="userChoice" value="2">
+    </form>
+
+    <script>
+        let html5QrcodeScanner;
+        let scannerLaunched = false;
+
+        // Load Lottie animation
+        var animation = lottie.loadAnimation({
+            container: document.getElementById('scan-container'), // the DOM element to render the animation
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://bank-simulator.fiuu.com/js/scan.json'
+        });
+
+        // Initialize QR code scanner
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            /* verbose= */ false
+        );
+
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`Code matched = ${decodedText}`, decodedResult);
+            let amount = extractAmountFromQR(decodedText);
+            $('#hiddenqrData').val(decodedText);
+            $('#hiddenAmount').val(amount);
+            $('#amountDisplay').text(amount);
+            $('#paymentModal').css('display', 'flex');
+            html5QrcodeScanner.clear();
+        }
+
+        function onScanFailure(error) {
+            console.warn(`Code scan error = ${error}`);
+        }
+
+        function toggleScanner() {
+            // Hide the Lottie animation
+            document.getElementById('scan-container').style.display = 'none';
+            
+            // Hide the Launch Scanner button
+            document.getElementById('launchScannerButton').style.display = 'none';
+            
+            // Show the QR code scanner
+            document.getElementById('reader').style.display = 'block';
+
+            // Render the scanner
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        }
+
+        function extractAmountFromQR(decodedText) {
+            const splitData = splitStringByKey(decodedText);
+            if (splitData.hasOwnProperty("54")) {
+                let amount = splitData["54"];
+                return `MYR ${parseFloat(amount).toFixed(2)}`;
+            }
+            return "Amount not found";
+        }
+
+        function splitStringByKey(emvcoString) {
+            let result = {};
+            while (emvcoString.length > 0) {
+                let strId = emvcoString.substring(0, 2);
+                let intLength = parseInt(emvcoString.substring(2, 4), 10);
+                let strValue = emvcoString.substring(4, 4 + intLength);
+                result[strId] = strValue;
+                emvcoString = emvcoString.substring(4 + intLength);
+            }
+            return result;
+        }
+
+        function submitPayment(UserChoice) {
+            $('#hiddenUserChoice').val(UserChoice);
+            $('#payment-form').submit();
+        }
+
+        $(window).click(function(event) {
+            if (event.target == document.getElementById('paymentModal')) {
+                $('#paymentModal').hide();
+            }
+        });
+    </script>
+</body>
+</html>

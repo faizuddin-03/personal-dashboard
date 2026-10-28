@@ -156,6 +156,62 @@ const RHB_TRANSFER_FIELDS: Field[] = [
   { label: "Remark", type: "textarea", wide: true },
 ];
 
+// From the live edit form for /esim/jomcheck-enquiry-resp/<id>/edit
+// (EAINT-12339, Faizuddin, 2026-09-30). Only controls whether JomCheck
+// returns a vehicle-found result at all — no claim data lives here.
+const JOMCHECK_ENQUIRY_FIELDS: Field[] = [
+  { label: "Vn Start With", required: true, placeholder: "only to RENAME the prefix" },
+  { label: "Cn Start With", required: true, placeholder: "only to RENAME the prefix" },
+  { label: "Result", required: true, presets: [{ value: "Yes" }, { value: "No" }] },
+  { label: "Delay Milliseconds", type: "number", required: true, placeholder: "0" },
+  { label: "Start Date", type: "datetime-local" },
+  { label: "End Date", type: "datetime-local" },
+];
+
+// From the live edit form for /esim/jomcheck-report-resp/<id>/edit (EAINT-12339,
+// Faizuddin, 2026-09-30). Only the top-level report-summary fields — this
+// entity ALSO carries a dynamic "Claim Records" sub-form
+// (claimValues[N].vehYear/.vin/.lossDate/.severity/... — see
+// _reference/html/esim/jomcheck-report-edit.html), added/removed one row at a
+// time via JS ("+ Add Claim Record" / "Remove Record") and saved together
+// with these fields. This generic label→value editor has no add/remove-row
+// UI, so it can only edit an EXISTING claim record's fields, never change
+// how many there are — steering claim COUNT (e.g. forcing exactly 1, for
+// EAINT-12339's TS05) needs bespoke automation, not this page.
+const JOMCHECK_REPORT_FIELDS: Field[] = [
+  { label: "Vn Start With", placeholder: "only to RENAME the prefix" },
+  { label: "Cn Start With", placeholder: "only to RENAME the prefix" },
+  { label: "Simulator Details Only (No Default)", presets: [{ value: "true" }, { value: "false" }] },
+  { label: "Possible Total Loss", presets: [{ value: "true" }, { value: "false" }] },
+  { label: "Possible BER", presets: [{ value: "true" }, { value: "false" }] },
+  { label: "Result", required: true, presets: [{ value: "Success" }, { value: "Failed" }] },
+  { label: "Delay Milliseconds", type: "number", required: true, placeholder: "0" },
+  { label: "Total Lost Actual" },
+  { label: "Total Lost BER" },
+  { label: "Windscreen History" },
+  { label: "Total Loss History" },
+  { label: "Flood History" },
+  { label: "Latest Mileage" },
+  { label: "Latest Mileage Date" },
+  { label: "Accident Count", type: "number" },
+  { label: "Max Severity" },
+  { label: "Multiple VIN" },
+  { label: "Veh Registration No" },
+  { label: "Created Date" },
+  { label: "Reference ID" },
+  { label: "VIN" },
+  { label: "Veh Year" },
+  { label: "Veh Make Desc" },
+  { label: "Veh Model Desc" },
+  { label: "Veh Engine" },
+  { label: "Veh Transmission" },
+  { label: "Veh Variant" },
+  { label: "Market Value", type: "number" },
+  { label: "New Net Selling Price", type: "number" },
+  { label: "Start Date", type: "datetime-local" },
+  { label: "End Date", type: "datetime-local" },
+];
+
 const ENTITIES: Entity[] = [
   { key: "estm-enquiry", label: "eSTM Enquiry", fields: ESTM_ENQUIRY_FIELDS },
   {
@@ -172,6 +228,11 @@ const ENTITIES: Entity[] = [
     note: "This is the entity that steers eDereg Pre-Checking's own JPJ enquiry result (EAINT-9306). Most fields are Y/N/NA selects — use the preset chips rather than typing free text.",
   },
   { key: "rhb-transfer", label: "RHB Transfer", fields: RHB_TRANSFER_FIELDS },
+  { key: "jomcheck-enquiry", label: "JomCheck Enquiry", fields: JOMCHECK_ENQUIRY_FIELDS },
+  {
+    key: "jomcheck-report", label: "JomCheck Report", fields: JOMCHECK_REPORT_FIELDS,
+    note: "Report-summary fields only. This entity also has a dynamic Claim Records sub-form (add/remove rows) that this generic editor can't drive — see knowledge/esim.md § Jomcheck.",
+  },
 ];
 
 type Mode = "read" | "write";

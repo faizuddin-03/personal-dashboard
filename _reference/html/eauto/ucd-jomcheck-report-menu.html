@@ -1,0 +1,123 @@
+<!--
+  URL: /uat1/view/ucd/jomcheck/view.do
+  Page: UCD JomCheck Report menu (entry point) — "JOMCHECK TRANSACTION LISTING" and
+  "PURCHASE JOMCHECK REPORT" buttons, price/video/support sidebar.
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly (not saved via Chrome download)
+  Trimmed: none — full page including header/footer chrome.
+-->
+<body>
+
+<div id="container" class="ucd-container">
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <div class="page-name">JomCheck Report</div>
+    </div>
+
+    <div style="display:flex">
+        <div style="width:100%;">
+            <div class="common-header-container">
+                <div class="common-header">
+                    <img src="/uat1/images/dashboard/icon_jomcheck.svg" width="56" class="jpj-logo common-header-icon">
+                             <div style="font-weight:bold; font-size:20px; margin-left: 5px;">JOMCHECK REPORT</div>
+                </div>
+            </div>
+
+            <div class="common-menu-container" style="flex-wrap: wrap;">
+                <div class="common-menu-box">
+                    <div class="flex flex-column">
+                        <div class="flex justify-content-center">
+                            <img src="/uat1/images/icon_jomcheck_list.svg" class="icon">
+                        </div>
+                        <div class="flex justify-content-center">
+                            <button onclick="window.location='/uat1/view/ucd/jomcheck/enquiry/'" class="btn-blue-outline" style="min-width: 280px;">
+                                JOMCHECK TRANSACTION LISTING
+                            </button>
+                        </div>
+                        <div><h5 class="menu-title">To View</h5></div>
+                    </div>
+                </div>
+
+                <div class="common-menu-box" style="border-left: none;">
+                    <div class="flex flex-column">
+                        <div class="flex justify-content-center">
+                            <img src="/uat1/images/icon_jomcheck_purchase.svg" class="icon">
+                        </div>
+                        <div class="flex justify-content-center">
+                            <button id="create-tx" class="btn-blue-outline" style="min-width: 280px;">
+                                PURCHASE JOMCHECK REPORT
+                            </button>
+                        </div>
+                        <div class="menu-title">
+                            Purchase Report (RM20.00 + 8% Service Tax per report)<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ucd-container" style="width:410px; padding:24px 0px 24px 32px; border-left: 1px solid #CCCCCC;">
+            <div style="margin-bottom:32px;">
+                <div style="height:221px;width:377px;">
+                    <video width="100%" height="100%" oncontextmenu="return false;" controls="" controlslist="nodownload" poster="https://cdn2.eauto.my/media/eauto-jomcheck-video-thumbnail-2.png">
+                      <source src="https://cdn2.eauto.my/media/eauto-jomcheck-walthrough-en-2.webm" type="video/webm">
+                      <source src="https://cdn2.eauto.my/media/eauto-jomcheck-walthrough-en-2.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <div style="margin-bottom:32px;margin-top: 45px;" class="need-help-section">
+                <h6 style="color:#0B4C5F;font-size:16px;margin-bottom:12px;">Need Help?</h6>
+                <div style="display:flex;margin-bottom:1rem;">
+                    <div>
+                        <table>
+                            <tbody><tr>
+                                <td style="width:140px;font-weight:700;">Support Hotline</td>
+                                <td style="padding-left:16px;">: <b>012-782 3796</b></td>
+                            </tr>
+                            <tr>
+                                <td style="width:140px;">Mon to Fri</td>
+                                <td style="padding-left:16px;">: 9am to 6pm (excluding Public Holiday)</td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                <div style="display:flex;margin-bottom:1rem;">
+                    <div>
+                        <table>
+                            <tbody><tr>
+                                <td style="width:140px;font-weight:700;">Email</td>
+                                <td style="padding-left:16px;">: <b>admin@ezauto.my</b></td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+                </div>
+                <div style="display:flex;">
+                    <div>
+                        <table>
+                            <tbody><tr>
+                                <td style="width:140px;font-weight:700;">WhatsApp</td>
+                                <td style="padding-left:16px;">: <b>012-782 3796</b></td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom:32px;" class="price-section">
+                <h6 style="color:#0B4C5F;font-size:16px;margin-bottom:12px;">Price</h6>
+                <div class="price-section-content" style="margin-bottom:1rem;">
+                    <div><span class="price-highlight">RM20*</span> only for each JomCheck Report</div>
+                    <div class="note-text">* The price is exclusive of government service tax. The product price consists of JPJ and eAuto Service Fee.</div>
+                </div>
+            </div>
+            <div style="margin-bottom:32px;" class="useful-link-section">
+                <h6 style="color:#0B4C5F;font-size:16px;margin-bottom:12px;">User Guide</h6>
+                <div style="display:flex;margin-bottom:1rem;">
+                    <span class="useful-link-text"><a href="https://cdn2.eauto.my/media/user-guide/JomCheck.pdf" target="_new">JomCheck Report Purchase</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>

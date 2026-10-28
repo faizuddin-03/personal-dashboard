@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import { JiraIssue } from "@/lib/jira";
 import { useApp } from "@/components/AppShell";
-import { reporterIs } from "@/lib/jira";
+import { fetchAssignedOpen, fetchCompletedToday, fetchRaisedOn } from "@/lib/todayActivity";
 import IssueCard from "@/components/IssueCard";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
 import {
@@ -17,8 +17,8 @@ import {
   isOverdue as isKanbanOverdue, isDueToday, accentBorderClass,
 } from "@/lib/kanban";
 import { syncCrTickets, getChildBugs, ChildBugMap, bugStats } from "@/lib/crSync";
-import { getDeployments, Deployment, DEPLOYMENT_TYPE_META, DEPLOYMENT_STATUS_META } from "@/lib/deployments";
-import { todayLocal, daysFromToday, jqlCreatedRange } from "@/lib/date";
+import UpcomingDeployments, { ScopeIndicator } from "@/components/calendar/UpcomingDeployments";
+import { todayLocal } from "@/lib/date";
 import { getWidgetConfig, saveWidgetConfig, WidgetConfig } from "@/lib/dashboard-widgets";
 import clsx from "clsx";
 
@@ -79,14 +79,28 @@ function StatBox({ value, label, color = "text-slate-200", alert }: { value: num
   );
 }
 
+// ── Jira widget error line ───────────────────────────────────
+function WidgetError({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <div className="flex flex-col items-center py-6 text-center px-3">
+      <p className="text-xs text-red-400 font-medium mb-1">Jira query failed</p>
+      <p className="text-xs text-slate-600 break-all mb-2">{message}</p>
+      <button onClick={onRetry} className="px-2.5 py-1 text-xs border border-slate-700 rounded-lg text-slate-300 hover:border-slate-500 hover:text-slate-100 transition-colors">
+        Retry
+      </button>
+    </div>
+  );
+}
+
 // ── Widget card shell ─────────────────────────────────────────
-function WidgetCard({ icon, title, href, children }: { icon: React.ReactNode; title: string; href: string; children: React.ReactNode }) {
+function WidgetCard({ icon, title, href, badge, children }: { icon: React.ReactNode; title: string; href: string; badge?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           {icon}
           <h2 className="text-sm font-semibold text-slate-200">{title}</h2>
+          {badge}
         </div>
         <Link href={href} className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors">
           View all <ArrowRight size={12} />
@@ -114,6 +128,9 @@ export default function Dashboard() {
   const [completedTodayLoading, setCompletedTodayLoading] = useState(false);
   const [copiedCompleted, setCopiedCompleted]             = useState(false);
   const [copiedRaised, setCopiedRaised]                   = useState(false);
+  const [completedTodayError, setCompletedTodayError]     = useState("");
+  const [completedReload, setCompletedReload]             = useState(0);
+  const [raisedReload, setRaisedReload]                   = useState(0);
 
   // Local data
   const [ongoingCards, setOngoingCards]   = useState<KanbanCard[]>([]);
@@ -121,12 +138,13 @@ export default function Dashboard() {
   const [crTodoCards, setCrTodoCards]     = useState<KanbanCard[]>([]);
   const [crOngoingCards, setCrOngoingCards] = useState<KanbanCard[]>([]);
   const [crChildBugs, setCrChildBugs]     = useState<ChildBugMap>({});
-  const [upcomingDeps, setUpcomingDeps]   = useState<Deployment[]>([]);
   const [tsCRs, setTsCRs]                 = useState<TSCR[]>([]);
 
   // Assigned tickets (API)
   const [assignedTickets, setAssignedTickets]           = useState<JiraIssue[]>([]);
   const [assignedTicketsLoading, setAssignedTicketsLoading] = useState(false);
+  const [assignedTicketsError, setAssignedTicketsError]     = useState("");
+  const [assignedReload, setAssignedReload]                 = useState(0);
 
   // Widget config
   const [widgets, setWidgets]       = useState<WidgetConfig[]>([]);
@@ -175,16 +193,7 @@ export default function Dashboard() {
 
   // Load local data once on mount
   useEffect(() => {
-    const todayStr = todayLocal();
     refreshKanbanWidgets();
-
-    const in30Str = daysFromToday(30);
-    setUpcomingDeps(
-      getDeployments()
-        .filter(d => d.date >= todayStr && d.date <= in30Str && d.status !== "cancelled")
-        .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
-        .slice(0, 6)
-    );
 
     try {
       const raw = localStorage.getItem("test_tracker_crs");
@@ -208,72 +217,62 @@ export default function Dashboard() {
 
   // Assigned tickets widget
   useEffect(() => {
-    if (!creds) { setAssignedTickets([]); return; }
+    if (!creds) { setAssignedTickets([]); setAssignedTicketsError(""); return; }
+    let cancelled = false;
     setAssignedTicketsLoading(true);
-    fetch("/api/jira/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql: "assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC", maxResults: 10, fields: ["summary", "status", "priority", "issuetype"] }),
-    })
-      .then(r => r.json())
-      .then(d => setAssignedTickets(d.issues ?? []))
-      .catch(() => setAssignedTickets([]))
-      .finally(() => setAssignedTicketsLoading(false));
-  }, [creds]); // eslint-disable-line react-hooks/exhaustive-deps
+    setAssignedTicketsError("");
+    fetchAssignedOpen(creds)
+      .then(issues => { if (!cancelled) setAssignedTickets(issues); })
+      .catch(e => { if (!cancelled) { setAssignedTickets([]); setAssignedTicketsError(e instanceof Error ? e.message : "Jira error"); } })
+      .finally(() => { if (!cancelled) setAssignedTicketsLoading(false); });
+    return () => { cancelled = true; };
+  }, [creds, assignedReload]);
 
   // Raised tickets
   useEffect(() => {
     if (!creds) { setTodayRaised([]); setTodayRaisedError(""); return; }
-    const jql = `${reporterIs(creds)} AND ${jqlCreatedRange(raisedDate)} ORDER BY created ASC`;
+    let cancelled = false;
     setTodayRaisedLoading(true);
     setTodayRaisedError("");
-    fetch("/api/jira/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...creds, jql, maxResults: 50, fields: ["summary", "status", "priority", "issuetype", "assignee", "reporter", "created", "updated", "labels", "fixVersions", "project", "duedate", "parent"] }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.errorMessages?.length || data.error) {
-          setTodayRaisedError(data.errorMessages?.[0] ?? data.error ?? "Jira error");
-          setTodayRaised([]);
-        } else {
-          setTodayRaised(data.issues ?? []);
-        }
-      })
-      .catch(e => setTodayRaisedError(e?.message ?? "Network error"))
-      .finally(() => setTodayRaisedLoading(false));
-  }, [creds, raisedDate]); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchRaisedOn(creds, raisedDate)
+      .then(issues => { if (!cancelled) setTodayRaised(issues); })
+      .catch(e => { if (!cancelled) { setTodayRaised([]); setTodayRaisedError(e instanceof Error ? e.message : "Jira error"); } })
+      .finally(() => { if (!cancelled) setTodayRaisedLoading(false); });
+    return () => { cancelled = true; };
+  }, [creds, raisedDate, raisedReload]);
 
   // Completed today
   useEffect(() => {
-    if (!creds) { setCompletedToday([]); return; }
+    if (!creds) { setCompletedToday([]); setCompletedTodayError(""); return; }
+    let cancelled = false;
     setCompletedTodayLoading(true);
-    fetch("/api/jira/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...creds,
-        jql: "statusCategory = Done AND status changed by currentUser() after startOfDay() ORDER BY updated DESC",
-        maxResults: 50,
-        fields: ["summary", "status", "priority", "issuetype", "project", "labels", "duedate", "assignee", "parent"],
-      }),
-    })
-      .then(r => r.json())
-      .then(d => setCompletedToday(d.issues ?? []))
-      .catch(() => setCompletedToday([]))
-      .finally(() => setCompletedTodayLoading(false));
-  }, [creds]); // eslint-disable-line react-hooks/exhaustive-deps
+    setCompletedTodayError("");
+    fetchCompletedToday(creds)
+      .then(issues => { if (!cancelled) setCompletedToday(issues); })
+      .catch(e => { if (!cancelled) { setCompletedToday([]); setCompletedTodayError(e instanceof Error ? e.message : "Jira error"); } })
+      .finally(() => { if (!cancelled) setCompletedTodayLoading(false); });
+    return () => { cancelled = true; };
+  }, [creds, completedReload]);
 
-  // ── Date helpers ──────────────────────────────────────────
-  function fmtDepDate(d: string) {
-    const dt = new Date(d + "T12:00:00");
-    const today = todayLocal();
-    const tomorrow = daysFromToday(1);
-    if (d === today) return "Today";
-    if (d === tomorrow) return "Tomorrow";
-    return dt.toLocaleDateString("en-MY", { weekday: "short", day: "numeric", month: "short" });
-  }
+  const assignedBody = assignedTicketsLoading && assignedTickets.length === 0 ? (
+    <div className="flex items-center justify-center py-6 text-slate-600"><Loader2 size={16} className="animate-spin" /><span className="text-sm ml-2">Loading…</span></div>
+  ) : assignedTicketsError ? (
+    <WidgetError message={assignedTicketsError} onRetry={() => setAssignedReload(n => n + 1)} />
+  ) : assignedTickets.length === 0 ? (
+    <p className="text-sm text-slate-600 py-4 text-center">No open tickets assigned</p>
+  ) : (
+    <div className="space-y-1.5">
+      {assignedTickets.map(issue => (
+        <Link key={issue.id} href={`/jira/${issue.key}`} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
+          <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
+          <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
+          <span className={clsx("text-xs px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
+            {issue.fields.status.name}
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-full">
@@ -365,56 +364,14 @@ export default function Dashboard() {
             const assignedVisible = widgets.find(x => x.id === "assigned-tickets")?.visible && !!creds;
 
             const deploymentsEl = (
-              <WidgetCard key="dep" icon={<Rocket size={15} className="text-sky-400" />} title="Upcoming Deployments" href="/calendar">
-                {upcomingDeps.length === 0 ? (
-                  <p className="text-sm text-slate-600 py-4 text-center">No upcoming deployments scheduled</p>
-                ) : (
-                  <div className="space-y-2">
-                    {upcomingDeps.map(d => {
-                      const tm = DEPLOYMENT_TYPE_META[d.type];
-                      const sm = DEPLOYMENT_STATUS_META[d.status];
-                      return (
-                        <Link key={d.id} href="/calendar" className={clsx("flex items-center gap-3 px-3 py-2.5 rounded-xl border hover:opacity-90 transition-opacity", tm.bg, tm.border)}>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <span className="text-xs font-mono font-bold text-blue-400">{d.ticketKey}</span>
-                              <span className={clsx("text-xs font-medium", tm.text)}>{d.environment}</span>
-                              <span className={clsx("text-xs opacity-60", tm.text)}>{tm.label}</span>
-                            </div>
-                            <span className={clsx("text-xs font-medium line-clamp-1", tm.text)}>{d.ticketSummary || d.ticketKey}</span>
-                          </div>
-                          <div className="text-right shrink-0 space-y-0.5">
-                            <p className={clsx("text-xs font-semibold", tm.text)}>{fmtDepDate(d.date)}</p>
-                            <p className={clsx("text-xs opacity-70", tm.text)}>{d.time}</p>
-                            <p className={clsx("text-xs font-medium", sm.color)}>{sm.label}</p>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
+              <WidgetCard key="dep" icon={<Rocket size={15} className="text-sky-400" />} title="Upcoming Deployments" href="/calendar" badge={<ScopeIndicator />}>
+                <UpcomingDeployments creds={creds} />
               </WidgetCard>
             );
 
             const assignedEl = assignedVisible ? (
               <WidgetCard key="at" icon={<Ticket size={15} className="text-blue-400" />} title="Assigned to Me" href="/jira">
-                {assignedTicketsLoading && assignedTickets.length === 0 ? (
-                  <div className="flex items-center justify-center py-6 text-slate-600"><Loader2 size={16} className="animate-spin" /></div>
-                ) : assignedTickets.length === 0 ? (
-                  <p className="text-sm text-slate-600 py-4 text-center">No open tickets assigned</p>
-                ) : (
-                  <div className="space-y-1.5">
-                    {assignedTickets.map(issue => (
-                      <div key={issue.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
-                        <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
-                        <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
-                        <span className={clsx("text-xs px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
-                          {issue.fields.status.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {assignedBody}
               </WidgetCard>
             ) : null;
 
@@ -435,23 +392,7 @@ export default function Dashboard() {
             if (!creds) return null;
             return (
               <WidgetCard key="assigned-tickets" icon={<Ticket size={15} className="text-blue-400" />} title="Assigned to Me" href="/jira">
-                {assignedTicketsLoading && assignedTickets.length === 0 ? (
-                  <div className="flex items-center justify-center py-6 text-slate-600"><Loader2 size={16} className="animate-spin" /><span className="text-sm ml-2">Loading…</span></div>
-                ) : assignedTickets.length === 0 ? (
-                  <p className="text-sm text-slate-600 py-4 text-center">No open tickets assigned</p>
-                ) : (
-                  <div className="space-y-1.5">
-                    {assignedTickets.map(issue => (
-                      <div key={issue.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/40 hover:bg-slate-800 transition-colors">
-                        <span className="text-xs font-mono text-blue-400 font-bold shrink-0">{issue.key}</span>
-                        <span className="text-xs text-slate-200 flex-1 truncate">{issue.fields.summary}</span>
-                        <span className={clsx("text-xs px-1.5 py-0.5 rounded border font-medium shrink-0", statusColor(issue.fields.status.statusCategory?.colorName ?? ""))}>
-                          {issue.fields.status.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {assignedBody}
               </WidgetCard>
             );
           }
@@ -615,10 +556,7 @@ export default function Dashboard() {
                   {todayRaisedLoading && todayRaised.length === 0 ? (
                     <div className="flex items-center justify-center py-8 text-slate-600"><Loader2 size={18} className="animate-spin mr-2" /> Loading…</div>
                   ) : todayRaisedError ? (
-                    <div className="flex flex-col items-center py-6 text-center px-3">
-                      <p className="text-xs text-red-400 font-medium mb-1">Jira query failed</p>
-                      <p className="text-xs text-slate-600 break-all">{todayRaisedError}</p>
-                    </div>
+                    <WidgetError message={todayRaisedError} onRetry={() => setRaisedReload(n => n + 1)} />
                   ) : todayRaised.length === 0 ? (
                     <div className="flex flex-col items-center py-8 text-slate-600">
                       <FileText size={24} className="mb-2" />
@@ -658,6 +596,8 @@ export default function Dashboard() {
                   </div>
                   {completedTodayLoading && completedToday.length === 0 ? (
                     <div className="flex items-center justify-center py-8 text-slate-600"><Loader2 size={18} className="animate-spin mr-2" /> Loading…</div>
+                  ) : completedTodayError ? (
+                    <WidgetError message={completedTodayError} onRetry={() => setCompletedReload(n => n + 1)} />
                   ) : completedToday.length === 0 ? (
                     <div className="flex flex-col items-center py-8 text-slate-600">
                       <CheckCheck size={24} className="mb-2 opacity-40" />

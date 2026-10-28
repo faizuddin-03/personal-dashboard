@@ -18,7 +18,11 @@ So:
   Then update it in the same change if the answer is yes.
 
 Everything in this file is `[from QA team, 2026-08-12]` unless tagged otherwise.
-None of it is verified against code in this repo.
+The underwriting rules are not verified against code in this repo; the
+EAINT-11864 and test-setup sections below cite the automation and captures that
+back them. Automation detail for the reminder lives in
+[flow-quotation-reminder.md](flow-quotation-reminder.md); the inbox in
+[mailtrap.md](mailtrap.md).
 
 ## Before testing — data rules per system
 
@@ -169,6 +173,110 @@ Whether the quote came through the eSTM flow decides whether TPFT is offered at 
 suppresses TPFT when Hak Milik is true. Until that's answered, treat the behaviour
 as observed-but-unexplained: test what it does, don't assert why. `[unconfirmed]`
 
+## Quote sequence (control sequence)
+
+Which insurers show, and in what order, is controlled per CR. These rules come from
+past CR test scripts; the exact insurer order changes every few months, so take it
+from the newest CR, not from this list.
+
+1. **Generic rules** `[from SharePoint TS #060 EAINT-8467, sheet Insurance Sequence TS, rows 4-9]`:
+   1. The quotes page shows "the Top 2 of available insurance providers" `[row 4]`.
+   2. Timestamp "Quotation retrieved on: DD/MM/YYYY, HH:MMam/pm" at the bottom; a
+      disclaimer top right `[row 4]`.
+   3. Changing postcode, transmission/variant, going Back or changing Sum Insured keeps
+      the same order `[rows 5, 7, 9]`.
+2. **Takaful counts once.** "Takaful - Comprehensive & TPFT is counted as one
+   insurance", so "top 2" can show three cards, e.g. "1. Takaful (Comprehensive) 2.
+   Takaful (TPFT) 3. Chubb".
+   `[from SharePoint TS #110 EAINT-9713, sheet Get Free Quote Sequence TS, meta row 2 and row 4]`
+3. **X-Star** (hire purchase tagged to X STAR TECHNOLOGY MALAYSIA SDN BHD): "Confirmed
+   with BA for XStar there is no specific sequence".
+   `[from SharePoint TS #102 EAINT-9564, sheet Sequence control, row 13]`
+4. **East Coast UCDs** have their own sequence (EAINT-9564): after eSTM, top 2
+   "Syarikat Takaful Malaysia (Third Party, Fire & Theft (TFT)) … Syarikat Takaful
+   Malaysia (Comprehensive)". `[from SharePoint TS #102 EAINT-9564, sheet Sequence control, rows 9-14]`
+5. **Company category** quotes Chubb (and Takaful) only: "company will only have Chubb
+   & Takaful". `[from SharePoint TS #102 EAINT-9564, sheet Sequence control, row 14]`
+6. **Islamic hire purchase** — a hire purchase whose name contains "Islamic" triggers
+   the Islamic sequence; the list of Islamic HP names is in sheet "Islamic Hire
+   Purchase" of the same workbook.
+   `[from SharePoint TS #069 EAINT-8595, sheet Insurance Sequence TS, meta row 2; sheet Islamic Hire Purchase]`
+
+## Sum-insured price range
+
+Underwriting-style rules — the warning at the top of this file applies.
+
+1. **Chubb, no X-Star HP, vehicle ≤10 years:** "The lowest price in the pricing range
+   should NOT be lower than 90% of the recommended price … NOT be higher than 140%".
+   `[from SharePoint TS #004 EAINT-10044, sheet New Transactions, row 6]`
+2. **Chubb with X-Star HP, ≤15 years:** ceiling 170%. `[… sheet New Transactions, row 33]`
+3. **Chubb before EAINT-10044:** ceiling 110%.
+   `[from SharePoint TS #004 EAINT-10044, sheet Regression Testing, row 16]`
+4. **Lonpac X-Star:** ceiling 150%.
+   `[from SharePoint TS #009 EAINT-10435, sheet Existing Transactions, row 5]`
+   **Lonpac minimum** is rounded up to the nearest 1,000: "ISM - (ISM × 10%) → round up
+   to nearest 1,000 Example: RM 25,300 - RM 2,530 = RM 22,770 → RM 23,000".
+   `[from SharePoint TS #009 EAINT-10435, sheet New Trxns (Scoped Down TS), row 6]`
+5. **RM10,000 floor:** "For recommended Sum Insured: - < RM10,000, the Chubb Quotation
+   SHOULD NOT be displayed. - = RM10,000, other options less than RM10,000 SHOULD NOT
+   be displayed." `[from SharePoint TS #004 EAINT-10044, sheet New Transactions, row 19]`
+6. **RM80,000 cap** on Get Free Quote applies to non-X-Star HP vehicles; not capped
+   otherwise. `[… sheet New Transactions, rows 18, 29]`
+7. **Over the age limit:** "The Sum Insured dropdown becomes an uneditable textfield".
+   `[… sheet New Transactions, row 20]`
+
+## Quotation inputs and price re-check
+
+1. **Chubb TIN No (EAINT-9641):** mandatory after eSTM approval ("This field is
+   required"); optional on Get Free Quote; not displayed on the VEL000069E path.
+   `[from SharePoint TS #108 EAINT-9641, sheet Sheet1, rows 3-6]`
+2. **Price re-check before payment (EAINT-9611):** if the insurer price changed, popup
+   "Price has changed. Click OK to reload and view the updated pricing" with [OK]
+   `[from SharePoint TS #105 EAINT-9611, sheet Gross Premium change TS - eSIM, row 5]`.
+   Paying a day later moves the policy start: "The start date of the Period of
+   Insurance is set to the payment date".
+   `[from SharePoint TS #105 EAINT-9611, sheet Date Change TS - Insurance API, row 4]`
+
+## Insurance notifications (referred risk, monthly commission)
+
+1. **WhatsApp video on referred risk (EAINT-11867)** `[from SharePoint TS #022 EAINT-11867, sheet Sheet1]`:
+   1. Referred Risk Log records before 01.06.2026 are excluded `[row 2]`.
+   2. The quote request goes to "All available insurers except the original failed
+      insurer" `[row 6]`.
+   3. No WhatsApp when the vehicle already has a purchase `[row 5]` or all insurers
+      fail `[row 7]`.
+   4. Car gets Car.mp4, motorcycle Motor.mp4 `[rows 9-10]`.
+   5. "Exactly one WhatsApp message is sent for the record, regardless of the number
+      of insurers that returned a successful quotation." `[row 13]`
+   6. Only the originally referred insurer quoting → not sent.
+      `[from SharePoint TS #023 EAINT-11867, sheet Test Scenario v1, row 13]`
+2. **Monthly commission (EAINT-10082).** WhatsApp and email to the UCD on "the 2nd day
+   of every month"; WhatsApp text "Hi {UCD Company}, your monthly commission summary
+   for eAuto Insurance is available." `[from SharePoint TS #006 EAINT-10082, sheet EAINT-10082, row 4]`;
+   email subject "eAuto – Monthly Commission Achievement" `[… row 5]`.
+   1. A new Main Director receives it after a director change `[rows 8-9]`.
+   2. Commission "0": neither is sent `[rows 10-11]`.
+   3. Office number: no WhatsApp, email still sent `[rows 12-13]`.
+   4. Authorised users (insurance@eauto.my) receive it and see UCD replies when in CC
+      `[rows 14-15]`.
+   5. Report "automatically sent on the 3rd day of every month" in xlsx `[row 16]`.
+3. **Secarang WhatsApp recipients after EAINT-11759:** Payment success goes to the user
+   only; Cover note failed and JPJ rejected go to Shamini only.
+   `[from Teams EAINT-11759, 2026-09-14 10:05, Batrisyia]`
+
+## Insurance cron jobs and simulating failures
+
+1. **Cron intervals**, daily 8am–11pm: Secarang JPJ Status and Cover Note every 1 min;
+   eAuto Cover Note every 5 min; eAuto JPJ Status every 1 min.
+   `[from Teams EAINT-12171, 2026-09-02 13:11, Charmain Ea Chiang]`
+2. The insurance JPJ enquiry, resubmit cover note and resubmit refer-case cron jobs are
+   **off on staging branches**; ask dev to turn them on per branch.
+   `[from Teams eAuto & Secarang Main Group, 2026-08-01, Goh Kai Jiaeh]`
+3. To simulate an insurer API that is down, set the eSIM insurance quotation for
+   Lonpac/TMIM to `false`. `[from Teams DM Charmain Ea Chiang, 2026-06-03]`
+
+Full catalogue: [business-rules-from-test-scenarios.md](business-rules-from-test-scenarios.md) §6.
+
 ## Motorcycle — what's available
 
 - **Comprehensive only.** TPFT is **declined**, and the **TP API does not apply**.
@@ -184,28 +292,38 @@ as observed-but-unexplained: test what it does, don't assert why. `[unconfirmed]
 Age **81+** is not a flat decline — it's **subject to no fault claim in the last 3
 years**.
 
-## EAINT-11864 runs on **/uat1** — and the eSTM half runs on **sit2**
+## EAINT-11864 — both halves run on the segment the dashboard sends
 
-`[from QA team, 2026-08-17]`
+**Corrected 2026-10-15.** This section previously claimed *"EAINT-11864 runs on
+/uat1 — and the eSTM half runs on sit2"* and that *"an eSTM created by the
+automation does NOT exist in the environment the quotation runs in"*
+(`[from QA team, 2026-08-17]`). The code does not do that: the eSTM leg derives
+its environment **from the same base URL as the quotation** —
+`envSegment()` takes the last path segment of `QR_BASE_URL` and passes it as
+`ESTM_ENV_SEGMENT` to the spawned `scripts/eauto-estm`, and the in-process
+`EstmHandoffPage` uses the same value. `[verified: scripts/eauto-quotation-reminder/
+utils/estm.ts:39-43, 60-61, 76-78; pages/EstmHandoffPage.ts:72-79]` So the
+eSTM and the quotation are always on one segment, and the "two halves" trap no
+longer exists.
 
-| Half | Environment | Why it is pinned there |
-|---|---|---|
-| Insurance / quotation-reminder (the ticket) | **`staging.eauto.my/uat1`** | The insurance code changes for this ticket are deployed to uat1. Any other segment exercises the OLD code, so a pass there proves nothing about the ticket. |
-| eSTM creation | **`staging.eauto.my/sit2`** | The identity bypass is only set up on sit2 — `faizuddinsub2` is patched to slot `zzz/22` there, and the patch is per-environment. |
+What is still true, and environment-dependent by design:
 
-Applied 2026-08-17: `QR_BASE_URL` defaults to uat1 in
-`scripts/eauto-quotation-reminder/data/config.ts`, and the dashboard page
-defaults to the UAT1 preset. It was uat4 before, which is where the DOM captures
-in `knowledge/` came from — so **the selectors are uat4-derived**. If one misses
-on uat1, that is the first thing to suspect, not a broken flow.
-
-⚠️ **The two halves are on different environments, so an eSTM created by the
-automation does NOT exist in the environment the quotation runs in.** That is
-fine for *quoting* — Get Free Quote needs only a vehicle number and an IC, no
-eSTM (see above). It is NOT fine for any case whose precondition is a real
-approved eSTM **in uat1**; for those the eSTM has to be created on uat1 by hand,
-or a uat1 bypass slot has to be patched. `[unconfirmed which 11864 cases this
-actually blocks — resolve before trusting a green run]`
+1. The segment is a **per-ticket choice** — pick the one the ticket's build is
+   deployed to, never bake it into a rule
+   ([eauto-portals.md](eauto-portals.md)). The dashboard's first preset and
+   `config.ts:13`'s default are only the segment this ticket was deployed to at
+   the time (`app/eauto/quotation-reminder/page.tsx:225-229`). Note that
+   `scripts/eauto-quotation-reminder/.env.example:3` still names a different
+   default than `data/config.ts:13` — the env file is stale.
+2. The eSTM identity bypass (`faizuddinsub2` patched to slot `zzz/22`) is **set
+   up per environment** by a manual UCD step; a segment where that patch does
+   not exist blocks eSTM step 3 with "Please use login user's mykad"
+   (`scripts/eauto-estm/data/config.ts:23-34`). So before running an
+   eSTM-creating case on a new segment, confirm the patch there.
+3. The DOM captures behind the selectors came from one run on one segment
+   (`[verified: live HTML from uat4, 2026-08-14]` tags in
+   [flow-insurance-purchase.md](flow-insurance-purchase.md)); the 2026-08-18/19
+   captures came from a different one. The selectors held across both.
 
 ## Quotation reminder email (EAINT-11864) — Discount, not Commission
 
@@ -223,7 +341,24 @@ in places — that is a typo, not a second address.)
 The reminder is sent by an **hourly cronjob that runs 07:00–23:00 daily**. A
 quotation is picked up by the **next** run after it was generated — a 10:59
 transaction emails at 11:00. Only **one** email is ever sent per quotation.
-`[from QA team, 2026-08-13]`
+`[from QA team, 2026-08-13]` The team script's own note: *"Will run every hour
+7am-11pm"*, *"3:59 -> 4.00 pickup / 00:00 -> 07:00 pickup"*
+`[from ticket EAINT-11864 test script, notes rows 19]`. Dev confirmation: the
+email is sent 7AM–11PM; emails due overnight go out at 7AM.
+`[from Teams EAINT-11864, 2026-07-29 12:41, Yi Link Lim]`
+
+**For testing the cron is run every 10 minutes** (13:00, 13:10, 13:20, …) so a
+scenario does not take hours. The automation models the grid with
+`QR_CRON_INTERVAL_MINUTES` (default 60) and `QR_CRON_FIRST_HOUR` /
+`QR_CRON_LAST_HOUR` (7 / 23); `nextCronRun()` and `inDeadWindow()` in
+`scripts/eauto-quotation-reminder/utils/schedule.ts` are the executable form of
+this rule. `[from Faizuddin, 2026-08-18; verified: data/config.ts:89-103]`
+
+**When no reminder is due**, per the team script: the purchase completed before
+the pickup run (TS04), the vehicle has no approved eSTM (TS05), or the quotation
+came through the 69E redirect (TS06 — reason not recorded anywhere,
+`[unconfirmed]`). A quotation generated in the dead window is delayed to 07:00,
+not suppressed (TS07). `[from ticket EAINT-11864 test script]`
 
 Because the last run of the day is **23:00**, the dead window is **after 23:00
 until 07:00**. A quotation generated in that gap gets no email until the 07:00
@@ -258,13 +393,24 @@ inbox in a browser that is already signed in and reads the mail there — see
 does NOT use the Mailtrap API. Inbox:
 `https://mailtrap.io/sandboxes/2581833/messages`. `[from QA team, 2026-08-17]`
 
+**Implemented** in `scripts/eauto-quotation-reminder/utils/mailtrap.ts`: the run
+route resolves the `modefair.com` Chrome profile by account, the spec copies its
+session files and launches headed Chrome on them, and an unreadable inbox is
+`blocked`. Everything about that reader — including that its row selectors are
+still unverified and that it only matches the vehicle number against the list,
+never a message body — is in [mailtrap.md](mailtrap.md). **It cannot run on
+GitHub Actions**, which is why the overnight case is split (quotation on
+Actions, inbox by hand next morning). `[verified: utils/mailtrap.ts;
+app/api/eauto-quotation-reminder/run/route.ts · resolveWorkProfile]`
+
 What the reference tool at `_reference/automation code/Mailtrap-Email-Checker/`
 still gives you is the **contract shape** — which fields to assert, the absence
 check for the dead window, and `blocked` instead of a false pass when the inbox
 can't be reached. Borrow that; leave its `Api-Token` transport alone.
 
 A new contract entry is needed — the existing ones cover SI/BDP appointment mail
-only. What goes in it:
+only, and **no code asserts the reminder's content today**. What goes in it
+(also recorded in [mailtrap.md](mailtrap.md) § 5b):
 
 | Contract field | Value for the quotation reminder |
 |---|---|
@@ -291,6 +437,35 @@ much to a browser-driven check:
 `[verified by reading the reference tool, 2026-08-14; contract values from the
 EAINT-11864 study, 2026-08-13]`
 
+The quotation-reminder spec handles both: `assertInbox('one')` asserts
+`toHaveLength(1)` and `assertInbox('none')` asserts `toHaveLength(0)` over rows
+mentioning the vehicle number, with a +3-minute grace after the cron run
+(`scripts/eauto-quotation-reminder/tests/quotation-reminder.spec.ts:150-169`).
+
+### The step-3 row, the resume control, and what the automation treats as "unpaid"
+
+1. A step-3 stop leaves a **`PENDING` ("Pending Payment")** row. Its Action
+   cell carries `a.to-view[data="<uuid>"]` "View" and `a.to-payment[data="<uuid>"]`
+   **"Resubmit"** — the control that re-enters step 3.
+   `[verified: _reference/html/eauto/insurance-listing-pending-payment-row.html:296-299]`
+2. The automation counts either `Quotation` or `Pending Payment` as "this run
+   left something for the cron" (`RESUMABLE_STATUSES = [DRAFT, PENDING]`,
+   `scripts/eauto-quotation-reminder/pages/InsuranceListingPage.ts:32-33`) and
+   never drives the status dropdown, because combining it with the vehicle
+   filter hid an existing row (`[from Faizuddin, 2026-08-18]`).
+3. Two code comments still say the step-3 row is `DRAFT` — `utils/paths.ts:19-20`
+   and `tests-nightly/nightly-quotation.spec.ts:33`. They are stale wording,
+   not behaviour; the checks accept `PENDING`.
+
+### What each EAINT-11864 case needs, and what it deviates from
+
+The case-by-case table (entry point, insurer, login, stop step, deviations from
+the team sheet) is in [flow-quotation-reminder.md](flow-quotation-reminder.md)
+§ 7. Two deviations matter when reading a result against the sheet: the
+automation's insurer choice is not the sheet's (it prefers Chubb and falls back
+to the first card), and TS02/TS03/TS06 always log in as the eSTM bypass user,
+not the Main/Sub UCD the sheet names. `[verified: tests/quotation-reminder.spec.ts]`
+
 ## The insurance transaction has no "update" action
 
 An insurance transaction has exactly **two** actor-recording events: **create**
@@ -307,3 +482,164 @@ most — created-by can differ from paid-by (a Sub UCD creates, a Main UCD pays)
 but last-updated-by simply follows paid-by. A test expecting three different
 names would be asserting something the flow cannot produce.
 `[from QA team, 2026-08-13]`
+
+## Update 2026-10-27 from Charmain repo
+
+Source: read-only clone `_reference/codebases/eauto-qa-charmain/`, folder
+`intake/` (commit `0ab45d1`). Test titles are tested expectations, not verified
+behaviour. Inventory: `script-inventory-team.md`.
+
+1. **Our insurance quote checker is in the team repo.** `scripts/eauto-insurance`
+   was migrated 2026-09-23 to `tools/insurance-quote-checker/` as a standalone
+   tool, after the human reversed a drop: "this is a tool other QA can use".
+   `[charmain-repo: intake/reports/faizuddin-insurance-migration.md:3]` It is "a
+   bulk Excel-in/Excel-out insurance-quote batch checker ... no assertions, just
+   SUCCESS/NO_VEHICLE_INFO/ERROR status collection" and drives "BO > Insurance >
+   quote enquiry". `[charmain-repo: intake/sources.yaml:56]`
+   a. Matches this repo: logic identical (diff 2026-10-27; comments differ).
+   b. Differs: the team copy removed the hard-coded fallback BO login;
+      `scripts/eauto-insurance/data/users.ts:14-15` here still has it.
+      `[charmain-repo: intake/reports/faizuddin-insurance-migration.md:13]`
+2. **BO Insurance menu pages the legacy production suite covers** (each a P1
+   search-and-filter spec): "BO Insurance Transaction", "BO Insurance Payment
+   Transaction", "BO Insurance Payment OTP Log", "BO Insurance Permission Listing",
+   "BO Insurance Refer Risk Log", "BO Upload Insurance e-Certificate".
+   `[charmain-repo: intake/reports/legacy-shared.md:52-57]` `[charmain-repo: intake/reports/legacy-shared.json:2254-2556]`
+3. **BO Insurance Transaction listing filters** (legacy load test `INSBOPT_TS*`):
+   Insurance Company (example value "'RHB Insurance Berhad'"), "'Yes/ No'
+   Over-insured", From / To date, Payment From / To date, Transaction Status
+   values "Insurance Created", "Pending Payment", "Failed"; multi-filter Company
+   Name + Company ROC + Vehicle No. `[charmain-repo: intake/reports/legacy-shared.json:532-551]`
+   The status labels agree with `flow-eauto-insurance-enquiry.md` (`SUCCESS` =
+   Insurance Created, `PENDING` = Pending Payment).
+4. **UCD insurance user permission** is raced by Charmain's
+   `backoffice-audit/src/modules/ucd-insurance-user-permission.js` (414 lines):
+   two contexts hit Save together to see what the audit trail records.
+   `[charmain-repo: intake/reports/charmain-backoffice-audit.md:36]` `[charmain-repo: intake/sources.yaml:140]`
+5. **Insurance test-data creators:** Charmain's `tools/macrokiosk-fixtures`
+   `flows/eauto-insurance-create.js`, `eauto-insurance-listing.js`,
+   `_lib/insurance.js` (255 lines). Not tests; they make insurance transactions
+   exist. `[charmain-repo: intake/reports/charmain-macrokiosk.md:32, 46-48]`
+6. **EAINT-12175 Lonpac:** Charmain's folder includes `make-lonpac-fixture.mjs`,
+   `finish-lonpac-uat4.mjs` and `probe-insurer-name.mjs`, run on uat4 and staging.
+   `[charmain-repo: intake/reports/charmain-12175.md:29-45]` `[charmain-repo: intake/sources.yaml:228]`
+   Ledger entry: `cr-ledger.md` § EAINT-12175 item 11.
+
+## Takaful Malaysia (STM) — NDDP disclosures and product documents
+
+Source: EAINT-12078 study (Secarang NDDPs for STM) and its related history. No SRD
+exists yet for EAINT-12078; facts below come from its attachments and from the eAuto
+precedent EAINT-9215 (eAuto NDDP changes for STMAB).
+`[source: pipeline EAINT-12078, Scout study | Scribe related history, 2026-10-27]`
+
+1. **"STM" in Insurance ticket titles = Syarikat Takaful Malaysia**, not the STMS /
+   eSTM module. Product files are prefixed "STMAB"; PDS EN p.1 names "Syarikat Takaful
+   Malaysia Am Berhad (Takaful Malaysia)". `[from ticket EAINT-12078, attachments]`
+   Write "Takaful Malaysia" in TS and evidence names to avoid the clash.
+2. **NDDP checklist — 7 disclosure items.** Title: "DISTRIBUTION OF TAKAFUL PRODUCTS
+   BY CORPORATE AGENTS VIA NDDP"; intro: "The intermediaries distributing takaful
+   products via NDDPs must clearly and prominently disclose the following information
+   to financial consumers:". Signed 17/11/2025 and 05/12/2025.
+   `[from ticket EAINT-12078, NDDP Monitoring Checklist (Bintang Prospek) PDF, pp.1-3]`
+   1. **No. 1** "Name of the company".
+   2. **No. 2** "The type of relationship between the company and the intermediary
+      distributing the takaful products via the NDDP." (No. 1 and 2 evidence: "This
+      product is underwritten by Takaful Malaysia and Bintang Prospek is the authorized
+      distributor of Takaful Malaysia".)
+   3. **No. 3** "The level of services to be expected from the company or intermediary
+      distributing the takaful products via the NDDP."
+   4. **No. 4** commission-free alternative statement, shown "prior to enabling
+      financial consumers to proceed with final confirmation of purchase."
+   5. **No. 5** "A detailed breakdown of takaful contribution amount, commission or
+      remuneration, as well as relevant fees and charges, ..."
+   6. **No. 6** "The takaful contribution refund policy, immediately after payment
+      (i.e. not via a link to another document)."
+   7. **No. 7** "No marking up of takaful contribution or imposing any additional
+      charges to financial consumers on the NDDP."
+3. **NDDP = non-direct distribution platform** `[unconfirmed]` expansion; not spelled
+   out in any source read.
+4. **Refund disclaimer wording: eAuto shipped "participated to".** EAINT-9215 SRD
+   V1.1 (20.11.2025) line 167: "Customers who have participated to the takaful product
+   through our website may request a refund or cancel their takaful coverage." The
+   EAINT-12078 checklist No. 6 evidence reads "Customers who have participated in the
+   takaful product through our website ...". Which wording a new CR expects is
+   `[unconfirmed]` — take it from that CR's SRD.
+   `[source: pipeline EAINT-12078, Scribe related history, 2026-10-27]`
+5. **Current Takaful myMotor (private car) document versions** (attached 2026-10-13):
+   PDS EN "Product Disclosure Sheet V2 02-2026", "Date: 1 February 2026"; PDS BM
+   "Helaian Penerangan Produk V2 02-2026"; Certificate Wording
+   "STMAB/Takaful myMotor-Private Car/V2.0(E)/05-2026" (40 pages); Sijil
+   "STMAB/Takaful myMotor-Kereta Persendirian/V2.0(BM)/05-2026" (41 pages). The older
+   label seen in EAINT-9215 TS R8 was "V01 08-2025". `[from ticket EAINT-12078, attachment footers]`
+6. **Fees (PDS EN p.2 illustration):** "Wakalah Fee ... 26% of total takaful
+   contribution", of which "Commission 10% of total takaful contribution"; "(+) 8%
+   Service Tax". Illustration amounts are not expected test values.
+   `[from ticket EAINT-12078, PDS EN p.2]`
+7. **Cancellation (PDS EN p.2):** "Upon cancellation, you are entitled to a pro-rated
+   refund of the contribution provided you have not made any claim. There will be no
+   cancellation fee." `[from ticket EAINT-12078, PDS EN p.2]`
+8. **eAuto page map for the NDDP items (EAINT-9215, eAuto only):** Step 2 =
+   distributor disclaimer; Step 3 = commission / PDS disclaimer "under the payment
+   summary section"; Step 4 = "Refund and Cancellation"; Insurance Homepage logo popup
+   = "Takaful Malaysia Contact Info"; Standard Plan Details = PDS + Certificate Wording
+   (BM + EN). The EAINT-9215 SRD has no rule for the breakdown box (items 5 and 7).
+   `[source: pipeline EAINT-12078, Scout study "Dependencies" item 8 | Scribe related history, 2026-10-27]`
+9. **Two names for Takaful Malaysia on eAuto.** Step 2 shows "Syarikat Takaful Malaysia
+   Am Berhad (1246486-D)" (EAINT-9215 TS R14); the listing filter shows "Takaful
+   Malaysia Berhad" (EAINT-9214 TS R5). Check which name a CIBO / BO filter uses before
+   asserting. `[source: pipeline EAINT-12078, Scribe related history "Known traps" 7, 2026-10-27]`
+10. **Old document labels in past TS steps** — EAINT-9215 R8: "[STMAB PDS(BM) Takaful
+   myMotor-Kenderaan Persendirian V01 08-2025]". Do not copy these link names into a new TS.
+   `[source: pipeline EAINT-12078, Scribe related history "Known traps" 3, 2026-10-27]`
+
+## Chubb corporate UBO capture (planned — EAINT-12097, Chubb mandatory UBO capture)
+
+Planned, not built. The ticket is To Do with no SRD; the only source is the
+insurer's `API Partner Briefing UBO.pdf` (Jira attachment, 2026-07-28). Treat every
+point as [unconfirmed] until an SRD exists.
+`[from ticket EAINT-12097, API Partner Briefing UBO.pdf]`
+
+1. **Who:** "Corporate / company client journeys only, for Motor. Individual client
+   journeys are NOT affected." (PDF p1, At a Glance). In eAuto terms: company
+   Vehicle Category with the Chubb card chosen [unconfirmed].
+2. **UBO section:** "a minimum of 1 and a maximum of 4" records (PDF §2 #1, p2).
+   Filled from the Chubb API response; typed in by the user when the response has
+   none (PDF §2 #2-#3).
+3. **Key rule (PDF p2, orange box):** "UBO details are mandatory. Whether they arrive
+   from the API or are typed in by the user, the journey must not be allowed to
+   continue without a minimum of 1 complete UBO record."
+4. **Mandatory fields conflict inside the PDF:** §2 #4 says "Name, IC / Passport and
+   Country"; the §3 table (p2) marks only **Name** "Mandatory". §3 also cites a
+   "Section 7" the PDF does not contain. Open until the API spec arrives.
+5. **Two touchpoints (PDF §4, pp3-4):** Touchpoint 1 "Before Quotation Issuance";
+   Touchpoint 2 "Before Confirm Purchase (after a break in the journey)", where the
+   Chubb API is called again and refreshed details overwrite the old ones. "Where
+   the refresh returns no details, RETAIN and proceed with the UBO details captured
+   earlier at quotation stage." (PDF §2 #7).
+6. **Not changing (PDF §5, p5):** "Individual (non-corporate) client journeys — no
+   change at all." Sanction screening "remains performed by Chubb".
+7. **Test data:** eSIM Insurance API has no UBO response type today (see
+   [esim.md](esim.md) § Insurance API and Insurance Quotation pages); the developer
+   would have to add it. `[source: pipeline EAINT-12097, Scout study, 2026-10-27]`
+
+## Staging traps from past insurance test scripts
+
+Found while studying EAINT-12097 (Chubb mandatory UBO capture).
+`[source: pipeline EAINT-12097, Scribe related history §Known traps, 2026-10-27]`
+
+1. **Reminder email link goes to prod.** "Link redirects to prod environment -
+   Existing behaviour" `[from SharePoint TS EAINT-11864, sheet 11864, R10, Remarks]`.
+   Do not use it to resume a quotation on staging.
+2. **A break in the journey is made by a developer date patch.** "Ask dev to patch
+   Created Date to 1 day before today's date" `[from SharePoint TS EAINT-9611, sheet
+   Date Change TS - Insurance API, R6]`. A natural 1-day wait can expire the quote
+   first (see [flow-insurance-purchase.md](flow-insurance-purchase.md), 24-hour expiry).
+3. **Resubmit re-check was never settled in EAINT-9611 (insurer API re-call before
+   payment).** "Pending dev and BA side to confirm whether we want the Resubmit button
+   to trigger and show the price change or not" `[from SharePoint TS EAINT-9611, sheet
+   Gross Premium change TS - eSIM, R27, Remarks]`.
+4. **JPJ submission can stay Pending.** "Submission Status to JPJ keeps staying at
+   Pending status for long time" `[from SharePoint TS EAINT-9641, Sheet1, R5, Remarks]`.
+5. **Downloadables are dummy on staging.** "Downloadables are returning dummy data so
+   cannot be viewed as well." `[from SharePoint TS EAINT-9611, sheet Date Change TS -
+   Insurance API, R5, Remarks]`

@@ -19,6 +19,7 @@ export class LoginPage extends BasePage {
     await this.navigate();
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
+    await this.demoHighlight(this.loginButton);
     await this.loginButton.click();
     // Submitting login kicks off a redirect chain to the portal home.
     // Returning before that fully settles lets a later goto() race the
@@ -29,17 +30,18 @@ export class LoginPage extends BasePage {
       .waitForURL((u) => !/\/public\/login/i.test(u.toString()), { timeout: 20000 })
       .catch(() => {});
     await this.page.waitForLoadState("networkidle").catch(() => {});
+    await this.demoPause();
   }
 
   async loginAsUCD(username: string, password: string) {
-    await test.step("Log in as UCD", async () => {
+    await test.step(`Log in as UCD (${username})`, async () => {
       await this.login(username, password);
       await expect(this.page).toHaveURL(new RegExp(PATHS.ucdHome));
     });
   }
 
   async loginAsBO(username: string, password: string) {
-    await test.step("Log in as BO", async () => {
+    await test.step(`Log in as BO (${username})`, async () => {
       await this.login(username, password);
       // Fail fast with a clear message if we're still on the login page
       // (e.g. wrong BO credentials) rather than timing out later on a

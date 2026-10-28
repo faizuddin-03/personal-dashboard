@@ -1,0 +1,2002 @@
+<!--
+  URL: https://staging.eauto.my/obs/admin/enquiry
+  Environment: staging BackOffice (obs admin, mfared via uat4)
+  Captured: 2026-10-21T07:43:21.699Z by Claude via Chrome
+  State: BO Application Listing for NA60001190 after registration fee paid
+  Trimmed: nothing
+-->
+<!DOCTYPE html>
+<html><head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    
+    
+        <title>UCD Application Listing - Onboarding</title>
+    <link rel="icon" type="image/x-icon" href="/obs/favicon.ico">
+
+    
+    
+        
+        <style>
+            #overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            
+            .spinner {
+                border: 4px solid #f3f3f3; /* Light grey */
+                border-top: 4px solid #3498db; /* Blue */
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                animation: spin 1s linear infinite;
+            }
+
+            #payment-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .payment-loading-box {
+                background-color: white;
+                border-radius: 1px;
+                border: solid 2px #A6A6A6;
+                padding: 20px 30px;
+                display: block;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                width: 400px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .spinner-and-text {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 10px auto;
+                gap: 10px;
+            }
+
+            .payment-spinner {
+                border: 3px solid #E0E0E0; /* Light grey */
+                border-top: 3px solid #00BCD4; /* Cyan/turquoise color */
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                animation: spin 0.8s linear infinite;
+                flex-shrink: 0; /* Prevent spinner from shrinking */
+            }
+
+            .payment-loading-text {
+                font-size: 20px;
+                font-weight: bold;
+                color: #000000;
+                font-family: Inter, sans-serif;
+                white-space: nowrap;
+                line-height: 100%;
+            }
+
+            .overlay-description {
+                font-size: 13px;
+                color: #FF4000;
+                font-family: Inter, sans-serif;
+                white-space: wrap;
+                text-align:center;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    
+    
+    
+        
+        <style>
+
+            .ui-widget-overlay { 
+                background: #000000; 
+                opacity: .50;
+                filter: Alpha(Opacity=50); 
+            }
+
+            .ui-widget-content {
+                border: none !important;
+            }
+
+            .ui-dialog .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_222222_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-state-hover .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_454545_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-widget-header {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border:none !important;
+                color: #FFF;
+            }
+
+            .ui-dialog {
+                border-radius: 4px !important;
+                padding: 0 !important;
+                min-width:350px !important;
+            }
+
+            .ui-dialog * {
+                font-family: "Inter", sans-serif !important;
+                font-size: 14px !important;
+            }
+
+            .ui-dialog-title {
+                font-size: 16px !important;
+            }
+
+            .ui-dialog-titlebar {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border-bottom-left-radius: 0px !important;
+                border-bottom-right-radius: 0px !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog-titlebar-close {
+                display: flex;
+                align-items: center;
+                height: 38px;
+                background:#0B4C5F !important;
+                border: none !important;
+            }
+            
+            .ui-dialog-content {
+                font-size: 14px !important;
+                min-height: 23px !important;
+                padding: 13px !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog.notis-dialog {
+                top:20% !important;
+            }
+
+            .ui-dialog-buttonpane {
+                margin:0 !important;
+                min-height:54px;
+                padding: 0 15px 10px 6px !important;
+                display: flex;
+                align-items:center;
+                justify-content:flex-end;
+            }
+
+            .ui-button-text {
+                padding: 0px !important;
+            }
+            
+            #custom-dialog {
+                display: none;
+            }
+
+            #custom-dialog-content {
+                white-space: pre-line;
+            }
+
+            .custom-dialog-primary-btn {
+                border-radius:4px;
+                color: #FFF !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#0B4C5F !important;
+                background: #0B4C5F !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-primary-btn:hover{
+                background-color: #146478 !important;
+            }
+            .custom-dialog-primary-btn:active {
+                background-color: #0a4353 !important;
+                box-shadow: 0 0 2px #0A4335;
+            } 
+
+            .custom-dialog-secondary-btn {
+                border-radius:4px;
+                color: #0B4C5F !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#FFF !important;
+                background:unset !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-secondary-btn:hover {
+                background-color: #F7F7F7 !important;
+            }
+            .custom-dialog-secondary-btn:active {
+                background-color: #EFEFEF !important;
+                box-shadow: 0 0 2px #0A4335;
+            }
+
+            /* Checkbox Dialog Styles */
+            #checkbox-dialog {
+                display: none;
+            }
+
+            #checkbox-dialog-content {
+                margin-bottom: 8px;
+                font-weight: 400;
+                color: #000000;
+                font-size: 14px !important;
+                line-height: 1.5;
+            }
+
+            .checkbox-dialog-container {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                text-align: left;
+            }
+
+            .checkbox-dialog-label {
+                margin-bottom: 12px;
+                margin-top: 16px;
+                font-weight: 600;
+                color: #000000;
+            }
+
+            .checkbox-dialog-options {
+                display: flex;
+                flex-direction: column;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .checkbox-dialog-option {
+                display: flex;
+                align-items: center;
+                padding: 4px 8px;
+                margin-bottom: 0px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.2s;
+            }
+
+            .checkbox-dialog-option:hover {
+                background-color: #f5f5f5;
+            }
+
+            .checkbox-dialog-option input[type="checkbox"] {
+                margin-right: 10px;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+            }
+
+            .checkbox-dialog-option label {
+                cursor: pointer;
+                font-size: 14px !important;
+                color: #000000;
+                user-select: none;
+            }
+
+            .checkbox-dialog-select-all {
+                display: flex;
+                align-items: center;
+                padding: 6px 8px;
+                margin-bottom: 2px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.2s;
+                border-bottom: 1px solid #E0E0E0;
+                padding-bottom: 12px;
+                margin-bottom: 8px;
+            }
+
+            .checkbox-dialog-select-all:hover {
+                background-color: #f5f5f5;
+            }
+
+            .checkbox-dialog-select-all input[type="checkbox"] {
+                margin-right: 10px;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+            }
+
+            .checkbox-dialog-select-all label {
+                cursor: pointer;
+                font-weight: 600;
+                color: #0B4C5F;
+                user-select: none;
+            }
+
+            .checkbox-dialog-required-msg {
+                color: #dc3545;
+                font-size: 13px !important;
+                margin-top: 12px;
+                display: none;
+            }
+
+            .checkbox-dialog-others-container {
+                display: none;
+                margin-left: 24px;
+                margin-top: 4px;
+                margin-bottom: 8px;
+            }
+
+            .checkbox-dialog-others-textarea {
+                width: 100%;
+                min-height: 80px;
+                padding: 8px;
+                border: 1px solid #d0d0d0;
+                border-radius: 4px;
+                font-size: 13px !important;
+                font-family: "Inter", sans-serif;
+                resize: vertical;
+                box-sizing: border-box;
+            }
+
+            .checkbox-dialog-others-textarea:focus {
+                outline: none;
+                border-color: #0B4C5F;
+            }
+
+            .checkbox-dialog-others-textarea::placeholder {
+                color: #999;
+            }
+
+            .checkbox-dialog-others-textarea.error {
+                background-color: #FFF5F2;
+            }
+
+            .checkbox-dialog-others-required-msg {
+                color: #dc3545;
+                font-size: 13px !important;
+                margin-top: 4px;
+                display: none;
+            }
+        </style>
+    
+    
+    <link rel="stylesheet" href="/obs/tailwindcss.css">
+    <link rel="stylesheet" href="/obs/layout.css">
+    <link rel="stylesheet" href="/obs/jquery-ui-1.11.4/themes/smoothness/jquery-ui.css">
+    
+    
+        <link href="/obs/pagination.css" rel="stylesheet">
+        <style>
+            body {
+                font-family: Inter, sans-serif; /* Default font */
+                font-size: 14px;
+            }
+
+            .custom-container {
+                flex: 1;
+            }
+
+            .text-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 240px;
+                padding: 0 8px;
+            }
+
+            .date-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 160px;
+                padding: 0 8px;
+            }
+
+            .dropdown-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 160px;
+                padding: 0 8px;
+            }
+
+            .custom-container {
+                width: 95%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 20px;
+            }
+
+            .search-btn {
+                width: 120px;
+                height: 40px;
+                padding: 10px 40px;
+                background: #EFEFEF;
+                border: 1px solid #000000;
+            }
+
+            .hyperlink-text {
+                color: #0000EE;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+
+            .hyperlink-text:hover {
+                color: #132659 !important;
+            }
+
+            .custom-select select:disabled {
+                pointer-events: none;
+                background-color: rgba(239, 239, 239, 0.3);
+            }
+
+            .custom-select {
+                position: relative;
+            }
+            .custom-select select {
+                -webkit-appearance:none;
+                -moz-appearance:none;
+                -ms-appearance:none;
+                appearance:none;
+                outline:0;
+                box-shadow:none;
+                background: white;
+                background-image: none;
+                border: 1px solid #767676;
+                height: 32px;
+                width:160px;
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                cursor:pointer;
+                text-overflow: ellipsis;
+                padding: 0 8px;
+            }
+            .custom-select select::-ms-expand {
+                display: none;
+            }
+            .custom-select .select {
+                position: relative;
+                display: flex;
+                height: 32px;
+                background: white;
+                overflow: hidden;
+                border: 1px solid #767676
+            }
+            .custom-select::after {
+                content: '';
+                display: inline-block;
+                border-bottom: 1px solid #808080;
+                border-right: 1px solid #808080;
+                height: 5px;
+                width: 5px;
+                transform: rotate(45deg);
+                position: absolute;
+                top: 11px;
+                right: 10px;
+            }
+
+            a:hover {
+                color: #132659 !important;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            #listing-table td, #listing-table th {border:1px solid white !important;}
+            #listing-table tr.header {background: #58ACFA; color:white;}
+            #listing-table tr.odd {background: #A9E2F3}
+            #listing-table tr.even {background: #CEF6F5}
+
+            .header-text {
+                font-size: 16px;
+                font-weight: 700;
+                margin: 15px 0;
+            }
+
+            .approved, .checked, .ok, .registered {
+                color:#008E00;
+                font-weight:700;
+            }
+
+            .rejected, .failed {
+                color: #FF4000;
+                font-weight: 700;
+            }
+
+            .pending, .new, .re-evaluate {
+                color: #0000FF;
+                font-weight: 700;
+            }
+
+            .kiv, .draft, .expired {
+                color: #000000;
+                font-weight: 700;
+            }
+
+            .text-wrap {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: break-all;
+                white-space: normal;
+            }
+
+            .table-scroll-container {
+                overflow-x: auto;
+                width: 100%;
+            }
+        </style>
+        <link href="/obs/datepicker.css" rel="stylesheet">
+    
+
+    
+    <script src="/obs/js/jquery-2.2.4.min.js" type="text/javascript"></script>
+    <script src="/obs/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    <script src="/obs/js/url-utils.js"></script>
+    
+
+        
+        <script>
+            $(document).ready(function() {
+                // Show overlay when any AJAX request starts
+                $(document).ajaxStart(function () {
+                    $("#overlay").fadeIn();
+                });
+
+                // Hide overlay when all AJAX requests complete
+                $(document).ajaxStop(function () {
+                    $("#overlay").fadeOut();
+                });
+            });
+
+            function showPaymentOverlay(){
+                $("#payment-overlay").fadeIn();
+            }
+
+            function hidePaymentOverlay(){
+                $("#payment-overlay").fadeOut();
+            }
+        </script>
+    
+
+
+
+        
+        <script>
+
+
+                /**
+                 * @typedef {Object} CustomDialogConfig
+                 * @property {string} title - The dialog's title
+                 * @property {string} content - The dialog's content
+                 * @property {string} height - The dialog's height
+                 * @property {string} width - The dialog's width
+                 * @property {string} confirmBtnName - confirm button name
+                 * @property {function} onConfirmHandler - function to invoke on confirm
+                 * @property {function} onConfirmCloseHandler - function to invoke on close after clicking confirm
+                 * @property {string} redirectPathOnConfirm - Path to redirect on confirm
+                 * @property {boolean} shouldHideConfirmBtn - hide confirm button
+                 * @property {string} cancelBtnName - cancel button name
+                 * @property {function} onCancelHandler - function to invoke on cancel
+                 * @property {function} onCancelCloseHandler - function to invoke on close after clicking cancel
+                 * @property {string} redirectPathOnCancel - Path to redirect on cancel
+                 * @property {boolean} shouldHideCancelBtn - hide cancel button
+                 * @property {function} onCloseButtonCloseHandler - function to invoke on close when not confirmed and not cancelled
+                 * @property {boolean} shouldReloadPageOnClose - Whether the dialog will reload page on close
+                 * @property {string} redirectPathOnClose - Path to redirect on close; only redirect when shouldReloadPageOnClose is false
+                 * @property {boolean} shouldHideCloseBtn - hide close button
+                 */
+
+                /**
+                 * Process a person's information
+                 * @param {CustomDialogConfig} config
+                 */
+                function openCustomDialog(config) {
+
+                    const handleOnClose = function(config) {
+                        if(config.shouldReloadPageOnClose) {
+                            location.reload();
+                        } else if (config.redirectPathOnClose != null){
+                            window.location.href = config.redirectPathOnClose;
+                        }
+                    }
+
+                    const confirmBtnName = config.confirmBtnName != null ? config.confirmBtnName : "OK";
+                    const cancelBtnName = config.cancelBtnName != null ? config.cancelBtnName : "Cancel";
+
+                    var isConfirmed  = false;
+                    var isCancelled = false;
+                    
+                    $("#custom-dialog-content").text(config.content)
+                    $("#custom-dialog").dialog({
+                        title: config.title,
+                        modal: true,
+                        width: config.width ? config.width : "480",
+                        height: config.height ? config.height: "auto",
+                        resizable: false,
+                        draggable: false,
+                        position: { my: "center", at: "center", of: window },
+                        closeOnEscape: false,
+                        close: function() {
+                            $(this).dialog("destroy");
+                            if(isConfirmed && config.onConfirmCloseHandler) {
+                                config.onConfirmCloseHandler();
+                            } else if(isCancelled && config.onCancelCloseHandler) {
+                                config.onCancelCloseHandler();
+                            } else if (!isConfirmed && !isCancelled && config.onCloseButtonCloseHandler) {
+                                config.onCloseButtonCloseHandler();
+                            }
+                            handleOnClose(config);
+                        },
+                        buttons:
+                        {
+                            [cancelBtnName]: function() {
+                                isCancelled = true;
+                                if(config.onCancelHandler) {
+                                    config.onCancelHandler();
+                                }
+
+                                if(config.redirectPathOnCancel) {
+                                    window.location.href = config.redirectPathOnCancel;
+                                }
+
+                                $(this).dialog("close");
+                            },
+                            [confirmBtnName]: function() {
+                                isConfirmed = true;
+                                if(config.onConfirmHandler) {
+                                    config.onConfirmHandler();
+                                }
+
+                                if(config.redirectPathOnConfirm) {
+                                    window.location.href = config.redirectPathOnConfirm;
+                                }
+
+                                $(this).dialog("close");
+                            }
+                        },
+                        open: function() {
+                            $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).addClass('custom-dialog-primary-btn');
+                            $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).addClass('custom-dialog-secondary-btn');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                            
+                            if(config.shouldHideConfirmBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).hide();
+                            if(config.shouldHideCancelBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).hide();
+                            if(config.shouldHideCloseBtn == true) $(".ui-dialog-titlebar-close").hide();
+                        }
+                    }).dialog("open");
+                }
+
+                /**
+                 * @typedef {Object} CheckboxOption
+                 * @property {string} id - Unique identifier for the checkbox
+                 * @property {string} label - Display label for the checkbox
+                 * @property {boolean} [checked] - Whether the checkbox is initially checked
+                 * @property {boolean} [disabled] - Whether the checkbox is disabled
+                 * @property {*} [value] - Optional value associated with the checkbox
+                 * @property {boolean} [isOthers] - Whether this is an "Others" option with textarea
+                 * @property {string} [othersPlaceholder] - Placeholder text for the Others textarea
+                 */
+
+                /**
+                 * @typedef {Object} CheckboxDialogConfig
+                 * @property {string} title - The dialog's title
+                 * @property {string} content - The dialog's content/description
+                 * @property {CheckboxOption[]} checkboxes - Array of checkbox options
+                 * @property {string} [height] - The dialog's height
+                 * @property {string} [width] - The dialog's width
+                 * @property {string} [confirmBtnName] - Confirm button name (default: "OK")
+                 * @property {function(string[])} [onConfirmHandler] - Function invoked on confirm with selected checkbox IDs
+                 * @property {function} [onConfirmCloseHandler] - Function invoked on close after clicking confirm
+                 * @property {string} [redirectPathOnConfirm] - Path to redirect on confirm
+                 * @property {boolean} [shouldHideConfirmBtn] - Hide confirm button
+                 * @property {string} [cancelBtnName] - Cancel button name (default: "Cancel")
+                 * @property {function} [onCancelHandler] - Function invoked on cancel
+                 * @property {function} [onCancelCloseHandler] - Function invoked on close after clicking cancel
+                 * @property {string} [redirectPathOnCancel] - Path to redirect on cancel
+                 * @property {boolean} [shouldHideCancelBtn] - Hide cancel button
+                 * @property {function} [onCloseButtonCloseHandler] - Function invoked on close when not confirmed/cancelled
+                 * @property {boolean} [shouldReloadPageOnClose] - Whether to reload page on close
+                 * @property {string} [redirectPathOnClose] - Path to redirect on close
+                 * @property {boolean} [shouldHideCloseBtn] - Hide close button
+                 * @property {boolean} [showSelectAll] - Show "Select All" checkbox (default: false)
+                 * @property {boolean} [requireAtLeastOne] - Require at least one checkbox selected (default: false)
+                 * @property {string} [requiredMessage] - Message shown when validation fails
+                 * @property {boolean} [requireOthersText] - Require text input when Others is selected (default: false)
+                 * @property {string} [othersRequiredMessage] - Message shown when Others text is required but empty
+                 * @property {string} [checkboxLabel] - Label shown above checkboxes (e.g., "Reason:")
+                 */
+
+                /**
+                 * Opens a custom dialog with dynamic checkboxes
+                 * @param {CheckboxDialogConfig} config
+                 */
+                function openCheckboxDialog(config) {
+                    const handleOnClose = function(config) {
+                        if (config.shouldReloadPageOnClose) {
+                            location.reload();
+                        } else if (config.redirectPathOnClose != null) {
+                            window.location.href = config.redirectPathOnClose;
+                        }
+                    };
+
+                    const getSelectedCheckboxes = function() {
+                        const selected = [];
+                        $('#checkbox-dialog-options input[type="checkbox"]:checked').each(function() {
+                            selected.push($(this).attr('id').replace('chk-', ''));
+                        });
+                        return selected;
+                    };
+
+                    const getSelectedValues = function() {
+                        const values = [];
+                        $('#checkbox-dialog-options input[type="checkbox"]:checked').each(function() {
+                            const id = $(this).attr('id').replace('chk-', '');
+                            const option = config.checkboxes.find(c => c.id === id);
+                            if (option) {
+                                const item = {
+                                    id: option.id,
+                                    label: option.label,
+                                    value: option.value !== undefined ? option.value : option.id
+                                };
+                                if (option.isOthers) {
+                                    item.othersText = $(`#chk-others-textarea-${option.id}`).val() || '';
+                                }
+                                values.push(item);
+                            }
+                        });
+                        return values;
+                    };
+
+                    const validateSelection = function() {
+                        // Clear all previous errors first
+                        $('#checkbox-dialog-required-msg').hide();
+                        $('.checkbox-dialog-others-textarea').removeClass('error');
+                        $('.checkbox-dialog-others-required-msg').hide();
+
+                        if (config.requireAtLeastOne) {
+                            const selected = getSelectedCheckboxes();
+                            if (selected.length === 0) {
+                                $('#checkbox-dialog-required-msg').show();
+                                return false;
+                            }
+                        }
+
+                        // Validate Others textarea if required
+                        if (config.requireOthersText) {
+                            let isValid = true;
+                            config.checkboxes.forEach(function(option) {
+                                if (option.isOthers && $(`#chk-${option.id}`).is(':checked')) {
+                                    const textarea = $(`#chk-others-textarea-${option.id}`);
+                                    const textareaVal = textarea.val();
+                                    if (!textareaVal || textareaVal.trim() === '') {
+                                        textarea.addClass('error');
+                                        $(`#chk-others-required-msg-${option.id}`).show();
+                                        isValid = false;
+                                    }
+                                }
+                            });
+                            if (!isValid) return false;
+                        }
+                        return true;
+                    };
+
+                    const buildCheckboxHtml = function() {
+                        let html = '';
+
+                        // Add label if provided
+                        if (config.checkboxLabel) {
+                            html += `<p class="checkbox-dialog-label">${config.checkboxLabel}</p>`;
+                        }
+                        
+                        if (config.showSelectAll && config.checkboxes.length > 1) {
+                            html += `
+                                <div class="checkbox-dialog-select-all">
+                                    <input type="checkbox" id="chk-select-all" />
+                                    <label for="chk-select-all">Select All</label>
+                                </div>
+                            `;
+                        }
+
+                        html += '<div id="checkbox-dialog-options" class="checkbox-dialog-options">';
+                        config.checkboxes.forEach(function(option) {
+                            const checked = option.checked ? 'checked' : '';
+                            const disabled = option.disabled ? 'disabled' : '';
+                            html += `
+                                <div class="checkbox-dialog-option">
+                                    <input type="checkbox" id="chk-${option.id}" ${checked} ${disabled} 
+                                        ${option.isOthers ? 'data-is-others="true"' : ''} />
+                                    <label for="chk-${option.id}">${option.label}</label>
+                                </div>
+                            `;
+                            if (option.isOthers) {
+                                const placeholder = option.othersPlaceholder || '';
+                                const containerDisplay = option.checked ? 'display: block;' : '';
+                                const othersReqMsg = config.othersRequiredMessage || 'This field is required';
+                                html += `
+                                    <div id="chk-others-container-${option.id}" 
+                                        class="checkbox-dialog-others-container" 
+                                        style="${containerDisplay}">
+                                        <textarea id="chk-others-textarea-${option.id}" 
+                                            class="checkbox-dialog-others-textarea" 
+                                            placeholder="${placeholder}"
+                                            maxlength="3000"></textarea>
+                                        <div id="chk-others-required-msg-${option.id}" 
+                                            class="checkbox-dialog-others-required-msg">${othersReqMsg}</div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        html += '</div>';
+
+                        const requiredMsg = config.requiredMessage || 'Select the reason by ticking the checkbox(s).';
+                        html += `<div id="checkbox-dialog-required-msg" class="checkbox-dialog-required-msg">${requiredMsg}</div>`;
+
+                        return html;
+                    };
+
+                    const confirmBtnName = config.confirmBtnName != null ? config.confirmBtnName : "OK";
+                    const cancelBtnName = config.cancelBtnName != null ? config.cancelBtnName : "Cancel";
+
+                    var isConfirmed = false;
+                    var isCancelled = false;
+
+                    $("#checkbox-dialog-content").text(config.content);
+                    $("#checkbox-dialog-checkboxes").html(buildCheckboxHtml());
+
+                    $("#checkbox-dialog").dialog({
+                        title: config.title,
+                        modal: true,
+                        width: config.width ? config.width : "480",
+                        height: config.height ? config.height : "auto",
+                        resizable: false,
+                        draggable: false,
+                        position: { my: "center", at: "center", of: window },
+                        closeOnEscape: false,
+                        close: function() {
+                            $(this).dialog("destroy");
+                            if (isConfirmed && config.onConfirmCloseHandler) {
+                                config.onConfirmCloseHandler();
+                            } else if (isCancelled && config.onCancelCloseHandler) {
+                                config.onCancelCloseHandler();
+                            } else if (!isConfirmed && !isCancelled && config.onCloseButtonCloseHandler) {
+                                config.onCloseButtonCloseHandler();
+                            }
+                            handleOnClose(config);
+                        },
+                        buttons: {
+                            [cancelBtnName]: function() {
+                                isCancelled = true;
+                                if (config.onCancelHandler) {
+                                    config.onCancelHandler();
+                                }
+                                if (config.redirectPathOnCancel) {
+                                    window.location.href = config.redirectPathOnCancel;
+                                }
+                                $(this).dialog("close");
+                            },
+                            [confirmBtnName]: function() {
+                                if (!validateSelection()) {
+                                    return;
+                                }
+                                isConfirmed = true;
+                                const selectedIds = getSelectedCheckboxes();
+                                const selectedValues = getSelectedValues();
+                                if (config.onConfirmHandler) {
+                                    config.onConfirmHandler(selectedIds, selectedValues);
+                                }
+                                if (config.redirectPathOnConfirm) {
+                                    window.location.href = config.redirectPathOnConfirm;
+                                }
+                                $(this).dialog("close");
+                            }
+                        },
+                        open: function() {
+                            $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`)
+                                .addClass('custom-dialog-primary-btn');
+                            $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`)
+                                .addClass('custom-dialog-secondary-btn');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+
+                            if (config.shouldHideConfirmBtn === true) {
+                                $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).hide();
+                            }
+                            if (config.shouldHideCancelBtn === true) {
+                                $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).hide();
+                            }
+                            if (config.shouldHideCloseBtn === true) {
+                                $(".ui-dialog-titlebar-close").hide();
+                            }
+
+                            // Select All functionality
+                            $('#chk-select-all').on('change', function() {
+                                const isChecked = $(this).is(':checked');
+                                $('#checkbox-dialog-options input[type="checkbox"]:not(:disabled)')
+                                    .prop('checked', isChecked);
+                                $('#checkbox-dialog-required-msg').hide();
+                            });
+
+                            // Update Select All state when individual checkboxes change
+                            $('#checkbox-dialog-options input[type="checkbox"]').on('change', function() {
+                                const total = $('#checkbox-dialog-options input[type="checkbox"]:not(:disabled)').length;
+                                const checked = $('#checkbox-dialog-options input[type="checkbox"]:checked').length;
+                                $('#chk-select-all').prop('checked', total === checked);
+                                $('#checkbox-dialog-required-msg').hide();
+                            });
+
+                            // Set initial Select All state
+                            if (config.showSelectAll) {
+                                const total = $('#checkbox-dialog-options input[type="checkbox"]:not(:disabled)').length;
+                                const checked = $('#checkbox-dialog-options input[type="checkbox"]:checked').length;
+                                $('#chk-select-all').prop('checked', total === checked && total > 0);
+                            }
+
+                            // Others textarea toggle
+                            $('#checkbox-dialog-options input[data-is-others="true"]').on('change', function() {
+                                const id = $(this).attr('id').replace('chk-', '');
+                                const container = $(`#chk-others-container-${id}`);
+                                const textarea = $(`#chk-others-textarea-${id}`);
+                                const reqMsg = $(`#chk-others-required-msg-${id}`);
+                                if ($(this).is(':checked')) {
+                                    container.slideDown(200);
+                                    textarea.focus();
+                                } else {
+                                    container.slideUp(200);
+                                    textarea.val('').removeClass('error');
+                                    reqMsg.hide();
+                                }
+                            });
+
+                            // Hide others required message and remove error style on input
+                            // Also auto-remove non-ASCII characters (Chinese, etc.) - allow alphanumeric and special characters only
+                            $('.checkbox-dialog-others-textarea').on('input', function() {
+                                const id = $(this).attr('id').replace('chk-others-textarea-', '');
+
+                                // Store cursor position before modification
+                                const cursorPos = this.selectionStart;
+                                const originalLength = $(this).val().length;
+
+                                // Remove non-ASCII characters (keeps alphanumeric and standard special characters)
+                                $(this).val($(this).val().replace(/[^\x00-\x7F]/g, ''));
+
+                                // Adjust cursor position after removing characters
+                                const newLength = $(this).val().length;
+                                const removedChars = originalLength - newLength;
+                                const newCursorPos = Math.max(0, cursorPos - removedChars);
+                                this.setSelectionRange(newCursorPos, newCursorPos);
+
+                                $(this).removeClass('error');
+                                $(`#chk-others-required-msg-${id}`).hide();
+                            });
+                        }
+                    }).dialog("open");
+                }
+        </script>
+    
+
+<script>
+    var contextPath = "\/obs\/";
+    var originalUrl = "https:\/\/staging.eauto.my\/uat4";
+</script>
+
+
+    <script>
+        $(document).ready(function() {
+            var error = null;
+            if (error) {
+                removeParameterAndUpdateUrl('error');
+                alert(error);
+            }
+
+            var oldBRN = document.getElementById('oldBRN');
+            var newBRN = document.getElementById('newBRN');
+            var businessTrading = document.getElementById('businessTrading');
+            var checkboxes = {
+                SDN_BHD : document.getElementById('type-SDN_BHD'),
+                SOLE_PROPRIETORSHIP_PARTNERSHIP : document.getElementById('type-SOLE_PROPRIETORSHIP_PARTNERSHIP'),
+                LLP : document.getElementById('type-LLP'),
+                TRADING_SABAH: document.getElementById('type-TRADING_SABAH'),
+                TRADING_SARAWAK: document.getElementById('type-TRADING_SARAWAK')
+            };
+
+            function handleBrnInput() {
+                if (oldBRN.value || newBRN.value) {
+                    checkboxes.TRADING_SABAH.checked = checkboxes.TRADING_SARAWAK.checked = false;
+                    checkboxes.TRADING_SABAH.disabled = checkboxes.TRADING_SARAWAK.disabled = true;
+                    businessTrading.value = '';
+                    if(checkboxes.SDN_BHD.disabled) {
+                        checkboxes.SDN_BHD.checked = true;
+                        checkboxes.SDN_BHD.disabled = false;
+                    }
+
+                    if(checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.disabled) {
+                        checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.checked = true;
+                        checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.disabled = false;
+                    }
+
+                    if(checkboxes.LLP.disabled) {
+                        checkboxes.LLP.checked = true;
+                        checkboxes.LLP.disabled = false;
+                    }
+                } else if (!businessTrading.value) {
+                    for (var key in checkboxes) {
+                        checkboxes[key].checked = true;
+                        checkboxes[key].disabled = false;
+                    }
+                }
+            }
+
+            function handleTradingInput() {
+                if (businessTrading.value) {
+                    checkboxes.SDN_BHD.checked = checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.checked = checkboxes.LLP.checked = false;
+                    checkboxes.SDN_BHD.disabled = checkboxes.SOLE_PROPRIETORSHIP_PARTNERSHIP.disabled = checkboxes.LLP.disabled = true;
+                    oldBRN.value = newBRN.value = '';
+                    if(checkboxes.TRADING_SABAH.disabled) {
+                        checkboxes.TRADING_SABAH.checked = true;
+                        checkboxes.TRADING_SABAH.disabled = false;
+                    }
+
+                    if(checkboxes.TRADING_SARAWAK.disabled) {
+                        checkboxes.TRADING_SARAWAK.checked = true;
+                        checkboxes.TRADING_SARAWAK.disabled = false;
+                    }
+                } else if (!oldBRN.value && !newBRN.value) {
+                    for (var key in checkboxes) {
+                        checkboxes[key].checked = true;
+                        checkboxes[key].disabled = false;
+                    }
+                }
+            }
+
+            oldBRN.addEventListener('input', handleBrnInput);
+            newBRN.addEventListener('input', handleBrnInput);
+            businessTrading.addEventListener('input', handleTradingInput);
+
+            // Handle Registration Fee (stage4Status) dropdown change
+            $('#stage4Status').change(function() {
+                var selectedValue = $(this).val();
+                if (selectedValue === 'EMPTY') {
+                    $('#stage4StatusEmpty').val('true');
+                    // Remove name attribute so it doesn't submit invalid enum value
+                    $(this).removeAttr('name');
+                } else {
+                    $('#stage4StatusEmpty').val('');
+                    // Restore name attribute
+                    $(this).attr('name', 'stage4Status');
+                }
+            });
+
+            $("input[name='createdDateFrom'], input[name='createdDateTo'], input[name='submissionDateFrom'], input[name='submissionDateTo']").keydown(function(e) {
+                // backspace or delete
+                if(e.keyCode == 8 || e.keyCode == 46){
+                    $(this).val("");
+                }
+                e.preventDefault();
+            });
+
+            var yearRange = 10;
+            var d = new Date();
+            var now = d.getFullYear();
+            $("input[name='createdDateFrom']")
+                .val('')
+                .datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: parseInt(now - yearRange) + ":" + now,
+                maxDate: '0',
+                minDate: '-' + yearRange + 'Y'
+            });
+
+            $("input[name='createdDateTo']")
+                .val('')
+                .datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: parseInt(now - yearRange) + ":" + now,
+                minDate: '0',
+                maxDate: '0'
+            });
+
+            $("input[name='createdDateFrom']").change(function(){
+                var fromDate = $("input[name='createdDateFrom']").datepicker('getDate');
+                var toDate = new Date(fromDate);
+                var today = new Date();
+                var sixMonthEndDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 7, 0);
+                var sixMonthEndDay = sixMonthEndDate.getDate();
+                var fromDateDay = fromDate.getDate();
+                var sixMonthSameDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 6, fromDateDay);
+
+                if(fromDateDay > sixMonthEndDay){
+                    toDate = sixMonthEndDate;
+                }else {
+                    toDate = sixMonthSameDate;
+                }
+
+                if(toDate > today){
+                    toDate = today;
+                }
+
+                $("input[name='createdDateTo']").datepicker('option','minDate', fromDate);
+                $("input[name='createdDateTo']").datepicker('option','maxDate', toDate);
+                $("input[name='createdDateTo']").datepicker('setDate', toDate);
+            });
+
+            $("input[name='submissionDateFrom']")
+                .val('')
+                .datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: parseInt(now - yearRange) + ":" + now,
+                maxDate: '0',
+                minDate: '-' + yearRange + 'Y'
+            });
+
+            $("input[name='submissionDateTo']")
+                .val('')
+                .datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: parseInt(now - yearRange) + ":" + now,
+                minDate: '0',
+                maxDate: '0'
+            });
+
+            $("input[name='submissionDateFrom']").change(function(){
+                var fromDate = $("input[name='submissionDateFrom']").datepicker('getDate');
+                var toDate = new Date(fromDate);
+                var today = new Date();
+                var sixMonthEndDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 7, 0);
+                var sixMonthEndDay = sixMonthEndDate.getDate();
+                var fromDateDay = fromDate.getDate();
+                var sixMonthSameDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 6, fromDateDay);
+
+                if(fromDateDay > sixMonthEndDay){
+                    toDate = sixMonthEndDate;
+                }else {
+                    toDate = sixMonthSameDate;
+                }
+
+                if(toDate > today){
+                    toDate = today;
+                }
+
+                $("input[name='submissionDateTo']").datepicker('option','minDate', fromDate);
+                $("input[name='submissionDateTo']").datepicker('option','maxDate', toDate);
+                $("input[name='submissionDateTo']").datepicker('setDate', toDate);
+            });
+
+            $("#createdDateFrom, #createdDateTo").on("focus", function() {
+                $("#submissionDateFrom, #submissionDateTo").val('');
+            });
+
+            $("#submissionDateFrom, #submissionDateTo").on("focus", function() {
+                $("#createdDateFrom, #createdDateTo").val('');
+            });
+
+            $("#to-reset").click(function() {
+                $("#search-form")[0].reset();
+                for (var key in checkboxes) {
+                    checkboxes[key].disabled = false;
+                }
+            });
+
+            $("#to-export").click(function() {$
+                if(!confirm("Sure to export?")) {
+                    return false;
+                }
+
+                const formData = $('#search-form').serialize();
+
+                window.open(`${contextPath}admin/form/enquiry/export?${formData}`, "_blank")
+
+                return true;
+            });
+
+            $("#to-search").click(function() {
+                var createdDateFilterPass = validateDateFilter('createdDateFrom','createdDateTo','Created Date (From)', 'Created Date (To)');
+                if(!createdDateFilterPass) {
+                    return false;
+                }
+
+                var submissionDateFilterPass = validateDateFilter('submissionDateFrom','submissionDateTo','Submission Date (From)', 'Submission Date (To)');
+                if(!submissionDateFilterPass) {
+                    return false;
+                }
+
+                search();
+                return true;
+            });
+
+            const validateDateFilter = (fromDateId, toDateId, fromDateTitle, toDateTitle) => {
+                var fromDate = $('#'+fromDateId).val().trim();
+                var toDate = $('#'+toDateId).val().trim();
+                var incompleteDate = (!fromDate && toDate) || (fromDate && !toDate)
+                if (incompleteDate) {
+                    var errorTitle = "";
+
+                    if (!fromDate) {
+                        errorTitle += fromDateTitle;
+                    }
+
+                    if (!toDate) {
+                        if(errorTitle != ""){
+                            errorTitle += " and ";
+                        }
+                        errorTitle += toDateTitle;
+                    }
+
+                    if (errorTitle != "") {
+                        alert("Please input valid " + errorTitle);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            const search = () => {
+                const formData = $('#search-form').serialize();
+
+                $.ajax({
+                    url: contextPath + 'admin/form/enquiry/search',
+                    method: 'GET',
+                    data: formData,
+                    success: function(response) {
+                        if(response.errorMsg) {
+                            alert(response.errorMsg);
+                            return false;
+                        } else {
+                            $('#count-container').addClass('hidden');
+                            if(response.totalRecords > 0) {
+                                $('#to-export').removeClass("hidden");
+                                $('#listing-count').text(response.totalRecords);
+                                $('#count-container').removeClass('hidden');
+                            } else {
+                                $('#to-export').addClass("hidden");
+                            }
+                            displayResults(response);
+                            if(response.totalPages > 1){
+                                initPagination(response);
+                                $(".pagination").removeClass("hidden");
+                            } else {
+                                $(".pagination").addClass("hidden");
+                            }
+                            $('#listing-table').removeClass('hidden');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Search failed. Please try again.');
+                    }
+                });
+            }
+
+            const displayResults = (response) => {
+                $('#listing-body').empty();
+
+                if (response.records.length === 0) {
+                    $('#listing-body').append(`
+                        <tr>
+                            <td colspan="100%" class="text-center py-3">
+                                <div>
+                                    No records found matching your search criteria
+                                </div>
+                            </td>
+                        </tr>
+                    `);
+
+                    return;
+                }
+
+                var startIndex = (response.currentPageNo - 1) * response.maxRecordsPerPage;
+                response.records.forEach((record, i) => {
+                    var index = startIndex + i + 1;
+                    var theme = index % 2 === 0 ? "even" : "odd";
+                    const applicationRow = `
+                    <tr id="${record.uuid}" class="${theme}">
+                        <td class="text-center">${index}</td>
+                        <td class="text-center">${record.preAppSubmittedAt? escapeHtml(record.preAppSubmittedAt) : '-'}</td>
+                        <td class="text-center">${escapeHtml(record.createdAt)}</td>
+                        <td class="text-center">${record.applicationNumber ? escapeHtml(record.applicationNumber) : ''}</td>
+                        <td class="text-wrap">${record.companyName ? escapeHtml(record.companyName) : ''}</td>
+                        <td class="text-center text-wrap">${record.companyRoc ? escapeHtml(record.companyRoc) : '-'}</td>
+                        <td class="text-center text-wrap">${record.newCompanyRoc ? escapeHtml(record.newCompanyRoc) : '-'}</td>
+                        <td class="text-center text-wrap">${record.tradingLicenceNo ? escapeHtml(record.tradingLicenceNo) : '-'}</td>
+                        <td class="text-center">${escapeHtml(record.typeOfBusiness)}</td>
+                        <td class="text-center">${record.submittedAt ? escapeHtml(record.submittedAt) : '-'}</td>
+                        <td class="text-center">${record.approvedAt ? escapeHtml(record.approvedAt) : '-'}</td>
+                        <td class="text-center">${record.turnAroundTimeDays != null ? escapeHtml(String(record.turnAroundTimeDays)) : '-'}</td>
+                        <td class="text-center">${record.expiredAt? escapeHtml(record.expiredAt) : '-'}</td>
+                        <td class="text-center">${record.assigneeFullName ? escapeHtml(record.assigneeFullName) : '-'}</td>
+                        <td class="text-center obs-status ${record.stage1Status ? record.stage1Status.toLowerCase() : ""}">${escapeHtml(record.stage1Status)}</td>
+                        <td class="text-center obs-status ${record.stage2Status ? record.stage2Status.toLowerCase() : ""}">${escapeHtml(record.stage2Status)}</td>
+                        <td class="text-center">${record.lastUpdatedAt ? escapeHtml(record.lastUpdatedAt) : '-'}</td> -->
+                        <td class="text-center obs-status ${record.lhdnStatus ? record.lhdnStatus.toLowerCase() : ""}">${record.lhdnStatus === 'N/A' ? '<b>' + escapeHtml(record.lhdnStatus) + '</b>' : escapeHtml(record.lhdnStatus)}</td>
+                        <td class="text-center obs-status ${record.status ? record.status.toLowerCase() : ""}">${escapeHtml(record.status)}</td>
+                        <td class="text-center obs-status ${record.stage3Status ? record.stage3Status.toLowerCase() : ""}">${escapeHtml(record.stage3Status)}</td>
+                        <td class="text-center obs-status ${record.stage4Status ? record.stage4Status.toLowerCase() : ""}">${escapeHtml(record.stage4Status)}</td>
+                        <td class="text-center obs-status ${record.stage5Status ? record.stage5Status.toLowerCase() : ""}">${escapeHtml(record.stage5Status)}</td>
+                        <td class="text-left">${record.remark ? escapeHtml(record.remark) : '-'}</td>
+                        <td class="text-center">
+                            <a href="${contextPath + (record.stage5Status != '-' ? 'admin/form/edit-registration-doc/' : 'admin/form/edit/') + record.uuid}" target="_blank" class="to-edit hyperlink-text">Edit</a>
+                        </td>
+                    </tr>
+                `;
+                    $('#listing-body').append(applicationRow);
+                });
+            }
+
+            const escapeHtml = (unsafe) => {
+                return $('<div>').text(unsafe).html();
+            }
+
+            const initPagination = (response) => {
+                $(".pagination").pagination(response.totalRecords, {
+                    items_per_page: response.maxRecordsPerPage,
+                    current_page: response.currentPageNo - 1,
+                    num_edge_entries: 2,
+                    num_display_entries: 8,
+                    callback: function(page, jq) {
+                        $("#search-form input[name='pageNo']").val(page + 1);
+                        search();
+                        $("#search-form input[name='pageNo']").val(1);
+                        return false;
+                    }
+                });
+            }
+        });
+
+    </script>
+
+
+
+        <link href="/obs/pagination.css" rel="stylesheet">
+        <style>
+            body {
+                font-family: Inter, sans-serif; /* Default font */
+                font-size: 14px;
+            }
+
+            .custom-container {
+                flex: 1;
+            }
+
+            .text-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 240px;
+                padding: 0 8px;
+            }
+
+            .date-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 160px;
+                padding: 0 8px;
+            }
+
+            .dropdown-filter {
+                border: 1px solid #767676;
+                height: 32px;
+                width: 160px;
+                padding: 0 8px;
+            }
+
+            .custom-container {
+                width: 95%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 20px;
+            }
+
+            .search-btn {
+                width: 120px;
+                height: 40px;
+                padding: 10px 40px;
+                background: #EFEFEF;
+                border: 1px solid #000000;
+            }
+
+            .hyperlink-text {
+                color: #0000EE;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+
+            .hyperlink-text:hover {
+                color: #132659 !important;
+            }
+
+            .custom-select select:disabled {
+                pointer-events: none;
+                background-color: rgba(239, 239, 239, 0.3);
+            }
+
+            .custom-select {
+                position: relative;
+            }
+            .custom-select select {
+                -webkit-appearance:none;
+                -moz-appearance:none;
+                -ms-appearance:none;
+                appearance:none;
+                outline:0;
+                box-shadow:none;
+                background: white;
+                background-image: none;
+                border: 1px solid #767676;
+                height: 32px;
+                width:160px;
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                cursor:pointer;
+                text-overflow: ellipsis;
+                padding: 0 8px;
+            }
+            .custom-select select::-ms-expand {
+                display: none;
+            }
+            .custom-select .select {
+                position: relative;
+                display: flex;
+                height: 32px;
+                background: white;
+                overflow: hidden;
+                border: 1px solid #767676
+            }
+            .custom-select::after {
+                content: '';
+                display: inline-block;
+                border-bottom: 1px solid #808080;
+                border-right: 1px solid #808080;
+                height: 5px;
+                width: 5px;
+                transform: rotate(45deg);
+                position: absolute;
+                top: 11px;
+                right: 10px;
+            }
+
+            a:hover {
+                color: #132659 !important;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            #listing-table td, #listing-table th {border:1px solid white !important;}
+            #listing-table tr.header {background: #58ACFA; color:white;}
+            #listing-table tr.odd {background: #A9E2F3}
+            #listing-table tr.even {background: #CEF6F5}
+
+            .header-text {
+                font-size: 16px;
+                font-weight: 700;
+                margin: 15px 0;
+            }
+
+            .approved, .checked, .ok, .registered {
+                color:#008E00;
+                font-weight:700;
+            }
+
+            .rejected, .failed {
+                color: #FF4000;
+                font-weight: 700;
+            }
+
+            .pending, .new, .re-evaluate {
+                color: #0000FF;
+                font-weight: 700;
+            }
+
+            .kiv, .draft, .expired {
+                color: #000000;
+                font-weight: 700;
+            }
+
+            .text-wrap {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: break-all;
+                white-space: normal;
+            }
+
+            .table-scroll-container {
+                overflow-x: auto;
+                width: 100%;
+            }
+        </style>
+        <link href="/obs/datepicker.css" rel="stylesheet">
+    
+    
+        <script src="/obs/js/jquery.pagination.js"></script>
+    
+
+<style id="claude-agent-animation-styles">
+      @keyframes claude-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      #claude-agent-glow-border-inner {
+        animation: claude-pulse 2s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #claude-agent-glow-border-inner {
+          animation: none;
+        }
+      }
+    </style></head><body class="min-h-screen flex flex-col">
+    
+    <div>
+    <div id="overlay" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+    <div id="payment-overlay" style="display: none;">
+        <div class="payment-loading-box">
+            <div class="spinner-and-text">
+                <div class="payment-spinner"></div>
+                <div class="payment-loading-text">Connecting...</div>
+            </div>
+            <div class="overlay-description">Please do not close the browser while connecting to payment gateway</div>
+        </div>
+    </div>
+</div>
+
+    
+    <div>
+    <div id="custom-dialog">
+        <span id="custom-dialog-content"></span>
+    </div>
+</div>
+
+    <div id="header">
+        <div id="custom-header">
+            <div class="flex flex-row">
+                <a class="text-white font-bold no-underline" onclick="window.open(originalUrl + '/home/', '_self');">
+                    Back to Backoffice
+                </a>
+            </div>
+        </div>
+        <div id="logo-container" class=" w-[140px] relative mt-[2px] ml-[2px]">
+            <img src="/obs/images/eauto-logo-tm-white-bg.png" class="w-[140px] h-[75px]">
+        </div>
+    </div>
+
+    
+    <div class="flex-grow">
+        <div class="flex flex-col">
+    <div class="custom-container">
+        
+        <div class="w-full">
+            <form id="search-form">
+                <input type="hidden" name="pageNo" value="1">
+                <input type="hidden" id="stage4StatusEmpty" name="stage4StatusEmpty" value="">
+                <div class="flex flex-col w-full space-y-3">
+                    <div id="filter-row-1" class="flex flex-row space-x-3">
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Company Name:</span>
+                            <input title="Company Name" type="text" class="text-filter" id="companyName" name="companyName">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Application No:</span>
+                            <input title="Application No" type="text" id="applicationNo" name="applicationNo" class="text-filter">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Application Status:</span>
+                            <div class="custom-select">
+                                <select id="status" name="status" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="NEW">New</option>
+                                    <option value="DRAFT">Draft</option>
+                                    <option value="PENDING">Pending</option>
+                                    <option value="KIV">KIV</option>
+                                    <option value="REEVALUATE">Re-evaluate</option>
+                                    <option value="APPROVED">Approved</option>
+                                    <option value="REJECTED">Rejected</option>
+                                    <option value="EXPIRED">Expired</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="filter-row-2" class="flex flex-row space-x-3">
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Application Created Date From:</span>
+                            <div class="pr-2"><input type="text" id="createdDateFrom" name="createdDateFrom" class="date-filter hasDatepicker" readonly=""></div>
+                            <span class="font-bold pr-2 flex">To:</span>
+                            <input type="text" id="createdDateTo" name="createdDateTo" class="date-filter hasDatepicker" readonly="">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Application Submission Date From:</span>
+                            <div class="pr-2"><input type="text" id="submissionDateFrom" name="submissionDateFrom" class="date-filter hasDatepicker" readonly=""></div>
+                            <span class="font-bold pr-2 flex">To:</span>
+                            <input type="text" id="submissionDateTo" name="submissionDateTo" class="date-filter hasDatepicker" readonly="">
+                        </div>
+                    </div>
+                    <div id="filter-row-3" class="flex flex-row space-x-3">
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Old BRN:</span>
+                            <input title="Old BRN" type="text" id="oldBRN" name="oldBRN" class="text-filter" size="20">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">New BRN:</span>
+                            <input title="New BRN" type="text" id="newBRN" name="newBRN" class="text-filter" size="20">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Business Trading License Number:</span>
+                            <input title="Business Trading License Number" type="text" id="businessTrading" name="businessTrading" class="text-filter" size="20">
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">LHDN Response Status:</span>
+                            <div class="custom-select">
+                                <select id="lhdnStatus" name="lhdnStatus" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="OK">OK</option>
+                                    <option value="Failed">Failed</option>
+                                    <option value="New">-</option>
+                                    <option value="Pending">N/A</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="filter-row-4" class="flex flex-row space-x-3">
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Assignee:</span>
+                            <div class="custom-select">
+                                <select id="assigneeUserId" name="assigneeUserId" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="99000/AzfarInt">Azfar</option>
+                                    <option value="99000/boruiluan">BO ruiluan</option>
+                                    <option value="99000/a0FnHhcUY">BO User bjGIQ</option>
+                                    <option value="99000/aaBBy">BO User bwvzW</option>
+                                    <option value="99000/akP6HM6">BO User GhFbw</option>
+                                    <option value="99000/bNJ71CsRT">BO User huWnF</option>
+                                    <option value="99000/biEX5Ju">BO User kbomK</option>
+                                    <option value="99000/bAT2NMC">BO User nPlkY</option>
+                                    <option value="99000/be2eao">BO User sxscg</option>
+                                    <option value="99000/axevXUzjSD">BO User sYRlw</option>
+                                    <option value="99000/bousertest1">BO user test 1</option>
+                                    <option value="99000/eautomie">BRANDON TEST MIE</option>
+                                    <option value="99000/charmaintest333">Charmain Ea Chiang</option>
+                                    <option value="99000/Charmaintest222">Charmain Ea Chiang</option>
+                                    <option value="99000/CharTest124">Charmain Ea Chiang</option>
+                                    <option value="99000/QAMM09041">Charmain Ea Chiang</option>
+                                    <option value="99000/CharTest123">Charmain Ea Chiang</option>
+                                    <option value="99000/CharTest125">Charmain Ea Chiang</option>
+                                    <option value="99000/BOChar">CHARMAIN EA CHIANG chg</option>
+                                    <option value="99000/QA121550011">CHARMAIN QA0011</option>
+                                    <option value="99000/QA121550013">CHARMAIN QA0013</option>
+                                    <option value="99000/QA121550015">CHARMAIN QA0015</option>
+                                    <option value="99000/QA121550017">CHARMAIN QA0017</option>
+                                    <option value="99000/QA121550058">CHARMAIN QA0058</option>
+                                    <option value="99000/QA121550059">CHARMAIN QA0059</option>
+                                    <option value="99000/QA121550063">CHARMAIN QA0063</option>
+                                    <option value="99000/QA121550065">CHARMAIN QA0065</option>
+                                    <option value="99000/QA121550101">CHARMAIN QA0101</option>
+                                    <option value="99000/QAMISMATCH0116">CHARMAIN QA0116</option>
+                                    <option value="99000/QA121550401">CHARMAIN QA0401</option>
+                                    <option value="99000/QA121550421">CHARMAIN QA0421</option>
+                                    <option value="99000/QA121550435">CHARMAIN QA0435</option>
+                                    <option value="99000/QA121550437">CHARMAIN QA0437</option>
+                                    <option value="99000/QA121550459">CHARMAIN QA0459</option>
+                                    <option value="99000/QA121550461">CHARMAIN QA0461</option>
+                                    <option value="99000/QA121550463">CHARMAIN QA0463</option>
+                                    <option value="99000/QA121550672">CHARMAIN QA0672</option>
+                                    <option value="99000/QA121550692">CHARMAIN QA0692</option>
+                                    <option value="99000/QA121550694">CHARMAIN QA0694</option>
+                                    <option value="99000/QA121550708">CHARMAIN QA0708</option>
+                                    <option value="99000/QA121550731">CHARMAIN QA0731</option>
+                                    <option value="99000/QA121550733">CHARMAIN QA0733</option>
+                                    <option value="99000/QA121550735">CHARMAIN QA0735</option>
+                                    <option value="99000/QA121550882">CHARMAIN QA0882</option>
+                                    <option value="99000/QA121550884">CHARMAIN QA0884</option>
+                                    <option value="99000/QA121550886">CHARMAIN QA0886</option>
+                                    <option value="99000/QA121550902">CHARMAIN QA0902</option>
+                                    <option value="99000/QA121550906">CHARMAIN QA0906</option>
+                                    <option value="99000/QA121550908">CHARMAIN QA0908</option>
+                                    <option value="99000/QA121550928">CHARMAIN QA0928</option>
+                                    <option value="99000/QA121550932">CHARMAIN QA0932</option>
+                                    <option value="99000/QA121550940">CHARMAIN QA0940</option>
+                                    <option value="99000/QA121550948">CHARMAIN QA0948</option>
+                                    <option value="99000/QA121550956">CHARMAIN QA0956</option>
+                                    <option value="99000/QA121550960">CHARMAIN QA0960</option>
+                                    <option value="99000/QA121550964">CHARMAIN QA0964</option>
+                                    <option value="99000/QA121550972">CHARMAIN QA0972</option>
+                                    <option value="99000/QA121550978">CHARMAIN QA0978</option>
+                                    <option value="99000/QA121550982">CHARMAIN QA0982</option>
+                                    <option value="99000/QA121550986">CHARMAIN QA0986</option>
+                                    <option value="99000/QA121550994">CHARMAIN QA0994</option>
+                                    <option value="99000/QA121551002">CHARMAIN QA1002</option>
+                                    <option value="99000/QA121551010">CHARMAIN QA1010</option>
+                                    <option value="99000/QA121551017">CHARMAIN QA1017</option>
+                                    <option value="99000/QA121551039">CHARMAIN QA1039</option>
+                                    <option value="99000/QA121551043">CHARMAIN QA1043</option>
+                                    <option value="99000/QA121551047">CHARMAIN QA1047</option>
+                                    <option value="99000/QA121551463">CHARMAIN QA1463</option>
+                                    <option value="99000/QA121551503">CHARMAIN QA1503</option>
+                                    <option value="99000/QA121551548">CHARMAIN QA1548</option>
+                                    <option value="99000/QA121552023">CHARMAIN QA2023</option>
+                                    <option value="99000/QA121552027">CHARMAIN QA2027</option>
+                                    <option value="99000/QA121552029">CHARMAIN QA2029</option>
+                                    <option value="99000/QA121552032">CHARMAIN QA2032</option>
+                                    <option value="99000/QA121552034">CHARMAIN QA2034</option>
+                                    <option value="99000/QA121552036">CHARMAIN QA2036</option>
+                                    <option value="99000/QA121552037">CHARMAIN QA2039</option>
+                                    <option value="99000/QA121552043">CHARMAIN QA2043</option>
+                                    <option value="99000/QA121552248">CHARMAIN QA2248</option>
+                                    <option value="99000/QA121552250">CHARMAIN QA2250</option>
+                                    <option value="99000/mfyilink">LIM YI LINK</option>
+                                    <option value="99000/74937493">MUSIC SDN BHD</option>
+                                    <option value="99000/aCkZtt1239">sdtPhAPWEMhvmv</option>
+                                    <option value="99000/besAjEyDLi">SlcklBI</option>
+                                    <option value="99000/traze">traze</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Assignee / UCD:</span>
+                            <div class="custom-select">
+                                <select id="stage1Status" name="stage1Status" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="PENDING_UCD">Pending UCD</option>
+                                    <option value="PENDING_ASSIGNEE">Pending Assignee</option>
+                                    <option value="CHECKED">Checked</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Approver / Assignee:</span>
+                            <div class="custom-select">
+                                <select id="stage2Status" name="stage2Status" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="PENDING_APPROVER">Pending Approver</option>
+                                    <option value="PENDING_ASSIGNEE">Pending Assignee</option>
+                                    <option value="CHECKED">Checked</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Softcopy Docs:</span>
+                            <div class="custom-select">
+                                <select id="stage3Status" name="stage3Status" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="PENDING_UCD">Pending UCD</option>
+                                    <option value="PENDING_ASSIGNEE">Pending Assignee</option>
+                                    <option value="CHECKED">Checked</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Hardcopy &amp; Acc Created:</span>
+                            <div class="custom-select">
+                                <select id="stage5Status" name="stage5Status" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="PENDING_UCD">Pending UCD</option>
+                                    <option value="PENDING_UCD_INCOMPLETE_DOCS">Pending UCD - Incomplete Docs</option>
+                                    <option value="PENDING_ASSIGNEE">Pending Assignee</option>
+                                    <option value="REGISTERED">Registered</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="filter-row-5" class="flex flex-row space-x-3">
+                        <div class="flex flex-row items-center">
+                            <span class="font-bold pr-2 flex">Registration Fee:</span>
+                            <div class="custom-select">
+                                <select id="stage4Status" name="stage4Status" class="custom-select dropdown-filter">
+                                    <option value="">All</option>
+                                    <option value="EMPTY">-</option>
+                                    <option value="PENDING_UCD">Pending UCD</option>
+                                    <option value="FAILED">Failed</option>
+                                    <option value="OK">OK</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex flex-row">
+                            <span class="font-bold pr-2 flex items-center">Type of Business:</span>
+                            <div class="flex flex-row space-x-4">
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="SDN_BHD" id="type-SDN_BHD" checked="">
+                                    <label class="pl-1 type-of-business" for="type-SDN_BHD">Sdn Bhd / Bhd</label>
+                                </div>
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="SOLE_PROPRIETORSHIP_PARTNERSHIP" id="type-SOLE_PROPRIETORSHIP_PARTNERSHIP" checked="">
+                                    <label class="pl-1 type-of-business" for="type-SOLE_PROPRIETORSHIP_PARTNERSHIP">Sole Proprietorship / Partnership</label>
+                                </div>
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="LLP" id="type-LLP" checked="">
+                                    <label class="pl-1 type-of-business" for="type-LLP">LLP</label>
+                                </div>
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="TRADING_SABAH" id="type-TRADING_SABAH" checked="">
+                                    <label class="pl-1 type-of-business" for="type-TRADING_SABAH">Business Trading (Sabah)</label>
+                                </div>
+                                <div class="flex flex-row items-center">
+                                    <input type="checkbox" name="businessType" value="TRADING_SARAWAK" id="type-TRADING_SARAWAK" checked="">
+                                    <label class="pl-1 type-of-business" for="type-TRADING_SARAWAK">Business Trading (Sarawak)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="button-row" class="flex flex-row justify-end space-x-4 items-center">
+                        <input type="button" id="to-search" value="Search" class="search-btn cursor-pointer">
+                        <a id="to-reset" class="hyperlink-text">Reset</a>
+                        <a id="to-export" class="hyperlink-text">Export</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-center items-center header-text">
+            <span>UCD Application Listing</span>
+        </div>
+
+        <div id="count-container" class="">
+            <span id="listing-count">1</span> record(s) in total
+        </div>
+
+        
+        <div class="table-scroll-container">
+        <table id="listing-table" class="" style="min-width: 2640px;">
+            <colgroup>
+                <col style="width: 30px;">  <!-- # -->
+                <col style="width: 150px;"> <!-- Pre-Application Submission Date -->
+                <col style="width: 100px;">  <!-- Application Created Date -->
+                <col style="width: 90px;">  <!-- Application No -->
+                <col style="width: 250px;"> <!-- Company Name -->
+                <col style="width: 130px;"> <!-- Old BRN -->
+                <col style="width: 130px;"> <!-- New BRN -->
+                <col style="width: 150px;"> <!-- Business Trading License Number -->
+                <col style="width: 150px;"> <!-- Type of Business -->
+                <col style="width: 150px;"> <!-- Application Submission Date -->
+                <col style="width: 120px;"> <!-- Approved Date -->
+                <col style="width: 120px;"> <!-- Turn Around Time (Days) -->
+                <col style="width: 100px;">  <!-- Application Expiry Date -->
+                <col style="width: 90px;">  <!-- Assignee -->
+                <col style="width: 60px;">  <!-- Assignee / UCD -->
+                <col style="width: 100px;">  <!-- Approver / Assignee -->
+                <col style="width: 100px;"> <!-- Last Updated Date -->
+                <col style="width: 90px;">  <!-- LHDN Response Status -->
+                <col style="width: 70px;">  <!-- Application Status -->
+                <col style="width: 80px;">  <!-- Softcopy Docs -->
+                <col style="width: 90px;">  <!-- Registration Fee -->
+                <col style="width: 130px;"> <!-- Hardcopy & Acc Created -->
+                <col style="width: 200px;"> <!-- Remarks -->
+                <col style="width: 70px;">  <!-- Action -->
+            </colgroup>
+            <thead>
+            <tr class="header">
+                <th>#</th>
+                <th>Pre-Application Submission Date</th>
+                <th>Application Created Date</th>
+                <th>Application No</th>
+                <th>Company Name</th>
+                <th>Old BRN</th>
+                <th>New BRN</th>
+                <th>Business Trading License Number</th>
+                <th>Type of Business</th>
+                <th>Application Submission Date</th>
+                <th>Approved Date</th>
+                <th>Turn Around Time (Days)</th>
+                <th>Application Expiry Date</th>
+                <th>Assignee</th>
+                <th>Assignee / UCD</th>
+                <th>Approver / Assignee</th>
+                <th>Last Updated Date</th>
+                <th>LHDN Response Status</th>
+                <th>Application Status</th>
+                <th>Softcopy Docs</th>
+                <th>Registration Fee</th>
+                <th>Hardcopy &amp; Acc Created</th>
+                <th>Remarks</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="listing-body">
+                    <tr id="4b3d010f-5a7e-4e25-9ac2-190ddd82ccf8" class="odd">
+                        <td class="text-center">1</td>
+                        <td class="text-center">2026-10-21 14:58</td>
+                        <td class="text-center">2026-10-21 15:25</td>
+                        <td class="text-center">NA60001190</td>
+                        <td class="text-wrap">UDIN ONBOARD TESTING SDN0001</td>
+                        <td class="text-center text-wrap">KT0307773-P</td>
+                        <td class="text-center text-wrap">201203099294</td>
+                        <td class="text-center text-wrap">-</td>
+                        <td class="text-center">Sdn Bhd / Bhd</td>
+                        <td class="text-center">2026-10-21 15:29</td>
+                        <td class="text-center">2026-10-21 15:37</td>
+                        <td class="text-center">0</td>
+                        <td class="text-center">2027-01-19 15:25</td>
+                        <td class="text-center">CHARMAIN QA0735</td>
+                        <td class="text-center obs-status checked">Checked</td>
+                        <td class="text-center obs-status checked">Checked</td>
+                        <td class="text-center">2026-10-21 15:42</td><td class="text-center obs-status failed">Failed</td>
+                        <td class="text-center obs-status approved">Approved</td>
+                        <td class="text-center obs-status checked">Checked</td>
+                        <td class="text-center obs-status ok">OK</td>
+                        <td class="text-center obs-status pending ucd">Pending UCD</td>
+                        <td class="text-left">TIN verification failed. Kindly provide correct TIN information to eAuto customer service.</td>
+                        <td class="text-center">
+                            <a href="/obs/admin/form/edit-registration-doc/4b3d010f-5a7e-4e25-9ac2-190ddd82ccf8" target="_blank" class="to-edit hyperlink-text">Edit</a>
+                        </td>
+                    </tr>
+                </tbody>
+        </table>
+        </div>
+        <div class="pagination mt-1 hidden"></div>
+    </div>
+</div>
+    </div>
+
+    <div id="footer">
+        <div class="flex justify-between items-end footer">
+            <div class="flex items-end justify-between">
+                <div class="flex flex-col">
+                    <div>Best Compatible With Mozilla Firefox V36.0.4</div>
+                    <div>Copyright © <span>2026</span> eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+                    <div class="flex">
+                        <a class="pr-[10px]" onclick="window.open(originalUrl + '/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+                        <span class="separator">|</span>
+                        <a class="px-[10px]" onclick="window.open(originalUrl + '/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a>
+                        <span class="separator">|</span>
+                        <a class="pl-[10px]" onclick="window.open(originalUrl + '/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <img src="/obs/images/eauto-logo-tm.png" width="98" height="40">
+            </div>
+        </div>
+    </div>
+
+<div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div><div id="claude-agent-glow-border" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483646; opacity: 1; transition: opacity 0.3s ease-in-out;"><div id="claude-agent-glow-border-inner" style="position: absolute; inset: 0px; will-change: opacity; box-shadow: rgba(217, 119, 87, 0.7) 0px 0px 15px inset, rgba(217, 119, 87, 0.5) 0px 0px 25px inset, rgba(217, 119, 87, 0.2) 0px 0px 35px inset;"></div></div><div id="claude-phantom-cursor" aria-hidden="true" style="position: fixed; top: 0px; left: 0px; pointer-events: none; z-index: 2147483646; transform: translate3d(1759px, 337px, 0px); transition: transform 180ms cubic-bezier(0.2, 0, 0, 1); will-change: transform;"><svg id="claude-phantom-cursor-plain" width="20" height="26" viewBox="0 0 20 26" style="position: absolute; top: 0px; left: 0px; overflow: visible;"><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" stroke="white" stroke-width="3" stroke-linejoin="round" fill="white"></path><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" fill="#111"></path></svg><svg id="claude-phantom-cursor-styled" width="20" height="26" viewBox="0 0 20 26" style="position: absolute; top: 0px; left: 0px; overflow: visible; filter: drop-shadow(rgba(217, 119, 87, 0.9) 0px 0px 4px) drop-shadow(rgba(217, 119, 87, 0.45) 0px 0px 10px);"><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" stroke="#D97757" stroke-width="3" stroke-linejoin="round" fill="#D97757"></path><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" fill="#FAF9F5"></path></svg></div><div id="claude-static-indicator-container" style="position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); align-items: center; justify-content: center; padding: 6px 6px 6px 16px; background: rgb(250, 249, 245); border: 0.5px solid rgba(31, 30, 29, 0.3); border-radius: 14px; box-shadow: rgba(0, 0, 0, 0.15) 0px 40px 80px 0px; z-index: 2147483647; pointer-events: none; white-space: nowrap; user-select: none; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; flex-shrink: 0; margin-right: 8px;">
+        <path d="M3.13946 10.6399L6.28757 8.87462L6.37405 8.73821L6.28757 8.6339H6.13189L5.60432 8.6018L3.80541 8.55366L2.24865 8.48947L0.735135 8.40923H0.492973L0.354595 8.32899L0.181622 8.1685L0.0345946 8.01605L0 7.85557L0.0345946 7.62287L0.138378 7.44634L0.224865 7.40622H0.354595L0.812973 7.44634L1.82486 7.51856L3.34703 7.62287L4.44541 7.68706L6.08 7.85557H6.33946L6.37405 7.75125L6.28757 7.68706L6.21838 7.62287L4.64432 6.55567L2.94054 5.4323L2.04973 4.78235L1.57405 4.45336L1.33189 4.14845L1.22811 3.92377L1.17622 3.69107L1.22811 3.47442L1.33189 3.28185L1.46162 3.13741L1.66054 2.99298H1.87676L2.24865 3.0331L2.39568 3.07322L2.99243 3.53059L4.26378 4.51755L5.92432 5.73721L6.16649 5.93781H6.27892V5.82548L6.16649 5.64092L5.26703 4.01204L4.30703 2.35105L3.87459 1.66098L3.76216 1.25176C3.7391 1.16082 3.69297 0.977332 3.69297 0.970913V0.762287L3.77946 0.505517L3.93513 0.240722L4.18595 0.0882648L4.4627 0H4.67892L4.83459 0.0240722L5.12865 0.0882648L5.4054 0.328987L5.82054 1.27583L6.48649 2.76028L7.52432 4.78235L7.82703 5.38415L7.99135 5.93781L8.05189 6.10632H8.15567V6.01003L8.24216 4.87061L8.39784 3.47442L8.55351 1.67703L8.6054 1.17151L8.85622 0.561685L8.9773 0.417252L9.21946 0.232698H9.35784L9.74703 0.417252L9.97189 0.665998L10.067 0.874624L10.0238 1.17151L9.83351 2.40722L9.46162 4.34102L9.21946 5.64092H9.35784L9.52216 5.47242L10.1795 4.60582L11.2778 3.22568L11.7622 2.68004L12.333 2.07823L12.6962 1.78937L13.0162 1.67703L13.3881 1.78937L13.7168 2.06219L13.8897 2.54363V2.76028L13.6649 3.32197L12.9557 4.22066L12.3676 4.98295L12.0043 5.56871L11.0011 7.02106V7.08526H11.1741L13.0768 6.67603L14.1059 6.49147L15.3341 6.28285L15.5762 6.34704L15.8876 6.53962L15.9481 6.80441L15.8876 7.12538L15.7319 7.34203L14.4173 7.66299L12.8778 7.97593L10.5854 8.51559C10.5705 8.51909 10.56 8.53236 10.56 8.54764C10.56 8.56468 10.573 8.57891 10.59 8.58044L11.6238 8.67402L12.0649 8.69809H13.1459L15.1611 8.85055L15.6886 9.19559L15.9481 9.39619L16 9.62086L15.9481 9.94985L15.8443 10.1023L15.4119 10.3029L15.1351 10.3591L14.0454 10.1023L11.4941 9.49248L10.6205 9.27583H10.4995V9.34804L11.2259 10.0622L12.5665 11.2658L14.2357 12.8225L14.3222 13.0953V13.2076L14.1059 13.5125L13.9243 13.5206L13.8811 13.4804L12.4108 12.3731L12.2984 12.325L11.84 11.8756L10.56 10.7924H10.4735V10.9047L10.7676 11.338L12.333 13.6891L12.4108 14.4112L12.2984 14.6439L11.8919 14.7884L11.667 14.7563L11.4508 14.7081L11.2605 14.5396L10.5254 13.4162L9.5827 11.9719L8.82162 10.672H8.79342C8.76039 10.672 8.73278 10.6972 8.7297 10.73L8.27676 15.5667L8.06919 15.8154L7.6454 16H7.58486L7.17838 15.6951L6.96216 15.1976L7.17838 14.2106L7.43784 12.9268L7.6454 11.9077L7.83567 10.6399L7.95187 10.2164C7.9548 10.2057 7.95069 10.1944 7.94161 10.1881C7.91157 10.1672 7.87034 10.1741 7.84878 10.2037L6.89297 11.5145L5.44 13.4804L4.28973 14.7081L4.01297 14.8205H3.80541L3.5373 14.5717V14.4514L3.58054 14.1304L3.84865 13.7372L5.44 11.7151L6.4 10.4554L7.01872 9.73222C7.04511 9.70139 7.04245 9.65523 7.0127 9.62763C7.00333 9.61894 6.98925 9.61773 6.97854 9.62471L2.75027 12.3811L1.99784 12.4774L1.66919 12.1725L1.71243 11.675L1.86811 11.5145L3.13946 10.6399Z" fill="#D97757"></path>
+      </svg>
+      <span style="vertical-align: middle; color: #141413; font-size: 14px; display: inline-block;">Claude is active in this tab group</span>
+      <div style="display: inline-block; width: 0.5px; height: 32px; background: rgba(31, 30, 29, 0.15); margin: 0 8px; vertical-align: middle;"></div>
+      <button id="claude-static-chat-button" style="position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 6px; background: transparent; border: none; cursor: pointer; pointer-events: auto; vertical-align: middle; width: 32px; height: 32px; border-radius: 8px; transition: background 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="#141413" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; display: block;">
+          <path d="M10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5H3C2.79779 17.5 2.61549 17.3782 2.53809 17.1914C2.4607 17.0046 2.50349 16.7895 2.64648 16.6465L4.35547 14.9365C3.20124 13.6175 2.5 11.8906 2.5 10C2.5 5.85786 5.85786 2.5 10 2.5ZM10 3.5C6.41015 3.5 3.5 6.41015 3.5 10C3.5 11.7952 4.22659 13.4199 5.40332 14.5967L5.46582 14.6729C5.52017 14.7544 5.5498 14.8508 5.5498 14.9502C5.5498 15.0828 5.49709 15.2099 5.40332 15.3037L4.20703 16.5H10C13.5899 16.5 16.5 13.5899 16.5 10C16.5 6.41015 13.5899 3.5 10 3.5ZM13.29 9.30371C13.3986 9.05001 13.6925 8.93174 13.9463 9.04004C14.2 9.14863 14.3183 9.44253 14.21 9.69629C13.8506 10.536 13.1645 11.25 12.25 11.25C11.6372 11.25 11.128 10.9289 10.75 10.4648C10.372 10.9289 9.86276 11.25 9.25 11.25C8.63724 11.25 8.12801 10.9289 7.75 10.4648C7.37198 10.9289 6.86276 11.25 6.25 11.25C5.97386 11.25 5.75 11.0261 5.75 10.75C5.75 10.4739 5.97386 10.25 6.25 10.25C6.58764 10.25 7.00448 9.97056 7.29004 9.30371L7.32422 9.2373C7.41431 9.09121 7.5749 9 7.75 9C7.9501 9 8.13123 9.11975 8.20996 9.30371L8.32227 9.53516C8.59804 10.0359 8.95442 10.25 9.25 10.25C9.58764 10.25 10.0045 9.97056 10.29 9.30371L10.3242 9.2373C10.4143 9.09121 10.5749 9 10.75 9C10.9501 9 11.1312 9.11975 11.21 9.30371L11.3223 9.53516C11.598 10.0359 11.9544 10.25 12.25 10.25C12.5876 10.25 13.0045 9.97056 13.29 9.30371Z"></path>
+        </svg>
+        <span id="claude-static-chat-tooltip" style="position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); padding: 6px 12px; background: #30302E; color: #FAF9F5; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">Open chat</span>
+      </button>
+      <button id="claude-static-close-button" style="position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 6px; background: transparent; border: none; cursor: pointer; pointer-events: auto; vertical-align: middle; width: 32px; height: 32px; margin-left: 4px; border-radius: 8px; transition: background 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; display: block;">
+          <path d="M15.1464 4.14642C15.3417 3.95121 15.6582 3.95118 15.8534 4.14642C16.0486 4.34168 16.0486 4.65822 15.8534 4.85346L10.7069 9.99997L15.8534 15.1465C16.0486 15.3417 16.0486 15.6583 15.8534 15.8535C15.6826 16.0244 15.4186 16.0461 15.2245 15.918L15.1464 15.8535L9.99989 10.707L4.85338 15.8535C4.65813 16.0486 4.34155 16.0486 4.14634 15.8535C3.95115 15.6583 3.95129 15.3418 4.14634 15.1465L9.29286 9.99997L4.14634 4.85346C3.95129 4.65818 3.95115 4.34162 4.14634 4.14642C4.34154 3.95128 4.65812 3.95138 4.85338 4.14642L9.99989 9.29294L15.1464 4.14642Z" fill="#141413"></path>
+        </svg>
+        <span id="claude-static-close-tooltip" style="position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); padding: 6px 12px; background: #30302E; color: #FAF9F5; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">Dismiss</span>
+      </button>
+    </div></body></html>

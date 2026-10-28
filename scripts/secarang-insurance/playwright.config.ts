@@ -24,6 +24,12 @@ export default defineConfig({
 
   projects: [
     {
+      // /eauto/secarang-plate-checker — error vs proceed per vehicle no. + IC / SSM
+      name: 'plate-checker',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 }, headless: process.env.PW_HEADED !== '1' },
+      testMatch: '**/plate-checker.spec.ts',
+    },
+    {
       name: 'secarang-checker',
       use: { ...devices['Desktop Chrome'], headless: false },
       testMatch: '**/secarang-checker.spec.ts',

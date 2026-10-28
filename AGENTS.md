@@ -51,6 +51,13 @@ without asking the user to paste the page again. **A `[verified: live HTML]` tag
 with no file behind it is not verified.** Saving it costs one tool call; losing
 it costs a recapture and the user's time.
 
+**Standing rule — SAVE EVERY MIRO LINK THE USER GIVES YOU.** Per Faizuddin,
+2026-10-22. The moment a Miro board link appears in a session, append it to
+`_reference/miro-links.txt` — one line: date given | ticket(s) | what it is |
+full link, exactly as pasted. Do this before opening the board. When asked to
+"retrieve" or "find" a Miro link, read that file first. Never delete or rewrite
+old lines; only append.
+
 # Reference material
 
 **`_reference/` is read-only. Never edit, refactor or run code inside it.** It

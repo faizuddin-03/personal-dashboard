@@ -26,15 +26,30 @@ in page objects — extracting it into a flow document is the same job.
 | Flow | Covers | Source |
 |---|---|---|
 | [flow-ucd-shell.md](flow-ucd-shell.md) | The portal shell every UCD page shares — home tiles, nav, popup chain, listing pattern, duplicate-id traps | Live HTML, uat4 |
-| [flow-estm.md](flow-estm.md) | eSTM (eSerahan) creation — the core transaction most other flows depend on, incl. the staging biometric bypass; plus home/listing/details DOM | Nick's R&D scripts + live HTML |
+| [flow-bo-shell.md](flow-bo-shell.md) | BackOffice shell — full menu map with hrefs and coverage, header, role filtering, listing/datepicker/export patterns, traps | BO home captures 2026-08-21/08-24/09-30 + BO listing captures + code |
+| [flow-service-portal-shell.md](flow-service-portal-shell.md) | Service Portal shell — login, home menu, header, listing pattern, one-month error | Service Portal captures 2026-09-30 / 10-05 + eauto-jomcheck code |
+| [flow-estm.md](flow-estm.md) | eSTM (eSerahan) creation — the core transaction most other flows depend on, incl. the staging biometric bypass; plus home/listing/details DOM | Nick's R&D scripts + live HTML + full code map of `scripts/eauto-estm` |
 | [flow-insurance-purchase.md](flow-insurance-purchase.md) | UCD insurance quotation → purchase → post-purchase records, across 6 surfaces | `scripts/eauto-e2e` + live HTML |
-| [flow-edereg.md](flow-edereg.md) | eDereg (AATF) Pre-Checking gate — the four-condition validation rule, JPJ/payment response codes, expiry vs cronjob distinction, multi-user race conditions, UI locations, AATF-side URL map + DOM handles, and the multi-system automation architecture (eSIM, a new fingerprint-bypass emulator, STMS creation, split test scripts). **Still missing**: Back-Office side URL map/DOM handles | Live HTML (AATF side) + `[from dev guide + QA test plan, 2026-08-21]`, EAINT-9306 |
-| [flow-ucd-company-listing.md](flow-ucd-company-listing.md) | Manage Company Accounts search — ROC/New ROC/TIN fields, AND-only search semantics, empty-vs-populated `<tbody>` as the presence signal | Live HTML, uat1, 2026-08-21 |
+| [flow-quotation-reminder.md](flow-quotation-reminder.md) | Quotation reminder email (EAINT-11864) — trigger/cron rules, five entry points, automation chain across eSTM/insurance/Mailtrap, DOM handles, config, traps, paused status | `scripts/eauto-quotation-reminder` + live HTML (2026-08-18/19) + team test script |
+| [flow-eauto-insurance-enquiry.md](flow-eauto-insurance-enquiry.md) | Insurance enquiry/listing/report/dashboard navigation — BO Insurance Transaction Listing, UCD Transaction Listing & Report, the separate Insurance Dashboard portal (Pemaju Payment Report, Agency Performance chart). **Navigation only, not live-verified** | Code-reading chatbot, 2026-09-25 |
+| [flow-secarang-insurance.md](flow-secarang-insurance.md) | Secarang car insurance purchase (B2C, no user login) — quote → add-ons → confirm → Fiuu payment → success/failed; FPX leg runs green, GrabPay/card selectors unconfirmed. **No live HTML captured** | `scripts/secarang-insurance` + `scripts/eauto-12107` + SRD EAINT-12107 v1.1 + SRD EAINT-12327 v1.0 + ticket notes |
+| [flow-cibo.md](flow-cibo.md) | CIBO page by page — portal shell, Transaction Management, Payment Management, Payment Report. **No live page captured, no page object** | SRDs + test scripts of EAINT-12058/12151/12327/12107 + EAINT-12151 mockup HTML |
+| [flow-edereg.md](flow-edereg.md) | eDereg (AATF) Pre-Checking gate — the four-condition validation rule, JPJ/payment response codes, expiry vs cronjob distinction, multi-user race conditions, UI locations, AATF-side URL map + DOM handles, and the multi-system automation architecture (eSIM, a new fingerprint-bypass emulator, STMS creation, split test scripts); plus the Back-Office side (§45 URL map, both BO listings' filters/columns/Cancel DOM, §46 both JPJ XML Log pages with decode tables), SRD V1.0→V1.2 delta (§47), automation config/env-var reference (§48). Still missing: BO details pages, Slip Pengesahan (§50) | Live HTML (AATF + BO side) + dev guide + QA test plan + SRD V1.0–V1.2, EAINT-9306 |
+| [flow-jomcheck.md](flow-jomcheck.md) | JomCheck — CR lineage (10089/10937/11175, 12339 API v2.0, 12412 invoice split), the 3 Service Portal surfaces, permission-gate chain, SRD REQ-001–011 map, 29-column BO listing, ICAP table, page-object/selector map, spec→TS map, BO Resubmit location | Jira + SRD EAINT-12339 v0.3/v1.0 + SharePoint legacy TS workbooks + mockup + live DOM captures + `scripts/eauto-jomcheck` code |
+| [flow-ucd-company-listing.md](flow-ucd-company-listing.md) | Manage Company Accounts search — ROC/New ROC/TIN fields, AND-only search semantics, empty-vs-populated `<tbody>` as the presence signal | Live HTML, uat1, 2026-08-21 + the built checker (`scripts/eauto-company-checker`, dashboard tabs, usage ledger) |
+| [flow-ucd-onboarding.md](flow-ucd-onboarding.md) | Dealer onboarding Pre-application → Application → Registered — 11 phases, two independent status fields, SSM live-lookup trap, reCAPTCHA gate, unique-data scheme, fixture cost; where EAINT-12257's DuitNow QR attaches | Reference pack + `scripts/eauto-duitnow-qr` port (verbatim DOM handles added 2026-10-15) |
+| [flow-payment-channels.md](flow-payment-channels.md) | UCD onboarding payment step — tiles, bank grid, Fiuu popup/simulator, success & failure pages, B2B Pending Approval (mockup), DuitNow QR (unverified), env vars, safety switches, traps | `scripts/eauto-duitnow-qr` (selectors matched live 2026-08-31) + reference pack aria/text captures + SRD v1.1 + mockup HTML; **no raw HTML captured yet** |
+| [flow-service-hub.md](flow-service-hub.md) | Service Hub — Software Installation, Biometric Device Purchase, appointments, reschedule, BO calendar: entry points, URLs, DOM, branches, data arrangement, traps. Business rules stay in eauto-service-hub.md | `tests/service-hub/**` + SRDs EAINT-10960 v1.2 / EAINT-11880 v1.2 + live captures + dashboard runners |
+| [flow-device-purchase.md](flow-device-purchase.md) | Biometric Device Purchase, BackOffice half — EAINT-12167 Device SN capture (40-device cap, locked-SN typo) and EAINT-12166 DO generation (snapshot rule) | SRD + Teams CR-group chat, 2026-09-18; not yet checked against a running app |
 | [flow-association-payment-listing.md](flow-association-payment-listing.md) | Association Payment Listing (BackOffice) — brand-new module, Summary/Details pages, Drafter→Reviewer→Approver workflow DOM, signature/payment-date modals, Payment Request generation. **Not live yet** — sourced entirely from the ticket's mockup HTML | Mockup HTML, EAINT-12028, 2026-07-31 |
+| [flow-inventory-control.md](flow-inventory-control.md) | Shopping Cart Inventory Control — Stock In / Stock Out / Report / Dashboard, low-stock email, UCD available stock (EAINT-12099, EAINT-12635). **Draft, not walked live** | Miro card + Teams CR group + Jira fields, 2026-10-26; SRD v1.1 not in repo |
+| [flow-emove.md](flow-emove.md) | eMOVE standalone logistics — entry gate, request, fee, payment, driver QR, BO, Finance (EAINT-12019). **Draft, not walked live; not in prod code** | Jira description + SRD version table + Teams CR group, 2026-10-26; SRD v0.8 not in repo |
+| [flow-application-reactivation.md](flow-application-reactivation.md) | Application reminder emails, Extend, link reactivation (EAINT-11868 / 11982). **Draft, not walked live** | SRD v1.4 text copy + Teams CR group + Miro card, 2026-10-26 |
+| [flow-browser-reminder.md](flow-browser-reminder.md) | Firefox to Chrome last-step browser reminder + homepage announcement, all modules (EAINT-12253 / 12180 / 12574). **Draft, not walked live by us** | SRD v1.1 + Miro + Jira + Teams + Azfar repo first-look (staging/uat1, 2026-10-21) |
+| [flow-secarang-social-media.md](flow-secarang-social-media.md) | Secarang Social Media auto-posting cron — Facebook, Instagram, TikTok (EAINT-12528). **Draft, not walked live; no SRD** | Jira description + Scribe related history, 2026-10-27 |
 
 Modules with **no** flow document yet — write one when a ticket touches them:
-Service Hub (SI/BDP appointments, partly covered by `tests/service-hub`), eVOC,
-LKM refund, CIBO, Secarang, BMK, JomCheck, Wholesale/Digits Marketplace.
+eVOC, LKM refund, BMK, Wholesale/Digits Marketplace.
 
 ## Capturing live HTML is the fastest way to build one
 
@@ -71,8 +86,10 @@ re-checked and selectors that cannot be re-derived without recapturing.
 capture in the same change as the doc. The eSIM captures under
 `_reference/html/esim/` are the worked example.
 
-Still owed: the eAuto UCD pages those three docs cite — Get Free Quote, insurance
-steps 1–3, insurance listing and details, eSTM listing and details, UCD home.
+Still owed: Get Free Quote, insurance steps 2–3, and insurance details. Since
+saved in `_reference/html/eauto/` (supersedes the older owed list): insurance step 1
+(after the 69E redirect), insurance listing, eSTM listing, eSTM details, UCD home.
+`[verified: _reference/html/eauto/ listing, 2026-10-16]`
 
 ## What every flow document must contain
 

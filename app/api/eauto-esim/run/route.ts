@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
+import { killTree, runInProgressResponse } from "@/lib/server/playwrightRun";
+import { jsonAndSave } from "@/lib/server/savedResults";
+
+/** Last result saved on the server (lib/savedRunKeys.ts, 2026-10-21). */
+const SAVE_KEY = "eauto/esim";
 
 // Runs the eSIM editor (scripts/eauto-esim): find a simulator record by vehicle
 // prefix and apply the fields the user filled in. eSIM is VPN-only; the page
@@ -38,15 +43,6 @@ interface RunResult {
 let currentChild: ChildProcess | null = null;
 let stopRequested = false;
 
-function killTree(child: ChildProcess) {
-  if (!child.pid) return;
-  if (process.platform === "win32") {
-    try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); } catch { /* ignore */ }
-  } else {
-    try { process.kill(-child.pid, "SIGKILL"); } catch { try { child.kill("SIGKILL"); } catch { /* ignore */ } }
-  }
-}
-
 /** Last RESULT: line the spec printed. */
 function parseResult(output: string): RunResult | null {
   let result: RunResult | null = null;
@@ -68,6 +64,9 @@ function parseSteps(output: string): string[] {
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({})) as Partial<RunRequest>;
+
+  // One run at a time on this page (2026-10-21).
+  if (currentChild) return runInProgressResponse();
 
   if (!fs.existsSync(path.join(SCRIPT_DIR, "node_modules"))) {
     return NextResponse.json({
@@ -124,7 +123,7 @@ export async function POST(req: NextRequest) {
   const steps = parseSteps(result.output);
 
   if (stopRequested) {
-    return NextResponse.json({ stopped: true, steps, log: result.output });
+    return jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, { stopped: true, steps, log: result.output });
   }
 
   // A network-level failure to a VPN-only host is almost always the VPN, and
@@ -132,7 +131,7 @@ export async function POST(req: NextRequest) {
   const looksLikeVpn = /ERR_CONNECTION|ERR_ADDRESS_UNREACHABLE|ERR_TIMED_OUT|net::ERR|ECONNREFUSED|ETIMEDOUT/i
     .test(result.output);
 
-  return NextResponse.json({
+  return jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, {
     result: parsed,
     steps,
     hint: !parsed && looksLikeVpn

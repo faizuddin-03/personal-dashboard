@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Play, Square, Loader2, CheckCircle2, XCircle, Circle, Layers, ShieldAlert, Clock, ChevronDown, ChevronRight, Download, ExternalLink, Info, ArrowRightCircle, Copy, Check } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
+import EvidenceBulkDownload, { type EvidenceGroup } from "@/components/EvidenceBulkDownload";
 import {
   TEST_CASES, TEST_CASE_GROUPS, VPN_GATE_SKIP_TEST_CASES, RE_WAIT_TEST_CASES, CONTINUATIONS_KEY,
   type FormState, type TestCase, type RunResponse, type RunResult, type PendingContinuation,
@@ -303,12 +304,12 @@ export default function BulkRunPanel({ form }: { form: FormState }) {
   // video comes back as-is (unless it's the only one AND has a folder), and
   // several come back zipped with each TS's recordings under its own
   // subfolder, per download-videos/route.ts.
-  async function downloadSelectedVideos() {
-    if (!selectedVideos.size) return;
+  async function downloadSelectedVideos(urls: string[] = Array.from(selectedVideos)) {
+    if (!urls.length) return;
     setDownloadingVideos(true);
     setDownloadError("");
     try {
-      const files = Array.from(selectedVideos).map(url => {
+      const files = urls.map(url => {
         const owner = bulk?.items.find(item => item.videos?.some(v => v.url === url));
         return owner ? { url, folder: folderNameFor(owner) } : { url };
       });
@@ -334,6 +335,14 @@ export default function BulkRunPanel({ form }: { form: FormState }) {
       setDownloadingVideos(false);
     }
   }
+
+  // One group per batch item that has recordings, for the bulk-download bar.
+  const videoGroups: (EvidenceGroup & { urls: string[] })[] = (bulk?.items ?? []).map((item, i) => {
+    const urls = (item.videos ?? []).map(v => v.url);
+    const status = item.status === "success" || item.status === "needs-patch" ? "passed" : item.status === "fail" ? "failed" : "unknown";
+    return { key: String(i), label: folderNameFor(item), status, fileCount: urls.length, urls };
+  });
+  const pickedGroupKeys = new Set(videoGroups.filter(g => g.urls.some(u => selectedVideos.has(u))).map(g => g.key));
 
   // Advances the queue as each run completes — mirrors page.tsx's own
   // processedRunId guard so a finished run is only consumed once, even
@@ -520,7 +529,12 @@ export default function BulkRunPanel({ form }: { form: FormState }) {
 
           {bulk && bulk.items.length > 0 && (
             <div className="space-y-2">
-              {selectedVideos.size > 0 && (
+              {/* All / Passed only / Failed only / Selected across the batch —
+                  Faizuddin, 2026-10-21. "Selected" = the ticked videos. */}
+              <EvidenceBulkDownload groups={videoGroups} selected={pickedGroupKeys} busy={downloadingVideos}
+                onDownload={(g, mode) => downloadSelectedVideos(mode === "selected" ? Array.from(selectedVideos) : g.flatMap(x => x.urls))}
+                onClearSelection={() => setSelectedVideos(new Set())} />
+              {selectedVideos.size > 0 && videoGroups.filter(g => g.fileCount > 0).length < 2 && (
                 <div className="flex items-center justify-between gap-2 rounded-lg border border-indigo-800/50 bg-indigo-950/20 px-3 py-2">
                   <span className="text-[11px] text-indigo-300">{selectedVideos.size} video(s) selected</span>
                   <div className="flex items-center gap-2">
@@ -528,7 +542,7 @@ export default function BulkRunPanel({ form }: { form: FormState }) {
                       Clear
                     </button>
                     <button
-                      type="button" onClick={downloadSelectedVideos} disabled={downloadingVideos}
+                      type="button" onClick={() => downloadSelectedVideos()} disabled={downloadingVideos}
                       className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
                     >
                       {downloadingVideos ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}

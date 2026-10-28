@@ -1,0 +1,429 @@
+<!--
+  CAPTURE
+  url         https://172.30.202.114:9089/esim/jomcheck-report-resp/19/edit
+  system      eSIM (eAuto Simulator) — VPN only
+  captured    2026-09-30
+  trimmed     the <aside class="sidebar"> nav — identical on every eSIM page,
+              captured once in app-shell.html. THE FORM ITSELF IS COMPLETE:
+              every field, id, name, type and required marker is present.
+              Faizuddin pasted this page twice — once before adding a claim
+              record, once after clicking "+ Add Claim Record" once — this
+              file keeps the AFTER version (the strict superset: it shows
+              both the static form fields AND one populated claim-record
+              block, plus the <template> the "+ Add Claim Record" button
+              clones). The BEFORE version differs only in
+              <div id="claimRecordList" data-next-index="0"></div> being
+              empty.
+  notes       Record #19, "HX" prefix. Faizuddin, 2026-09-30: "i want to
+              share with you the eSim pages for JomCheck Enquiry and
+              JomCheck Report."
+
+              This is the entity that actually carries claim data — Enquiry
+              (jomcheck-enquiry-edit.html) only controls whether a vehicle is
+              found at all. Top-level fields describe the REPORT SUMMARY
+              (Possible Total Loss/BER, Total Lost Actual/BER, Windscreen/
+              Flood/Total Loss History, Latest Mileage, Accident Count, Max
+              Severity, vehicle identity fields). Below that, "Claim Records
+              (result.claimList[].value[])" is a DYNAMIC, repeatable sub-form
+              — "+ Add Claim Record" clones <template id="claimRecordTemplate">
+              client-side, replacing "__IDX__" with a running index
+              (data-next-index on #claimRecordList), and "Remove Record"
+              deletes one block. Every claim record's fields
+              (claimValues[N].vehYear, .vehMakeDesc, .vehModelDesc, .vehTrim,
+              .vin, .lossDate, .authorizedDate, .claimType, .accidentType,
+              .mileage, .approvedParts, .severity, .claimsType,
+              .totalPartsChanged, .mileageRange, .possibleTotalLoss,
+              .possibleBER) submit as part of THIS SAME form — added/removed
+              records are only persisted once "Save Changes" is clicked, same
+              trip as every other field on the page. THIS is the mechanism
+              that could force a specific claim count for a vehicle (e.g.
+              EAINT-12339's TS05, which needs exactly 1 claim and currently
+              can't force it — see knowledge/flow-jomcheck.md §7d) — driving
+              this form to add/remove claimValues[] rows before Save Changes
+              would let automation set the claim count directly, instead of
+              relying on whatever the connected source happens to return.
+-->
+<body>
+  <div class="app-layout">
+    <div class="main-content">
+      <div class="top-bar">
+  <nav class="breadcrumb-nav">
+    <a href="/esim/">
+      <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    </a>
+    <span>
+      <span class="sep">/</span>
+      <a href="/esim/jomcheck-report-resp">Jomcheck Report Resps</a>
+    </span><span>
+      <span class="sep">/</span>
+      <span class="current">Edit #19</span>
+    </span>
+  </nav>
+  <div>
+    <span class="user-avatar">A</span>
+  </div>
+</div>
+      <div class="content-body">
+        <div class="page-header">
+          <div class="page-header-left">
+            <a href="/esim/jomcheck-report-resp" class="btn-back" title="Back to list">
+              <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </a>
+            <h1 class="page-title page-title-sm">Edit Jomcheck Report Resp #19</h1>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-header">
+            <span class="form-card-header-title">EDIT RECORD</span>
+          </div>
+          <div class="form-card-body">
+            <form action="/esim/jomcheck-report-resp/save" method="post">
+              <input type="hidden" name="id" value="19">
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vnStartWith"><span>Vn Start With</span></label>
+                  <input type="text" class="form-input" id="vnStartWith" name="vnStartWith" value="HX" placeholder="Enter Vn Start With">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cnStartWith"><span>Cn Start With</span></label>
+                  <input type="text" class="form-input" id="cnStartWith" name="cnStartWith" value="HX" placeholder="Enter Cn Start With">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="useDbReport"><span>Simulator Details Only (No Default)</span></label>
+                  <select class="form-select" id="useDbReport" name="useDbReport">
+                    <option value="true">Yes</option>
+                    <option value="false" selected="selected">No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="possibleTotalLoss"><span>Possible Total Loss</span></label>
+                  <select class="form-select" id="possibleTotalLoss" name="possibleTotalLoss">
+                    <option value="true">Yes</option>
+                    <option value="false" selected="selected">No</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="possibleBER"><span>Possible BER</span></label>
+                  <select class="form-select" id="possibleBER" name="possibleBER">
+                    <option value="true">Yes</option>
+                    <option value="false" selected="selected">No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="result">
+                    <span>Result</span>
+                    <span class="required">*</span>
+                  </label>
+                  <select class="form-select" id="result" name="result" required="required">
+                    <option value="">-- Select --</option>
+                    <option value="Success" selected="selected">Success</option>
+                    <option value="Failed">Failed</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="delayMiliSeconds">
+                    <span>Delay Milliseconds</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="number" step="any" class="form-input" id="delayMiliSeconds" name="delayMiliSeconds" value="0" placeholder="Enter Delay Milliseconds" required="required">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="totalLostActual"><span>Total Lost Actual</span></label>
+                  <input type="text" class="form-input" id="totalLostActual" name="totalLostActual" value="2 RECORD" placeholder="Enter Total Lost Actual">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="totalLostBER"><span>Total Lost BER</span></label>
+                  <input type="text" class="form-input" id="totalLostBER" name="totalLostBER" value="3 RECORD" placeholder="Enter Total Lost BER">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="windscreenHistory"><span>Windscreen History</span></label>
+                  <input type="text" class="form-input" id="windscreenHistory" name="windscreenHistory" value="YES" placeholder="Enter Windscreen History">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="totalLossHistory"><span>Total Loss History</span></label>
+                  <input type="text" class="form-input" id="totalLossHistory" name="totalLossHistory" value="4 RECORD" placeholder="Enter Total Loss History">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="floodHistory"><span>Flood History</span></label>
+                  <input type="text" class="form-input" id="floodHistory" name="floodHistory" value="No Record Found" placeholder="Enter Flood History">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="latestMileage"><span>Latest Mileage</span></label>
+                  <input type="text" class="form-input" id="latestMileage" name="latestMileage" value="120500" placeholder="Enter Latest Mileage">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="latestMileageDate"><span>Latest Mileage Date</span></label>
+                  <input type="text" class="form-input" id="latestMileageDate" name="latestMileageDate" value="30 Mar 2026" placeholder="Enter Latest Mileage Date">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="accidentCount"><span>Accident Count</span></label>
+                  <input type="number" step="any" class="form-input" id="accidentCount" name="accidentCount" value="3" placeholder="Enter Accident Count">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="maxSeverity"><span>Max Severity</span></label>
+                  <input type="text" class="form-input" id="maxSeverity" name="maxSeverity" value="Medium" placeholder="Enter Max Severity">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="multipleVin"><span>Multiple VIN</span></label>
+                  <input type="text" class="form-input" id="multipleVin" name="multipleVin" value="No" placeholder="Enter Multiple VIN">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="vehRegistrationNo"><span>Veh Registration No</span></label>
+                  <input type="text" class="form-input" id="vehRegistrationNo" name="vehRegistrationNo" value="" placeholder="Enter Veh Registration No">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="createdDate"><span>Created Date</span></label>
+                  <input type="text" class="form-input" id="createdDate" name="createdDate" value="" placeholder="Enter Created Date">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="referenceID"><span>Reference ID</span></label>
+                  <input type="text" class="form-input" id="referenceID" name="referenceID" value="" placeholder="Enter Reference ID">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vin"><span>VIN</span></label>
+                  <input type="text" class="form-input" id="vin" name="vin" value="" placeholder="Enter VIN">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="vehYear"><span>Veh Year</span></label>
+                  <input type="text" class="form-input" id="vehYear" name="vehYear" value="" placeholder="Enter Veh Year">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vehMakeDesc"><span>Veh Make Desc</span></label>
+                  <input type="text" class="form-input" id="vehMakeDesc" name="vehMakeDesc" value="" placeholder="Enter Veh Make Desc">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="vehModelDesc"><span>Veh Model Desc</span></label>
+                  <input type="text" class="form-input" id="vehModelDesc" name="vehModelDesc" value="" placeholder="Enter Veh Model Desc">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vehEngine"><span>Veh Engine</span></label>
+                  <input type="text" class="form-input" id="vehEngine" name="vehEngine" value="" placeholder="Enter Veh Engine">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="vehTransmission"><span>Veh Transmission</span></label>
+                  <input type="text" class="form-input" id="vehTransmission" name="vehTransmission" value="" placeholder="Enter Veh Transmission">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vehVariant"><span>Veh Variant</span></label>
+                  <input type="text" class="form-input" id="vehVariant" name="vehVariant" value="" placeholder="Enter Veh Variant">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="marketValue"><span>Market Value</span></label>
+                  <input type="number" step="any" class="form-input" id="marketValue" name="marketValue" value="" placeholder="Enter Market Value">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="newNetSellingPrice"><span>New Net Selling Price</span></label>
+                  <input type="number" step="any" class="form-input" id="newNetSellingPrice" name="newNetSellingPrice" value="" placeholder="Enter New Net Selling Price">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="startDate"><span>Start Date</span></label>
+                  <input type="datetime-local" class="form-input" id="startDate" name="startDate" value="">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="endDate"><span>End Date</span></label>
+                  <input type="datetime-local" class="form-input" id="endDate" name="endDate" value="">
+                </div>
+              </div>
+
+              <!-- Claim records (jomcheck-report-resp only) — part of THIS form, so they are
+                   saved together when you click Create / Save Changes, on both new and existing records. -->
+              <div id="claim-records" style="margin-top:24px; border-top:1px solid var(--border); padding-top:20px;">
+                <div style="font-family:var(--font-mono); font-size:11px; font-weight:600; letter-spacing:1px; color:var(--text-tertiary); text-transform:uppercase; margin-bottom:6px;">
+                  Claim Records (result.claimList[].value[])
+                </div>
+                <p style="font-size:12px; color:var(--text-tertiary); margin-bottom:16px;">
+                  Added/removed here and saved together when you click <strong>Save Changes</strong>.
+                </p>
+
+                <div id="claimRecordList" data-next-index="0">
+                  <div class="claim-record" style="border:1px solid #e5e7eb; border-radius:8px; padding:12px; margin-bottom:12px;">
+                    <input type="hidden" name="claimValues[0].id" value="">
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Veh Year</label><input class="form-input" name="claimValues[0].vehYear"></div>
+                      <div class="form-group"><label class="form-label">Veh Make Desc</label><input class="form-input" name="claimValues[0].vehMakeDesc"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Veh Model Desc</label><input class="form-input" name="claimValues[0].vehModelDesc"></div>
+                      <div class="form-group"><label class="form-label">Veh Trim</label><input class="form-input" name="claimValues[0].vehTrim"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">VIN</label><input class="form-input" name="claimValues[0].vin"></div>
+                      <div class="form-group"><label class="form-label">Loss Date</label><input class="form-input" name="claimValues[0].lossDate"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Authorized Date</label><input class="form-input" name="claimValues[0].authorizedDate"></div>
+                      <div class="form-group"><label class="form-label">Claim Type</label><input class="form-input" name="claimValues[0].claimType"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Accident Type</label><input class="form-input" name="claimValues[0].accidentType"></div>
+                      <div class="form-group"><label class="form-label">Mileage</label><input class="form-input" name="claimValues[0].mileage"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Approved Parts</label><input class="form-input" name="claimValues[0].approvedParts"></div>
+                      <div class="form-group"><label class="form-label">Severity</label><input class="form-input" name="claimValues[0].severity"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Claims Type (ICAP code)</label><input class="form-input" name="claimValues[0].claimsType"></div>
+                      <div class="form-group"><label class="form-label">Total Parts Changed</label><input class="form-input" name="claimValues[0].totalPartsChanged"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Mileage Range</label><input class="form-input" name="claimValues[0].mileageRange"></div>
+                      <div class="form-group"><label class="form-label">Possible Total Loss</label>
+                        <select class="form-select" name="claimValues[0].possibleTotalLoss">
+                          <option value="" selected="">-- Not set --</option>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Possible BER</label>
+                        <select class="form-select" name="claimValues[0].possibleBER">
+                          <option value="" selected="">-- Not set --</option>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button type="button" class="btn btn-danger-outline" onclick="removeClaimRecord(this)">Remove Record</button>
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-outline" onclick="addClaimRecord()">+ Add Claim Record</button>
+
+                <!-- Template for a new (empty) record; __IDX__ is replaced with a fresh index by the script. -->
+                <template id="claimRecordTemplate">
+                  <div class="claim-record" style="border:1px solid #e5e7eb; border-radius:8px; padding:12px; margin-bottom:12px;">
+                    <input type="hidden" name="claimValues[__IDX__].id" value="">
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Veh Year</label><input class="form-input" name="claimValues[__IDX__].vehYear"></div>
+                      <div class="form-group"><label class="form-label">Veh Make Desc</label><input class="form-input" name="claimValues[__IDX__].vehMakeDesc"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Veh Model Desc</label><input class="form-input" name="claimValues[__IDX__].vehModelDesc"></div>
+                      <div class="form-group"><label class="form-label">Veh Trim</label><input class="form-input" name="claimValues[__IDX__].vehTrim"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">VIN</label><input class="form-input" name="claimValues[__IDX__].vin"></div>
+                      <div class="form-group"><label class="form-label">Loss Date</label><input class="form-input" name="claimValues[__IDX__].lossDate"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Authorized Date</label><input class="form-input" name="claimValues[__IDX__].authorizedDate"></div>
+                      <div class="form-group"><label class="form-label">Claim Type</label><input class="form-input" name="claimValues[__IDX__].claimType"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Accident Type</label><input class="form-input" name="claimValues[__IDX__].accidentType"></div>
+                      <div class="form-group"><label class="form-label">Mileage</label><input class="form-input" name="claimValues[__IDX__].mileage"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Approved Parts</label><input class="form-input" name="claimValues[__IDX__].approvedParts"></div>
+                      <div class="form-group"><label class="form-label">Severity</label><input class="form-input" name="claimValues[__IDX__].severity"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Claims Type (ICAP code)</label><input class="form-input" name="claimValues[__IDX__].claimsType"></div>
+                      <div class="form-group"><label class="form-label">Total Parts Changed</label><input class="form-input" name="claimValues[__IDX__].totalPartsChanged"></div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Mileage Range</label><input class="form-input" name="claimValues[__IDX__].mileageRange"></div>
+                      <div class="form-group"><label class="form-label">Possible Total Loss</label>
+                        <select class="form-select" name="claimValues[__IDX__].possibleTotalLoss">
+                          <option value="" selected="">-- Not set --</option>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-row-2col">
+                      <div class="form-group"><label class="form-label">Possible BER</label>
+                        <select class="form-select" name="claimValues[__IDX__].possibleBER">
+                          <option value="" selected="">-- Not set --</option>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button type="button" class="btn btn-danger-outline" onclick="removeClaimRecord(this)">Remove Record</button>
+                  </div>
+                </template>
+
+                <script>
+                  (function () {
+                    var list = document.getElementById('claimRecordList');
+                    var nextIdx = parseInt((list && list.getAttribute('data-next-index')) || '0', 10);
+                    window.addClaimRecord = function () {
+                      var tpl = document.getElementById('claimRecordTemplate');
+                      var html = tpl.innerHTML.replace(/__IDX__/g, String(nextIdx++));
+                      var tmp = document.createElement('div');
+                      tmp.innerHTML = html.trim();
+                      list.appendChild(tmp.firstElementChild);
+                    };
+                    window.removeClaimRecord = function (btn) {
+                      var row = btn.closest('.claim-record');
+                      if (row) row.remove();
+                    };
+                  })();
+                </script>
+              </div>
+
+              <div class="form-actions">
+                <a href="/esim/jomcheck-report-resp" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

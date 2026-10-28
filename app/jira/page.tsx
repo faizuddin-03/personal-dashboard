@@ -480,7 +480,7 @@ export default function JiraPage() {
                   <div className="flex flex-col items-center py-8 text-slate-600 text-sm">
                     <BookOpen size={20} className="mb-2 opacity-40" />
                     <p>No CR selected</p>
-                    <p className="text-xs mt-1 text-slate-700">Click "Select CR" above to view its bug tickets</p>
+                    <p className="text-xs mt-1 text-slate-700">Click &quot;Select CR&quot; above to view its bug tickets</p>
                   </div>
                 )}
 

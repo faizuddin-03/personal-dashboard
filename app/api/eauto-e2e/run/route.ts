@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
+import { killTree, runInProgressResponse } from "@/lib/server/playwrightRun";
 
 // Runs the eAuto UCD Insurance purchase E2E (scripts/eauto-e2e) and streams
 // its PROGRESS:/ART:/RESULT: stdout back as a parsed result. A real purchase
@@ -17,15 +18,6 @@ let currentChild: ChildProcess | null = null;
 let stopRequested = false;
 let forceResolveRun: ((r: { code: number; output: string }) => void) | null = null;
 let runOutputBuffer = "";
-
-function killTree(child: ChildProcess) {
-  if (!child.pid) return;
-  if (process.platform === "win32") {
-    try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); } catch { /* ignore */ }
-  } else {
-    try { process.kill(-child.pid, "SIGKILL"); } catch { try { child.kill("SIGKILL"); } catch { /* ignore */ } }
-  }
-}
 
 // Parse the last RESULT:/PROGRESS: lines and collect ART: screenshots.
 function parseStream(output: string) {
@@ -84,6 +76,9 @@ function publishArtifacts(artifactDir: string): { screenshots: string[]; video?:
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({})) as Record<string, string | boolean>;
+
+  // One run at a time on this page (2026-10-21).
+  if (currentChild) return runInProgressResponse();
 
   if (!fs.existsSync(path.join(SCRIPT_DIR, "node_modules"))) {
     return NextResponse.json({ error: `Playwright not installed. Run:\n\n  cd scripts/eauto-e2e && npm install && npx playwright install chromium` }, { status: 500 });

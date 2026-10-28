@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
+import { killTree as killProcessTree, runInProgressResponse } from "@/lib/server/playwrightRun";
+import { jsonAndSave } from "@/lib/server/savedResults";
+
+/** Last result saved on the server (lib/savedRunKeys.ts, 2026-10-21). */
+const SAVE_KEY = "eauto/company-details-checker";
 
 // ── Running-process registry ──────────────────────────────────
 // Same shape as app/api/insurance/check/route.ts — see that file for the
@@ -10,17 +15,6 @@ let currentChild: ChildProcess | null = null;
 let stopRequested = false;
 let forceResolveRun: ((r: { code: number; output: string }) => void) | null = null;
 let runOutputBuffer = "";
-
-function killProcessTree(child: ChildProcess) {
-  if (!child.pid) return;
-  if (process.platform === "win32") {
-    try { spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"]); }
-    catch { /* ignore */ }
-  } else {
-    try { process.kill(-child.pid, "SIGKILL"); }
-    catch { try { child.kill("SIGKILL"); } catch { /* ignore */ } }
-  }
-}
 
 // ── Configuration ─────────────────────────────────────────────
 const SCRIPT_DIR  = process.env.COMPANY_CHECKER_SCRIPT_DIR
@@ -66,6 +60,9 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: "Invalid JSON in request body." }, { status: 400 });
   }
+
+  // One run at a time on this page (2026-10-21).
+  if (currentChild) return runInProgressResponse();
 
   const { rows = [], username = "", password = "", baseUrl = "", concurrency } = body;
 
@@ -122,15 +119,15 @@ export async function POST(req: NextRequest) {
 
   if (stopRequested) {
     const results = readOutputJson();
-    return NextResponse.json({ results, log: result.output, stopped: true });
+    return jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, { results, log: result.output, stopped: true });
   }
 
   if (result.code !== 0 && !fs.existsSync(OUTPUT_JSON)) {
-    return NextResponse.json({ error: result.output || "Playwright test failed with no output." }, { status: 500 });
+    return jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, { error: result.output || "Playwright test failed with no output." }, { status: 500 });
   }
 
   const results = readOutputJson();
-  return NextResponse.json({ results, log: result.output });
+  return jsonAndSave(SAVE_KEY, (body as { runId?: unknown }).runId, { results, log: result.output });
 }
 
 // ── Stop the in-flight run ────────────────────────────────────

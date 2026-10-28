@@ -46,7 +46,7 @@ function AdfNode({ node }: { node: AdfNode }): React.ReactNode {
       const cls = level === 1 ? "text-base font-bold text-slate-100 mb-2 mt-3 first:mt-0"
                 : level === 2 ? "text-sm font-bold text-slate-200 mb-1.5 mt-3 first:mt-0"
                 : "text-sm font-semibold text-slate-300 mb-1 mt-2 first:mt-0";
-      const Tag = `h${Math.min(level, 6)}` as keyof JSX.IntrinsicElements;
+      const Tag = `h${Math.min(Math.max(level, 1), 6)}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
       return <Tag className={cls}>{renderChildren(node)}</Tag>;
     }
 

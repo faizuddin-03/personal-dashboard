@@ -1,0 +1,204 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/report/view.do  (UCD top bar "REPORTS", #reports-link)
+Environment: staging.eauto.my/uat1, UCD login MUHAMMAD FAIZUDDIN BIN BIDI (company 1109700)
+Captured: 2026-10-19, pasted into chat by Faizuddin (EAINT-12412 TS10 / TS11).
+Trimmed: the shared footer <style> block and the footer markup were dropped; the
+insurance/logout dialogs and the header script are kept. The report grid is untrimmed.
+Notes: each report is a <button onclick="window.location='...'"> (no <a>), so click by
+button text: "PAYMENT BREAKDOWN REPORT" -> /view/ucd/report/e-statement,
+"DOWNLOAD PAYMENT DOCUMENT" -> /view/ucd/report/download-payment-document.
+-->
+<body>
+<div id="container" class="ucd-container">
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <div class="page-name">Reports</div>
+    </div>
+    <div class="common-header-container">
+        <div class="common-header">
+            <img src="/uat1/images/dashboard/icon_reports.svg" class="jpj-logo common-header-icon">
+            <div style="font-weight:bold; font-size:20px; margin-left: 5px;">REPORTS</div>
+        </div>
+    </div>
+    <div class="box-container" style="margin: 20px 0;">
+        <div class="box">
+            <div class="flex flex-column">
+                <div class="flex justify-content-center">
+                    <img src="/uat1/images/icon_payment_breakdown.svg" class="icon">
+                </div>
+                <div class="flex justify-content-center">
+                    <button onclick="window.location='/uat1/view/ucd/report/e-statement'" class="btn-blue-outline button">
+                        PAYMENT BREAKDOWN REPORT
+                    </button>
+                </div>
+                <h5 class="menu-title">Payment breakdown details in PDF</h5>
+            </div>
+        </div>
+        <div class="box">
+            <div class="flex flex-column">
+                <div class="flex justify-content-center">
+                    <img src="/uat1/images/icon_payment_document.svg" class="icon">
+                </div>
+                <div class="flex justify-content-center">
+                    <button onclick="window.location='/uat1/view/ucd/report/download-payment-document'" class="btn-blue-outline button">
+                        DOWNLOAD PAYMENT DOCUMENT
+                    </button>
+                </div>
+                <h5 class="menu-title">Download Payment zip file here</h5>
+            </div>
+        </div>
+        <div class="box">
+            <div class="flex flex-column">
+                <div class="flex justify-content-center">
+                    <img src="/uat1/images/icon_ucd_payment.svg" class="icon">
+                </div>
+                <div class="flex justify-content-center">
+                    <button onclick="window.location='/uat1/view/ucd/report/payment'" class="btn-blue-outline button">
+                        UCD PAYMENT REPORT
+                    </button>
+                </div>
+                <h5 class="menu-title">UCD Payment Report</h5>
+            </div>
+        </div>
+        <div class="box">
+            <div class="flex flex-column">
+                <div class="flex justify-content-center">
+                    <img src="/uat1/images/icon_inter_branch_transfer.svg" class="icon">
+                </div>
+                <div class="flex justify-content-center">
+                    <button onclick="window.location='/uat1/view/ucd/report/inter-branch-transfer'" class="btn-blue-outline button">
+                        VEHICLE INTER-BRANCH TRANSFER
+                    </button>
+                </div>
+                <h5 class="menu-title">Vehicle Inter-Branch Transfer</h5>
+            </div>
+        </div>
+        <div class="box">
+            <div class="flex flex-column">
+                <div class="flex justify-content-center">
+                    <img src="/uat1/images/icon_audit_trail.svg" class="icon">
+                </div>
+                <div class="flex justify-content-center">
+                    <button onclick="window.location='/uat1/view/ucd/report/audit-log'" class="btn-blue-outline button">
+                        AUDIT TRAIL LOG
+                    </button>
+                </div>
+                <h5 class="menu-title">Audit Trail Log</h5>
+            </div>
+        </div>
+        <div class="box">
+            <div class="flex flex-column">
+                <div class="flex justify-content-center">
+                    <img src="/uat1/images/icon_vehicle_history.svg" class="icon">
+                </div>
+                <div class="flex justify-content-center">
+                    <button onclick="window.location='/uat1/view/ucd/report/vehicle-history'" class="btn-blue-outline button">
+                        VEHICLE HISTORY REPORT
+                    </button>
+                </div>
+                <h5 class="menu-title">Vehicle History Report</h5>
+            </div>
+        </div>
+        <div class="box">
+            <div class="flex flex-column">
+                <div class="flex justify-content-center">
+                    <img src="/uat1/images/icon_movement_report.svg" class="icon">
+                </div>
+                <div class="flex justify-content-center">
+                    <button onclick="window.location='/uat1/view/ucd/report/vehicle-movement'" class="btn-blue-outline button">
+                        VEHICLE MOVEMENT REPORT
+                    </button>
+                </div>
+                <h5 class="menu-title">Vehicle Movement Report</h5>
+            </div>
+        </div>
+            <div class="box empty-box"></div>
+            <div class="box empty-box"></div>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="/uat1/view/ucd/home/screen.css">
+<script>
+$(document).ready(function() {
+    $("#common-bar .page-title").text($("head title").text());
+    $("#header a.logout").click(function() {
+            $("#logout-confirmation").dialog({
+                modal: true, width: "300", minHeight: "150", resizable: false, draggable: false,
+                position: "center", closeOnEscape: false,
+                close: function() { $(this).dialog("destroy"); },
+                buttons: {
+                    "No": function() { $(this).dialog("close"); $(this).dialog("destroy"); },
+                    "Yes": function() { window.location.href = "/uat1/user/logout.do"; }
+                },
+                open: function() {
+                    $('.ui-dialog-buttonpane').find('button:contains("No")').addClass('cancel-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button:contains("Yes")').addClass('confirm-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                }
+        }).dialog("open");
+        return false;
+    });
+    LoginSessionTimer.startCountdown();
+    $("#deposit-info").click(function() {
+        window.location.href = "/uat1/view/ucd/deposit/generate.do?companyAccountId=" + 1109700;
+        return false;
+    });
+    $("#payment-history").click(function() {
+        window.location.href = "/uat1/view/ucd/topup-pob/payment-history.do?companyId=" + 1109700;
+        return false;
+    });
+    $(":button, :submit").mouseenter(function() { $(this).css({'cursor': 'pointer'}); })
+        .mouseleave(function() { $(this).css({'cursor': 'default'}); });
+    $("#settings-link").click(function() { window.location="/uat1/view/ucd/settings/view.do"; });
+    $("#reports-link").click(function() { window.location="/uat1/view/ucd/report/view.do"; });
+    $("#insurance-link").click(function() { window.location="/uat1/view/ucd/insurance"; });
+    $("#econtract").live("click", function() {
+        var conf = "width=800,height=450,scrollbars=yes,location=no,menubar=no,status=no,toolbar=no,directories=no";
+        popup_window = window.open("/uat1/view/ucd/insurance/enquiry/generate-econtract-page.do","",conf);
+    });
+});
+function openAccessDeniedDialog() {
+    $("#access-denied").dialog({
+        modal: true, width: "300", minHeight: "150", resizable: false, draggable: false,
+        position: "center", closeOnEscape: false,
+        close: function() { $(this).dialog("destroy"); },
+        buttons: { "Ok": function() { $(this).dialog("close"); $(this).dialog("destroy"); } },
+        open: function() {
+            $('.ui-dialog-buttonpane').find('button:contains("Ok")').addClass('confirm-dialog-btn');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+        }
+    }).dialog("open");
+}
+</script>
+<div id="header">
+    <div id="home-bar">
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/home'" id="home-link" style="cursor: default;">HOME</button>
+    <button class="tab-button1" onclick="" id="insurance-link" style="cursor: default;">INSURANCE</button>
+    <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+    <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/user-guide'" id="user-guide-link">USER GUIDE</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/download'" id="download-link">DOWNLOAD</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/contact'" id="contact-link">CONTACT US</button>
+    </div>
+    <table id="common-bar">
+    <tbody><tr>
+    <td class="page-title" nowrap="">Online Services - Reports</td>
+    <td>
+    <ol class="inline">
+        <li><img src="/uat1/images/icon_user.gif" style="position:relative; top:4px"> <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI  </span></li>
+        <li>&nbsp;|&nbsp;</li>
+        <li><a href="#" class="logout" style="position:relative; top:-1px">Logout</a></li>
+    </ol>
+    </td>
+    </tr>
+    </tbody></table>
+</div>
+<div id="logout-confirmation" style="display:none;" title="Logout Confirmation">
+    Sure to logout?
+</div>
+<div id="access-denied" style="display:none;">
+    Sorry, access denied.
+</div>
+</body>

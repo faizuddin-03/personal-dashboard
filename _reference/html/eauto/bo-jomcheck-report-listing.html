@@ -1,0 +1,138 @@
+<!--
+  URL: /uat1/view/admin/jomcheck/report-listing (BackOffice "JomCheck Report Listing")
+  Page: search form (Vehicle No./Chassis No.) blank state + the post-search results
+  table (search Vehicle No. HXJ0001, 1 record) showing the live 29-column layout
+  EAINT-12339 changes — this is the primary automation target for that CR.
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: none — only 1 row matched, kept whole.
+  IMPORTANT for EAINT-12339: this capture is PRE-v2.0-push data (Type of Claim shows
+  "Own Damage (OD)" not "Windscreen (WS)"-style codes yet, Possible Total Loss/Possible
+  BER both show "N/A" — matches the "existing/pre-push transaction" behaviour TS20-TS24
+  describe, not the new post-push behaviour). Re-capture after a v2.0-connected
+  transaction exists to get the "new" state for TS05-TS19.
+-->
+
+<!-- ============ STATE 1: blank search form ============ -->
+<body>
+<div id="container">
+<table width="100%">
+    <tbody><tr>
+        <td class="not-to-print">
+            <form id="search-form" style="margin-left:20px;">
+            <table style="width:100%">
+                <tbody><tr>
+                    <td style="padding-left:20px; white-space: nowrap;">
+                        <b>Vehicle No.:</b>
+                        <input type="text" name="vehicleNo" id="vehicleNo" value="" size="15">&nbsp;
+                        <b>Chassis No.:</b>
+                        <input type="text" name="chassisNo" id="chassisNo" value="" size="30">&nbsp;
+                        <input type="submit" id="to-search" value="SEARCH" style="height:35px;">
+                        <a href="#" id="to-reset">Reset</a>
+                        <a href="#" id="to-export" style="display:none;">Export</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top:10px; font-size:14px" class="center"><b>JomCheck Report Listing</b></td>
+                </tr>
+            </tbody></table>
+            <input type="hidden" name="pageNo" value="1">
+            </form>
+        </td>
+    </tr>
+    <tr><td id="result" colspan="2">&nbsp;</td></tr>
+</tbody></table>
+</div>
+</body>
+
+<!-- ============ STATE 2: after Vehicle No. HXJ0001 + SEARCH (1 record) ============ -->
+<!--
+Export link pattern once a search is active:
+/uat1/download/admin/jomcheck/report-listing/export.do?vehicleNo=HXJ0001&pageNo=1
+Note banner above the table (dates before this CR's push, general to the listing,
+not JomCheck-2.0-specific):
+  "Note: Before 22 April 2026,
+   a. Avg. Market Value / Avg. Retail Price is displayed as Avg. Market Value.
+   b. Approx. New Car Price / Recommended Trade Price is displayed as Approx. New Car Price."
+Row count indicator: <div id="result-summary" data-count="1">1 record(s) in total</div>
+-->
+<div style="padding-left:20px; padding-top:8px; padding-bottom:8px;">
+    Note: Before 22 April 2026,
+    <div style="padding-left:15px;">
+        a. Avg. Market Value / Avg. Retail Price is displayed as Avg. Market Value.<br>
+        b. Approx. New Car Price / Recommended Trade Price is displayed as Approx. New Car Price.
+    </div>
+</div>
+
+<div id="result-summary" data-count="1">1 record(s) in total</div>
+
+<div style="overflow-x: auto;">
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+    <tr class="header" style="background:#58ACFA; color:white;">
+        <th class="col" style="min-width:30px;">#</th>
+        <th class="col" style="min-width:80px;">Date &amp; Time</th>
+        <th class="col" style="min-width:80px;">Vehicle Number</th>
+        <th class="col" style="min-width:80px;">Chassis Number</th>
+        <th class="col" style="min-width:80px;">Transaction Number</th>
+        <th class="col" style="min-width:70px;">Total Loss History (Actual)</th>
+        <th class="col" style="min-width:70px;">Possible Total Loss</th>
+        <th class="col" style="min-width:70px;">Total Loss History (BER)</th>
+        <th class="col" style="min-width:70px;">Possible BER</th>
+        <th class="col" style="min-width:70px;">Make / Brand</th>
+        <th class="col" style="min-width:70px;">Model</th>
+        <th class="col" style="min-width:50px;">Year Make</th>
+        <th class="col" style="min-width:70px;">Variant</th>
+        <th class="col" style="min-width:60px;">Engine CC</th>
+        <th class="col" style="min-width:70px;">Transmission</th>
+        <th class="col" style="min-width:120px;">Avg. Market Value / Avg. Retail Price</th>
+        <th class="col" style="min-width:120px;">Approx. New Car Price / Recommended Trade Price</th>
+        <th class="col" style="min-width:50px;">Flood History</th>
+        <th class="col" style="min-width:60px;">Windscreen Claim</th>
+        <th class="col" style="min-width:80px;">Multiple Registration of Car Plate / Chassis No.</th>
+        <th class="col" style="min-width:70px;">Last Mileage Recorded</th>
+        <th class="col" style="min-width:60px;">Accident Record</th>
+        <th class="col" style="min-width:70px;">Date of Loss</th>
+        <th class="col" style="min-width:70px;">Date of Authorized</th>
+        <th class="col" style="min-width:70px;">Odometer Reading</th>
+        <th class="col" style="min-width:70px;">Type of Claim</th>
+        <th class="col" style="min-width:70px;">Total No. of Parts Approved for Change</th>
+        <th class="col" style="min-width:60px;">State in Malaysia</th>
+        <th class="col" style="min-width:70px;">Incidents Severity Scale</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="odd">
+        <td class="col-c">1</td>
+        <td class="col-c">30-09-2026 14:20</td>
+        <td class="col-c">HXJ0001</td>
+        <td class="col-c">PPVZZZ60ZEL003133 (-)</td>
+        <td class="col-c">J690008380</td>
+        <td class="col-c">-</td>
+        <td class="col-c">N/A</td>
+        <td class="col-c">-</td>
+        <td class="col-c">N/A</td>
+        <td class="col-c">Volkswagen</td>
+        <td class="col-c">Polo</td>
+        <td class="col-c">2014</td>
+        <td class="col-c">MK5 Sedan Petrol - Unleaded (ULP) 5st 4dr Automatic 4cyl 1598cc FWD</td>
+        <td class="col-c">Piston</td>
+        <td class="col-c">Automatic</td>
+        <td class="col-c">19172.0</td>
+        <td class="col-c">14571.0</td>
+        <td class="col-c">-</td>
+        <td class="col-c">-</td>
+        <td class="col-c">-</td>
+        <td class="col-c">-</td>
+        <td class="col-c">-</td>
+        <td class="col">1. 22 Nov 2019<br>2. 22 Aug 2021<br></td>
+        <td class="col">1. 26 Nov 2019<br>2. 17 Sep 2021<br></td>
+        <td class="col">1. 0<br>2. 226825<br></td>
+        <td class="col">1. Own Damage (OD)<br>2. Own Damage (OD)<br></td>
+        <td class="col">1. 3<br>2. 8<br></td>
+        <td class="col-c">-</td>
+        <td class="col">1. MEDIUM<br>2. SEVERE<br></td>
+    </tr>
+    </tbody>
+</table>
+</div>
