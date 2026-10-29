@@ -8,8 +8,8 @@ import { ddmmyyyy, today } from './format';
 // Steps the workflow TS (sections E to J, M) share.
 
 /** Opens the month typed on the row as `role` and checks it is in status `want`. */
-export async function openAs(page: Page, ts: string, role: RoleKey, want: MonthState, monthKey: 'E12028_MONTH' | 'E12028_MONTH2' = 'E12028_MONTH') {
-  const month = monthInput(monthKey, 'Month');
+export async function openAs(page: Page, ts: string, role: RoleKey, want: MonthState, monthKey = 'E12028_MONTH', field = 'Month') {
+  const month = monthInput(monthKey, field);
   const s = new Session(page, ts);
   await s.as(role);
   const { details } = await s.openMonth(month);

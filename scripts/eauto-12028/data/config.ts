@@ -55,7 +55,7 @@ export const CONFIG = {
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /** Reads a month typed on the TS row (E12028_MONTH / E12028_MONTH2) as its name. */
-export function monthInput(k: 'E12028_MONTH' | 'E12028_MONTH2', field: string): string {
+export function monthInput(k: string, field: string): string {
   const v = required(k, field);
   const byName = MONTHS.find(m => m.toLowerCase() === v.toLowerCase());
   const byNo = /^\d{1,2}$/.test(v) ? MONTHS[Number(v) - 1] : undefined;

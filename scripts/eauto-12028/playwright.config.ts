@@ -38,7 +38,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
     acceptDownloads: true,
-    // 12028_TS86 pastes a date from the clipboard, as a person would.
+    // 12028_TS37 pastes a date from the clipboard, as a person would.
     permissions: ['clipboard-read', 'clipboard-write'],
     // Object form with an explicit size — the bare 'on' string downscales the
     // recording to fit 800x800 (scaffold skill §1, video-resolution trap).

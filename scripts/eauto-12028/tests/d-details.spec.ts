@@ -3,12 +3,13 @@ import { Session } from '../utils/session';
 import { tagOf } from '../data/priority';
 import { CONFIG, MONTHS, countInput, monthInput, required } from '../data/config';
 import { STATES } from '../data/expected';
-import { AMOUNT_RE, COUNT_RE, fmtAmount, fmtCount, toNumber } from '../utils/format';
+import { AMOUNT_RE, fmtAmount, fmtCount, toNumber } from '../utils/format';
+import { Checks } from '../utils/combined';
 import { AplDetailsPage } from '../pages/AplDetailsPage';
 import { TxSummaryStatePage } from '../pages/TxSummaryStatePage';
 import { TableData } from '../utils/table';
 
-// D. Details page figures — 12028_TS26 to TS40. As the Drafter unless named.
+// D. Details page figures — 12028_TS14 to TS19. As the Drafter unless named.
 // [unconfirmed] the Details page is not captured live; see pages/AplDetailsPage.ts.
 
 const VEH = {
@@ -31,7 +32,7 @@ function stateInput(k: 'E12028_STATE' | 'E12028_STATE2', field: string): { code:
   return { code, name: st.names[0] };
 }
 
-async function stateCount(d: AplDetailsPage, data: TableData, code: string, header: string): Promise<{ n: number; cell: ReturnType<AplDetailsPage['stateCell']> }> {
+async function stateCount(d: AplDetailsPage, data: TableData, code: string, header: string) {
   const r = d.stateRows(data).find(x => x.code === code);
   if (!r) throw new Error(`No state row with code (${code}) on the Details page.`);
   const cell = d.stateCell(data, r.row, header);
@@ -39,204 +40,121 @@ async function stateCount(d: AplDetailsPage, data: TableData, code: string, head
   return { n: toNumber(d.cell(data, r.row, header), `(${code}) ${header}`), cell };
 }
 
-test('12028_TS26: Details lists 16 states with codes 01 to 16', tagOf('12028_TS26'), async ({ page }) => {
-  const ts = '12028_TS26';
-  const month = monthInput('E12028_MONTH', 'Closed month with data');
+test('12028_TS14: Details shows 16 states, TOTAL and amounts at the FMC and MMSDA rates', tagOf('12028_TS14'), async ({ page }) => {
+  const ts = '12028_TS14';
+  const month = monthInput('E12028_MONTH', 'Closed month with an amount of 1,000 or more');
   const s = new Session(page, ts);
   await s.as('drafter');
   const { details: d } = await s.openMonth(month);
-  await test.step('Check 16 state rows with codes (01) to (16) and a TOTAL row', async () => {
-    const data = await d.readStates();
-    const rows = d.stateRows(data);
-    const codes = rows.map(r => r.code).sort();
-    const badNames = rows.filter(r => {
-      const st = STATES.find(x => x.code === r.code);
-      const name = r.name.replace(/\s*\(\d{2}\)\s*$/, '').toLowerCase();
-      return !st || !st.names.some(n => n.toLowerCase() === name);
-    });
-    for (const r of badNames) await d.captureIssue(`${ts}-${r.code}`, d.stateRowAt(r.row), `"${r.name}" is not the SRD name for (${r.code})`);
+  const data = await d.readStates();
+  const rows = d.stateRows(data);
+  const c = new Checks(d, ts);
+  console.log(`DETAIL:${JSON.stringify({ label: 'Headers', value: data.headers.join(' | ') })}`);
+  await test.step('Check 16 state rows with codes (01) to (16), SRD names, and a TOTAL row', async () => {
     await d.showValue(d.stateTable());
-    await d.verify(`${ts}-states`, d.stateTable(), `${rows.length} state rows, codes ${codes.join(',')}`, async () => {
-      expect(codes).toEqual(STATES.map(x => x.code));
-      expect(badNames.map(r => r.name)).toEqual([]);
-      expect(() => d.totalRow(data)).not.toThrow();
+    await c.run('16 states', d.stateTable(), () => {
+      expect(rows.map(r => r.code).sort()).toEqual(STATES.map(x => x.code));
+      const badNames = rows.filter(r => {
+        const st = STATES.find(x => x.code === r.code);
+        const name = r.name.replace(/\s*\(\d{2}\)\s*$/, '').toLowerCase();
+        return !st || !st.names.some(n => n.toLowerCase() === name);
+      });
+      expect(badNames.map(r => r.name), 'names not as SRD v1.1 REQ-008').toEqual([]);
+      d.totalRow(data);
     });
-    await d.captureEvidence(`${ts}-states`);
   });
-});
-
-for (const c of [
-  { title: '12028_TS27: Details TOTAL sums the car columns of 16 states', v: 'Car' as Vehicle },
-  { title: '12028_TS28: Details TOTAL sums the motorcycle columns of 16 states', v: 'Motorcycle' as Vehicle },
-]) {
-  const ts = c.title.split(':')[0];
-  const h = VEH[c.v];
-  test(c.title, tagOf(ts), async ({ page }) => {
-    const month = monthInput('E12028_MONTH', 'Closed month');
-    const s = new Session(page, ts);
-    await s.as('drafter');
-    const { details: d } = await s.openMonth(month);
-    await test.step(`Add up ${h.count} and ${h.amount} of the 16 states and compare with TOTAL`, async () => {
-      const data = await d.readStates();
-      const rows = d.stateRows(data);
-      const sumN = rows.reduce((t, r) => t + toNumber(d.cell(data, r.row, h.count), h.count), 0);
-      const sumA = rows.reduce((t, r) => t + toNumber(d.cell(data, r.row, h.amount), h.amount), 0);
+  for (const v of Object.values(VEH)) {
+    await test.step(`Check ${v.amount} = ${v.count} × ${v.rate}.00 for every state`, async () => {
+      for (const r of rows) {
+        const want = fmtAmount(toNumber(d.cell(data, r.row, v.count), v.count) * v.rate);
+        await c.run(`${r.code} ${v.amount}`, d.stateCell(data, r.row, v.amount), () => expect(d.cell(data, r.row, v.amount)).toBe(want));
+      }
+    });
+    await test.step(`Check TOTAL ${v.count} and TOTAL ${v.amount} equal the sum of the 16 states`, async () => {
+      const sumN = rows.reduce((t, r) => t + toNumber(d.cell(data, r.row, v.count), v.count), 0);
+      const sumA = rows.reduce((t, r) => t + toNumber(d.cell(data, r.row, v.amount), v.amount), 0);
       const total = d.totalRow(data);
-      const cells = [d.stateCell(data, total, h.count), d.stateCell(data, total, h.amount)];
+      const cells = [d.stateCell(data, total, v.count), d.stateCell(data, total, v.amount)];
       for (const x of cells) await d.showValue(x);
-      await d.verify(`${ts}-total`, cells, `TOTAL should be ${fmtCount(sumN)} / ${fmtAmount(sumA)}`, async () => {
-        expect(d.cell(data, total, h.count)).toBe(fmtCount(sumN));
-        expect(d.cell(data, total, h.amount)).toBe(fmtAmount(sumA));
+      await c.run(`TOTAL ${v.count}`, cells, () => {
+        expect(d.cell(data, total, v.count)).toBe(fmtCount(sumN));
+        expect(d.cell(data, total, v.amount)).toBe(fmtAmount(sumA));
       });
     });
-  });
-}
-
-for (const c of [
-  { title: '12028_TS29: Each state Cars (RM) equals Car Transactions x 1.00', v: 'Car' as Vehicle },
-  { title: '12028_TS30: Each state Motorcycles (RM) equals Motorcycle Transactions x 2.00', v: 'Motorcycle' as Vehicle },
-]) {
-  const ts = c.title.split(':')[0];
-  const h = VEH[c.v];
-  test(c.title, tagOf(ts), async ({ page }) => {
-    const month = monthInput('E12028_MONTH', 'Closed month');
-    const s = new Session(page, ts);
-    await s.as('drafter');
-    const { details: d } = await s.openMonth(month);
-    await test.step(`Check ${h.amount} = ${h.count} × ${h.rate}.00 for every state`, async () => {
-      const data = await d.readStates();
-      const wrong: string[] = [];
-      for (const r of d.stateRows(data)) {
-        const want = fmtAmount(toNumber(d.cell(data, r.row, h.count), h.count) * h.rate);
-        const shown = d.cell(data, r.row, h.amount);
-        if (shown !== want) {
-          wrong.push(`${r.name}: ${shown} (expected ${want})`);
-          await d.captureIssue(`${ts}-${r.code}`, d.stateCell(data, r.row, h.amount), `${shown}, expected ${want}`);
-        }
-      }
-      await d.showValue(d.stateTable());
-      expect(wrong, `${h.amount} ≠ ${h.count} × ${h.rate}.00`).toEqual([]);
+  }
+  await test.step('Check every amount is #,##0.00 and a 1,000+ amount has the comma', async () => {
+    const list = [...rows.map(r => r.row), d.totalRow(data)].flatMap(row => ['Cars (RM)', 'Motorcycles (RM)'].map(h => ({ text: d.cell(data, row, h), cell: d.stateCell(data, row, h) })));
+    for (const a of list.filter(x => !AMOUNT_RE.test(x.text))) await c.run('amount format', a.cell, () => expect(a.text).toMatch(AMOUNT_RE));
+    const big = list.filter(a => AMOUNT_RE.test(a.text) && toNumber(a.text, 'amount') >= 1000);
+    await c.run('1,000+ amount', d.stateTable(), () => {
+      if (!big.length) throw new Error(`no amount of 1,000 or more on ${month}; pick a month that has one`);
+      expect(big.every(a => a.text.includes(','))).toBe(true);
     });
   });
-}
-
-test('12028_TS31: Amounts show the #,##0.00 format', tagOf('12028_TS31'), async ({ page }) => {
-  const ts = '12028_TS31';
-  const month = monthInput('E12028_MONTH', 'Month with an amount of 1,000 or more');
-  const s = new Session(page, ts);
-  await s.as('drafter');
-  await s.openListing();
-  const sumData = await s.search();
-  const amountsOk = async (where: string, list: { text: string; cell: ReturnType<AplDetailsPage['stateCell']> }[]) => {
-    const bad = list.filter(a => !AMOUNT_RE.test(a.text));
-    for (const b of bad) await s.details.captureIssue(`${ts}-${where}-format`, b.cell, `"${b.text}" is not #,##0.00`);
-    expect(bad.map(b => b.text), `${where} amounts not in #,##0.00`).toEqual([]);
-  };
-  await test.step('Check every Summary amount of a closed month is #,##0.00', async () => {
-    const sm = s.summary;
-    const list = sm.monthRows(sumData)
-      .filter(r => COUNT_RE.test(sm.cell(sumData, r.row, 'Car Transactions')))
-      .flatMap(r => ['Cars (RM)', 'Motorcycles (RM)'].map(h => ({ text: sm.cell(sumData, r.row, h), cell: sm.cellAt(sumData, r.row, h) })));
-    await amountsOk('summary', list);
-  });
-  await test.step(`Click [View] on ${month} ${CONFIG.year}`, async () => {
-    await s.summary.openMonth(sumData, month);
-    await s.details.expectOpenFor(month, CONFIG.year);
-  });
-  await test.step('Check every Details amount is #,##0.00 and a 1,000+ amount has the comma', async () => {
-    const d = s.details;
-    const data = await d.readStates();
-    const list = [...d.stateRows(data).map(r => r.row), d.totalRow(data)]
-      .flatMap(row => ['Cars (RM)', 'Motorcycles (RM)'].map(h => ({ text: d.cell(data, row, h), cell: d.stateCell(data, row, h) })));
-    await amountsOk('details', list);
-    const big = list.filter(a => toNumber(a.text, 'amount') >= 1000);
-    if (!big.length) throw new Error(`No amount of 1,000 or more on ${month}; pick a month that has one.`);
-    await d.showValue(big[0].cell);
-    expect(big.every(a => a.text.includes(','))).toBe(true);
-  });
-});
-
-test('12028_TS32: Car and Motorcycle values shown separately', tagOf('12028_TS32'), async ({ page }) => {
-  const ts = '12028_TS32';
-  const month = monthInput('E12028_MONTH', 'Closed month');
-  const s = new Session(page, ts);
-  await s.as('drafter');
-  const { details: d } = await s.openMonth(month);
-  await test.step('Check the four car / motorcycle columns are separate and none is combined', async () => {
-    const data = await d.readStates();
-    console.log(`DETAIL:${JSON.stringify({ label: 'Headers', value: data.headers.join(' | ') })}`);
-    const head = d.stateTable().locator('tr').first();
-    await d.showValue(head);
-    await d.verify(`${ts}-headers`, head, 'Car / motorcycle columns not separate', async () => {
+  await test.step('Check car and motorcycle values are separate columns, none combined', async () => {
+    await c.run('separate columns', d.stateTable().locator('tr').first(), () => {
       for (const h of ['Car Transactions', 'Cars (RM)', 'Motorcycle Transactions', 'Motorcycles (RM)']) expect(data.headers).toContain(h);
       expect(data.headers.filter(h => /total|combined|amount|grand/i.test(h))).toEqual([]);
     });
   });
+  await d.captureEvidence(`${ts}-states`);
+  c.done();
 });
 
-for (const c of [
-  { title: '12028_TS33: Car counts per state match Transaction Summary Report (State)', v: 'Car' as Vehicle },
-  { title: '12028_TS34: Motorcycle counts per state match Transaction Summary Report (State)', v: 'Motorcycle' as Vehicle },
-]) {
-  const ts = c.title.split(':')[0];
-  test(c.title, tagOf(ts), async ({ page }) => {
-    // [unconfirmed] Transaction Summary Report (State) page not captured; report split = Open point 4.
-    const month = monthInput('E12028_MONTH', 'Closed month');
-    const s = new Session(page, ts);
-    await s.as('superadmin');
-    const report = await test.step(`Open Reports → Transaction Summary Report (State) and search ${month} ${CONFIG.year}`, async () => {
-      await s.home.openTransactionSummaryState();
-      const rep = new TxSummaryStatePage(page);
-      const data = await rep.searchMonth(CONFIG.year, MONTHS.indexOf(month));
-      await rep.captureEvidence(`${ts}-report`);
-      return rep.countsByState(data, c.v);
-    });
-    console.log(`DETAIL:${JSON.stringify({ label: 'Report counts', value: [...report].map(([k, v]) => `(${k}) ${v}`).join(', ') })}`);
-    await s.as('drafter');
-    const { details: d } = await s.openMonth(month);
-    await test.step(`Check each state's ${VEH[c.v].count} equals the report`, async () => {
-      const data = await d.readStates();
-      const wrong: string[] = [];
+test('12028_TS15: State counts match Transaction Summary Report (State)', tagOf('12028_TS15'), async ({ page }) => {
+  const ts = '12028_TS15';
+  // [unconfirmed] Transaction Summary Report (State) page not captured; report split = Open point 4.
+  const month = monthInput('E12028_MONTH', 'Closed month');
+  const s = new Session(page, ts);
+  await s.as('superadmin');
+  const report = await test.step(`Open Reports → Transaction Summary Report (State) and search ${month} ${CONFIG.year}`, async () => {
+    await s.home.openTransactionSummaryState();
+    const rep = new TxSummaryStatePage(page);
+    const data = await rep.searchMonth(CONFIG.year, MONTHS.indexOf(month));
+    await rep.captureEvidence(`${ts}-report`);
+    return { Car: rep.countsByState(data, 'Car'), Motorcycle: rep.countsByState(data, 'Motorcycle') };
+  });
+  await s.as('drafter');
+  const { details: d } = await s.openMonth(month);
+  const data = await d.readStates();
+  const c = new Checks(d, ts);
+  for (const v of ['Car', 'Motorcycle'] as Vehicle[]) {
+    await test.step(`Check each state's ${VEH[v].count} equals the report`, async () => {
       for (const r of d.stateRows(data)) {
-        const shown = toNumber(d.cell(data, r.row, VEH[c.v].count), VEH[c.v].count);
-        const want = report.get(r.code);
-        if (want !== shown) {
-          wrong.push(`(${r.code}) ${shown} vs report ${want ?? 'none'}`);
-          await d.captureIssue(`${ts}-${r.code}`, d.stateCell(data, r.row, VEH[c.v].count), `Report shows ${want ?? 'no row'}`);
-        }
+        const shown = toNumber(d.cell(data, r.row, VEH[v].count), VEH[v].count);
+        const want = report[v].get(r.code);
+        await c.run(`(${r.code}) ${v}`, d.stateCell(data, r.row, VEH[v].count), () => expect(shown, `report shows ${want ?? 'no row'}`).toBe(want));
       }
-      await d.showValue(d.stateTable());
-      expect(wrong).toEqual([]);
     });
-  });
-}
+  }
+  c.done();
+});
 
-for (const c of [
-  { title: '12028_TS35: Private and company cars both counted under Car', v: 'Car' as Vehicle },
-  { title: '12028_TS36: Private and company motorcycles both counted under Motorcycle', v: 'Motorcycle' as Vehicle },
-]) {
-  const ts = c.title.split(':')[0];
-  test(c.title, tagOf(ts), async ({ page }) => {
-    // One company transaction cannot be seen inside an aggregate count. The
-    // check is the state count against the count typed on the row (approved +
-    // paid, private + company, from the BO transaction listing) — see
-    // scenarios.md Self-review 5.
-    const month = monthInput('E12028_MONTH', 'JPJ approval month');
-    const st = stateInput('E12028_STATE', 'Dealer state');
-    const want = countInput('E12028_COUNT', `Expected ${c.v.toLowerCase()} count (private + company)`);
-    const s = new Session(page, ts);
-    await s.as('drafter');
-    const { details: d } = await s.openMonth(month);
-    await test.step(`Check ${st.name} (${st.code}) ${VEH[c.v].count} = ${want}`, async () => {
-      const data = await d.readStates();
-      const { n, cell } = await stateCount(d, data, st.code, VEH[c.v].count);
-      await d.verify(`${ts}-count`, cell, `Shows ${n}, expected ${want}`, async () => expect(n).toBe(want));
+test('12028_TS16: Private and company vehicles both counted under Car and Motorcycle', tagOf('12028_TS16'), async ({ page }) => {
+  const ts = '12028_TS16';
+  // One company transaction cannot be seen inside an aggregate count. The check
+  // is the state count against the counts typed on the row (approved + paid,
+  // private + company, from the BO transaction listing).
+  const month = monthInput('E12028_MONTH', 'Closed month');
+  const st = stateInput('E12028_STATE', 'Dealer state');
+  const wantCar = countInput('E12028_COUNT', 'Car count (private + company)');
+  const wantBike = countInput('E12028_COUNT2', 'Motorcycle count (private + company)');
+  const s = new Session(page, ts);
+  await s.as('drafter');
+  const { details: d } = await s.openMonth(month);
+  const data = await d.readStates();
+  const c = new Checks(d, ts);
+  for (const [v, want] of [['Car', wantCar], ['Motorcycle', wantBike]] as const) {
+    await test.step(`Check ${st.name} (${st.code}) ${VEH[v].count} = ${want}`, async () => {
+      const { n, cell } = await stateCount(d, data, st.code, VEH[v].count);
+      await c.run(`${v} count`, cell, () => expect(n).toBe(want));
     });
-  });
-}
+  }
+  c.done();
+});
 
-test('12028_TS37: Transaction counted in the month of its JPJ Approved Date', tagOf('12028_TS37'), async ({ page }) => {
-  const ts = '12028_TS37';
+test('12028_TS17: Transaction counted in the month of its JPJ Approved Date', tagOf('12028_TS17'), async ({ page }) => {
+  const ts = '12028_TS17';
   const approvalMonth = monthInput('E12028_MONTH', 'JPJ approval month');
   const createdMonth = monthInput('E12028_MONTH2', 'Creation month');
   const st = stateInput('E12028_STATE', 'Dealer state');
@@ -245,7 +163,7 @@ test('12028_TS37: Transaction counted in the month of its JPJ Approved Date', ta
   const want2 = countInput('E12028_COUNT2', 'Expected count, creation month');
   const s = new Session(page, ts);
   await s.as('drafter');
-  for (const [month, want] of [[approvalMonth, want1], [createdMonth, want2]] as const) {
+  for (const [month, want] of [[createdMonth, want2], [approvalMonth, want1]] as const) {
     const { details: d } = await s.openMonth(month);
     await test.step(`Check ${month}: ${st.name} ${VEH[v].count} = ${want}`, async () => {
       const data = await d.readStates();
@@ -255,8 +173,8 @@ test('12028_TS37: Transaction counted in the month of its JPJ Approved Date', ta
   }
 });
 
-test('12028_TS38: Approved transaction not yet paid is not counted', tagOf('12028_TS38'), async ({ page }) => {
-  const ts = '12028_TS38';
+test('12028_TS18: Approved transaction not yet paid is not counted', tagOf('12028_TS18'), async ({ page }) => {
+  const ts = '12028_TS18';
   // [unconfirmed] dev guide "approved + paid" vs SRD "approved" only.
   const month = monthInput('E12028_MONTH', 'Month of the unpaid transaction');
   const st = stateInput('E12028_STATE', 'Dealer state');
@@ -272,8 +190,8 @@ test('12028_TS38: Approved transaction not yet paid is not counted', tagOf('1202
   });
 });
 
-test("12028_TS39: Transaction counted under the dealer's registered state", tagOf('12028_TS39'), async ({ page }) => {
-  const ts = '12028_TS39';
+test("12028_TS19: Transaction counted under the dealer's registered state", tagOf('12028_TS19'), async ({ page }) => {
+  const ts = '12028_TS19';
   const month = monthInput('E12028_MONTH', 'JPJ approval month');
   const dealer = stateInput('E12028_STATE', 'Dealer state');
   const plate = stateInput('E12028_STATE2', 'Plate state');
@@ -284,28 +202,12 @@ test("12028_TS39: Transaction counted under the dealer's registered state", tagO
   await s.as('drafter');
   const { details: d } = await s.openMonth(month);
   const data = await d.readStates();
+  const c = new Checks(d, ts);
   for (const [st, want, what] of [[dealer, want1, 'dealer'], [plate, want2, 'plate']] as const) {
     await test.step(`Check ${what} state ${st.name} ${VEH[v].count} = ${want}`, async () => {
       const { n, cell } = await stateCount(d, data, st.code, VEH[v].count);
-      await d.verify(`${ts}-${what}`, cell, `${st.name} shows ${n}, expected ${want}`, async () => expect(n).toBe(want));
+      await c.run(`${what} state`, cell, () => expect(n).toBe(want));
     });
   }
-});
-
-test('12028_TS40: Back to Summary returns to the Summary page', tagOf('12028_TS40'), async ({ page }) => {
-  const ts = '12028_TS40';
-  const month = monthInput('E12028_MONTH', 'Closed month');
-  const s = new Session(page, ts);
-  await s.as('drafter');
-  const { details: d } = await s.openMonth(month);
-  await test.step('Click [← Back to Summary]', async () => { await d.backToSummary(); });
-  await test.step('Check the Summary page is shown and the Details page is gone', async () => {
-    const sm = s.summary;
-    await sm.verify(`${ts}-back`, s.apl.locator('body'), 'Not back on the Summary', async () => {
-      await expect(sm.heading()).toBeVisible();
-      await expect(sm.yearSelect()).toBeVisible();
-      await expect(d.stateTable()).toBeHidden();
-    });
-    await sm.captureEvidence(`${ts}-summary`);
-  });
+  c.done();
 });

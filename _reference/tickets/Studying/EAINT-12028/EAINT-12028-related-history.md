@@ -15,8 +15,8 @@
    6. **Role and permission:** role from login ID, multi-role user (mfizni), no-role user blocked; menu visibility.
    7. **Month-close data:** figures frozen by the eauto-cron month-close job; cross-check against Transaction Summary Report (State).
    8. **Regression:** BO login / logout / SSO (core change), other BO Reports menu items.
-   9. **Beyond the Miro board (~180 TS):** security and session checks, out-of-sequence and direct-URL attempts, month-close states, every PDF field.
-2. **Estimated testing time:** **10 man-days** (base 8 + buffer 2, 1 QA), range **8–14**, confidence **low**. QA lead estimates about 180 TS [answered by Faizuddin on 2026-10-28]. Official: Miro "Est. Testing Mandays: 10 days (1 QA)"; Jira "[QA] Est Man-day (cf 10081): 10". Detail in "Estimated testing effort".
+   9. **Beyond the Miro board (one TS per case, 68 TS):** security and session checks, out-of-sequence and direct-URL attempts, month-close states, every PDF field as expected lines inside one TS.
+2. **Estimated testing time:** **10 man-days** (base 8 + buffer 2, 1 QA), range **8–12**, confidence **medium**. Option B chosen: one TS per case [answered by Faizuddin on 2026-10-29]; Elf draft now **68 TS** (12028_TS01–TS68). Official: Miro "Est. Testing Mandays: 10 days (1 QA)"; Jira "[QA] Est Man-day (cf 10081): 10". Detail in "Estimated testing effort".
 3. **Modules / pages to cover:**
    1. **Association Payment Listing (BO):** Reports menu, Summary page, Details page, Reject remarks popup, Finance payment date popup, Signature popup, FMC / MMSDA Payment Request PDF — new.
    2. **BO login / logout / SSO hand-off (core → backoffice):** regression, core login/logout changed.
@@ -35,6 +35,15 @@
 5. **Hand-off (Faizuddin's reply):** "so you need to do anything else? if not, pass to elf". Related history **complete**; passed to Elf. The 3 questions for the team do not block TS drafting; rows that depend on them stay [unconfirmed].
 6. **Coverage update (Faizuddin's reply):** "btw, the miro is not complete, so we need more coverage. my lead estimates +-180 TS". Changed: expected TS count **~180** (was 80–150); range **8–14** (was 8–12); confidence **low** (was medium); scope line 9 and a **Security & Session** block added to the brief; **Known traps** item 10 no longer treats the board as the full matrix. Man-days kept at **10** (official).
 7. **Elf's answer on the ~180 TS (2026-10-28):** current draft `data/pipeline/work/EAINT-12028/scenarios.md` has **24 TS** and already maps every SRD v1.1 REQ-001 to REQ-019; the gap is depth plus 8 dev-guide checks with no TS (SSO replay, direct download before approval, double submit, finished-month actions, repeated month-close, repeat download, H1 cross-module role, server-side sequence). Reaching ~180 needs one row per check, which clashes with "**Cap around 40 scenarios per subject**" and "Same trigger + same setup = one TS with several expected lines." `[knowledge/test-scripts.md "Ideas from Charmain's repo" items 5 and 2]`. Decision is with Faizuddin; see "Estimated testing effort" item 3. Brief unchanged.
+
+## Changes 2026-10-29
+
+1. **Faizuddin's decision:** "lets go with option B. dont forget to tell elf to update the TS also". TS sizing is now **one TS per case** (same trigger + same setup = one TS with several expected lines), plus the 8 missing dev-guide checks: **~60–80 TS**, not ~180.
+2. Changed: brief scope line 9, estimate range **8–14 → 8–12**, confidence **low → medium**, "Estimated testing effort" items 3–5. Man-days kept at **10**.
+3. Elf asked to update the TS (scenarios.md / scenarios.json).
+4. **Elf's answer:** already done. `scenarios.md` and `scenarios.json` hold **68 TS** (12028_TS01–TS68; checked: no TS69). Dev-guide checks: SSO replay → 12028_TS58; direct download before approval → TS52–TS53; double submit → TS63–TS65; finished month → TS25, TS33, TS39, TS68; repeated month-close → TS12–TS13; repeat download → TS54; server-side sequence → TS66–TS68 (manual). **H1 cross-module role** has no TS — Regression gap **R2**, because "not independently reproducible with only one module live today" `[knowledge/flow-association-payment-listing.md "QA Test Guide"]`. Planned sheets: A–D Menu / Summary / month-close / figures (19), E–I Workflow + audit log (28), J–M Payment Request / login / security (21) `[scenarios.md Open points 12]`.
+5. **Workbook state (corrected 2026-10-29):** the current workbook `EAINT-12028 - [...] (Automate Association_Vendor Payment Requests).xlsx` is the **68-TS, one-sheet** build from `ts-spec.json` (ends at 12028_TS68, no TS69). The old 174-TS build is now the `(superseded v1).xlsx` copy; Faizuddin's 27-scenario draft (hyphen name, 2026-09-04) is a separate file. Earlier line here said the folder workbook was still the 174-TS build — out of date. Workbook content not opened by an agent `[unconfirmed]`. Brief scope line 9 and estimate basis say **68 TS**.
+6. **Workbook decision:** "built in 1 sheet for now. since it wont affect automation, i will update if need change later" [answered by Faizuddin on 2026-10-29]. Elf confirmed the one-sheet rebuild was already done (item 5); the 3-sheet split is deferred to Faizuddin. Brief unchanged.
 
 ## Header
 
@@ -139,9 +148,9 @@
 | EAINT-10038 | BO role menu change | 5 | not fetched |
 
 2. **EAINT-12028 itself:** Miro "Est. Testing Mandays: 10 days (1 QA)", "Base Testing Time: 8 days", "Buffer (Req Change + Bug Fix + Retest Bug): 2 days", "~150 TS" `[EAINT-12028-miro-card.md lines 15–17, 25]`; Jira "[QA] Est Man-day (cf 10081): 10" `[EAINT-12028-jira.md line 11]`.
-3. **Expected TS count:** **~180** — QA lead's estimate: "my lead estimates +-180 TS" [answered by Faizuddin on 2026-10-28]. Corrects the earlier 80–150; that figure came from the Miro "~150 TS" and the past TS only. About twice EAINT-10168 (94 rows). Elf draft today: **24 TS**. Two ways to get there, per Elf: one row per check (role × status matrix, one row per PDF field and per state, ~4 sheets of 40 or fewer) ≈ 160–180, or one TS per case plus the missing dev-guide checks ≈ 60–80 `[unconfirmed, pending Faizuddin's choice]`.
-4. **Estimate: 10 man-days (range 8–14):** base **8**, buffer **2**, **1 QA**. Official figure kept. 180 TS in 8 base days is ~22 TS a day; EAINT-12403 (STMS / APT fee change) ran 45 TS on "3" man-days (~15 a day) `[EAINT-12019-related-history.md "Estimated testing effort"]`, so the top of the range is 14 `[unconfirmed]`.
-5. **Confidence: low.** Test env still not named; MR !1 fix state unknown `[EAINT-12028-study.md §11 items 1, 4]`.
+3. **TS count:** **68** in Elf's draft (12028_TS01–TS68, 2026-10-29), inside the expected ~60–80 — one TS per case plus the missing dev-guide checks: "lets go with option B" [answered by Faizuddin on 2026-10-29]. Replaces the ~180 (QA lead's count, "my lead estimates +-180 TS", 2026-10-28), which needed one row per check. Elf draft before the change: **24 TS**.
+4. **Estimate: 10 man-days (range 8–12):** base **8**, buffer **2**, **1 QA**. Official figure kept. 68 TS in 8 base days is ~8–9 TS a day, but each TS walks a month through the workflow and checks several lines `[unconfirmed]`.
+5. **Confidence: medium.** Test env and MR !1 fix state still unknown. Test env still not named; MR !1 fix state unknown `[EAINT-12028-study.md §11 items 1, 4]`.
 
 ## Sources read
 

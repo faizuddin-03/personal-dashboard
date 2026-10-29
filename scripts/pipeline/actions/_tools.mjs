@@ -47,6 +47,8 @@ export function protectExistingSuites(own = []) {
 export const TOOLBOX = [
   "Bash(node scripts/pipeline/tools/fetch.mjs *)",
   "Bash(node scripts/pipeline/lib/xlsx-text.mjs *)",
+  // Copy into his OneDrive ticket folder (2026-10-29); writes only there, never overwrites.
+  "Bash(node scripts/pipeline/tools/to-my-folder.mjs *)",
 ];
 
 /**

@@ -12,6 +12,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Only <main> in AppShell scrolls. The window itself never does, so the
+   sidebar cannot be dragged off into a blank screen (2026-10-29). */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

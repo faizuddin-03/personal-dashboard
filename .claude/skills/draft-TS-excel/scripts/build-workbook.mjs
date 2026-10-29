@@ -18,6 +18,12 @@ const PASS_FILL = 'FFC6EFCE';
 const PASS_FONT = 'FF006100';
 const FAIL_FILL = 'FFFFC7CE';
 const FAIL_FONT = 'FF9C0006';
+// Untested rows read "Not Started", bold dark blue on light blue (Faizuddin,
+// 2026-10-29: "the N/A should be 'Not Started' and its bolded dark blue with
+// light blue cells"). Conditional, so the colour goes once a result is picked.
+const NOT_STARTED = 'Not Started';
+const NOT_STARTED_FILL = 'FFDDEBF7';
+const NOT_STARTED_FONT = 'FF1F3864';
 const NUM_COLS = 7; // TS No. | Test Objective | Test Steps | Expected Result | QA | Test Result | Remarks
 
 const THIN = { style: 'thin', color: { argb: 'FF000000' } };
@@ -123,7 +129,7 @@ async function build(spec) {
       const expectedText = 'Ensure:\n' + renderItems(r.expected);
       const remarksText = r.remarks || '';
 
-      const values = [r.no, objectiveText, stepsText, expectedText, '', 'N/A', remarksText];
+      const values = [r.no, objectiveText, stepsText, expectedText, '', NOT_STARTED, remarksText];
       values.forEach((v, i) => {
         const cell = ws.getCell(rowIndex, i + 1);
         const bold = i === 0;
@@ -148,10 +154,12 @@ async function build(spec) {
         style: { font: { bold: true, color: { argb: PASS_FONT } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: PASS_FILL } } } },
       { type: 'containsText', operator: 'containsText', text: 'FAIL', priority: 2,
         style: { font: { bold: true, color: { argb: FAIL_FONT } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: FAIL_FILL } } } },
+      { type: 'containsText', operator: 'containsText', text: NOT_STARTED, priority: 3,
+        style: { font: { bold: true, color: { argb: NOT_STARTED_FONT } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: NOT_STARTED_FILL } } } },
     ],
   });
   dataRowIndices.forEach((i) => {
-    ws.getCell(`F${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: ['"Pass,Fail,Blocked,N/A"'] };
+    ws.getCell(`F${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"Pass,Fail,Blocked,${NOT_STARTED}"`] };
   });
 
   ws.views = [{ state: 'frozen', ySplit: 2 }];

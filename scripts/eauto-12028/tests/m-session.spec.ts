@@ -10,9 +10,9 @@ import { AplSummaryPage } from '../pages/AplSummaryPage';
 import { AplDetailsPage, Role } from '../pages/AplDetailsPage';
 import { addDays, ddmmyyyy, today } from '../utils/format';
 
-// M. BO login, SSO, session and double submit — 12028_TS162, TS164 to TS166,
-// TS169 to TS171. Manual only (never automated): 12028_TS163 (replay a used
-// hand-off address), TS167 / TS168 (outside redirect target), TS172 to TS174
+// M. BO login, SSO, session and double submit — 12028_TS57, TS59, TS60,
+// TS63 to TS65. Manual only (never automated): 12028_TS58 (replay a used
+// hand-off address), TS61 / TS62 (outside redirect target), TS66 to TS68
 // (forcing requests with dev tools).
 // [unconfirmed] the module's own Logout link and the SSO hand-off are not captured.
 
@@ -25,8 +25,8 @@ async function onBoLogin(page: Page): Promise<boolean> {
   return url.host === want.host && url.pathname.startsWith(`/${CONFIG.instance}/`) && (await new LoginPage(page).isLoginFormVisible());
 }
 
-test('12028_TS162: BO login opens Association Payment Listing without a second login', tagOf('12028_TS162'), async ({ page }) => {
-  const ts = '12028_TS162';
+test('12028_TS57: BO login hand-off opens Association Payment Listing and module logout needs a fresh login', tagOf('12028_TS57'), async ({ page }) => {
+  const ts = '12028_TS57';
   const s = new Session(page, ts);
   await s.as('drafter');
   await test.step('Check BO Home shows the logged-in name', async () => {
@@ -41,13 +41,6 @@ test('12028_TS162: BO login opens Association Payment Listing without a second l
     });
     await summary.captureEvidence(`${ts}-summary`);
   });
-});
-
-test('12028_TS164: Logout from Association Payment Listing lands on BO login', tagOf('12028_TS164'), async ({ page }) => {
-  const ts = '12028_TS164';
-  const s = new Session(page, ts);
-  await s.as('drafter');
-  await s.openListing();
   const apl = s.apl;
   await test.step('Click Logout on the Association Payment Listing page and confirm', async () => { await new LoginPage(apl).logoutByLink(); });
   await test.step('Check the BO login page is shown', async () => {
@@ -58,15 +51,18 @@ test('12028_TS164: Logout from Association Payment Listing lands on BO login', t
     await apl.goBack({ waitUntil: 'load' }).catch(e => console.log(`   Back: ${e instanceof Error ? e.message.split('\n')[0] : e}`));
     await apl.waitForLoadState('load', { timeout: CONFIG.navigationTimeout });
   });
-  await test.step('Check the Summary is not shown again', async () => {
+  await test.step('Check the Summary is not shown again and the BO login page is', async () => {
     const sm = new AplSummaryPage(apl);
-    await sm.verify(`${ts}-back`, apl.locator('body'), 'Summary shown after Back', async () => expect(await sm.isShown()).toBe(false));
+    await sm.verify(`${ts}-back`, apl.locator('body'), 'Summary shown after Back', async () => {
+      expect(await sm.isShown()).toBe(false);
+      expect(await onBoLogin(apl)).toBe(true);
+    });
     await sm.captureEvidence(`${ts}-after-back`);
   });
 });
 
-test('12028_TS165: Core logout logs out the open Association Payment Listing tab', tagOf('12028_TS165'), async ({ page }) => {
-  const ts = '12028_TS165';
+test('12028_TS59: Core logout logs out the open Association Payment Listing tab', tagOf('12028_TS59'), async ({ page }) => {
+  const ts = '12028_TS59';
   const s = new Session(page, ts);
   await s.as('drafter');
   const tab2 = await test.step('Open BO Home in a new tab and open Association Payment Listing there', async () => {
@@ -96,8 +92,8 @@ test('12028_TS165: Core logout logs out the open Association Payment Listing tab
   });
 });
 
-test('12028_TS166: Session expiry returns to BO login without an error page', tagOf('12028_TS166'), async ({ page }) => {
-  const ts = '12028_TS166';
+test('12028_TS60: Session expiry returns to BO login without an error page', tagOf('12028_TS60'), async ({ page }) => {
+  const ts = '12028_TS60';
   // Open point 7 (for the developer): the session timeout is typed on the row.
   const minutes = countInput('E12028_TIMEOUT_MIN', 'Session timeout (minutes)');
   test.setTimeout((minutes + 15) * 60_000);
@@ -137,9 +133,9 @@ async function secondTab(page: Page, month: string): Promise<AplDetailsPage> {
 }
 
 for (const c of [
-  { title: '12028_TS169: Drafter Approve from two tabs makes one audit row', role: 'drafter' as RoleKey, who: 'Drafter' as Role, from: 'Pending' as MonthState },
-  { title: '12028_TS170: Reviewer Approve from two tabs makes one audit row', role: 'reviewer' as RoleKey, who: 'Reviewer' as Role, from: 'DA' as MonthState },
-  { title: '12028_TS171: Approver Approve from two tabs makes one audit row and one payment date', role: 'approver' as RoleKey, who: 'Approver' as Role, from: 'RA' as MonthState },
+  { title: '12028_TS63: Drafter Approve from two tabs makes one audit row', role: 'drafter' as RoleKey, who: 'Drafter' as Role, from: 'Pending' as MonthState },
+  { title: '12028_TS64: Reviewer Approve from two tabs makes one audit row', role: 'reviewer' as RoleKey, who: 'Reviewer' as Role, from: 'DA' as MonthState },
+  { title: '12028_TS65: Approver Approve from two tabs makes one audit row and one payment date', role: 'approver' as RoleKey, who: 'Approver' as Role, from: 'RA' as MonthState },
 ]) {
   const ts = c.title.split(':')[0];
   test(c.title, tagOf(ts), async ({ page }) => {

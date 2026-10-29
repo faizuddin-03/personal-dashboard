@@ -25,6 +25,7 @@ import { hasQuestions, firstQuestion, NAMES } from "./prompts-common.mjs";
 import { splitFinalText, handleAsks, relayAnswer, helpFailed } from "./ask.mjs";
 import { autoAnswer } from "./answers.mjs";
 import { deferredBlock } from "./lib/deferred-questions.mjs";
+import { MY_DOCS, myDocsAvailable } from "./lib/my-folder.mjs";
 
 const jobId = process.argv[2];
 const DRY = process.argv.includes("--dry");
@@ -63,6 +64,9 @@ function buildArgs(tools, session) {
     "--allowedTools", ...allowed,
     "--disallowedTools", ...disallowed,
     "--strict-mcp-config",
+    // His personal OneDrive "eAuto Documents" folder (2026-10-29), so every
+    // character can read what he drops there and save files he can open.
+    ...(myDocsAvailable() ? ["--add-dir", MY_DOCS] : []),
   ];
 }
 

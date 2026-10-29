@@ -21,7 +21,8 @@ const RUN_KEY = "eauto/12028";
 // from the 31.07 mock-up and is [unconfirmed] until the first run.
 
 type RoleKey = "drafter" | "drafter2" | "reviewer" | "approver" | "multi" | "norole" | "superadmin";
-type InputKey = "month" | "month2" | "state" | "state2" | "vehicle" | "count" | "count2" | "name" | "payDate" | "expectMenu" | "expectKiv" | "expectSig" | "waitMin" | "timeoutMin" | "target";
+type InputKey = "month" | "month2" | "state" | "state2" | "vehicle" | "count" | "count2" | "name" | "name2" | "name3" | "payDate" | "expectMenu" | "expectKiv" | "expectSig" | "waitMin" | "timeoutMin" | "target"
+  | "mPending" | "mKIV" | "mDRA" | "mDA" | "mRRA" | "mRA" | "mFull";
 
 interface Scenario {
   id: string;
@@ -35,10 +36,8 @@ interface Scenario {
   roles?: RoleKey[];
   /** Values typed on the TS row (blank and required). */
   inputs?: InputKey[];
-  /** What the month must be — shown under the month field. */
-  needs?: string;
-  /** Whose full name the "name" field holds (PDF TS). */
-  nameRole?: string;
+  /** Field labels that say what this TS needs (e.g. which month). */
+  labels?: Partial<Record<InputKey, string>>;
 }
 
 const TS_SECTIONS: { letter: string; title: string }[] = [
@@ -60,179 +59,73 @@ const TS_SECTIONS: { letter: string; title: string }[] = [
 // P1 first, then P2, then P3 (scenarios.json "priority"), so the default order runs the P1 tests first.
 const SCENARIOS: Scenario[] = [
   { id: "12028_TS05", section: "A", priority: "P1", title: "12028_TS05: No-role BO user Reports menu item visible or hidden per BA answer", roles: ["norole"], inputs: ["expectMenu"] },
-  { id: "12028_TS06", section: "A", priority: "P1", title: "12028_TS06: No-role BO user blocked on the Summary page address", roles: ["drafter","norole"] },
-  { id: "12028_TS07", section: "A", priority: "P1", title: "12028_TS07: No-role BO user blocked on the Details page address", roles: ["drafter","norole"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS14", section: "B", priority: "P1", title: "12028_TS14: Summary Cars (RM) equals Car Transactions x 1.00 for each month", roles: ["drafter"] },
-  { id: "12028_TS15", section: "B", priority: "P1", title: "12028_TS15: Summary Motorcycles (RM) equals Motorcycle Transactions x 2.00 for each month", roles: ["drafter"] },
-  { id: "12028_TS16", section: "B", priority: "P1", title: "12028_TS16: Total row sums Car Transactions and Cars (RM)", roles: ["drafter"] },
-  { id: "12028_TS17", section: "B", priority: "P1", title: "12028_TS17: Total row sums Motorcycle Transactions and Motorcycles (RM)", roles: ["drafter"] },
-  { id: "12028_TS22", section: "B", priority: "P1", title: "12028_TS22: Summary month row equals the Details TOTAL row", roles: ["drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS25", section: "C", priority: "P1", title: "12028_TS25: Running month-close on an approved month keeps statuses and Payment Date", roles: ["drafter"], inputs: ["month","waitMin"], needs: "fully approved" },
-  { id: "12028_TS27", section: "D", priority: "P1", title: "12028_TS27: Details TOTAL sums the car columns of 16 states", roles: ["drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS28", section: "D", priority: "P1", title: "12028_TS28: Details TOTAL sums the motorcycle columns of 16 states", roles: ["drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS29", section: "D", priority: "P1", title: "12028_TS29: Each state Cars (RM) equals Car Transactions x 1.00", roles: ["drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS30", section: "D", priority: "P1", title: "12028_TS30: Each state Motorcycles (RM) equals Motorcycle Transactions x 2.00", roles: ["drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS33", section: "D", priority: "P1", title: "12028_TS33: Car counts per state match Transaction Summary Report (State)", roles: ["superadmin","drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS34", section: "D", priority: "P1", title: "12028_TS34: Motorcycle counts per state match Transaction Summary Report (State)", roles: ["superadmin","drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS52", section: "E", priority: "P1", title: "12028_TS52: Drafter buttons disabled on a fully approved month", roles: ["drafter"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS56", section: "F", priority: "P1", title: "12028_TS56: Reviewer buttons disabled with waiting note on a Pending month", roles: ["reviewer"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS57", section: "F", priority: "P1", title: "12028_TS57: Reviewer buttons disabled with waiting note on a KIV month", roles: ["reviewer"], inputs: ["month"], needs: "KIV" },
-  { id: "12028_TS58", section: "F", priority: "P1", title: "12028_TS58: Reviewer buttons disabled with waiting note on a Drafter Review Again month", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Review Again" },
-  { id: "12028_TS70", section: "F", priority: "P1", title: "12028_TS70: Reviewer buttons disabled on a fully approved month", roles: ["reviewer"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS72", section: "G", priority: "P1", title: "12028_TS72: Approver buttons disabled with waiting note on a Pending month", roles: ["approver"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS73", section: "G", priority: "P1", title: "12028_TS73: Approver buttons disabled with waiting note on a KIV month", roles: ["approver"], inputs: ["month"], needs: "KIV" },
-  { id: "12028_TS74", section: "G", priority: "P1", title: "12028_TS74: Approver buttons disabled with waiting note when only the Drafter approved", roles: ["approver"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS75", section: "G", priority: "P1", title: "12028_TS75: Approver buttons disabled with waiting note on a Drafter Review Again month", roles: ["approver"], inputs: ["month"], needs: "Drafter Review Again" },
-  { id: "12028_TS76", section: "G", priority: "P1", title: "12028_TS76: Approver buttons disabled with waiting note on a Reviewer Review Again month", roles: ["approver"], inputs: ["month"], needs: "Reviewer Review Again" },
-  { id: "12028_TS79", section: "G", priority: "P1", title: "12028_TS79: Approver Approve with tomorrow's date sets Approver Status Approved", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS92", section: "G", priority: "P1", title: "12028_TS92: Approver buttons disabled on a fully approved month", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS108", section: "J", priority: "P1", title: "12028_TS108: Download buttons hidden with pending note on a Pending month", roles: ["approver"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS109", section: "J", priority: "P1", title: "12028_TS109: Download buttons hidden with pending note on a KIV month", roles: ["approver"], inputs: ["month"], needs: "KIV" },
-  { id: "12028_TS110", section: "J", priority: "P1", title: "12028_TS110: Download buttons hidden with pending note when only the Drafter approved", roles: ["approver"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS111", section: "J", priority: "P1", title: "12028_TS111: Download buttons hidden with pending note on a Drafter Review Again month", roles: ["approver"], inputs: ["month"], needs: "Drafter Review Again" },
-  { id: "12028_TS112", section: "J", priority: "P1", title: "12028_TS112: Download buttons hidden with pending note when the Approver has not approved", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS113", section: "J", priority: "P1", title: "12028_TS113: Download buttons hidden with pending note on a Reviewer Review Again month", roles: ["approver"], inputs: ["month"], needs: "Reviewer Review Again" },
-  { id: "12028_TS114", section: "J", priority: "P1", title: "12028_TS114: Approver sees both download buttons on a fully approved month", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS117", section: "J", priority: "P1", title: "12028_TS117: No-role BO user blocked on the PDF download address (manual)", manual: true },
-  { id: "12028_TS118", section: "J", priority: "P1", title: "12028_TS118: Download address of a month not fully approved is blocked (manual)", manual: true },
-  { id: "12028_TS130", section: "K", priority: "P1", title: "12028_TS130: FMC PDF Pay to Account Holder Name", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS131", section: "K", priority: "P1", title: "12028_TS131: FMC PDF Pay to Bank Name", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS132", section: "K", priority: "P1", title: "12028_TS132: FMC PDF Pay to Bank Account No.", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS136", section: "K", priority: "P1", title: "12028_TS136: FMC PDF Amount Payable equals the month's Cars (RM)", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS137", section: "K", priority: "P1", title: "12028_TS137: FMC PDF amount in words matches the figures", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS151", section: "L", priority: "P1", title: "12028_TS151: MMSDA PDF Pay to Account Holder Name", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS152", section: "L", priority: "P1", title: "12028_TS152: MMSDA PDF Pay to Bank Name", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS153", section: "L", priority: "P1", title: "12028_TS153: MMSDA PDF Pay to Bank Account No.", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS157", section: "L", priority: "P1", title: "12028_TS157: MMSDA PDF Amount Payable equals the month's Motorcycles (RM)", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS158", section: "L", priority: "P1", title: "12028_TS158: MMSDA PDF amount in words matches the figures", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS162", section: "M", priority: "P1", title: "12028_TS162: BO login opens Association Payment Listing without a second login", roles: ["drafter"] },
-  { id: "12028_TS163", section: "M", priority: "P1", title: "12028_TS163: Used SSO hand-off address cannot log in again (manual)", manual: true },
-  { id: "12028_TS165", section: "M", priority: "P1", title: "12028_TS165: Core logout logs out the open Association Payment Listing tab", roles: ["drafter"] },
-  { id: "12028_TS167", section: "M", priority: "P1", title: "12028_TS167: Logout redirect to an outside address stays on eAuto (manual)", manual: true },
-  { id: "12028_TS168", section: "M", priority: "P1", title: "12028_TS168: Session-expiry redirect to an outside address stays on eAuto (manual)", manual: true },
-  { id: "12028_TS169", section: "M", priority: "P1", title: "12028_TS169: Drafter Approve from two tabs makes one audit row", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS170", section: "M", priority: "P1", title: "12028_TS170: Reviewer Approve from two tabs makes one audit row", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS171", section: "M", priority: "P1", title: "12028_TS171: Approver Approve from two tabs makes one audit row and one payment date", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS172", section: "M", priority: "P1", title: "12028_TS172: Forced Reviewer approval on a Pending month is rejected (manual)", manual: true },
-  { id: "12028_TS173", section: "M", priority: "P1", title: "12028_TS173: Forced Approver approval before the Reviewer approves is rejected (manual)", manual: true },
-  { id: "12028_TS174", section: "M", priority: "P1", title: "12028_TS174: Forced action on a fully approved month is rejected (manual)", manual: true },
+  { id: "12028_TS06", section: "A", priority: "P1", title: "12028_TS06: No-role BO user blocked on the Summary and Details page addresses", roles: ["drafter","norole"], inputs: ["month"], labels: {"month":"Closed month"} },
+  { id: "12028_TS08", section: "B", priority: "P1", title: "12028_TS08: Summary figures use the FMC and MMSDA rates and the total row sums the months", roles: ["drafter"] },
+  { id: "12028_TS10", section: "B", priority: "P1", title: "12028_TS10: View opens the month's Details matching the Summary row and Back to Summary returns", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month"} },
+  { id: "12028_TS13", section: "C", priority: "P1", title: "12028_TS13: Running month-close on an approved month keeps statuses and Payment Date", roles: ["drafter"], inputs: ["month","waitMin"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS14", section: "D", priority: "P1", title: "12028_TS14: Details shows 16 states, TOTAL and amounts at the FMC and MMSDA rates", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month with an amount of 1,000+"} },
+  { id: "12028_TS15", section: "D", priority: "P1", title: "12028_TS15: State counts match Transaction Summary Report (State)", roles: ["superadmin","drafter"], inputs: ["month"], labels: {"month":"Closed month"} },
+  { id: "12028_TS25", section: "E", priority: "P1", title: "12028_TS25: Drafter buttons disabled once the Drafter step is done", roles: ["drafter"], inputs: ["mDA","mRRA","mFull"] },
+  { id: "12028_TS28", section: "F", priority: "P1", title: "12028_TS28: Reviewer buttons disabled with waiting note until the Drafter approves", roles: ["reviewer"], inputs: ["mPending","mKIV","mDRA"] },
+  { id: "12028_TS33", section: "F", priority: "P1", title: "12028_TS33: Reviewer buttons disabled once the Reviewer step is done", roles: ["reviewer"], inputs: ["mRA","mFull"] },
+  { id: "12028_TS35", section: "G", priority: "P1", title: "12028_TS35: Approver buttons disabled with waiting note until the Reviewer approves", roles: ["approver"], inputs: ["mPending","mKIV","mDA","mDRA","mRRA"] },
+  { id: "12028_TS36", section: "G", priority: "P1", title: "12028_TS36: Approver first Approve with signature and tomorrow's date completes the month", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month (Approver never signed)"} },
+  { id: "12028_TS39", section: "G", priority: "P1", title: "12028_TS39: Approver buttons disabled on a fully approved month", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS48", section: "J", priority: "P1", title: "12028_TS48: Download buttons hidden with pending note until the month is fully approved", roles: ["approver"], inputs: ["mPending","mKIV","mDA","mDRA","mRA","mRRA"] },
+  { id: "12028_TS49", section: "J", priority: "P1", title: "12028_TS49: Approver sees both download buttons on a fully approved month", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS52", section: "J", priority: "P1", title: "12028_TS52: No-role BO user blocked on the PDF download address (manual)", manual: true },
+  { id: "12028_TS53", section: "J", priority: "P1", title: "12028_TS53: Download address of a month not fully approved is blocked (manual)", manual: true },
+  { id: "12028_TS55", section: "K", priority: "P1", title: "12028_TS55: FMC Payment Request PDF shows the SRD fields and the month's car amount", roles: ["approver"], inputs: ["month","name","name2","name3"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS56", section: "L", priority: "P1", title: "12028_TS56: MMSDA Payment Request PDF shows the SRD fields and the month's motorcycle amount", roles: ["approver"], inputs: ["month","name","name2","name3"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS57", section: "M", priority: "P1", title: "12028_TS57: BO login hand-off opens Association Payment Listing and module logout needs a fresh login", roles: ["drafter"] },
+  { id: "12028_TS58", section: "M", priority: "P1", title: "12028_TS58: Used SSO hand-off address cannot log in again (manual)", manual: true },
+  { id: "12028_TS59", section: "M", priority: "P1", title: "12028_TS59: Core logout logs out the open Association Payment Listing tab", roles: ["drafter"] },
+  { id: "12028_TS61", section: "M", priority: "P1", title: "12028_TS61: Logout redirect to an outside address stays on eAuto (manual)", manual: true },
+  { id: "12028_TS62", section: "M", priority: "P1", title: "12028_TS62: Session-expiry redirect to an outside address stays on eAuto (manual)", manual: true },
+  { id: "12028_TS63", section: "M", priority: "P1", title: "12028_TS63: Drafter Approve from two tabs makes one audit row", roles: ["drafter"], inputs: ["month"], labels: {"month":"Pending month"} },
+  { id: "12028_TS64", section: "M", priority: "P1", title: "12028_TS64: Reviewer Approve from two tabs makes one audit row", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Drafter Approved month"} },
+  { id: "12028_TS65", section: "M", priority: "P1", title: "12028_TS65: Approver Approve from two tabs makes one audit row and one payment date", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
+  { id: "12028_TS66", section: "M", priority: "P1", title: "12028_TS66: Forced Reviewer approval on a Pending month is rejected (manual)", manual: true },
+  { id: "12028_TS67", section: "M", priority: "P1", title: "12028_TS67: Forced Approver approval before the Reviewer approves is rejected (manual)", manual: true },
+  { id: "12028_TS68", section: "M", priority: "P1", title: "12028_TS68: Forced action on a fully approved month is rejected (manual)", manual: true },
   { id: "12028_TS01", section: "A", priority: "P2", title: "12028_TS01: Drafter sees Association Payment Listing under Reports and opens Summary", roles: ["drafter"] },
   { id: "12028_TS02", section: "A", priority: "P2", title: "12028_TS02: Reviewer sees Association Payment Listing under Reports and opens Summary", roles: ["reviewer"] },
   { id: "12028_TS03", section: "A", priority: "P2", title: "12028_TS03: Approver sees Association Payment Listing under Reports and opens Summary", roles: ["approver"] },
   { id: "12028_TS04", section: "A", priority: "P2", title: "12028_TS04: Multi-role user sees Association Payment Listing under Reports and opens Summary", roles: ["multi"] },
-  { id: "12028_TS09", section: "B", priority: "P2", title: "12028_TS09: Search Year 2026 lists 12 months January to December", roles: ["drafter"] },
-  { id: "12028_TS11", section: "B", priority: "P2", title: "12028_TS11: Month not yet closed shows No data with no View", roles: ["drafter"], inputs: ["month"], needs: "not yet closed" },
-  { id: "12028_TS12", section: "B", priority: "P2", title: "12028_TS12: Closed month shows car and motorcycle counts and amounts", roles: ["drafter"], inputs: ["month"], needs: "closed, with data" },
-  { id: "12028_TS19", section: "B", priority: "P2", title: "12028_TS19: Newly closed month starts with all three statuses Pending", roles: ["drafter"], inputs: ["month"], needs: "newly closed" },
-  { id: "12028_TS20", section: "B", priority: "P2", title: "12028_TS20: Payment Date shows - before the Approver approves", roles: ["drafter"], inputs: ["month"], needs: "Approver Status Pending" },
-  { id: "12028_TS21", section: "B", priority: "P2", title: "12028_TS21: View opens the Details page of that month", roles: ["drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS23", section: "C", priority: "P2", title: "12028_TS23: Month-close on a past month makes its figures appear", roles: ["drafter"], inputs: ["month","waitMin"], needs: "past, not yet closed" },
-  { id: "12028_TS24", section: "C", priority: "P2", title: "12028_TS24: Running month-close twice keeps the same figures", roles: ["drafter"], inputs: ["month","waitMin"], needs: "closed" },
-  { id: "12028_TS26", section: "D", priority: "P2", title: "12028_TS26: Details lists 16 states with codes 01 to 16", roles: ["drafter"], inputs: ["month"], needs: "closed, with data" },
-  { id: "12028_TS35", section: "D", priority: "P2", title: "12028_TS35: Private and company cars both counted under Car", roles: ["drafter"], inputs: ["month","state","count"], needs: "JPJ approval month" },
-  { id: "12028_TS36", section: "D", priority: "P2", title: "12028_TS36: Private and company motorcycles both counted under Motorcycle", roles: ["drafter"], inputs: ["month","state","count"], needs: "JPJ approval month" },
-  { id: "12028_TS37", section: "D", priority: "P2", title: "12028_TS37: Transaction counted in the month of its JPJ Approved Date", roles: ["drafter"], inputs: ["month","month2","state","vehicle","count","count2"], needs: "JPJ approval month" },
-  { id: "12028_TS38", section: "D", priority: "P2", title: "12028_TS38: Approved transaction not yet paid is not counted", roles: ["drafter"], inputs: ["month","state","vehicle","count"], needs: "month of the unpaid transaction" },
-  { id: "12028_TS39", section: "D", priority: "P2", title: "12028_TS39: Transaction counted under the dealer's registered state", roles: ["drafter"], inputs: ["month","state","state2","vehicle","count","count2"], needs: "JPJ approval month" },
-  { id: "12028_TS41", section: "E", priority: "P2", title: "12028_TS41: Drafter sees Approve and KIV but no Reject on a Pending month", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS42", section: "E", priority: "P2", title: "12028_TS42: Drafter first Approve shows the signature pad", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS44", section: "E", priority: "P2", title: "12028_TS44: Signature pad Cancel leaves Drafter Status Pending", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS45", section: "E", priority: "P2", title: "12028_TS45: Drafter Save and Approve sets Drafter Status Approved", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS46", section: "E", priority: "P2", title: "12028_TS46: Drafter KIV on a Pending month sets Drafter Status KIV", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS47", section: "E", priority: "P2", title: "12028_TS47: Drafter Approve on a Review Again month sets Drafter Status Approved", roles: ["drafter"], inputs: ["month"], needs: "Drafter Review Again" },
-  { id: "12028_TS48", section: "E", priority: "P2", title: "12028_TS48: Drafter KIV on a Review Again month sets Drafter Status KIV", roles: ["drafter"], inputs: ["month"], needs: "Drafter Review Again" },
-  { id: "12028_TS49", section: "E", priority: "P2", title: "12028_TS49: Drafter action on a KIV month follows the final KIV rule", roles: ["drafter"], inputs: ["month","expectKiv"], needs: "KIV" },
-  { id: "12028_TS50", section: "E", priority: "P2", title: "12028_TS50: Drafter buttons disabled after the Drafter approved", roles: ["drafter"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS51", section: "E", priority: "P2", title: "12028_TS51: Drafter buttons disabled on a Reviewer Review Again month", roles: ["drafter"], inputs: ["month"], needs: "Reviewer Review Again" },
-  { id: "12028_TS53", section: "E", priority: "P2", title: "12028_TS53: Second Drafter user can approve a Pending month", roles: ["drafter2"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS54", section: "E", priority: "P2", title: "12028_TS54: Second Drafter user cannot approve a month the first Drafter approved", roles: ["drafter2"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS55", section: "E", priority: "P2", title: "12028_TS55: Drafter second approval reuses the signature without the pad", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS59", section: "F", priority: "P2", title: "12028_TS59: Reviewer sees Approve and Reject but no KIV after the Drafter approved", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS60", section: "F", priority: "P2", title: "12028_TS60: Reviewer first Approve shows the signature pad", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS61", section: "F", priority: "P2", title: "12028_TS61: Reviewer Approve sets Reviewer Status Approved", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS62", section: "F", priority: "P2", title: "12028_TS62: Reviewer Reject with blank remarks is not submitted", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS64", section: "F", priority: "P2", title: "12028_TS64: Reviewer Reject Cancel leaves the month unchanged", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS65", section: "F", priority: "P2", title: "12028_TS65: Reviewer Reject with remarks sets Drafter Status Review Again", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS66", section: "F", priority: "P2", title: "12028_TS66: Reviewer sees Approve and Reject on a Reviewer Review Again month", roles: ["reviewer"], inputs: ["month"], needs: "Reviewer Review Again" },
-  { id: "12028_TS67", section: "F", priority: "P2", title: "12028_TS67: Reviewer Approve on a Review Again month sets Reviewer Status Approved", roles: ["reviewer"], inputs: ["month"], needs: "Reviewer Review Again" },
-  { id: "12028_TS68", section: "F", priority: "P2", title: "12028_TS68: Reviewer Reject on a Review Again month sets Drafter Status Review Again", roles: ["reviewer"], inputs: ["month"], needs: "Reviewer Review Again" },
-  { id: "12028_TS69", section: "F", priority: "P2", title: "12028_TS69: Reviewer buttons disabled after the Reviewer approved", roles: ["reviewer"], inputs: ["month"] },
-  { id: "12028_TS71", section: "F", priority: "P2", title: "12028_TS71: Reviewer second approval reuses the signature without the pad", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS77", section: "G", priority: "P2", title: "12028_TS77: Approver sees Approve and Reject but no KIV after the Reviewer approved", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS78", section: "G", priority: "P2", title: "12028_TS78: Approver first Approve shows the signature pad then the payment date popup", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS80", section: "G", priority: "P2", title: "12028_TS80: Payment Date shows the picked date in DD-MM-YYYY", roles: ["drafter"], inputs: ["month","payDate"], needs: "approved in 12028_TS79" },
-  { id: "12028_TS81", section: "G", priority: "P2", title: "12028_TS81: Payment date popup Cancel leaves Approver Status Pending", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS82", section: "G", priority: "P2", title: "12028_TS82: Blank payment date is rejected", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS83", section: "G", priority: "P2", title: "12028_TS83: Today's date is rejected as payment date", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS84", section: "G", priority: "P2", title: "12028_TS84: Yesterday's date is rejected as payment date", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS85", section: "G", priority: "P2", title: "12028_TS85: Typed payment date is blocked", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS86", section: "G", priority: "P2", title: "12028_TS86: Pasted payment date is blocked", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS87", section: "G", priority: "P2", title: "12028_TS87: Approver Reject with blank remarks is not submitted", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS89", section: "G", priority: "P2", title: "12028_TS89: Approver Reject Cancel leaves the month unchanged", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS90", section: "G", priority: "P2", title: "12028_TS90: Approver Reject with remarks sets Reviewer Status Review Again", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS91", section: "G", priority: "P2", title: "12028_TS91: Approver Reject keeps Payment Date as -", roles: ["drafter"], inputs: ["month"], needs: "rejected in 12028_TS90" },
-  { id: "12028_TS93", section: "G", priority: "P2", title: "12028_TS93: Approver second approval reuses the signature and still asks payment date", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS94", section: "G", priority: "P2", title: "12028_TS94: Approver approves a month after the Reviewer re-approves it", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS95", section: "H", priority: "P2", title: "12028_TS95: Multi-role user sees Drafter Approve and KIV on a Pending month", roles: ["multi"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS96", section: "H", priority: "P2", title: "12028_TS96: Multi-role user first Drafter Approve shows the signature pad", roles: ["multi"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS97", section: "H", priority: "P2", title: "12028_TS97: Multi-role user Reviewer step signature pad follows the final signature rule", roles: ["multi"], inputs: ["month","expectSig"], needs: "Drafter Approved" },
-  { id: "12028_TS98", section: "H", priority: "P2", title: "12028_TS98: Multi-role user Approver step asks for the payment date", roles: ["multi"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS99", section: "H", priority: "P2", title: "12028_TS99: Multi-role user completes a month alone", roles: ["multi"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS100", section: "H", priority: "P2", title: "12028_TS100: Multi-role user KIV sets Drafter Status KIV", roles: ["multi"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS101", section: "H", priority: "P2", title: "12028_TS101: Multi-role user Reviewer Reject then re-approves as Drafter", roles: ["multi"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS102", section: "H", priority: "P2", title: "12028_TS102: Multi-role user Approver Reject sets Reviewer Status Review Again", roles: ["multi"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS103", section: "H", priority: "P2", title: "12028_TS103: Multi-role user name shows in Prepared Checked and Approved by", roles: ["multi"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS106", section: "I", priority: "P2", title: "12028_TS106: Audit Log keeps every row after a reject loop", roles: ["drafter"], inputs: ["month"], needs: "approved in 12028_TS94" },
-  { id: "12028_TS115", section: "J", priority: "P2", title: "12028_TS115: Drafter can download both PDFs on a fully approved month", roles: ["drafter"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS116", section: "J", priority: "P2", title: "12028_TS116: Reviewer can download both PDFs on a fully approved month", roles: ["reviewer"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS120", section: "K", priority: "P2", title: "12028_TS120: FMC PDF file name", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS126", section: "K", priority: "P2", title: "12028_TS126: FMC PDF Date is the Approver's approved date", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS127", section: "K", priority: "P2", title: "12028_TS127: FMC PDF Requestor is the Drafter who approved", roles: ["approver"], inputs: ["month","name"], needs: "fully approved", nameRole: "Drafter" },
-  { id: "12028_TS128", section: "K", priority: "P2", title: "12028_TS128: FMC PDF Reason for Payment line 1", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS129", section: "K", priority: "P2", title: "12028_TS129: FMC PDF Reason for Payment line 2 month", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS138", section: "K", priority: "P2", title: "12028_TS138: FMC PDF Prepared by shows the Drafter", roles: ["approver"], inputs: ["month","name"], needs: "fully approved", nameRole: "Drafter" },
-  { id: "12028_TS139", section: "K", priority: "P2", title: "12028_TS139: FMC PDF Checked by shows the Reviewer", roles: ["approver"], inputs: ["month","name"], needs: "fully approved", nameRole: "Reviewer" },
-  { id: "12028_TS140", section: "K", priority: "P2", title: "12028_TS140: FMC PDF Approved by shows the Approver", roles: ["approver"], inputs: ["month","name"], needs: "fully approved", nameRole: "Approver" },
-  { id: "12028_TS141", section: "L", priority: "P2", title: "12028_TS141: MMSDA PDF file name", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS147", section: "L", priority: "P2", title: "12028_TS147: MMSDA PDF Date is the Approver's approved date", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS148", section: "L", priority: "P2", title: "12028_TS148: MMSDA PDF Requestor is the Drafter who approved", roles: ["approver"], inputs: ["month","name"], needs: "fully approved", nameRole: "Drafter" },
-  { id: "12028_TS149", section: "L", priority: "P2", title: "12028_TS149: MMSDA PDF Reason for Payment line 1", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS150", section: "L", priority: "P2", title: "12028_TS150: MMSDA PDF Reason for Payment line 2 month in English", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS159", section: "L", priority: "P2", title: "12028_TS159: MMSDA PDF Prepared by shows the Drafter", roles: ["approver"], inputs: ["month","name"], needs: "fully approved", nameRole: "Drafter" },
-  { id: "12028_TS160", section: "L", priority: "P2", title: "12028_TS160: MMSDA PDF Checked by shows the Reviewer", roles: ["approver"], inputs: ["month","name"], needs: "fully approved", nameRole: "Reviewer" },
-  { id: "12028_TS161", section: "L", priority: "P2", title: "12028_TS161: MMSDA PDF Approved by shows the Approver", roles: ["approver"], inputs: ["month","name"], needs: "fully approved", nameRole: "Approver" },
-  { id: "12028_TS164", section: "M", priority: "P2", title: "12028_TS164: Logout from Association Payment Listing lands on BO login", roles: ["drafter"] },
-  { id: "12028_TS166", section: "M", priority: "P2", title: "12028_TS166: Session expiry returns to BO login without an error page", roles: ["drafter"], inputs: ["timeoutMin"] },
-  { id: "12028_TS08", section: "B", priority: "P3", title: "12028_TS08: Year filter starts at 2026 with no earlier year", roles: ["drafter"] },
-  { id: "12028_TS10", section: "B", priority: "P3", title: "12028_TS10: Summary shows the listing columns", roles: ["drafter"] },
-  { id: "12028_TS13", section: "B", priority: "P3", title: "12028_TS13: Closed month with zero transactions shows 0.00 and can be opened", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS18", section: "B", priority: "P3", title: "12028_TS18: Total row label reads YEAR TO DATE for a part year", roles: ["drafter"] },
-  { id: "12028_TS31", section: "D", priority: "P3", title: "12028_TS31: Amounts show the #,##0.00 format", roles: ["drafter"], inputs: ["month"], needs: "has an amount of 1,000+" },
-  { id: "12028_TS32", section: "D", priority: "P3", title: "12028_TS32: Car and Motorcycle values shown separately", roles: ["drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS40", section: "D", priority: "P3", title: "12028_TS40: Back to Summary returns to the Summary page", roles: ["drafter"], inputs: ["month"], needs: "closed" },
-  { id: "12028_TS43", section: "E", priority: "P3", title: "12028_TS43: Signature pad Clear empties the pad", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS63", section: "F", priority: "P3", title: "12028_TS63: Reviewer Reject with spaces only is not submitted", roles: ["reviewer"], inputs: ["month"], needs: "Drafter Approved" },
-  { id: "12028_TS88", section: "G", priority: "P3", title: "12028_TS88: Approver Reject with spaces only is not submitted", roles: ["approver"], inputs: ["month"], needs: "Reviewer Approved" },
-  { id: "12028_TS104", section: "I", priority: "P3", title: "12028_TS104: New month Audit Log shows No activity yet", roles: ["drafter"], inputs: ["month"], needs: "Pending" },
-  { id: "12028_TS105", section: "I", priority: "P3", title: "12028_TS105: Audit Log shows Date/Time, Role, Action/Status and Remarks", roles: ["drafter"], inputs: ["month"], needs: "rejected in 12028_TS65" },
-  { id: "12028_TS107", section: "I", priority: "P3", title: "12028_TS107: Audit Log shows no signature image", roles: ["drafter"], inputs: ["month"], needs: "approved in 12028_TS45" },
-  { id: "12028_TS119", section: "J", priority: "P3", title: "12028_TS119: Second download gives the same file", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS121", section: "K", priority: "P3", title: "12028_TS121: FMC PDF company header", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS122", section: "K", priority: "P3", title: "12028_TS122: FMC PDF document title", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS123", section: "K", priority: "P3", title: "12028_TS123: FMC PDF To", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS124", section: "K", priority: "P3", title: "12028_TS124: FMC PDF Attn", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS125", section: "K", priority: "P3", title: "12028_TS125: FMC PDF Adds", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS133", section: "K", priority: "P3", title: "12028_TS133: FMC PDF Pay to Person in charge", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS134", section: "K", priority: "P3", title: "12028_TS134: FMC PDF Pay to Contact Number", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS135", section: "K", priority: "P3", title: "12028_TS135: FMC PDF Pay to Email Address", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS142", section: "L", priority: "P3", title: "12028_TS142: MMSDA PDF company header", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS143", section: "L", priority: "P3", title: "12028_TS143: MMSDA PDF document title", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS144", section: "L", priority: "P3", title: "12028_TS144: MMSDA PDF To", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS145", section: "L", priority: "P3", title: "12028_TS145: MMSDA PDF Attn", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS146", section: "L", priority: "P3", title: "12028_TS146: MMSDA PDF Adds", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS154", section: "L", priority: "P3", title: "12028_TS154: MMSDA PDF Pay to Person in charge", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS155", section: "L", priority: "P3", title: "12028_TS155: MMSDA PDF Pay to Contact Number", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
-  { id: "12028_TS156", section: "L", priority: "P3", title: "12028_TS156: MMSDA PDF Pay to Email Address", roles: ["approver"], inputs: ["month"], needs: "fully approved" },
+  { id: "12028_TS07", section: "B", priority: "P2", title: "12028_TS07: Summary for Year 2026 shows the year filter, 12 months, columns, total label and Payment Date", roles: ["drafter"], inputs: ["month"], labels: {"month":"Month with Approver Status Pending"} },
+  { id: "12028_TS11", section: "C", priority: "P2", title: "12028_TS11: Month-close on a past month shows its figures with all statuses Pending", roles: ["drafter"], inputs: ["month","waitMin"], labels: {"month":"Past month not yet closed"} },
+  { id: "12028_TS12", section: "C", priority: "P2", title: "12028_TS12: Running month-close twice keeps the same figures", roles: ["drafter"], inputs: ["month","waitMin"], labels: {"month":"Closed month"} },
+  { id: "12028_TS16", section: "D", priority: "P2", title: "12028_TS16: Private and company vehicles both counted under Car and Motorcycle", roles: ["drafter"], inputs: ["month","state","count","count2"], labels: {"month":"Closed month","count":"Car count (private + company)","count2":"Motorcycle count (private + company)"} },
+  { id: "12028_TS17", section: "D", priority: "P2", title: "12028_TS17: Transaction counted in the month of its JPJ Approved Date", roles: ["drafter"], inputs: ["month","month2","state","vehicle","count","count2"], labels: {"month":"JPJ approval month","count":"Count, approval month","count2":"Count, creation month"} },
+  { id: "12028_TS18", section: "D", priority: "P2", title: "12028_TS18: Approved transaction not yet paid is not counted", roles: ["drafter"], inputs: ["month","state","vehicle","count"], labels: {"month":"Month of the unpaid transaction","count":"Count (paid only)"} },
+  { id: "12028_TS19", section: "D", priority: "P2", title: "12028_TS19: Transaction counted under the dealer's registered state", roles: ["drafter"], inputs: ["month","state","state2","vehicle","count","count2"], labels: {"month":"JPJ approval month","count":"Count, dealer state","count2":"Count, plate state"} },
+  { id: "12028_TS20", section: "E", priority: "P2", title: "12028_TS20: Drafter first Approve with the signature pad sets Drafter Status Approved", roles: ["drafter"], inputs: ["month"], labels: {"month":"Pending month (Drafter never signed)"} },
+  { id: "12028_TS21", section: "E", priority: "P2", title: "12028_TS21: Drafter KIV on a Pending month sets Drafter Status KIV", roles: ["drafter"], inputs: ["month"], labels: {"month":"Pending month"} },
+  { id: "12028_TS22", section: "E", priority: "P2", title: "12028_TS22: Drafter Approve on a Review Again month sets Drafter Status Approved", roles: ["drafter"], inputs: ["month"], labels: {"month":"Drafter Review Again month"} },
+  { id: "12028_TS23", section: "E", priority: "P2", title: "12028_TS23: Drafter KIV on a Review Again month sets Drafter Status KIV", roles: ["drafter"], inputs: ["month"], labels: {"month":"Drafter Review Again month"} },
+  { id: "12028_TS24", section: "E", priority: "P2", title: "12028_TS24: Drafter action on a KIV month follows the final KIV rule", roles: ["drafter"], inputs: ["month","expectKiv"], labels: {"month":"KIV month"} },
+  { id: "12028_TS26", section: "E", priority: "P2", title: "12028_TS26: Second Drafter user approves a Pending month and is blocked after another Drafter approved", roles: ["drafter2"], inputs: ["mPending","mDA"], labels: {"mDA":"Month the first Drafter approved"} },
+  { id: "12028_TS27", section: "E", priority: "P2", title: "12028_TS27: Drafter second approval reuses the signature without the pad", roles: ["drafter"], inputs: ["month"], labels: {"month":"Another Pending month"} },
+  { id: "12028_TS29", section: "F", priority: "P2", title: "12028_TS29: Reviewer first Approve with the signature pad sets Reviewer Status Approved", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Drafter Approved month (Reviewer never signed)"} },
+  { id: "12028_TS30", section: "F", priority: "P2", title: "12028_TS30: Reviewer Reject needs remarks and returns the month to Drafter Review Again", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Drafter Approved month"} },
+  { id: "12028_TS31", section: "F", priority: "P2", title: "12028_TS31: Reviewer re-approves a Reviewer Review Again month", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Reviewer Review Again month"} },
+  { id: "12028_TS32", section: "F", priority: "P2", title: "12028_TS32: Reviewer Reject on a Review Again month sets Drafter Status Review Again", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Reviewer Review Again month"} },
+  { id: "12028_TS34", section: "F", priority: "P2", title: "12028_TS34: Reviewer second approval reuses the signature without the pad", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Another Drafter Approved month"} },
+  { id: "12028_TS37", section: "G", priority: "P2", title: "12028_TS37: Payment date popup blocks cancel, blank, today, past, typed and pasted dates", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
+  { id: "12028_TS38", section: "G", priority: "P2", title: "12028_TS38: Approver Reject needs remarks and returns the month to Reviewer Review Again", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
+  { id: "12028_TS40", section: "G", priority: "P2", title: "12028_TS40: Approver second approval reuses the signature and still asks payment date", roles: ["approver"], inputs: ["month"], labels: {"month":"Another Reviewer Approved month"} },
+  { id: "12028_TS41", section: "G", priority: "P2", title: "12028_TS41: Approver approves a month after the Reviewer re-approves it", roles: ["approver"], inputs: ["month"], labels: {"month":"Month re-approved in 12028_TS31"} },
+  { id: "12028_TS42", section: "H", priority: "P2", title: "12028_TS42: Multi-role user completes a month alone", roles: ["multi"], inputs: ["month","expectSig"], labels: {"month":"Pending month (multi-role user never signed)"} },
+  { id: "12028_TS43", section: "H", priority: "P2", title: "12028_TS43: Multi-role user KIV sets Drafter Status KIV", roles: ["multi"], inputs: ["month"], labels: {"month":"Pending month"} },
+  { id: "12028_TS44", section: "H", priority: "P2", title: "12028_TS44: Multi-role user Reviewer Reject then re-approves as Drafter", roles: ["multi"], inputs: ["month"], labels: {"month":"Drafter Approved month"} },
+  { id: "12028_TS45", section: "H", priority: "P2", title: "12028_TS45: Multi-role user Approver Reject sets Reviewer Status Review Again", roles: ["multi"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
+  { id: "12028_TS47", section: "I", priority: "P2", title: "12028_TS47: Audit Log shows its columns, keeps every row after a reject loop and shows no signature image", roles: ["drafter"], inputs: ["month"], labels: {"month":"Month approved in 12028_TS41"} },
+  { id: "12028_TS50", section: "J", priority: "P2", title: "12028_TS50: Drafter can download both PDFs on a fully approved month", roles: ["drafter"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS51", section: "J", priority: "P2", title: "12028_TS51: Reviewer can download both PDFs on a fully approved month", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS60", section: "M", priority: "P2", title: "12028_TS60: Session expiry returns to BO login without an error page", roles: ["drafter"], inputs: ["timeoutMin"] },
+  { id: "12028_TS09", section: "B", priority: "P3", title: "12028_TS09: Closed month with zero transactions shows 0.00 and can be opened", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month, zero transactions, all Pending"} },
+  { id: "12028_TS46", section: "I", priority: "P3", title: "12028_TS46: New month Audit Log shows No activity yet", roles: ["drafter"], inputs: ["month"], labels: {"month":"Pending month with no action yet"} },
+  { id: "12028_TS54", section: "J", priority: "P3", title: "12028_TS54: Second download gives the same file", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
 ];
 
 /** Test-data setup (not a TS): its own box above the TS sections. */
@@ -259,32 +152,45 @@ const ROLES = Object.keys(ROLE_LABEL) as RoleKey[];
 
 const INPUT_ENV: Record<InputKey, string> = {
   month: "E12028_MONTH", month2: "E12028_MONTH2", state: "E12028_STATE", state2: "E12028_STATE2", vehicle: "E12028_VEHICLE",
-  count: "E12028_COUNT", count2: "E12028_COUNT2", name: "E12028_NAME", payDate: "E12028_PAY_DATE",
+  count: "E12028_COUNT", count2: "E12028_COUNT2", name: "E12028_NAME", name2: "E12028_NAME2", name3: "E12028_NAME3", payDate: "E12028_PAY_DATE",
   expectMenu: "E12028_EXPECT_MENU", expectKiv: "E12028_EXPECT_KIV", expectSig: "E12028_EXPECT_SIG",
   waitMin: "E12028_WAIT_MIN", timeoutMin: "E12028_TIMEOUT_MIN", target: "E12028_TARGET",
+  // One month per status, for the TS that visit several months (scripts/eauto-12028/utils/combined.ts MONTH_KEY).
+  mPending: "E12028_M_PENDING", mKIV: "E12028_M_KIV", mDRA: "E12028_M_DRA", mDA: "E12028_M_DA", mRRA: "E12028_M_RRA", mRA: "E12028_M_RA", mFull: "E12028_M_FULL",
 };
+const MONTH_INPUTS: InputKey[] = ["month", "month2", "mPending", "mKIV", "mDRA", "mDA", "mRRA", "mRA", "mFull"];
 
 /** Environments (staging = the /eauto instance from 2026-10-21). Chosen, never prefilled. */
 const ENVIRONMENTS = [{ value: "https://staging.eauto.my|eauto", label: "Staging — staging.eauto.my/eauto" }];
 
-function inputLabel(s: { id: string; nameRole?: string; needs?: string }, k: InputKey): string {
-  const x = Number(s.id.replace(/^12028_TS/, ""));
+function inputLabel(s: { labels?: Partial<Record<InputKey, string>> }, k: InputKey): string {
+  const own = s.labels?.[k];
+  if (own) return own;
   switch (k) {
-    case "month": return x === 37 ? "JPJ approval month" : `Month${s.needs ? ` (${s.needs})` : ""}`;
+    case "month": return "Month";
     case "month2": return "Creation month";
     case "state": return "Dealer state";
     case "state2": return "Plate state";
     case "vehicle": return "Vehicle type";
-    case "count": return x === 37 ? "Count, approval month" : x === 39 ? "Count, dealer state" : x === 38 ? "Count (paid only)" : "Count (private + company)";
-    case "count2": return x === 37 ? "Count, creation month" : "Count, plate state";
-    case "name": return `${s.nameRole ?? ""} full name (as on the PDF)`;
-    case "payDate": return "Payment date picked in 12028_TS79 (DD-MM-YYYY)";
+    case "count": return "Count";
+    case "count2": return "Count 2";
+    case "name": return "Drafter full name (as on the PDF)";
+    case "name2": return "Reviewer full name (as on the PDF)";
+    case "name3": return "Approver full name (as on the PDF)";
+    case "payDate": return "Payment date (DD-MM-YYYY)";
     case "expectMenu": return "BA answer: menu item for a no-role user";
     case "expectKiv": return "Final KIV rule (BA)";
     case "expectSig": return "Final signature rule (BA)";
     case "waitMin": return "Month-close wait (minutes, ≥ one cron interval)";
     case "timeoutMin": return "Session timeout (minutes, from the developer)";
     case "target": return "Move it to";
+    case "mPending": return "Pending month";
+    case "mKIV": return "KIV month";
+    case "mDRA": return "Drafter Review Again month";
+    case "mDA": return "Drafter Approved month";
+    case "mRRA": return "Reviewer Review Again month";
+    case "mRA": return "Reviewer Approved month";
+    case "mFull": return "Fully approved month";
   }
 }
 
@@ -527,7 +433,7 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
     for (const s of rowsToCheck) {
       for (const k of s.inputs) {
         const v = (rows[s.id]?.[k] ?? "").trim();
-        if (!v) missing.push(`${tsNo(s.id)} ${inputLabel(SCENARIOS.find(x => x.id === s.id) ?? { id: s.id }, k)}`);
+        if (!v) missing.push(`${tsNo(s.id)} ${inputLabel(SCENARIOS.find(x => x.id === s.id) ?? {}, k)}`);
         else if (k === "payDate" && !/^\d{2}-\d{2}-\d{4}$/.test(v)) missing.push(`${tsNo(s.id)} payment date as DD-MM-YYYY`);
       }
     }
@@ -595,11 +501,11 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
   });
 
   // A plain render function (not a nested component), so typing never remounts the field.
-  function inputField(s: { id: string; needs?: string; nameRole?: string }, k: InputKey): ReactNode {
+  function inputField(s: { id: string; labels?: Partial<Record<InputKey, string>> }, k: InputKey): ReactNode {
     const v = rows[s.id]?.[k] ?? "";
     const set = (x: string) => setRow(s.id, k, x);
     let control: ReactNode;
-    if (k === "month" || k === "month2") control = (
+    if (MONTH_INPUTS.includes(k)) control = (
       <select value={v} onChange={e => set(e.target.value)} className={field}>
         <option value="">— month —</option>
         {monthOptions(s.id).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}

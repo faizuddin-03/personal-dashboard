@@ -4,7 +4,7 @@ import { tagOf } from '../data/priority';
 import { monthInput, required } from '../data/config';
 import { RoleKey } from '../data/users';
 
-// A. Reports menu and module access — 12028_TS01 to TS07.
+// A. Reports menu and module access — 12028_TS01 to TS06.
 // [unconfirmed] the module is not captured live; see pages/AplSummaryPage.ts.
 const idOf = (title: string) => title.split(':')[0];
 
@@ -60,45 +60,38 @@ test('12028_TS05: No-role BO user Reports menu item visible or hidden per BA ans
   });
 });
 
-test('12028_TS06: No-role BO user blocked on the Summary page address', tagOf('12028_TS06'), async ({ page }) => {
+test('12028_TS06: No-role BO user blocked on the Summary and Details page addresses', tagOf('12028_TS06'), async ({ page }) => {
   const ts = '12028_TS06';
+  const month = monthInput('E12028_MONTH', 'Closed month');
   const s = new Session(page, ts);
   await s.as('drafter');
   await s.openListing();
-  const address = await test.step('Copy the Summary page address', async () => s.apl.url());
-  console.log(`DETAIL:${JSON.stringify({ label: 'Summary address', value: address })}`);
+  const summaryAddress = await test.step('Copy the Summary page address', async () => s.apl.url());
+  await s.openMonth(month);
+  const detailsAddress = await test.step(`Click [View] on ${month} and copy the Details page address`, async () => s.apl.url());
+  console.log(`DETAIL:${JSON.stringify({ label: 'Summary address', value: summaryAddress })}`);
+  console.log(`DETAIL:${JSON.stringify({ label: 'Details address', value: detailsAddress })}`);
   await s.as('norole');
+  // Opening the copied address IS the TS step — the only typed-address visits in this suite.
   await test.step('Open the copied Summary address as the no-role user', async () => {
-    // The TS step itself is "open the address" — the only typed-address visit in this suite.
-    await page.goto(address, { waitUntil: 'load' });
+    await page.goto(summaryAddress, { waitUntil: 'load' });
     await s.login.settleAfterLoad();
   });
-  await test.step('Check the listing is not shown (no month table, no [Search])', async () => {
+  await test.step('Check the Summary listing is not shown (no month table, no [Search])', async () => {
     const summary = s.summary;
-    await summary.captureEvidence(`${ts}-blocked`);
+    await summary.captureEvidence(`${ts}-summary-blocked`);
     await summary.verify(`${ts}-listing-shown`, summary.table(), 'No-role user can see the listing', async () => {
       await expect(summary.table()).toHaveCount(0);
       await expect(summary.searchBtn()).toHaveCount(0);
     });
   });
-});
-
-test('12028_TS07: No-role BO user blocked on the Details page address', tagOf('12028_TS07'), async ({ page }) => {
-  const ts = '12028_TS07';
-  const month = monthInput('E12028_MONTH', 'Closed month');
-  const s = new Session(page, ts);
-  await s.as('drafter');
-  await s.openMonth(month);
-  const address = await test.step('Copy the Details page address', async () => s.apl.url());
-  console.log(`DETAIL:${JSON.stringify({ label: 'Details address', value: address })}`);
-  await s.as('norole');
   await test.step('Open the copied Details address as the no-role user', async () => {
-    await page.goto(address, { waitUntil: 'load' });
+    await page.goto(detailsAddress, { waitUntil: 'load' });
     await s.login.settleAfterLoad();
   });
-  await test.step('Check no workflow buttons and no state table are shown', async () => {
+  await test.step('Check no [Approve], [KIV], [Reject] and no state table are shown', async () => {
     const d = s.details;
-    await d.captureEvidence(`${ts}-blocked`);
+    await d.captureEvidence(`${ts}-details-blocked`);
     await d.verify(`${ts}-details-shown`, d.stateTable(), 'No-role user can see the Details page', async () => {
       await expect(d.approveBtn()).toHaveCount(0);
       await expect(d.kivBtn()).toHaveCount(0);

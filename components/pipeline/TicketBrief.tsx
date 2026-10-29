@@ -8,7 +8,7 @@
 // briefProblems from GET /api/pipeline/tickets/[key]; schema in
 // scripts/pipeline/lib/brief.mjs.
 import { useState, type ReactNode } from "react";
-import { ClipboardList, Clock, LayoutGrid, AlertTriangle, ListTree } from "lucide-react";
+import { ClipboardList, Clock, LayoutGrid, AlertTriangle, ListTree, Copy, Check } from "lucide-react";
 import { Inline, ConfidencePill } from "@/components/pipeline/SectionedDoc";
 
 interface Line { text: string; numbered?: boolean; children?: Line[] }
@@ -37,12 +37,13 @@ export interface TicketBriefData {
 // modules full width below it, one idea per line with its lead words in bold,
 // sources moved into small italic captions, and the long explanations folded.
 
-function Box({ title, icon, children, hint }: { title: string; icon: ReactNode; children: ReactNode; hint?: string }) {
+function Box({ title, icon, children, hint, action }: { title: string; icon: ReactNode; children: ReactNode; hint?: string; action?: ReactNode }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-4 sm:p-5 min-w-0">
       <h3 className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold text-blue-300">
         {icon}{title}
         {hint && <span className="normal-case tracking-normal font-normal text-slate-500">· {hint}</span>}
+        {action && <span className="ml-auto normal-case tracking-normal font-normal">{action}</span>}
       </h3>
       <div className="mt-4">{children}</div>
     </div>
@@ -96,6 +97,97 @@ function Scope({ lines }: { lines: string[] }) {
         </button>
       )}
     </>
+  );
+}
+
+/** Inline marks (`code`, **bold**, ++green++, !!red!!, [text](link)) dropped for pasting as plain text. */
+function plainText(text: string): string {
+  return text
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*(.+?)\*\*|\+\+(.+?)\+\+|!!(.+?)!!/g, (_, a, b, c) => a ?? b ?? c)
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, "$1");
+}
+
+const escapeHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+/** Same inline marks as plainText, kept as formatting for rich paste (Word, Teams, Outlook). */
+function richText(text: string): string {
+  return escapeHtml(text)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+    .replace(/\+\+(.+?)\+\+/g, '<b style="color:#16a34a">$1</b>')
+    .replace(/!!(.+?)!!/g, '<b style="color:#dc2626">$1</b>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
+}
+
+/** One scope item: first line is the item, later lines ("- x", "1. x", indented by 2 spaces per level) are its sub-points. */
+interface ScopeNode { text: string; numbered: boolean; children: ScopeNode[] }
+function parseItem(item: string): ScopeNode {
+  const [head, ...rest] = item.split(/\r?\n/);
+  const root: ScopeNode = { text: head.trim(), numbered: false, children: [] };
+  const stack: { depth: number; node: ScopeNode }[] = [{ depth: -1, node: root }];
+  for (const raw of rest) {
+    if (!raw.trim()) continue;
+    const depth = Math.floor((raw.match(/^\s*/)?.[0].length ?? 0) / 2);
+    const m = raw.trim().match(/^(?:([-*•])|(\d+|[a-z]|[ivx]+)[.)])\s+(.*)$/i);
+    const node: ScopeNode = { text: m ? m[3] : raw.trim(), numbered: !!m?.[2], children: [] };
+    while (stack.length > 1 && stack[stack.length - 1].depth >= depth) stack.pop();
+    stack[stack.length - 1].node.children.push(node);
+    stack.push({ depth, node });
+  }
+  return root;
+}
+
+/** Bold lead words before a short ":" — the same headline the card shows. */
+function leadHtml(text: string): string {
+  const at = text.indexOf(":");
+  return at > 0 && at <= 70 ? `<b>${richText(text.slice(0, at))}:</b> ${richText(text.slice(at + 1).trim())}` : richText(text);
+}
+
+function nodesHtml(nodes: ScopeNode[]): string {
+  if (!nodes.length) return "";
+  const tag = nodes.every(n => n.numbered) ? "ol" : "ul";
+  return `<${tag}>${nodes.map(n => `<li>${richText(n.text)}${nodesHtml(n.children)}</li>`).join("")}</${tag}>`;
+}
+
+function nodesText(nodes: ScopeNode[], depth: number): string[] {
+  return nodes.flatMap((n, i) => [
+    `${"   ".repeat(depth)}${n.numbered ? `${i + 1}.` : "-"} ${plainText(n.text)}`,
+    ...nodesText(n.children, depth + 1),
+  ]);
+}
+
+// Copies every scope item, not only the 5 shown (Faizuddin, 2026-10-29:
+// "make button to coppy the entirety of the scope"), as rich text — bold,
+// real numbering, nested indents — with a plain-text copy for apps that
+// take no formatting ("paste in proper format", 2026-10-29).
+function CopyScope({ lines }: { lines: string[] }) {
+  const [state, setState] = useState<"idle" | "done" | "failed">("idle");
+  async function copy() {
+    const items = lines.map(parseItem);
+    const html = `<ol>${items.map(n => `<li>${leadHtml(n.text)}${nodesHtml(n.children)}</li>`).join("")}</ol>`;
+    const text = items.flatMap((n, i) => [`${i + 1}. ${plainText(n.text)}`, ...nodesText(n.children, 1)]).join("\n");
+    try {
+      if (typeof ClipboardItem !== "undefined" && navigator.clipboard.write) {
+        await navigator.clipboard.write([new ClipboardItem({
+          "text/html": new Blob([html], { type: "text/html" }),
+          "text/plain": new Blob([text], { type: "text/plain" }),
+        })]);
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      setState("done");
+    } catch {
+      setState("failed");
+    }
+    setTimeout(() => setState("idle"), 2000);
+  }
+  return (
+    <button type="button" onClick={copy}
+      className="inline-flex items-center gap-1 rounded-md border border-slate-700 px-2 py-1 text-xs text-slate-300 hover:bg-slate-800 hover:text-slate-100">
+      {state === "done" ? <Check size={12} aria-hidden /> : <Copy size={12} aria-hidden />}
+      {state === "done" ? "Copied" : state === "failed" ? "Copy failed" : "Copy all"}
+    </button>
   );
 }
 
@@ -248,7 +340,8 @@ export default function TicketBrief({ brief, problems, updatedLabel }: { brief?:
           <Box title="Estimated testing time" icon={<Clock size={14} aria-hidden />}>
             {brief.estimate ? <Estimate e={brief.estimate} /> : <p className="text-sm text-slate-500">Not written yet.</p>}
           </Box>
-          <Box title="High-level scope" icon={<ClipboardList size={14} aria-hidden />} hint={scope.length ? `${scope.length} items` : undefined}>
+          <Box title="High-level scope" icon={<ClipboardList size={14} aria-hidden />} hint={scope.length ? `${scope.length} items` : undefined}
+            action={scope.length ? <CopyScope lines={scope} /> : undefined}>
             {scope.length ? <Scope lines={scope} /> : <p className="text-sm text-slate-500">Not written yet.</p>}
           </Box>
           <Box title="Modules / pages to cover" icon={<LayoutGrid size={14} aria-hidden />}

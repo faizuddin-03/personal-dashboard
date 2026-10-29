@@ -52,6 +52,8 @@ Source: `[gsheet EAINT-6014, Functional & Interruption Test R78; P2 - Compatibil
 2. Manual full testing = "Iris and Dermalog full testing, including negative testing", face / fingerprint login, interruption testing. `[same, R19–R22]`
 3. Edge-to-edge check, Android 16 and 17 only: buttons and text not hidden under the status bar or navigation bar. `[same, R27]`
 4. Iris TS: lead asked for a new tab in the EAINT-9805 workbook, modelled on the EAINT-7229 Dermalog WebSocket TS. `[lead message to Faizuddin, 2026-10-28]`
+5. The eAuto mobile app is a **native installed app** (Android / iOS), not a Chrome browser or web view of the portal. Web-only TS (browsers, installer, HMAC via F12, one-tab rule) do not apply. `[Faizuddin, 2026-10-29]`
+6. Faizuddin's role on EAINT-9805: **manual** — write the Iris manual TS tab and do manual testing. Automation stays with Hui Xin. `[Faizuddin, 2026-10-29, per lead message 2026-10-28: "Please add the manual TS in EAINT-9805 excel by creating a new tab ya."]`
 
 ## Open questions
 

@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { ROOT, repoPath } from "./store.mjs";
+import { myDocsAvailable, myTicketDir } from "./lib/my-folder.mjs";
 
 export const PERSONAS = {
   scout: "You are Scout, the pipeline's Jira character. You study tickets and draft QA-Issue text. You never write to Jira yourself: the dashboard does that after Faizuddin presses a button.",
@@ -187,6 +188,12 @@ export function ticketFiles(ticket) {
   return lines.join("\n") || "1. (no files yet)";
 }
 
+/** Where his personal OneDrive ticket folder is, and the rules for it (2026-10-29). */
+function myFolderNote(key) {
+  if (!myDocsAvailable()) return "";
+  return `Faizuddin's personal OneDrive folder for this ticket: ${myTicketDir(key)} (syncs to his personal SharePoint; NOT the QA Team site). He drops files there (SRDs, screenshots, sheets): look in it for anything he mentions. Any file you make for him to open (Excel, Word, PDF, images) goes there as well as where your task says: make it in the repo first, then copy it with exactly: node scripts/pipeline/tools/to-my-folder.mjs ${key} <repo file> [<repo file> ...] (cp, PowerShell and the Write tool cannot do it; this command never overwrites and prints the new path — give him that path). Never delete, rename or overwrite a file in that folder.`;
+}
+
 /** Header every prompt starts with. */
 export function header(character, ticket, task) {
   return `${PERSONAS[character]} You work for Faizuddin (QA engineer, eAuto) inside his dashboard pipeline. Repo root: ${ROOT}. Today: ${new Date().toLocaleDateString("en-CA")}.
@@ -195,6 +202,8 @@ Ticket: ${ticket.key} — "${ticket.title}"${ticket.jiraStatus ? ` (Jira status:
 
 Known files:
 ${ticketFiles(ticket)}
+
+${myFolderNote(ticket.key)}
 
 Start from knowledge/README.md and the knowledge/flow-*.md file for this module. Read CLAUDE.md / AGENTS.md rules: _reference/ is read only except the files this task tells you to write. knowledge/ is kept by the Sage only${character === "sage" ? " (you)" : ": never edit it; list facts worth keeping under a \"Knowledge candidates\" heading in your file or reply, and the Sage folds them in. List only NEW facts: grep knowledge/ and data/pipeline/knowledge-review.json (changes already waiting for his OK) first, and leave out anything already there"}.
 

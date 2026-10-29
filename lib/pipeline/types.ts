@@ -196,6 +196,8 @@ export interface PipelineTicket {
     scenariosJson?: string;      // data/pipeline/work/<KEY>/scenarios.json (PipelineScenario[])
     workbook?: string;           // _reference/tickets/<KEY>/<KEY> - <summary>.xlsx
     officialTs?: string;         // absolute path of the official workbook in the synced QA Team folder
+    myWorkbook?: string;         // absolute path of Elf's workbook copy in his OneDrive "eAuto Documents/<KEY>" folder (2026-10-29)
+    qaWorkbook?: string;         // absolute path of the last copy put in the QA Team folder with the Elf button (2026-10-29)
     suiteDir?: string;           // scripts/eauto-<n>
     runnerPage?: string;         // /eauto/<n> (dashboard URL)
     brief?: string;              // data/pipeline/work/<KEY>/brief.json (TicketBrief), set once it is complete

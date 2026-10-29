@@ -10,7 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, ExternalLink, Loader2, AlertTriangle, Sparkles, CheckCircle2, Hammer, Bot,
   BookOpen, History, ListChecks, Bug, FileSpreadsheet, Trash2, ScrollText,
-  HelpCircle, PauseCircle, Copy, Ban, RotateCcw, PlayCircle,
+  HelpCircle, PauseCircle, Copy, Ban, RotateCcw, PlayCircle, FolderOpen, Share2,
 } from "lucide-react";
 import clsx from "clsx";
 import Panel from "@/components/pipeline/Panel";
@@ -18,6 +18,7 @@ import SectionedDoc, { Inline, PriorityChip, priorityCounts } from "@/components
 import TicketBrief, { type TicketBriefData } from "@/components/pipeline/TicketBrief";
 import StageStepper from "@/components/pipeline/StageStepper";
 import ChatThread, { JobLine } from "@/components/pipeline/ChatThread";
+import PipChat, { usePipChat, PopOutButton, PoppedNote, type PipCharacter } from "@/components/pipeline/PipChat";
 import FindingCard from "@/components/pipeline/FindingCard";
 import CharacterSprite, { CHARACTER_INFO } from "@/components/pipeline/CharacterSprite";
 import AutomationPanel from "@/components/pipeline/AutomationPanel";
@@ -303,7 +304,9 @@ export default function PipelineWorkspacePage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmApprove, setConfirmApprove] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
+  const [confirmQa, setConfirmQa] = useState(false);
   const activeRef = useRef(false);
+  const pip = usePipChat(key);
 
   const load = useCallback(async () => {
     const [d, s, r] = await Promise.all([
@@ -344,6 +347,10 @@ export default function PipelineWorkspacePage() {
 
   const queue = (action: JobAction) => act(action, () => api("/api/pipeline/jobs", { method: "POST", json: { key, action } }));
   const stopJob = (id: string) => { void act("stop", () => api(`/api/pipeline/jobs?id=${encodeURIComponent(id)}`, { method: "DELETE" })); };
+  // Opens a ticket folder in File Explorer on this PC (2026-10-29).
+  const openFolder = (action: "open-mine" | "open-qa") => {
+    void act(action, () => api("/api/pipeline/folders", { method: "POST", json: { key, action } }));
+  };
   const sendChat = (character: "elf" | "dwarf" | "scout" | "scribe") => (text: string) =>
     act(`chat:${character}`, () => api("/api/pipeline/chat", { method: "POST", json: { key, character, text } }));
 
@@ -375,6 +382,29 @@ export default function PipelineWorkspacePage() {
   const elfWaiting = t.characters?.elf?.state === "waiting";
   // Scout and Scribe questions are answered in their notes panel (2026-10-27).
   const sideWaiting = (["scout", "scribe"] as const).filter(c => t.characters?.[c]?.state === "waiting");
+
+  // One chat thread per character, shown either in its panel or in the
+  // floating window (never both: one draft box per character).
+  const CHAT_PLACEHOLDER: Record<PipCharacter, string> = {
+    scout: "Reply to Scout or ask a question… (Ctrl+Enter to send)",
+    scribe: "Reply to Scribe or ask a question… (Ctrl+Enter to send)",
+    elf: "Tell Elf what to change or answer its question… (Ctrl+Enter to send)",
+    dwarf: approved ? "Message Dwarf… (Ctrl+Enter to send)" : "Dwarf can chat after the green light",
+  };
+  const thread = (c: PipCharacter) => (
+    <ChatThread
+      character={c}
+      entries={chats?.[c] ?? []}
+      job={activeJob(c)}
+      onStop={stopJob}
+      onSend={sendChat(c)}
+      disabled={c === "dwarf" && !approved}
+      placeholder={CHAT_PLACEHOLDER[c]}
+    />
+  );
+  const chatSlot = (c: PipCharacter) =>
+    pip.popped === c ? <PoppedNote name={CHARACTER_INFO[c].name} onBack={() => pip.update(null)} /> : thread(c);
+  const popOut = (c: PipCharacter) => <PopOutButton name={CHARACTER_INFO[c].name} onClick={() => pip.popOut(c)} />;
 
   // Opens the approve box in the Elf panel and brings it into view.
   const startApprove = () => {
@@ -439,7 +469,11 @@ export default function PipelineWorkspacePage() {
           <Link href={`/jira/${t.key}`} className="font-mono text-lg text-blue-300 hover:underline">{t.key}</Link>
           {t.jiraStatus && <span className="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400">{t.jiraStatus}</span>}
           <span className="text-[11px] text-slate-500">Added by {t.addedBy === "scout" ? "Scout" : "you"} · {when(t.addedAt)}</span>
-          <div className="ml-auto">
+          <div className="ml-auto flex flex-wrap items-center gap-3">
+            <button type="button" onClick={() => openFolder("open-mine")} title="OneDrive › eAuto Documents › this ticket. The characters can read and save files here."
+              className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200">
+              <FolderOpen size={12} aria-hidden /> Open my folder
+            </button>
             {!confirmRemove ? (
               <button type="button" onClick={() => setConfirmRemove(true)} className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-red-300">
                 <Trash2 size={12} aria-hidden /> Remove from pipeline
@@ -558,17 +592,10 @@ export default function PipelineWorkspacePage() {
           {(["scout", "scribe"] as const).map(c => (
             <div key={c} id={`${c}-chat`} className="scroll-mt-4">
               <Panel title={`Chat with ${CHARACTER_INFO[c].name}`} icon={<CharacterSprite character={c} size={20} />}
-                defaultOpen={t.characters?.[c]?.state === "waiting"}>
+                defaultOpen={t.characters?.[c]?.state === "waiting"} right={popOut(c)}>
                 <div className="space-y-2">
                   <CharacterHeader character={c} state={t.characters?.[c]} lastError={lastError(c)} />
-                  <ChatThread
-                    character={c}
-                    entries={chats?.[c] ?? []}
-                    job={activeJob(c)}
-                    onStop={stopJob}
-                    onSend={sendChat(c)}
-                    placeholder={`Reply to ${CHARACTER_INFO[c].name} or ask a question… (Ctrl+Enter to send)`}
-                  />
+                  {chatSlot(c)}
                 </div>
               </Panel>
             </div>
@@ -630,20 +657,49 @@ export default function PipelineWorkspacePage() {
               )}
 
               {t.files?.workbook && (
-                <p className="flex items-center gap-1.5 text-xs text-slate-400 break-all">
-                  <FileSpreadsheet size={13} className="text-green-400 shrink-0" aria-hidden /> Workbook: {t.files.workbook}
-                </p>
+                <div className="space-y-2">
+                  <p className="flex items-center gap-1.5 text-xs text-slate-400 break-all">
+                    <FileSpreadsheet size={13} className="text-green-400 shrink-0" aria-hidden />
+                    Workbook: {t.files.myWorkbook ?? t.files.workbook}
+                  </p>
+                  {t.files.qaWorkbook && <p className="text-xs text-slate-500 break-all">In the QA Team folder: {t.files.qaWorkbook}</p>}
+                  {/* QA Team folder only on his say-so (2026-10-29): it is shared with the team. */}
+                  {!confirmQa ? (
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" className={btnGhost} onClick={() => openFolder("open-mine")}>
+                        <FolderOpen size={14} aria-hidden /> Open my folder
+                      </button>
+                      <button type="button" className={btnGhost} onClick={() => setConfirmQa(true)}>
+                        <Share2 size={14} aria-hidden /> {t.files.qaWorkbook ? "Put in QA Team folder again" : "Put in QA Team folder"}
+                      </button>
+                      {t.files.qaWorkbook && (
+                        <button type="button" className={btnGhost} onClick={() => openFolder("open-qa")}>
+                          <FolderOpen size={14} aria-hidden /> Open QA Team folder
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 space-y-2 text-sm">
+                      <p className="text-slate-200">Copy the TS workbook into the QA Team &quot;CR Test Scenarios&quot; folder? The whole team can see it. Files already there are kept; a taken name gets &quot;(v2)&quot;.</p>
+                      <div className="flex flex-wrap gap-2">
+                        <button type="button" className={btnPrimary} disabled={busy === "copy-to-qa"} onClick={async () => {
+                          const ok = await act("copy-to-qa", () => api("/api/pipeline/folders", { method: "POST", json: { key, action: "copy-to-qa" } }));
+                          if (ok) setConfirmQa(false);
+                        }}>
+                          {busy === "copy-to-qa" ? <Loader2 size={14} className="animate-spin" aria-hidden /> : <Share2 size={14} aria-hidden />}
+                          Yes, put it there
+                        </button>
+                        <button type="button" className={btnGhost} onClick={() => setConfirmQa(false)}>Cancel</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
 
-              <h3 id="elf-chat" className="scroll-mt-4 pt-1 border-t border-slate-800 text-xs font-semibold text-slate-300">Chat with Elf</h3>
-              <ChatThread
-                character="elf"
-                entries={chats?.elf ?? []}
-                job={elfJob}
-                onStop={stopJob}
-                onSend={sendChat("elf")}
-                placeholder="Tell Elf what to change or answer its question… (Ctrl+Enter to send)"
-              />
+              <h3 id="elf-chat" className="scroll-mt-4 pt-1 border-t border-slate-800 text-xs font-semibold text-slate-300 flex items-center justify-between">
+                Chat with Elf {popOut("elf")}
+              </h3>
+              {chatSlot("elf")}
             </div>
           </Panel>
           </div>
@@ -676,15 +732,10 @@ export default function PipelineWorkspacePage() {
                 </div>
               )}
 
-              <ChatThread
-                character="dwarf"
-                entries={chats?.dwarf ?? []}
-                job={dwarfJob}
-                onStop={stopJob}
-                onSend={sendChat("dwarf")}
-                disabled={!approved}
-                placeholder={approved ? "Message Dwarf… (Ctrl+Enter to send)" : "Dwarf can chat after the green light"}
-              />
+              <h3 className="pt-1 border-t border-slate-800 text-xs font-semibold text-slate-300 flex items-center justify-between">
+                Chat with Dwarf {popOut("dwarf")}
+              </h3>
+              {chatSlot("dwarf")}
             </div>
           </Panel>
 
@@ -788,6 +839,10 @@ export default function PipelineWorkspacePage() {
           </Panel>
         </div>
       </div>
+
+      {/* Floating chat: part of this page only, so it hides on /pipeline and comes back with the ticket. */}
+      <PipChat pip={pip} render={thread}
+        waiting={Object.fromEntries((["scout", "scribe", "elf", "dwarf"] as const).map(c => [c, t.characters?.[c]?.state === "waiting"]))} />
     </div>
   );
 }

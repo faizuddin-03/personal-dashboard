@@ -10,6 +10,7 @@ import path from "node:path";
 import { header, joinPrompt, STYLE_RULES, TS_RULES, ASK_RULES, exists } from "../prompts-common.mjs";
 import { elfTools } from "./_tools.mjs";
 import { workDir, scenariosJsonRel, validateScenarios } from "./_elf-common.mjs";
+import { copyToMyTicketDir } from "../lib/my-folder.mjs";
 
 /** "<KEY> - <Jira summary, emoji stripped>" made safe for a Windows file name. */
 export function workbookBaseName(key, title, suggestion) {
@@ -80,13 +81,24 @@ Your final message: TS count, the checks you ran, and anything you could not che
     }
     fs.copyFileSync(built, target);
     const rel = store.relPath(target);
+    // The copy he opens lives in his OneDrive ticket folder (2026-10-29: "elf
+    // should create excel TS in the personal onedrive folder"); the repo copy
+    // stays for Dwarf and the scripts that read it.
+    let mine = null, mineError = "";
+    try { mine = copyToMyTicketDir(job.key, built, state.base); } catch (e) { mineError = e.message; }
     store.updateTicket(job.key, t => {
-      t.files = { ...t.files, workbook: rel };
-      t.events = [{ at: store.nowIso(), text: `Elf built the TS workbook${superseded ? " (older copy kept as superseded)" : ""}` }, ...(t.events ?? [])].slice(0, 100);
+      t.files = { ...t.files, workbook: rel, ...(mine ? { myWorkbook: mine } : {}) };
+      t.events = [{ at: store.nowIso(), text: `Elf built the TS workbook${mine ? " (copy in your OneDrive folder)" : ""}${superseded ? " (older copy kept as superseded)" : ""}` }, ...(t.events ?? [])].slice(0, 100);
     });
+    const lines = [
+      mine ? `Workbook in your OneDrive folder: **${mine}**`
+        : `Not copied to your OneDrive folder: ${mineError || "OneDrive is not set up on this PC"}.`,
+      `Repo copy: ${rel}`,
+      ...(superseded ? [`Older repo copy kept as: ${store.relPath(superseded)}`] : []),
+    ];
     store.appendChat(job.key, "elf", {
       from: "system",
-      text: `1. Workbook saved: **${rel}**${superseded ? `\n2. Older workbook kept as: ${store.relPath(superseded)}` : ""}`,
+      text: lines.map((l, i) => `${i + 1}. ${l}`).join("\n"),
       jobId: job.id,
     });
   },

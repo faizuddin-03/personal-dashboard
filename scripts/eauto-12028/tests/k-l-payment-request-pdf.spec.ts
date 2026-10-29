@@ -7,68 +7,30 @@ import { AplDetailsPage, Role } from '../pages/AplDetailsPage';
 import { amountInWords, escapeRe, monShort, phraseRe, toNumber } from '../utils/format';
 import { savePdf, highlightPdf, SavedPdf } from '../utils/pdf';
 import { HighlightSpec } from '../utils/pdfHighlight';
+import { Checks } from '../utils/combined';
 
-// K. FMC Payment Request PDF (12028_TS120 to TS140) and L. MMSDA Payment
-// Request PDF (12028_TS141 to TS161). Common steps (scenarios.md K / L):
-// Login to BO as Approver; [View] a fully approved month; click the button;
-// open the PDF. Expected values: SRD v1.1 §2.2.10 (FMC) / §2.2.11 (MMSDA),
-// quoted in data/expected.ts. Every TS saves the PDF and a green / red boxed
-// screenshot of what it checked (pdfHighlight, copied from scripts/eauto-jomcheck).
-// [unconfirmed] PDF text order: values are looked for right after their label.
+// K. FMC Payment Request PDF (12028_TS55) and L. MMSDA Payment Request PDF
+// (12028_TS56). Steps (scenarios.json): Login to BO as Approver; [View] a
+// fully approved month; click the button; open the PDF. Every SRD v1.1 field
+// is checked in one TS: §2.2.10 (FMC) / §2.2.11 (MMSDA), quoted in
+// data/expected.ts. The PDF and a green / red boxed screenshot of every
+// checked word are saved (pdfHighlight, copied from scripts/eauto-jomcheck).
+// Each field check that fails gets its own red box; one assertion at the end
+// lists them all. [unconfirmed] PDF text order: values are looked for right
+// after their label.
 
 type Assoc = 'FMC' | 'MMSDA';
 type Key = 'file' | 'header' | 'title' | 'to' | 'attn' | 'adds' | 'date' | 'requestor' | 'reason1' | 'reason2'
   | 'Account Holder Name' | 'Bank Name' | 'Bank Account No.' | 'Person in charge' | 'Contact Number' | 'Email Address'
   | 'amount' | 'words' | 'prepared' | 'checked' | 'approved';
 
-const TITLES: Record<Assoc, Record<Key, string>> = {
-  FMC: {
-    file: '12028_TS120: FMC PDF file name',
-    header: '12028_TS121: FMC PDF company header',
-    title: '12028_TS122: FMC PDF document title',
-    to: '12028_TS123: FMC PDF To',
-    attn: '12028_TS124: FMC PDF Attn',
-    adds: '12028_TS125: FMC PDF Adds',
-    date: "12028_TS126: FMC PDF Date is the Approver's approved date",
-    requestor: '12028_TS127: FMC PDF Requestor is the Drafter who approved',
-    reason1: '12028_TS128: FMC PDF Reason for Payment line 1',
-    reason2: '12028_TS129: FMC PDF Reason for Payment line 2 month',
-    'Account Holder Name': '12028_TS130: FMC PDF Pay to Account Holder Name',
-    'Bank Name': '12028_TS131: FMC PDF Pay to Bank Name',
-    'Bank Account No.': '12028_TS132: FMC PDF Pay to Bank Account No.',
-    'Person in charge': '12028_TS133: FMC PDF Pay to Person in charge',
-    'Contact Number': '12028_TS134: FMC PDF Pay to Contact Number',
-    'Email Address': '12028_TS135: FMC PDF Pay to Email Address',
-    amount: "12028_TS136: FMC PDF Amount Payable equals the month's Cars (RM)",
-    words: '12028_TS137: FMC PDF amount in words matches the figures',
-    prepared: '12028_TS138: FMC PDF Prepared by shows the Drafter',
-    checked: '12028_TS139: FMC PDF Checked by shows the Reviewer',
-    approved: '12028_TS140: FMC PDF Approved by shows the Approver',
-  },
-  MMSDA: {
-    file: '12028_TS141: MMSDA PDF file name',
-    header: '12028_TS142: MMSDA PDF company header',
-    title: '12028_TS143: MMSDA PDF document title',
-    to: '12028_TS144: MMSDA PDF To',
-    attn: '12028_TS145: MMSDA PDF Attn',
-    adds: '12028_TS146: MMSDA PDF Adds',
-    date: "12028_TS147: MMSDA PDF Date is the Approver's approved date",
-    requestor: '12028_TS148: MMSDA PDF Requestor is the Drafter who approved',
-    reason1: '12028_TS149: MMSDA PDF Reason for Payment line 1',
-    reason2: '12028_TS150: MMSDA PDF Reason for Payment line 2 month in English',
-    'Account Holder Name': '12028_TS151: MMSDA PDF Pay to Account Holder Name',
-    'Bank Name': '12028_TS152: MMSDA PDF Pay to Bank Name',
-    'Bank Account No.': '12028_TS153: MMSDA PDF Pay to Bank Account No.',
-    'Person in charge': '12028_TS154: MMSDA PDF Pay to Person in charge',
-    'Contact Number': '12028_TS155: MMSDA PDF Pay to Contact Number',
-    'Email Address': '12028_TS156: MMSDA PDF Pay to Email Address',
-    amount: "12028_TS157: MMSDA PDF Amount Payable equals the month's Motorcycles (RM)",
-    words: '12028_TS158: MMSDA PDF amount in words matches the figures',
-    prepared: '12028_TS159: MMSDA PDF Prepared by shows the Drafter',
-    checked: '12028_TS160: MMSDA PDF Checked by shows the Reviewer',
-    approved: '12028_TS161: MMSDA PDF Approved by shows the Approver',
-  },
-};
+const KEYS: Key[] = ['file', 'header', 'title', 'to', 'attn', 'adds', 'date', 'requestor', 'reason1', 'reason2',
+  'Account Holder Name', 'Bank Name', 'Bank Account No.', 'Person in charge', 'Contact Number', 'Email Address',
+  'amount', 'words', 'prepared', 'checked', 'approved'];
+
+/** Full names typed on the row (the people who approved this month). */
+const NAME_KEY: Record<Role, string> = { Drafter: 'E12028_NAME', Reviewer: 'E12028_NAME2', Approver: 'E12028_NAME3' };
+const nameOf = (role: Role) => required(NAME_KEY[role], `${role} full name`);
 
 interface Ctx { d: AplDetailsPage; month: string; pdf: SavedPdf; assoc: Assoc }
 interface Field { spec: (c: Ctx) => Promise<HighlightSpec>; check: (c: Ctx) => Promise<void> }
@@ -106,13 +68,12 @@ function fixed(label: string, value: string, wrong?: string): Field {
 }
 
 function signOff(block: string, role: Role): Field {
-  const name = () => required('E12028_NAME', `${role} full name`);
   return {
-    spec: async () => ({ expected: [block, name()] }),
+    spec: async () => ({ expected: [block, nameOf(role)] }),
     check: async ({ d, pdf }) => {
       const date = await d.approvedDate(role);
       const part = blockAfter(pdf.text, block);
-      expect(part, `${block}: ${name()}`).toMatch(phraseRe(name(), 'i'));
+      expect(part, `${block}: ${nameOf(role)}`).toMatch(phraseRe(nameOf(role), 'i'));
       expect(part, `${block}: ${role}'s approved date ${date}`).toContain(date);
       // Signature image: not readable from the PDF text — see the boxed screenshot.
     },
@@ -150,8 +111,8 @@ function field(assoc: Assoc, key: Key): Field {
       },
     };
     case 'requestor': return {
-      spec: async () => ({ expected: ['Requestor', required('E12028_NAME', 'Drafter full name')] }),
-      check: async ({ pdf }) => expect(pdf.text).toMatch(labelled('Requestor', required('E12028_NAME', 'Drafter full name'))),
+      spec: async () => ({ expected: ['Requestor', nameOf('Drafter')] }),
+      check: async ({ pdf }) => expect(pdf.text).toMatch(labelled('Requestor', nameOf('Drafter'))),
     };
     case 'reason1': return fixed('Reason for Payment', A.reason, assoc === 'FMC' ? PDF_FIXED.MMSDA.reason : PDF_FIXED.FMC.reason);
     case 'reason2': return {
@@ -188,21 +149,26 @@ function field(assoc: Assoc, key: Key): Field {
   }
 }
 
-for (const assoc of ['FMC', 'MMSDA'] as const) {
-  for (const [key, title] of Object.entries(TITLES[assoc]) as [Key, string][]) {
-    const ts = title.split(':')[0];
-    test(title, tagOf(ts), async ({ page }) => {
-      const { d, month } = await openAs(page, ts, 'approver', 'Full');
-      const btn = assoc === 'FMC' ? d.fmcBtn() : d.mmsdaBtn();
-      const pdf = await test.step(`Click [${assoc} Payment Request] and save the PDF`, async () => savePdf(await d.download(btn, `${assoc} Payment Request`), `${ts}-${assoc}`));
-      const ctx: Ctx = { d, month, pdf, assoc };
-      const f = field(assoc, key);
-      await test.step('Save a screenshot of the PDF with the checked words boxed', async () => {
-        await highlightPdf(page, pdf, `${ts}-checked`, await f.spec(ctx), title);
-      });
-      await test.step(`Check: ${title.slice(title.indexOf(':') + 2)}`, async () => {
-        await d.verify(`${ts}-pdf`, btn, `${assoc} PDF check failed — see ${ts}-checked.png`, async () => f.check(ctx));
-      });
+for (const t of [
+  { title: "12028_TS55: FMC Payment Request PDF shows the SRD fields and the month's car amount", assoc: 'FMC' as Assoc },
+  { title: "12028_TS56: MMSDA Payment Request PDF shows the SRD fields and the month's motorcycle amount", assoc: 'MMSDA' as Assoc },
+]) {
+  const ts = t.title.split(':')[0];
+  test(t.title, tagOf(ts), async ({ page }) => {
+    const { d, month } = await openAs(page, ts, 'approver', 'Full', 'E12028_MONTH', 'Fully approved month');
+    const btn = t.assoc === 'FMC' ? d.fmcBtn() : d.mmsdaBtn();
+    const pdf = await test.step(`Click [${t.assoc} Payment Request] and save the PDF`, async () => savePdf(await d.download(btn, `${t.assoc} Payment Request`), `${ts}-${t.assoc}`));
+    const ctx: Ctx = { d, month, pdf, assoc: t.assoc };
+    const fields = KEYS.map(k => ({ k, f: field(t.assoc, k) }));
+    await test.step('Save a screenshot of the PDF with every checked word boxed', async () => {
+      const specs: HighlightSpec[] = [];
+      for (const x of fields) specs.push(await x.f.spec(ctx));
+      await highlightPdf(page, pdf, `${ts}-checked`, { expected: specs.flatMap(x => x.expected), forbidden: specs.flatMap(x => x.forbidden ?? []) }, t.title);
     });
-  }
+    const c = new Checks(d, ts);
+    for (const { k, f } of fields) {
+      await test.step(`Check the PDF: ${k}`, async () => { await c.run(`${t.assoc} ${k}`, btn, () => f.check(ctx)); });
+    }
+    c.done();
+  });
 }

@@ -107,3 +107,4 @@ data/browser-profile/
 # broken gitlinks). Re-clone from their remotes; see knowledge/charmain-qa-repo.md.
 _reference/codebases/eauto-qa-azfar/
 _reference/codebases/eauto-qa-charmain/
+share/esim-response-code-kit/node_modules/

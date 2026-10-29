@@ -107,6 +107,8 @@ applied to the EAINT-12153 and EAINT-12257 workbooks, 2026-10-21.
 No version suffix — the folder holds the current script. A superseded copy kept
 for comparison gets ` (superseded v0.1)` appended.
 
+**Updating a file in the OneDrive ticket folder (2026-10-29).** The pipeline's "never overwrite" rule for that folder only guards the copy step: "that rule was placed there to make sure nothing is lost during the transfer process" `[Faizuddin, dashboard chat to Elf, 2026-10-29]`. He asked for characters to be able to update files there ("can you update that rule,s o you can do those things in that folder?", same chat). So an update replaces the file under the same name, with the old copy kept somewhere safe first, matching "No version suffix" above. Delete and rename were not asked for `[unconfirmed]`.
+
 ## Case numbering
 
 Ticket number only, never a project prefix. Numbers come from the scenarios

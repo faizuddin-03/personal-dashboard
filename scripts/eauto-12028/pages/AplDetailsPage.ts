@@ -230,6 +230,13 @@ export class AplDetailsPage extends AplBase {
     await this.rmkText().fill(remarks);
   }
 
+  /** Types into the open Reject popup (replacing what is there). */
+  async typeRemarks(remarks: string): Promise<void> {
+    if (!(await this.rmkModal().isVisible())) throw new Error('The Reject remarks popup is not open.');
+    await this.demoHighlight(this.rmkText());
+    await this.rmkText().fill(remarks);
+  }
+
   async submitReject(): Promise<void> {
     await this.demoHighlight(this.rmkSubmit());
     await this.rmkSubmit().click();

@@ -400,7 +400,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </button>
           </div>
 
-          <main className="flex-1 overflow-y-auto bg-slate-950">
+          {/* relative: absolute children (sr-only labels, tooltips) with no
+              positioned parent used the page as their box, escaped the clip
+              and made the whole window scroll past the sidebar (2026-10-29). */}
+          <main className="relative flex-1 overflow-y-auto bg-slate-950">
             {children}
           </main>
         </div>
