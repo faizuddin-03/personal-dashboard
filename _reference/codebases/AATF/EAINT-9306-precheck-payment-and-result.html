@@ -1,0 +1,91 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URL: /uat1/view/aatf/dereg/precheck/enquiry/main.do (Payment step, header "2 Payment" active,
+       then "3 Result" active for the final state)
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome (see EAINT-9306-aatf-home-and-menu.html note).
+  This file holds the full click-by-click sequence from "Yes" on the step-1 confirm
+  dialog through to the successful Result screen:
+    STATE 1 - Payment step landing, showing vehicle no. + fee breakdown (RM10.40 total:
+              JPJ Fee RM5.00 + eAuto Service Fee RM5.00 + Service Tax 8% RM0.40),
+              payment method fixed to "RHB Direct Debit (DD)" (hidden radio, no user choice)
+    STATE 2 - after clicking NEXT: button gains disabled="", jQuery UI confirm
+              "#payment-dialog" opens ("Sure to make payment? No refund is allowed...")
+    STATE 3 - Result screen after clicking Yes: GLB000000I success response with the
+              full JPJ enquiry attribute checklist
+  Used by: knowledge/flow-edereg.md (§5.2 JPJ response codes, §5.4 payment flow, §4 DOM handles)
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1: Payment step landing -->
+<!-- ============================================================ -->
+<div id="form-container" class="flex flex-column center">
+    <div id="payment-method">
+        <div class="click-to-pay">
+            <span class="instruction">Click NEXT to pay and retrieve the vehicle eDereg Pre-Checking result.</span>
+        </div>
+        <div class="flex">
+            <span class="fw-700 fs-14 mr-12">Vehicle Registration Number:</span>
+            <span>HXA001</span>
+        </div>
+        <table class="paymentsummary" style="width: 100%;">
+            <tbody>
+                <tr><td>JPJ Fee :</td><td style="text-align:right">RM</td><td style="text-align:right">5.00</td></tr>
+                <tr><td>eAuto Service Fee :</td><td style="text-align:right">RM</td><td style="text-align:right">5.00</td></tr>
+                <tr><td>Service Tax 8% :</td><td style="text-align:right">RM</td><td style="text-align:right">0.40</td></tr>
+                <tr class="grandtotal">
+                    <td class="totalPayable fw-700">Total Amount Payable (inclusive of Service Tax 8%) :</td>
+                    <td class="totalPayable" style="text-align:right">RM</td>
+                    <td class="totalPayable" style="text-align:right"><span class="totalPayableAmount label">10.40</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="display: none">
+            <label><input type="radio" name="paymentMethod" value="RHB" checked="">RHB Direct Debit (DD)</label>
+        </div>
+        <div class="mt-20 center">
+            <button type="button" id="to-continue" class="custom-btn mr-12">SAVE &amp; CONTINUE LATER</button>
+            <button type="button" id="to-payment" class="custom-btn">NEXT</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STATE 2: after clicking NEXT -->
+<!-- #to-payment gains disabled="" -->
+<!--
+<div id="payment-dialog" class="ui-dialog-content">
+    <div>Are you sure to make payment? No refund is allowed, once payment is made</div>
+    <div>Adakah anda pasti akan meneruskan pembayaran? Tiada bayaran balik dibenarkan setelah bayaran dibuat</div>
+</div>
+buttons: Yes / No
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 3: Result screen (header now shows "3 Result" active, 1&2 completed) -->
+<!-- URL unchanged (SPA-style content swap on the same main.do page) -->
+<!-- ============================================================ -->
+<div id="result-container" class="center">
+    <input type="hidden" id="jpjStatusLabel" value="OK">
+    <table>
+        <tbody>
+            <tr><td class="title">Vehicle Registration Number: </td><td class="value" id="responseVehicleNo">HXA001</td></tr>
+            <tr><td class="title">Valid As At: </td><td class="value" id="value">21 Aug 2026 03:16 pm</td></tr>
+            <tr><td class="title">Enquiry Response: </td><td id="responseDesc" class="value approved">GLB000000I - TRANSACTION SUCCESSFUL</td></tr>
+            <tr><td class="title">Vehicle Record: </td><td class="value black" id="vehicleRecord">Exist</td></tr>
+            <tr><td class="title">Vehicle Status: </td><td class="value black" id="vehicleStatus">Active</td></tr>
+            <tr><td class="title">Verified Status: </td><td class="value black" id="verifiedStatus">Yes</td></tr>
+            <tr><td class="title">Usage Code: </td><td class="value black" id="usageCode">Yes</td></tr>
+            <tr><td class="title">Blacklist (JPJ): </td><td class="value black" id="jpjBlacklist">No</td></tr>
+            <tr><td class="title">Blacklist (JSJ): </td><td class="value black" id="jsjBlacklist">No</td></tr>
+            <tr><td class="title">Blacklist (Agency): </td><td class="value black" id="agencyBlacklist">No</td></tr>
+            <tr><td class="title">Claim Ownership: </td><td class="value black" id="claimOwnership">No</td></tr>
+            <tr><td class="title">Vehicle in Investigation: </td><td class="value black" id="vehicleInInvestigation">No</td></tr>
+            <tr><td class="title">Vehicle Condition: </td><td class="value black" id="vehicleCondition">No</td></tr>
+            <tr><td colspan="2" class="center value">Note: <span class="fw-700 green">Able to proceed for eDereg</span></td></tr>
+        </tbody>
+    </table>
+    <div class="center mt-16"><button type="button" id="to-view" class="custom-btn">Done</button></div>
+</div>
+<!-- Clicking Done navigates to /uat1/view/aatf/dereg/precheck/enquiry/view.do?id=<transactionId> -->

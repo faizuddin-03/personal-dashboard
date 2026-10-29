@@ -1,0 +1,277 @@
+<!--
+  Captured: 2026-09-18, pasted into chat by Faizuddin (not fetched by the assistant).
+  Environment: uat1 (inferred from asset paths — /uat1/images/..., /uat1/ajax/..., /uat1/user/logout.do).
+  URL: not given — this is the BackOffice Service Request Details page for a
+  Biometric Device Purchase SR (page title shows "Service Request #SR69001385").
+  This is the PRE-EAINT-12167 baseline — no Number of Device / Device Serial No.
+  fields exist yet anywhere on this page or in its Update Shipping Details dialog.
+  Nothing trimmed — full page as pasted, including header/menu/footer chrome and
+  the other same-page dialogs (op-fail-dialog, op-concurrent-dialog,
+  op-installstate-dialog, op-success-dialog). Forms are never trimmed per house
+  rule; the op-ship-dialog form (the one 12167 will change) is captured whole.
+-->
+<body>
+<div id="container">
+
+    <div id="ins-detail">
+        <table class="ins-topbar">
+            <tbody><tr>
+                <td>
+                    <span class="ins-title">Service Request #SR69001385</span>
+
+                </td>
+            </tr>
+        </tbody></table>
+
+
+        <table class="ins-info"><tbody><tr>
+            <td>
+                <table class="ins-kv">
+                    <tbody><tr><td class="k">Date Requested:</td><td>15-09-2026 03:41pm</td></tr>
+                    <tr><td class="k">Company Name:</td><td>BH SDN BHD</td></tr>
+                    <tr><td class="k">Company ROC:</td><td>1700001-A</td></tr>
+                </tbody></table>
+            </td>
+            <td style="padding-left:48px;">
+                <table class="ins-kv">
+                    <tbody><tr><td class="k">e-Invoice Submission Date:</td><td>-</td></tr>
+
+                    <tr><td class="k">LHDN Response Status:</td><td><b style="color:#FF4000;">Failed</b></td></tr>
+                    <tr><td class="k">e-Invoice Validation Date:</td><td>-</td></tr>
+                </tbody></table>
+            </td>
+            <td class="inv-cell">
+
+                <button type="button" class="btn-inv" onclick="opInvoice()"><img src="/uat1/images/icon-print.png"><span>INVOICE</span></button>
+
+
+            </td>
+            <td class="inv-spacer"><div class="einv-note">e-Invoices are only available for customers with a valid TIN.<br>e-Invoices can only be issued for transactions within the current calendar month.</div></td>
+        </tr>
+        </tbody></table>
+        <hr>
+
+        <table class="ins-cols"><tbody><tr>
+
+            <td>
+                <div class="ins-h">Shipping Details</div>
+                <table class="ins-kv ins-ship">
+                    <tbody><tr><td class="k">Purchase Device:</td><td>1 unit(s)</td></tr>
+                    <tr><td class="k">Delivery Status:</td><td><b style="color:blue;">New</b></td></tr>
+                    <tr><td class="k">Delivery Date:</td><td>-</td></tr>
+                    <tr><td class="k">Delivery Order Number:</td><td>-</td></tr>
+                    <tr><td class="k">Consignment Number:</td><td>
+-
+                    </td></tr>
+                    <tr><td class="k">Recipient Name:</td><td>BATRISYIA HASANAH BINTI NURSYAMSI</td></tr>
+                    <tr><td class="k">Shipping Address:</td><td><div class="ship-addr">NO. 5, PUSAT PERDAGANGAN BAHAGIA, JLN RAHMAN 5, 56000 KUALA LUMPUR, WILAYAH PERSEKUTUAN KUALA LUMPUR</div></td></tr>
+                    <tr><td class="k">Contact No:</td><td>0193928989</td></tr>
+                </tbody></table>
+                <div><button type="button" class="btn-update" style="font-weight:normal;" onclick="opShipOpen()">Update Shipping Details</button></div>
+            </td>
+
+
+
+        </tr></tbody></table>
+        <hr>
+
+        <div class="ins-h">Payment Details</div>
+        <ul class="pay-lines">
+            <li>1. 15-09-2026 03:41pm - RHB (SR20260915000003-1109686) - <b style="color:#008E00;">OK</b></li>
+        </ul>
+
+        <table class="ins-kv ins-pay" style="margin-top:8px;">
+            <tbody><tr><td class="k">Biometric Device:</td><td class="amt">RM 850.00</td></tr>
+        </tbody></table>
+
+        <div class="sr-title">Special Remark:</div>
+
+        <textarea id="ins-special-remark" maxlength="500"></textarea>
+
+        <div><button type="button" class="btn-update" onclick="opSaveRemark()">Update Special Remark</button></div>
+
+    </div>
+
+</div>
+
+<!-- Installation Failed modal -> fail.do (acts on the single appt) -->
+<div id="op-fail-dialog" title="Installation Failed" style="display:none;">
+    <div>Please select the reason causing the installation failed:</div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="Reappointment"> Reappointment</label></div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="LaptopIssue"> Laptop/PC Issues</label></div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="Other"> Other</label></div>
+
+    <div class="row" id="op-fail-other-wrap" style="display:none; margin-left:22px;">
+        <textarea id="op-fail-other" rows="3" style="width:100%; box-sizing:border-box; border:1px solid #ccc; padding:6px;" placeholder="Please specify the reason"></textarea>
+        <div id="op-fail-other-err" class="op-err">Reason must not exceed 100 characters.</div>
+    </div>
+</div>
+
+<!-- EAINT-11953: shipping concurrent-update dialog — same chrome as the other BO dialogs; OK refreshes the page. -->
+<div id="op-concurrent-dialog" title="Error" style="display:none;">
+    <div style="padding:4px 0;">Unable to proceed. This record was just updated by another user.</div>
+</div>
+
+<!-- EAINT-11953: installation-status concurrency dialog — another Ops user completed/failed the record (or it
+     expired/was cancelled) first; OK refreshes the page so the latest Installation Status is shown. -->
+<div id="op-installstate-dialog" title="Error" style="display:none;">
+    <div style="padding:4px 0;">Unable to proceed. This Service Request has been completed, failed, expired or cancelled.</div>
+</div>
+
+<!-- Update Shipping Details — jQuery UI dialog (same chrome/header as the BO cancel popup). -->
+<div id="op-ship-dialog" title="Update Shipping Details" style="display:none;">
+    <div class="row"><label class="k">Delivery Date<span style="color:red">*</span>:</label>
+        <input type="text" id="op-ship-date" readonly="readonly" tabindex="-1" value="" class="hasDatepicker">
+        <div id="op-ship-date-err" class="op-err">This field is required</div></div>
+    <div class="row"><label class="k">Delivery Status<span style="color:red">*</span>:</label>
+        <input type="text" id="op-ship-status-display" readonly="readonly" tabindex="-1" value="Arranged">
+        <input type="hidden" id="op-ship-status" value="Arranged">
+        <div id="op-ship-status-err" class="op-err">This field is required</div></div>
+    <div class="row"><label class="k">Consignment Number<span style="color:red">*</span>:</label>
+        <input type="text" id="op-ship-consign" value="">
+        <div id="op-ship-consign-err" class="op-err">This field is required</div></div>
+    <input type="hidden" id="op-ship-recipient" value="BATRISYIA HASANAH BINTI NURSYAMSI">
+    <input type="hidden" id="op-ship-address" value="NO. 5, PUSAT PERDAGANGAN BAHAGIA, JLN RAHMAN 5, 56000 KUALA LUMPUR, WILAYAH PERSEKUTUAN KUALA LUMPUR">
+    <input type="hidden" id="op-ship-contact" value="0193928989">
+</div>
+
+<div id="op-success-dialog" style="display:none;">Are you sure want to mark the installation appointment as completed?</div>
+
+<script>
+function doPendingTransactionCountQuery() {
+    // Do incomplete transaction notification check
+    $.ajax({
+        global: false,
+        type: "POST",
+        data: "",
+        url: "/uat1/ajax/support/incomplete-txn/notification.do",
+        success: function(response) {
+            if(/Pending Transaction/.test(response)) {
+                $("#incomplete-txn-notification-wrapper").html(response);
+            }
+        }
+    });
+}
+
+$(document).ready(function() {
+
+    $("#header a.logout").click(function() {
+        if(confirm("Sure to logout?")) {
+            window.location.href = "/uat1/user/logout.do";
+        }
+        return false;
+    });
+
+    $("#header #menu-link").click(function() {
+        var offset = $(this).offset();
+
+
+        $("#menu-bar").load(_contextPath + "/home/menu.jsp?source=menuLink", function() {
+
+
+            $("#menu-bar").css({left: offset.left - 80, top: offset.top + 20}).slideToggle('fast');
+            $("#menu-bar div").hide();
+            var _userRole = "HubAdmin";
+
+            if(_userRole.indexOf(",") != "-1") {
+                var roles = _userRole.split(",");
+
+                $(roles).each(function(i,role) {
+                    if(role != ""){
+                        $("div."+role).show();
+                    }
+                });
+            }
+            else {
+                $("div."+_userRole).show();
+            }
+        });
+
+        return false;
+    });
+
+    $("body").click(function() {
+        $("#menu-bar").slideUp();
+    });
+
+    LoginSessionTimer.startCountdown();
+
+    doPendingTransactionCountQuery();
+
+});
+</script>
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar" style="width: 350px !important;">
+                <ol class="inline">
+                    <li>
+                        <a href="/uat1/home/" id="home-link">Home |</a>
+                    </li>
+                    <li><a href="#" id="menu-link">Menu <img src="/uat1/images/arrow_down.gif"></a></li>
+                </ol>
+
+
+                <div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onclick="window.location='/uat1/view/support/incomplete-txn/';">
+<span>
+    7 Pending Transaction Found!
+</span>
+</div>
+
+
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">Jason Seah</span>,</li>
+                <li><a href="/uat1/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+    <div id="menu-bar" class="hidden" style="position:absolute; width:800px;"></div>
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1430:44</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo" style="background-color: white;">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+
+<style>
+#footer {color: grey!important; height:60px !important; margin-top:15px !important;font-size:15px}
+#footer table tr td{color: grey!important;font-size:11px!important;}
+</style>
+
+<div id="footer">
+    <colspan width="10%">
+        <colspan width="50%">
+        <colspan width="auto">
+        </colspan></colspan></colspan><table border="0" width="100%">
+        <tbody><tr>
+            <td>&nbsp;</td>
+            <td>
+                Best Compatible With Mozilla Firefox V36.0.4 <br>
+                Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+                <a href="#" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a> |
+                <a href="#" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a> |
+                <a href="#" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </td>
+            <td class="right">
+                <img src="/uat1/images/eAuto_TM_logo.svg" width="98">
+            </td>
+        </tr>
+    </tbody></table>
+</div>
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div></body>

@@ -1,0 +1,281 @@
+<!--
+URL: staging.eauto.my/uat1/view/jomcheck/sst-payment-report  (BO menu: Reports > "SST Payment Report (JomCheck)")
+Environment: staging.eauto.my/uat1, logged in as "eAuto Account" (role HubAdmin)
+Captured: 2026-10-19, pasted into chat by Faizuddin, state AFTER choosing a date and clicking
+"Generate »" (before Generate the #report-content area shows no details).
+Trimmed: report tbody cut from 8 rows to rows 1 and 7 (row 7 = a second company, 030312-A);
+rows 2-6 and 8 are the same company/amounts with HXA0281A-HXA0287A. tfoot Grand Total kept
+verbatim (covers all 8 rows). Header/menu/footer chrome and the shared logout/menu scripts
+dropped. The filter form is untrimmed.
+Notes: Created Date inputs are readonly jQuery UI datepickers with generated ids (dp<digits>);
+use input[name=fromDate] / input[name=toDate]. "Generate »" = #generate-summary (type=button,
+loads into #report-content). "Export »" = #to-export submits the form to
+/ajax/jomcheck/sst-payment-report/export.do. Each row has a.to-cancel "Cancel »" (Cancel
+Invoice) — never click it in automation.
+-->
+<body>
+<div id="container">
+    <div>
+        <table>
+            <tbody><tr>
+                <td colspan="2">
+                    <img src="/uat1/images/x-office-spreadsheet.png">
+                    <span class="app-title">SST Payment Report (JomCheck)</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:240px !important;">
+<style>
+    #summary-form select, #summary-form input[type='text'] {width:218px}
+    #date input[type='text'] {width:84px}
+</style>
+<form id="summary-form" action="/uat1/ajax/jomcheck/sst-payment-report/export.do">
+    <div class="option-set" id="date">
+        <b>Created Date</b>
+        <div>
+            <span class="label">from</span>
+            <input type="text" name="fromDate" class="startDate hasDatepicker" size="9" readonly="" id="dp1792391564047">
+            to
+            <input type="text" name="toDate" class="endDate hasDatepicker" size="9" readonly="" id="dp1792391564048">
+        </div>
+    </div>
+    <div class="option-set">
+        <b>ROC No</b>
+        <div><input type="text" name="companyRocNo"></div>
+    </div>
+    <div class="option-set">
+        <b>Transaction No</b>
+        <div><input type="text" name="transactionRefNo"></div>
+    </div>
+    <div class="option-set">
+        <b>UCD GST No</b>
+        <div><input type="text" name="ucdGstNo"></div>
+    </div>
+    <div class="option-set">
+        <b>Vehicle No</b>
+        <div><input type="text" name="vehicleRegNo"></div>
+    </div>
+    <div class="option-set">
+        <b>Chassis No</b>
+        <div><input type="text" name="vehicleChassisNo"></div>
+    </div>
+    <div class="option-set">
+        <b>Payment Mode</b>
+        <div>
+            <select name="paymentMethod">
+                <option value="">All</option>
+                <option value="DD">DD</option>
+                <option value="FPX">FPX</option>
+                <option value="POB">POB</option>
+                <option value="RHB">RHB</option>
+            </select>
+        </div>
+    </div>
+    <div class="option-set">
+        <b>Vehicle Type</b>
+        <div>
+            <select name="vehicleType">
+                <option value="">All</option>
+                <option value="CAR">Car</option>
+                <option value="COMM_CAR">Comm_Car</option>
+                <option value="BIKE">Bike</option>
+                <option value="COMM_BIKE">Comm_Bike</option>
+            </select>
+        </div>
+    </div>
+    <div class="option-set">
+        <b>Payment To</b>
+        <div>
+            <select name="paymentTo">
+                <option value="">All</option>
+                <option value="eAuto" selected="selected">eAuto</option>
+                <option value="JPJ">JPJ</option>
+            </select>
+        </div>
+    </div>
+    <div class="option-set">
+        <b>Association</b>
+        <div>
+            <select name="association">
+                <option value="">All</option>
+                <option value="FMCCAM">FMCCAM</option>
+                <option value="MMSDA">MMSDA</option>
+            </select>
+        </div>
+    </div>
+    <div class="option-set">
+        <b>State</b>
+        <div>
+            <select name="state">
+                <option value="">All</option>
+<option value="01">JOHOR (01)</option>
+<option value="02">KEDAH (02)</option>
+<option value="03">KELANTAN (03)</option>
+<option value="04">MELAKA (04)</option>
+<option value="05">NEGERI SEMBILAN (05)</option>
+<option value="06">PAHANG (06)</option>
+<option value="07">PULAU PINANG (07)</option>
+<option value="08">PERAK (08)</option>
+<option value="09">PERLIS (09)</option>
+<option value="10">SELANGOR (10)</option>
+<option value="11">TERENGGANU (11)</option>
+<option value="12">SABAH (12)</option>
+<option value="13">SARAWAK (13)</option>
+<option value="14">WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option>
+<option value="15">WILAYAH PERSEKUTUAN LABUAN (15)</option>
+<option value="16">WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option>
+</select>
+        </div>
+    </div>
+    <div class="option-set">
+        <b>Transaction Type</b>
+        <div>
+            <input type="checkbox" name="transactionType" value="JCK" checked="checked">JomCheck<br>
+        </div>
+    </div>
+    <div class="option-set">
+        <b>Hide Cancel Transaction</b>
+        <div>
+            <input type="radio" name="showCancelTrx" value="Yes">Yes
+            <input type="radio" name="showCancelTrx" value="No" checked="">No
+        </div>
+    </div>
+    <div style="margin-top:25px;">
+        <input type="button" class="button" value="Generate »" id="generate-summary">&nbsp;&nbsp;
+        <input type="submit" id="to-export" value="Export »">
+        <a href="#" class="to-reset">Reset</a>
+    </div>
+</form>
+                </td>
+                <td id="report">
+                    <div id="report-content">
+<div class="report-header">
+    <h1 align="center">Service Tax Payment Report<br>19 Oct 2026 02:32 pm</h1>
+</div>
+<br>
+    <table border="1" style="margin-bottom:30px; width:2150px !important;" class="report-body">
+    <thead>
+        <tr style="vertical-align:middle !important;">
+            <td width="30px">#</td>
+            <td width="100px">ROC No</td>
+            <td width="100px">Company Name</td>
+            <td width="100px">State</td>
+            <td width="100px">UCD <br>GST No</td>
+            <td width="100px">Transaction <br>No</td>
+            <td width="100px">System <br>Ref</td>
+            <td width="100px">Invoice <br>No</td>
+            <td width="100px">Invoice <br>Date</td>
+            <td width="100px">Transaction <br>Type</td>
+            <td width="100px">Vehicle <br>Type</td>
+            <td width="100px">Vehicle <br>No</td>
+            <td width="100px">Chassis <br>No</td>
+            <td width="100px">Payment <br>Ref ID</td>
+            <td width="100px">Payment <br>Mode</td>
+            <td width="100px">Payment <br>To</td>
+            <td width="100px">Association</td>
+            <td width="100px">Amount <br>(RM)</td>
+            <td width="100px">Total Service Tax <br>Amount (RM)</td>
+            <td width="100px">Total <br>Amount (RM)</td>
+            <td width="100px">EAUTO (RM)</td>
+            <td width="100px">SST (8%)</td>
+            <td width="100px">EZAUTO <br>ASIA (RM)</td>
+            <td width="100px">SST (8%)</td>
+            <td width="100px">Created <br>Date</td>
+            <td width="100px">Perform By / Date</td>
+            <td width="100px">Refund Type</td>
+            <td width="100px">Remarks</td>
+            <td width="100px"></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>1518238-K</td>
+            <td>FAIZUDDIN AUTO TEST</td>
+            <td>10 - SELANGOR (10)</td>
+            <td>-</td>
+            <td>J600008536</td>
+            <td>26101911-1109700-T4O8nQ</td>
+            <td>IJ6001022</td>
+            <td>19 Oct 2026 11:10 am</td>
+            <td>JomCheck</td>
+            <td>-</td>
+            <td>HXA0280A</td>
+            <td>-</td>
+            <td>JOM261019000001-HXA0280A</td>
+            <td>RHB</td>
+            <td>eAuto</td>
+            <td> - </td>
+            <td class="right">20.00</td>
+            <td class="right">1.60</td>
+            <td class="right">21.60</td>
+            <td class="right">6.00</td>
+            <td class="right">0.48</td>
+            <td class="right">14.00</td>
+            <td class="right">1.12</td>
+            <td>19 Oct 2026 11:10 am</td>
+            <td> -  /  - </td>
+            <td></td>
+            <td></td>
+            <td class="center">
+                <a class="to-cancel" invoiceid="5d6f8ff9-fcf4-4bdb-a24f-fddc5d2c7fd7" title="... Click to cancel invoice" href="#">Cancel »</a>
+            </td>
+        </tr>
+        <!-- rows 2-6 trimmed: J600008537-J600008541, HXA0281A-HXA0285A, same company and amounts -->
+        <tr>
+            <td>7</td>
+            <td>030312-A</td>
+            <td>FAIZUDDIN AUTO TEST 2</td>
+            <td>10 - SELANGOR (10)</td>
+            <td>-</td>
+            <td>J600008542</td>
+            <td>26101912-1109702-RUX88r</td>
+            <td>IJ6001028</td>
+            <td>19 Oct 2026 12:45 pm</td>
+            <td>JomCheck</td>
+            <td>-</td>
+            <td>HXA0286A</td>
+            <td>-</td>
+            <td>JOM261019000007-HXA0286A</td>
+            <td>RHB</td>
+            <td>eAuto</td>
+            <td> - </td>
+            <td class="right">20.00</td>
+            <td class="right">1.60</td>
+            <td class="right">21.60</td>
+            <td class="right">6.00</td>
+            <td class="right">0.48</td>
+            <td class="right">14.00</td>
+            <td class="right">1.12</td>
+            <td>19 Oct 2026 12:45 pm</td>
+            <td> -  /  - </td>
+            <td></td>
+            <td></td>
+            <td class="center">
+                <a class="to-cancel" invoiceid="7c18df40-5e8c-42de-8315-30d36e6c3840" title="... Click to cancel invoice" href="#">Cancel »</a>
+            </td>
+        </tr>
+        <!-- row 8 trimmed: J600008543, HXA0287A, company 1518238-K -->
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="17" class="right"><b>Grand Total :</b></td>
+            <td class="right"><b>160.00</b></td>
+            <td class="right"><b>12.80</b></td>
+            <td class="right"><b>172.80</b></td>
+            <td class="right"><b>48.00</b></td>
+            <td class="right"><b>3.84</b></td>
+            <td class="right"><b>112.00</b></td>
+            <td class="right"><b>8.96</b></td>
+            <td colspan="5">&nbsp;</td>
+        </tr>
+    </tfoot>
+</table>
+</div>
+                </td>
+            </tr>
+        </tbody></table>
+    </div>
+</div>
+<div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div>
+</body>

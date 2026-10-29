@@ -1,0 +1,182 @@
+<!--
+  URL: /uat1/credit/home/ (home menu, superadmin Jason Seah) and
+       /uat1/credit/home/jomcheck-report-listing/main.do (JomCheck Report Listing)
+  Page: Service Portal home menu showing the "Hire Purchase Ownership" section links
+  (Ownership Claim Enquiry, Ownership Claim Listing, Hire Purchase Record Creation
+  Listing, JomCheck Report Listing) + the JomCheck Report Listing page itself, blank
+  search form state, then after Shared-Date-From/To + "Search Now" (7 records) —
+  this results table is EAINT-12339's Severity-counter target (REQ-008/010).
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: results table kept to 2 representative rows of 7 (rest repeat the same
+  shape with different company/vehicle data) — declared per house rule.
+-->
+
+<!-- ============ Service Portal home menu ============ -->
+<body>
+<div id="container">
+<table><tbody><tr><td id="main-content">
+    <div id="home-welcome">Good Afternoon, JASON SEAH</div>
+    <div id="home-menu">
+        <table><tbody><tr><td>
+            <div class="Admin HubAdmin Normal" style="display: block;">
+                <table><tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/x-office-spreadsheet.png"></td>
+                    <td>
+                        <span class="category">Hire Purchase Ownership</span>
+                        <ul>
+                            <li><a href="/uat1/credit/home/view.jsp">Ownership Claim Enquiry</a></li>
+                            <li><a href="/uat1/credit/home/enquiry">Ownership Claim Listing</a></li>
+                            <li><a href="/uat1/credit/home/hp-record">Hire Purchase Record Creation Listing</a></li>
+                            <li><a href="/uat1/credit/home/jomcheck-report-listing/main.do">JomCheck Report Listing</a></li>
+                        </ul>
+                    </td>
+                </tr></tbody></table>
+            </div>
+        </td></tr></tbody></table>
+    </div>
+</td><td id="side-bar"></td></tr></tbody></table>
+</div>
+</body>
+
+<!-- ============ JomCheck Report Listing: blank search form ============ -->
+<body>
+<div id="container">
+<table width="100%">
+<tbody><tr>
+    <td class="not-to-print">
+    <form id="search-form" style="margin-left:20px;">
+        <table style="width:100%" border="0">
+        <colgroup><col width="10%"><col width="15%"><col width="10%"><col width="15%"><col width="10%"><col width="15%"><col width="10%"><col width="15%"></colgroup>
+        <tbody>
+        <tr>
+            <td class="jc-filter-label">Vehicle No.:</td>
+            <td><input type="text" name="vehicleNo" id="vehicleNo" maxlength="255"></td>
+            <td class="jc-filter-label">Chassis No.:</td>
+            <td><input type="text" name="chassisNo" id="chassisNo" maxlength="255"></td>
+            <td class="jc-filter-label">Shared Date From<span class="required">*</span>:</td>
+            <td><input type="text" name="sharedDateFrom" id="sharedDateFrom" readonly="" class="hasDatepicker"></td>
+            <td class="jc-filter-label">Shared Date To<span class="required">*</span>:</td>
+            <td><input type="text" name="sharedDateTo" id="sharedDateTo" readonly="" class="hasDatepicker"></td>
+        </tr>
+        <tr>
+            <td class="jc-filter-label">Payment Date From:</td>
+            <td><input type="text" name="paymentDateFrom" id="paymentDateFrom" readonly="" class="hasDatepicker"></td>
+            <td class="jc-filter-label">Payment Date To:</td>
+            <td><input type="text" name="paymentDateTo" id="paymentDateTo" readonly="" class="hasDatepicker"></td>
+            <td colspan="4">
+                <div style="float:right;">
+                    <input type="button" id="to-search" value="Search Now">&nbsp;
+                    <a class="to-reset" href="#">Reset</a>
+                    &nbsp;<a id="to-export" href="javascript:void(0);" style="color:#007bff; text-decoration:underline; display:none;">Export</a>
+                </div>
+            </td>
+        </tr>
+        </tbody></table>
+        <input type="hidden" name="pageNo" value="1">
+    </form>
+    </td>
+</tr>
+<tr><td style="padding-top:10px; font-size:14px" class="center"><b>JomCheck Report Listing</b></td></tr>
+<tr><td id="result" colspan="2">&nbsp;</td></tr>
+</tbody></table>
+</div>
+</body>
+
+<!-- ============ JomCheck Report Listing: after Shared Date filter + Search Now (7 records) ============ -->
+<!--
+Columns: # | Company Name | Credit Company | Company ROC | Purchase Date |
+JomCheck Report Sharing Date | Search by Vehicle No. | Search by Chassis No. |
+Total Loss History | Avg. Retail Price (RM) | Recommended Trade Price (RM) |
+Flood History | Windscreen Claim | Multiple Registration of Car Plate/Chassis No. |
+Count(s) of Date of Loss | Count(s) of Incidents Severity Scale | Action | Download (checkbox)
+Severity counter format (EAINT-12339 REQ-008 target — order as rendered on this page,
+which is Severe/High/Medium/Low/Critical/Catastrophic, NOT the SRD's stated
+Severe/Critical/Catastrophic/High/Medium/Low order — see knowledge/flow-jomcheck.md §6):
+  "Severe - 1<br>High - 0<br>Medium - 1<br>Low - 0<br>Critical - 0<br>Catastrophic - 0"
+Bulk download: checkbox class "jc-dl" per row, "jc-dl-all" header checkbox, link
+#jc-bulk-dl reads "Download files (N)" and appears once N>=1 — downloads a ZIP of PDFs.
+Row "Action" link opens the PDF in an iframe viewer (see -report-details.html capture).
+-->
+<div id="result-summary" data-count="7" style="overflow:hidden;">
+    <span style="float:left;">7 record(s) in total</span>
+    <a id="jc-bulk-dl" href="javascript:void(0);" style="float:right; color:#007bff; text-decoration:underline;">Download files (0)</a>
+</div>
+
+<div style="overflow-x: auto;">
+<table style="width:100%; border-collapse:collapse;">
+    <thead>
+    <tr class="header" style="background:#58ACFA; color:white;">
+        <th class="col" style="width:3%;">#</th>
+        <th class="col" style="width:8%;">Company Name</th>
+        <th class="col" style="width:10%;">Credit Company</th>
+        <th class="col" style="width:6%;">Company ROC</th>
+        <th class="col" style="width:7%;">Purchase Date</th>
+        <th class="col" style="width:8%;">JomCheck Report Sharing Date</th>
+        <th class="col" style="width:6%;">Search by Vehicle No.</th>
+        <th class="col" style="width:6%;">Search by Chassis No.</th>
+        <th class="col" style="width:5%;">Total Loss History</th>
+        <th class="col" style="width:6%;">Avg. Retail Price (RM)</th>
+        <th class="col" style="width:7%;">Recommended Trade Price (RM)</th>
+        <th class="col" style="width:5%;">Flood History</th>
+        <th class="col" style="width:5%;">Windscreen Claim</th>
+        <th class="col" style="width:6%;">Multiple Registration of Car Plate / Chassis No.</th>
+        <th class="col" style="width:5%;">Count(s) of Date of Loss</th>
+        <th class="col" style="width:7%;">Count(s) of Incidents Severity Scale</th>
+        <th class="col" style="width:3%;">Action</th>
+        <th class="col" style="width:3%;"><input type="checkbox" id="jc-dl-all" title="Select all">&nbsp;Download</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="odd">
+        <td class="col-c">1</td>
+        <td class="col">NEW BB COMPANY</td>
+        <td class="col">1. mfxstar<br>2. YI LINK TEST SDN BHD</td>
+        <td class="col-c">123456-B</td>
+        <td class="col-c">17-09-2026 11:33</td>
+        <td class="col">1. 17-09-2026 11:33<br>2. 17-09-2026 11:33</td>
+        <td class="col-c">GTA0001</td>
+        <td class="col-c">-</td>
+        <td class="col-c">ATL</td>
+        <td class="col-c">108,000.00</td>
+        <td class="col-c">98,000.00</td>
+        <td class="col-c">1</td>
+        <td class="col-c">YES</td>
+        <td class="col-c">NO</td>
+        <td class="col-c">2</td>
+        <td class="col-c">Severe - 1<br>High - 0<br>Medium - 1<br>Low - 0<br>Critical - 0<br>Catastrophic - 0</td>
+        <td class="col-c"><a href="/uat1/api/credit/jomcheck-report-listing/details.do?transactionId=afbdb405-b7d9-4ae1-976f-d794cbb9e5a6" target="_blank">View</a></td>
+        <td class="col-c"><input type="checkbox" class="jc-dl" value="afbdb405-b7d9-4ae1-976f-d794cbb9e5a6"></td>
+    </tr>
+    <tr class="even">
+        <td class="col-c">5</td>
+        <td class="col">SIGMA BOIZ</td>
+        <td class="col">1. mfxstar</td>
+        <td class="col-c">1493580-T</td>
+        <td class="col-c">08-09-2026 10:17</td>
+        <td class="col">1. 08-09-2026 10:17</td>
+        <td class="col-c">REGRESS001</td>
+        <td class="col-c">-</td>
+        <td class="col-c">-</td>
+        <td class="col-c">19,172.00</td>
+        <td class="col-c">14,571.00</td>
+        <td class="col-c">-</td>
+        <td class="col-c">-</td>
+        <td class="col-c">-</td>
+        <td class="col-c">2</td>
+        <td class="col-c">Severe - 1<br>High - 0<br>Medium - 1<br>Low - 0<br>Critical - 0<br>Catastrophic - 0</td>
+        <td class="col-c"><a href="/uat1/api/credit/jomcheck-report-listing/details.do?transactionId=5ab4ccbc-3666-4e85-9e88-c5a5b9c43eb6" target="_blank">View</a></td>
+        <td class="col-c"><input type="checkbox" class="jc-dl" value="5ab4ccbc-3666-4e85-9e88-c5a5b9c43eb6"></td>
+    </tr>
+    <!-- rows 2,3,4,6,7 of the live capture repeat this same shape with different
+         company/vehicle data and no Severity claims (Count(s) of Incidents Severity
+         Scale = "-") — dropped here, full 7-row set available in the session
+         transcript if needed again. -->
+    </tbody>
+</table>
+</div>
+
+<!-- ============ After checking one download checkbox ============ -->
+<!-- Only diff from state above: #jc-bulk-dl becomes visible and reads
+     "Download files (1)". Clicking it downloads a ZIP containing the PDF reports
+     for every checked row. -->

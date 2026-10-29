@@ -1,0 +1,42 @@
+https://staging.eauto.my/obs/admin/preOnb/enquiry
+
+Back to Backoffice
+Pre-Application No:
+Company Name:
+Submission Date From:
+To:
+Pre-Application Status:
+All
+New
+Approved
+Rejected
+Cancelled
+SSM Status:
+All
+OK
+Failed
+-
+Old BRN:
+New BRN:
+Business Trading License Number:
+LHDN Response Status:
+All
+OK
+Failed
+-
+N/A
+Business Type:
+Sdn Bhd / Bhd
+Sole Proprietorship / Partnership
+LLP
+Business Trading (Sabah)
+Business Trading (Sarawak)
+Reset
+UCD Pre-Application Listing
+Best Compatible With Mozilla Firefox V36.0.4
+Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.
+Contact Us
+|
+Terms & Conditions
+|
+Privacy

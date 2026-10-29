@@ -1,0 +1,152 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/estm/enquiry/view.do?id=bb150f73-0ad2-4eb8-af0a-3ac1d97bdc72
+Environment: staging.eauto.my/uat1, UCD login MUHAMMAD FAIZUDDIN BIN BIDI, company FAIZUDDIN AUTO TEST 2 (030312-A, account 1109702)
+Captured: 2026-10-19, pasted into chat by Faizuddin — the page 12412_TS12 stopped on (first eSTM made
+through the MyKad emulator: HX0006EX, Ref E601941728, Approved).
+State: Approved; eSTM / eLKM / eVOC e-Invoice sections all "LHDN Response Status: Failed", submission
+and validation dates "-"; header buttons are Invoice (#to-print-invoice), JPJ Official Receipt
+(#to-print-jpj-receipt), Slip Pengesahan (#to-print) — NO e-Invoice button. Red note: "e-Invoices are
+only available for customers with a valid TIN. e-Invoices can only be issued for transactions within the
+current calendar month."
+Trimmed: the commented-out legacy <table> layout inside #transaction-form (old copy of the same data),
+the header/footer chrome, insurance dialogs and shared scripts. Everything above the form is untrimmed
+except whitespace.
+-->
+<body>
+<div id="container" class="ucd-container">
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a><div class="separator">/</div>
+        <a onclick="viewEstmDashboard()">eSerahan</a><div class="separator">/</div>
+        <a href="/uat1/view/ucd/estm/enquiry/main.do">eSTM Transaction Listing</a><div class="separator">/</div>
+        <div class="page-name">HX0006EX</div>
+    </div>
+    <div class="trx-details-row">
+        <div class="flex">
+            <div class="flex flex-row">
+                <button class="btn-blue-outline" style="font-size: 13px; margin: 4.5px 0; padding: 5px 15px;" onclick="window.location='/uat1/view/ucd/estm/enquiry/main.do'">« Back</button>
+                <h1 class="title-id">HX0006EX</h1>
+                <h6 class="ref-no">(Ref No: E601941728)</h6>
+            </div>
+            <div class="flex flex-row"><h3 class="trx-details-status approved"> Approved</h3></div>
+        </div>
+    </div>
+    <div class="main-content" style="margin-bottom: 50px;">
+        <input type="hidden" name="transactionId" id="transactionId" value="bb150f73-0ad2-4eb8-af0a-3ac1d97bdc72">
+        <div class="flex justify-content-between trx-details-header">
+            <div><h3 class="main-title">Transaction Details</h3></div>
+            <div class="flex flex-row">
+                <button id="to-print-invoice" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 116px; height: 40px; cursor: default;">
+                    <div class="flex justify-content-center"><div class="flex items-center"><img class="icon" src="/uat1/images/file-money-icon.png"><div>Invoice</div></div></div>
+                </button>
+                <button id="to-print-jpj-receipt" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 192px; height: 40px;">
+                    <div class="flex justify-content-center"><div class="flex items-center"><img class="icon" src="/uat1/images/file-money-icon.png"><div>JPJ Official Receipt</div></div></div>
+                </button>
+                <button id="to-print" class="btn-blue-outline trx-btn" style="margin-left: 8px; width: 170px; height: 40px;">
+                    <div class="flex justify-content-center"><div class="flex items-center"><img class="icon" src="/uat1/images/file-tick-icon.png"><div>Slip Pengesahan</div></div></div>
+                </button>
+            </div>
+        </div>
+        <div class="box-container" style="margin-top: 20px;">
+            <div class="box">
+                <div class="flex flex-row"><h6 class="label w-40">Category:</h6><h6 class="data w-60">UCD to Malaysian</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Engine No:</h6><h6 class="data w-60">*/ -1231AA</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Chassis No:</h6><h6 class="data w-60">913821AA/* --</h6></div>
+            </div>
+            <div class="box">
+                <div class="flex flex-row"><h6 class="label w-40">Date Created:</h6><h6 class="data w-60">19-10-2026 05:28pm</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Request eVOC:</h6><h6 class="data w-60">Yes</h6></div>
+            </div>
+            <div class="box box-3">
+                <div class="box box-3"><div class="flex flex-row"><div style="color: red;">e-Invoices are only available for customers with a valid TIN. <br>
+                    e-Invoices can only be issued for transactions within the current calendar month.</div></div></div>
+            </div>
+        </div>
+        <div class="line"></div>
+        <div class="box-container">
+            <div class="box">
+                <div><h3 class="subtitle">e-Invoice (eSTM)</h3></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">e-Invoice Submission Date:</h6><h6 class="data w-50">-</h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">LHDN Response Status:</h6><h6 class="data w-50"><b><span style="color:#FF4000">Failed</span></b></h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">e-Invoice Validation Date:</h6><h6 class="data w-50">-</h6></div>
+            </div>
+            <div class="box">
+                <div><h3 class="subtitle">e-Invoice (eLKM)</h3></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">e-Invoice Submission Date:</h6><h6 class="data w-50">-</h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">LHDN Response Status:</h6><h6 class="data w-50"><b><span style="color:#FF4000">Failed</span></b></h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">e-Invoice Validation Date:</h6><h6 class="data w-50">-</h6></div>
+            </div>
+            <div class="box box-3">
+                <div><h3 class="subtitle">e-Invoice (eVOC)</h3></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">e-Invoice Submission Date:</h6><h6 class="data w-50">-</h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">LHDN Response Status:</h6><h6 class="data w-50"><b><span style="color:#FF4000">Failed</span></b></h6></div>
+                <div class="flex flex-row"><h6 class="trx-details-label w-50">e-Invoice Validation Date:</h6><h6 class="data w-50">-</h6></div>
+            </div>
+        </div>
+        <div class="line"></div>
+        <div class="box-container">
+            <div class="box"><div>
+                <h3 class="subtitle">Buyer</h3>
+                <div class="flex flex-row"><h6 class="label w-40">Name:</h6><h6 class="data w-60">MUHAMMAD FAIZUDDIN BIN BIDI</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">MyKad No:</h6><h6 class="data w-60">030217141005</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Mobile No:</h6><h6 class="data w-60">0110307224</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Buyer's Email:</h6><h6 class="data w-60">ts12.mvf1whpn1pz@mailinator.com</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">eVOC Email:</h6><h6 class="data w-60">faizuddin@modefair.com</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Latest Address:</h6><h6 class="data w-60">NO 1 JALAN TEST<br> TAMAN SIMULATOR<br> 81100 JOHOR BAHRU<br> JOHOR</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">MyKad/Thumbprint <br> verified on:</h6><h6 class="data w-60">19-10-2026 05:28pm</h6></div>
+            </div></div>
+            <div class="box"><div>
+                <h3 class="subtitle">Dealer (Seller)</h3>
+                <div class="flex flex-row"><h6 class="label w-40">Dealer:</h6><h6 class="data w-60">FAIZUDDIN AUTO TEST 2</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Dealer's Reg No:</h6><h6 class="data w-60">030312-A</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Dealer's Address:</h6><h6 class="data w-60">24, JALAN SULAM EMPAT, 19/14D, 40300 SHAH ALAM, SELANGOR</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Dealer's Contact No:</h6><h6 class="data w-60">0189812839</h6></div>
+            </div></div>
+            <div class="box box-3"><div>
+                <h3 class="subtitle">Dealer's Authorised Representative</h3>
+                <div class="flex flex-row"><h6 class="label w-40">Dealer's Representative:</h6><h6 class="data w-60">MUHAMMAD FAIZUDDIN BIN BIDI</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Representative MyKad No:</h6><h6 class="data w-60">030217141005</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Representative Mobile No:</h6><h6 class="data w-60">0189812839</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">MyKad/Thumbprint verified on:</h6><h6 class="data w-60">19-10-2026 05:28pm</h6></div>
+            </div></div>
+        </div>
+        <div class="line"></div>
+        <div class="box-container">
+            <div class="box"><div>
+                <h3 class="subtitle">JPJ Enquiry</h3>
+                <!-- 3 entries: 19-10-2026 05:28pm - OK (GLB000000I) -->
+            </div></div>
+            <div class="box"><div>
+                <h3 class="subtitle">JPJ Enquiry Status</h3>
+                <div class="flex flex-row"><h6 class="label w-40">Valid As At:</h6><h6 class="data w-60">19 Oct 2026 05:28 pm</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Blacklisted:</h6><h6 class="data w-60">No</h6></div>
+                <div class="flex flex-row"><h6 class="label w-40">Condition Code:</h6><h6 class="data w-60">No</h6></div>
+            </div></div>
+            <div class="box box-3">
+                <div><h3 class="subtitle">JPJ Transfer (Final Submission)</h3><div>19-10-2026 05:28pm <h6 class="successful" style="font-size: 14px; font-weight: 700;">Successful</h6></div></div>
+                <br><div><h3 class="subtitle">eVOC (Final Submission)</h3><div>19-10-2026 05:28pm <h6 class="successful" style="font-size: 14px; font-weight: 700;">Successful</h6></div></div>
+                <br><div><h3 class="subtitle">eLKM (Final Submission)</h3><div>19-10-2026 05:28pm <h6 class="successful" style="font-size: 14px; font-weight: 700;">Successful</h6></div></div>
+                <br><div>
+                    <h3 class="subtitle">eLKM Details:</h3>
+                    <div class="flex flex-row"><h6 class="label w-40">Amount:</h6><h6 class="data w-60">RM&nbsp;200.00</h6></div>
+                    <div class="flex flex-row"><h6 class="label w-40">Effective Date:</h6><h6 class="data w-60">19 Oct 2026</h6></div>
+                    <div class="flex flex-row"><h6 class="label w-40">Expiry Date:</h6><h6 class="data w-60">19 Oct 2027</h6></div>
+                    <div class="flex flex-row"><h6 class="label w-40">eLKM Tx No:</h6><h6 class="data w-60">LKM60071147</h6></div>
+                    <div class="flex flex-row"><h6 class="label w-40">Declaration Area:</h6><h6 class="data w-60">Semenanjung</h6></div>
+                </div>
+            </div>
+        </div>
+        <div class="line"></div>
+        <div class="box-container payment-details">
+            <div class="box"><div><h3 class="subtitle">Payment Details (eSTM)</h3>
+                <!-- 1. 19-10-2026 05:28pm - RHB (2610190017000037-HX0006EX) - OK ; 2. ... (2610190017000037) - OK -->
+            </div></div>
+            <div class="box"><div><h3 class="subtitle">Payment Details (eLKM)</h3>
+                <!-- 1. RHB (LK261019000003-HX0006EX) - OK ; 2. (LK261019000003) - OK -->
+            </div></div>
+            <div class="box"><div><h3 class="subtitle">Payment Details (eVOC)</h3>
+                <!-- 1. RHB (EV261019000004-HX0006EX) - OK ; 2. (EV261019000004) - OK -->
+            </div></div>
+        </div>
+    </div>
+</div>
+</body>

@@ -1,0 +1,227 @@
+<!-- Annotated copy of dev's (tracey's) "EAINT-12166 Delivery Order QA Guide" artifact
+     (https://claude.ai/artifact/VZgowBgtmmy4Yu3y7J35Hm), reconstructed from a full
+     read-through on 2026-09-21 (the original page has a scroll bug that blocks normal
+     navigation; content was captured via screenshots after duplicating it).
+     Yellow highlights = new information or a correction vs. the SRD/mockup understanding
+     this session had before reading this guide. Republish with url =
+     https://claude.ai/artifact/6ad29b4b-763f-4562-aadf-4a3adce81395 (Faizuddin's own
+     duplicate of the dev artifact) to update in place. -->
+<title>EAINT-12166 Delivery Order QA Guide — annotated</title>
+<style>
+  :root {
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --ink-soft: #55585c;
+    --ink-faint: #8a8d91;
+    --line: #e3e5e8;
+    --line-strong: #cfd3d8;
+    --mark-bg: #fff2a8;
+    --mark-ink: #1a1a1a;
+    --warn-bg: #fdecea;
+    --warn-line: #e8b4ac;
+    --warn: #a13a2a;
+    --code-bg: #f2f3f5;
+    --legend-bg: #f6f7f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #16181b;
+      --ink: #e7e8ea;
+      --ink-soft: #b0b3b8;
+      --ink-faint: #83878d;
+      --line: #2b2f34;
+      --line-strong: #3a3f45;
+      --mark-bg: #6b5c12;
+      --mark-ink: #fbf3d0;
+      --warn-bg: #3a211c;
+      --warn-line: #6b3a2c;
+      --warn: #e8a08c;
+      --code-bg: #22262b;
+      --legend-bg: #1e2226;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #16181b;
+    --ink: #e7e8ea;
+    --ink-soft: #b0b3b8;
+    --ink-faint: #83878d;
+    --line: #2b2f34;
+    --line-strong: #3a3f45;
+    --mark-bg: #6b5c12;
+    --mark-ink: #fbf3d0;
+    --warn-bg: #3a211c;
+    --warn-line: #6b3a2c;
+    --warn: #e8a08c;
+    --code-bg: #22262b;
+    --legend-bg: #1e2226;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: -apple-system, "Segoe UI", sans-serif; line-height: 1.5; padding: 36px 20px 80px; }
+  .sheet { max-width: 900px; margin: 0 auto; }
+  .eyebrow { font: 600 11px/1 sans-serif; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-faint); margin: 0 0 8px; }
+  h1 { font-size: 27px; margin: 0 0 10px; }
+  .dek { color: var(--ink-soft); font-size: 15px; max-width: 74ch; }
+  h2 { font-size: 18px; margin: 34px 0 10px; border-top: 1px solid var(--line); padding-top: 22px; }
+  h2:first-of-type { border-top: none; padding-top: 0; }
+  p.note { color: var(--ink-soft); font-size: 14px; }
+  .legend { display: flex; align-items: center; gap: 10px; background: var(--legend-bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; font-size: 13px; color: var(--ink-soft); margin: 18px 0 28px; }
+  .legend mark { padding: 1px 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin-bottom: 6px; }
+  th { text-align: left; font: 600 11px/1 sans-serif; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-faint); border-bottom: 1px solid var(--line-strong); padding: 7px 10px; white-space: nowrap; }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 12px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+  ul { margin: 0 0 10px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  mark { background: var(--mark-bg); color: var(--mark-ink); border-radius: 2px; padding: 0 2px; }
+  .callout { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 6px; padding: 12px 14px; margin: 10px 0; font-size: 13.5px; }
+  .callout b.tag { display: inline-block; font: 700 10.5px/1 sans-serif; color: var(--warn); border: 1px solid var(--warn); padding: 3px 7px; border-radius: 4px; margin-right: 8px; }
+  footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-faint); }
+</style>
+
+<div class="sheet">
+  <p class="eyebrow">QA Test Guide &middot; annotated by Faizuddin/Claude, 2026-09-21</p>
+  <h1>EAINT-12166 — Delivery Order for Device Purchase</h1>
+  <p class="dek">BackOffice downloads a system-generated Delivery Order (DO) PDF for a Biometric Device Purchase.
+    This release also changes <mark>how DO numbers are issued (per-day sequence, race-safe)</mark>,
+    <mark>stores the PDF once at issue (frozen snapshot)</mark>, and <mark>moves the Report Engine URL into
+    settings</mark> — the reason for the dedicated regression section at the bottom. Reference layout: the four
+    approved draft DO PDFs.</p>
+
+  <div class="legend"><mark>Highlighted</mark> = new information or a correction vs. what the SRD/mockup led us to
+    expect this session, before reading this guide. Everything else confirms the SRD as already understood.</div>
+
+  <h2>Affected areas &amp; pages</h2>
+  <table>
+    <tr><th>Portal</th><th>Page</th><th>What changed</th></tr>
+    <tr><td>UCD</td><td>Service Hub &rarr; <b>Biometric Device Purchase</b> (purchase page)</td><td>Quantity capped at 40 per order (client + server).</td></tr>
+    <tr><td>UCD</td><td>Service Hub &rarr; purchase <b>Receipt</b></td><td><mark>Shows the Delivery Order Number(s) of the order (comma-separated for split orders).</mark></td></tr>
+    <tr><td>BackOffice</td><td>Service Hub &rarr; Service Request <b>detail page</b></td><td>Delivery Order Number display; <b>DO</b> download button (stored PDF, live fallback); <b>Update Shipping Details</b> dialog now captures one Device Serial No. per device (numbered inputs, 2 columns); "Number of Device" shown; serials locked once Arranged.</td></tr>
+    <tr><td>BackOffice</td><td>Service Hub &rarr; Service Request <b>listing</b></td><td><mark>Serial column removed from the listing (serials live on the detail page).</mark></td></tr>
+    <tr><td>Document</td><td><b>Delivery Order PDF</b> (new Report Engine template <code>ServiceHubDeliveryOrder</code>)</td><td>New document: layout per the four approved drafts; 20 serials per DO page; split-order pages.</td></tr>
+    <tr><td>Regression</td><td>Insurance e-Contract / CP58 / Add User Authorization PDFs, eSTM buyer slip, Company Management Print DO</td><td><mark>Unchanged behaviour, but all now read the Report Engine URL from settings — see section 7.</mark></td></tr>
+  </table>
+
+  <h2>Before you test</h2>
+  <ul>
+    <li>Deploy team applied <code>sql/2026-08-17-EAINT-12166/master.sql</code> — it creates the DO tables and counter, runs its own pre-deploy duplicate check (must return zero rows) and the one-time seeding.</li>
+    <li><b>Report Engine redeployed</b> with the DO template, and <code>settings.eauto.report.engine.api.url</code> set correctly for the environment.</li>
+    <li>You need a UCD account and BackOffice access. Tests below create fresh paid device purchases.</li>
+  </ul>
+
+  <h2>1 &middot; Purchase page — quantity cap</h2>
+  <table>
+    <tr><th>#</th><th>Steps</th><th>Expected</th></tr>
+    <tr><td>1.1</td><td>Type 41 or more in the quantity box.</td><td>Value clamps to 40 and the message "A maximum of 40 devices can be purchased per transaction." appears.</td></tr>
+    <tr><td>1.2</td><td>Type exactly 40.</td><td>No message — 40 is valid.</td></tr>
+    <tr><td>1.3</td><td>Clear the box / type 0 and leave the field.</td><td><mark>Value becomes 1, no error left behind.</mark></td></tr>
+    <tr><td>1.4</td><td>Try to submit &gt; 40 bypassing the UI (browser console).</td><td><mark>Server rejects it — the cap is enforced server-side too.</mark></td></tr>
+  </table>
+
+  <h2>2 &middot; DO numbers — issued once, at the shipping save</h2>
+  <p class="note">Numbers come from the new per-date counter (<code>yyyyMMdd/DP-0001</code>), <mark>restarts each
+    day; a save after 12:00 noon is dated the next day</mark>. Issued <b>once</b> at the first shipping save and
+    never change afterwards.</p>
+  <table>
+    <tr><th>#</th><th>Steps</th><th>Expected</th></tr>
+    <tr><td>2.1</td><td>Pay a &le; 20-unit order; save shipping (serials) in BO.</td><td>Exactly <b>one</b> DO number appears on the detail page.</td></tr>
+    <tr><td>2.2</td><td>Pay a 21&ndash;40-unit order; save shipping.</td><td><b>Two consecutive</b> DO numbers (units 1&ndash;20 on the first, the rest on the second).</td></tr>
+    <tr><td>2.3</td><td>Same day: ship a 40-device order, then a 5-device order.</td><td><mark>Numbers run in sequence — no repeats (e.g. 0001 + 0002, then 0003).</mark></td></tr>
+    <tr><td>2.4</td><td>Have a <b>different officer</b> update the transaction later (e.g. mark Delivered). Download the DO again.</td><td><mark>Same numbers; Issued-by still the original officer's full name (not the login id) and the original date — nothing re-issues.</mark></td></tr>
+    <tr><td>2.5</td><td>(Next calendar day) Ship another order.</td><td>Numbering restarts at <code>.../DP-0001</code> under the new date prefix.</td></tr>
+  </table>
+
+  <h2>3 &middot; The DO PDF — content and layout</h2>
+  <table>
+    <tr><th>#</th><th>Steps</th><th>Expected</th></tr>
+    <tr><td>3.1</td><td>Click the <b>DO</b> button on a shipped order.</td><td>PDF downloads as <mark><code>Delivery_Order_&lt;SR ref&gt;.pdf</code></mark>. Layout matches the approved drafts: logo top-left, bordered tables, English + Malay labels, issuer name + "ADMIN", warranty remark.</td></tr>
+    <tr><td>3.2</td><td>Order of &le; 20 devices.</td><td>1 page; all serials in the grid; selected appointment slots listed.</td></tr>
+    <tr><td>3.3</td><td>Order of 21&ndash;40 devices.</td><td>One PDF, 2 pages, each page its own DO number, max 20 serials per page.</td></tr>
+    <tr><td>3.4</td><td>Order with no appointment slot selected.</td><td>Appointment area shows: "No appointment has been selected yet — to be arranged with the UCD."</td></tr>
+    <tr><td>3.5</td><td>Order with extra installations.</td><td>Installation count printed in words = quantity + extra installations. Never blank, never "FREE".</td></tr>
+    <tr><td>3.6</td><td>Account with a long multi-line registered address.</td><td><mark>The DO shows the registered account address (never the delivery address), complete — nothing cut off.</mark></td></tr>
+  </table>
+
+  <h2>4 &middot; Stored PDF — frozen snapshot</h2>
+  <p class="note">The PDF is generated <b>once</b> at the shipping save, stored, and every later download serves
+    that stored copy.</p>
+  <table>
+    <tr><th>#</th><th>Steps</th><th>Expected</th></tr>
+    <tr><td>4.1</td><td>Edit the company profile (address / phone) <i>after</i> shipping, then download the DO again.</td><td><b>Identical PDF</b> — still the old details. The snapshot is frozen at issue time.</td></tr>
+    <tr><td>4.2</td><td>Download twice in a row.</td><td><mark>Identical file both times; one BO audit-log entry per download listing all DO numbers of the transaction.</mark></td></tr>
+  </table>
+
+  <h2>5 &middot; Display — BO detail and UCD receipt</h2>
+  <table>
+    <tr><th>#</th><th>Steps</th><th>Expected</th></tr>
+    <tr><td>5.1</td><td>Open BO detail of a split (2-DO) order.</td><td>Delivery Order Number shows <b>both</b> numbers, comma-separated.</td></tr>
+    <tr><td>5.2</td><td>Open the same order's UCD receipt page.</td><td><mark>Same display as BO — all numbers, comma-separated.</mark></td></tr>
+    <tr><td>5.3</td><td>Open an unshipped (New) order on both pages.</td><td>DO number shows "-"; no DO button.</td></tr>
+    <tr><td>5.4</td><td>Open a device purchase created <b>before</b> this release.</td><td><mark>Page opens normally and shows its old DO number, but has no DO button (by design — legacy orders don't carry the data the PDF needs).</mark></td></tr>
+  </table>
+
+  <h2>6 &middot; Failure behaviour</h2>
+  <div class="callout">Needs the Report Engine stopped briefly — arrange with the deploy team.</div>
+  <table>
+    <tr><th>#</th><th>Steps</th><th>Expected</th></tr>
+    <tr><td>6.1</td><td>Report Engine stopped: save shipping on a paid order.</td><td><mark><b>Save succeeds</b> — status, serials and DO numbers all assigned. Only the stored PDF is skipped.</mark></td></tr>
+    <tr><td>6.2</td><td>Still stopped: click the DO button.</td><td>Within a few seconds: "Delivery Order could not be generated. Please try again." — no endless loading, no raw error page. If required details are missing: "Unable to generate Delivery Order: required details are incomplete."</td></tr>
+    <tr><td>6.3</td><td>Start the Report Engine; download again on the 6.1 order.</td><td><mark>PDF generates live and downloads fine (no stored copy exists for that order — accepted: it live-generates from then on).</mark></td></tr>
+  </table>
+
+  <h2>7 &middot; Regression — Report Engine URL moved to settings</h2>
+  <div class="callout"><b class="tag">NEEDS A DECISION</b><mark>Run in every environment (SIT, staging, prod
+    smoke). Five existing report flows previously called a hardcoded <code>http://localhost:8088</code>; they now
+    all read <code>settings.eauto.report.engine.api.url</code>. A wrong or missing value in one environment breaks
+    all of them at once</mark> — so each PDF below must be generated once per environment after deploy.</div>
+  <table>
+    <tr><th>#</th><th>Report flow</th><th>What to do</th><th>Expected</th></tr>
+    <tr><td>R1</td><td>Insurance — e-Contract</td><td>Generate an insurance e-Contract PDF (with and without signature).</td><td>PDF downloads and looks as before.</td></tr>
+    <tr><td>R2</td><td>Insurance — CP58</td><td>Generate a CP58 PDF.</td><td>PDF downloads and looks as before.</td></tr>
+    <tr><td>R3</td><td>Insurance — Add User Authorization</td><td>Generate the Add User Authorization PDF and its Declaration PDF.</td><td>Both download and look as before.</td></tr>
+    <tr><td>R4</td><td>eSTM — Buyer Authentication</td><td>Complete an eSTM buyer authentication that produces the PDF slip.</td><td>Slip generates as before.</td></tr>
+    <tr><td>R5</td><td>Company Management — Print DO (New Registration)</td><td>Use the existing manual Print DO form under Company Management.</td><td>Prints as before — this old form is unchanged apart from where it reads the URL.</td></tr>
+  </table>
+  <p class="note">One-minute config check per environment: the edition's <code>settings.properties</code> must
+    contain <code>settings.eauto.report.engine.api.url</code> pointing at that environment's Report Engine host.
+    The Report Engine serves at the root (no context path), so the value is host + port only, e.g.
+    <code>http://localhost:8088</code> where co-located.</p>
+
+  <h2>8 &middot; General regression — Service Hub flow</h2>
+  <table>
+    <tr><th>#</th><th>Area</th><th>What to do</th><th>Expected</th></tr>
+    <tr><td>G1</td><td>Shipping save</td><td>Save shipping details (serials, appointments) on a device purchase.</td><td>Saves as before; DO number assigned; serials + appointments on the detail page.</td></tr>
+    <tr><td>G2</td><td>Invoice / e-Invoice</td><td>On the same transaction detail page, download the Invoice and e-Invoice.</td><td>Both download as before.</td></tr>
+  </table>
+
+  <h2>9 &middot; Device Serial No. capture — Update Shipping Details dialog (EAINT-12167, ships on this branch)</h2>
+  <table>
+    <tr><th>#</th><th>Steps</th><th>Expected</th></tr>
+    <tr><td>9.1</td><td>Open Update Shipping Details on a paid device purchase of N devices.</td><td>Dialog shows "Number of Device: N" and exactly N numbered Device Serial No. inputs in two columns; the dialog body scrolls when N is large (up to 40).</td></tr>
+    <tr><td>9.2</td><td>Leave one serial blank &rarr; Save.</td><td>Red "This field is required" under that input; nothing saved.</td></tr>
+    <tr><td>9.3</td><td>Type a 7-character or 13-character serial &rarr; Save.</td><td><mark>"Device Serial No. must be between 8 and 12 characters." under that input.</mark></td></tr>
+    <tr><td>9.4</td><td>Type a serial with a symbol (e.g. <code>ABC-12345</code>) &rarr; Save.</td><td><mark>Rejected — letters, digits and spaces only.</mark></td></tr>
+    <tr><td>9.5</td><td>Type the same serial in two inputs &rarr; Save.</td><td>"Duplicate device serial number. Each serial number must be unique."</td></tr>
+    <tr><td>9.6</td><td>Fill all N serials validly, status Arranged, consignment + date &rarr; Save.</td><td>"Shipping details saved." Detail page lists every serial; DO number(s) assigned (section 2); serial inputs, Consignment No. and Delivery Date become read-only (locked once Arranged).</td></tr>
+    <tr><td>9.7</td><td>Open the dialog again on that Arranged order.</td><td><mark>Serials shown greyed / not editable; only the status move Arranged &rarr; Delivered is offered.</mark></td></tr>
+    <tr><td>9.8</td><td>Try Delivered &rarr; Arranged (or New) via the browser console.</td><td><mark>"Invalid delivery status change. Delivery status can only move New &rarr; Arranged &rarr; Delivered."</mark></td></tr>
+    <tr><td>9.9</td><td>BO Service Request listing.</td><td><mark>No serial column; everything else as before.</mark></td></tr>
+  </table>
+
+  <h2>Out of scope for this round</h2>
+  <ul>
+    <li>Payment refs / payment flow (unchanged; separate improvement planned).</li>
+    <li>Inventory Control / Stock Out (EAINT-12099) — not on this branch; DO creation stays at the shipping save here.</li>
+  </ul>
+
+  <footer>
+    EAINT-12166 &middot; baseline SRD v1.0 (19.08.2026) &middot; design authority: the four draft DO PDFs &middot;
+    branch <code>dev/feat/EAINT-12166</code> &middot; updated 2026-09-22 — adds the affected-areas map and the
+    EAINT-12167 serial-capture section (merged onto this branch 03.09); earlier: sequence numbering, stored
+    snapshot, receipt display, Report-Engine-URL regression suite.
+    <br><br>
+    Annotation pass by Claude, 2026-09-21 — cross-checked against EAINT-12166 SRD v1.1 (28.08.2026) and EAINT-12167
+    SRD v1.2 (17.08.2026). Two corrections found (9.3, 9.4) and one direct SRD contradiction (9.9 vs. 12167
+    REQ-011) — see <code>knowledge/flow-device-purchase.md</code> in the QA repo for the full writeup.
+  </footer>
+</div>

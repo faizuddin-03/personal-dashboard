@@ -1,0 +1,49 @@
+<!--
+  URL: likely /uat1/banker/login or /uat1/public/login (not confirmed — the address
+  bar wasn't captured, only the rendered HTML). Inferred from the logout target seen
+  on other Service Portal captures: window.location.href = "/uat1/banker/logout.do".
+  Page: Service Portal login page — "DEMO SYSTEM" banner, Username/Password/Remember
+  Password form, no visible action attribute on #login-form (posts to itself).
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: none.
+  IMPORTANT: field names are name="name" / name="pass" — DIFFERENT from the UCD/BO
+  login form other eauto-* scripts use (name="username"/"password"). Do not reuse
+  the shared LoginPage/username-password selectors for Service Portal.
+-->
+<body>
+<div id="header"></div>
+
+<div id="container">
+    <div id="logo" style="padding-top: 20px !important; padding-bottom:5px; ">
+        <img title="eAuto" src="/uat1/images/eAuto_TM_logo-Contact.svg" style="width:480px">
+    </div>
+
+    <div><p style="font-size:1.4em; color:red">WARNING!! This is a DEMO SYSTEM!! DO NOT USE THIS SYSTEM TO SELL TICKET TO CUSTOMER</p></div>
+    <div><marquee behavior="scroll" direction="left" scrollamount="3" style="font-size:1.0em; color:red">DEMO SYSTEM!!  DEMO SYSTEM!!  DEMO SYSTEM!! </marquee></div>
+
+    <form id="login-form">
+    <table>
+        <tbody>
+        <tr><td><div class="right" style="color:black;font-weight:bold;font-size:14px;">Login</div></td><td class="left"></td></tr>
+        <tr>
+            <td><div class="label right">Username:</div></td>
+            <td class="left"><input type="text" name="name" class="login-name text" size="26"></td>
+        </tr>
+        <tr>
+            <td><div class="label right">Password:</div></td>
+            <td class="left"><input type="password" name="pass" class="login-pass text" size="26"></td>
+        </tr>
+        <tr>
+            <td><div class="label right"></div></td>
+            <td class="left"><input type="checkbox" name="rememberMe" id="rememberMe" value="true">Remember Password<br></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="left"><input type="submit" class="to-login button" value="Login »"><br><br></td>
+        </tr>
+        </tbody>
+    </table>
+    </form>
+</div>
+</body>

@@ -1,0 +1,56 @@
+                                                                                                                         e-INVOICE
+
+e-Invoice Type                : 01-Invoice
+e-Invoice Version             : 1.1
+Document Code                 : EA-IV-1026-0000001
+Unique Identifier No.         : SAMPLE0DUMMY0UIN0000000001
+Submission Date               : 15 Oct 2026 10:30 am
+Validation Date               : 15 Oct 2026 10:30 am
+Currency Code                 : MYR
+Payment Reference No.         : JOM261015000001-ABC1234
+Original e-Invoice UIN        : Not Applicable
+
+Supplier                                                                         Buyer
+Name                                                                             Name
+EAUTO SDN BHD                                                                    SAMPLE MOTOR SDN BHD
+
+Registration Number                   TIN                              Registration Number                  TIN
+200401038456                          C21450560100                     202001012345                         C20880012340
+
+SST Registration Number               MSIC Code                        SST Registration Number              Contact Number
+W10-1808-3101-4293                    62099                            W10-2001-32000001                    0121234567
+
+Contact Number                        Email                            Email                                Vehicle No.
+03-2779 8899                          support@eauto.my                 sample@example.com                   ABC 1234
+
+Address                                                                Address
+LEVEL 15 SUNWAY TOWER
+JALAN AMPANG 50450 KUALA LUMPUR.                                       NO. 1, JALAN CONTOH 1/1, TAMAN CONTOH,
+                                                                       47301 PETALING JAYA, SELANGOR, MALAYSIA.
+
+Business Activity Description
+Other information technology service activities n.e.c.
+
+Classification Description                     Quantity    Unit Price           Amount              Tax        Tax        Total Price
+                                                    #          RM                  RM              Type     Amount      (including tax)
+
+022          JomCheck report                            1  18.00                       18.00   Service Tax     RM               RM
+                                                                                         2.00  Service Tax        1.44                 19.44
+022          JomCheck service charge                    1  2.00                                                                          2.16
+                                                                                       20.00                      0.16
+                                                           Subtotal                                                                    21.60
+                                                                                                                  1.60                 20.00
+
+                                                           Total Excluding Tax                                                           1.60
+                                                                                                                                       21.60
+                                                           Tax Amount                                                                  21.60
+
+                                                           Total Including Tax
+
+                                                        Total Payable Amount
+
+ Tax Type       Tax Rate    Tax Amount
+Service Tax        8%             RM
+
+                                         1.60
+

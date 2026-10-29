@@ -1,0 +1,147 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Software Installation - Mandatory Booking"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-14T15-46-21",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-14T15-46-21\\report.json"
+        }
+      ],
+      [
+        "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\reporters\\step-reporter.ts",
+        {}
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "slot-capacity-boundary.spec.ts",
+      "file": "slot-capacity-boundary.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Slot Capacity Boundary",
+          "file": "slot-capacity-boundary.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "slot-capacity-boundary.spec.ts",
+              "line": 20,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Software Installation - Mandatory Booking",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 56079,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T15:46:24.976Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-14T15-46-21\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-ebcc7d7051e8212def5b",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 116,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-14T15:46:23.801Z",
+    "duration": 57959.626000000004,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,2941 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "operationId": "UsersController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/contacts": {
+      "get": {
+        "operationId": "ContactsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "ContactsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContactDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/contacts/import": {
+      "post": {
+        "operationId": "ContactsController_import",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/contacts/{id}": {
+      "get": {
+        "operationId": "ContactsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "ContactsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateContactDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "ContactsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/segments": {
+      "get": {
+        "operationId": "SegmentsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "SegmentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSegmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/segments/{id}": {
+      "get": {
+        "operationId": "SegmentsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "SegmentsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSegmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "SegmentsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/segments/{id}/preview": {
+      "get": {
+        "operationId": "SegmentsController_preview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/templates": {
+      "get": {
+        "operationId": "TemplatesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "TemplatesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/templates/group/{name}": {
+      "get": {
+        "operationId": "TemplatesController_findGroup",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/templates/{id}": {
+      "get": {
+        "operationId": "TemplatesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "TemplatesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/templates/generate": {
+      "post": {
+        "operationId": "TemplatesController_generate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/templates/sync": {
+      "post": {
+        "operationId": "TemplatesController_sync",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/templates/{name}/{version}/submit": {
+      "post": {
+        "operationId": "TemplatesController_submit",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/webhooks/meta": {
+      "get": {
+        "operationId": "WebhookController_verify",
+        "parameters": [
+          {
+            "name": "hub.mode",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hub.verify_token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hub.challenge",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "WebhookController_receive",
+        "parameters": [
+          {
+            "name": "x-hub-signature-256",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/blasts": {
+      "get": {
+        "operationId": "BlastsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "BlastsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlastDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/blasts/{id}": {
+      "get": {
+        "operationId": "BlastsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/blasts/{id}/stats": {
+      "get": {
+        "operationId": "BlastsController_stats",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/blasts/{id}/messages": {
+      "get": {
+        "operationId": "BlastsController_messages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/blasts/preview-state-languages": {
+      "post": {
+        "operationId": "BlastsController_previewStateLanguages",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewStateLanguagesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/blasts/{id}/cancel": {
+      "post": {
+        "operationId": "BlastsController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/blasts/{id}/messages/{messageId}/retry": {
+      "post": {
+        "operationId": "BlastsController_retryMessage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "messageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/blasts/{id}/retry-failed": {
+      "post": {
+        "operationId": "BlastsController_retryFailed",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/autopilot/events": {
+      "get": {
+        "operationId": "AutopilotController_events",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/knowledge": {
+      "get": {
+        "operationId": "KnowledgeController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "KnowledgeController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKnowledgeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/knowledge/candidates": {
+      "get": {
+        "operationId": "KnowledgeController_candidates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/knowledge/{id}": {
+      "patch": {
+        "operationId": "KnowledgeController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateKnowledgeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "KnowledgeController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/knowledge/{id}/publish": {
+      "post": {
+        "operationId": "KnowledgeController_publish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/knowledge/{id}/dismiss": {
+      "post": {
+        "operationId": "KnowledgeController_dismiss",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/knowledge/{id}/reindex": {
+      "post": {
+        "operationId": "KnowledgeController_reindex",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets": {
+      "get": {
+        "operationId": "TicketsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}": {
+      "get": {
+        "operationId": "TicketsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/agent-context": {
+      "get": {
+        "operationId": "TicketsController_agentContext",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/suggest-reply": {
+      "post": {
+        "operationId": "TicketsController_suggestReply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/assign": {
+      "post": {
+        "operationId": "TicketsController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTicketDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/resolve": {
+      "post": {
+        "operationId": "TicketsController_resolve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/close": {
+      "post": {
+        "operationId": "TicketsController_close",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/reopen": {
+      "post": {
+        "operationId": "TicketsController_reopen",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/knowledge-suggestion": {
+      "get": {
+        "operationId": "TicketsController_knowledgeSuggestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tickets/{id}/knowledge-candidate": {
+      "post": {
+        "operationId": "TicketsController_createKnowledgeCandidate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKnowledgeCandidateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/inbox/conversations": {
+      "get": {
+        "operationId": "InboxController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/inbox/conversations/{contactId}": {
+      "get": {
+        "operationId": "InboxController_getOne",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/inbox/conversations/{contactId}/messages": {
+      "post": {
+        "operationId": "InboxController_send",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendReplyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/inbox/conversations/{contactId}/resolve": {
+      "post": {
+        "operationId": "InboxController_resolve",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/inbox/conversations/{contactId}/reopen": {
+      "post": {
+        "operationId": "InboxController_reopen",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/inbox/unread-count": {
+      "get": {
+        "operationId": "InboxController_unreadCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/state-language-mappings": {
+      "get": {
+        "operationId": "StateLanguageMappingController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/state-language-mappings/{state}": {
+      "put": {
+        "operationId": "StateLanguageMappingController_upsert",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertMappingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "StateLanguageMappingController_remove",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/system-settings": {
+      "get": {
+        "operationId": "SystemSettingsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "SystemSettingsController_update",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/analytics/audience": {
+      "get": {
+        "operationId": "AnalyticsController_audience",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/analytics/delivery": {
+      "get": {
+        "operationId": "AnalyticsController_delivery",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/analytics/volume": {
+      "get": {
+        "operationId": "AnalyticsController_volume",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/analytics/autopilot": {
+      "get": {
+        "operationId": "AnalyticsController_autopilot",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/analytics/escalation": {
+      "get": {
+        "operationId": "AnalyticsController_escalation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/analytics/kpis": {
+      "get": {
+        "operationId": "AnalyticsController_kpis",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/canned-replies": {
+      "get": {
+        "operationId": "CannedRepliesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "CannedRepliesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCannedReplyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/canned-replies/{id}": {
+      "patch": {
+        "operationId": "CannedRepliesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCannedReplyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "CannedRepliesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/chatbot/conversations": {
+      "get": {
+        "operationId": "ConversationsController_list",
+        "summary": "List inbox conversations with filtering, search and pagination.",
+        "parameters": [
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "description": "Filter by conversation state.",
+            "schema": {
+              "enum": [
+                "NEW",
+                "AUTO_REPLIED",
+                "ESCALATION_OFFERED",
+                "ESCALATED",
+                "AWAITING_REPLY",
+                "REPLIED",
+                "RESOLVED"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "assignedToId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by the assigned operator user id.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pinned",
+            "required": false,
+            "in": "query",
+            "description": "Only pinned conversations when true.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Free-text search over the contact name/phone and message bodies.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/conversations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/conversations/{id}": {
+      "get": {
+        "operationId": "ConversationsController_get",
+        "summary": "Get a single conversation with its contact, messages and bot drafts.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/conversations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "ConversationsController_update",
+        "summary": "Triage a conversation: pin/unpin, set tags, assign/unassign an operator.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConversationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/conversations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/conversations/{id}/manual-reply": {
+      "post": {
+        "operationId": "ConversationsController_manualReply",
+        "summary": "Send a free-form operator reply to the customer via WhatsApp.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualReplyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/conversations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/conversations/{id}/close": {
+      "post": {
+        "operationId": "ConversationsController_close",
+        "summary": "Close a conversation with a disposition, triggering resolution capture.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseConversationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/conversations"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/drafts": {
+      "get": {
+        "operationId": "DraftsController_list",
+        "summary": "List bot escalation drafts (defaults to PENDING), newest first.",
+        "parameters": [
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "description": "Filter by draft state (defaults to PENDING).",
+            "schema": {
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "EDITED",
+                "REJECTED",
+                "SENT"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "conversationId",
+            "required": false,
+            "in": "query",
+            "description": "Only drafts for this conversation.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/drafts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/drafts/{id}/approve": {
+      "post": {
+        "operationId": "DraftsController_approve",
+        "summary": "Approve a pending draft: send it to the customer as-is and record the reply.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/drafts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/drafts/{id}/edit": {
+      "post": {
+        "operationId": "DraftsController_edit",
+        "summary": "Edit a pending draft: send the revised body to the customer and record it.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditDraftDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/drafts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/drafts/{id}/reject": {
+      "post": {
+        "operationId": "DraftsController_reject",
+        "summary": "Reject a pending draft: discard it so the operator replies manually.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDraftDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/drafts"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/decisions/stats": {
+      "get": {
+        "operationId": "DecisionsController_stats",
+        "summary": "Aggregate decision stats over a rolling window (rates, latencies, daily series).",
+        "parameters": [
+          {
+            "name": "days",
+            "required": false,
+            "in": "query",
+            "description": "Window in days for the aggregate stats and the daily series.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 90,
+              "default": 7,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/decisions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/decisions": {
+      "get": {
+        "operationId": "DecisionsController_list",
+        "summary": "Paginated, filterable audit list of chatbot decisions (newest first).",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "description": "Filter by decision kind.",
+            "schema": {
+              "enum": [
+                "AUTO_SEND",
+                "ESCALATE",
+                "IGNORE"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "conversationId",
+            "required": false,
+            "in": "query",
+            "description": "Only decisions for this conversation.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "ISO date-time lower bound (inclusive) on created_at.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "ISO date-time upper bound (inclusive) on created_at.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/decisions"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/knowledge/documents": {
+      "get": {
+        "operationId": "KnowledgeController_list",
+        "summary": "List knowledge documents with optional category/status/search filters.",
+        "parameters": [
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Filter by category, e.g. Logistics / Billing / Resolved tickets.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "DRAFT",
+                "LIVE",
+                "ARCHIVED"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Free-text search over title/name/content.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "KnowledgeController_create",
+        "summary": "Create a document from raw markdown; chunks + embeds when autoIngest.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDocumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/knowledge/documents/{id}": {
+      "get": {
+        "operationId": "KnowledgeController_get",
+        "summary": "Fetch a single document with its chunk count.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "KnowledgeController_update",
+        "summary": "Update document fields; re-ingests when contentMd changes.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDocumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "KnowledgeController_remove",
+        "summary": "Delete a document; chunks and citations cascade.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/knowledge/documents/{id}/stats": {
+      "get": {
+        "operationId": "KnowledgeController_stats",
+        "summary": "Per-document analytics: embeddings, citations/day, grounded %, recent uses.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/knowledge/documents/upload": {
+      "post": {
+        "operationId": "KnowledgeController_upload",
+        "summary": "Create a document by uploading a .md/.markdown file (field \"file\").",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/knowledge/documents/{id}/publish": {
+      "post": {
+        "operationId": "KnowledgeController_publish",
+        "summary": "Mark a document LIVE (requires at least one chunk).",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/knowledge/documents/{id}/unpublish": {
+      "post": {
+        "operationId": "KnowledgeController_unpublish",
+        "summary": "Return a document to DRAFT, removing it from retrieval.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/knowledge/documents/{id}/reembed": {
+      "post": {
+        "operationId": "KnowledgeController_reembed",
+        "summary": "Re-chunk and re-embed a document from its current content.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/knowledge/search": {
+      "post": {
+        "operationId": "KnowledgeController_search",
+        "summary": "Semantic search over LIVE chunks (admin preview of bot retrieval).",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchKnowledgeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/knowledge"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/captures/preview": {
+      "post": {
+        "operationId": "CapturesController_preview",
+        "summary": "Build a capture preview (proposed title/content + LIVE duplicates) for a conversation.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewCaptureDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/captures"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/captures": {
+      "get": {
+        "operationId": "CapturesController_list",
+        "summary": "List resolution captures with status/disposition/closed-at filters.",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by capture status.",
+            "schema": {
+              "enum": [
+                "pending",
+                "captured_live",
+                "captured_draft",
+                "skipped_by_operator",
+                "skipped_duplicate",
+                "failed",
+                "discarded"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "disposition",
+            "required": false,
+            "in": "query",
+            "description": "Filter by disposition.",
+            "schema": {
+              "enum": [
+                "IMPORT_LIVE",
+                "SAVE_DRAFT",
+                "SKIP"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "ISO date-time lower bound (inclusive) on closed_at.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "ISO date-time upper bound (inclusive) on closed_at.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/captures"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/captures/{id}": {
+      "get": {
+        "operationId": "CapturesController_get",
+        "summary": "Get a single capture with its document and originating conversation.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/captures"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/captures/{id}/promote": {
+      "post": {
+        "operationId": "CapturesController_promote",
+        "summary": "Promote a captured DRAFT doc to LIVE (re-runs dedup unless forced).",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromoteCaptureDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/captures"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/captures/{id}/discard": {
+      "post": {
+        "operationId": "CapturesController_discard",
+        "summary": "Discard a capture: archive its document and mark the capture discarded.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscardCaptureDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/captures"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/chatbot/settings": {
+      "get": {
+        "operationId": "SettingsController_getAll",
+        "summary": "List all chatbot settings, coerced to their real JS types.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "SettingsController_update",
+        "summary": "Update one or more chatbot settings; returns the refreshed set.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "chatbot/settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "WhatsApp Blasting API",
+    "description": "REST API for the blasting platform and the AI chatbot inbox + admin surface.",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateContactDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateContactDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSegmentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateSegmentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GenerateTemplateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateTemplateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PreviewStateLanguagesDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateBlastDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateKnowledgeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateKnowledgeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AssignTicketDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateKnowledgeCandidateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SendReplyDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpsertMappingDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateCannedReplyDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateCannedReplyDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateConversationDto": {
+        "type": "object",
+        "properties": {
+          "pinned": {
+            "type": "boolean",
+            "description": "Pin/unpin the conversation in the inbox."
+          },
+          "tags": {
+            "description": "Replace the conversation tags.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "assignedToId": {
+            "type": "object",
+            "nullable": true,
+            "description": "Assign to an operator (null to unassign)."
+          }
+        }
+      },
+      "ManualReplyDto": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "description": "Free-form operator reply, sent to the customer via WhatsApp.",
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "CloseConversationDto": {
+        "type": "object",
+        "properties": {
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "IMPORT_LIVE",
+              "SAVE_DRAFT",
+              "SKIP"
+            ],
+            "description": "IMPORT_LIVE publishes the resolution to the KB; SAVE_DRAFT stores it as a draft for review; SKIP captures nothing."
+          },
+          "resolutionNotes": {
+            "type": "string",
+            "description": "Internal notes about how the ticket was resolved."
+          },
+          "editedAnswer": {
+            "type": "string",
+            "description": "Cleaned-up answer used as the authoritative KB content (overrides the literal operator reply)."
+          },
+          "forcedDespiteDuplicate": {
+            "type": "boolean",
+            "default": false,
+            "description": "Capture even if a near-duplicate KB doc already exists."
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "EditDraftDto": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "description": "Edited reply body; sent to the customer and recorded as the operator reply.",
+            "maxLength": 4096
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "RejectDraftDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why the draft was rejected (audit only)."
+          }
+        }
+      },
+      "CreateDocumentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique filename-style identifier, e.g. \"shipping_table.md\"."
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable display title."
+          },
+          "category": {
+            "type": "string",
+            "description": "Category, e.g. Logistics / Billing / General / Resolved tickets."
+          },
+          "contentMd": {
+            "type": "string",
+            "description": "Markdown body of the document."
+          },
+          "autoIngest": {
+            "type": "boolean",
+            "default": true,
+            "description": "Chunk + embed immediately after creation."
+          }
+        },
+        "required": [
+          "name",
+          "title",
+          "category",
+          "contentMd"
+        ]
+      },
+      "UpdateDocumentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "contentMd": {
+            "type": "string",
+            "description": "New markdown body; triggers re-ingest when changed."
+          },
+          "autoIngest": {
+            "type": "boolean",
+            "default": true,
+            "description": "Re-ingest when contentMd changed."
+          }
+        }
+      },
+      "SearchKnowledgeDto": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Query text to embed and match against LIVE chunks."
+          },
+          "topK": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 20,
+            "description": "Max chunks to return."
+          },
+          "minScore": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Minimum cosine similarity for a chunk to count."
+          },
+          "category": {
+            "type": "string",
+            "description": "Restrict the search to one category."
+          }
+        },
+        "required": [
+          "query"
+        ]
+      },
+      "PreviewCaptureDto": {
+        "type": "object",
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "description": "Conversation to build a capture preview for (must have an operator reply on record)."
+          }
+        },
+        "required": [
+          "conversationId"
+        ]
+      },
+      "PromoteCaptureDto": {
+        "type": "object",
+        "properties": {
+          "forcedDespiteDuplicate": {
+            "type": "boolean",
+            "default": false,
+            "description": "Promote even if a near-duplicate LIVE doc already exists."
+          }
+        }
+      },
+      "DiscardCaptureDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why the captured doc was discarded (audit only)."
+          }
+        }
+      },
+      "UpdateSettingsDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Master switch for the chatbot."
+          },
+          "disable_auto_reply": {
+            "type": "boolean",
+            "description": "When true, the bot drafts but never auto-sends."
+          },
+          "confidence_threshold": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Minimum draft confidence required to auto-send."
+          },
+          "business_name": {
+            "type": "string",
+            "description": "Business display name used in bot replies."
+          },
+          "business_hours_start": {
+            "type": "string",
+            "example": "09:00",
+            "description": "Start of business hours (HH:MM, local)."
+          },
+          "business_hours_end": {
+            "type": "string",
+            "example": "18:00",
+            "description": "End of business hours (HH:MM; '24:00' = end of day)."
+          },
+          "business_hours_timezone": {
+            "type": "string",
+            "example": "Asia/Kuala_Lumpur",
+            "description": "IANA timezone for business hours."
+          },
+          "business_days": {
+            "type": "string",
+            "example": "MON,TUE,WED,THU,FRI",
+            "description": "Comma-separated business days."
+          },
+          "escalation_phone": {
+            "type": "string",
+            "description": "Phone number (E.164) used for human escalation."
+          },
+          "retrieval_top_k": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 20,
+            "description": "Number of knowledge chunks to retrieve per query."
+          },
+          "retrieval_min_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Minimum cosine similarity for a retrieved chunk."
+          }
+        }
+      }
+    }
+  }
+}

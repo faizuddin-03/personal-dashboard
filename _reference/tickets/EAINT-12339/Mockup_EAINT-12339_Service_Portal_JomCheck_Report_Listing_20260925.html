@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Service Portal - JomCheck Report Listing</title>
+<style>
+  :root{--page-bg:#e9ebee}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--page-bg:#16191d}}
+  :root[data-theme="dark"]{--page-bg:#16191d}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:#fff;
+       font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+  .wrap{height:100%;margin:0;padding:0;display:flex;flex-direction:column}
+
+  .browser{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:#fff}
+  .viewport{background:#fff;flex:1 1 auto;min-height:0;overflow:auto}
+
+  .app{font:13px/1.45 Arial,Helvetica,sans-serif;color:#000;background:#fff;
+       min-height:100%;display:flex;flex-direction:column}
+  .app a{color:#2b3fc4;text-decoration:none}
+  .app a:hover{text-decoration:underline}
+  .app a.inert{cursor:default}
+  .topbar{display:flex;align-items:stretch;color:#fff;font-weight:600;font-size:14px;
+          position:relative;flex:0 0 auto;
+          background:linear-gradient(100deg,#c8102e 0%,#b00e28 55%,#8e0b22 100%)}
+  .topbar::after{content:"";position:absolute;right:0;top:0;bottom:0;width:38%;
+    background:linear-gradient(115deg,rgba(255,255,255,.14),rgba(255,255,255,0) 60%);pointer-events:none}
+  .brand{background:#fff;padding:5px 16px;display:flex;align-items:center;flex:0 0 auto}
+  .brand .ealogo{height:38px;width:auto;display:block}
+  .navleft{padding:9px 14px;white-space:nowrap;align-self:center}
+  .navleft a{color:#fff}
+  .navright{margin-left:auto;padding:9px 18px;white-space:nowrap;position:relative;z-index:1;align-self:center}
+  .navright a{color:#fff}
+  .navright .who{font-weight:700}
+
+  .body{flex:1 1 auto}
+  .page{padding:14px 16px 26px}
+  .greet{font-weight:700;font-size:15px;margin:0 0 14px}
+  .grp h3{color:#8B1A1A;font-size:17px;margin:0 0 6px;font-weight:700;
+          display:flex;align-items:flex-start;gap:9px}
+  .grp h3 .gi{width:28px;height:28px;flex:0 0 auto;margin-top:-2px}
+  .grp ul{list-style:none;margin:0;padding:0 0 0 38px}
+  .grp li{margin:0 0 5px;padding-left:13px;position:relative;line-height:1.4;font-size:13.5px}
+  .grp li::before{content:"\25B8";position:absolute;left:0;color:#555;font-size:11px}
+  .grp a:hover{text-decoration:none}
+  .grp a.live{font-weight:700}
+  .pagebadge{display:inline-block;margin-left:7px;padding:1px 6px;border-radius:3px;
+    background:#e8710a;color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.4px;
+    vertical-align:middle;text-transform:uppercase}
+  .screen{display:none}.screen.on{display:block}
+
+  .filters{display:grid;grid-template-columns:auto 230px auto 230px auto 230px auto 230px;
+           gap:10px 14px;align-items:center;max-width:1500px}
+  .filters label{font-weight:700;white-space:nowrap}
+  .filters input[type=text]{width:100%;font:13px Arial,Helvetica,sans-serif;padding:5px 7px;
+    border:1px solid #9aa0a6;border-radius:2px;background:#fff;color:#000;text-transform:uppercase}
+  .filters input.dt{text-transform:none}
+  .req{color:#c8102e}
+  .actions{display:flex;align-items:center;gap:12px;justify-content:flex-end;margin:10px 0 4px}
+  .btn{font:13px Arial,Helvetica,sans-serif;padding:6px 16px;cursor:pointer;background:#e4e4e4;
+       border:1px solid #8a8a8a;border-radius:2px;color:#000}
+  .btn:hover{background:#d8d8d8}
+  .linkbtn{background:none;border:0;padding:0;font:13px Arial,Helvetica,sans-serif;
+           color:#2b3fc4;cursor:pointer}
+  .linkbtn:hover{text-decoration:underline}
+  .linkbtn:focus-visible{outline:2px solid #2b3fc4;outline-offset:2px}
+
+  .listing-title{text-align:center;font-weight:700;font-size:15px;margin:14px 0 10px}
+  .count{margin:0 0 6px}
+  .msg{margin:6px 0 0;font-size:12.5px;color:#8B1A1A}
+  .tablewrap{overflow-x:auto;border:1px solid #9fc6e0}
+  table.rpt{border-collapse:collapse;font-size:12px;white-space:nowrap;min-width:100%}
+  table.rpt th{background:#6FB7E9;color:#fff;font-weight:700;text-align:center;padding:7px 9px;
+               border:1px solid #fff;vertical-align:middle}
+  table.rpt td{background:#CFE7F7;padding:7px 9px;border:1px solid #fff;vertical-align:top;text-align:left}
+  table.rpt td.mid{text-align:center}
+  table.rpt td .ln{display:block}
+  .wrapcell{white-space:normal;max-width:190px}
+
+  table.rpt th .badge{display:inline-block;margin-left:5px;padding:1px 5px;border-radius:3px;
+    color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.4px;
+    vertical-align:middle;text-transform:uppercase}
+  table.rpt th .badge.upd{background:#e8710a}
+  table.rpt th .srcnote{display:block;font-weight:400;font-size:10px;color:#0b3c5d;
+    margin-top:3px;white-space:nowrap}
+  table.rpt th .badge.new{background:#1e8e3e}
+  table.rpt th.updcol,table.rpt th.newcol{background:#3f97d4}
+  table.rpt td.updcol{background:#FFF0B3}
+  table.rpt td.newcol{background:#D7F0D9}
+  .addline{color:#8a5b00;font-weight:700}
+
+  .footer{border-top:1px solid #ccc;margin-top:22px;padding:10px 16px 16px;color:#8a8a8a;
+          font-size:12px;flex:0 0 auto}
+  .footer a{color:#2b3fc4}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="browser">
+    <div class="viewport" id="viewport">
+    <div class="app">
+
+      <div class="topbar">
+        <div class="brand"><svg class="ealogo" role="img" aria-label="eAuto.my" xmlns="http://www.w3.org/2000/svg" viewBox="4 85 270 110" preserveAspectRatio="xMidYMid meet"><defs><style>.ea1{fill-rule:evenodd;}.ea1,.ea2{fill:#384c68;}.ea3{fill:#ef4123;}</style></defs><path class="ea2" d="M51.95,147.43c-1.7,4.24-4.5,7.31-8.41,9.21-3.91,1.9-8.56,2.85-13.96,2.85-3.57,0-6.81-.37-9.71-1.1-2.9-.74-5.39-1.89-7.47-3.45-2.08-1.56-3.68-3.56-4.82-5.99-1.14-2.43-1.71-5.35-1.71-8.74s.57-6.31,1.71-8.74c1.14-2.43,2.75-4.43,4.82-5.99,2.08-1.56,4.56-2.71,7.47-3.45,2.9-.74,6.14-1.11,9.71-1.11,7.77,0,13.55,1.88,17.35,5.63,3.79,3.75,5.69,9,5.69,15.74v1.07H18.07v.13c0,.85.22,1.77.67,2.78.45,1,1.14,1.94,2.08,2.81.94.87,2.13,1.6,3.58,2.18,1.45.58,3.18.87,5.19.87,4.87,0,8.13-1.56,9.78-4.69h12.59ZM40.44,136.38v-.13c0-.49-.18-1.18-.54-2.08-.36-.89-.96-1.77-1.81-2.65-.85-.87-1.99-1.63-3.42-2.28-1.43-.65-3.21-.97-5.36-.97-2.37,0-4.28.38-5.73,1.14-1.45.76-2.59,1.61-3.42,2.54-.83.94-1.38,1.84-1.67,2.71-.29.87-.44,1.4-.44,1.57v.13h22.37Z"/><path class="ea3" d="M75.19,148.1l-5.58,10.05h-15.95l31.38-57.84h16.41l12.65,57.84h-16.03l-2.17-10.05h-20.71ZM90.42,118.18h-.15l-9.12,18.41h12.5l-3.23-18.41Z"/><path class="ea3" d="M142.25,118.8l-3.32,21.02c-.79,4.99-.12,8.51,5.63,8.51s7.54-3.53,8.32-8.51l3.32-21.02h13.96l-3.74,23.7c-2.05,12.96-11.81,16.95-23.62,16.95s-20.31-3.99-18.26-16.95l3.74-23.7h13.96Z"/><path class="ea3" d="M191.95,158.14h-13.96l4.4-27.84h-4.53l1.82-11.51h4.53l1.87-11.81h13.96l-1.87,11.81h7.9l-1.82,11.51h-7.9l-4.4,27.84Z"/><path class="ea3" d="M255.73,138.51c-2.11,13.35-14.35,20.94-27.01,20.94s-22.51-7.52-20.39-20.94c2.12-13.42,14.37-21.02,27.02-21.02s22.5,7.59,20.38,21.02ZM223.05,138.51c-.79,4.99,1.9,8.82,7.58,8.82s9.58-3.83,10.37-8.82c.76-4.83-1.89-8.9-7.57-8.9s-9.62,4.07-10.38,8.9Z"/><path class="ea1" d="M112.42,115.23c1.11-.09,4.97-.37,6.67-.54.37-.04,2.68-.7,2.68-.7.07-.1.15-.18.25-.25.09-.06.2-.11.31-.14h0c6.39-3.04,20.07-10.55,27.22-14.48,15.9-8.75,31.79-13.64,49.87-12.24,6.96.55,12.64,2.18,17.93,4.77,5.25,2.56,10.14,6.06,15.57,10.34,5.35.28,12.09,1.4,18.43,2.66,6.36,1.27,12.32,2.69,16.04,3.56h.02c.46.14.92.3,1.37.48.45.19.9.4,1.32.63h0c.17.09.21.22.25.34h0s0,.01,0,.03h0s.18.44.18.44h0c.37.89.62,1.69.79,2.5.16.76.26,1.53.34,2.42l.29.13.03.02c.73.48,1.33,1.01,1.7,1.55.29.41.45.83.44,1.24,0,.43-.18.84-.57,1.21-.34.31-.82.58-1.48.82h-.03s-.33.08-.33.08c-.02.31-.03.59-.05.87-.04.75-.08,1.46-.14,2.19-.35,3.83-1.28,6.13-6.45,5.65-.15-.02-.3-.19-.3-.34v-.2c.01-.16.16-.32.31-.33,4.79-.37,4.86-1.89,5.01-5.61.03-.81.07-1.72.16-2.79h0c.01-.21.16-.36.35-.46.12-.07.26-.12.35-.14h0c1.37-.41,1.88-.79,1.8-1.15-.1-.45-.86-.98-2.02-1.58h0c-.07-.04-.14-.08-.21-.15-.1-.09-.17-.2-.19-.35h0c-.08-.46-.15-.89-.21-1.3-.19-1.25-.34-2.28-.93-3.62v-.02s-.09-.22-.09-.22l-2.11-.78-4.34-1.12h.02c-.8-.17-1.61-.33-2.41-.5-9.18-1.91-18.48-3.84-27.78-4.62-.08,0-.16-.02-.24-.05-.08-.03-.15-.06-.22-.11h0c-4.82-3.93-9.91-7.1-15.32-9.44-5.4-2.35-11.12-3.88-17.19-4.53-15.61-1.68-27.62,2.06-41.86,8.45-7.37,3.31-33.16,17.32-36.2,17.94-4.38.89-7.39.02-9.47.33-.95.15-1.45-.73.48-.88Z"/><path class="ea2" d="M189.19,180.81c-.36,2.27-2.5,4.16-4.81,4.16s-3.86-1.88-3.5-4.16c.36-2.31,2.51-4.16,4.81-4.16s3.87,1.85,3.5,4.16Z"/><path class="ea2" d="M201.69,168.3h.07c1.85-2.03,3.86-2.88,6.21-2.88,2.63,0,4.74,1.06,5.67,3.48,1.6-2.27,4.25-3.48,6.73-3.48,4.62,0,5.74,3.02,5.08,7.21l-1.83,11.62h-6.47l1.37-8.71c.3-1.88.86-4.97-1.88-4.97-2.98,0-3.53,2.81-3.87,4.97l-1.37,8.71h-6.47l1.37-8.71c.32-2.03.81-5.12-2.07-5.12s-3.37,3.09-3.69,5.12l-1.37,8.71h-6.47l2.88-18.23h6.47l-.36,2.27Z"/><path class="ea2" d="M228.08,166.03h7.46l3.39,9.35,6.24-9.35h7.36l-18.91,27.33h-7.25l8.05-11.59-6.33-15.74Z"/><path class="ea2" d="M266.33,157.74l1.47,5.51,1.49-5.51h2.47v8.13h-1.52v-6.34l-1.66,6.34-1.56-.02-1.57-6.29s-.06.07-.06.07v6.24h-1.49v-8.13h2.43Z"/><polygon class="ea2" points="262.83 157.74 262.83 159.11 260.42 159.11 260.42 165.87 258.81 165.87 258.81 159.11 256.41 159.11 256.37 159.06 256.37 157.74 262.83 157.74"/></svg></div>
+        <div class="navleft"><a href="#" data-goto="1">Home</a> &nbsp;|&nbsp; <a class="inert" href="#">Menu &#9662;</a></div>
+        <div class="navright"><span class="who">TAN WEI MING</span>, <a class="inert" href="#">Logout</a></div>
+      </div>
+
+      <div class="body">
+
+        <section class="screen on" id="screen1">
+          <div class="page">
+            <p class="greet">Good Afternoon, TAN WEI MING</p>
+            <div class="grp">
+              <h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="24" height="26" rx="2" fill="#f2f2f2" stroke="#9aa5b1" stroke-width="2"/><path d="M7 9h14M7 13h14M7 17h9" stroke="#8d99a6" stroke-width="2" stroke-linecap="round"/><circle cx="22" cy="22" r="7" fill="#e8ecf0" stroke="#7b8794" stroke-width="2"/><path d="M22 22V15a7 7 0 0 1 7 7z" fill="#c8102e"/></svg><span>Hire Purchase Ownership</span></h3>
+              <ul>
+                <li><a class="inert" href="#">Ownership Claim Enquiry</a></li>
+                <li><a class="inert" href="#">Ownership Claim Listing</a></li>
+                <li><a class="inert" href="#">Hire Purchase Record Creation Listing</a></li>
+                <li><a class="live" href="#" data-goto="2">JomCheck Report Listing</a><span class="pagebadge">Updated</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen2">
+        <div class="page">
+          <div class="filters">
+            <label for="veh">Vehicle No.:</label>
+            <input type="text" id="veh" value="GTA0001">
+            <label for="chs">Chassis No.:</label>
+            <input type="text" id="chs" value="">
+            <label for="sdf">Shared Date From<span class="req" id="rq1">*</span>:</label>
+            <input type="text" class="dt" id="sdf" value="">
+            <label for="sdt">Shared Date To<span class="req" id="rq2">*</span>:</label>
+            <input type="text" class="dt" id="sdt" value="">
+
+            <label for="pdf">Payment Date From:</label>
+            <input type="text" class="dt" id="pdf" value="">
+            <label for="pdt">Payment Date To:</label>
+            <input type="text" class="dt" id="pdt" value="">
+            <span></span><span></span><span></span><span></span>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="searchbtn" type="button">Search Now</button>
+            <button class="linkbtn" id="resetbtn" type="button">Reset</button>
+            <button class="linkbtn hidden" id="exportbtn" type="button">Export</button>
+          </div>
+
+          <div class="listing-title">JomCheck Report Listing</div>
+
+          <div id="results">
+            <p class="count" id="count"></p>
+            <div class="tablewrap">
+              <table class="rpt">
+                <thead><tr id="thead"></tr></thead>
+                <tbody id="tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <p class="msg hidden" id="msg"></p>
+        </div>
+        </section>
+
+      </div>
+
+      <div class="footer">
+        Best Compatible With Mozilla Firefox V36.0.4<br>
+        Copyright &copy; 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+        <a class="inert" href="#">Contact Us</a> | <a class="inert" href="#">Terms &amp; Conditions</a> | <a class="inert" href="#">Privacy</a>
+      </div>
+
+    </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+
+  var COLS = ["#","Company Name","Credit Company","Company ROC","Purchase Date",
+    "JomCheck Report Sharing Date","Search by Vehicle No.","Search by Chassis No.",
+    "Total Loss History","Avg. Retail Price (RM)","Recommended Trade Price (RM)",
+    "Flood History","Windscreen Claim","Multiple Registration of Car Plate / Chassis No.",
+    "Count(s) of Date of Loss","Count(s) of Incidents Severity Scale","Action","Download"];
+
+  var HEAD_HTML = ["#","Company<br>Name","Credit<br>Company","Company<br>ROC","Purchase<br>Date",
+    "JomCheck Report<br>Sharing Date","Search by<br>Vehicle No.","Search by<br>Chassis No.",
+    "Total Loss<br>History","Avg. Retail<br>Price (RM)","Recommended<br>Trade Price (RM)",
+    "Flood<br>History","Windscreen<br>Claim","Multiple Registration of<br>Car Plate / Chassis No.",
+    "Count(s) of<br>Date of Loss","Count(s) of Incidents<br>Severity Scale","Action","Download"];
+
+  // EAINT-12339: same column, different value set
+  var UPDATED = [15];
+  // Possible Total Loss / Possible BER are NOT displayed on Service Portal
+  var NEWCOLS = [];
+  var NOTES = { 15: "Severity \u2014 6 bands" };
+
+  var rows = [{
+    n: "1",
+    company: "AAA MOTORS SDN BHD",
+    credit: ["BBB CREDIT SDN BHD", "CCC CAPITAL SDN BHD"],
+    roc: "123456-B",
+    purchase: "17-09-2026 11:33",
+    shared: ["17-09-2026 11:33", "17-09-2026 11:33"],
+    veh: "GTA0001",
+    chs: "-",
+    tlh: "ATL",
+    retail: "108,000.00",
+    trade: "98,000.00",
+    flood: "1",
+    wind: "YES",
+    multi: "NO",
+    dol: "2",
+    sev: [["Severe", "1"], ["High", "0"], ["Medium", "1"], ["Low", "0"],
+          ["Critical", "0", true], ["Catastrophic", "0", true]],
+    action: "View",
+    download: ""
+  }];
+
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function nHtml(l){ return l.map(function(t,i){ return '<span class="ln">'+(i+1)+'. '+esc(t)+'</span>'; }).join(""); }
+  function sevHtml(l){
+    return l.map(function(p){
+      var cls = p[2] ? ' class="ln addline"' : ' class="ln"';
+      return '<span'+cls+'>'+p[0]+' - '+p[1]+'</span>';
+    }).join("");
+  }
+  function sevFlat(l){ return l.map(function(p){ return p[0]+" - "+p[1]; }).join(" "); }
+
+  function cells(r){
+    return [r.n, r.company, r.credit, r.roc, r.purchase, r.shared, r.veh, r.chs,
+            r.tlh, r.retail, r.trade, r.flood, r.wind, r.multi, r.dol, r.sev,
+            r.action, r.download];
+  }
+
+  var MID = [0,3,4,6,7,8,9,10,11,12,13,14,16,17];
+  var WRAPC = [1,2,13];
+
+  function buildTable(){
+    $("thead").innerHTML = HEAD_HTML.map(function(h,i){
+      var upd = UPDATED.indexOf(i) >= 0, nw = NEWCOLS.indexOf(i) >= 0;
+      var cls = upd ? ' class="updcol"' : (nw ? ' class="newcol"' : '');
+      var badge = upd ? '<span class="badge upd">Updated</span>'
+                : (nw ? '<span class="badge new">New</span>' : '');
+      var note = NOTES[i] ? '<span class="srcnote">'+NOTES[i]+'</span>' : '';
+      return "<th"+cls+">"+h+badge+note+"</th>";
+    }).join("");
+
+    $("tbody").innerHTML = rows.map(function(r){
+      return "<tr>" + cells(r).map(function(v,i){
+        var c = [];
+        if (MID.indexOf(i) >= 0) c.push("mid");
+        if (WRAPC.indexOf(i) >= 0) c.push("wrapcell");
+        if (UPDATED.indexOf(i) >= 0) c.push("updcol");
+        if (NEWCOLS.indexOf(i) >= 0) c.push("newcol");
+        var cls = c.length ? ' class="'+c.join(" ")+'"' : '';
+        var val;
+        if (i === 15) val = sevHtml(v);
+        else if (i === 16) val = '<a href="#" class="inert">'+esc(v)+'</a>';
+        else if (Array.isArray(v)) val = nHtml(v);
+        else val = esc(v);
+        return "<td"+cls+">"+val+"</td>";
+      }).join("") + "</tr>";
+    }).join("");
+
+    $("count").textContent = rows.length + " record(s) in total";
+  }
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function stamp(){
+    var d = new Date();
+    return pad(d.getDate())+pad(d.getMonth()+1)+d.getFullYear()+"_"+pad(d.getHours())+pad(d.getMinutes());
+  }
+
+  var downloads = null;
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("downloads").then(function(d){ downloads = d; }).catch(function(){});
+  }
+  function showMsg(t){ var m = $("msg"); m.textContent = t; m.classList.remove("hidden"); }
+  function clearMsg(){ $("msg").classList.add("hidden"); }
+
+  function doExport(){
+    clearMsg();
+    if (typeof XLSX === "undefined" || !downloads){ showMsg("Export unavailable in this view."); return; }
+    var base = "JomCheck_Report_Listing_" + stamp();
+    var aoa = [COLS].concat(rows.map(function(r){
+      return cells(r).map(function(v,i){
+        if (i === 15) return sevFlat(v);
+        if (Array.isArray(v)) return v.map(function(t,j){ return (j+1)+". "+t; }).join(" ");
+        return String(v);
+      });
+    }));
+    var ws = XLSX.utils.aoa_to_sheet(aoa);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "JomCheck Report Listing");
+    var buf = XLSX.write(wb, {bookType:"xlsx", type:"array"});
+    downloads.save({filename: base + ".xlsx", data: buf}).catch(function(e){
+      if (e && e.code === "declined") return;
+      showMsg("Export could not be saved.");
+    });
+  }
+
+  function syncRequired(){
+    var hasKey = $("veh").value.trim() || $("chs").value.trim();
+    $("rq1").style.display = hasKey ? "none" : "";
+    $("rq2").style.display = hasKey ? "none" : "";
+  }
+
+  function doSearch(){
+    clearMsg();
+    var v = $("veh").value.trim(), c = $("chs").value.trim();
+    var f = $("sdf").value.trim(), t = $("sdt").value.trim();
+    if (!v && !c && (!f || !t)){
+      showMsg("Shared Date From and Shared Date To are required when searching without a Vehicle No. or Chassis No.");
+      $("results").classList.add("hidden");
+      $("exportbtn").classList.add("hidden");
+      return;
+    }
+    buildTable();
+    $("results").classList.remove("hidden");
+    $("exportbtn").classList.remove("hidden");
+  }
+
+  function doReset(){
+    clearMsg();
+    ["veh","chs","sdf","sdt","pdf","pdt"].forEach(function(id){ $(id).value = ""; });
+    $("results").classList.add("hidden");
+    $("exportbtn").classList.add("hidden");
+    syncRequired();
+    $("veh").focus();
+  }
+
+  ["veh","chs"].forEach(function(id){
+    var el = $(id);
+    el.addEventListener("input", function(){
+      var p = el.selectionStart, before = el.value;
+      var after = before.toUpperCase().replace(/[^A-Z0-9*\/\- ]/g, "");
+      if (before !== after){
+        el.value = after;
+        var d = before.length - after.length;
+        el.setSelectionRange(Math.max(0, p - d), Math.max(0, p - d));
+      }
+      syncRequired();
+    });
+    el.addEventListener("keydown", function(e){ if (e.key === "Enter") doSearch(); });
+  });
+
+  document.querySelectorAll("a.inert").forEach(function(el){
+    el.addEventListener("click", function(e){ e.preventDefault(); });
+  });
+  $("searchbtn").addEventListener("click", doSearch);
+  $("resetbtn").addEventListener("click", doReset);
+  $("exportbtn").addEventListener("click", doExport);
+
+  var URLS = {
+    "1": ["staging.eauto.my", "/preprod1/credit/home/", "Service Portal - eAuto"],
+    "2": ["staging.eauto.my", "/preprod1/credit/home/jomcheck-report-listing/main.do", "Service Portal - eAuto"]
+  };
+  var hist = ["1"];
+  function paintUrl(n){}
+  function show(n, push){
+    n = String(n);
+    ["1","2"].forEach(function(k){ $("screen"+k).classList.toggle("on", k === n); });
+    if (push !== false) hist.push(n);
+    paintUrl(n);
+    $("viewport").scrollTop = 0;
+  }
+  document.querySelectorAll("[data-goto]").forEach(function(el){
+    el.addEventListener("click", function(e){ e.preventDefault(); show(el.dataset.goto); });
+  });
+
+  buildTable();
+  syncRequired();
+  $("exportbtn").classList.remove("hidden");
+  paintUrl("1");
+})();
+</script>
+</body>
+</html>

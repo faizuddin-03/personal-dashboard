@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mock Up_EAINT-12348_BackOffice Portal_20261007</title>
+<style>
+/* ===== reset / base (from portal) ===== */
+:root{ color-scheme: light; }
+html,body{margin:0;padding:0}
+body{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:13px;color:#000;background:#fff;line-height:20.15px}
+a{text-decoration:underline;color:blue}
+b{font-weight:bold}
+ol,ul{margin:0;padding:0}
+ol.inline{padding:0;margin:0}
+ol.inline li{display:inline;list-style:none}
+.hidden{display:none}
+.right{text-align:right !important}
+.center{text-align:center !important}
+img{border:0}
+
+/* ===== chrome (portal look, flow layout) ===== */
+#page{position:relative;width:100%}
+#chrome{position:relative;height:88px}
+#header{position:absolute;top:0;left:0;right:0;margin:0;padding:8px 30px 5px 190px;font-size:13px;
+  background:linear-gradient(#c40632 0%,#b1052d 55%,#9e0428 100%);box-sizing:border-box;z-index:1;min-height:48px;
+  display:flex;align-items:center}
+#logo{position:absolute;top:0;left:0;z-index:5;background:#fff;width:176px;height:88px;
+  display:flex;align-items:center;justify-content:center}
+#logo svg{width:140px;height:75px;display:block}
+#header a{text-decoration:none !important}
+#header .inline li,#header a,#header span{color:#fff !important}
+#header .header-box{width:100% !important;margin:0;border-collapse:collapse}
+#header .header-box td{padding:0;vertical-align:middle;white-space:nowrap}
+#header .header-box td>div{display:inline}
+#header ol.inline,#header div.inline{display:inline}
+#header .pending{padding-left:14px;white-space:nowrap}
+#header .user-name{font-weight:bold}
+#header .pending{padding-left:14px}
+#container{width:100%;margin:12px 0 0 0;padding:5px 10px 0 5px;font-size:13px;box-sizing:border-box;overflow-x:auto}
+#container>div>table{width:100%}
+#container form table{width:auto}
+#container form table td{white-space:nowrap;padding:2px 4px}
+#container table td{vertical-align:top}
+#footer{border-top:1px solid #ccc;margin:15px 10px 0 10px;color:grey !important;font-size:15px;
+  padding:8px 20px 20px 10px;box-sizing:border-box}
+#footer table{width:100%;border-collapse:collapse}
+#footer table tr td{color:grey !important;font-size:11px !important;vertical-align:top;line-height:16px}
+#footer a{color:blue}
+#footer .right{text-align:right;width:130px}
+#footer .right svg{width:110px;height:59px}
+
+/* ===== result grid (page inline style) ===== */
+#result{width:100% !important;border-collapse:collapse}
+#result td,#result th{border:1px solid white !important;padding:1px;font-size:13px}
+#result th{text-align:center;font-weight:bold;vertical-align:middle}
+#result tr.header{background:#58ACFA;color:white}
+#result tr.odd{background:#A9E2F3}
+#result tr.even{background:#CEF6F5}
+#result td.col-limit-width{max-width:200px;word-wrap:break-word;white-space:normal}
+#result td.ok{color:#127a2e;font-weight:bold;text-align:center}
+
+/* ===== home menu ===== */
+#home-welcome{margin-left:30px;width:95%;font-weight:bold;font-size:16px;padding:10px 0 6px}
+#home-menu{margin-left:30px;width:calc(100% - 60px);table-layout:fixed;border-collapse:collapse}
+#home-menu td{vertical-align:top;padding:5px 0 15px 0}
+#home-menu .icon-holder{width:40px}
+#home-menu td{word-wrap:break-word}
+#home-menu .icon-holder svg{width:32px;height:32px}
+#home-menu h2{margin:0 0 4px;font-size:19px;line-height:22px;color:#8b2020}
+#home-menu a,#home-menu .dead{display:block;position:relative;padding-left:14px;text-decoration:none;color:blue;padding-right:10px}
+#home-menu a{font-weight:bold}
+#home-menu a:hover{text-decoration:underline}
+#home-menu .dead{cursor:default}
+#home-menu a::before,#home-menu .dead::before{content:"";position:absolute;left:2px;top:7px;border-left:5px solid #8b2020;border-top:4px solid transparent;border-bottom:4px solid transparent}
+#home-menu .tag{display:inline-block;background:#1e7b34;color:#fff;font-size:10px;font-weight:bold;line-height:14px;padding:0 5px;border-radius:2px;margin-left:5px;vertical-align:1px;letter-spacing:.3px}
+#demo-note{margin:24px 0 0 30px;font-size:22px;font-weight:bold;color:#f00}
+
+
+/* ===== form grid (portal table.grid) ===== */
+.tool-bar{padding:0 0 5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tool-bar .back-to{text-decoration:underline;padding-right:5px}
+.app-title{color:#BF3444;font-size:20px;font-weight:bold}
+input.button,.addmore input,.list-btn{padding:3px;font-family:Arial,Helvetica,sans-serif;font-size:14px;
+  color:#000;background:#F0F0F0;border:2px outset #000;border-radius:0;cursor:pointer}
+table.grid{width:956px;border-collapse:collapse;margin-bottom:20px}
+table.grid thead.fhead td{background:#f0f8ff;border-top:1px solid #ccc;padding:5px;font-size:13px;font-weight:400}
+table.grid td.item{padding:10px;vertical-align:top;width:458px;border-bottom:1px dashed #DEF1F7}
+table.grid .label{font-weight:bold;font-size:13px;margin-bottom:6px;display:block}
+table.grid span.label{display:inline;margin:0}
+.required{color:#f00;font-weight:bold}
+.hint{color:#8F8F8F;font-size:12px}
+table.grid input[type=text],table.grid input[type=password]{padding:3px;font-family:inherit;font-size:13px;border:2px inset #767676;background:#fff}
+table.grid input[readonly]{background:#ebebeb}
+table.grid textarea{padding:3px;font-family:inherit;font-size:13px;border:1px solid #767676;background:#fff;width:262px;height:78px;resize:none}
+table.grid select{padding:2px;font-family:inherit;font-size:13px;border:1px solid #767676;background:#fff}
+table.grid select[multiple]{width:300px;height:150px}
+.checkbox-section{margin-bottom:6px}
+.radio-line{margin:6px 0}
+table.dual{border-collapse:collapse}
+table.dual td{padding:0 10px 0 0;vertical-align:top;border:0}
+table.dual td.mid{padding:40px 10px 0;text-align:center}
+table.grid.cp td{padding:5px;border-bottom:1px dashed #DEF1F7;vertical-align:middle}
+table.grid.cp .cp-head td{font-weight:bold;border-bottom:1px solid #ccc}
+.addmore{margin:-12px 0 20px}
+
+
+#result td.ok{color:#127a2e;font-weight:bold;text-align:center}
+#result td.bad{color:#c0170c;font-weight:bold;text-align:center}
+#result td.pend{color:#1a3c8c;font-weight:bold;text-align:center}
+#result td.dash{text-align:center}
+#result td a{color:blue;text-decoration:underline}
+.cancel-link{color:blue}
+.pc-status{color:#127a2e;font-weight:bold;font-size:15px;margin-left:30px}
+table.pcd{border-collapse:collapse;margin-bottom:6px}
+table.pcd>tbody>tr>td{vertical-align:top;padding-right:40px}
+table.pcd.two>tbody>tr>td{padding-right:80px}
+.pcd-btns input.button{margin-bottom:4px;width:150px}
+table.kv{border-collapse:collapse}
+table.kv td{padding:2px 14px 2px 0;font-size:13px;vertical-align:top}
+table.kv td.k{font-weight:bold;white-space:nowrap}
+table.kv td.good{color:#127a2e;font-weight:bold}
+.grp{color:#1a5fb4;font-weight:bold;margin:16px 0 6px}
+.plain{font-size:13px;margin-bottom:2px}
+.plain .good{color:#127a2e;font-weight:bold}
+.pc-remark{width:560px;height:110px;border:1px solid #767676;padding:4px;
+  font-family:inherit;font-size:13px;resize:none}
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;
+  align-items:center;justify-content:center;z-index:50}
+.modal-back.on{display:flex}
+.modal{background:#fff;border:2px solid #1f6fd0;width:420px}
+.modal .body{padding:34px 30px}
+.modal .body.big{font-size:22px}
+.modal .foot{background:#f0f0f0;padding:14px 20px;text-align:right;display:flex;
+  gap:12px;justify-content:flex-end}
+.modal .foot input.button{width:120px;height:44px;font-size:18px;border:2px solid #1f6fd0;background:#fff}
+
+
+/* ===== EAINT-12348 change markers ===== */
+.cr-new{display:inline-block;background:#1e7b34;color:#fff;font-size:10px;font-weight:bold;
+  line-height:14px;padding:0 5px;border-radius:2px;margin-left:6px;vertical-align:1px;
+  font-family:Verdana,Arial,sans-serif;letter-spacing:.3px;white-space:nowrap}
+.cr-ask{display:inline-block;background:#c9a200;color:#fff;font-size:10px;font-weight:bold;
+  line-height:14px;padding:0 5px;border-radius:2px;margin-left:6px;vertical-align:1px;
+  font-family:Verdana,Arial,sans-serif;letter-spacing:.3px;white-space:nowrap}
+.cr-hl{background:#fff6c4}
+tr.cr-row td{background:#eafbef !important}
+.cr-legend{border:1px solid #cfcfcf;background:#fafafa;padding:6px 10px;margin:0 0 10px;font-size:12px}
+.cr-legend b{font-size:12px}
+
+
+.frow{display:flex;align-items:center;gap:6px 14px;margin:0 0 12px;white-space:nowrap}
+.frow label{font-weight:bold}
+.frow input[type=text]{width:150px;padding:3px;border:1px solid #767676}
+.frow input.wide{width:330px}
+.frow select{padding:2px;border:1px solid #767676;min-width:120px}
+.frow .gap{flex:1}
+.fbar{text-align:center;font-weight:bold;margin:14px 0 6px}
+.d-status{color:#127a2e;font-weight:bold;font-size:15px;margin-left:24px}
+table.dtop{border-collapse:collapse;margin:10px 0 18px}
+table.dtop>tbody>tr>td{vertical-align:top;padding-right:46px}
+.dbtns input.button{margin:0 4px 4px 0;font-size:12px}
+table.dcols{width:100%;border-collapse:collapse}
+table.dcols>tbody>tr>td{vertical-align:top;width:50%;padding-right:40px}
+hr.rule{border:0;border-top:1px solid #d5d5d5;margin:18px 0}
+
+/* ===== screens ===== */
+.screen{display:none}
+.screen.on{display:block}
+.scrollx{overflow-x:auto}
+.app-title{color:#BF3444;font-size:20px;font-weight:bold}
+.back-to{text-decoration:underline;padding-right:5px}
+.fbar{width:100%;text-align:center;font-weight:bold;padding-top:6px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="ic-users" viewBox="0 0 32 32">
+    <circle cx="9" cy="9" r="4.4" fill="#9aa5ae"/>
+    <path d="M1.5 24c0-4.4 3.4-7.2 7.5-7.2s7.5 2.8 7.5 7.2z" fill="#9aa5ae"/>
+    <circle cx="22.5" cy="8" r="4.8" fill="#e08a1e"/>
+    <path d="M14 24.5c0-4.8 3.8-7.8 8.5-7.8s8.5 3 8.5 7.8z" fill="#e08a1e"/>
+    <circle cx="14" cy="13" r="5.4" fill="#2b6cb0"/>
+    <path d="M5 30c0-5.3 4.2-8.6 9-8.6s9 3.3 9 8.6z" fill="#2b6cb0"/>
+  </symbol>
+  <symbol id="ic-report" viewBox="0 0 32 32">
+    <rect x="3" y="2.5" width="20" height="27" fill="#fff" stroke="#8a8a8a" stroke-width="1.4"/>
+    <rect x="6.5" y="6" width="13" height="1.8" fill="#9aa5ae"/>
+    <rect x="6.5" y="10" width="13" height="1.8" fill="#9aa5ae"/>
+    <rect x="6.5" y="14" width="8" height="1.8" fill="#9aa5ae"/>
+    <circle cx="21.5" cy="21" r="8.5" fill="#f2f2f2" stroke="#8a8a8a" stroke-width="1.2"/>
+    <path d="M21.5 21V12.5A8.5 8.5 0 0 1 30 21z" fill="#2b6cb0"/>
+    <path d="M21.5 21l7.3 4.3A8.5 8.5 0 0 1 21.5 29.5z" fill="#c4122f"/>
+  </symbol>
+  <symbol id="ic-calendar" viewBox="0 0 32 32">
+    <rect x="2.5" y="4.5" width="27" height="25" rx="2" fill="#fff" stroke="#8a8a8a" stroke-width="1.4"/>
+    <rect x="2.5" y="4.5" width="27" height="6" rx="2" fill="#c4122f"/>
+    <rect x="7" y="2" width="4" height="6" rx="1.4" fill="#5b6670"/>
+    <rect x="21" y="2" width="4" height="6" rx="1.4" fill="#5b6670"/>
+    <text x="16" y="25" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="13" font-weight="bold" fill="#2b6cb0">12</text>
+  </symbol>
+  <symbol id="ic-tools" viewBox="0 0 32 32">
+    <path d="M20.5 3.5a7.5 7.5 0 0 0-6.9 10.4L3.6 23.9a2.6 2.6 0 0 0 3.7 3.7l10-10a7.5 7.5 0 0 0 9.6-9.2l-4.3 4.3-3.6-3.6 4.3-4.3a7.6 7.6 0 0 0-2.8-.8z" fill="#5b6670"/>
+    <path d="M6.5 22.5l4.2-4.2 2.6 2.6-4.2 4.2z" fill="#9aa5ae"/>
+  </symbol>
+  <symbol id="ic-invoice" viewBox="0 0 32 32">
+    <rect x="5" y="2.5" width="18" height="27" fill="#fff" stroke="#8a8a8a" stroke-width="1.4"/>
+    <rect x="8.5" y="6.5" width="11" height="1.8" fill="#2b6cb0"/>
+    <rect x="8.5" y="10.5" width="11" height="1.8" fill="#9aa5ae"/>
+    <rect x="8.5" y="14.5" width="7" height="1.8" fill="#9aa5ae"/>
+    <circle cx="22" cy="22" r="8" fill="#f2f2f2" stroke="#8a8a8a" stroke-width="1.2"/>
+    <path d="M22 22V14a8 8 0 0 1 8 8z" fill="#c4122f"/>
+    <path d="M22 22h8a8 8 0 0 1-8 8z" fill="#e08a1e"/>
+  </symbol>
+    <symbol id="brandmark" viewBox="2 82 276 114"><defs><style>.ea-1{fill-rule:evenodd;}.ea-1,.ea-2{fill:#384c68;}.ea-3{fill:#ef4123;}</style></defs><path class="ea-2" d="M51.95,147.43c-1.7,4.24-4.5,7.31-8.41,9.21-3.91,1.9-8.56,2.85-13.96,2.85-3.57,0-6.81-.37-9.71-1.1-2.9-.74-5.39-1.89-7.47-3.45-2.08-1.56-3.68-3.56-4.82-5.99-1.14-2.43-1.71-5.35-1.71-8.74s.57-6.31,1.71-8.74c1.14-2.43,2.75-4.43,4.82-5.99,2.08-1.56,4.56-2.71,7.47-3.45,2.9-.74,6.14-1.11,9.71-1.11,7.77,0,13.55,1.88,17.35,5.63,3.79,3.75,5.69,9,5.69,15.74v1.07H18.07v.13c0,.85.22,1.77.67,2.78.45,1,1.14,1.94,2.08,2.81.94.87,2.13,1.6,3.58,2.18,1.45.58,3.18.87,5.19.87,4.87,0,8.13-1.56,9.78-4.69h12.59ZM40.44,136.38v-.13c0-.49-.18-1.18-.54-2.08-.36-.89-.96-1.77-1.81-2.65-.85-.87-1.99-1.63-3.42-2.28-1.43-.65-3.21-.97-5.36-.97-2.37,0-4.28.38-5.73,1.14-1.45.76-2.59,1.61-3.42,2.54-.83.94-1.38,1.84-1.67,2.71-.29.87-.44,1.4-.44,1.57v.13h22.37Z"/><path class="ea-3" d="M75.19,148.1l-5.58,10.05h-15.95l31.38-57.84h16.41l12.65,57.84h-16.03l-2.17-10.05h-20.71ZM90.42,118.18h-.15l-9.12,18.41h12.5l-3.23-18.41Z"/><path class="ea-3" d="M142.25,118.8l-3.32,21.02c-.79,4.99-.12,8.51,5.63,8.51s7.54-3.53,8.32-8.51l3.32-21.02h13.96l-3.74,23.7c-2.05,12.96-11.81,16.95-23.62,16.95s-20.31-3.99-18.26-16.95l3.74-23.7h13.96Z"/><path class="ea-3" d="M191.95,158.14h-13.96l4.4-27.84h-4.53l1.82-11.51h4.53l1.87-11.81h13.96l-1.87,11.81h7.9l-1.82,11.51h-7.9l-4.4,27.84Z"/><path class="ea-3" d="M255.73,138.51c-2.11,13.35-14.35,20.94-27.01,20.94s-22.51-7.52-20.39-20.94c2.12-13.42,14.37-21.02,27.02-21.02s22.5,7.59,20.38,21.02ZM223.05,138.51c-.79,4.99,1.9,8.82,7.58,8.82s9.58-3.83,10.37-8.82c.76-4.83-1.89-8.9-7.57-8.9s-9.62,4.07-10.38,8.9Z"/><path class="ea-1" d="M112.42,115.23c1.11-.09,4.97-.37,6.67-.54.37-.04,2.68-.7,2.68-.7.07-.1.15-.18.25-.25.09-.06.2-.11.31-.14h0c6.39-3.04,20.07-10.55,27.22-14.48,15.9-8.75,31.79-13.64,49.87-12.24,6.96.55,12.64,2.18,17.93,4.77,5.25,2.56,10.14,6.06,15.57,10.34,5.35.28,12.09,1.4,18.43,2.66,6.36,1.27,12.32,2.69,16.04,3.56h.02c.46.14.92.3,1.37.48.45.19.9.4,1.32.63h0c.17.09.21.22.25.34h0s0,.01,0,.03h0s.18.44.18.44h0c.37.89.62,1.69.79,2.5.16.76.26,1.53.34,2.42l.29.13.03.02c.73.48,1.33,1.01,1.7,1.55.29.41.45.83.44,1.24,0,.43-.18.84-.57,1.21-.34.31-.82.58-1.48.82h-.03s-.33.08-.33.08c-.02.31-.03.59-.05.87-.04.75-.08,1.46-.14,2.19-.35,3.83-1.28,6.13-6.45,5.65-.15-.02-.3-.19-.3-.34v-.2c.01-.16.16-.32.31-.33,4.79-.37,4.86-1.89,5.01-5.61.03-.81.07-1.72.16-2.79h0c.01-.21.16-.36.35-.46.12-.07.26-.12.35-.14h0c1.37-.41,1.88-.79,1.8-1.15-.1-.45-.86-.98-2.02-1.58h0c-.07-.04-.14-.08-.21-.15-.1-.09-.17-.2-.19-.35h0c-.08-.46-.15-.89-.21-1.3-.19-1.25-.34-2.28-.93-3.62v-.02s-.09-.22-.09-.22l-2.11-.78-4.34-1.12h.02c-.8-.17-1.61-.33-2.41-.5-9.18-1.91-18.48-3.84-27.78-4.62-.08,0-.16-.02-.24-.05-.08-.03-.15-.06-.22-.11h0c-4.82-3.93-9.91-7.1-15.32-9.44-5.4-2.35-11.12-3.88-17.19-4.53-15.61-1.68-27.62,2.06-41.86,8.45-7.37,3.31-33.16,17.32-36.2,17.94-4.38.89-7.39.02-9.47.33-.95.15-1.45-.73.48-.88Z"/><path class="ea-2" d="M189.19,180.81c-.36,2.27-2.5,4.16-4.81,4.16s-3.86-1.88-3.5-4.16c.36-2.31,2.51-4.16,4.81-4.16s3.87,1.85,3.5,4.16Z"/><path class="ea-2" d="M201.69,168.3h.07c1.85-2.03,3.86-2.88,6.21-2.88,2.63,0,4.74,1.06,5.67,3.48,1.6-2.27,4.25-3.48,6.73-3.48,4.62,0,5.74,3.02,5.08,7.21l-1.83,11.62h-6.47l1.37-8.71c.3-1.88.86-4.97-1.88-4.97-2.98,0-3.53,2.81-3.87,4.97l-1.37,8.71h-6.47l1.37-8.71c.32-2.03.81-5.12-2.07-5.12s-3.37,3.09-3.69,5.12l-1.37,8.71h-6.47l2.88-18.23h6.47l-.36,2.27Z"/><path class="ea-2" d="M228.08,166.03h7.46l3.39,9.35,6.24-9.35h7.36l-18.91,27.33h-7.25l8.05-11.59-6.33-15.74Z"/><path class="ea-2" d="M266.33,157.74l1.47,5.51,1.49-5.51h2.47v8.13h-1.52v-6.34l-1.66,6.34-1.56-.02-1.57-6.29s-.06.07-.06.07v6.24h-1.49v-8.13h2.43Z"/><polygon class="ea-2" points="262.83 157.74 262.83 159.11 260.42 159.11 260.42 165.87 258.81 165.87 258.81 159.11 256.41 159.11 256.37 159.06 256.37 157.74 262.83 157.74"/></symbol>
+</svg>
+
+<div id="page">
+
+  <div id="chrome">
+  <div id="logo"><svg viewBox="0 0 276 114" role="img" aria-label="eAuto.my"><use href="#brandmark"/></svg></div>
+
+  <div id="header">
+    <table class="header-box"><tbody><tr>
+      <td>
+        <div>
+          <ol class="inline">
+            <li><a href="#" data-go="home">Home</a>&nbsp;|&nbsp;</li>
+            <li><a href="#" data-go="home">Menu&nbsp;&#9662;</a></li>
+          </ol>
+          <div class="inline"><span class="pending">7 Pending Transaction Found!</span></div>
+        </div>
+      </td>
+      <td class="right">
+        <div>
+          <ol class="inline">
+            <li><span class="user-name">Tan Wei Ming</span>,&nbsp;</li>
+            <li><a href="#" class="my-account">My Account</a>&nbsp;|&nbsp;</li>
+            <li><a href="#" class="logout">Logout</a></li>
+          </ol>
+        </div>
+      </td>
+    </tr></tbody></table>
+  </div>
+  </div>
+
+  <div id="container">
+    <div class="screen on" id="home">
+      <div id="home-welcome">Good Morning, Tan Wei Ming</div>
+      <table id="home-menu"><tbody><tr>
+      <td class="icon-holder"><svg aria-hidden="true"><use href="#ic-users"/></svg></td>
+      <td><h2>Account Management</h2><span class="dead">Manage Company Accounts</span><span class="dead">Manage Backoffice User Accounts</span><span class="dead">View UCD User Accounts</span><span class="dead">Manage Bank/Credit Company Accounts</span><span class="dead">Manage Bank/Credit Company User Accounts</span><span class="dead">Manage Bank/Credit Company IP Whitelist</span><span class="dead">Company Account Listing (Limited Features For UCD To UCD)</span><a href="#" data-go="listing">Manage AATF/PBT Account <span class="tag">UPDATED</span></a><span class="dead">Manage e-Invoice Setup Company Listing</span><span class="dead">Manage LKM Refund Amount (below RM30)</span><span class="dead">Company Business Document Listing</span></td>
+      <td class="icon-holder"><svg aria-hidden="true"><use href="#ic-report"/></svg></td>
+      <td><h2>Reports</h2><span class="dead">JPJ Reports</span><span class="dead">Account Balance Summary</span><span class="dead">Account Balance Summary (Month / Year)</span><span class="dead">Account Deposit / Adjustment Report</span><span class="dead">Company POB Balance Report</span><span class="dead">POB Payment Report</span><span class="dead">Statement of Account (UCD)</span><span class="dead">Transaction Summary Report</span><span class="dead">Transaction Summary Report (State)</span><span class="dead">Vehicle Movement Report (UCD)</span><span class="dead">Interim Payment Report</span><span class="dead">Reset Payment Report</span><span class="dead">Inter-Branch Transfer History Report</span></td>
+      <td class="icon-holder"><svg aria-hidden="true"><use href="#ic-calendar"/></svg></td>
+      <td><h2>Insurance</h2><span class="dead">Insurance Permission Listing</span><span class="dead">Insurance User Permission Log</span><span class="dead">Endorsement</span><span class="dead">Insurance Transaction Listing</span><span class="dead">Insurance Payment Transaction</span><span class="dead">Upload Insurance e-Certificate</span><span class="dead">Insurance Quote Enquiry</span><span class="dead">Refer Risk Log</span><span class="dead">Insurance Payment OTP Log</span></td>
+      <td class="icon-holder"><svg aria-hidden="true"><use href="#ic-calendar"/></svg></td>
+      <td><h2>Onboarding</h2><span class="dead">UCD New Application</span><span class="dead">UCD Application Listing</span><span class="dead">UCD Pre-Application Listing</span><span class="dead">UCD Application Audit Log</span><span class="dead">UCD Pre-Application Audit Log</span></td>
+    </tr></tbody></table>
+      <div id="demo-note">DEMO SYSTEM!! DEMO SYSTEM!! DEMO SYSTEM!!</div>
+      <table id="home-menu"><tbody><tr>
+      <td class="icon-holder"><svg aria-hidden="true"><use href="#ic-calendar"/></svg></td>
+      <td><h2>Transactions Relevant</h2><span class="dead">STMS Transaction</span><span class="dead">APT Transaction</span><span class="dead">eSTM Transaction</span><a href="#" data-go="dereg-enq"><b>Deregistration Transaction</b> <span class="tag">UPDATED</span></a><span class="dead">Jomcheck Transaction</span><span class="dead">SSM Transaction</span><a href="#" data-go="precheck-list">eDereg Pre-Checking Transaction <span class="tag">UPDATED</span></a><span class="dead">Company Business Document Listing</span></td>
+      <td class="icon-holder"><svg aria-hidden="true"><use href="#ic-calendar"/></svg></td>
+      <td><h2>eAuto Plus Relevant</h2><span class="dead">BMK Transaction</span><span class="dead">RHB Payment Transaction (eAuto Plus)</span><span class="dead">LKM Refund Status</span><span class="dead">LKM Refund Attachment Listing</span></td>
+      <td class="icon-holder"><svg aria-hidden="true"><use href="#ic-tools"/></svg></td>
+      <td><h2>Support Tools</h2><span class="dead">STMS Transaction</span><span class="dead">Support Audit Log (STMS, APT &amp; eSTM)</span><span class="dead">Audit Trail Log</span><span class="dead">Company Account Audit Log</span><span class="dead">Backoffice User Account Audit Log</span><span class="dead">JPJ Enquiry</span><span class="dead">JPJ Hasil Audit Log</span></td>
+      <td class="icon-holder"><svg aria-hidden="true"><use href="#ic-invoice"/></svg></td>
+      <td><h2>Proforma Invoice / e-Invoice</h2><span class="dead">Generate Proforma Invoice</span><span class="dead">Proforma Invoice / e-Invoice Listing</span><span class="dead">Credit Note Listing</span><span class="dead">Biometric Device Purchase &amp; Software Installation Listing</span></td>
+    </tr></tbody></table>
+    </div>
+    <div class="screen" id="listing">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+      <table><tbody>
+        <tr>
+          <td class="not-to-print">
+            <form onsubmit="return false">
+              <table><tbody>
+                <tr> <td><b>Company Name:</b></td> <td><input type="text" style="width:190px"></td> <td><b>Company ROC:</b></td> <td><input type="text" style="width:190px"></td> <td><b>New Company ROC:</b></td> <td><input type="text" style="width:190px"></td> <td><b>AATF/PBT ID:</b></td> <td><input type="text" style="width:190px"></td> </tr>
+                <tr> <td><b>Email Address:</b></td> <td><input type="text" style="width:190px"></td> <td><b>Login ID:</b></td> <td><input type="text" style="width:190px"></td> <td><b>MyKad No:</b></td> <td><input type="text" style="width:190px"></td> <td><b>Contact Person Name:</b></td> <td><input type="text" style="width:190px"></td> </tr>
+                <tr> <td><b>Decision Maker Name:</b></td> <td><input type="text" style="width:190px"></td> <td><b>Decision Maker Contact Number:</b></td> <td><input type="text" style="width:190px"></td> <td><b>Decision Maker Email Address:</b></td> <td><input type="text" style="width:190px"></td> </tr>
+                <tr>
+                  <td colspan="5"></td>
+                  <td colspan="3" style="white-space:nowrap;text-align:right"><br>
+                    <select style="width:150px"><option>All State</option><option>JOHOR (01)</option><option>KEDAH (02)</option><option>KELANTAN (03)</option><option>MELAKA (04)</option><option>NEGERI SEMBILAN (05)</option><option>PAHANG (06)</option><option>PULAU PINANG (07)</option><option>PERAK (08)</option><option>PERLIS (09)</option><option>SELANGOR (10)</option><option>TERENGGANU (11)</option><option>SABAH (12)</option><option>SARAWAK (13)</option><option>WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option><option>WILAYAH PERSEKUTUAN LABUAN (15)</option><option>WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option></select>
+                    <select style="width:130px"><option>All</option><option>Authorised Automotive Treatment Facility</option><option>PBT</option></select>
+                    <input type="submit" value="Search">
+                    |
+                    <input type="button" value="Create New" data-go="create">
+                    <a class="to-reset" href="#" data-go="listing">Reset</a>
+                    <a class="hidden" href="#">Export CSV</a>
+                  </td>
+                </tr>
+                <tr><td colspan="8"><div class="fbar">AATF/PBT Account Listing</div></td></tr>
+              </tbody></table>
+            </form>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="scrollx">
+            <table id="result">
+              <colgroup><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col><col></colgroup>
+              <thead><tr class="header"><th>#</th><th>Company Name</th><th>Company ROC</th><th>New Company ROC</th><th>AATF/PBT ID</th><th>Contact No</th><th>Email Address</th><th>Company Type</th><th>RHB Status</th><th>RHB DD Number</th><th>Group</th><th>Company Account Status</th><th>Registration Date</th><th>Verified Date</th><th>Activation Date</th><th>Decision Maker Name</th><th>Decision Maker Contact Number</th><th>Decision Maker Email Address</th></tr></thead>
+              <tbody>
+            <tr class="even"><td>1.</td><td><a href="#" data-go="update">ABC AATF SDN BHD</a></td><td>2020123-X</td><td>-</td><td>4150011</td><td>0312345678</td><td>admin@abcaatf.com</td><td>Authorised Automotive Treatment Facility</td><td>Inactivated</td><td>-</td><td>-</td><td>Activated</td><td>06-04-2026</td><td>06-04-2026</td><td>06-04-2026</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">admin@abcaatf.com</td></tr>
+            <tr class="odd"><td>2.</td><td><a href="#" data-go="update">BEST AUTO RECYCLE SDN BHD</a></td><td>2020456-K</td><td>-</td><td>4150012</td><td>0387654321</td><td>admin@bestauto.com</td><td>Authorised Automotive Treatment Facility</td><td>Active</td><td>081234567890</td><td>-</td><td>Inactivated</td><td>20-11-2023</td><td>20-11-2023</td><td>20-11-2023</td><td class="col-limit-width">LIM CHEE KEONG</td><td>0312345600</td><td class="col-limit-width">dm@bestauto.com</td></tr>
+            <tr class="even"><td>3.</td><td><a href="#" data-go="update">GREEN METAL SDN BHD</a></td><td>2020789-P</td><td>202001078912</td><td>4150013</td><td>0398765432</td><td>admin@bestauto.com</td><td>Authorised Automotive Treatment Facility</td><td>Active</td><td>089876543210</td><td>B3</td><td>Inactivated</td><td>09-05-2024</td><td>09-05-2024</td><td>09-05-2024</td><td class="col-limit-width">WONG MEI FONG</td><td>0387654300</td><td class="col-limit-width">dm@greenmetal.com</td></tr>
+            <tr class="odd"><td>4.</td><td><a href="#" data-go="update">SEJAHTERA AUTO SDN BHD</a></td><td>2021334-W</td><td>202101033412</td><td>4150014</td><td>0355556666</td><td>admin@sejahtera.com</td><td>Authorised Automotive Treatment Facility</td><td>Inactivated</td><td>-</td><td>-</td><td>New</td><td>29-01-2024</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>5.</td><td><a href="#" data-go="update-import">Jaring Metal Industries Sdn Bhd</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4150031</td><td>0357408823</td><td>-</td><td>Authorised Automotive Treatment Facility</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>6.</td><td><a href="#" data-go="update-import">Kitaran Recovery Sdn Bhd</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4150032</td><td>053577002</td><td>-</td><td>Authorised Automotive Treatment Facility</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>7.</td><td><a href="#" data-go="update-import">Eco-R Malaysia Sdn Bhd</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4150033</td><td>0333598807</td><td>-</td><td>Authorised Automotive Treatment Facility</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>8.</td><td><a href="#" data-go="update-import">YonMing Euro Used Parts Sdn Bhd</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4150034</td><td>052916663</td><td>-</td><td>Authorised Automotive Treatment Facility</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>9.</td><td><a href="#" data-go="update">Dewan Bandaraya Kuala Lumpur</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160001</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>10.</td><td><a href="#" data-go="update">Majlis Bandaraya Alor Setar</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160002</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>11.</td><td><a href="#" data-go="update">Majlis Bandaraya Pulau Pinang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160003</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>12.</td><td><a href="#" data-go="update">Majlis Bandaraya Seberang Perai</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160004</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>13.</td><td><a href="#" data-go="update">Majlis Bandaraya Ipoh</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160005</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>14.</td><td><a href="#" data-go="update">Majlis Bandaraya Kuantan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160006</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>15.</td><td><a href="#" data-go="update">Majlis Bandaraya Shah Alam</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160007</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>16.</td><td><a href="#" data-go="update">Majlis Bandaraya Petaling Jaya</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160008</td><td>0379563544</td><td>dereg@mbpj.gov.my</td><td>PBT</td><td>Active</td><td>-</td><td>-</td><td>Activated</td><td>07-10-2026</td><td>07-10-2026</td><td>07-10-2026</td><td class="col-limit-width">NORHASLINDA BINTI AHMAD</td><td>0379563500</td><td class="col-limit-width">dm@mbpj.gov.my</td></tr>
+            <tr class="cr-row"><td>17.</td><td><a href="#" data-go="update">Majlis Bandaraya Subang Jaya</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160009</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>18.</td><td><a href="#" data-go="update">Majlis Bandaraya Diraja Klang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160010</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>19.</td><td><a href="#" data-go="update">Majlis Bandaraya Seremban</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160011</td><td>0667625566</td><td>dereg@mbs.gov.my</td><td>PBT</td><td>Active</td><td>-</td><td>-</td><td>Activated</td><td>07-10-2026</td><td>07-10-2026</td><td>07-10-2026</td><td class="col-limit-width">AZLAN BIN OMAR</td><td>0667625500</td><td class="col-limit-width">dm@mbs.gov.my</td></tr>
+            <tr class="cr-row"><td>20.</td><td><a href="#" data-go="update">Majlis Bandaraya Melaka Bersejarah</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160012</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>21.</td><td><a href="#" data-go="update">Majlis Bandaraya Johor Bahru</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160013</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>22.</td><td><a href="#" data-go="update">Majlis Bandaraya Iskandar Puteri</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160014</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>23.</td><td><a href="#" data-go="update">Majlis Bandaraya Pasir Gudang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160015</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>24.</td><td><a href="#" data-go="update">Majlis Bandaraya Kuala Terengganu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160016</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>25.</td><td><a href="#" data-go="update">Dewan Bandaraya Kota Kinabalu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160017</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>26.</td><td><a href="#" data-go="update">Dewan Bandaraya Kuching Utara</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160018</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>27.</td><td><a href="#" data-go="update">Majlis Bandaraya Kuching Selatan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160019</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>28.</td><td><a href="#" data-go="update">Majlis Bandaraya Miri</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160020</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>29.</td><td><a href="#" data-go="update">Majlis Perbandaran Kangar</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160021</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>30.</td><td><a href="#" data-go="update">Majlis Perbandaran Kubang Pasu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160022</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>31.</td><td><a href="#" data-go="update">Majlis Perbandaran Kulim</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160023</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>32.</td><td><a href="#" data-go="update">Majlis Perbandaran Langkawi Bandaraya Pelancongan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160024</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>33.</td><td><a href="#" data-go="update">Majlis Perbandaran Sungai Petani</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160025</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>34.</td><td><a href="#" data-go="update">Majlis Perbandaran Kuala Kangsar</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160026</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>35.</td><td><a href="#" data-go="update">Majlis Perbandaran Manjung</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160027</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>36.</td><td><a href="#" data-go="update">Majlis Perbandaran Taiping</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160028</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>37.</td><td><a href="#" data-go="update">Majlis Perbandaran Teluk Intan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160029</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>38.</td><td><a href="#" data-go="update">Majlis Perbandaran Ampang Jaya</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160030</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>39.</td><td><a href="#" data-go="update">Majlis Perbandaran Hulu Selangor</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160031</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>40.</td><td><a href="#" data-go="update">Majlis Perbandaran Kajang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160032</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>41.</td><td><a href="#" data-go="update">Majlis Perbandaran Kuala Langat</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160033</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>42.</td><td><a href="#" data-go="update">Majlis Perbandaran Kuala Selangor</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160034</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>43.</td><td><a href="#" data-go="update">Majlis Perbandaran Selayang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160035</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>44.</td><td><a href="#" data-go="update">Majlis Perbandaran Sepang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160036</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>45.</td><td><a href="#" data-go="update">Majlis Perbandaran Jempol</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160037</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>46.</td><td><a href="#" data-go="update">Majlis Perbandaran Port Dickson</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160038</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>47.</td><td><a href="#" data-go="update">Majlis Perbandaran Alor Gajah</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160039</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>48.</td><td><a href="#" data-go="update">Majlis Perbandaran Hang Tuah Jaya</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160040</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>49.</td><td><a href="#" data-go="update">Majlis Perbandaran Jasin</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160041</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>50.</td><td><a href="#" data-go="update">Majlis Perbandaran Batu Pahat</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160042</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>51.</td><td><a href="#" data-go="update">Majlis Perbandaran Kluang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160043</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>52.</td><td><a href="#" data-go="update">Majlis Perbandaran Kulai</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160044</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>53.</td><td><a href="#" data-go="update">Majlis Perbandaran Muar</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160045</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>54.</td><td><a href="#" data-go="update">Majlis Perbandaran Pengerang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160046</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>55.</td><td><a href="#" data-go="update">Majlis Perbandaran Pontian</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160047</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>56.</td><td><a href="#" data-go="update">Majlis Perbandaran Segamat</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160048</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>57.</td><td><a href="#" data-go="update">Majlis Perbandaran Bentong</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160049</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>58.</td><td><a href="#" data-go="update">Majlis Perbandaran Temerloh</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160050</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>59.</td><td><a href="#" data-go="update">Majlis Perbandaran Pekan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160051</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>60.</td><td><a href="#" data-go="update">Majlis Perbandaran Dungun</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160052</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>61.</td><td><a href="#" data-go="update">Majlis Perbandaran Kemaman</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160053</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>62.</td><td><a href="#" data-go="update">Majlis Perbandaran Kota Bharu Bandar Raya Islam</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160054</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>63.</td><td><a href="#" data-go="update">Majlis Perbandaran Penampang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160055</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>64.</td><td><a href="#" data-go="update">Majlis Perbandaran Sandakan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160056</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>65.</td><td><a href="#" data-go="update">Majlis Perbandaran Tawau</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160057</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>66.</td><td><a href="#" data-go="update">Lembaga Kemajuan Bintulu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160058</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>67.</td><td><a href="#" data-go="update">Majlis Perbandaran Kota Samarahan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160059</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>68.</td><td><a href="#" data-go="update">Majlis Perbandaran Padawan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160060</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>69.</td><td><a href="#" data-go="update">Majlis Perbandaran Sibu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160061</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>70.</td><td><a href="#" data-go="update">Majlis Daerah Baling</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160062</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>71.</td><td><a href="#" data-go="update">Majlis Daerah Bandar Baharu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160063</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>72.</td><td><a href="#" data-go="update">Majlis Daerah Padang Terap</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160064</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>73.</td><td><a href="#" data-go="update">Majlis Daerah Pendang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160065</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>74.</td><td><a href="#" data-go="update">Majlis Daerah Sik</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160066</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>75.</td><td><a href="#" data-go="update">Majlis Daerah Yan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160067</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>76.</td><td><a href="#" data-go="update">Majlis Daerah Batu Gajah</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160068</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>77.</td><td><a href="#" data-go="update">Majlis Daerah Perak Tengah</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160069</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>78.</td><td><a href="#" data-go="update">Majlis Daerah Gerik</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160070</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>79.</td><td><a href="#" data-go="update">Majlis Daerah Kampar</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160071</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>80.</td><td><a href="#" data-go="update">Majlis Daerah Kerian</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160072</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>81.</td><td><a href="#" data-go="update">Majlis Daerah Lenggong</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160073</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>82.</td><td><a href="#" data-go="update">Majlis Daerah Pengkalan Hulu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160074</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>83.</td><td><a href="#" data-go="update">Majlis Daerah Selama</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160075</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>84.</td><td><a href="#" data-go="update">Majlis Daerah Tanjong Malim</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160076</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>85.</td><td><a href="#" data-go="update">Majlis Daerah Tapah</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160077</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>86.</td><td><a href="#" data-go="update">Majlis Daerah Sabak Bernam</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160078</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>87.</td><td><a href="#" data-go="update">Majlis Daerah Jelebu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160079</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>88.</td><td><a href="#" data-go="update">Majlis Daerah Kuala Pilah</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160080</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>89.</td><td><a href="#" data-go="update">Majlis Daerah Rembau</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160081</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>90.</td><td><a href="#" data-go="update">Majlis Daerah Tampin</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160082</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>91.</td><td><a href="#" data-go="update">Majlis Daerah Kota Tinggi</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160083</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>92.</td><td><a href="#" data-go="update">Majlis Daerah Labis</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160084</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>93.</td><td><a href="#" data-go="update">Majlis Daerah Mersing</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160085</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>94.</td><td><a href="#" data-go="update">Majlis Daerah Simpang Renggam</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160086</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>95.</td><td><a href="#" data-go="update">Majlis Daerah Tangkak</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160087</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>96.</td><td><a href="#" data-go="update">Majlis Daerah Yong Peng</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160088</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>97.</td><td><a href="#" data-go="update">Majlis Daerah Bera</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160089</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>98.</td><td><a href="#" data-go="update">Majlis Daerah Cameron Highlands</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160090</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>99.</td><td><a href="#" data-go="update">Majlis Daerah Jerantut</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160091</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>100.</td><td><a href="#" data-go="update">Majlis Daerah Lipis</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160092</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>101.</td><td><a href="#" data-go="update">Majlis Daerah Maran</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160093</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>102.</td><td><a href="#" data-go="update">Majlis Daerah Raub</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160094</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>103.</td><td><a href="#" data-go="update">Majlis Daerah Rompin</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160095</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>104.</td><td><a href="#" data-go="update">Majlis Daerah Bachok Bandar Pelancongan Islam</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160096</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>105.</td><td><a href="#" data-go="update">Majlis Daerah Dabong</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160097</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>106.</td><td><a href="#" data-go="update">Majlis Daerah Gua Musang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160098</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>107.</td><td><a href="#" data-go="update">Majlis Daerah Jeli</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160099</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>108.</td><td><a href="#" data-go="update">Majlis Daerah Ketereh Perbandaran Islam</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160100</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>109.</td><td><a href="#" data-go="update">Majlis Daerah Kuala Krai</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160101</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>110.</td><td><a href="#" data-go="update">Majlis Daerah Machang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160102</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>111.</td><td><a href="#" data-go="update">Majlis Daerah Pasir Mas</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160103</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>112.</td><td><a href="#" data-go="update">Majlis Daerah Pasir Puteh</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160104</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>113.</td><td><a href="#" data-go="update">Majlis Daerah Tanah Merah</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160105</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>114.</td><td><a href="#" data-go="update">Majlis Daerah Tumpat</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160106</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>115.</td><td><a href="#" data-go="update">Majlis Daerah Besut</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160107</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>116.</td><td><a href="#" data-go="update">Majlis Daerah Hulu Terengganu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160108</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>117.</td><td><a href="#" data-go="update">Majlis Daerah Marang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160109</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>118.</td><td><a href="#" data-go="update">Majlis Daerah Setiu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160110</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>119.</td><td><a href="#" data-go="update">Majlis Daerah Beaufort</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160111</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>120.</td><td><a href="#" data-go="update">Majlis Daerah Beluran</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160112</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>121.</td><td><a href="#" data-go="update">Majlis Daerah Keningau</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160113</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>122.</td><td><a href="#" data-go="update">Majlis Daerah Kinabatangan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160114</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>123.</td><td><a href="#" data-go="update">Majlis Daerah Kota Belud</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160115</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>124.</td><td><a href="#" data-go="update">Majlis Daerah Kota Marudu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160116</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>125.</td><td><a href="#" data-go="update">Majlis Daerah Kuala Penyu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160117</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>126.</td><td><a href="#" data-go="update">Lembaga Bandaran Kudat</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160118</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>127.</td><td><a href="#" data-go="update">Majlis Daerah Kunak</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160119</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>128.</td><td><a href="#" data-go="update">Majlis Daerah Lahad Datu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160120</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>129.</td><td><a href="#" data-go="update">Majlis Daerah Nabawan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160121</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>130.</td><td><a href="#" data-go="update">Majlis Daerah Papar</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160122</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>131.</td><td><a href="#" data-go="update">Majlis Daerah Pitas</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160123</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>132.</td><td><a href="#" data-go="update">Majlis Daerah Putatan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160124</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>133.</td><td><a href="#" data-go="update">Majlis Daerah Ranau</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160125</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>134.</td><td><a href="#" data-go="update">Majlis Daerah Semporna</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160126</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>135.</td><td><a href="#" data-go="update">Majlis Daerah Sipitang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160127</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>136.</td><td><a href="#" data-go="update">Majlis Daerah Tambunan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160128</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>137.</td><td><a href="#" data-go="update">Majlis Daerah Telupid</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160129</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>138.</td><td><a href="#" data-go="update">Majlis Daerah Tenom</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160130</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>139.</td><td><a href="#" data-go="update">Majlis Daerah Tongod</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160131</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>140.</td><td><a href="#" data-go="update">Majlis Daerah Tuaran</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160132</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>141.</td><td><a href="#" data-go="update">Majlis Daerah Bau</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160133</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>142.</td><td><a href="#" data-go="update">Majlis Daerah Betong</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160134</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>143.</td><td><a href="#" data-go="update">Majlis Daerah Dalat dan Mukah</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160135</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>144.</td><td><a href="#" data-go="update">Majlis Daerah Gedong</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160136</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>145.</td><td><a href="#" data-go="update">Majlis Daerah Kanowit</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160137</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>146.</td><td><a href="#" data-go="update">Majlis Daerah Kapit</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160138</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>147.</td><td><a href="#" data-go="update">Majlis Daerah Lawas</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160139</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>148.</td><td><a href="#" data-go="update">Majlis Daerah Limbang</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160140</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>149.</td><td><a href="#" data-go="update">Majlis Daerah Lubok Antu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160141</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>150.</td><td><a href="#" data-go="update">Majlis Daerah Lundu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160142</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>151.</td><td><a href="#" data-go="update">Majlis Daerah Maradong dan Julau</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160143</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>152.</td><td><a href="#" data-go="update">Majlis Daerah Marudi</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160144</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>153.</td><td><a href="#" data-go="update">Majlis Daerah Matu dan Daro</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160145</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>154.</td><td><a href="#" data-go="update">Majlis Daerah Saratok</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160146</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>155.</td><td><a href="#" data-go="update">Majlis Daerah Sarikei</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160147</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>156.</td><td><a href="#" data-go="update">Majlis Daerah Sebuyau</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160148</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>157.</td><td><a href="#" data-go="update">Majlis Daerah Serian</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160149</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>158.</td><td><a href="#" data-go="update">Majlis Daerah Luar Bandar Sibu</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160150</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>159.</td><td><a href="#" data-go="update">Majlis Daerah Simunjan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160151</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>160.</td><td><a href="#" data-go="update">Majlis Daerah Sri Aman</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160152</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>161.</td><td><a href="#" data-go="update">Majlis Daerah Subis</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160153</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>162.</td><td><a href="#" data-go="update">Perbadanan Labuan</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160154</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>163.</td><td><a href="#" data-go="update">Perbadanan Putrajaya</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160155</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>164.</td><td><a href="#" data-go="update">Pihak Berkuasa Tempatan Taman Perindustrian Hi-Tech Kulim</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160156</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>165.</td><td><a href="#" data-go="update">Perbadanan Bandar Baru Tunjong</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160157</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+            <tr class="cr-row"><td>166.</td><td><a href="#" data-go="update">Lembaga Pembangunan Tioman</a><span class="cr-new">NEW</span></td><td>-</td><td>-</td><td>4160158</td><td>-</td><td>-</td><td>PBT</td><td>-</td><td>-</td><td>-</td><td>New</td><td>07-10-2026</td><td>-</td><td>-</td><td class="col-limit-width">-</td><td>-</td><td class="col-limit-width">-</td></tr>
+        </tbody>
+            </table>
+            </div>
+          </td>
+        </tr>
+      </tbody></table>
+    </div>
+    <div class="screen" id="create">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+  <div class="tool-bar"><a class="back-to" href="#" data-go="listing">&laquo; Back</a> <span class="app-title">Create New AATF/PBT Company Account</span> <input class="button" type="button" value="Save &raquo;"></div>
+  <form onsubmit="return false"><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Company Details</td></tr></thead><tbody><tr><td class="item"><div class="label">Company Name<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value=""></td><td class="item"><div class="label">Company Reg. No.<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value=""></td></tr><tr><td class="item"><div class="label">Company Type<span class="required">*</span>:<span class="cr-new">NEW</span></div><div class="hint">Company Type = PBT now creates a login-enabled eDereg account.</div><select class="is-required ctype"><option>Authorised Automotive Treatment Facility</option><option>PBT</option></select></td><td class="item"><div class="label">New Company Reg. No.:</div><input type="text" size="30" value=""></td></tr><tr class="aatf-only"><td class="item"><div class="label">TIN Number:<span class="cr-new">NEW</span></div><input type="text" size="30" value=""></td><td class="item"></td></tr><tr><td class="item"><div class="label">Mailing Address<span class="required">*</span>:</div><textarea class="is-required"></textarea><br><br><span class="label">Postcode<span class="required">*</span>: </span><input type="text" class="is-required number-only valid-postcode" size="10" value=""></td><td class="item"><div class="label">State<span class="required">*</span>:</div><select class="is-required"><option>-- Select a State --</option><option>JOHOR (01)</option><option>KEDAH (02)</option><option>KELANTAN (03)</option><option>MELAKA (04)</option><option>NEGERI SEMBILAN (05)</option><option>PAHANG (06)</option><option>PULAU PINANG (07)</option><option>PERAK (08)</option><option>PERLIS (09)</option><option>SELANGOR (10)</option><option>TERENGGANU (11)</option><option>SABAH (12)</option><option>SARAWAK (13)</option><option>WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option><option>WILAYAH PERSEKUTUAN LABUAN (15)</option><option>WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option></select><br><br><div class="label">City<span class="required">*</span>:</div><select class="is-required"><option>-- Select a City --</option></select><br><br><div class="label">District<span class="required">*</span>:</div><select class="is-required"><option>-- Select a District --</option></select><br><br></td></tr><tr><td class="item"><div class="checkbox-section"><input type="checkbox"> <label>Same as Mailing Address</label></div><div class="label">Showroom Address:</div><textarea></textarea><br><br><span class="label">Showroom Postcode: </span><input type="text" class="valid-postcode number-only" size="10" value=""></td><td class="item"><div class="label">Showroom State:</div><select><option>-- Please Select --</option><option>JOHOR (01)</option><option>KEDAH (02)</option><option>KELANTAN (03)</option><option>MELAKA (04)</option><option>NEGERI SEMBILAN (05)</option><option>PAHANG (06)</option><option>PULAU PINANG (07)</option><option>PERAK (08)</option><option>PERLIS (09)</option><option>SELANGOR (10)</option><option>TERENGGANU (11)</option><option>SABAH (12)</option><option>SARAWAK (13)</option><option>WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option><option>WILAYAH PERSEKUTUAN LABUAN (15)</option><option>WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option></select><br><br><div class="label">Showroom City:</div><select><option>-- Please Select --</option></select><br><br><div class="label">Showroom District:</div><select><option>-- Please Select --</option></select><br><br></td></tr><tr><td class="item"><div class="label">Contact Number<span class="required">*</span>:</div><div><input type="text" class="is-required number-only valid-contact" size="20" value=""></div></td><td class="item"><div class="label">Company Email<span class="required">*</span>:</div><input type="text" class="is-required email-only" size="35" value=""></td></tr><tr class="pbt-only"><td class="item"><div class="label">PBT Shortform<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value=""></td><td class="item"><div class="label">DOE Email<span class="required">*</span>:</div><input type="text" class="is-required email-only" size="30" value=""></td></tr><tr><td class="item"><div class="label">Attach Form A / 9 / 13<span class="required">*</span>:</div><input type="file"> <span class="hint">(max size: 5 MB)</span></td><td class="item"><div class="label">Attach Form D / 49<span class="required">*</span>:</div><input type="file"> <span class="hint">(max size: 5 MB)</span></td></tr><tr class="aatf-only"><td class="item" colspan="2"><table class="dual"><tr><td><div class="label">PBT Listing:</div><select multiple size="10"><option>DFSADRWE - CHAR MIFASO</option><option>GGT - CHARMAIN AATF</option><option>INDIVIDU - INDIVIDU</option><option>MBMB - MAJLIS BANDARAYA MELAKA BERSEJARAH</option><option>MBPJ - MAJLIS BANDARAYA PETALING JAYA</option><option>MBS - MAJLIS BANDARAYA SEREMBAN</option><option>MPJ - MAJLIS PERBANDARAN JASIN</option><option>MPKJ - MAJLIS PERBANDARAN KAJANG</option><option>TEST - NICK PBT TEST</option></select></td><td class="mid"><input type="button" value="&gt;&gt;"><br><br><input type="button" value="&lt;&lt;"></td><td><div class="label">PBT Selected:</div><select multiple size="10"></select></td></tr></table></td></tr><tr><td class="item"><div class="label">Remarks:</div><textarea></textarea></td></tr></tbody></table><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Director / Owner Details</td></tr></thead><tbody><tr><td class="item"><div class="label">Name<span class="required">*</span>:</div><input type="text" class="is-required allowed-chars-only" size="30" value=""></td><td class="item"><div class="label">MyKad Number<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value=""></td></tr><tr><td class="item"><div class="label">Contact Number<span class="required">*</span>:</div><input type="text" class="is-required number-only valid-contact" size="30" value=""></td><td class="item"><div class="label">Email Address<span class="required">*</span>:</div><input type="text" class="is-required email-only email-input" size="30" value=""></td></tr><tr><td class="item"><div class="label">Position:</div><input type="text" size="30" value=""></td><td class="item"><div class="label">Attach IC / Passport<span class="required">*</span>:</div><input type="file"> <span class="hint">(max size: 5 MB)</span></td></tr><tr><td class="item"><div class="label">Login ID<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value=""></td><td class="item"><div class="label">Password<span class="required">*</span>:</div><input type="password" size="30"><div class="hint">Password must contain: At least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character</div></td></tr></tbody></table><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Decision Maker Details</td></tr></thead><tbody><tr><td class="item"><div class="checkbox-section"><input type="checkbox"> <label>Same as Director Name</label></div><div class="label">Name:</div><input type="text" size="30" value=""><br><br><div class="label">Contact Number:</div><input type="text" class="number-only valid-contact" size="30" value=""></td><td class="item"><div class="label">Email Address:</div><input type="text" class="email-only" size="30" value=""></td></tr></tbody></table><table class="grid cp"><thead class="fhead"><tr><td colspan="10">Contact Person Details</td></tr></thead><tbody><tr class="cp-head"><td>Contact Person Name <span class="required">*</span></td><td>Contact Number <span class="required">*</span></td><td>Email Address <span class="required">*</span></td><td></td></tr><tr><td><input type="text" class="is-required" size="40" value=""></td><td><input type="text" class="is-required number-only valid-contact" size="20" value=""></td><td><input type="text" class="is-required email-only" size="35" value=""></td><td></td></tr></tbody></table><div class="addmore"><input type="button" value="Add More..."> <span class="hint">(Maximum 6)</span></div><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Transaction Payment Details</td></tr></thead><tbody><tr><td class="item"><div class="label">RHB Account Number:</div><input type="text" size="30" value="" readonly><div class="radio-line"><label><input type="radio" name="split"> Split</label></div><div class="label">Group :</div><input type="text" size="10" value=""></td><td class="item"></td></tr></tbody></table></form>
+</div>
+    <div class="screen" id="update">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+  <div class="tool-bar"><a class="back-to" href="#" data-go="listing">&laquo; Back</a> <span class="app-title">Update AATF/PBT Company Account #4150011</span> <input class="button" type="button" value="Update &raquo;"><input class="button" type="button" value="Inactivate &raquo;"><input class="button" type="button" value="Print DO &raquo;"><input class="button" type="button" value="Confirmation Of Registration &raquo;"></div>
+  <form onsubmit="return false"><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Deregistration Company Details</td></tr></thead><tbody><tr><td class="item"><div class="label">Company Name<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value="ABC AATF SDN BHD"></td><td class="item"><div class="label">Company Reg. No.<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value="2020123-X"></td></tr><tr><td class="item"><div class="label">Company Type<span class="required">*</span>:<span class="cr-new">NEW</span></div><div class="hint">Company Type can be switched after creation. Transactions created before the switch keep the D prefix; transactions created after use the PBT prefix.</div><select class="is-required ctype"><option>Authorised Automotive Treatment Facility</option><option>PBT</option></select></td><td class="item"><div class="label">New Company Reg. No.:</div><input type="text" size="30" value=""></td></tr><tr class="aatf-only"><td class="item"><div class="label">TIN Number:<span class="cr-new">NEW</span></div><input type="text" size="30" value="C20123456789"></td><td class="item"></td></tr><tr><td class="item"><div class="label">Mailing Address<span class="required">*</span>:</div><textarea class="is-required">LORONG 0/9-A &amp; B, JALAN 1, TAMAN 2, BANGUNAN TEST.000</textarea><br><br><span class="label">Postcode<span class="required">*</span>: </span><input type="text" class="is-required number-only valid-postcode" size="10" value="55000"></td><td class="item"><div class="label">State<span class="required">*</span>:</div><select class="is-required"><option>-- Select a State --</option><option>JOHOR (01)</option><option>KEDAH (02)</option><option>KELANTAN (03)</option><option>MELAKA (04)</option><option>NEGERI SEMBILAN (05)</option><option>PAHANG (06)</option><option>PULAU PINANG (07)</option><option>PERAK (08)</option><option>PERLIS (09)</option><option>SELANGOR (10)</option><option>TERENGGANU (11)</option><option>SABAH (12)</option><option>SARAWAK (13)</option><option>WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option><option>WILAYAH PERSEKUTUAN LABUAN (15)</option><option>WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option></select><br><br><div class="label">City<span class="required">*</span>:</div><select class="is-required"><option>-- Select a City --</option></select><br><br><div class="label">District<span class="required">*</span>:</div><select class="is-required"><option>-- Select a District --</option></select><br><br></td></tr><tr><td class="item"><div class="checkbox-section"><input type="checkbox"> <label>Same as Mailing Address</label></div><div class="label">Showroom Address:</div><textarea></textarea><br><br><span class="label">Showroom Postcode: </span><input type="text" class="valid-postcode number-only" size="10" value=""></td><td class="item"><div class="label">Showroom State:</div><select><option>-- Please Select --</option><option>JOHOR (01)</option><option>KEDAH (02)</option><option>KELANTAN (03)</option><option>MELAKA (04)</option><option>NEGERI SEMBILAN (05)</option><option>PAHANG (06)</option><option>PULAU PINANG (07)</option><option>PERAK (08)</option><option>PERLIS (09)</option><option>SELANGOR (10)</option><option>TERENGGANU (11)</option><option>SABAH (12)</option><option>SARAWAK (13)</option><option>WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option><option>WILAYAH PERSEKUTUAN LABUAN (15)</option><option>WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option></select><br><br><div class="label">Showroom City:</div><select><option>-- Please Select --</option></select><br><br><div class="label">Showroom District:</div><select><option>-- Please Select --</option></select><br><br></td></tr><tr><td class="item"><div class="label">Contact Number<span class="required">*</span>:</div><div><input type="text" class="is-required number-only valid-contact" size="20" value="0312345678"></div></td><td class="item"><div class="label">Company Email<span class="required">*</span>:</div><input type="text" class="is-required email-only" size="35" value="admin@abcaatf.com"></td></tr><tr class="pbt-only"><td class="item"><div class="label">PBT Shortform<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value=""></td><td class="item"><div class="label">DOE Email<span class="required">*</span>:</div><input type="text" class="is-required email-only" size="30" value=""></td></tr><tr><td class="item"><div class="label">Attach Form A / 9 / 13<span class="required">*</span>:</div><input type="file"> <span class="hint">(max size: 5 MB)</span></td><td class="item"><div class="label">Attach Form D / 49<span class="required">*</span>:</div><input type="file"> <span class="hint">(max size: 5 MB)</span></td></tr><tr class="aatf-only"><td class="item" colspan="2"><table class="dual"><tr><td><div class="label">PBT Listing:</div><select multiple size="10"><option>DFSADRWE - CHAR MIFASO</option><option>GGT - CHARMAIN AATF</option><option>INDIVIDU - INDIVIDU</option><option>MBMB - MAJLIS BANDARAYA MELAKA BERSEJARAH</option><option>MBPJ - MAJLIS BANDARAYA PETALING JAYA</option><option>MBS - MAJLIS BANDARAYA SEREMBAN</option><option>MPJ - MAJLIS PERBANDARAN JASIN</option><option>MPKJ - MAJLIS PERBANDARAN KAJANG</option><option>TEST - NICK PBT TEST</option></select></td><td class="mid"><input type="button" value="&gt;&gt;"><br><br><input type="button" value="&lt;&lt;"></td><td><div class="label">PBT Selected:</div><select multiple size="10"></select></td></tr></table></td></tr><tr><td class="item"><div class="label">Remarks:</div><textarea></textarea></td></tr></tbody></table><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Director / Owner Details&nbsp;&nbsp;&nbsp;Change Main User Password</td></tr></thead><tbody><tr><td class="item"><div class="label">Name<span class="required">*</span>:</div><input type="text" size="30" value="TAN WEI MING"></td><td class="item"><div class="label">MyKad Number<span class="required">*</span>:</div><input type="text" size="30" value="880202025678"></td></tr><tr><td class="item"><div class="label">Contact Number<span class="required">*</span>:</div><input type="text" size="30" value="0312345678"></td><td class="item"><div class="label">Email Address<span class="required">*</span>:</div><input type="text" size="30" value="admin@abcaatf.com"></td></tr><tr><td class="item"><div class="label">Position:</div><input type="text" size="30" value=""></td><td class="item"><div class="label">Attach IC / Passport:</div><a href="#">View</a> <span class="hint">(max size: 5 MB)</span></td></tr><tr><td class="item"><div class="label">Login ID:</div>abcaatf</td><td class="item"><div class="label">Password:</div>************</td></tr></tbody></table><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Decision Maker Details</td></tr></thead><tbody><tr><td class="item"><div class="checkbox-section"><input type="checkbox"> <label>Same as Director Name</label></div><div class="label">Name:</div><input type="text" size="30" value=""><br><br><div class="label">Contact Number:</div><input type="text" class="number-only valid-contact" size="30" value=""></td><td class="item"><div class="label">Email Address:</div><input type="text" class="email-only" size="30" value=""></td></tr></tbody></table><table class="grid cp"><thead class="fhead"><tr><td colspan="10">Contact Person Details</td></tr></thead><tbody><tr class="cp-head"><td>Contact Person Name <span class="required">*</span></td><td>Contact Number <span class="required">*</span></td><td>Email Address <span class="required">*</span></td><td></td></tr><tr><td><input type="text" class="is-required" size="40" value=""></td><td><input type="text" class="is-required number-only valid-contact" size="20" value=""></td><td><input type="text" class="is-required email-only" size="35" value=""></td><td></td></tr></tbody></table><div class="addmore"><input type="button" value="Add More..."> <span class="hint">(Maximum 6)</span></div><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Transaction Payment Details</td></tr></thead><tbody><tr><td class="item"><div class="label"><input type="checkbox" checked> RHB Account Number:</div><input type="text" size="30" value="081234567890"><div class="label" style="margin-top:8px">RHB Dealer ID:</div><input type="text" size="30" value="DLR100234"><div class="radio-line"><label><input type="radio" name="split"> Split</label></div><div class="label">Group :</div><input type="text" size="10" value="B3"></td><td class="item"></td></tr></tbody></table><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Other Details</td></tr></thead><tbody><tr><td class="item"><div class="label">Account Status:</div>Activated</td><td class="item"><div class="label">Account Creation Date:</div>06/04/2026</td></tr><tr><td class="item"><div class="label">Account Verified Date:</div>06/04/2026</td><td class="item"><div class="label">Account Activation Date:</div>06/04/2026</td></tr><tr><td class="item"><div class="label">Account Inactivation Date:</div>-</td><td class="item"></td></tr></tbody></table></form>
+</div>
+    <div class="screen" id="update-import">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+  <div class="tool-bar"><a class="back-to" href="#" data-go="listing">&laquo; Back</a> <span class="app-title">Update AATF/PBT Company Account #4150031</span> <input class="button" type="button" value="Update &raquo;"><input class="button" type="button" value="Inactivate &raquo;"><input class="button" type="button" value="Print DO &raquo;"><input class="button" type="button" value="Confirmation Of Registration &raquo;"></div>
+  <div class="cr-hl" style="padding:6px 10px;margin:0 0 10px;font-size:12px">Imported from the licensed AATF list. Highlighted mandatory fields have no source data and must be filled before the account can be saved.<span class="cr-new">NEW</span></div><form onsubmit="return false"><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Deregistration Company Details</td></tr></thead><tbody><tr><td class="item"><div class="label">Company Name<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value="Jaring Metal Industries Sdn Bhd"></td><td class="item"><div class="label">Company Reg. No.<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value="" class="cr-hl"></td></tr><tr><td class="item"><div class="label">Company Type<span class="required">*</span>:<span class="cr-new">NEW</span></div><div class="hint">Company Type can be switched after creation. Transactions created before the switch keep the D prefix; transactions created after use the PBT prefix.</div><select class="is-required ctype"><option>Authorised Automotive Treatment Facility</option><option>PBT</option></select></td><td class="item"><div class="label">New Company Reg. No.:</div><input type="text" size="30" value=""></td></tr><tr class="aatf-only"><td class="item"><div class="label">TIN Number:<span class="cr-new">NEW</span></div><input type="text" size="30" value=""></td><td class="item"></td></tr><tr><td class="item"><div class="label">Mailing Address<span class="required">*</span>:</div><textarea class="is-required">No.7&amp;9, Jalan Sungai Kayu Ara 32/37, Taman Perindustrian Berjaya, Seksyen 32</textarea><br><br><span class="label">Postcode<span class="required">*</span>: </span><input type="text" class="is-required number-only valid-postcode" size="10" value="40460"></td><td class="item"><div class="label">State<span class="required">*</span>:</div><select class="is-required"><option>-- Select a State --</option><option>JOHOR (01)</option><option>KEDAH (02)</option><option>KELANTAN (03)</option><option>MELAKA (04)</option><option>NEGERI SEMBILAN (05)</option><option>PAHANG (06)</option><option>PULAU PINANG (07)</option><option>PERAK (08)</option><option>PERLIS (09)</option><option selected>SELANGOR (10)</option><option>TERENGGANU (11)</option><option>SABAH (12)</option><option>SARAWAK (13)</option><option>WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option><option>WILAYAH PERSEKUTUAN LABUAN (15)</option><option>WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option></select><br><br><div class="label">City<span class="required">*</span>:</div><select class="is-required"><option>-- Select a City --</option><option selected>SHAH ALAM</option></select><br><br><div class="label">District<span class="required">*</span>:</div><select class="is-required cr-hl"><option>-- Select a District --</option></select><br><br></td></tr><tr><td class="item"><div class="checkbox-section"><input type="checkbox"> <label>Same as Mailing Address</label></div><div class="label">Showroom Address:</div><textarea></textarea><br><br><span class="label">Showroom Postcode: </span><input type="text" class="valid-postcode number-only" size="10" value=""></td><td class="item"><div class="label">Showroom State:</div><select><option>-- Please Select --</option><option>JOHOR (01)</option><option>KEDAH (02)</option><option>KELANTAN (03)</option><option>MELAKA (04)</option><option>NEGERI SEMBILAN (05)</option><option>PAHANG (06)</option><option>PULAU PINANG (07)</option><option>PERAK (08)</option><option>PERLIS (09)</option><option>SELANGOR (10)</option><option>TERENGGANU (11)</option><option>SABAH (12)</option><option>SARAWAK (13)</option><option>WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option><option>WILAYAH PERSEKUTUAN LABUAN (15)</option><option>WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option></select><br><br><div class="label">Showroom City:</div><select><option>-- Please Select --</option></select><br><br><div class="label">Showroom District:</div><select><option>-- Please Select --</option></select><br><br></td></tr><tr><td class="item"><div class="label">Contact Number<span class="required">*</span>:</div><div><input type="text" class="is-required number-only valid-contact" size="20" value="0357408823"></div></td><td class="item"><div class="label">Company Email<span class="required">*</span>:</div><input type="text" class="is-required email-only" size="35" value="" class="cr-hl"></td></tr><tr class="pbt-only"><td class="item"><div class="label">PBT Shortform<span class="required">*</span>:</div><input type="text" class="is-required" size="30" value=""></td><td class="item"><div class="label">DOE Email<span class="required">*</span>:</div><input type="text" class="is-required email-only" size="30" value=""></td></tr><tr><td class="item"><div class="label">Attach Form A / 9 / 13<span class="required">*</span>:</div><input type="file"> <span class="hint">(max size: 5 MB)</span></td><td class="item"><div class="label">Attach Form D / 49<span class="required">*</span>:</div><input type="file"> <span class="hint">(max size: 5 MB)</span></td></tr><tr class="aatf-only"><td class="item" colspan="2"><table class="dual"><tr><td><div class="label">PBT Listing:</div><select multiple size="10"><option>DFSADRWE - CHAR MIFASO</option><option>GGT - CHARMAIN AATF</option><option>INDIVIDU - INDIVIDU</option><option>MBMB - MAJLIS BANDARAYA MELAKA BERSEJARAH</option><option>MBPJ - MAJLIS BANDARAYA PETALING JAYA</option><option>MBS - MAJLIS BANDARAYA SEREMBAN</option><option>MPJ - MAJLIS PERBANDARAN JASIN</option><option>MPKJ - MAJLIS PERBANDARAN KAJANG</option><option>TEST - NICK PBT TEST</option></select></td><td class="mid"><input type="button" value="&gt;&gt;"><br><br><input type="button" value="&lt;&lt;"></td><td><div class="label">PBT Selected:</div><select multiple size="10"></select></td></tr></table></td></tr><tr><td class="item"><div class="label">Remarks:</div><textarea></textarea></td></tr></tbody></table><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Director / Owner Details&nbsp;&nbsp;&nbsp;Change Main User Password</td></tr></thead><tbody><tr><td class="item"><div class="label">Name<span class="required">*</span>:</div><input type="text" size="30" value="" class="cr-hl"></td><td class="item"><div class="label">MyKad Number<span class="required">*</span>:</div><input type="text" size="30" value="" class="cr-hl"></td></tr><tr><td class="item"><div class="label">Contact Number<span class="required">*</span>:</div><input type="text" size="30" value="0312345678"></td><td class="item"><div class="label">Email Address<span class="required">*</span>:</div><input type="text" size="30" value="admin@abcaatf.com"></td></tr><tr><td class="item"><div class="label">Position:</div><input type="text" size="30" value=""></td><td class="item"><div class="label">Attach IC / Passport:</div><a href="#">View</a> <span class="hint">(max size: 5 MB)</span></td></tr><tr><td class="item"><div class="label">Login ID:</div>abcaatf</td><td class="item"><div class="label">Password:</div>************</td></tr></tbody></table><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Decision Maker Details</td></tr></thead><tbody><tr><td class="item"><div class="checkbox-section"><input type="checkbox"> <label>Same as Director Name</label></div><div class="label">Name:</div><input type="text" size="30" value=""><br><br><div class="label">Contact Number:</div><input type="text" class="number-only valid-contact" size="30" value=""></td><td class="item"><div class="label">Email Address:</div><input type="text" class="email-only" size="30" value=""></td></tr></tbody></table><table class="grid cp"><thead class="fhead"><tr><td colspan="10">Contact Person Details</td></tr></thead><tbody><tr class="cp-head"><td>Contact Person Name <span class="required">*</span></td><td>Contact Number <span class="required">*</span></td><td>Email Address <span class="required">*</span></td><td></td></tr><tr><td><input type="text" class="is-required" size="40" value=""></td><td><input type="text" class="is-required number-only valid-contact" size="20" value=""></td><td><input type="text" class="is-required email-only" size="35" value=""></td><td></td></tr></tbody></table><div class="addmore"><input type="button" value="Add More..."> <span class="hint">(Maximum 6)</span></div><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Transaction Payment Details</td></tr></thead><tbody><tr><td class="item"><div class="label"><input type="checkbox" checked> RHB Account Number:</div><input type="text" size="30" value="081234567890"><div class="label" style="margin-top:8px">RHB Dealer ID:</div><input type="text" size="30" value="DLR100234"><div class="radio-line"><label><input type="radio" name="split"> Split</label></div><div class="label">Group :</div><input type="text" size="10" value="B3"></td><td class="item"></td></tr></tbody></table><table class="grid"><colgroup><col><col></colgroup><thead class="fhead"><tr><td colspan="10">Other Details</td></tr></thead><tbody><tr><td class="item"><div class="label">Account Status:</div>Activated</td><td class="item"><div class="label">Account Creation Date:</div>06/04/2026</td></tr><tr><td class="item"><div class="label">Account Verified Date:</div>06/04/2026</td><td class="item"><div class="label">Account Activation Date:</div>06/04/2026</td></tr><tr><td class="item"><div class="label">Account Inactivation Date:</div>-</td><td class="item"></td></tr></tbody></table></form>
+</div>
+    <div class="screen" id="precheck-list">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR &nbsp;&nbsp; <span class="cr-ask">TO CONFIRM</span> pending requestor / dev confirmation</div>
+      <div class="frow"><label for="b1">Company Name:</label><input id="b1" type="text" class="wide" value=""><label for="b2">Vehicle No.:</label><input id="b2" type="text" value=""><label for="b3">Transaction No.:</label><input id="b3" type="text" value=""><label for="b4">Date Created (From):</label><input id="b4" type="text" value=""><label for="b5">Date Created (To):</label><input id="b5" type="text" value=""></div><div class="frow"><label for="b6">Company ROC:</label><input id="b6" type="text" class="wide" value=""><label for="b7">Trx Status:</label><select id="b7"><option>All</option><option>Approved</option><option>Pending</option><option>Failed</option><option>Cancelled</option></select><label for="b8">Payment Status:</label><select id="b8"><option>All</option><option>OK</option><option>Failed</option></select><label for="b9">Payment Date (From):</label><input id="b9" type="text" value=""><label for="b10">Payment Date (To):</label><input id="b10" type="text" value=""></div><div class="frow"><label for="b11">LHDN Response Status:</label><select id="b11"><option>All</option><option>OK</option><option>Failed</option></select><span class="gap"></span><input type="button" class="button" value="Search Now"> <a href="#" data-go="precheck-list">Reset</a> <a href="#">Export</a></div><div class="fbar">eDereg Pre-Checking Transaction Listing</div>
+
+      <div class="scrollx">
+      <table id="result">
+        <thead><tr class="header">
+          <th>#</th><th>Company Name</th><th>Company ROC</th><th>Vehicle</th><th>Transaction No.</th>
+          <th>Created At</th><th>Payment</th><th>JPJ Pre-Checking</th><th>Trx Status</th>
+          <th>LHDN Response Status</th><th>Remarks</th><th>Special Remarks</th><th>Action</th>
+        </tr></thead>
+        <tbody>
+            <tr class="even"><td>1</td><td>ABC ABC AATF SDN BHD</td><td>2020123-X</td><td>VAN1234</td><td>PC55000005</td><td>10-05-2025 12:00</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="ok">OK</td><td class="col-limit-width"></td><td>No</td><td><a href="#" data-go="pc-detail">View</a></td></tr>
+            <tr class="odd"><td>2</td><td>ABC ABC AATF SDN BHD</td><td>2020123-X</td><td>VAN1235</td><td>PC55000004</td><td>10-05-2025 12:00</td><td class="dash">-</td><td class="dash">-</td><td class="pend">Pending</td><td class="dash">-</td><td class="col-limit-width"></td><td>No</td><td><a href="#" data-go="pc-detail">View</a> | <a href="#" class="cancel-link">Cancel</a></td></tr>
+            <tr class="even"><td>3</td><td>ABC ABC AATF SDN BHD</td><td>2020123-X</td><td>VAN1236</td><td>PC55000003</td><td>10-05-2025 12:00</td><td class="ok">OK</td><td class="bad">Failed</td><td class="bad">Failed</td><td class="dash">-</td><td class="col-limit-width">VEL000100E - VEHICLE RECORD NOT EXIST</td><td>No</td><td><a href="#" data-go="pc-detail">View</a> | <a href="#" class="cancel-link">Cancel</a></td></tr>
+            <tr class="odd"><td>4</td><td>ABC ABC AATF SDN BHD</td><td>2020123-X</td><td>VAN1237</td><td>PC55000002</td><td>10-05-2025 12:00</td><td class="bad">Failed</td><td class="dash">-</td><td class="bad">Failed</td><td class="dash">-</td><td class="col-limit-width">IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. &lt;br&gt;Sila buat pembayaran semula.</td><td>No</td><td><a href="#" data-go="pc-detail">View</a> | <a href="#" class="cancel-link">Cancel</a></td></tr>
+            <tr class="even"><td>5</td><td>ABC ABC AATF SDN BHD</td><td>2020123-X</td><td>VAN1238</td><td>PC55000001</td><td>30-04-2025 12:00</td><td class="bad">Failed</td><td class="dash">-</td><td class="bad">Cancelled</td><td class="dash">-</td><td class="col-limit-width">CANCELLED BY eautoadmin on 01-05-2025 23:59</td><td>No</td><td><a href="#" data-go="pc-detail">View</a></td></tr>
+          <tr class="cr-row"><td>6</td><td>Majlis Bandaraya Petaling Jaya<span class="cr-new">NEW</span></td><td>-</td><td>WA1234B</td><td>PBTPC69000003<span class="cr-ask">TO CONFIRM</span></td><td>20-09-2026 10:05</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="ok">OK</td><td class="col-limit-width"></td><td>No</td><td><a href="#" data-go="pc-detail">View</a></td></tr>
+            <tr class="cr-row"><td>7</td><td>Majlis Bandaraya Petaling Jaya<span class="cr-new">NEW</span></td><td>-</td><td>BQL5540</td><td>PBTPC69000002<span class="cr-ask">TO CONFIRM</span></td><td>19-09-2026 15:40</td><td class="dash">-</td><td class="dash">-</td><td class="pend">Pending</td><td class="dash">-</td><td class="col-limit-width"></td><td>No</td><td><a href="#" data-go="pc-detail">View</a> | <a href="#" class="cancel-link">Cancel</a></td></tr>
+            <tr class="cr-row"><td>8</td><td>Majlis Bandaraya Seremban<span class="cr-new">NEW</span></td><td>-</td><td>NS8821C</td><td>PBTPC69000001<span class="cr-ask">TO CONFIRM</span></td><td>18-09-2026 09:12</td><td class="ok">OK</td><td class="bad">Failed</td><td class="bad">Failed</td><td class="dash">-</td><td class="col-limit-width">VEL000100E - VEHICLE RECORD NOT EXIST</td><td>No</td><td><a href="#" data-go="pc-detail">View</a> | <a href="#" class="cancel-link">Cancel</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="screen" id="pc-detail">
+      <div class="tool-bar">
+        <a class="back-to" href="#" data-go="precheck-list">&laquo; Back</a>
+        <span class="app-title">VAN1234 &nbsp;(Ref No.: PC55000005) - Transaction Details</span>
+        <span class="pc-status">Approved</span>
+      </div>
+
+      <table class="pcd"><tbody><tr>
+        <td>
+          <table class="kv"><tbody>
+            <tr><td class="k">Date Created:</td><td>30-08-2025 11:30am</td></tr>
+            <tr><td class="k">e-Invoice Submission Date:</td><td>30-08-2025 12:00pm</td></tr>
+            <tr><td class="k">LHDN Response Status:</td><td class="good">OK</td></tr>
+            <tr><td class="k">e-Invoice Validation Date:</td><td>30-08-2025 12:00pm</td></tr>
+          </tbody></table>
+        </td>
+        <td class="pcd-btns">
+          <input type="button" class="button" value="&#128196; Invoice"><br>
+          <input type="button" class="button" value="&#128196; e-Invoice">
+        </td>
+        <td class="pcd-btns">
+          <input type="button" class="button" value="JPJ OFFICIAL RECEIPT">
+        </td>
+      </tr></tbody></table>
+
+      <p class="grp">AATF</p>
+      <table class="kv"><tbody>
+        <tr><td class="k">AATF:</td><td>ABC ABC AATF SDN BHD</td></tr>
+        <tr><td class="k">Company Reg. No:</td><td>2020123-X</td></tr>
+        <tr><td class="k">Company Address:</td><td>JALAN ABC, TAMAN TESTING, 59200 KUALA LUMPUR</td></tr>
+        <tr><td class="k">Company Contact No:</td><td>012345678</td></tr>
+      </tbody></table>
+
+      <p class="grp">AATF&rsquo;s Authorised Representative</p>
+      <table class="kv"><tbody>
+        <tr><td class="k">Name:</td><td>TAN WEI MING</td></tr>
+        <tr><td class="k">MyKad No:</td><td>880202025678</td></tr>
+        <tr><td class="k">Mobile No:</td><td>0312345678</td></tr>
+      </tbody></table>
+
+      <p class="grp">Result</p>
+      <table class="pcd two"><tbody><tr>
+        <td>
+          <table class="kv"><tbody>
+            <tr><td class="k">Enquiry Response:</td><td class="good">GL80000001 - ENQUIRY SUCCESSFUL</td></tr>
+            <tr><td class="k">Valid As At:</td><td>15-05-2025 15:30</td></tr>
+            <tr><td class="k">Vehicle Record:</td><td>Exist</td></tr>
+            <tr><td class="k">Vehicle Status:</td><td>Active</td></tr>
+            <tr><td class="k">Verified Status:</td><td>Yes</td></tr>
+            <tr><td class="k">Usage Code:</td><td>Yes</td></tr>
+            <tr><td class="k">Blacklist (JPJ):</td><td>No</td></tr>
+          </tbody></table>
+        </td>
+        <td>
+          <table class="kv"><tbody>
+            <tr><td class="k">Blacklist (JBJ):</td><td>No</td></tr>
+            <tr><td class="k">Blacklist (Agency):</td><td>No</td></tr>
+            <tr><td class="k">Claim Ownership:</td><td>No</td></tr>
+            <tr><td class="k">Vehicle in Investigation:</td><td>No</td></tr>
+            <tr><td class="k">Vehicle Condition:</td><td>No</td></tr>
+            <tr><td class="k">Note:</td><td class="good">Able to proceed for eDereg</td></tr>
+          </tbody></table>
+        </td>
+      </tr></tbody></table>
+
+      <p class="grp">Payment Details</p>
+      <div class="plain">1. 10-05-2025 12:00pm - RHB (DPC080525000001 - VAN1234) - <span class="good">OK</span></div>
+      <div class="plain">2. 10-05-2025 12:00pm - RHB (DPC080525000001) - <span class="good">OK</span></div>
+
+      <p class="grp">JPJ Final Submission:</p>
+      <div class="plain">10-05-2025 12:00pm <span class="good">Successful</span></div>
+
+      <p class="grp">Special Remark:</p>
+      <textarea class="pc-remark"></textarea>
+    </div>
+
+    <div class="screen" id="dereg-enq">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+      <div class="frow"><label for="e1">Company Name:</label><input id="e1" type="text" class="wide" value=""><label for="e2">Vehicle No.:</label><input id="e2" type="text" value=""><label for="e3">Transaction No.:</label><input id="e3" type="text" value=""><label for="e4">From<span style="color:#f00">*</span>:</label><input id="e4" type="text" value="01/09/2026"><label for="e5">To<span style="color:#f00">*</span>:</label><input id="e5" type="text" value="18/09/2026"><label for="e6">Filter by</label><select id="e6"><option>Transaction Status</option><option>Created Date</option></select></div><div class="frow"><label for="e7">Company ROC:</label><input id="e7" type="text" class="wide" value=""><label for="e8">Payment Method:</label><select id="e8"><option>All</option><option>RHB</option><option>FPX</option></select><label for="e9">Payment From:</label><input id="e9" type="text" value=""><label for="e10">Payment To:</label><input id="e10" type="text" value=""></div><div class="frow"><label for="e11">Category Type:</label><select id="e11"><option>All</option><option>Company</option><option>Foreigner</option><option>Government</option><option>Malaysian</option><option>Military</option><option>MyKas</option><option>Pemastautin Tetap</option><option>Police</option><option>Statutory Body</option></select><label for="e12">COD:</label><select id="e12"><option>All</option><option>Yes</option><option>No</option></select><label for="e13">PBT:</label><select id="e13"><option>All</option><option>INDIVIDU - INDIVIDU</option><option>MBPJ - MAJLIS BANDARAYA PETALING JAYA</option><option>MBS - MAJLIS BANDARAYA SEREMBAN</option></select><label for="e14">LHDN Response Status:</label><select id="e14"><option>All</option><option>OK</option><option>Failed</option></select><label><input type="checkbox"> Includes Draft Trx</label><span class="gap"></span><input type="button" class="button" value="SEARCH Now"> <a href="#" data-go="dereg-enq">Reset</a> <a href="#">Export CSV</a></div><div class="fbar">Deregistration Transaction Enquiry</div>
+
+      <div class="scrollx">
+      <table id="result">
+        <thead><tr class="header"><th>#</th><th>Company Name</th><th>Company ROC</th><th>Vehicle</th><th>Transaction No.</th><th>Owner Name</th><th>Created At</th><th>Method</th><th>JPJ Enquiry</th><th>Payment</th><th>JPJ Dereg</th><th>Tx Status</th><th>COD</th><th>LHDN Response Status</th><th>Remarks</th><th>Action</th></tr></thead>
+        <tbody>
+            <tr class="even"><td>1.</td><td>ABC AATF SDN BHD</td><td>2020123-X</td><td>HXA224</td><td>D690000638</td><td>AZLI BIN AHMAD</td><td>14-09-2026 18:20</td><td>RHB</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="bad">No</td><td class="bad">Failed</td><td class="col-limit-width">No TIN info has been provided.</td><td><a href="#" data-go="dd-aatf">View</a></td></tr>
+            <tr class="odd"><td>2.</td><td>ABC AATF SDN BHD</td><td>2020123-X</td><td>HXA223</td><td>D690000637</td><td>SITI NURUL AIN</td><td>14-09-2026 18:16</td><td>RHB</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="bad">No</td><td class="bad">Failed</td><td class="col-limit-width">No TIN info has been provided.</td><td><a href="#" data-go="dd-aatf">View</a></td></tr>
+            <tr class="even"><td>3.</td><td>ABC AATF SDN BHD</td><td>2020123-X</td><td>HXA221</td><td>D690000636</td><td>LIM CHEE KEONG</td><td>14-09-2026 18:10</td><td>RHB</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="bad">No</td><td class="ok">OK</td><td class="col-limit-width"></td><td><a href="#" data-go="dd-aatf">View</a></td></tr>
+            <tr class="odd"><td>4.</td><td>ABC AATF SDN BHD</td><td>2020123-X</td><td>HXA220</td><td>D690000635</td><td>RAJA MOHAN A/L S</td><td>14-09-2026 18:07</td><td>FPX</td><td class="ok">OK</td><td class="bad">Failed</td><td class="dash">-</td><td class="bad">Failed</td><td class="bad">No</td><td class="dash">-</td><td class="col-limit-width">IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI.</td><td><a href="#" data-go="dd-aatf">View</a></td></tr>
+            <tr class="even"><td>5.</td><td>ABC AATF SDN BHD</td><td>2020123-X</td><td>HXA219</td><td>D690000634</td><td>TAN MEI LING</td><td>13-09-2026 09:44</td><td>FPX</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td class="pend">Pending</td><td class="bad">No</td><td class="dash">-</td><td class="col-limit-width"></td><td><a href="#" data-go="dd-aatf">View</a></td></tr>
+            <tr class="cr-row"><td>6.</td><td>Majlis Bandaraya Petaling Jaya<span class="cr-new">NEW</span></td><td>-</td><td>WA1234B</td><td>PBT0000002</td><td>NORAINI BINTI OSMAN</td><td>20-09-2026 10:24</td><td>RHB</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="bad">No</td><td class="ok">OK</td><td class="col-limit-width"></td><td><a href="#" data-go="dd-pbt">View</a></td></tr>
+            <tr class="cr-row"><td>7.</td><td>Majlis Bandaraya Seremban<span class="cr-new">NEW</span></td><td>-</td><td>NS8821C</td><td>PBT0000001</td><td>KAMARUL BIN HASSAN</td><td>19-09-2026 16:02</td><td>RHB</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="bad">No</td><td class="ok">OK</td><td class="col-limit-width"></td><td><a href="#" data-go="dd-pbt">View</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+<div class="screen" id="dd-aatf">
+      <div class="tool-bar">
+        <a class="back-to" href="#" data-go="dereg-enq">&laquo; Back</a>
+        <span class="app-title">HXA224 &nbsp;(Ref No.: D690000638)</span>
+        <span class="d-status">Approved</span>
+      </div>
+      <table class="dtop"><tbody><tr>
+        <td><table class="kv"><tbody>
+          <tr><td class="k">Category:</td><td>Malaysian</td></tr>
+          <tr><td class="k">Engine No:</td><td>EN12345678</td></tr>
+          <tr><td class="k">Chassis No:</td><td>CH12345678</td></tr>
+          <tr><td class="k">Vehicle Make / Model:</td><td>Perodua Myvi</td></tr>
+          <tr><td class="k">Manufacturing Year:</td><td>2020</td></tr>
+        </tbody></table></td>
+        <td><table class="kv"><tbody>
+          <tr><td class="k">Date Created:</td><td>20-09-2026 08:55am</td></tr>
+          <tr><td class="k">e-Invoice Submission Date:</td><td>20-09-2026 09:00am</td></tr>
+          <tr><td class="k">LHDN Response Status:</td><td class="good">OK</td></tr>
+          <tr><td class="k">e-Invoice Validation Date:</td><td>20-09-2026 09:01am</td></tr>
+          <tr><td class="k">eDereg Pre-Checking:</td><td class="good">Yes</td></tr>
+        </tbody></table></td>
+        <td class="dbtns">
+          <input type="button" class="button" value="&#128196; Invoice"><input type="button" class="button" value="&#128196; e-Invoice"><br>
+          <input type="button" class="button" value="&#128196; COD"><input type="button" class="button" value="&#128196; Uploaded Consent"><br>
+          <input type="button" class="button" value="&#128196; Perakuan">
+        </td>
+      </tr></tbody></table>
+      <table class="dcols"><tbody><tr>
+        <td>
+          <p class="grp">Owner</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">Name:</td><td>AZLI BIN AHMAD</td></tr>
+            <tr><td class="k">MyKad No:</td><td>900101015678</td></tr>
+            <tr><td class="k">Address:</td><td>H123, LORONG 456,<br>JALAN 789,<br>56000 KUALA LUMPUR</td></tr>
+            <tr><td class="k">Mobile No:</td><td>0123456789</td></tr>
+            <tr><td class="k">MyKad/Thumbprint<br>verified on:</td><td>20-09-2026 08:51am</td></tr>
+            <tr><td class="k">Uploaded Document:</td><td><a href="#">Photo 1</a><br><a href="#">Photo 2</a><br><a href="#">Photo 3</a></td></tr>
+          </tbody></table>
+        </td>
+        <td>
+          <p class="grp">AATF</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">AATF:</td><td>ABC AATF SDN BHD</td></tr>
+            <tr><td class="k">Company Reg. No:</td><td>2020123-X</td></tr>
+            <tr><td class="k">Company Address:</td><td>JALAN ABC, TAMAN TESTING,<br>59200 KUALA LUMPUR</td></tr>
+            <tr><td class="k">Company Contact No:</td><td>0312345678</td></tr>
+          </tbody></table>
+          <p class="grp">AATF&rsquo;s Authorised Representative</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">Name:</td><td>TAN WEI MING</td></tr>
+            <tr><td class="k">MyKad No:</td><td>880202025678</td></tr>
+            <tr><td class="k">Mobile No:</td><td>0123456789</td></tr>
+            <tr><td class="k">MyKad/Thumbprint<br>verified on:</td><td>20-09-2026 08:57am</td></tr>
+          </tbody></table>
+        </td>
+      </tr></tbody></table>
+      <hr class="rule">
+      <table class="dcols"><tbody><tr>
+        <td><p class="grp">JPJ Enquiry:</p>
+          <div class="plain">1. 20-09-2026 08:56 am - <span class="good">OK</span> (GL80900001)</div></td>
+        <td><p class="grp">Payment Details:</p>
+          <div class="plain">1. 20-09-2026 08:59am - RHB (ORG260920000001-HXA224) - <span class="good">OK</span></div></td>
+      </tr></tbody></table>
+      <p class="grp">JPJ Final Submission:</p>
+      <div class="plain">20-09-2026 09:00pm <span class="good">Successful</span></div>
+      <p class="grp">Special Remark:</p>
+      <textarea class="pc-remark"></textarea>
+    </div>
+
+<div class="screen" id="dd-pbt">
+      <div class="tool-bar">
+        <a class="back-to" href="#" data-go="dereg-enq">&laquo; Back</a>
+        <span class="app-title">WA1234B &nbsp;(Ref No.: PBT0000002)<span class="cr-new">NEW</span></span>
+        <span class="d-status">Approved</span>
+      </div>
+      <table class="dtop"><tbody><tr>
+        <td><table class="kv"><tbody>
+          <tr><td class="k">Category:</td><td>Malaysian</td></tr>
+          <tr><td class="k">Engine No:</td><td>EN12345678</td></tr>
+          <tr><td class="k">Chassis No:</td><td>CH12345678</td></tr>
+          <tr><td class="k">Vehicle Make / Model:</td><td>Perodua Myvi</td></tr>
+          <tr><td class="k">Manufacturing Year:</td><td>2020</td></tr>
+        </tbody></table></td>
+        <td><table class="kv"><tbody>
+          <tr><td class="k">Date Created:</td><td>20-09-2026 08:55am</td></tr>
+          <tr><td class="k">e-Invoice Submission Date:</td><td>20-09-2026 09:00am</td></tr>
+          <tr><td class="k">LHDN Response Status:</td><td class="good">OK</td></tr>
+          <tr><td class="k">e-Invoice Validation Date:</td><td>20-09-2026 09:01am</td></tr>
+          <tr><td class="k">eDereg Pre-Checking:</td><td class="good">Yes</td></tr>
+        </tbody></table></td>
+        <td class="dbtns">
+          <input type="button" class="button" value="&#128196; Invoice"><input type="button" class="button" value="&#128196; e-Invoice"><br>
+          <input type="button" class="button" value="&#128196; COD"><input type="button" class="button" value="&#128196; Uploaded Consent"><br>
+          <input type="button" class="button" value="&#128196; Perakuan">
+        </td>
+      </tr></tbody></table>
+      <table class="dcols"><tbody><tr>
+        <td>
+          <p class="grp">Owner</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">Name:</td><td>NORAINI BINTI OSMAN</td></tr>
+            <tr><td class="k">MyKad No:</td><td>880505105522</td></tr>
+            <tr><td class="k">Address:</td><td>H123, LORONG 456,<br>JALAN 789,<br>56000 KUALA LUMPUR</td></tr>
+            <tr><td class="k">Mobile No:</td><td>0123456789</td></tr>
+            <tr><td class="k">MyKad/Thumbprint<br>verified on:</td><td>20-09-2026 08:51am</td></tr>
+            <tr><td class="k">Uploaded Document:</td><td><a href="#">Photo 1</a><br><a href="#">Photo 2</a><br><a href="#">Photo 3</a></td></tr>
+          </tbody></table>
+        </td>
+        <td>
+          <p class="grp">PBT</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">PBT:</td><td>Majlis Bandaraya Petaling Jaya</td></tr>
+            <tr><td class="k">PBT Shortform:<span class="cr-new">NEW</span></td><td>MBPJ</td></tr>
+            <tr><td class="k">PBT Address:</td><td>JALAN YONG SHOOK LIN, SEKSYEN 52,<br>46200 PETALING JAYA, SELANGOR</td></tr>
+            <tr><td class="k">PBT Contact No:</td><td>0379563544</td></tr>
+          </tbody></table>
+          <p class="grp">PBT&rsquo;s Authorised Representative</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">Name:</td><td>TAN WEI MING</td></tr>
+            <tr><td class="k">MyKad No:</td><td>880202025678</td></tr>
+            <tr><td class="k">Mobile No:</td><td>0123456789</td></tr>
+            <tr><td class="k">MyKad/Thumbprint<br>verified on:</td><td>20-09-2026 08:57am</td></tr>
+          </tbody></table>
+        </td>
+      </tr></tbody></table>
+      <hr class="rule">
+      <table class="dcols"><tbody><tr>
+        <td><p class="grp">JPJ Enquiry:</p>
+          <div class="plain">1. 20-09-2026 08:56 am - <span class="good">OK</span> (GL80900001)</div></td>
+        <td><p class="grp">Payment Details:</p>
+          <div class="plain">1. 20-09-2026 08:59am - RHB (ORG260920000001-WA1234B) - <span class="good">OK</span></div></td>
+      </tr></tbody></table>
+      <p class="grp">JPJ Final Submission:</p>
+      <div class="plain">20-09-2026 09:00pm <span class="good">Successful</span></div>
+      <p class="grp">Special Remark:</p>
+      <textarea class="pc-remark"></textarea>
+    </div>
+
+  </div>
+
+  <div id="footer">
+    <table><tbody><tr>
+      <td>
+        Best Compatible With Mozilla Firefox V36.0.4<br>
+        Copyright &copy; 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+        <a href="#">Contact Us</a> | <a href="#">Terms &amp; Conditions</a> | <a href="#">Privacy</a>
+      </td>
+      <td class="right"><svg viewBox="0 0 276 114" role="img" aria-label="eAuto.my"><use href="#brandmark"/></svg></td>
+    </tr></tbody></table>
+  </div>
+
+</div>
+
+<div class="modal-back" id="cancelconfirm">
+  <div class="modal">
+    <div class="body big">Sure to cancel?</div>
+    <div class="foot">
+      <input type="button" class="button" id="cc-cancel" value="Cancel">
+      <input type="button" class="button" id="cc-ok" value="OK">
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function show(id){
+    var all=document.querySelectorAll('.screen');
+    for(var i=0;i<all.length;i++) all[i].classList.remove('on');
+    var t=document.getElementById(id);
+    if(t) t.classList.add('on');
+    window.scrollTo(0,0);
+  }
+
+  document.addEventListener('click',function(e){
+    var cl=e.target.closest ? e.target.closest('.cancel-link') : null;
+    if(cl){ e.preventDefault(); window.__cancelRow=cl.closest('tr'); document.getElementById('cancelconfirm').classList.add('on'); return; }
+    if(e.target.id==='cc-cancel'){ document.getElementById('cancelconfirm').classList.remove('on'); window.__cancelRow=null; return; }
+    if(e.target.id==='cc-ok'){
+      document.getElementById('cancelconfirm').classList.remove('on');
+      var tr=window.__cancelRow; window.__cancelRow=null;
+      if(tr){
+        var td=tr.querySelectorAll('td');
+        td[8].className='bad'; td[8].textContent='Cancelled';
+        var d=new Date(), pad=function(x){return (x<10?'0':'')+x;};
+        td[10].textContent='CANCELLED BY Tan Wei Ming on '+pad(d.getDate())+'-'+pad(d.getMonth()+1)+'-'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+        var c=td[12].querySelector('.cancel-link'); if(c){ td[12].innerHTML='<a href="#" data-go="pc-detail">View</a>'; }
+      }
+      return;
+    }
+    var n=e.target;
+    while(n && n!==document && !(n.getAttribute && n.getAttribute('data-go'))) n=n.parentNode;
+    if(!n || n===document) return;
+    e.preventDefault();
+    show(n.getAttribute('data-go'));
+  });
+
+  function applyType(){
+    try{
+      var sel=document.querySelectorAll('select.ctype');
+      for(var i=0;i<sel.length;i++){
+        var s=sel[i];
+        var opt=s.options[s.selectedIndex];
+        var pbt=opt && opt.text.trim()==='PBT';
+        var scope=s.closest?s.closest('.screen'):null;
+        if(!scope) continue;
+        var p=scope.querySelectorAll('.pbt-only');
+        for(var j=0;j<p.length;j++) p[j].style.display = pbt?'':'none';
+        var a=scope.querySelectorAll('.aatf-only');
+        for(var k=0;k<a.length;k++) a[k].style.display = pbt?'none':'';
+      }
+    }catch(err){}
+  }
+  document.addEventListener('change',function(e){
+    if(e.target && e.target.className && String(e.target.className).indexOf('ctype')>-1) applyType();
+  });
+  applyType();
+})();
+</script>
+</body>
+</html>

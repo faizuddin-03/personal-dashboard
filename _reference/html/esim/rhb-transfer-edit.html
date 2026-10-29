@@ -1,0 +1,97 @@
+<!--
+  URL: /esim/rhb-transfer-resp/140/edit
+  Env: eSIM (VPN-only simulator), env instance not stated by user
+  Captured: 2026-08-21
+  Trimmed: none — full form kept complete per the "never trim a form" rule.
+  Fields: Vn Start With*, Response Code*, Description*, Delay Milliseconds*,
+  Remark (textarea, unlike Dereg Enquiry's plain text input). Row 140's prefix
+  is HX, response OK — this is the same "HX" prefix seen in
+  dereg-enquiry-edit.html's row #57 (Remark: "Faiz - GLB000000I, GLB000003E"),
+  meaning HX is a shared testing prefix Faizuddin already uses across both the
+  Dereg Enquiry and RHB Transfer entities.
+  Used by: knowledge/flow-edereg.md, knowledge/esim.md
+-->
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="sidebar-brand" href="/esim/"><span class="sidebar-brand-text">eAuto Sim</span></a>
+      <div class="sidebar-label">Entities</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item sidebar-group" id="group-rhb">
+          <button class="sidebar-group-toggle" onclick="toggleGroup('group-rhb')"><span>RHB</span></button>
+          <ul class="sidebar-group-items">
+            <li class="sidebar-nav-item"><a href="/esim/rhb-enquiry-resp"><span>RHB Enquiry</span></a></li>
+            <li class="sidebar-nav-item active"><a href="/esim/rhb-transfer-resp"><span>RHB Transfer</span></a></li>
+            <li class="sidebar-nav-item"><a href="/esim/service-hub-resp"><span>Service Hub</span></a></li>
+            <li class="sidebar-nav-item"><a href="/esim/rhb-account-info"><span>RHB Account Info</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+    <div class="main-content">
+      <div class="top-bar">
+        <nav class="breadcrumb-nav">
+          <a href="/esim/">home</a>
+          <span><span class="sep">/</span><a href="/esim/rhb-transfer-resp">RHB Transfer Resps</a></span><span><span class="sep">/</span><span class="current">Edit #140</span></span>
+        </nav>
+      </div>
+      <div class="content-body">
+        <div class="page-header">
+          <div class="page-header-left">
+            <a href="/esim/rhb-transfer-resp" class="btn-back" title="Back to list">back</a>
+            <h1 class="page-title page-title-sm">Edit RHB Transfer Resp #140</h1>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-header"><span class="form-card-header-title">EDIT RECORD</span></div>
+          <div class="form-card-body">
+            <form action="/esim/rhb-transfer-resp/save" method="post">
+              <input type="hidden" name="id" value="140">
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="vnStartWith"><span>Vn Start With</span><span class="required">*</span></label>
+                  <input type="text" class="form-input" id="vnStartWith" name="vnStartWith" value="HX" placeholder="Enter Vn Start With" required="required">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="responseCode"><span>Response Code</span><span class="required">*</span></label>
+                  <input type="text" class="form-input" id="responseCode" name="responseCode" value="OK" placeholder="Enter Response Code" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="description"><span>Description</span><span class="required">*</span></label>
+                  <input type="text" class="form-input" id="description" name="description" value="OK" placeholder="Enter Description" required="required">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="delayMiliSeconds"><span>Delay Milliseconds</span><span class="required">*</span></label>
+                  <input type="number" step="any" class="form-input" id="delayMiliSeconds" name="delayMiliSeconds" value="0" placeholder="Enter Delay Milliseconds" required="required">
+                </div>
+              </div>
+
+              <div class="form-row-2col">
+                <div class="form-group">
+                  <label class="form-label" for="remark"><span>Remark</span></label>
+                  <textarea class="form-textarea" id="remark" name="remark" placeholder="Enter Remark">Faiz
+
+OK
+IF
+RE</textarea>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <a href="/esim/rhb-transfer-resp" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary"><span>Save Changes</span></button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="/esim/js/app.js"></script>
+</body>

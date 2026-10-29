@@ -1,0 +1,1464 @@
+<!--
+  eSTM — Step 5 "Payment", BEFORE the submit button is clicked.
+
+  URL          https://staging.eauto.my/sit2/view/ucd/estm/transaction/... (step 5)
+  Environment  sit2
+  Captured     2026-08-17, by Faizuddin
+  Transaction  e2bbee53-05d8-413f-8064-c49c63a69b8c · vehicle HX037
+  Trimmed      NOTHING. Full <body> as pasted, forms and inline <script> intact.
+
+  Companion to estm-step5-payment.html, which is the SAME page after clicking
+  submit. Read them together — the differences are the whole point:
+
+    | | before (this file) | after |
+    |---|---|---|
+    | #to-payment | <div class="next-btn">Next</div> | same, plus disabled="true" |
+    | #sure-to-submit-payment | display:none, empty spans | rendered into a .ui-dialog |
+    | .ui-dialog in the DOM | none | one, titled "Payment" |
+
+  So disabled="true" is added BY the click handler — it is not the page's
+  initial state. A click arriving before the add-on fee AJAX settles is
+  therefore not blocked by it. Confirmed here; previously only inferred.
+
+  Add-ons both start TICKED, set in $(document).ready:
+      checkLkmAddon()                                -> #lkm-addson-checkbox
+      $("#evoc-addson-checkbox").attr("checked", true)
+      shouldSubmitLkm = true;  shouldSubmitEvoc = true;
+  Those two globals are the real submit flags; the checkboxes only drive
+  doEstmAddonEnq(). See knowledge/flow-estm.md, "Step 5 Payment".
+-->
+<body>
+
+<div id="sure-to-submit-payment" style="display:none;" title="Payment">
+    <div style="width:100%;">
+        <div>Sure to proceed with payment?</div>
+        <div id="sure-to-submit-payment-addon-container">
+            <div style="margin: 10px 0px;">You have selected the following add-on service(s) : <span id="sure-to-submit-payment-addon-selected" class="fw-500"></span></div>
+            <div id="sure-to-submit-payment-addon-pricing" style="white-space: pre-line;"></div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="sure-to-continue-later" style="display:none;" title="Exit Confirmation">
+    Sure to continue later?
+</div>
+
+<div id="sure-to-continue" style="display:none;" title="Continue Confirmation">
+    Sure to continue?
+</div>
+
+<div id="sure-to-cancel" style="display:none;" title="Cancel Confirmation">
+    Sure to cancel?
+</div>
+
+<div id="sure-to-retry" style="display:none;" title="Payment">
+    Sure to retry?
+</div>
+
+<div id="confirm-retry" style="display:none;"></div>
+
+<input type="hidden" id="runEnquiry" name="runEnquiry" value="true">
+
+<div id="block-estm" style="display:none;color:#FF4000">
+<div>
+    Our payment system is under maintenance. You can only save the transaction and resubmit on Monday. For URGENT case, kindly bring buyer to JPJ.
+    <br><br>
+    我们的支付系统正在进行维修。 您只能保存交易，并在下星期一重新提交。 若这是紧急的交易，请与买家去JPJ以进行交易
+</div>
+</div>
+
+<div id="dialog" title="Payment Processing" style="display:none">
+  <p style="color:#FF4000">Payment is in process. Please do not refresh or close the browser.</p>
+</div>
+
+<div id="container" class="ucd-container">
+
+<div id="popup-blocker-dialog" style="padding:15px 20px; display:none;" class="msgBlocker">
+<div>
+    <font color="#FF4000" size="2"><b>Please allow browser's pop up blocker before goes to next step. <br><br>See  <a href="#" id="popupHelper">here</a> for instruction.</b></font>
+</div>
+</div>
+
+<div id="estm-header">
+    <div class="title1">New eSerahan Transaction:</div>
+
+    <div class="title2" style="margin:10px 0">
+
+
+
+Selling to Individual
+
+</div>
+
+    <table>
+    <tbody><tr>
+        <td colspan="6">
+
+                <center>
+    <div style="display:flex;justify-content:center;width:100%;">
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">1</div>
+            </div>
+            <span style="line-height:14.5px;padding-top:3px;">Buyer<br>(Customer)</span>
+        </div>
+        <div>
+            <br>
+            <img src="/sit2/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">2</div>
+            </div>
+            Vehicle
+        </div>
+        <div>
+            <br>
+            <img src="/sit2/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">3</div>
+            </div>
+            <span style="line-height:14.5px;padding-top:3px;">Seller<br>(Dealer)</span>
+        </div>
+        <div>
+            <br>
+            <img src="/sit2/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">4</div>
+            </div>
+            JPJ Check
+        </div>
+        <div>
+            <br>
+            <img src="/sit2/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element-active">
+            <div class="txn-header-active">
+                <div class="txn-header-div">5</div>
+            </div>
+            Payment
+        </div>
+        <div>
+            <br>
+            <img src="/sit2/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header">
+                <div class="txn-header-div">6</div>
+            </div>
+            Transfer
+        </div>
+    </div>
+
+</center>
+
+
+        </td>
+    </tr>
+    </tbody></table>
+
+</div>
+
+
+    <div class="estm-header-title">Payment</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+    textarea {overflow:auto;resize:none;width: 100%}
+    #container table#insurance-ads {margin-top: 15px; background-color: #EFEFEF; width: 91%;}
+    #container table td.ads-content {padding: 10px 0px 10px 15px;}
+    span.title {font-weight: bold;}
+    span.warning {color: #ED5108;}
+    #container table#insurance-premium, #container table td#action {margin-top: 10px;}
+    #container table td.insurance-logo {vertical-align: middle;}
+    #container table td.insurance-logo img {width: 70px; padding-right: 15px;}
+    button#to-buy-insurance {width: 93%; color:#ffffff; font-weight: bold; background: #ED7A08 0% 0% no-repeat padding-box;
+                                border: 1px solid #ED7A08; border-radius: 4px; padding: 8px;}
+    #container table td#action {padding-top: 10px;}
+    input {
+        width: 100%;
+    }
+
+    input#to-agree {
+        width:unset;
+    }
+    .tx-details-address {
+        white-space: pre-line;
+        max-height: 61px;
+        overflow: auto;
+        padding: 3px;
+    }
+    .hide{display:none;}
+</style>
+<script>
+    $(document).ready(function() {
+        $("#to-buy-insurance").click(function() {
+            $("#to-buy-insurance").attr("disabled", "disabled");
+            var data = "transactionId=e2bbee53-05d8-413f-8064-c49c63a69b8c";
+            window.location = "/sit2/view/ucd/insurance/quote/processQuoteFromEstm.do?" + data;
+        });
+
+
+    });
+
+    function updateNewOwnerName(name) {
+        $("#newOwnerName").val(name);
+
+    }
+</script>
+<div class="tx-details">
+<table>
+<colgroup><col width="50%">
+<col width="auto">
+</colgroup><tbody><tr>
+    <td style="padding-right:20px;">
+        <table id="jpjTableLeft">
+        <colgroup><col width="220px">
+        <col width="auto">
+        </colgroup><tbody><tr>
+            <td><b>Dealer's Representative:</b></td>
+            <td><input type="text" name="ucdName" value="MUHAMMAD FAIZUDDIN BIN BIDI" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Representative MyKad No:</b></td>
+            <td><input type="text" name="ucdRefId" value="990909010122" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer:</b></td>
+            <td><input type="text" name="ucdCompanyName" value="FAIZUDDIN AUTO TEST" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Reg No:</b></td>
+            <td><input type="text" name="ucdCompanyRocNo" value="030311-A" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Address:</b></td>
+            <td><div class="notEditable tx-details-address">24, JALAN SULAM EMPAT, 19/14D, 40300 SHAH ALAM, SELANGOR</div></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Contact No:</b></td>
+            <td><input type="text" name="ucdContact" value="0189812839" class="notEditable" readonly=""></td>
+        </tr>
+        </tbody></table>
+    </td>
+    <td style="padding-left:20px;">
+        <table id="jpjTableRight">
+        <colgroup><col width="200px">
+        <col width="auto">
+        </colgroup><tbody>
+
+                <tr>
+                    <td><b>Buyer's Name:</b></td>
+                    <td><input type="text" name="name" value="Emily Rodriguez" class="notEditable" readonly=""></td>
+                </tr>
+
+                <tr>
+                    <td><b>Buyer's MyKad No:</b></td>
+                    <td><input type="text" name="refId" id="refId" value="990909010122" class="notEditable" readonly=""></td>
+                </tr>
+
+
+
+        </tbody>
+        <tbody>
+            <tr>
+                <td><b>Vehicle No:</b></td>
+                <td><input type="text" name="vehicleRegNo" id="vehicleRegNo" value="HX037" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td><b>Engine No:</b> </td>
+                <td><input type="text" maxlength="22" name="vehicleEngineNo" title="Engine No" id="vehicleEngineNo" value="*/ -1231AA" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td><b>Chassis No:</b> </td>
+                <td><input type="text" maxlength="30" name="vehicleChassisNo" title="Chassis No" id="vehicleChassisNo" value="913821AA/* --" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td><b>Buyer's Email:</b></td>
+                <td><input type="text" name="buyerEmail" id="buyerEmail" value="2tester@test.com" class="notEditable" readonly=""></td>
+            </tr>
+
+            <tr>
+                <td><b>eVOC Email:</b></td>
+                <td><input type="text" name="email" id="email" value="faizuddin@modefair.com" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><div style="color: #808080;">eVOC will be sent to this email address.</div></td>
+            </tr>
+
+
+        </tbody>
+        </table>
+    </td>
+</tr></tbody></table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+    .estm-adds-on-container {
+        padding: 30px 80px 0px 80px;
+    }
+    .fs-14{font-size:14px;}
+    .fs-16{font-size:16px;}
+    .fw-400{font-weight:400;}
+    .fw-500{font-weight:500;}
+    .fw-700{font-weight:700;}
+    .mb-5{margin-bottom:5px;}
+    .ml-24{margin-left:24px;}
+    .ml-5{margin-left:5px;}
+    .d-flex{display:flex;}
+    .f-col{flex-direction:column;}
+    .gray{color:#808080;}
+    .estm-adds-on-title {
+        background-color:#F7F9FA;
+        padding: 16px 20px;
+        border: 1px solid #CCCCCC;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+    .estm-adds-on-checkbox {
+        padding: 16px 24px;
+    }
+    .vh-center {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+    }
+    .mr-20 {margin-right: 20px;}
+    .adds-on-section {
+        flex: 1;
+        padding: 16px 24px;
+        border-left: 1px solid #CCCCCC;
+        display: flex;
+        align-items:center;
+    }
+    .space-between{justify-content: space-between;}
+    #lkm-error-msg {
+        color: #FF4000;
+        border-left:1px solid #CCCCCC;
+        padding: 12px 24px;
+        background: #FFF5F2;
+    }
+    #lkm-details-container {
+        padding: 12px 24px;
+        background: rgba(0, 142, 0, 0.08);
+        border-left:1px solid #CCCCCC;
+    }
+    .adds-on-selection {
+        overflow: hidden;
+        border:1px solid #CCCCCC;
+        border-top : none;
+    }
+    .adds-on-selection:last-child {
+        border-bottom-right-radius:8px;
+        border-bottom-left-radius:8px;
+    }
+    .hide{display:none;}
+    .v-center{
+        display:flex;
+        align-items:center;
+    }
+    .addon-disabled {
+        opacity: 0.5;
+        cursor: default;
+        pointer-events: none;
+    }
+    .addon-disabled * {
+          pointer-events: none;
+    }
+    #lkm-error-msg::before {
+      content: "";
+      display: inline-block;
+      background-image: url("../../../../images/icon-alert-red.svg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      height: 17px;
+      width: 17px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    #evoc-error-msg {
+        color: #FF4000;
+        border-left:1px solid #CCCCCC;
+        padding: 12px 24px;
+        background: #FFF5F2;
+    }
+    #evoc-error-msg::before {
+      content: "";
+      display: inline-block;
+      background-image: url("../../../../images/icon-alert-red.svg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      height: 17px;
+      width: 17px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    #evoc-price-info-section {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+</style>
+
+<script>
+    // require global variable from the main script before import
+    // shouldSubmitLkm, selectedLkmDuration, shouldSubmitEvoc
+
+    $(document).ready(function() {
+
+
+        $('#lkm-effective-date').text("17 Aug 2026");
+        $('#lkm-expiry-date').text("17 Aug 2027");
+        $('#lkm-region').text("Semenanjung");
+        $('#lkm-amount').text("RM "+ "200.00");
+
+        shouldSubmitLkm = true;
+        selectedLkmDuration = "12";
+        var calculationedLkmDuration = 12
+        if(calculationedLkmDuration == 6) {
+            selectedLkmDuration = "6";
+            $('#renewalPeriod_6').attr('checked', true);
+        }
+
+        checkLkmAddon()
+
+        showLkmDetailsContainer();
+
+
+
+
+
+
+
+
+        $("#evoc-addson-checkbox").attr("checked", true);
+        shouldSubmitEvoc = true;
+
+
+
+
+        function checkLkmAddon() {
+             $("#lkm-addson-checkbox").attr("checked", true);
+             $("#lkm-body").removeClass("addon-disabled");
+         }
+
+        function uncheckLkmAddon() {
+             $("#lkm-addson-checkbox").attr("checked", false);
+             $("#lkm-body").addClass("addon-disabled");
+         }
+
+            $("#evoc-adds-on").change(function() {
+              doEstmAddonEnq();
+          });
+
+           $("input[type=radio][name=renewalPeriod]").change(function() {
+               if ($("#lkm-addson-checkbox").is(":checked")){
+                   doEstmAddonEnq();
+               }
+          });
+
+           $("#lkm-addson-checkbox").change(function() {
+                if (this.checked) {
+                $("#lkm-body").removeClass("addon-disabled");
+            } else {
+                $("#lkm-body").addClass("addon-disabled");
+            }
+              doEstmAddonEnq();
+          });
+
+        function showLkmDetailsContainer() {
+            $("#lkm-details-container").removeClass("hide");
+        }
+
+        function hideLkmDetailsContainer() {
+            $("#lkm-details-container").addClass("hide");
+        }
+
+        function showLkmErrorMessageContainer() {
+            $("#lkm-error-msg").removeClass("hide");
+        }
+
+        function hideLkmErrorMessageContainer() {
+            $("#lkm-error-msg").addClass("hide");
+        }
+
+        function showEvocErrorMessageContainer() {
+            $("#evoc-error-msg").removeClass("hide");
+        }
+
+        function hideEvocErrorMessageContainer() {
+            $("#evoc-error-msg").addClass("hide");
+        }
+
+
+        function updateRenewalText() {
+            if ($("#lkm-addson-checkbox").is(":checked")){
+                var renewalPeriod = selectedLkmDuration;
+                if (renewalPeriod == '6' || renewalPeriod == '12') {
+                    $("#renewal-text").text(" - " + renewalPeriod + " Months");
+                } else {
+                    $("#renewal-text").text(renewalPeriod);
+                }
+            } else {
+                removeMonthInRenewalText();
+            }
+        }
+
+        function removeMonthInRenewalText() {
+            $("#renewal-text").text('');
+        }
+
+        function removeComma(str) {
+            return str.replace(",", "");
+        }
+
+        function handleNewOwnerName(json) {
+
+        }
+
+        function uncheckEvocAddon() {
+            $("#evoc-addson-checkbox").attr("checked", false);
+        }
+
+        function getInsuranceQuote() {
+            $.ajax({
+                type: "POST",
+                url: "/sit2/api/ucd/insurance/quote/process-quote.do?transactionId=e2bbee53-05d8-413f-8064-c49c63a69b8c",
+                success: function(response) {
+                    if($(".code", response).text() == "OK") {
+                        var insuranceTransactionId = $(".item", response).text();
+                        window.location = "/sit2/view/ucd/insurance/plan/view.do?transactionId=" + insuranceTransactionId + "&isFirstTime=true";
+                        return false;
+                    }
+                }
+            });
+        }
+
+        function doEstmAddonEnq() {
+
+            var data = {};
+            data.transactionId = "e2bbee53-05d8-413f-8064-c49c63a69b8c";
+            data.evocIndicator = $("#evoc-addson-checkbox").is(':checked');
+            data.lkmDuration = $("input[type='radio'][name='renewalPeriod']:checked").val();
+            data.lkmIndicator = $("#lkm-addson-checkbox").is(':checked') ? "Y" : "";
+            data.retryWithoutLkmIfErr = true;
+
+            // reset shouldSubmitLkm for each req
+            shouldSubmitLkm = false;
+            selectedLkmDuration = data.lkmDuration;
+
+            $.ajax({
+                type: "GET",
+                url: "/sit2/api/ucd/estm/transaction/addon-fee.get",
+                data: data,
+                success: function(response) {
+                    if($(".code", response).text() == "OK") {
+
+                        shouldSubmitEvoc = data.evocIndicator;
+                        shouldSubmitLkm = data.lkmIndicator == "Y";
+                        var json = JSON.parse($(".item", response).text());
+
+                        if(json.estmResponseCode == "VEL000069E") {
+                            getInsuranceQuote();
+                        }
+
+                        if(json.isFailedEstm) {
+                            var errorCodeDesc = json.errorCodeDesc;
+                                var enq = "/sit2/view/ucd/estm/transaction/estm-enq.do?id="+data.transactionId;
+                            openCustomDialogWithTitle("JPJ Enquiry Failed: "+ errorCodeDesc, "", false, enq);
+                           }
+
+                        handleNewOwnerName(json);
+
+                        $('#paymentAmount').text(json.paymentAmount);
+                        $('#fisAmount').text(json.fisAmount);
+                        $('#eautoAmount').text(json.eautoAmount);
+                        $('#lkmAmount').text(json.lkmAmount);
+                        $('#lkmEautoServiceFee').text(json.lkmEautoAmount);
+                        $('#evocEautoServiceFee').text(json.evocAmount);
+                        $('#taxAmount').text(json.serviceTax);
+                        $('#grandTotalAmount').text(json.grandTotal);
+                        $('#payment-summary-date').text(json.requestAt);
+
+                        hideLkmDetailsContainer();
+                        hideLkmErrorMessageContainer();
+                        hideEvocErrorMessageContainer();
+                        if(json.errorMsg != null) {
+
+                            if($("#lkm-addson-checkbox").is(':checked') && (!json.isFailedEvoc || json.isFailedLkm)) {
+                                $("#lkm-error-msg").text(json.errorMsg);
+                                showLkmErrorMessageContainer();
+                                removeMonthInRenewalText();
+                            }
+
+                            if($("#evoc-addson-checkbox").is(':checked') && (!json.isFailedLkm || json.isFailedEvoc)) {
+                                $("#evoc-error-msg").text(json.errorMsg);
+                                showEvocErrorMessageContainer();
+                            }
+
+                            shouldSubmitLkm = false;
+                            shouldSubmitEvoc = false;
+                            uncheckLkmAddon();
+                            uncheckEvocAddon();
+
+                        } else {
+                            $('#lkm-effective-date').text(json.effectiveDate);
+                            $('#lkm-expiry-date').text(json.expiryDate);
+                            $('#lkm-region').text(json.declarationArea);
+                            $('#lkm-amount').text("RM "+json.lkmAmount);
+
+                            if ($("#lkm-addson-checkbox").is(":checked")){
+                                showLkmDetailsContainer();
+                            }
+                            updateRenewalText();
+                        }
+
+                        if(json.hasRetryWithoutLkm) {
+                            shouldSubmitLkm = false;
+                            $('#elkm-addson').addClass("addon-disabled");
+                            uncheckLkmAddon();
+                            hideLkmDetailsContainer();
+                        }
+
+                        $("#lkmAmountExceedMaxError").hide();
+                        $("#lkmAmount").removeClass("strikethrough");
+                        if(parseFloat(removeComma(json.lkmAmount)) > 2000) {
+
+                            $("#lkmAmountExceedMaxError").show();
+                            $("#lkmAmount").addClass("strikethrough");
+                            $('#lkmEautoServiceFee').text("0.00");
+                            $('#taxAmount').text(json.eautoServiceTaxWithoutLkm);
+                            $('#grandTotalAmount').text(json.eautoGrandTotalWithoutLkm);
+                            shouldSubmitLkm = false;
+
+                        }
+
+                        $("#fisAmount, #lkmAmount, #lkmEautoServiceFee").each(function() {
+                            if($(this).text() == "NOT FOUND") {
+                                $(this).addClass("not-found");
+                            } else {
+                                $(this).removeClass("not-found");
+                            }
+                        })
+
+                        return true;
+
+                    } else {
+                        shouldSubmitEvoc = false;
+                        shouldSubmitLkm = false;
+                        uncheckLkmAddon();
+                        uncheckEvocAddon();
+
+                        if($(".item", response).text() == 'The transaction had been approved/cancelled.') {
+                            $("#transaction-approved-cancelled-dialog").text($(".item", response).text());
+                            $("#transaction-approved-cancelled-dialog").dialog({
+                                title: 'Error',
+                                modal: true,
+                                width: 480,
+                                resizable: false,
+                                draggable: false,
+                                position: "center",
+                                closeOnEscape: false,
+                                dialogClass: "noclose",
+                                buttons : {
+                                    "OK": function() {
+                                        $(this).dialog("close");
+                                        window.location = "/sit2/view/ucd/estm/enquiry/main.do?refNo=E681941379";
+                                    }
+                                },
+                                open: function() {
+                                    $('.ui-dialog-buttonpane').find('button:contains("OK")').addClass('confirm-wfw-dialog-btn');
+                                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                                }
+                            });
+                        } else if($(".item", response).text() == "JPJ CONNECTION TIMEOUT" || $(".item", response).text().indexOf("connect timed out") !== -1){
+                            openCustomDialogWithTitle("Rangkaian sistem tergendala. Jangan risau! Transaksi anda telah disimpan. Sila log keluar sekarang dan log masuk semula selepas 15 minit untuk cuba 'Resubmit' . Sekiranya masih gagal, sila tunggu setiap 15 minit dan cuba sehingga berjaya. Untuk bantuan, sila hubungi 1700 816 186.  Sebarang kesulitan amat dikesali. 系统网络故障。别担心！您的交易已保存。请暂时登出, 15分钟后再登录尝试“Resubmit”。 如果仍然无效，请再等候15分钟并再次尝试。任何查询，请致电1700 816 186。不便之处敬请谅解。", "JPJ Enquiry");
+                        } else if($(".item", response).text() == "PAYMENT_AMOUNT_REVISED"){
+                            openCustomDialogWithTitle("Payment amount revised.", "Attention", true, null);
+                        } else if($(".item", response).text() == "Payment amount revised."){
+                            openCustomDialogWithTitle("Payment amount revised.", "Attention", true, null);
+                        } else if($(".item", response).text() == "Your account doesn't have permission to proceed EVOC."){
+                            openCustomDialogWithTitle("Your account doesn't have permission to proceed EVOC.", "Attention", true, null);
+                        } else {
+
+                            var errorMsg = $(".item", response).text();
+                            var lkmPermissionErrorMsg = "Your account doesn't have permission to renew LKM.";
+                            var lkmPermissionErrorMsg2 = "Please go to JPJ Counter to get LKM rate for Langkawi/Labuan.";
+                            var lkmPermissionErrorMsg3 = "Invalid usage code for LKM transaction.";
+
+                            if(errorMsg == lkmPermissionErrorMsg || errorMsg == lkmPermissionErrorMsg2 || errorMsg == lkmPermissionErrorMsg3) {
+                                openCustomDialogWithTitle(errorMsg, "ERROR", false, "/sit2/view/ucd/home.do");
+                                return false;
+                            }
+
+                            openCustomDialogWithTitle(errorMsg, "ERROR");
+                        }
+                    }
+
+                }
+            });
+        }
+
+    });
+</script>
+
+
+
+<div id="estm-adds-on" class="estm-adds-on-container">
+    <div class="fs-14 fw-400 mb-5">
+        Make sure the preferred add-on(s) have been added before you proceed by ticking the checkbox(es).
+    </div>
+    <div class="d-flex f-col">
+        <div class="estm-adds-on-title">
+            <span class="fw-700 fs-14">Add-on Services</span> <span class="fs-14 fw-400 gray">(Optional)</span>
+        </div>
+
+
+        <div id="elkm-addson" class="d-flex adds-on-selection  ">
+            <div class="estm-adds-on-checkbox vh-center">
+                <input type="checkbox" id="lkm-addson-checkbox" name="lkm-addson-checkbox" value="false">
+            </div>
+            <div class="d-flex f-col" style="width:100%">
+                <div class="d-flex ">
+                    <div class="adds-on-section">
+                        <div class="mr-20">
+                            <img src="/sit2/images/icon_elkm.svg">
+                        </div>
+                        <div>
+                            <div class="fs-16 fw-700">eLKM (Road Tax) Renewal</div>
+                            <div class="fs-14 fw-400" style="color: #696969;">
+                                Make sure your vehicle has active insurance before renewing the road tax.
+                                Digital road tax will be reflected in the vehicle owner MyJPJ App.
+                            </div>
+                        </div>
+                    </div>
+                    <div id="lkm-body" class="adds-on-section space-between">
+                        <div>
+                            <div class="fs-14 fw-400 mb-5">Please select LKM renewal period</div>
+
+                                <div>
+                                    <input type="radio" id="renewalPeriod_6" name="renewalPeriod" value="6" class="hide">
+                                    <label for="renewalPeriod_6" id="renewalPeriod_6_label" class="custom-radio mr-20 fs-14 fw-500">6 Months</label>
+
+                                    <input type="radio" id="renewalPeriod_12" name="renewalPeriod" value="12" class="hide" checked="">
+                                    <label for="renewalPeriod_12" id="renewalPeriod_12_label" class="custom-radio fs-14 fw-500">12 Months</label>
+                                </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="lkm-error-msg" class="fw-500 hide"></div>
+
+                <div id="lkm-details-container" class="">
+                    <div class="d-flex v-center">
+                        <img src="/sit2/images/icon-success-green.svg">
+                        <div class="ml-5 fw-700 fs-14"> LKM Details: </div>
+                        <div class="ml-24 fw-400"> LKM Effective Date : <span id="lkm-effective-date" class="fw-500">17 Aug 2026</span> </div>
+                        <div class="ml-24 fw-400"> LKM Expiry Date : <span id="lkm-expiry-date" class="fw-500">17 Aug 2027</span></div>
+                        <div class="ml-24 fw-400"> Declaration Area : <span id="lkm-region" class="fw-500">Semenanjung</span></div>
+                        <div class="ml-24 fw-400"> Amount : <span id="lkm-amount" class="fw-500">RM 200.00</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="evoc-adds-on" class="d-flex adds-on-selection">
+            <div class="estm-adds-on-checkbox vh-center">
+                <input type="checkbox" id="evoc-addson-checkbox" name="evoc-addson-checkbox" value="false">
+            </div>
+               <div class="d-flex f-col" style="width:100%">
+                   <div class="d-flex">
+                    <div class="adds-on-section">
+                        <div class="mr-20">
+                            <img src="/sit2/images/icon_evoc.svg">
+                        </div>
+                        <div>
+                            <div class="fs-16 fw-700">eVOC (Vehicle Ownership Certificate)</div>
+                            <div class="fs-14 fw-400" style="color: #696969;">
+                               VOC in PDF format will be sent to the agreed email address.
+                            </div>
+                        </div>
+                       </div>
+                       <div id="evoc-price-info-section" class="adds-on-section">
+                           <div>eAuto Processing Fee : <span class="fw-500">RM 10.00</span></div>
+                           <div class="gray">eAuto processing fee is subject to service tax.</div>
+                       </div>
+                   </div>
+                   <div id="evoc-error-msg" class="fw-500 hide"></div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+<div id="payment-method">
+    <div class="center-align payment-summary-banner">
+        <div class="w-720">
+            <span class="fs-14 fw-700">Payment Summary</span>
+            <i>
+                <span style="color:#0000FF; font-size:14px; font-weight: 400;">
+                    (Current amount payable as at <span id="payment-summary-date">17 Aug 2026 03:00 pm</span>)
+                </span>
+            </i>
+        </div>
+    </div>
+    <div>
+
+
+
+            <div class="center-align">
+                <div class="w-720">
+                    <div class="payment-summary-row payment-summary-row--first">
+                        <div><span class="fs-14 fw-700">Description</span></div>
+                        <div><span class="fs-14 fw-700">RM</span></div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>JPJ Fee :</div>
+                        <div id="paymentAmount" style="text-align:right">100.00</div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>eHakMilik Fee (FIS) :</div>
+                        <div id="fisAmount" style="text-align:right">50.00</div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>eSerahan Fee :</div>
+                        <div id="eautoAmount" style="text-align:right">35.00</div>
+                    </div>
+
+                    <div class="payment-summary-row">
+                        <div>
+                            <div>
+                                eLKM (Road Tax<span id="renewal-text"> - 12 Months</span>) :
+                            </div>
+                            <div id="lkmAmountExceedMaxError" class="hide">Maximum LKM Amount RM2,000.00 per transaction, unable to proceed.</div>
+                        </div>
+                        <div id="lkmAmount" style="text-align:right">200.00</div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>eAuto Processing Fee - eLKM :</div>
+                        <div id="lkmEautoServiceFee" style="text-align:right">2.75</div>
+                    </div>
+
+
+                    <div class="payment-summary-row">
+                        <div>eAuto Processing Fee - eVOC :</div>
+                        <div id="evocEautoServiceFee" style="text-align:right; font-weight:700;">10.00</div>
+                    </div>
+
+                    <div class="payment-summary-row">
+                        <div>Service Tax 8% :</div>
+                        <div style="text-align:right" id="taxAmount">3.82</div>
+                    </div>
+                    <div class="payment-summary-row grandtotal">
+                        <div><span class="fs-14 fw-700">Total Amount Payable (inclusive of Service Tax 8%) :</span></div>
+                        <div style="text-align:right"><span id="grandTotalAmount" class="totalPayableAmount label fs-14 fw-700">401.57</span></div>
+                    </div>
+                </div>
+            </div>
+
+
+        <br>
+        <!--
+
+        -->
+
+
+
+                <!--<div style="font-size: 18px; color:#FF4000; width:1200px; margin-left: auto; margin-right: auto;">
+                    Your RHB Auto Debit has been activated. Click NEXT to pay.
+                </div>
+                --><br>
+                <div style="display: none">
+                    <label><input type="radio" name="paymentMethod" value="RHB" checked="">
+                    RHB Direct Debit (DD)</label>
+                </div>
+
+
+
+        <!--
+
+        -->
+        <div class="button-bar">
+            <div id="to-continue" class="save-btn">Save &amp; Continue Later</div>
+            <div id="to-payment" class="next-btn">Next</div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+</div>
+ <div id="confirm-reset-dialog" style="display:none;color:#FF4000">
+ <div>
+    <img src="/sit2/images/info-big.png"><br>
+    NOTIFICATION: If you reset to make payment again, you must make sure that earlier payment has been unsuccessful.
+    If you are not sure, please check with your bank or call us at 1700-81-6186 to check. However, if you still wish to proceed,
+    any previous instruction of payment by you (if it happens to be already processed in the banking system) would continue
+    and we will NOT be able to stop the Bank's action. <br> <br>
+
+     Henceforth, we must apologise that earlier payments relating to this transaction cannot and would not be reversed or refunded
+     and you shall not hold us responsible for such reversal and/or refund. <br>
+
+    <br><br>
+    <form id="checkboxForm" style="color:black">
+        <input type="checkbox" class="terms" value="1">I hereby agree to the above and request you to reset for me to make payment.
+    </form>
+ </div>
+ </div>
+
+<div id="fis-amount-different-dialog" style="display:none;">
+    <div style="width:100%;">
+
+
+
+
+<style>
+    #pu-buyer-info {
+        width: 300px;
+        margin-right: 15px;
+        padding-right: 15px;
+        border-right: 1px solid #CCC;
+    }
+    .dimGray { color: #696969; }
+    .pu-buyer-item {
+        padding: 16px 0px;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    .border-top-btm {
+        border-top: 1px solid #CCC;
+        border-bottom: 1px solid #CCC;
+    }
+</style>
+
+<div id="payment-popup-container" class="flex justify-content-center">
+    <div id="pu-buyer-info" class="hide">
+        <div class="fw-700 fs-16">Buyer Info</div>
+
+        <div class="pu-buyer-item">
+            <div class="dimGray">Buyer's Company Name keyed-in by UCD: </div>
+            <div id="pu-tx-buyer-name"></div>
+        </div>
+
+        <div class="pu-buyer-item border-top-btm">
+            <div class="dimGray">Response from mySIKAP: </div>
+            <div id="pu-jpj-buyer-name"></div>
+        </div>
+
+        <div class="pu-buyer-item">
+            <div class="dimGray">Name will appear on eVOC: </div>
+            <div id="pu-final-buyer-name"></div>
+        </div>
+    </div>
+
+    <div>
+        <div class="center-align">
+            <div class="w-720">
+                <span class="fs-16 fw-700">Payment Summary</span>
+                <i>
+                    <span style="color:#0000FF; font-size:14px; font-weight: 400;">
+                        (Current amount payable as at <span id="pu-payment-summary-date"></span>)
+                    </span>
+                </i>
+            </div>
+        </div>
+        <div class="center-align">
+            <div class="w-720">
+                <div class="payment-summary-row payment-summary-row--first">
+                    <div><span class="fs-14 fw-700">Description</span></div>
+                    <div><span class="fs-14 fw-700">RM</span></div>
+                </div>
+                <div class="payment-summary-row">
+                    <div>JPJ Fee :</div>
+                    <div id="pu-paymentAmount" style="text-align:right"></div>
+                </div>
+                <div class="payment-summary-row">
+                    <div>eHakMilik Fee (FIS) :</div>
+                    <div id="pu-fisAmount" style="text-align:right"></div>
+                </div>
+                <div class="payment-summary-row">
+                    <div id="pu-eautoAmount-desc"></div>
+                    <div id="pu-eautoAmount" style="text-align:right"></div>
+                </div>
+                <div id="pu-lkm-section" class="hide">
+                    <div class="payment-summary-row">
+                        <div>eLKM (Road Tax<span id="pu-renewal-text"></span>) :</div>
+                        <div id="pu-lkmAmount" style="text-align:right">0.00</div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>eAuto Processing Fee - eLKM :</div>
+                        <div id="pu-lkmEautoServiceFee" style="text-align:right">0.00</div>
+                    </div>
+                </div>
+                <div id="pu-evoc-section" class="hide">
+                    <div class="payment-summary-row">
+                        <div>eAuto Processing Fee - eVOC :</div>
+                        <div id="pu-evocEautoServiceFee" style="text-align:right; font-weight: 700;">0.00</div>
+                    </div>
+                </div>
+                <div class="payment-summary-row">
+                    <div>Service Tax <span class="pu-sst-rate"></span>% :</div>
+                    <div style="text-align:right" id="pu-taxAmount"></div>
+                </div>
+                <div class="payment-summary-row grandtotal">
+                    <div><span class="fs-14 fw-700">Total Amount Payable (inclusive of Service Tax <span class="pu-sst-rate"></span>%) :</span></div>
+                    <div style="text-align:right"><span id="pu-grandTotalAmount" class="totalPayableAmount label fs-14 fw-700">&gt;</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+<div id="transaction-approved-cancelled-dialog" style="display:none;">
+</div>
+
+<div id="buyername-info-dialog" style="display:none;">
+    <div style="width:100%;">
+
+
+
+
+<div id="buyername-popup-container">
+    <div class="center-align">
+        <div class="buyername-details w-720">
+            <div class="buyername-block">
+                <div class="buyername-title-row">Buyer's Company Name keyed-in by UCD:</div>
+                <div class="buyername-detail-row" id="buyerName"></div>
+            </div>
+            <div class="buyername-block">
+                <div class="buyername-title-row">Response from mySIKAP:</div>
+                <div class="buyername-detail-row" id="newOwnerName">COMPANY FAIZUDDIN</div>
+            </div>
+            <div class="finalbuyername-block">
+                <div class="buyername-title-row">Name will appear on eVOC:</div>
+                <div class="buyername-detail-row" id="finalBuyerName">COMPANY FAIZUDDIN</div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/sit2/view/ucd/home/screen.css">
+<script>
+$(document).ready(function() {
+    $("#common-bar .page-title").text($("head title").text());
+    $("#header a.logout").click(function() {
+            $("#logout-confirmation").dialog({
+                modal: true,
+                width: "300",
+                minHeight: "150",
+                resizable: false,
+                draggable: false,
+                position: "center",
+                closeOnEscape: false,
+                close: function() {
+                    $(this).dialog("destroy");
+                },
+                buttons:
+                {
+                    "No": function() {
+                        $(this).dialog("close");
+                        $(this).dialog("destroy");
+                    },
+                    "Yes": function() {
+                        window.location.href = "/sit2/user/logout.do";
+                    }
+                },
+                open: function() {
+                    $('.ui-dialog-buttonpane').find('button:contains("No")').addClass('cancel-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button:contains("Yes")').addClass('confirm-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                }
+        }).dialog("open");
+        return false;
+    });
+
+    LoginSessionTimer.startCountdown();
+
+    $("#deposit-info").click(function() {
+        window.location.href = "/sit2/view/ucd/deposit/generate.do?companyAccountId=" + 1109700;
+        return false;
+    });
+
+    $("#payment-history").click(function() {
+        window.location.href = "/sit2/view/ucd/topup-pob/payment-history.do?companyId=" + 1109700;
+        return false;
+    });
+
+    $(":button, :submit").mouseenter(function() {
+        $(this).css({'cursor': 'pointer'});
+    }).mouseleave(function() {
+        $(this).css({'cursor': 'default'});
+    });
+
+    $("#settings-link").click(function() {
+
+
+            window.location="/sit2/view/ucd/settings/view.do";
+
+
+    });
+
+    $("#reports-link").click(function() {
+
+            window.location="/sit2/view/ucd/report/view.do";
+
+    });
+
+    $("#insurance-link").click(function() {
+        window.location="/sit2/view/ucd/insurance";
+    });
+
+    $("#econtract").live("click", function() {
+        var conf = "width=800,height=450,scrollbars=yes,location=no,menubar=no,status=no,toolbar=no,directories=no";
+        popup_window = window.open("/sit2/view/ucd/insurance/enquiry/generate-econtract-page.do","",conf);
+
+    });
+});
+
+function openAccessDeniedDialog() {
+    $("#access-denied").dialog({
+        modal: true,
+        width: "300",
+        minHeight: "150",
+        resizable: false,
+        draggable: false,
+        position: "center",
+        closeOnEscape: false,
+        close: function() {
+            $(this).dialog("destroy");
+        },
+        buttons:
+        {
+            "Ok": function() {
+                $(this).dialog("close");
+                $(this).dialog("destroy");
+            }
+        },
+        open: function() {
+            $('.ui-dialog-buttonpane').find('button:contains("Ok")').addClass('confirm-dialog-btn');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+        }
+    }).dialog("open");
+}
+</script>
+
+<!--[if lte IE 8]>
+<style>
+.tab-button1{ padding-left: 10px; padding-right: 10px; margin-left: 5px;}
+#home-bar{margin: 20px 0px 0 0 !important}
+</style>
+<!--<![endif]-->
+
+<style>
+a#deposit-log {text-decoration:underline !important; color:#FF4000!important;}
+.new {
+    position: absolute;
+    top: 10px;
+    color: #FF4000;
+    font-weight:bold;
+    font-size:16px;
+    margin-left:30px;
+}
+
+.terms {padding: 3px; width: 10px;}
+</style>
+<div id="header">
+
+    <div id="home-bar">
+    <button class="tab-button1" onclick="window.location='/sit2/view/ucd/home'" id="home-link">HOME</button>
+
+    <button class="tab-button1" onclick="" id="insurance-link">INSURANCE</button>
+
+    <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+    <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+    <button class="tab-button1" onclick="window.location='/sit2/view/ucd/user-guide'" id="user-guide-link">USER GUIDE</button>
+
+
+    <button class="tab-button1" onclick="window.location='/sit2/view/ucd/download'" id="download-link">DOWNLOAD</button>
+    <button class="tab-button1" onclick="window.location='/sit2/view/ucd/contact'" id="contact-link">CONTACT US</button>
+
+
+    </div>
+
+    <table id="common-bar">
+    <tbody><tr>
+    <td class="page-title" nowrap="">Online Services - eSerahan Service</td>
+    <!--td class="scroll-message"><marquee behavior="scroll" direction="left" scrollamount="3"  width="70%"><div id="scroll-message" name="scroll-message">You have 7 of APT transactions pending for Payment. Please make payment to complete APT process. Thank you.</div></marquee></td-->
+    <td>
+    <ol class="inline">
+
+        <li>
+            <img src="/sit2/images/icon_user.gif" style="position:relative; top:4px">
+            <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI  </span>
+        </li>
+        <li>
+            &nbsp;|&nbsp;
+        </li>
+        <li><a href="#" class="logout" style="position:relative; top:-1px">Logout</a></li>
+    </ol>
+    </td>
+    </tr>
+    </tbody></table>
+
+
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:42</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/sit2/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo">
+    <img src="/sit2/images/eAuto_TM_logo.svg">
+</div>
+<div id="allow-insurance-dialog" style="display:none;color:#FF4000">
+    <div>
+        <form id="checkboxForm" style="color:black">
+            <div class="flex flex-row">
+                <input type="checkbox" class="terms" value="1" style="padding: 3px; width: 10px;">
+                <span>By clicking this checkbox and the "I Accept" button below, you agree to participate in our Insurance Programme.</span>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="dialog-insurance-not-add-as-user" style="display: none">
+Anda belum dibenarkan menggunakan Insurance. Sila rujuk User Guide (<a href="/sit2/view/ucd/user-guide/Add_New_Insurance1.pdf" target="_new"><b>sini</b></a>) untuk mengetahui cara <b>Main user/Director</b> menambah
+<br>pengguna Insurance. <br>Support Hotline: 1700-816-186.
+<br><br>
+您还未被授权使用 Insurance 。请参阅用户指南 (<a href="/sit2/view/ucd/user-guide/Add_New_Insurance1.pdf" target="_new"><b>此处</b></a>) 以了解 <b>主要用户</b> 如何增加 Insurance 用户。 <br>Support Hotline: 1700-816-186 。
+</div>
+<div id="dialog-insurance-access-denied" style="display:none;color:#FF4000">
+    <form id="checkboxForm" style="color:black"><br>
+            This user named MUHAMMAD FAIZUDDIN BIN BIDI will be chosen to participate in Insurance<br>
+            17/08/2026 <br>
+        <br>
+        <input type="checkbox" class="terms" value="1" style="padding: 3px; width: 10px;">By clicking this checkbox and the "I Accept" button below, you agree to participate in our Insurance Programme.
+    </form>
+</div>
+
+<div id="logout-confirmation" style="display:none;" title="Logout Confirmation">
+    Sure to logout?
+</div>
+
+<div id="access-denied" style="display:none;">
+    Sorry, access denied.
+</div>
+
+
+
+
+
+<style>
+    .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 60px;
+        border-top: 1px solid #CCCCCC;
+    }
+
+    .footer .footer-container {
+        height: 60px;
+    }
+
+    .footer .footer-container .footer-row {
+        height: 20px;
+    }
+
+    .ucd-container, .aatf-container {
+        min-height: calc(100vh - 221px);
+    }
+    @media screen and (max-width: 693px) {
+      .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 90px;
+        border-top: 1px solid #CCCCCC;
+      }
+
+      .ucd-container, .aatf-container {
+        min-height: calc(100vh - 251px);
+      }
+
+      .footer .footer-container {
+        height: 90px;
+      }
+
+      .footer .footer-container .footer-row {
+        height: auto;
+      }
+    }
+
+
+    @media screen and (max-width: 500px) {
+      .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 131px;
+        border-top: 1px solid #CCCCCC;
+      }
+
+      .ucd-container, .aatf-container {
+        min-height: calc(100vh - 292px);
+      }
+
+      .footer .footer-container {
+        height: 131px;
+      }
+
+      .footer .footer-container .footer-row {
+        height: auto;
+      }
+    }
+
+    .footer a {
+        color:#0B4C5F!important;
+        font-weight:500;
+    }
+    .footer .separator {
+        color:#CCC;
+    }
+    #footer table tr td{font-size:11px!important;}
+</style>
+
+<!-- <script>
+    $(document).ready(function() {
+        setInterval(function() {
+            if($(".ui-dialog").length > 0) {
+                $("body").css("overflow","hidden");
+            } else {
+                $("body").css("overflow","auto");
+            }
+        }, 1000);
+    })
+</script> -->
+
+
+<div class="footer">
+    <div class="footer-container" style="display:flex;align-items:flex-end;width:63%;justify-content:space-between;">
+        <div style="display:flex;flex-direction:column;">
+            <div class="footer-row" style="display:flex;">
+                <a href="#" style="padding-right:10px;" onclick="window.open('/sit2/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding:0 10px" ;="" onclick="window.open('/sit2/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding-left:10px" ;="" onclick="window.open('/sit2/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </div>
+            <div class="footer-row" style="color:#808080;">Best Compatible With Mozilla Firefox V36.0.4</div>
+            <div class="footer-row" style="color:#808080;">Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+        </div>
+    </div>
+
+    <div style="text-align:right;">
+        <img src="/sit2/images/eAuto_TM_logo.svg" width="126" height="52">
+    </div>
+
+
+</div>
+
+
+
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div></body>

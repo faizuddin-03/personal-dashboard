@@ -1,0 +1,20 @@
+{
+  "name": "eauto-preapp",
+  "version": "1.0.0",
+  "description": "Create Pre-Application — a quick UCD onboarding Pre-Application (Sdn Bhd) with a Success or Failed payment, to check the listing. Pages copied from scripts/eauto-12153.",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "check": "tsc -p tsconfig.json",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.0",
+    "pdf-parse": "^1.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pdf-parse": "^1.1.5",
+    "typescript": "^5.3.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "eauto-payment-channels",
+  "version": "1.0.0",
+  "description": "EAINT-12153 — UCD onboarding payment channels (Pre-application/Application) automation, TS3-TS8. Skeleton only — page-object methods are stubbed pending real HTML captures.",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}

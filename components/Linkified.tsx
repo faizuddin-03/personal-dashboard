@@ -1,6 +1,6 @@
 import React from "react";
 
-const URL_RE = /https?:\/\/[^\s]+/g;
+const URL_RE = /https?:\/\/[^\s<>]+[^\s<>.,;:!?)\]'"]/g;
 
 /**
  * Renders text with URLs turned into clickable blue links.

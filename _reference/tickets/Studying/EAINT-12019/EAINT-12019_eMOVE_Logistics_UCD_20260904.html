@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eAuto MOVE (eMOVE) — Prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#FF4000;--orange-dark:#E72C19;--teal:#0B4C5F;--teal-2:#146478;
+    --ink:#222222;--muted:#696969;--grey:#808080;--line:#CCCCCC;--bg:#EDF0F3;--smoke:#F7F9FA;
+    --green:#008E00;--red:#E72C19;--blue:#1668a8;--amber:#e08a00;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter','Segoe UI',Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+  .app{max-width:1160px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 25px rgba(0,0,0,.08)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 26px;background:#fff}
+  .logo{font-weight:800;font-size:27px;letter-spacing:-1px;color:var(--teal);position:relative;font-style:italic}
+  .logo span.a{color:var(--orange)}
+  .logo small{color:var(--orange);font-size:13px;font-weight:800;font-style:italic}
+  .logo sup{font-size:9px;font-weight:700;font-style:normal;vertical-align:super}
+  .nav{display:flex;gap:2px}
+  .nav a{background:var(--orange);color:#fff;padding:12px 17px;font-size:12px;font-weight:700;text-decoration:none;letter-spacing:.3px;cursor:pointer}
+  .nav a:hover{background:var(--orange-dark)}
+  .subbar{background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:11px 26px;font-size:13px}
+  .subbar .who .name{font-weight:600}
+  .subbar #subLeft{font-weight:600}
+  .subbar a{color:#fff;text-decoration:underline;cursor:pointer}
+  .subbar .right{display:flex;align-items:center;gap:16px}
+  .company{padding:14px 26px 0;color:var(--teal);font-weight:700;font-size:13px}
+  .crumb{padding:14px 26px 0;color:var(--muted);font-size:13px}
+  .crumb a{color:var(--blue);text-decoration:none;cursor:pointer}
+  .content{padding:22px 26px 40px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 18px;margin-top:8px}
+  .card{text-align:center;cursor:pointer;padding:6px 4px;border-radius:8px;transition:.15s}
+  .card:hover{background:#fafbfc;transform:translateY(-2px)}
+  .card .price{color:var(--orange);font-weight:700;font-size:13px;margin-bottom:6px;height:16px}
+  .card .ico{font-size:30px;color:var(--teal);margin-bottom:10px;position:relative;display:inline-block;width:100%}
+  .card.new .ico{color:var(--orange)}
+  .card .ico .mini{position:absolute;font-size:13px;left:50%;margin-left:2px;bottom:-2px;color:var(--orange)}
+  .card .ico .mini.green{color:var(--green)}
+  .badge-buy,.badge-sell{position:absolute;top:-8px;left:50%;transform:translateX(-2px);background:var(--orange);color:#fff;font-size:8px;font-weight:800;padding:1px 4px;border-radius:3px;letter-spacing:.3px}
+  .btnline{border:1px solid var(--line);border-radius:6px;padding:9px;font-weight:700;color:var(--teal);font-size:13px;background:#fff}
+  .card:hover .btnline{border-color:var(--orange);color:var(--orange)}
+  .card .desc{color:var(--muted);font-size:11px;margin-top:7px;line-height:1.35}
+  .card .price.green{color:var(--green)}
+  .flag{display:inline-block;background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;margin-bottom:6px}
+  .flag.green{background:var(--green)}
+  .badgeNew{position:relative}
+  .badgeNew::after{content:"NEW!";position:absolute;top:-6px;right:14px;color:var(--orange);font-size:10px;font-weight:800}
+  .home-layout{display:grid;grid-template-columns:1fr 320px;gap:0}
+  .home-main{padding-right:28px}
+  .home-side{border-left:1px solid var(--line);padding-left:28px}
+  .pricenote{text-align:right;color:var(--grey);font-size:11.5px;margin-top:18px;line-height:1.5}
+  .side-h{color:var(--teal);font-weight:800;font-size:15px;margin:0 0 12px}
+  .side-h:not(:first-child){margin-top:26px}
+  .whatsnew{border-radius:6px;overflow:hidden;display:flex;background:#FCEEE9;min-height:120px}
+  .wn-text{padding:16px;flex:1}
+  .wn-logo{font-weight:800;font-style:italic;color:var(--teal);font-size:15px}
+  .wn-logo span{color:var(--orange)}
+  .wn-logo small{color:var(--orange);font-size:9px}
+  .wn-title{color:var(--teal);font-weight:800;font-size:14px;margin-top:10px;line-height:1.3}
+  .wn-media{flex:1;background:linear-gradient(135deg,#FF5A1F,#E72C19);position:relative;min-width:120px}
+  .wn-media .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.85);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .help .row{display:flex;gap:10px;margin-bottom:12px;font-size:12.5px;align-items:flex-start;line-height:1.5}
+  .help .row i{color:var(--orange);width:16px;margin-top:2px}
+  .uselinks{display:flex;flex-wrap:wrap;gap:10px}
+  .ul{color:#fff;font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:4px;cursor:pointer}
+  @media(max-width:900px){.home-layout{grid-template-columns:1fr}.home-side{border-left:none;padding-left:0;margin-top:24px}.home-main{padding-right:0}.grid{grid-template-columns:repeat(2,1fr)}.nav{display:none}}
+  .page-title{display:flex;align-items:center;gap:10px;justify-content:center;font-size:20px;font-weight:800;color:var(--ink);margin:14px 0 22px}
+  .page-title .i{color:var(--orange)}
+  .chooser{max-width:760px;margin:0 auto;border:1px solid var(--line);border-radius:6px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+  .chooser .cell{padding:40px 20px;text-align:center;border-right:1px solid var(--line);cursor:pointer;transition:.15s}
+  .chooser .cell:last-child{border-right:none}
+  .chooser .cell:hover{background:#fafbfc}
+  .chooser .cell .ico{font-size:34px;color:var(--orange);margin-bottom:18px}
+  .chooser .cell .btnline{max-width:320px;margin:0 auto}
+  .chooser .cell .sub{color:var(--muted);font-size:12px;margin-top:12px}
+  .layout2{display:grid;grid-template-columns:1fr 300px;gap:30px}
+  @media(max-width:900px){.layout2{grid-template-columns:1fr}}
+  /* Buttons */
+  .btn{border:none;border-radius:5px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer}
+  .btn-primary{background:var(--teal);color:#fff}.btn-primary:hover{background:var(--teal-2)}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+  .btn-orange{background:var(--orange);color:#fff}.btn-orange:hover{background:var(--orange-dark)}
+  /* Filter panel (Figma) */
+  .fpanel{border:1px solid var(--line);border-radius:4px;margin-bottom:20px;overflow:hidden}
+  .fpanel-head{background:#E4EBEE;padding:11px 16px;font-weight:800;color:var(--teal);font-size:14px}
+  .fpanel-body{padding:18px 16px}
+  .frow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;margin-bottom:14px}
+  .frow:last-child{margin-bottom:0}
+  .fitem{display:flex;align-items:center;gap:8px}
+  .fitem label{font-size:12.5px;color:var(--ink);white-space:nowrap}
+  .fitem input,.fitem select{flex:1;min-width:0;padding:7px 9px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;color:var(--ink);background:#fff}
+  .fitem .dual{display:flex;gap:8px;flex:1}
+  .fitem .dual input{flex:1}
+  .factions{display:flex;justify-content:flex-end;gap:10px}
+  /* Listing title + table */
+  .sec-title{font-weight:800;font-size:18px;margin:6px 0 14px}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px}
+  table.data{border-collapse:collapse;width:100%;font-size:12.5px;min-width:900px}
+  table.data th{background:#F0F3F5;color:var(--teal);text-align:center;padding:11px 10px;font-weight:800;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.data td{padding:12px 10px;border-bottom:1px solid #ECEFF1;vertical-align:middle;text-align:center}
+  table.data td.l{text-align:left}
+  table.data tr:hover td{background:#fafbfc}
+  .st{font-weight:800}
+  .st.green{color:var(--green)}.st.red{color:var(--red)}.st.blue{color:var(--blue)}.st.amber{color:var(--amber)}.st.grey{color:var(--grey)}
+  .link{color:var(--blue);text-decoration:none;cursor:pointer;font-weight:600}
+  .link:hover{text-decoration:underline}
+  /* Wizard circular stepper */
+  .wsteps{display:flex;align-items:flex-start;justify-content:center;margin:8px auto 26px;flex-wrap:wrap}
+  .wstep{display:flex;flex-direction:column;align-items:center;width:130px}
+  .wstep .circle{width:46px;height:46px;border-radius:50%;background:#BEBEBE;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px}
+  .wstep .wlbl{font-size:12px;color:var(--ink);margin-top:8px;text-align:center;font-weight:600;line-height:1.3}
+  .wstep.done .circle{background:var(--teal)}
+  .wstep.active .circle{background:var(--orange)}
+  .wstep.active .wlbl{color:var(--orange);font-weight:800}
+  .wconn{color:#BEBEBE;font-size:18px;margin-top:12px;padding:0 4px}
+  .wtitle{text-align:center;color:var(--teal);font-weight:800;font-size:20px;margin-bottom:20px}
+  .formcard{border:1px solid var(--line);border-radius:8px;padding:20px 22px;margin-bottom:16px}
+  .formcard h3{font-size:14px;color:var(--teal);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .formcard h3 i{color:var(--orange)}
+  .formcard .hint{color:var(--muted);font-size:11.5px;margin-bottom:14px}
+  .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 16px}
+  .form-grid .full{grid-column:1/-1}
+  @media(max-width:700px){.form-grid{grid-template-columns:1fr}}
+  .fld label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;font-weight:600}
+  .fld input,.fld select{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:5px;font-size:12.5px;color:var(--ink);background:#fff}
+  .fld input[readonly]{background:#F4F6F7;color:var(--muted)}
+  .req{color:var(--red)}
+  .inp-err{border-color:var(--red)!important;background:#FFF6F5}
+  .field-err{color:var(--red);font-size:11px;margin-top:4px;font-weight:600}
+  .demo-plates{border:1px dashed #bcd3cf;background:#F4FAF9;border-radius:8px;padding:12px 14px;margin:14px 0 4px;font-size:12px}
+  .demo-plates .dp-h{font-weight:800;color:var(--teal);margin-bottom:8px;font-size:12px}
+  .demo-plates table{border-collapse:collapse;width:100%;max-width:620px}
+  .demo-plates th{text-align:left;font-size:11px;color:var(--muted);font-weight:700;padding:3px 10px 5px 0;border-bottom:1px solid #d9e6e4}
+  .demo-plates td{padding:5px 10px 5px 0;border-bottom:1px solid #eaf1f0;vertical-align:top}
+  .demo-plates tr:last-child td{border-bottom:none}
+  .dp-plate{font-weight:800;color:var(--ink);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+  .dp-plate:hover{color:var(--orange)}
+  .dp-yes{color:var(--green);font-weight:700}
+  .dp-no{color:var(--muted);font-weight:700}
+  .veh-search{display:flex;gap:10px;align-items:flex-end;max-width:520px}
+  .veh-search .fld{flex:1}
+  .svc-choice{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .svc-opt{border:2px solid var(--line);border-radius:8px;padding:16px;cursor:pointer;transition:.15s;display:flex;gap:12px;align-items:flex-start}
+  .svc-opt:hover{border-color:#f3b39c}
+  .svc-opt.sel{border-color:var(--orange);background:#FFF3EF}
+  .svc-opt .ico{font-size:22px;color:var(--orange)}
+  .svc-opt .t{font-weight:700;font-size:13.5px}
+  .svc-opt .d{color:var(--muted);font-size:11.5px;margin-top:3px;line-height:1.4}
+  @media(max-width:800px){.svc-choice{grid-template-columns:1fr}}
+  .wizard-actions{display:flex;justify-content:space-between;margin-top:10px}
+  .wizard-actions.center{justify-content:center;gap:14px}
+  /* Step 2 grey summary card (Figma) */
+  .sum-card{background:var(--smoke);border:1px solid var(--line);border-radius:8px;padding:24px 26px;margin-bottom:16px}
+  .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px}
+  @media(max-width:800px){.sum-grid{grid-template-columns:1fr}}
+  .sum-row{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:end;padding:10px 0}
+  .sum-row .k{font-weight:700;font-size:13px;color:var(--ink)}
+  .sum-row .v{font-size:13px;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:5px;min-height:22px}
+  .sum-sub{display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;margin-top:14px;padding-top:16px;border-top:1px solid var(--line)}
+  .sum-sub .row{display:grid;grid-template-columns:170px 1fr;gap:10px;padding:5px 0;font-size:13px}
+  .sum-sub .row .k{font-weight:700}
+  .sum-sub .row .v.ok{color:var(--green);font-weight:800}
+  /* Payment summary block */
+  .pay-card{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:16px}
+  .pay-strip{background:#FFF3EF;display:flex;justify-content:space-between;align-items:center;padding:14px 22px;flex-wrap:wrap;gap:8px}
+  .pay-strip .l{color:var(--orange);font-weight:800;font-size:15px}
+  .pay-strip .r{color:var(--orange);font-weight:800;font-size:13px}
+  .pay-body{padding:20px 22px 24px}
+  .pay-body h3{font-size:15px;font-weight:800;margin-bottom:14px}
+  table.paytbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.paytbl td{padding:9px 4px}
+  table.paytbl td.cur{text-align:right;color:var(--muted);width:60px;padding-right:16px}
+  table.paytbl td.amt{text-align:right;width:130px;font-variant-numeric:tabular-nums}
+  table.paytbl tr.tot td{border-top:2px solid var(--ink);font-weight:800;padding-top:12px}
+  .subline td{color:var(--muted);font-size:11.5px;padding-top:0!important;padding-bottom:12px!important}
+  .demo-tag{background:#FFF3EF;border:1px dashed var(--orange);color:#b34e28;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700}
+  /* Step 3 result */
+  .center-card{max-width:600px;margin:10px auto;text-align:center;border:1px solid var(--line);border-radius:10px;padding:36px 28px}
+  .spinner{width:54px;height:54px;border:5px solid #eee;border-top-color:var(--orange);border-radius:50%;margin:6px auto 18px;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .tick{width:66px;height:66px;border-radius:50%;background:var(--green);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+  .center-card h2{font-size:20px;margin-bottom:6px;color:var(--teal)}
+  .center-card p.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+  .mini-summary{text-align:left;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:14px 0 22px}
+  .mini-summary .l{display:flex;justify-content:space-between;gap:10px;padding:11px 16px;font-size:13px;border-bottom:1px solid #ECEFF1}
+  .mini-summary .l:last-child{border-bottom:none}
+  .mini-summary .l .k{color:var(--muted)}
+  .mini-summary .l .v{font-weight:700;text-align:right}
+  .mini-summary .l.tot{background:var(--smoke);font-weight:800}
+  /* Details page (Figma) */
+  .dhead{display:flex;align-items:center;gap:16px;padding:16px 0;flex-wrap:wrap}
+  .btn-back{border:1px solid var(--line);border-radius:6px;padding:8px 16px;background:#fff;cursor:pointer;font-weight:700;font-size:13px}
+  .dhead .plate{color:var(--orange);font-weight:800;font-size:22px}
+  .dhead .ref{color:var(--ink);font-size:16px}
+  .dhead .stat{font-weight:800;font-size:16px}
+  .tpanel{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .tpanel-head{background:#E4EBEE;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .tpanel-head h3{color:var(--teal);font-size:17px;font-weight:800}
+  .tbtns{display:flex;gap:10px;flex-wrap:wrap}
+  .tbtn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:7px}
+  .tbtn i{color:var(--teal)}
+  .tbtn:hover{border-color:var(--teal)}
+  .tsection{padding:20px 20px;border-bottom:1px solid var(--line)}
+  .tsection:last-child{border-bottom:none}
+  .tgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+  .tgrid.two{grid-template-columns:1fr 1fr}
+  @media(max-width:800px){.tgrid,.tgrid.two{grid-template-columns:1fr}}
+  .theading{color:var(--teal);font-weight:800;font-size:14px;margin-bottom:12px}
+  .dl .row{display:grid;grid-template-columns:190px 1fr;gap:10px;padding:5px 0;font-size:13px;align-items:start}
+  .dl.narrow .row{grid-template-columns:150px 1fr}
+  .dl .row .k{color:var(--muted)}
+  .dl .row .v{color:var(--ink);font-weight:600}
+  .dl .row .v.ok{color:var(--green)}
+  .dl .row .v.warn{color:var(--red)}
+  .timeline{position:relative}
+  /* Horizontal delivery status track */
+  .tlh{display:flex;align-items:flex-start;width:100%;margin-top:4px}
+  .tlh .tlstep{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative}
+  .tlh .tlstep .node{width:30px;height:30px;border-radius:50%;background:#dfe5e8;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;z-index:2;position:relative;border:3px solid #fff;box-shadow:0 0 0 1px #dfe5e8}
+  .tlh .tlstep.done .node{background:var(--green);box-shadow:0 0 0 1px var(--green)}
+  .tlh .tlstep.active .node{background:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+  .tlh .tlstep.fail .node{background:var(--red);box-shadow:0 0 0 1px var(--red)}
+  /* connector sits behind the node, drawn on the left half of each step except the first */
+  .tlh .tlstep::before{content:"";position:absolute;top:14px;left:-50%;width:100%;height:3px;background:#e4e8ea;z-index:1}
+  .tlh .tlstep:first-child::before{display:none}
+  .tlh .tlstep.done::before,.tlh .tlstep.active::before{background:var(--green)}
+  .tlh .tlstep.fail::before{background:var(--red)}
+  .tlh .tlstep .t{font-weight:700;font-size:12.5px;margin-top:10px;line-height:1.3}
+  .tlh .tlstep .d{color:var(--muted);font-size:11px;margin-top:4px;line-height:1.35;padding:0 6px}
+  /* narrow screens: fall back to a stacked track so labels stay readable */
+  @media(max-width:760px){
+    .tlh{flex-direction:column;align-items:stretch}
+    .tlh .tlstep{flex-direction:row;text-align:left;gap:12px;padding-bottom:16px;align-items:flex-start}
+    .tlh .tlstep .node{flex-shrink:0}
+    .tlh .tlstep::before{top:-16px;left:13px;width:3px;height:16px}
+    .tlh .tlstep .t{margin-top:6px}
+    .tlh .tlstep .d{padding:0}
+    .tlh .tlstep .txtwrap{padding-top:4px}
+  }
+  .tl{display:flex;gap:12px;position:relative;padding-bottom:16px}
+  .tl:last-child{padding-bottom:0}
+  .tl .node{width:22px;height:22px;border-radius:50%;background:#dfe5e8;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1}
+  .tl.done .node{background:var(--green)}.tl.active .node{background:var(--orange)}.tl.fail .node{background:var(--red)}
+  .tl::before{content:"";position:absolute;left:10px;top:22px;bottom:0;width:2px;background:#e4e8ea}
+  .tl:last-child::before{display:none}
+  .tl .txt .t{font-weight:700;font-size:13px}.tl .txt .d{color:var(--muted);font-size:11.5px}
+  .qr{width:110px;height:110px;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--muted);font-size:11px;text-align:center;gap:6px}
+  .qr i{font-size:38px;color:var(--teal)}
+  .foot{border-top:1px solid var(--line);padding:18px 26px;color:var(--grey);font-size:11.5px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
+  .foot a{color:var(--blue);text-decoration:none;cursor:pointer}
+  .src-note{font-size:11px;margin-top:4px;font-weight:600}
+  .src-note.found{color:var(--green)}
+  .src-note.none{color:var(--muted);font-weight:500}
+  .hide{display:none}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--teal);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1}
+  .rec-count{display:none;font-size:12px;color:#333;margin:2px 0 8px}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo">e<span class="a">A</span>uto<sup>™</sup><small>.my</small></div>
+    <div class="nav"><a onclick="go('home')">HOME</a><a>INSURANCE</a><a>REPORTS</a><a>SETTINGS</a><a>USER GUIDE</a><a>DOWNLOAD</a><a>CONTACT US</a></div>
+  </div>
+  <div class="subbar">
+    <div class="who"><span id="subLeft">Welcome to eAuto</span> &nbsp; <span class="name"><i class="fa-solid fa-user"></i> MUHAMMAD AMSHAR AMIN BIN NOOR SHAMSURIJAL (RHB:25707800004598-Active)</span></div>
+    <a>Logout</a>
+  </div>
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="company">BERJAYA MEGA MOTORS ENTERPRISE SDN. BHD.</div>
+    <div class="content">
+      <div class="home-layout">
+        <div class="home-main">
+          <div class="grid">
+            <div class="card"><div class="price">From RM30*</div><div class="ico"><span class="badge-buy">BUY</span><i class="fa-solid fa-car-side"></i></div><div class="btnline">STMS</div><div class="desc">Sistem Tukar Milik Sementara<br>(View or Create Transaction)</div></div>
+            <div class="card"><div class="price">RM30 only*</div><div class="ico"><i class="fa-solid fa-car-side"></i><i class="fa-solid fa-right-left mini"></i></div><div class="btnline">UCD TO UCD</div><div class="desc">Dealer to Dealer</div></div>
+            <div class="card"><div class="price">RM115 only*</div><div class="ico"><i class="fa-solid fa-car-side"></i><i class="fa-solid fa-rotate mini"></i></div><div class="btnline">APT</div><div class="desc">Automatic Permanent Transfer<br>(View / Make Payment for vehicles in STMS which are 6 months or more)</div></div>
+            <div class="card"><div class="flag">RM10 <span style="font-weight:400">for eVOC request</span></div><div class="ico"><span class="badge-sell">SELL</span><i class="fa-solid fa-car-side"></i></div><div class="btnline">eSERAHAN</div><div class="desc">Online Transfer<br>(Dealer to Customer)</div></div>
+
+            <div class="card"><div class="price">RM30 only*</div><div class="ico"><span class="badge-buy">BMK</span><i class="fa-solid fa-id-card"></i></div><div class="btnline">BMK</div><div class="desc">Butiran Maklumat Kenderaan</div></div>
+            <div class="card"><div class="price green">Instant Commission</div><div class="ico"><i class="fa-solid fa-car-side"></i><i class="fa-solid fa-circle-check mini green"></i></div><div class="btnline">INSURANCE</div><div class="desc">Motor Insurance</div></div>
+            <div class="card"><div class="price">RM18 only*</div><div class="ico"><i class="fa-solid fa-car-side"></i><i class="fa-solid fa-magnifying-glass mini"></i></div><div class="btnline">JOMCHECK REPORT</div><div class="desc">Vehicle Check Report</div></div>
+            <div class="card"><div class="price">&nbsp;</div><div class="ico"><span class="badge-buy">SSM</span><i class="fa-solid fa-file-lines"></i></div><div class="btnline">SSM Document</div><div class="desc">Mandatory seller/buyer representative details listed in SSM Document as Director/Owner</div></div>
+
+            <div class="card"><div class="price">&nbsp;</div><div class="ico"><span class="badge-buy">eVOC</span><i class="fa-solid fa-id-card"></i></div><div class="btnline">eVOC</div><div class="desc">eVehicle Ownership Certificate</div></div>
+            <div class="card badgeNew"><div class="price">&nbsp;</div><div class="ico"><span class="badge-buy">RM</span><i class="fa-solid fa-id-card"></i></div><div class="btnline">LKM REFUND</div><div class="desc">Lesen Kenderaan Motor Refund</div></div>
+
+            <div class="card new badgeNew" onclick="go('logistics')" title="eAuto MOVE (eMOVE)">
+              <div class="price">&nbsp;</div><div class="ico"><span class="badge-sell" style="background:var(--green)">NEW</span><i class="fa-solid fa-truck-fast"></i></div>
+              <div class="btnline">LOGISTICS</div><div class="desc">eAuto MOVE (eMOVE)<br>Car pickup &amp; delivery</div>
+            </div>
+            <div></div>
+          </div>
+
+          <div class="pricenote">* The price is exclusive of government service tax.<br>The product price consists of JPJ and eAuto Service Fee.</div>
+
+          <div class="grid" style="margin-top:10px;border-top:1px solid var(--line);padding-top:26px">
+            <div class="card"><div class="ico"><i class="fa-solid fa-receipt"></i></div><div class="btnline">COMPANY / BUSINESS PROFILE</div><div class="desc">Main user, update your company/business profile before 31 August 2025</div></div>
+            <div class="card"><div class="ico"><i class="fa-solid fa-gear"></i></div><div class="btnline">SETTINGS</div><div class="desc">Manage the branches, registration or users</div></div>
+            <div class="card"><div class="ico"><i class="fa-solid fa-chart-column"></i></div><div class="btnline">REPORTS</div><div class="desc">&nbsp;</div></div>
+            <div></div>
+          </div>
+        </div>
+
+        <aside class="home-side">
+          <div class="side-h">What's New</div>
+          <div class="whatsnew">
+            <div class="wn-text"><div class="wn-logo">e<span>A</span>uto<small>.my</small></div><div class="wn-title">Butiran Maklumat Kenderaan (BMK)</div></div>
+            <div class="wn-media"><div class="play"><i class="fa-solid fa-play"></i></div></div>
+          </div>
+          <div class="side-h">Need Help?</div>
+          <div class="help">
+            <div class="row"><i class="fa-solid fa-headset"></i><div><b>Support Hotline</b> : <b>03-2779 8899</b><br>Mon to Fri : 9am to 6pm<br>Sat, Sun &amp; P.Holiday : 10am to 4pm</div></div>
+            <div class="row"><i class="fa-solid fa-envelope"></i><div><b>Email</b> : <b>support@eauto.my</b></div></div>
+            <div class="row"><i class="fa-brands fa-whatsapp"></i><div><b>WhatsApp</b> : <b>012-200 1324</b></div></div>
+          </div>
+          <div class="side-h">Useful Link</div>
+          <div class="uselinks">
+            <span class="ul" style="background:#D98A2B">JPJ Info</span>
+            <span class="ul" style="background:var(--orange)">Firefox V36.0.4</span>
+            <span class="ul" style="background:var(--blue)">TeamViewer</span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGISTICS LANDING -->
+  <section id="logistics" class="hide">
+    <div class="crumb"><a onclick="go('home')">Home</a> / Logistics</div>
+    <div class="content">
+      <div class="page-title"><i class="fa-solid fa-truck-fast i"></i> eAUTO MOVE (eMOVE) — LOGISTICS</div>
+      <div class="layout2">
+        <div>
+          <div class="chooser">
+            <div class="cell" onclick="go('listing')"><div class="ico"><i class="fa-solid fa-list-check"></i></div><div class="btnline">TRANSACTION LISTING</div><div class="sub">To View or Track Logistics Transactions</div></div>
+            <div class="cell" onclick="startCreate()"><div class="ico"><i class="fa-solid fa-square-plus"></i></div><div class="btnline">CREATE NEW LOGISTICS</div><div class="sub">Request a new pickup &amp; delivery</div></div>
+          </div>
+        </div>
+        <aside class="help">
+          <div class="side-h">Need Help?</div>
+          <div class="row"><i class="fa-solid fa-headset"></i><div><b>Support Hotline</b> : <b>03-2779 8899</b><br>Mon to Fri : 9am to 6pm<br>Sat, Sun &amp; P.Holiday : 10am to 4pm</div></div>
+          <div class="row"><i class="fa-solid fa-envelope"></i><div><b>Email</b> : <b>support@eauto.my</b></div></div>
+          <div class="row"><i class="fa-brands fa-whatsapp"></i><div><b>WhatsApp</b> : <b>012-200 1324</b></div></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- LISTING -->
+  <section id="listing" class="hide">
+    <div class="crumb"><a onclick="go('home')">Home</a> / <a onclick="go('logistics')">Logistics</a> / Logistics Transaction Listing</div>
+    <div class="content">
+      <div class="fpanel">
+        <div class="fpanel-head">Search &amp; Filter</div>
+        <div class="fpanel-body">
+          <div class="frow">
+            <div class="fitem"><label>Vehicle No :</label><input id="fltVehicle"></div>
+            <div class="fitem"><label>Trx No :</label><input id="fltTrx"></div>
+            <div class="fitem"><label>Date Created :</label><div class="dual"><input type="date" id="fltCreatedFrom"><input type="date" id="fltCreatedTo"></div></div>
+          </div>
+          <div class="frow">
+            <div class="fitem"><label>Payment Status :</label><select id="fltPay"><option>All</option><option>OK</option><option>Pending</option><option>Failed</option></select></div>
+            <div class="fitem"><label>Delivery Status :</label><select id="fltDel"><option>All</option><option value="-">-</option><option>Pending Pick Up</option><option>In Transit</option><option>Delivered</option><option>Pickup Failed</option><option>Delivery Failed</option></select></div>
+            <div class="fitem"><label>Pickup Date :</label><div class="dual"><input type="date" id="fltPickFrom"><input type="date" id="fltPickTo"></div></div>
+          </div>
+          <div class="frow">
+            <div class="fitem"><label>Tx Status :</label><select id="fltTx"><option>All</option><option>Completed</option><option>Pending</option><option>Failed</option></select></div>
+            <div></div><div></div>
+          </div>
+          <div class="factions" style="margin-top:6px"><button class="btn btn-primary" onclick="applyFilter()">Search Now</button><button class="btn btn-ghost" onclick="resetFilter()">Reset</button></div>
+        </div>
+      </div>
+
+      <div class="sec-title">Logistics Transaction Listing</div>
+      <div class="rec-count" id="listCount"></div>
+      <div class="tblwrap">
+        <table class="data">
+          <thead><tr>
+            <th>#</th><th>Vehicle</th><th>Trx No</th><th>Created At</th><th>Pickup</th><th>Drop Off</th>
+            <th>Payment</th><th>Delivery</th><th>Tx Status</th><th>e-Invoice Status</th><th>Remarks</th><th>Action</th>
+          </tr></thead>
+          <tbody id="listingBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATE WIZARD -->
+  <section id="create" class="hide">
+    <div class="crumb"><a onclick="go('home')">Home</a> / <a onclick="go('logistics')">Logistics</a> / Create New Logistics</div>
+    <div class="content">
+      <div class="wsteps">
+        <div class="wstep" id="ws1"><div class="circle">1</div><div class="wlbl">Logistics Details</div></div>
+        <div class="wconn"><i class="fa-solid fa-arrow-right-long"></i></div>
+        <div class="wstep" id="ws2"><div class="circle">2</div><div class="wlbl">Transaction<br>Summary</div></div>
+        <div class="wconn"><i class="fa-solid fa-arrow-right-long"></i></div>
+        <div class="wstep" id="ws3"><div class="circle">3</div><div class="wlbl">Payment &amp;<br>Confirmation</div></div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div id="step1">
+        <div class="wtitle">Logistics Details</div>
+        <div class="formcard">
+          <h3><i class="fa-solid fa-car-side"></i> Vehicle Information</h3>
+          <div class="hint">Key in the Vehicle No and click Search — the system will auto-fill the vehicle details.</div>
+          <div class="veh-search">
+            <div class="fld"><label>Vehicle No <span class="req">*</span></label><input id="f_plate" value="PLL4524"></div>
+            <button class="btn btn-primary" style="height:35px" onclick="searchVehicle()"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+          </div>
+
+          <div class="demo-plates">
+            <div class="dp-h"><i class="fa-solid fa-flask"></i> Demo Data — click a Vehicle No to load it, then click Search</div>
+            <table>
+              <tr><th>Vehicle No</th><th>Vehicle Make / Model</th><th>Insurance Vehicle Type</th><th>Behaviour</th></tr>
+              <tr>
+                <td><span class="dp-plate" onclick="useDemoPlate('PLL4524')">PLL4524</span></td>
+                <td>Bentley / Azure (2022)</td>
+                <td class="dp-yes">Sedan</td>
+                <td>Vehicle Type prefilled</td>
+              </tr>
+              <tr>
+                <td><span class="dp-plate" onclick="useDemoPlate('JHK4520')">JHK4520</span></td>
+                <td>Proton / X70 Premium (2023)</td>
+                <td class="dp-yes">SUV</td>
+                <td>Vehicle Type prefilled</td>
+              </tr>
+              <tr>
+                <td><span class="dp-plate" onclick="useDemoPlate('WXP1123')">WXP1123</span></td>
+                <td>Toyota / Vios 1.5 G (2020)</td>
+                <td class="dp-yes">Sedan</td>
+                <td>Vehicle Type prefilled</td>
+              </tr>
+              <tr>
+                <td><span class="dp-plate" onclick="useDemoPlate('VAN1237')">VAN1237</span></td>
+                <td>Perodua / Myvi 1.5 AV (2021)</td>
+                <td class="dp-no">No record</td>
+                <td>Blank — UCD to fill in</td>
+              </tr>
+              <tr>
+                <td><span class="dp-plate" onclick="useDemoPlate('ABC1234')">ABC1234</span></td>
+                <td>Any other plate</td>
+                <td class="dp-no">No record</td>
+                <td>Blank — UCD to fill in</td>
+              </tr>
+            </table>
+          </div>
+          <div class="form-grid" style="margin-top:16px">
+            <div class="fld"><label>Engine No</label><input id="f_engine" readonly placeholder="Auto-filled after Search"></div>
+            <div class="fld"><label>Chassis No</label><input id="f_chassis" readonly placeholder="Auto-filled after Search"></div>
+            <div class="fld"><label>Vehicle Make &amp; Model</label><input id="f_model" readonly placeholder="Auto-filled after Search"></div>
+            <div class="fld"><label>Manufacturing Year</label><input id="f_year" readonly placeholder="Auto-filled after Search"></div>
+            <div class="fld"><label>Colour <span style="color:var(--muted);font-weight:400">(optional)</span></label><input id="f_colour" placeholder="Optional — UCD to fill in"></div>
+            <div class="fld"><label>Vehicle Type <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+              <select id="f_type"><option value="">— Select (optional) —</option><option value="Sedan">Sedan / Hatchback</option><option value="SUV">SUV / MPV</option><option value="Pickup">Pickup / 4x4</option><option value="Motorcycle">Motorcycle</option><option value="Commercial">Commercial / Lorry</option></select>
+              <div id="f_type_src" class="src-note hide"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="formcard">
+          <h3><i class="fa-solid fa-location-dot"></i> Pickup Location</h3>
+          <div class="hint">Choose how the vehicle is collected. <b>Door-to-Door Pickup adds RM200.</b></div>
+          <div class="svc-choice" style="margin-bottom:16px">
+            <div class="svc-opt sel" id="pick_door" onclick="setPickMode('door')"><div class="ico"><i class="fa-solid fa-house-chimney"></i></div><div><div class="t">Door-to-Door Pickup <span style="color:var(--orange)">(+RM200)</span></div><div class="d">We collect the vehicle from your pickup address.</div></div></div>
+            <div class="svc-opt" id="pick_hub" onclick="setPickMode('hub')"><div class="ico"><i class="fa-solid fa-warehouse"></i></div><div><div class="t">Drop at Hub</div><div class="d">You drop the vehicle at the nearest eMOVE hub.</div></div></div>
+          </div>
+          <div class="form-grid">
+            <div class="fld"><label>State <span class="req">*</span></label><select id="f_pickstate" onchange="populatePickHub()"><option>Selangor</option><option>Kuala Lumpur</option><option>Penang</option><option>Perak</option><option>Johor</option><option>Melaka</option><option>Negeri Sembilan</option><option>Pahang</option><option>Kedah</option><option>Kelantan</option><option>Terengganu</option><option>Perlis</option><option>Putrajaya</option></select></div>
+            <div class="fld pickhubfld hide"><label>Pickup Hub (by state) <span class="req">*</span></label><select id="f_pickhub"></select></div>
+            <div class="fld pickdoorfld"><label>City / Town <span class="req">*</span></label><input id="f_pickcity" class="reqf" value="Petaling Jaya"></div>
+            <div class="fld pickdoorfld"><label>Postcode <span class="req">*</span></label><input id="f_pickpost" class="reqf" maxlength="5" inputmode="numeric" oninput="sanitizePostcode(this)" value="47800"></div>
+            <div class="fld pickdoorfld full"><label>Address <span class="req">*</span></label><input id="f_pickaddr" class="reqf" value="No. 12, Jalan PJS 8/4, Mentari Court"></div>
+            <div class="fld"><label>Contact Person <span class="req">*</span></label><input class="reqf" value="Amshar Amin"></div>
+            <div class="fld"><label>Contact No <span class="req">*</span></label><input class="reqf" inputmode="numeric" oninput="sanitizePhone(this)" value="012-3456789"></div>
+            <div class="fld"><label>Preferred Pickup Date <span class="req">*</span></label><input type="date" id="f_pickdate" class="reqf"></div>
+            <div class="fld full"><label>Remarks (optional)</label><input id="f_pickremark" placeholder="e.g. Gate access code, contact before arrival"></div>
+          </div>
+        </div>
+
+        <div class="formcard">
+          <h3><i class="fa-solid fa-flag-checkered"></i> Drop Off Location</h3>
+          <div class="hint">Choose how the vehicle is delivered. <b>Door-to-Door Drop-Off adds RM200.</b></div>
+          <div class="svc-choice" style="margin-bottom:16px">
+            <div class="svc-opt sel" id="drop_door" onclick="setDropMode('door')"><div class="ico"><i class="fa-solid fa-house-chimney"></i></div><div><div class="t">Door-to-Door Drop-Off <span style="color:var(--orange)">(+RM200)</span></div><div class="d">We deliver the vehicle to your drop-off address.</div></div></div>
+            <div class="svc-opt" id="drop_hub" onclick="setDropMode('hub')"><div class="ico"><i class="fa-solid fa-warehouse"></i></div><div><div class="t">Collect at Hub</div><div class="d">You collect the vehicle at the destination eMOVE hub.</div></div></div>
+          </div>
+          <div class="form-grid">
+            <div class="fld"><label>State <span class="req">*</span></label><select id="f_dropstate" onchange="populateDropHub()"><option>Johor</option><option>Selangor</option><option>Kuala Lumpur</option><option>Penang</option><option>Perak</option><option>Melaka</option><option>Negeri Sembilan</option><option>Pahang</option><option>Kedah</option><option>Kelantan</option><option>Terengganu</option><option>Perlis</option><option>Putrajaya</option></select></div>
+            <div class="fld drophubfld hide"><label>Drop-off Hub (by state) <span class="req">*</span></label><select id="f_drophub"></select></div>
+            <div class="fld dropdoorfld"><label>City / Town <span class="req">*</span></label><input id="f_dropcity" class="reqf" value="Johor Bahru"></div>
+            <div class="fld dropdoorfld"><label>Postcode <span class="req">*</span></label><input id="f_droppost" class="reqf" maxlength="5" inputmode="numeric" oninput="sanitizePostcode(this)" value="80100"></div>
+            <div class="fld dropdoorfld full"><label>Address <span class="req">*</span></label><input id="f_dropaddr" class="reqf" value="No. 5, Jalan Molek 1/10, Taman Molek"></div>
+            <div class="fld"><label>Contact Person <span class="req">*</span></label><input class="reqf" value="Farid Zainal"></div>
+            <div class="fld"><label>Contact No <span class="req">*</span></label><input class="reqf" inputmode="numeric" oninput="sanitizePhone(this)" value="019-8876543"></div>
+            <div class="fld full"><label>Remarks (optional)</label><input id="f_dropremark" placeholder="e.g. Vehicle not driveable, please arrange towing"></div>
+          </div>
+        </div>
+
+        <div class="wizard-actions center">
+          <button class="btn btn-ghost" onclick="go('logistics')">Cancel</button>
+          <button class="btn btn-orange" onclick="validateAndNext()">Next</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step2" class="hide">
+        <div class="wtitle">Logistics Transaction Summary</div>
+        <div class="sum-card">
+          <div class="sum-grid">
+            <div class="sum-row"><div class="k">Vehicle No :</div><div class="v" id="s_plate">—</div></div>
+            <div class="sum-row"><div class="k">Service Type :</div><div class="v" id="s_svc">—</div></div>
+            <div class="sum-row"><div class="k">Engine No :</div><div class="v" id="s_engine">—</div></div>
+            <div class="sum-row"><div class="k">Vehicle Make / Model :</div><div class="v" id="s_model">—</div></div>
+            <div class="sum-row"><div class="k">Chassis No :</div><div class="v" id="s_chassis">—</div></div>
+            <div class="sum-row"><div class="k">Manufacturing Year :</div><div class="v" id="s_year">—</div></div>
+          </div>
+          <div class="sum-sub">
+            <div class="row"><div class="k">Pickup :</div><div class="v" id="s_pick">—</div></div>
+            <div class="row"><div class="k">Drop Off :</div><div class="v" id="s_drop">—</div></div>
+            <div class="row"><div class="k">Preferred Pickup Date :</div><div class="v" id="s_date">—</div></div>
+            <div class="row"><div class="k">Estimated Distance :</div><div class="v" id="s_dist">—</div></div>
+          </div>
+        </div>
+
+        <div class="pay-card">
+          <div class="pay-strip"><div class="l">Click Make Payment to pay.</div><div class="r">CUSTOMER SUPPORT : 03-2779 8899</div></div>
+          <div class="pay-body">
+            <h3>Payment Summary</h3>
+            <table class="paytbl">
+              <tr><td>Logistics Fee :</td><td class="cur">RM</td><td class="amt" id="p_log">0.00</td></tr>
+              <tr class="subline"><td colspan="3" id="p_lognote"></td></tr>
+              <tr id="row_dpick"><td>Door-to-Door Pickup Charge :</td><td class="cur">RM</td><td class="amt" id="p_dpick">200.00</td></tr>
+              <tr id="row_ddrop"><td>Door-to-Door Drop-Off Charge :</td><td class="cur">RM</td><td class="amt" id="p_ddrop">200.00</td></tr>
+              <tr><td>eAuto Fee :</td><td class="cur">RM</td><td class="amt" id="p_eauto">0.00</td></tr>
+              <tr><td>Service Tax 8% :</td><td class="cur">RM</td><td class="amt" id="p_sst">0.00</td></tr>
+              <tr class="tot"><td>Total Amount Payable (inclusive of Service Tax 8%) :</td><td class="cur">RM</td><td class="amt" id="p_total">0.00</td></tr>
+            </table>
+            <div style="margin-top:12px"><span class="demo-tag">Demo — modelled on STMS payment summary</span></div>
+          </div>
+        </div>
+
+        <div class="wizard-actions center">
+          <button class="btn btn-ghost" onclick="toast('Saved as draft (demo)')">Save &amp; Continue Later</button>
+          <button class="btn btn-primary" onclick="makePayment()">Make Payment</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div id="step3" class="hide">
+        <div id="processing" class="center-card">
+          <div class="spinner"></div><h2>Processing Payment…</h2>
+          <p class="sub">Please wait while we securely process your transaction. Do not close this window.</p>
+        </div>
+        <div id="success" class="hide">
+          <div class="wtitle">Submission (Payment)</div>
+          <div class="sum-card">
+            <div class="sum-grid">
+              <div class="sum-row"><div class="k">Trx No :</div><div class="v" id="c_no">—</div></div>
+              <div class="sum-row"><div class="k">Service Type :</div><div class="v" id="c_svc">—</div></div>
+              <div class="sum-row"><div class="k">Vehicle No :</div><div class="v" id="c_plate">—</div></div>
+              <div class="sum-row"><div class="k">Vehicle Make / Model :</div><div class="v" id="c_model">—</div></div>
+              <div class="sum-row"><div class="k">Pickup :</div><div class="v" id="c_pick">—</div></div>
+              <div class="sum-row"><div class="k">Drop Off :</div><div class="v" id="c_drop">—</div></div>
+            </div>
+            <div class="sum-sub">
+              <div class="row"><div class="k">Payment Status :</div><div class="v ok" style="font-weight:800">OK - SUCCESSFUL</div></div>
+              <div class="row"><div class="k">Submission Date/Time :</div><div class="v" id="c_dt">—</div></div>
+              <div class="row"><div class="k">Preferred Pickup Date :</div><div class="v" id="c_pickdate">—</div></div>
+              <div class="row"><div class="k">Total Amount Paid :</div><div class="v" id="c_total" style="color:var(--orange);font-weight:800">—</div></div>
+            </div>
+          </div>
+          <div class="wizard-actions center">
+            <button class="btn btn-ghost" style="min-width:190px" onclick="finishToDetails()">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRX DETAILS -->
+  <section id="details" class="hide">
+    <div class="crumb"><a onclick="go('home')">Home</a> / <a onclick="go('logistics')">Logistics</a> / <a onclick="go('listing')">Logistics Transaction Listing</a> / <span id="d_crumb">—</span></div>
+    <div class="content">
+      <div class="dhead">
+        <button class="btn-back" onclick="go('listing')">« Back</button>
+        <span class="plate" id="d_plate">—</span>
+        <span class="ref" id="d_ref">—</span>
+        <span class="stat" id="d_stat">—</span>
+      </div>
+
+      <div class="tpanel">
+        <div class="tpanel-head">
+          <h3>Transaction Details</h3>
+          <div class="tbtns">
+            <button class="tbtn" onclick="toast('Opening Invoice (demo)')"><i class="fa-solid fa-file-invoice-dollar"></i> Invoice</button>
+            <button class="tbtn" onclick="toast('Opening e-Invoice (demo)')"><i class="fa-solid fa-file-invoice"></i> e-Invoice</button>
+          </div>
+        </div>
+
+        <div class="tsection">
+          <div class="tgrid">
+            <div class="dl">
+              <div class="row"><div class="k">Engine No :</div><div class="v" id="d_engine">—</div></div>
+              <div class="row"><div class="k">Chassis No :</div><div class="v" id="d_chassis">—</div></div>
+              <div class="row"><div class="k">Vehicle Make / Model :</div><div class="v" id="d_model">—</div></div>
+              <div class="row"><div class="k">Colour :</div><div class="v" id="d_colour">—</div></div>
+            </div>
+            <div class="dl">
+              <div class="row"><div class="k">Date Created :</div><div class="v" id="d_created">—</div></div>
+              <div class="row"><div class="k">Manufacturing Year :</div><div class="v" id="d_year">—</div></div>
+              <div class="row"><div class="k">Vehicle Type :</div><div class="v" id="d_vtype">—</div></div>
+              <div class="row"><div class="k">Service Type :</div><div class="v" id="d_svc">—</div></div>
+            </div>
+            <div class="dl">
+              <div class="row"><div class="k">Estimated Distance :</div><div class="v" id="d_dist">—</div></div>
+              <div class="row"><div class="k">Delivery Status :</div><div class="v" id="d_delstat">—</div></div>
+              <div class="row" style="margin-top:8px"><div class="k" style="font-weight:800;color:var(--ink)">Total Amount Paid :</div><div class="v" style="color:var(--orange);font-size:16px;font-weight:800" id="d_totalpaid">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tsection">
+          <div class="tgrid two">
+            <div class="dl">
+              <div class="theading">e-Invoice</div>
+              <div class="row"><div class="k">e-Invoice Submission Date :</div><div class="v" id="d_einvdate">—</div></div>
+              <div class="row"><div class="k">LHDN Response Status :</div><div class="v ok" id="d_einvstat">OK</div></div>
+              <div class="row"><div class="k">e-Invoice Validation Date :</div><div class="v" id="d_einvval">—</div></div>
+            </div>
+            <div>
+              <div class="theading">Payment Details</div>
+              <div id="d_paylist" style="font-size:13px;line-height:1.8;padding-left:4px">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tsection">
+          <div class="tgrid two">
+            <div class="dl">
+              <div class="theading">Pickup</div>
+              <div class="row"><div class="k">Location :</div><div class="v" id="d_pickloc">—</div></div>
+              <div class="row"><div class="k">Address :</div><div class="v" id="d_pickaddr">—</div></div>
+              <div class="row"><div class="k">Contact :</div><div class="v" id="d_pickcontact">—</div></div>
+              <div class="row"><div class="k">Preferred Date :</div><div class="v" id="d_pickdate">—</div></div>
+              <div class="row"><div class="k">Remarks :</div><div class="v" id="d_pickremark">-</div></div>
+            </div>
+            <div class="dl">
+              <div class="theading">Drop Off</div>
+              <div class="row"><div class="k">Location :</div><div class="v" id="d_droploc">—</div></div>
+              <div class="row"><div class="k">Address :</div><div class="v" id="d_dropaddr">—</div></div>
+              <div class="row"><div class="k">Contact :</div><div class="v" id="d_dropcontact">—</div></div>
+              <div class="row"><div class="k">Remarks :</div><div class="v" id="d_dropremark">-</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tsection">
+          <div class="theading">Delivery Status</div>
+          <div class="timeline" id="d_timeline"></div>
+          <div id="d_nextaction" style="font-size:12px;color:var(--red);font-weight:700;margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div>
+      <div style="margin-bottom:6px"><a>Contact Us</a> &nbsp;|&nbsp; <a>Terms &amp; Conditions</a> &nbsp;|&nbsp; <a>Privacy</a></div>
+      Best Compatible With Mozilla Firefox V36.0.4<br>
+      Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.
+    </div>
+    <div class="logo" style="font-size:22px">e<span class="a">A</span>uto<sup>™</sup><small>.my</small></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let currentScreen='home';
+let lastResults=null;
+
+function updateSubLeft(){
+  document.getElementById('subLeft').textContent = (currentScreen==='home') ? 'Welcome to eAuto' : 'Online Services - eMOVE Logistics Service';
+}
+function updateCount(){ const el=document.getElementById('listCount'); if(el) el.innerHTML = lastResults ? ('<b>'+lastResults.length+'</b> record(s) found') : ''; }
+
+const screens=['home','logistics','listing','create','details'];
+function go(id){
+  screens.forEach(s=>document.getElementById(s).classList.add('hide'));
+  document.getElementById(id).classList.remove('hide');
+  currentScreen=id; updateSubLeft();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2200);}
+
+/* ---------- Vehicle search (prepopulate) ---------- */
+const vehicleDB={
+  'PLL4524':{engine:'EN12345678',chassis:'CH12345678',model:'Bentley / Azure',year:'2022',type:'Sedan'},
+  'VAN1237':{engine:'PM2B200S12345678',chassis:'PM2M300S12345678',model:'Perodua / Myvi 1.5 AV',year:'2021',type:'Sedan'},
+  'WXP1123':{engine:'2NR1234567',chassis:'MHFXX1234567',model:'Toyota / Vios 1.5 G',year:'2020',type:'Sedan'},
+  'JHK4520':{engine:'K12B998877',chassis:'MA3XX998877',model:'Proton / X70 Premium',year:'2023',type:'SUV'}
+};
+/* Vehicle Type source = existing insurance record.
+   If the plate has an insurance record with a vehicle type, prefill it.
+   If not, the field is left blank for the UCD to fill in. Stays optional either way. */
+const insuranceVehicleType={
+  'PLL4524':'Sedan',
+  'JHK4520':'SUV',
+  'WXP1123':'Sedan'
+  /* VAN1237 intentionally absent - demonstrates the no-insurance-data path */
+};
+function useDemoPlate(p){
+  document.getElementById('f_plate').value=p;
+  searchVehicle();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function searchVehicle(){
+  const plate=(document.getElementById('f_plate').value||'').trim().toUpperCase();
+  document.getElementById('f_plate').value=plate;
+  const v=vehicleDB[plate] || {engine:'EN'+(10000000+Math.floor(Math.random()*8999999)),chassis:'CH'+(10000000+Math.floor(Math.random()*8999999)),model:'Perodua / Bezza 1.3',year:'2019',type:'Sedan'};
+  document.getElementById('f_engine').value=v.engine;
+  document.getElementById('f_chassis').value=v.chassis;
+  document.getElementById('f_model').value=v.model;
+  document.getElementById('f_year').value=v.year;
+  prefillVehicleType(plate);
+}
+/* Vehicle Type prefill from insurance: got data -> show it, else leave for UCD to fill in */
+function prefillVehicleType(plate){
+  const sel=document.getElementById('f_type'), note=document.getElementById('f_type_src');
+  const t=insuranceVehicleType[plate];
+  note.classList.remove('hide','found','none');
+  if(t){
+    sel.value=t;
+    note.classList.add('found');
+    note.textContent='You may change it if incorrect.';
+  }else{
+    sel.value='';
+    note.classList.add('hide');
+    note.textContent='';
+  }
+}
+
+/* ---------- State & fee ---------- */
+let pickMode='door', dropMode='door';   // pickup & drop-off methods chosen independently
+const job={};
+/* Dummy addresses & contacts by state (details page must not be empty) */
+const addrByState={
+  'Selangor':'No. 22, Jalan SS15/4, Subang Jaya, 47500 Selangor',
+  'Kuala Lumpur':'No. 30, Jalan Ampang, 50450 Kuala Lumpur',
+  'Penang':'No. 8, Lebuh Light, 10200 George Town, Penang',
+  'Perak':'No. 9, Jalan Sultan Idris Shah, 30000 Ipoh, Perak',
+  'Johor':'No. 5, Jalan Molek 1/10, Taman Molek, 80100 Johor Bahru',
+  'Melaka':'No. 12, Jalan Hang Tuah, 75300 Melaka',
+  'Negeri Sembilan':'No. 18, Jalan Yam Tuan, 70000 Seremban, N. Sembilan',
+  'Pahang':'No. 7, Jalan Mahkota, 25000 Kuantan, Pahang',
+  'Kedah':'No. 14, Jalan Sultan Badlishah, 05000 Alor Setar, Kedah',
+  'Kelantan':'No. 3, Jalan Sultan Yahya Petra, 15200 Kota Bharu, Kelantan',
+  'Terengganu':'No. 21, Jalan Sultan Ismail, 20200 Kuala Terengganu, Terengganu'
+};
+function addrFor(s){return addrByState[s]||('No. 1, Jalan Utama, '+s);}
+/* Full address = street address, postcode city, state */
+function fullAddr(addrId,postId,cityId,state){
+  const g=id=>{const e=document.getElementById(id);return e?(e.value||'').trim():'';};
+  const line=g(addrId), post=g(postId), city=g(cityId);
+  const tail=[post,city].filter(Boolean).join(' ');
+  return [line,tail,state].filter(Boolean).join(', ');
+}
+const contactPool=['Amshar Amin · 012-345 6789','Farid Zainal · 019-887 6543','Kumar Raj · 016-223 4455','Siti Nurul · 013-778 9900','Tan Wei Ming · 017-556 1200'];
+function contactFor(seed){return contactPool[Math.abs(seed)%contactPool.length];}
+/* Standard date formats: DD-MM-YYYY hh:mmam/pm  and  DD-MM-YYYY */
+function two(n){return String(n).padStart(2,'0');}
+/* ID formats */
+let emRun=200;   // running-number counter
+function fmtTrxNo(dt,run){ return 'EM'+(dt.getFullYear()%10)+(dt.getMonth()+1)+String(run).padStart(7,'0'); }      // EM + Y + M + running(7) e.g. EM680000001
+function fmtPayId(dt,run){ return 'EM'+String(dt.getFullYear()).slice(-2)+two(dt.getMonth()+1)+two(dt.getDate())+String(run).padStart(6,'0'); }  // EM + yy + MM + DD + running(6) e.g. EM260805000001
+function fmtDateTime(dt){let h=dt.getHours();const ap=h<12?'am':'pm';h=h%12||12;return `${two(dt.getDate())}-${two(dt.getMonth()+1)}-${dt.getFullYear()} ${two(h)}:${two(dt.getMinutes())}${ap}`;}
+function fmtDate(dt){return `${two(dt.getDate())}-${two(dt.getMonth()+1)}-${dt.getFullYear()}`;}
+const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function fmtDateDay(dt){return `${two(dt.getDate())}.${two(dt.getMonth()+1)}.${dt.getFullYear()} (${dayNames[dt.getDay()]})`;}
+function genPayref(dt){
+  const yy=String(dt.getFullYear()).slice(-2), seq=String(Math.floor(1+Math.random()*999999)).padStart(6,'0');
+  const L='BGKRSVW'; const s=L[Math.floor(Math.random()*7)]+L[Math.floor(Math.random()*7)]+L[Math.floor(Math.random()*7)]+String(Math.floor(1000+Math.random()*8999));
+  return 'PAY'+yy+two(dt.getMonth()+1)+two(dt.getDate())+seq+'-'+s;
+}
+/* eMOVE hubs by state — hub dropdown is populated from the chosen state */
+const hubsByState={
+  'Selangor':[{name:'Shah Alam',addr:'PT 626, Jalan Mandolin 33/5, Seksyen 27, 40400 Shah Alam, Selangor'}],
+  'Kuala Lumpur':[{name:'Chan Sow Lin',addr:'Wisma Trax, Jalan Lima, Off Jalan Chan Sow Lin, 55200 Kuala Lumpur'}],
+  'Negeri Sembilan':[{name:'Seremban',addr:'Pekan Bukit Kepayang, Daerah Seremban, 70300 Seremban, Negeri Sembilan'}],
+  'Melaka':[{name:'Melaka',addr:'Jln PS3, Plaza Semabok, 75050 Melaka'}],
+  'Johor':[{name:'Johor Bahru',addr:'Jalan Kempas Lama, Mukim Tebrau, 81200 Johor Bahru, Johor'},{name:'Pasir Gudang',addr:'Jalan Mutiara 3, Taman Perindustrian Plentong, 81750 Masai, Johor'},{name:'Kulai',addr:'Jalan Tropika Utama, Taman Tropika, 81000 Kulai, Johor'},{name:'Muar',addr:'Jln Dato Haji Kosai, Kampung Parit Keroma Darat, 84000 Muar, Johor'},{name:'Batu Pahat',addr:'Taman Flora, 83000 Batu Pahat, Johor'},{name:'Kluang',addr:'Jalan Besar, Kampung Yap Tau Sah, 86000 Kluang, Johor'},{name:'Segamat',addr:'Jalan Muhibbah 3, Taman Muhibbah, 85000 Segamat, Johor'}],
+  'Perak':[{name:'Ipoh',addr:'Jalan Lahat, 30200 Ipoh, Perak'},{name:'Sitiawan',addr:'Jalan Besar, Jln Lin Chen Mei, 32000 Sitiawan, Perak'}],
+  'Penang':[{name:'Penang',addr:'Medan Perniagaan Pauh Jaya, Jalan Baru, Taman Pauh Jaya, 13700 Perai, Penang'},{name:'Bayan Lepas',addr:'Jalan Sungai Tiram 2, Sungai Tiram, 11900 Bayan Lepas, Pulau Pinang'}],
+  'Kedah':[{name:'Alor Setar',addr:'Sultan Abdul Halim Hwy, Lebuhraya Sultan Abdul Halim, 05400 Alor Setar, Kedah'}],
+  'Pahang':[{name:'Temerloh',addr:'Jalan Semantan Indah, Kampung Tok Embun, 28000 Temerloh, Pahang'},{name:'Kuantan',addr:'Jln Haji Ahmad 9, Kampung Lapang Besar, 25300 Kuantan, Pahang'}],
+  'Terengganu':[{name:'Kuala Terengganu',addr:'Dataran Panji, Jalan Panji Alam, 21100 Kuala Terengganu, Terengganu'}],
+  'Kelantan':[{name:'Kota Bharu',addr:'Persimpangan Kijang, 15050 Kota Bharu, Kelantan'}],
+  'Perlis':[{name:'Alor Setar (Kedah branch)',addr:'Sultan Abdul Halim Hwy, Lebuhraya Sultan Abdul Halim, 05400 Alor Setar, Kedah'}],
+  'Putrajaya':[{name:'Shah Alam (Selangor branch)',addr:'PT 626, Jalan Mandolin 33/5, Seksyen 27, 40400 Shah Alam, Selangor'}]
+};
+function hubList(st){return hubsByState[st]||[{name:st+' Hub',addr:'eMOVE '+st+' Hub'}];}
+function fillHubSelect(selId,st){const sel=document.getElementById(selId);if(!sel)return;sel.innerHTML=hubList(st).map(h=>`<option data-addr="${h.addr}">${h.name} — ${h.addr}</option>`).join('');}
+function populatePickHub(){fillHubSelect('f_pickhub',document.getElementById('f_pickstate').value);}
+function populateDropHub(){fillHubSelect('f_drophub',document.getElementById('f_dropstate').value);}
+const distTable={'Selangor-Johor':330,'Kuala Lumpur-Johor':340,'Selangor-Penang':355,'Kuala Lumpur-Penang':365,'Selangor-Perak':200,'Selangor-Melaka':145,'Selangor-Kuala Lumpur':35,'Penang-Johor':680,'Selangor-Pahang':270,'Selangor-Negeri Sembilan':90,'Selangor-Kedah':420,'Selangor-Kelantan':420,'Selangor-Terengganu':450,'Penang-Perak':160,'Kuala Lumpur-Melaka':120};
+function distanceKm(a,b){if(a===b)return 40;return distTable[a+'-'+b]||distTable[b+'-'+a]||300;}
+const vehSurcharge={Sedan:0,SUV:30,Pickup:50,Motorcycle:-20,Commercial:90};
+
+function setPickMode(m){pickMode=m;
+  document.getElementById('pick_door').classList.toggle('sel',m==='door');
+  document.getElementById('pick_hub').classList.toggle('sel',m==='hub');
+  document.querySelectorAll('.pickdoorfld').forEach(e=>e.classList.toggle('hide',m!=='door'));
+  document.querySelectorAll('.pickhubfld').forEach(e=>e.classList.toggle('hide',m!=='hub'));
+  if(m==='hub')populatePickHub();
+}
+function setDropMode(m){dropMode=m;
+  document.getElementById('drop_door').classList.toggle('sel',m==='door');
+  document.getElementById('drop_hub').classList.toggle('sel',m==='hub');
+  document.querySelectorAll('.dropdoorfld').forEach(e=>e.classList.toggle('hide',m!=='door'));
+  document.querySelectorAll('.drophubfld').forEach(e=>e.classList.toggle('hide',m!=='hub'));
+  if(m==='hub')populateDropHub();
+}
+function serviceLabel(p,dp){
+  if(p==='door'&&dp==='door')return'Door-to-Door';
+  if(p==='hub'&&dp==='hub')return'Hub-to-Hub';
+  if(p==='door'&&dp==='hub')return'Door Pickup / Hub Drop-off';
+  return'Hub Pickup / Door Drop-off';
+}
+/* Distance base-rate tiers (charged to UCD) */
+function distanceTier(km){
+  if(km<=250)  return {rate:300,  name:'Tier 1 (Base)'};
+  if(km<=400)  return {rate:450,  name:'Tier 2 (Standard)'};
+  if(km<=600)  return {rate:650,  name:'Tier 3 (Extended)'};
+  return {rate:1000, name:'Tier 4 (Premium)'};
+}
+function computeFee(){
+  const type=document.getElementById('f_type').value;
+  const ps=document.getElementById('f_pickstate').value, ds=document.getElementById('f_dropstate').value;
+  const km=distanceKm(ps,ds);
+  const tier=distanceTier(km);
+  const logistics=tier.rate;   // distance base rate by tier
+  const doorPickup=pickMode==='door'?200:0, doorDrop=dropMode==='door'?200:0;   // +RM200 per door leg
+  const eautoFee=0;      // eAuto Fee waived for now - field retained, may be charged in future
+  const sst=Math.round(eautoFee*0.08*100)/100;                                   // Service Tax charged on eAuto Fee only
+  const total=Math.round((logistics+doorPickup+doorDrop+eautoFee+sst)*100)/100;
+  return {km,logistics,doorPickup,doorDrop,eautoFee,sst,total,type,ps,ds,tierName:tier.name};
+}
+function money(n){return Number(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+/* ---------- Wizard ---------- */
+function startCreate(){go('create');
+  populatePickHub();populateDropHub();
+  setPickMode('door');setDropMode('door');
+  document.getElementById('f_engine').value='';document.getElementById('f_chassis').value='';
+  document.getElementById('f_model').value='';document.getElementById('f_year').value='';
+  document.getElementById('f_type').value='';
+  const tn=document.getElementById('f_type_src'); tn.className='src-note hide'; tn.textContent='';
+  // Preferred pickup date: from tomorrow up to 1 month ahead
+  const t=new Date(), isod=x=>`${x.getFullYear()}-${two(x.getMonth()+1)}-${two(x.getDate())}`;
+  const mn=new Date(t);mn.setDate(t.getDate()+1); const mx=new Date(t);mx.setMonth(t.getMonth()+1);
+  const pd=document.getElementById('f_pickdate'); pd.min=isod(mn); pd.max=isod(mx); pd.value='';
+  toStep(1);}
+function toStep(n){
+  document.getElementById('step1').classList.toggle('hide',n!==1);
+  document.getElementById('step2').classList.toggle('hide',n!==2);
+  document.getElementById('step3').classList.toggle('hide',n!==3);
+  const s=[document.getElementById('ws1'),document.getElementById('ws2'),document.getElementById('ws3')];
+  s.forEach(x=>x.className='wstep');
+  if(n===1)s[0].classList.add('active');
+  if(n===2){s[0].classList.add('done');s[1].classList.add('active');buildSummary();}
+  if(n===3){s[0].classList.add('done');s[1].classList.add('done');s[2].classList.add('active');}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function collect(){
+  const f=computeFee();
+  job.plate=document.getElementById('f_plate').value||'—';
+  job.engine=document.getElementById('f_engine').value||'—';
+  job.chassis=document.getElementById('f_chassis').value||'—';
+  job.model=document.getElementById('f_model').value||'—';
+  job.year=document.getElementById('f_year').value||'—';
+  job.colour=document.getElementById('f_colour').value;
+  job.type=f.type; job.service=serviceLabel(pickMode,dropMode); job.pickMode=pickMode; job.dropMode=dropMode;
+  job.pickState=f.ps; job.dropState=f.ds; job.km=f.km;
+  if(pickMode==='hub'){
+    const s=document.getElementById('f_pickhub'),o=s.options[s.selectedIndex];
+    job.pickLoc=(o?o.text.split(' — ')[0]:'Hub')+', '+f.ps;
+    job.pickAddr=o?o.getAttribute('data-addr'):addrFor(f.ps);
+    job.pickFull='Hub: '+job.pickLoc+' — '+job.pickAddr;
+  }else{
+    job.pickLoc=(document.getElementById('f_pickcity').value||'')+', '+f.ps;
+    job.pickAddr=fullAddr('f_pickaddr','f_pickpost','f_pickcity',f.ps);
+    job.pickFull=job.pickAddr;
+  }
+  if(dropMode==='hub'){
+    const s=document.getElementById('f_drophub'),o=s.options[s.selectedIndex];
+    job.dropLoc=(o?o.text.split(' — ')[0]:'Hub')+', '+f.ds;
+    job.dropAddr=o?o.getAttribute('data-addr'):addrFor(f.ds);
+    job.dropFull='Hub: '+job.dropLoc+' — '+job.dropAddr;
+  }else{
+    job.dropLoc=(document.getElementById('f_dropcity').value||'')+', '+f.ds;
+    job.dropAddr=fullAddr('f_dropaddr','f_droppost','f_dropcity',f.ds);
+    job.dropFull=job.dropAddr;
+  }
+  const pd=document.getElementById('f_pickdate').value;
+  job.pickDateObj=pd?new Date(pd):null;
+  job.pickDate=pd?fmtDate(new Date(pd)):'Next available day';
+  const pr=document.getElementById('f_pickremark'), dr=document.getElementById('f_dropremark');
+  job.pickRemark=pr?pr.value.trim():''; job.dropRemark=dr?dr.value.trim():'';
+  job.fee=f; return f;
+}
+function buildSummary(){
+  const f=collect();
+  document.getElementById('s_plate').textContent=job.plate;
+  document.getElementById('s_svc').textContent=job.service;
+  document.getElementById('s_engine').textContent=job.engine;
+  document.getElementById('s_model').textContent=job.model;
+  document.getElementById('s_chassis').textContent=job.chassis;
+  document.getElementById('s_year').textContent=job.year;
+  document.getElementById('s_pick').textContent=job.pickFull;
+  document.getElementById('s_drop').textContent=job.dropFull;
+  document.getElementById('s_date').textContent=job.pickDateObj?fmtDateDay(job.pickDateObj):job.pickDate;
+  document.getElementById('s_dist').textContent=f.km+' km';
+  document.getElementById('p_log').textContent=money(f.logistics);
+  document.getElementById('row_dpick').classList.toggle('hide',pickMode!=='door');
+  document.getElementById('row_ddrop').classList.toggle('hide',dropMode!=='door');
+  document.getElementById('p_dpick').textContent=money(f.doorPickup);
+  document.getElementById('p_ddrop').textContent=money(f.doorDrop);
+  document.getElementById('p_eauto').textContent=money(f.eautoFee);
+  document.getElementById('p_sst').textContent=money(f.sst);
+  document.getElementById('p_total').textContent=money(f.total);
+  document.getElementById('p_lognote').textContent=`Distance ${f.km} km · ${job.service}`;
+}
+function clearErrors(){
+  document.querySelectorAll('#step1 .field-err').forEach(e=>e.remove());
+  document.querySelectorAll('#step1 .inp-err').forEach(e=>e.classList.remove('inp-err'));
+}
+function fieldVisible(el){let n=el;while(n&&n.nodeType===1){if(n.classList&&n.classList.contains('hide'))return false;n=n.parentNode;}return true;}
+function markErr(el,msg){el.classList.add('inp-err');const m=document.createElement('div');m.className='field-err';m.textContent=msg;el.parentNode.appendChild(m);}
+/* Input sanitizers */
+function sanitizePostcode(el){el.value=el.value.replace(/\D/g,'').slice(0,5);}
+function sanitizePhone(el){let v=el.value.replace(/[^0-9-]/g,'');const i=v.indexOf('-');if(i!==-1){v=v.slice(0,i+1)+v.slice(i+1).replace(/-/g,'');}el.value=v;}
+function validateAndNext(){
+  clearErrors();
+  let firstBad=null;
+  const plate=document.getElementById('f_plate');
+  if(!plate.value.trim()){markErr(plate,'Vehicle No is required');firstBad=firstBad||plate;}
+  const eng=document.getElementById('f_engine');
+  if(!eng.value.trim()){markErr(eng,'Click Search to load the vehicle details');firstBad=firstBad||eng;}
+  document.querySelectorAll('#step1 .reqf').forEach(el=>{
+    if(!fieldVisible(el))return;
+    if(!String(el.value||'').trim()){markErr(el,'This field is required');firstBad=firstBad||el;}
+  });
+  if(firstBad){if(firstBad.scrollIntoView)firstBad.scrollIntoView({behavior:'smooth',block:'center'});return;}
+  toStep(2);
+}
+function pad(n){return String(n).padStart(4,'0');}
+function makePayment(){
+  toStep(3);
+  document.getElementById('processing').classList.remove('hide');
+  document.getElementById('success').classList.add('hide');
+  setTimeout(()=>{
+    const now=new Date(); emRun++;
+    job.no=fmtTrxNo(now,emRun);
+    job.payref=fmtPayId(now,emRun);
+    job.einv='E'+(640000000+Math.floor(Math.random()*9999999));
+    job.created=fmtDateTime(now);
+    const f=job.fee;
+    document.getElementById('c_no').textContent=job.no;
+    document.getElementById('c_svc').textContent=job.service;
+    document.getElementById('c_plate').textContent=job.plate;
+    document.getElementById('c_model').textContent=job.model;
+    document.getElementById('c_pick').textContent=job.pickFull;
+    document.getElementById('c_drop').textContent=job.dropFull;
+    document.getElementById('c_dt').textContent=job.created;
+    document.getElementById('c_pickdate').textContent=job.pickDateObj?fmtDateDay(job.pickDateObj):job.pickDate;
+    document.getElementById('c_total').textContent='RM '+money(f.total);
+    document.getElementById('processing').classList.add('hide');
+    document.getElementById('success').classList.remove('hide');
+    addToListing();
+  },2200);
+}
+
+/* ---------- Details ---------- */
+function buildTimeline(pay,del,created,fr){
+  const paid=pay==='OK';
+  const isPickFail=del==='Pickup Failed', isDropFail=del==='Delivery Failed';
+  const order={'Pending Pick Up':0,'In Transit':1,'Delivered':2};
+  let idx = paid ? (order[del]!==undefined?order[del]:0) : -1;
+  if(isPickFail) idx=0; if(isDropFail) idx=1;
+  const step=(state,t,dsc,fallbackNum)=>{
+    const inner = state==='done' ? '<i class="fa-solid fa-check"></i>' : (state==='fail' ? '<i class="fa-solid fa-xmark"></i>' : (state==='active' ? '<i class="fa-solid fa-truck"></i>' : fallbackNum));
+    return `<div class="tlstep ${state}"><div class="node">${inner}</div><div class="txtwrap"><div class="t">${t}</div><div class="d">${dsc}</div></div></div>`;
+  };
+  const payState = paid?'done':'';
+  const payDesc = paid ? created : (pay==='Failed'?'<span style="color:var(--red)">Payment failed</span>':'Awaiting payment');
+  const reason = fr || 'reason not stated';
+  return '<div class="tlh">' + [
+    step('done','Logistics Created',created,'1'),
+    step(payState,'Payment Received',payDesc,'2'),
+    step(!paid?'':(isPickFail?'fail':(idx>0?'done':(idx===0?'active':''))),'Pending Pick Up', isPickFail?('<span style="color:var(--red)">Pickup failed — '+reason+'</span>'):'Awaiting logistics driver to collect','3'),
+    step(isDropFail?'done':(idx>1?'done':(idx===1&&!isPickFail?'active':'')),'In Transit','Driver picked up · uploads 12 photos to system','4'),
+    step(idx>=2?'done':(isDropFail?'fail':''),'Delivered', isDropFail?('<span style="color:var(--red)">Delivery failed — '+reason+'</span>'):'Driver dropped off · uploads 12 photos to system','5')
+  ].join('') + '</div>';
+}
+function fillDetails(o){
+  const tx=(o.pay==='Failed'||o.del==='Pickup Failed'||o.del==='Delivery Failed')?'Failed':((o.pay==='OK'&&o.del==='Delivered')?'Completed':'Pending');
+  const paid=o.pay==='OK';
+  document.getElementById('d_crumb').textContent=o.no;
+  document.getElementById('d_plate').textContent=o.plate;
+  document.getElementById('d_ref').textContent='(Trx No: '+o.no+')';
+  document.getElementById('d_stat').textContent=tx;
+  document.getElementById('d_stat').style.color=stColors[txCls(tx)];
+  document.getElementById('d_engine').textContent=o.engine;
+  document.getElementById('d_chassis').textContent=o.chassis;
+  document.getElementById('d_colour').textContent=(o.colour&&String(o.colour).trim())?o.colour:'-';
+  document.getElementById('d_vtype').textContent=(o.type&&String(o.type).trim())?o.type:'-';
+  document.getElementById('d_created').textContent=o.created;
+  document.getElementById('d_model').textContent=o.model;
+  document.getElementById('d_year').textContent=o.year;
+  document.getElementById('d_svc').textContent=o.service;
+  document.getElementById('d_dist').textContent=o.km+' km';
+  document.getElementById('d_delstat').textContent=o.del;
+  document.getElementById('d_delstat').style.color=stColors[delCls(o.del)];
+  document.getElementById('d_totalpaid').textContent='RM '+money(o.total);
+  document.getElementById('d_einvdate').textContent=paid?o.created:'-';
+  document.getElementById('d_einvval').textContent=paid?o.created:'-';
+  const es=document.getElementById('d_einvstat'); es.textContent=paid?'OK':'-'; es.style.color=paid?'var(--green)':'var(--grey)';
+  document.getElementById('d_paylist').innerHTML = paid
+    ? '1. '+o.created+' &ndash; RHB ('+o.payref+') &ndash; <b style="color:var(--green)">OK</b>'
+    : (o.pay==='Failed' ? '1. '+o.created+' &ndash; RHB (payment attempt) &ndash; <b style="color:var(--red)">Failed</b>' : '<span style="color:var(--muted)">No payment record yet.</span>');
+  document.getElementById('d_pickloc').textContent=o.pickLoc;
+  document.getElementById('d_pickaddr').textContent=o.pickAddr||'—';
+  document.getElementById('d_pickcontact').textContent=o.pickContact||'Amshar Amin · 012-345 6789';
+  { const pdt=parseDMY(o.pickDate); document.getElementById('d_pickdate').textContent = pdt?fmtDateDay(pdt):(o.pickDate||'—'); }
+  document.getElementById('d_pickremark').textContent=(((o.pickRemark||'')+'').trim())||'-';
+  document.getElementById('d_droploc').textContent=o.dropLoc;
+  document.getElementById('d_dropaddr').textContent=o.dropAddr||'—';
+  document.getElementById('d_dropcontact').textContent=o.dropContact||'Farid Zainal · 019-887 6543';
+  document.getElementById('d_dropremark').textContent=(((o.dropRemark||'')+'').trim())||'-';
+  document.getElementById('d_timeline').innerHTML=buildTimeline(o.pay,o.del,o.created,o.failReason);
+  document.getElementById('d_nextaction').innerHTML = o.del==='Pickup Failed'
+    ? '⚠ Next Action: Reschedule pickup (1st reschedule — no re-charge) or Cancel & refund.'
+    : (o.del==='Delivery Failed' ? '⚠ Next Action: Re-attempt delivery (may incur extra door charge), hold at destination hub for self-collection, or return to origin.' : '');
+  go('details');
+}
+function finishToDetails(){
+  const f=job.fee;
+  fillDetails({no:job.no,plate:job.plate,engine:job.engine,chassis:job.chassis,colour:job.colour,type:job.type,created:job.created,model:job.model,year:job.year,service:job.service,km:job.km,pickRemark:job.pickRemark,dropRemark:job.dropRemark,einv:job.einv,payref:job.payref,pay:'OK',del:'Pending Pick Up',pickLoc:job.pickLoc,pickAddr:job.pickAddr,pickDate:job.pickDate,dropLoc:job.dropLoc,dropAddr:job.dropAddr,total:f.total});
+}
+
+/* ---------- Listing ---------- */
+/* Sample rows cover every valid combination of Payment / Delivery / (derived) Tx Status */
+const sample=[
+  {no:'LG260012',plate:'WXP1123',svc:'Door-to-Door',pickState:'Selangor',dropState:'Penang',created:'28-07-2026 10:22am',pick:'30-07-2026',pay:'OK',del:'Delivered',einv:'OK',remarks:'',total:871.60,payref:'PAY260728000012-VVG3554',engine:'2NR1234567',chassis:'MHFXX1234567',model:'Toyota / Vios 1.5 G',year:'2020'},
+  {no:'LG260011',plate:'JHK4520',svc:'Hub-to-Hub',pickState:'Johor',dropState:'Selangor',created:'27-07-2026 03:40pm',pick:'29-07-2026',pay:'OK',del:'In Transit',einv:'OK',remarks:'',total:471.60,payref:'PAY260727000011-BKG7781',engine:'K12B998877',chassis:'MA3XX998877',model:'Proton / X70 Premium',year:'2023'},
+  {no:'LG260010',plate:'BMT8891',svc:'Door Pickup / Hub Drop-off',pickState:'Kuala Lumpur',dropState:'Melaka',created:'27-07-2026 09:05am',pick:'28-07-2026',pay:'OK',del:'Pending Pick Up',einv:'OK',remarks:'',total:521.60,payref:'PAY260727000010-GRS2290',engine:'M15A778812',chassis:'JMBXX778812',model:'Mitsubishi / ASX',year:'2019'},
+  {no:'LG260009',plate:'PGT2210',svc:'Hub-to-Hub',pickState:'Penang',dropState:'Perak',created:'26-07-2026 02:18pm',pick:'—',pay:'Pending',del:'-',einv:'-',remarks:'',total:321.60,payref:'',engine:'HR15112233',chassis:'PNVXX112233',model:'Nissan / Almera',year:'2018'},
+  {no:'LG260008',plate:'VCA5567',svc:'Door-to-Door',pickState:'Selangor',dropState:'Kelantan',created:'25-07-2026 11:47am',pick:'—',pay:'Failed',del:'-',einv:'-',remarks:'IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. 你的RHB银行余额不足.',total:1071.60,payref:'',engine:'G16556677',chassis:'SZKXX556677',model:'Suzuki / Swift',year:'2017'},
+  {no:'LG260007',plate:'BJT3345',svc:'Door-to-Door',pickState:'Selangor',dropState:'Johor',created:'24-07-2026 04:12pm',pick:'26-07-2026',pay:'OK',del:'Delivered',einv:'OK',remarks:'',total:871.60,payref:'PAY260724000007-KRV5540',engine:'DA17667788',chassis:'HYNXX667788',model:'Honda / City 1.5',year:'2021'},
+  {no:'LG260006',plate:'KEN9902',svc:'Door Pickup / Hub Drop-off',pickState:'Penang',dropState:'Johor',created:'24-07-2026 09:33am',pick:'25-07-2026',pay:'OK',del:'In Transit',einv:'OK',remarks:'',total:1221.60,payref:'PAY260724000006-SBW1123',engine:'ZR20443322',chassis:'MZDXX443322',model:'Mazda / CX-5',year:'2022'},
+  {no:'LG260005',plate:'WPQ1188',svc:'Hub-to-Hub',pickState:'Selangor',dropState:'Melaka',created:'23-07-2026 02:05pm',pick:'25-07-2026',pay:'OK',del:'Pending Pick Up',einv:'OK',remarks:'',total:321.60,payref:'PAY260723000005-GBK8890',engine:'EP30221100',chassis:'PRDXX221100',model:'Perodua / Bezza 1.3',year:'2020'},
+  {no:'LG260004',plate:'JMT4402',svc:'Door-to-Door',pickState:'Selangor',dropState:'Johor',created:'01-08-2026 08:20am',pick:'03-08-2026',pay:'OK',del:'Pickup Failed',einv:'OK',remarks:'Pickup failed — vehicle not ready',total:871.60,payref:'PAY260801000004-JMT01',failReason:'Vehicle not ready at pickup (still under grooming). To reschedule.',engine:'2NR9988776',chassis:'MHFXX998877',model:'Toyota / Vios 1.5 G',year:'2021'},
+  {no:'LG260003',plate:'BQT7781',svc:'Door-to-Door',pickState:'Penang',dropState:'Kedah',created:'31-07-2026 01:15pm',pick:'02-08-2026',pay:'OK',del:'Delivery Failed',einv:'OK',remarks:'Delivery failed — recipient absent',total:521.60,payref:'PAY260731000003-BQT01',failReason:'Recipient absent at drop-off address. Vehicle held at destination hub.',engine:'HR15221133',chassis:'PNVXX221133',model:'Nissan / Almera',year:'2019'}
+];
+/* Apply EM Trx No + Payment ID formats to sample rows */
+sample.forEach((r,i)=>{ const c=parseDMY(r.created); if(c){ const run=12-i; r.no=fmtTrxNo(c,run); if(r.payref) r.payref=fmtPayId(c,run); } });
+/* Payment: OK / Pending / Failed. Delivery: - / Pending Pick Up / In Transit / Delivered.
+   Tx Status derived: Approved only when Payment=OK AND Delivery=Delivered, else Pending. */
+function payCls(s){s=(s||'').toLowerCase();if(s==='ok')return'green';if(s==='pending')return'blue';return'red';}
+function delCls(s){s=(s||'').toLowerCase();if(s==='delivered')return'green';if(s==='in transit')return'blue';if(s==='pending pick up')return'blue';if(s==='pickup failed'||s==='delivery failed')return'red';return'grey';}
+function txCls(s){s=(s||'').toLowerCase();if(s==='completed')return'green';if(s==='failed')return'red';return'blue';}
+function einvCls(s){s=(s||'').toLowerCase();if(s==='ok')return'green';if(s==='failed')return'red';return'grey';}
+function txStatus(r){ if(r.pay==='Failed'||r.del==='Pickup Failed'||r.del==='Delivery Failed')return'Failed'; return (r.pay==='OK' && r.del==='Delivered')?'Completed':'Pending'; }
+const stColors={green:'var(--green)',red:'var(--red)',blue:'var(--blue)',amber:'var(--amber)',grey:'var(--grey)'};
+function rowHtml(r,i){
+  const j=JSON.stringify(r).replace(/'/g,"&#39;");
+  const tx=txStatus(r);
+  return `<tr>
+    <td>${i}</td><td>${r.plate}</td><td>${r.no}</td><td>${r.created}</td>
+    <td class="l">${r.pickState}</td><td class="l">${r.dropState}</td>
+    <td><span class="st ${payCls(r.pay)}">${r.pay}</span></td>
+    <td><span class="st ${delCls(r.del)}">${r.del}</span></td>
+    <td><span class="st ${txCls(tx)}">${tx}</span></td>
+    <td><span class="st ${einvCls(r.einv)}">${r.einv}</span></td>
+    <td class="l">${r.remarks||'-'}</td>
+    <td><a class="link" onclick='openExisting(${j})'>View</a></td></tr>`;
+}
+let liveRows=[...sample];
+function renderRows(rows){
+  const colspan = 12;
+  document.getElementById('listingBody').innerHTML = rows.length
+    ? rows.map((r,i)=>rowHtml(r,i+1)).join('')
+    : `<tr><td colspan="${colspan}" style="padding:22px;color:var(--muted)">No records found.</td></tr>`;
+}
+function renderListing(){renderRows(liveRows);}
+function renderPrompt(){ document.getElementById('listingBody').innerHTML=''; lastResults=null; updateCount(); }
+function addToListing(){liveRows.unshift({no:job.no,plate:job.plate,svc:job.service,pickState:job.pickState,dropState:job.dropState,created:job.created,pick:job.pickDate,pay:'OK',del:'Pending Pick Up',einv:'OK',remarks:'',total:job.fee.total,payref:job.payref,engine:job.engine,chassis:job.chassis,model:job.model,year:job.year});}
+/* ---- Working Search & Filter ---- */
+function parseDMY(s){ if(!s)return null; const t=String(s).trim().split(' ')[0]; const m=t.match(/^(\d{2})-(\d{2})-(\d{4})$/); return m?new Date(+m[3],+m[2]-1,+m[1]):null; }
+function inRange(dt,from,to){ if(!dt)return false; if(from&&dt<new Date(from))return false; if(to){const t=new Date(to);t.setHours(23,59,59,999);if(dt>t)return false;} return true; }
+function applyFilter(){
+  const gv=id=>{const e=document.getElementById(id);return e?(e.value||'').trim():'';};
+  const veh=gv('fltVehicle').toUpperCase(), trx=gv('fltTrx').toUpperCase();
+  const pay=gv('fltPay'), del=gv('fltDel'), txf=gv('fltTx');
+  const cF=gv('fltCreatedFrom'), cT=gv('fltCreatedTo'), pF=gv('fltPickFrom'), pT=gv('fltPickTo');
+  const out=liveRows.filter(r=>{
+    if(veh && !r.plate.toUpperCase().includes(veh))return false;
+    if(trx && !r.no.toUpperCase().includes(trx))return false;
+    if(pay && pay!=='All' && r.pay!==pay)return false;
+    if(del && del!=='All' && r.del!==del)return false;
+    if(txf && txf!=='All' && txStatus(r)!==txf)return false;
+    if((cF||cT) && !inRange(parseDMY(r.created),cF,cT))return false;
+    if((pF||pT) && !inRange(parseDMY(r.pick),pF,pT))return false;
+    return true;
+  });
+  lastResults=out;
+  renderRows(out);
+  updateCount();
+}
+function resetFilter(){
+  ['fltVehicle','fltTrx','fltCreatedFrom','fltCreatedTo','fltPickFrom','fltPickTo','fltPay','fltDel','fltTx','fltSvc'].forEach(id=>{
+    const e=document.getElementById(id); if(!e)return;
+    if(e.tagName==='SELECT')e.selectedIndex=0; else e.value='';
+  });
+  renderPrompt();
+  toast('Filter reset');
+}
+function openExisting(r){
+  const seed=parseInt(r.no.slice(-3))||0;
+  fillDetails({no:r.no,plate:r.plate,engine:r.engine,chassis:r.chassis,colour:r.colour,type:r.vtype,created:r.created,model:r.model,year:r.year,service:r.svc,km:distanceKm(r.pickState,r.dropState),pickRemark:r.pickRemark,dropRemark:r.dropRemark,failReason:r.failReason,einv:'E'+r.no.slice(-6)+'0',payref:r.payref||('PAY'+r.no.slice(-6)),pay:r.pay,del:r.del,pickLoc:r.pickState,pickAddr:addrFor(r.pickState),pickContact:contactFor(seed),pickDate:r.pick,dropLoc:r.dropState,dropAddr:addrFor(r.dropState),dropContact:contactFor(seed+1),total:r.total});
+}
+
+updateSubLeft();
+/* Date inputs: calendar-only, no typing */
+document.querySelectorAll('input[type=date]').forEach(i=>{
+  i.addEventListener('keydown',e=>e.preventDefault());
+  i.addEventListener('paste',e=>e.preventDefault());
+});
+renderPrompt();
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# https://staging.eauto.my/obs/form/a3c13510-2cb6-4279-a556-a95e684e092b?id=KCH%2F1744139&s=0435d069ead9bb9ea38923116c088296a892870528874c6668e4bd36473810f9&v=1
+- img
+- text: "Support Team: 03-2779 8899 Application email: apply@eauto.my WA : 012 200 1324 eAuto Application Form 1 Business Information 2 Upload Files 3 Acknowledgement 4 Registration Documents Success Notification: The registration documents have been successfully submitted. Our team will get back to you soon with the next steps! Registration Documents Please upload all relevant Registration Documents to complete the application 1 RHB Offer Letter * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB"
+- link "View Sample":
+  - /url: /obs/documents/S2.1 RHB Offer Letter.pdf
+  - img
+  - text: View Sample
+- text: "document-0.pdf 2 RHB Direct Debit Application Form * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB"
+- link "View Sample":
+  - /url: /obs/documents/S2.2 RHB Direct Debit Application Form.pdf
+  - img
+  - text: View Sample
+- text: "document-1.pdf 3 RHB LoA e-TukarMilik * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB"
+- link "View Sample":
+  - /url: /obs/documents/S2.3 RHB LoA e-TukarMilik.pdf
+  - img
+  - text: View Sample
+- text: "document-2.pdf 4 RHB Bank Statement Cover / RHB Welcome Letter * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB"
+- link "View Sample":
+  - /url: /obs/documents/S2.4 Sample - RHB Bank Account Welcome Letter.pdf
+  - img
+  - text: View Sample
+- text: "document-3.pdf 5 eAuto LoA e-TukarMilik * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB"
+- link "View Sample":
+  - /url: /obs/documents/S3.1 eAUTO LoA eTukarMilik.pdf
+  - img
+  - text: View Sample
+- text: "document-4.pdf 6 LHDN Company Tax Compliance Certificate * Up to 2 files allowed: pdf, png, jpg, jpeg. Max Size: 10MB"
+- link "View Sample":
+  - /url: /obs/documents/S3.3 LHDN Sijil Pematuhan Cukai (LHDN Tax Compliance Certificate).pdf
+  - img
+  - text: View Sample
+- text: "document-5.pdf By submitting the required documents via the eAuto portal, I hereby confirm and agree that:"
+- list:
+  - listitem: I am duly authorised to act on behalf of the company/entity named in this application.
+  - listitem: All information and documents provided are true, accurate, complete, and up-to-date.
+  - listitem: I understand that eAuto Sdn Bhd reserves the right to verify the submitted documents with relevant authorities, banks, or third parties, and to request additional documentation or clarification if deemed necessary.
+  - listitem: I acknowledge that submission of documents does not guarantee approval of the application.
+  - listitem: I accept that any false, misleading, or forged information may result in immediate rejection of the application, suspension, or termination of access to eAuto services, without prejudice to any legal action available to eAuto.
+- button "Back"
+- text: Application Form / Version 1.0

@@ -27,9 +27,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ key
     body: JSON.stringify({ body: adfBody }),
   });
 
-  const data = await res.json();
+  const data = await res.json().catch(() => ({})) as Record<string, unknown>;
   if (!res.ok) {
-    return NextResponse.json({ error: data.errorMessages?.[0] ?? "Comment failed" }, { status: res.status });
+    const msgs = data.errorMessages as string[] | undefined;
+    return NextResponse.json({ error: msgs?.[0] ?? "Comment failed" }, { status: res.status });
   }
   return NextResponse.json(data);
 }

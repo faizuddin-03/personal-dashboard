@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in · Blaster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background: var(--green-50);
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+    }
+    .login-shell { width: 100%; max-width: 420px; padding: 24px; }
+    .login-card {
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 28px 28px;
+    }
+    .login-success {
+      background: var(--green-100);
+      border-color: var(--green-200);
+    }
+    .login-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .login-mark {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      background: var(--green-500);
+      color: #fff;
+      display: grid; place-items: center;
+    }
+    .login-name {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--green-800);
+      letter-spacing: -0.01em;
+    }
+    .login-heading {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .login-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .login-field { margin-bottom: 12px; }
+    .login-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+    }
+    .login-input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px;
+      font-size: 14px;
+      border: 0.5px solid var(--border-strong);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      font-family: inherit;
+    }
+    .login-input:focus {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-focus);
+    }
+    .login-input[data-error="true"] { border-color: var(--red-500); }
+    .login-error {
+      font-size: 12px;
+      color: var(--red-500);
+      margin-top: 6px;
+    }
+    .login-btn {
+      width: 100%;
+      height: 38px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--green-500);
+      color: #fff;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 4px;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .login-btn:hover { background: var(--accent-hover); }
+    .login-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .login-helper {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      text-align: center;
+    }
+    .login-success-icon {
+      width: 44px; height: 44px;
+      border-radius: 11px;
+      background: var(--green-500);
+      color: #fff;
+      display: grid; place-items: center;
+      margin: 0 auto 14px;
+    }
+    .login-resend {
+      background: transparent; border: 0;
+      color: var(--green-700);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-family: inherit;
+    }
+    .login-resend:disabled { color: var(--text-subtle); cursor: not-allowed; }
+    .login-resend:not(:disabled):hover { text-decoration: underline; }
+    .login-foot {
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--text-subtle);
+      text-align: center;
+    }
+    .login-foot a { color: inherit; }
+  </style>
+</head>
+<body>
+  <div class="login-shell">
+    <div id="card" class="login-card">
+      <div class="login-brand">
+        <span class="login-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/>
+          </svg>
+        </span>
+        <span class="login-name">Blaster</span>
+      </div>
+
+      <div id="form-view">
+        <h1 class="login-heading">Sign in to your dashboard</h1>
+        <p class="login-sub">WhatsApp Business outbound messaging · Modefair MY</p>
+
+        <form id="form">
+          <div class="login-field">
+            <label for="email">Email</label>
+            <input id="email" class="login-input" type="email" autocomplete="email" placeholder="you@modefair.com" required />
+            <div id="error" class="login-error" hidden></div>
+          </div>
+          <button id="submit" class="login-btn" type="submit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Send magic link
+          </button>
+          <p class="login-helper">We'll email you a one-time login link. No password needed.</p>
+        </form>
+      </div>
+
+      <div id="success-view" hidden>
+        <div class="login-success-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h1 class="login-heading" style="text-align: center;">Check your email</h1>
+        <p class="login-sub" style="text-align: center; margin-bottom: 18px;">
+          We sent a magic link to <b id="success-email" style="color: var(--text);"></b>
+        </p>
+        <p class="login-helper" style="margin: 0 0 8px;">
+          The link expires in 15 minutes. Didn't receive it?
+        </p>
+        <div style="text-align: center;">
+          <button id="resend" class="login-resend" disabled>Resend in <span id="countdown">30</span>s</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-foot">
+      <a href="index.html">Skip and explore the dashboard demo →</a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("form");
+    const emailInput = document.getElementById("email");
+    const errorEl = document.getElementById("error");
+    const card = document.getElementById("card");
+    const formView = document.getElementById("form-view");
+    const successView = document.getElementById("success-view");
+    const successEmail = document.getElementById("success-email");
+    const resendBtn = document.getElementById("resend");
+    const countdownEl = document.getElementById("countdown");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const v = emailInput.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+        emailInput.dataset.error = "true";
+        errorEl.textContent = "Enter a valid email address.";
+        errorEl.hidden = false;
+        return;
+      }
+      successEmail.textContent = v;
+      formView.hidden = true;
+      successView.hidden = false;
+      card.classList.add("login-success");
+      startCountdown();
+    });
+
+    emailInput.addEventListener("input", () => {
+      emailInput.dataset.error = "false";
+      errorEl.hidden = true;
+    });
+
+    function startCountdown() {
+      let n = 30;
+      countdownEl.textContent = n;
+      resendBtn.disabled = true;
+      resendBtn.firstChild.nodeValue = "Resend in ";
+      const iv = setInterval(() => {
+        n--;
+        if (n <= 0) {
+          clearInterval(iv);
+          resendBtn.disabled = false;
+          resendBtn.innerHTML = "Resend magic link";
+        } else {
+          countdownEl.textContent = n;
+        }
+      }, 1000);
+    }
+
+    resendBtn.addEventListener("click", () => {
+      if (resendBtn.disabled) return;
+      startCountdown();
+    });
+  </script>
+</body>
+</html>

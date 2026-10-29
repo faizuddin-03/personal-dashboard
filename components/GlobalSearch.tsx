@@ -35,7 +35,8 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
       setQuery("");
       setResults([]);
       setSelected(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      const t = setTimeout(() => inputRef.current?.focus(), 50);
+      return () => clearTimeout(t);
     }
   }, [isOpen]);
 
@@ -113,8 +114,9 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
     }
 
     try {
+      const parsed = JSON.parse(localStorage.getItem("test_tracker_crs") ?? "[]");
       const testData: { id: string; crKey: string; crSummary: string; suites: { id: string; title: string; cases: { id: string; tsNumber: string }[] }[] }[] =
-        JSON.parse(localStorage.getItem("test_tracker_crs") ?? "[]");
+        Array.isArray(parsed) ? parsed : [];
       for (const cr of testData) {
         if (cr.crKey.toLowerCase().includes(q) || cr.crSummary.toLowerCase().includes(q)) {
           out.push({ id: cr.id, type: "test", title: cr.crKey, subtitle: cr.crSummary, href: "/tests" });
@@ -182,7 +184,7 @@ export default function GlobalSearch({ isOpen, onClose }: Props) {
             const Icon = typeIcon[r.type];
             return (
               <button
-                key={r.id}
+                key={`${r.type}-${r.id}`}
                 onClick={() => { router.push(r.href); onClose(); }}
                 onMouseEnter={() => setSelected(i)}
                 className={clsx(

@@ -1,0 +1,1857 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: reschedule-handling.spec.ts >> Reschedule & Handling >> Cross-Portal >> Reschedule failed appointment — should be blocked for UCD
+- Location: tests\service-hub\specs\reschedule-handling.spec.ts:316:9
+
+# Error details
+
+```
+TimeoutError: locator.click: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('.btn-fail').first()
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - text: "Reference No.:"
+          - textbox [ref=e6]
+        - generic [ref=e7]:
+          - text: "Company Name:"
+          - textbox [ref=e8]
+        - generic [ref=e9]:
+          - generic [ref=e10]: "Date Requested From :"
+          - textbox [ref=e11]
+        - generic [ref=e12]:
+          - generic [ref=e13]: "Date Requested To :"
+          - textbox [ref=e14]
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - text: "Company ROC:"
+          - textbox [ref=e17]
+        - generic [ref=e18]:
+          - text: "Delivery Date From:"
+          - textbox [ref=e19]
+        - generic [ref=e20]:
+          - text: "Delivery Date To:"
+          - textbox [ref=e21]
+        - generic [ref=e22]:
+          - text: "Delivery Status:"
+          - combobox [ref=e23]:
+            - option "All" [selected]
+            - option "New"
+            - option "Arranged"
+            - option "Delivered"
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - text: "Appointment Date From:"
+          - textbox [ref=e26]
+        - generic [ref=e27]:
+          - text: "Appointment Date To:"
+          - textbox [ref=e28]
+        - generic [ref=e29]:
+          - text: "Installation Status:"
+          - combobox [ref=e30]:
+            - option "All"
+            - option "New"
+            - option "Pending" [selected]
+            - option "Completed"
+            - option "Failed"
+            - option "Cancelled"
+        - generic [ref=e31]:
+          - text: "Time Slot:"
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - checkbox "10am - 12pm" [checked] [ref=e34]
+              - text: 10am - 12pm
+            - generic [ref=e35]:
+              - checkbox "2pm - 4pm" [checked] [ref=e36]
+              - text: 2pm - 4pm
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - text: "Payment Status:"
+          - combobox [ref=e39]:
+            - option "All" [selected]
+            - option "Paid"
+            - option "Pending"
+            - option "Failed"
+            - option "New"
+        - generic [ref=e40]:
+          - text: "LHDN Response Status:"
+          - combobox [ref=e41]:
+            - option "All" [selected]
+            - option "OK"
+            - option "Failed"
+            - option "-"
+            - option "N/A"
+        - generic [ref=e42]:
+          - button "Search" [ref=e43]
+          - text: Export Reset |
+          - button "Appointment Calendar" [ref=e44]
+    - generic [ref=e45]: Biometric Device Purchase & Software Installation Listing
+    - generic [ref=e46]:
+      - generic [ref=e47]: 70 record(s) in total
+      - table [ref=e49]:
+        - rowgroup [ref=e69]:
+          - row "# Reference No. Date Requested Company Name Company ROC Device Delivery Date Installation Request Appointment Date Time Slot Payment Status LHDN Response Status Delivery Status Installation Status Date Completed Remarks Special Remarks Action" [ref=e70]:
+            - columnheader "#" [ref=e71]
+            - columnheader "Reference No." [ref=e72]
+            - columnheader "Date Requested" [ref=e73]
+            - columnheader "Company Name" [ref=e74]
+            - columnheader "Company ROC" [ref=e75]
+            - columnheader "Device" [ref=e76]
+            - columnheader "Delivery Date" [ref=e77]
+            - columnheader "Installation Request" [ref=e78]
+            - columnheader "Appointment Date" [ref=e79]
+            - columnheader "Time Slot" [ref=e80]
+            - columnheader "Payment Status" [ref=e81]
+            - columnheader "LHDN Response Status" [ref=e82]
+            - columnheader "Delivery Status" [ref=e83]
+            - columnheader "Installation Status" [ref=e84]
+            - columnheader "Date Completed" [ref=e85]
+            - columnheader "Remarks" [ref=e86]
+            - columnheader "Special Remarks" [ref=e87]
+            - columnheader "Action" [ref=e88]
+        - rowgroup [ref=e89]:
+          - row "1 SRI67000112 15-07-2026 10:46 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e90]:
+            - cell "1" [ref=e91]
+            - cell "SRI67000112" [ref=e92]
+            - cell "15-07-2026 10:46" [ref=e93]:
+              - text: 15-07-2026
+              - text: 10:46
+            - cell "FAIZUDDIN AUTO TEST" [ref=e94]
+            - cell "-" [ref=e95]
+            - cell "-" [ref=e96]
+            - cell "-" [ref=e97]
+            - cell "1" [ref=e98]
+            - cell "31-07-2026" [ref=e99]
+            - cell "10am - 12pm" [ref=e100]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e101]
+            - cell "-" [ref=e102]
+            - cell "-" [ref=e103]
+            - cell "Pending" [ref=e104]
+            - cell "-" [ref=e105]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e106]
+            - cell "No" [ref=e107]
+            - cell "View | Cancel" [ref=e108]:
+              - link "View" [active] [ref=e109] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=a1a95627-bac9-47de-9f95-7ec64969af9b&apptId=62beceeb-dca0-4888-ab18-27d6f435cd3d
+              - text: "|"
+              - link "Cancel" [ref=e110] [cursor=pointer]:
+                - /url: "#"
+          - row "2 SRI67000111 15-07-2026 10:40 QA TEST 123 CYCLE & CARRIAGE (M') <> LLP. 1285516-A - - 1 23-07-2026 2pm - 4pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e111]:
+            - cell "2" [ref=e112]
+            - cell "SRI67000111" [ref=e113]
+            - cell "15-07-2026 10:40" [ref=e114]:
+              - text: 15-07-2026
+              - text: 10:40
+            - cell "QA TEST 123 CYCLE & CARRIAGE (M') <> LLP." [ref=e115]
+            - cell "1285516-A" [ref=e116]
+            - cell "-" [ref=e117]
+            - cell "-" [ref=e118]
+            - cell "1" [ref=e119]
+            - cell "23-07-2026" [ref=e120]
+            - cell "2pm - 4pm" [ref=e121]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e122]
+            - cell "OK" [ref=e123]
+            - cell "-" [ref=e124]
+            - cell "Pending" [ref=e125]
+            - cell "-" [ref=e126]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e127]
+            - cell "No" [ref=e128]
+            - cell "View | Cancel" [ref=e129]:
+              - link "View" [ref=e130] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=f202b42c-0ef4-465c-a49b-87ffae55eaf3&apptId=f729600e-ee89-4a8b-a2ce-90c88d5a7b4d
+              - text: "|"
+              - link "Cancel" [ref=e131] [cursor=pointer]:
+                - /url: "#"
+          - row "3 SRI67000110 15-07-2026 10:37 FAIZUDDIN AUTO TEST 030311-A - - 1 24-07-2026 2pm - 4pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e132]:
+            - cell "3" [ref=e133]
+            - cell "SRI67000110" [ref=e134]
+            - cell "15-07-2026 10:37" [ref=e135]:
+              - text: 15-07-2026
+              - text: 10:37
+            - cell "FAIZUDDIN AUTO TEST" [ref=e136]
+            - cell "030311-A" [ref=e137]
+            - cell "-" [ref=e138]
+            - cell "-" [ref=e139]
+            - cell "1" [ref=e140]
+            - cell "24-07-2026" [ref=e141]
+            - cell "2pm - 4pm" [ref=e142]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e143]
+            - cell "OK" [ref=e144]
+            - cell "-" [ref=e145]
+            - cell "Pending" [ref=e146]
+            - cell "-" [ref=e147]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e148]
+            - cell "No" [ref=e149]
+            - cell "View | Cancel" [ref=e150]:
+              - link "View" [ref=e151] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=7595fd9b-8b15-4ba6-b35b-279018f749e6&apptId=dce66ff1-624c-4420-9a88-a279a665097c
+              - text: "|"
+              - link "Cancel" [ref=e152] [cursor=pointer]:
+                - /url: "#"
+          - row "4 SRI67000109 15-07-2026 10:36 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e153]:
+            - cell "4" [ref=e154]
+            - cell "SRI67000109" [ref=e155]
+            - cell "15-07-2026 10:36" [ref=e156]:
+              - text: 15-07-2026
+              - text: 10:36
+            - cell "FAIZUDDIN AUTO TEST" [ref=e157]
+            - cell "-" [ref=e158]
+            - cell "-" [ref=e159]
+            - cell "-" [ref=e160]
+            - cell "1" [ref=e161]
+            - cell "31-07-2026" [ref=e162]
+            - cell "10am - 12pm" [ref=e163]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e164]
+            - cell "-" [ref=e165]
+            - cell "-" [ref=e166]
+            - cell "Pending" [ref=e167]
+            - cell "-" [ref=e168]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e169]
+            - cell "No" [ref=e170]
+            - cell "View | Cancel" [ref=e171]:
+              - link "View" [ref=e172] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=d8257140-4843-4e4d-9e7a-3a8455c88bc6&apptId=b0175483-0bd9-4131-bd13-58128606e586
+              - text: "|"
+              - link "Cancel" [ref=e173] [cursor=pointer]:
+                - /url: "#"
+          - row "5 SRI67000106 15-07-2026 10:05 FAIZUDDIN AUTO TEST 030311-A - - 1 24-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e174]:
+            - cell "5" [ref=e175]
+            - cell "SRI67000106" [ref=e176]
+            - cell "15-07-2026 10:05" [ref=e177]:
+              - text: 15-07-2026
+              - text: 10:05
+            - cell "FAIZUDDIN AUTO TEST" [ref=e178]
+            - cell "030311-A" [ref=e179]
+            - cell "-" [ref=e180]
+            - cell "-" [ref=e181]
+            - cell "1" [ref=e182]
+            - cell "24-07-2026" [ref=e183]
+            - cell "10am - 12pm" [ref=e184]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e185]
+            - cell "OK" [ref=e186]
+            - cell "-" [ref=e187]
+            - cell "Pending" [ref=e188]
+            - cell "-" [ref=e189]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e190]
+            - cell "No" [ref=e191]
+            - cell "View | Cancel" [ref=e192]:
+              - link "View" [ref=e193] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=477a005d-8efa-47b3-a060-d4c87a0e9985&apptId=df67ffa3-21a4-49dd-82dd-7c8410d87cf1
+              - text: "|"
+              - link "Cancel" [ref=e194] [cursor=pointer]:
+                - /url: "#"
+          - row "6 SRB67000105 15-07-2026 10:04 FAIZUDDIN AUTO TEST 030311-A 2 - 1 23-07-2026 2pm - 4pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e195]:
+            - cell "6" [ref=e196]
+            - cell "SRB67000105" [ref=e197]
+            - cell "15-07-2026 10:04" [ref=e198]:
+              - text: 15-07-2026
+              - text: 10:04
+            - cell "FAIZUDDIN AUTO TEST" [ref=e199]
+            - cell "030311-A" [ref=e200]
+            - cell "2" [ref=e201]
+            - cell "-" [ref=e202]
+            - cell "1" [ref=e203]
+            - cell "23-07-2026" [ref=e204]
+            - cell "2pm - 4pm" [ref=e205]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e206]
+            - cell "OK" [ref=e207]
+            - cell "New" [ref=e208]
+            - cell "Pending" [ref=e209]
+            - cell "-" [ref=e210]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e211]
+            - cell "No" [ref=e212]
+            - cell "View | Cancel" [ref=e213]:
+              - link "View" [ref=e214] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=a3275a41-ed49-4c39-a4f6-888298485f43&apptId=67340631-efac-4474-acbc-11b87bca377b
+              - text: "|"
+              - link "Cancel" [ref=e215] [cursor=pointer]:
+                - /url: "#"
+          - row "7 SRB67000103 15-07-2026 10:04 FAIZUDDIN AUTO TEST 030311-A 2 - 1 23-07-2026 10am - 12pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e216]:
+            - cell "7" [ref=e217]
+            - cell "SRB67000103" [ref=e218]
+            - cell "15-07-2026 10:04" [ref=e219]:
+              - text: 15-07-2026
+              - text: 10:04
+            - cell "FAIZUDDIN AUTO TEST" [ref=e220]
+            - cell "030311-A" [ref=e221]
+            - cell "2" [ref=e222]
+            - cell "-" [ref=e223]
+            - cell "1" [ref=e224]
+            - cell "23-07-2026" [ref=e225]
+            - cell "10am - 12pm" [ref=e226]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e227]
+            - cell "OK" [ref=e228]
+            - cell "New" [ref=e229]
+            - cell "Pending" [ref=e230]
+            - cell "-" [ref=e231]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e232]
+            - cell "No" [ref=e233]
+            - cell "View | Cancel" [ref=e234]:
+              - link "View" [ref=e235] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=dbe6532b-4dd1-49b6-b06b-d58cf64e6034&apptId=ef5910a3-8700-46bd-8284-3b4e250294a0
+              - text: "|"
+              - link "Cancel" [ref=e236] [cursor=pointer]:
+                - /url: "#"
+          - row "8 SRI67000101 15-07-2026 10:03 FAIZUDDIN AUTO TEST 030311-A - - 1 23-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e237]:
+            - cell "8" [ref=e238]
+            - cell "SRI67000101" [ref=e239]
+            - cell "15-07-2026 10:03" [ref=e240]:
+              - text: 15-07-2026
+              - text: 10:03
+            - cell "FAIZUDDIN AUTO TEST" [ref=e241]
+            - cell "030311-A" [ref=e242]
+            - cell "-" [ref=e243]
+            - cell "-" [ref=e244]
+            - cell "1" [ref=e245]
+            - cell "23-07-2026" [ref=e246]
+            - cell "10am - 12pm" [ref=e247]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e248]
+            - cell "OK" [ref=e249]
+            - cell "-" [ref=e250]
+            - cell "Pending" [ref=e251]
+            - cell "-" [ref=e252]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e253]
+            - cell "No" [ref=e254]
+            - cell "View | Cancel" [ref=e255]:
+              - link "View" [ref=e256] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=0e104f87-1861-4ea9-9074-81c511f76505&apptId=35b87e8a-9446-46b1-908c-5a0262439636
+              - text: "|"
+              - link "Cancel" [ref=e257] [cursor=pointer]:
+                - /url: "#"
+          - row "9 SRB67000100 15-07-2026 10:03 FAIZUDDIN AUTO TEST 030311-A 2 - 1 22-07-2026 2pm - 4pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e258]:
+            - cell "9" [ref=e259]
+            - cell "SRB67000100" [ref=e260]
+            - cell "15-07-2026 10:03" [ref=e261]:
+              - text: 15-07-2026
+              - text: 10:03
+            - cell "FAIZUDDIN AUTO TEST" [ref=e262]
+            - cell "030311-A" [ref=e263]
+            - cell "2" [ref=e264]
+            - cell "-" [ref=e265]
+            - cell "1" [ref=e266]
+            - cell "22-07-2026" [ref=e267]
+            - cell "2pm - 4pm" [ref=e268]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e269]
+            - cell "OK" [ref=e270]
+            - cell "New" [ref=e271]
+            - cell "Pending" [ref=e272]
+            - cell "-" [ref=e273]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e274]
+            - cell "No" [ref=e275]
+            - cell "View | Cancel" [ref=e276]:
+              - link "View" [ref=e277] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=c190d6f9-0181-4ed4-ad04-3b0173f2c298&apptId=ad774d08-3422-4197-aebd-0b9a23aee6b1
+              - text: "|"
+              - link "Cancel" [ref=e278] [cursor=pointer]:
+                - /url: "#"
+          - row "10 SRB67000096 15-07-2026 10:02 FAIZUDDIN AUTO TEST 030311-A 2 - 1 22-07-2026 2pm - 4pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e279]:
+            - cell "10" [ref=e280]
+            - cell "SRB67000096" [ref=e281]
+            - cell "15-07-2026 10:02" [ref=e282]:
+              - text: 15-07-2026
+              - text: 10:02
+            - cell "FAIZUDDIN AUTO TEST" [ref=e283]
+            - cell "030311-A" [ref=e284]
+            - cell "2" [ref=e285]
+            - cell "-" [ref=e286]
+            - cell "1" [ref=e287]
+            - cell "22-07-2026" [ref=e288]
+            - cell "2pm - 4pm" [ref=e289]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e290]
+            - cell "OK" [ref=e291]
+            - cell "New" [ref=e292]
+            - cell "Pending" [ref=e293]
+            - cell "-" [ref=e294]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e295]
+            - cell "No" [ref=e296]
+            - cell "View | Cancel" [ref=e297]:
+              - link "View" [ref=e298] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=b8a3f01e-2e3f-4a09-84b7-81d93d339f9f&apptId=d7a363f7-ff26-47fd-9813-1bfcc7cdc1a1
+              - text: "|"
+              - link "Cancel" [ref=e299] [cursor=pointer]:
+                - /url: "#"
+          - row "11 SRI67000093 15-07-2026 10:01 FAIZUDDIN AUTO TEST 030311-A - - 1 22-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 2 unit(s) No View | Cancel" [ref=e300]:
+            - cell "11" [ref=e301]
+            - cell "SRI67000093" [ref=e302]
+            - cell "15-07-2026 10:01" [ref=e303]:
+              - text: 15-07-2026
+              - text: 10:01
+            - cell "FAIZUDDIN AUTO TEST" [ref=e304]
+            - cell "030311-A" [ref=e305]
+            - cell "-" [ref=e306]
+            - cell "-" [ref=e307]
+            - cell "1" [ref=e308]
+            - cell "22-07-2026" [ref=e309]
+            - cell "10am - 12pm" [ref=e310]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e311]
+            - cell "OK" [ref=e312]
+            - cell "-" [ref=e313]
+            - cell "Pending" [ref=e314]
+            - cell "-" [ref=e315]
+            - cell "Split into 1 appointments, 2 unit(s)" [ref=e316]
+            - cell "No" [ref=e317]
+            - cell "View | Cancel" [ref=e318]:
+              - link "View" [ref=e319] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=34377134-6344-4266-912e-ba4b5f6021e5&apptId=48404ce1-51e7-452b-8b6b-745b121bcb78
+              - text: "|"
+              - link "Cancel" [ref=e320] [cursor=pointer]:
+                - /url: "#"
+          - row "12 SRI67000093 15-07-2026 10:01 FAIZUDDIN AUTO TEST 030311-A - - 1 22-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 2 unit(s) No View | Cancel" [ref=e321]:
+            - cell "12" [ref=e322]
+            - cell "SRI67000093" [ref=e323]
+            - cell "15-07-2026 10:01" [ref=e324]:
+              - text: 15-07-2026
+              - text: 10:01
+            - cell "FAIZUDDIN AUTO TEST" [ref=e325]
+            - cell "030311-A" [ref=e326]
+            - cell "-" [ref=e327]
+            - cell "-" [ref=e328]
+            - cell "1" [ref=e329]
+            - cell "22-07-2026" [ref=e330]
+            - cell "10am - 12pm" [ref=e331]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e332]
+            - cell "OK" [ref=e333]
+            - cell "-" [ref=e334]
+            - cell "Pending" [ref=e335]
+            - cell "-" [ref=e336]
+            - cell "Split into 1 appointments, 2 unit(s)" [ref=e337]
+            - cell "No" [ref=e338]
+            - cell "View | Cancel" [ref=e339]:
+              - link "View" [ref=e340] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=34377134-6344-4266-912e-ba4b5f6021e5&apptId=50e9588c-0b25-4e4a-83f3-82184a81a988
+              - text: "|"
+              - link "Cancel" [ref=e341] [cursor=pointer]:
+                - /url: "#"
+          - row "13 SRI67000087 15-07-2026 09:58 FAIZUDDIN AUTO TEST 030311-A - - 1 22-07-2026 2pm - 4pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e342]:
+            - cell "13" [ref=e343]
+            - cell "SRI67000087" [ref=e344]
+            - cell "15-07-2026 09:58" [ref=e345]:
+              - text: 15-07-2026
+              - text: 09:58
+            - cell "FAIZUDDIN AUTO TEST" [ref=e346]
+            - cell "030311-A" [ref=e347]
+            - cell "-" [ref=e348]
+            - cell "-" [ref=e349]
+            - cell "1" [ref=e350]
+            - cell "22-07-2026" [ref=e351]
+            - cell "2pm - 4pm" [ref=e352]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e353]
+            - cell "OK" [ref=e354]
+            - cell "-" [ref=e355]
+            - cell "Pending" [ref=e356]
+            - cell "-" [ref=e357]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e358]
+            - cell "No" [ref=e359]
+            - cell "View | Cancel" [ref=e360]:
+              - link "View" [ref=e361] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=f39229ac-0e62-4bd8-a4ca-4735423b4651&apptId=e8448c70-79b1-488c-96c8-29af980ee5a4
+              - text: "|"
+              - link "Cancel" [ref=e362] [cursor=pointer]:
+                - /url: "#"
+          - row "14 SRI67000086 15-07-2026 09:58 FAIZUDDIN AUTO TEST 030311-A - - 1 20-07-2026 2pm - 4pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e363]:
+            - cell "14" [ref=e364]
+            - cell "SRI67000086" [ref=e365]
+            - cell "15-07-2026 09:58" [ref=e366]:
+              - text: 15-07-2026
+              - text: 09:58
+            - cell "FAIZUDDIN AUTO TEST" [ref=e367]
+            - cell "030311-A" [ref=e368]
+            - cell "-" [ref=e369]
+            - cell "-" [ref=e370]
+            - cell "1" [ref=e371]
+            - cell "20-07-2026" [ref=e372]
+            - cell "2pm - 4pm" [ref=e373]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e374]
+            - cell "OK" [ref=e375]
+            - cell "-" [ref=e376]
+            - cell "Pending" [ref=e377]
+            - cell "-" [ref=e378]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e379]
+            - cell "No" [ref=e380]
+            - cell "View | Cancel" [ref=e381]:
+              - link "View" [ref=e382] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=870dde64-f06a-44d4-a54f-938470d3b294&apptId=382526e9-c59c-4d1e-95f9-8bcb6b0c405d
+              - text: "|"
+              - link "Cancel" [ref=e383] [cursor=pointer]:
+                - /url: "#"
+          - row "15 SRI67000085 15-07-2026 09:56 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e384]:
+            - cell "15" [ref=e385]
+            - cell "SRI67000085" [ref=e386]
+            - cell "15-07-2026 09:56" [ref=e387]:
+              - text: 15-07-2026
+              - text: 09:56
+            - cell "FAIZUDDIN AUTO TEST" [ref=e388]
+            - cell "-" [ref=e389]
+            - cell "-" [ref=e390]
+            - cell "-" [ref=e391]
+            - cell "1" [ref=e392]
+            - cell "31-07-2026" [ref=e393]
+            - cell "10am - 12pm" [ref=e394]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e395]
+            - cell "-" [ref=e396]
+            - cell "-" [ref=e397]
+            - cell "Pending" [ref=e398]
+            - cell "-" [ref=e399]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e400]
+            - cell "No" [ref=e401]
+            - cell "View | Cancel" [ref=e402]:
+              - link "View" [ref=e403] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=215c0f16-bb68-4278-a7c9-9c9441690a7a&apptId=f806f521-d8a9-478d-9dc2-39b04441a8fb
+              - text: "|"
+              - link "Cancel" [ref=e404] [cursor=pointer]:
+                - /url: "#"
+          - row "16 SRI67000084 15-07-2026 09:56 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 2pm - 4pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e405]:
+            - cell "16" [ref=e406]
+            - cell "SRI67000084" [ref=e407]
+            - cell "15-07-2026 09:56" [ref=e408]:
+              - text: 15-07-2026
+              - text: 09:56
+            - cell "FAIZUDDIN AUTO TEST" [ref=e409]
+            - cell "-" [ref=e410]
+            - cell "-" [ref=e411]
+            - cell "-" [ref=e412]
+            - cell "1" [ref=e413]
+            - cell "31-07-2026" [ref=e414]
+            - cell "2pm - 4pm" [ref=e415]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "-" [ref=e416]
+            - cell "-" [ref=e417]
+            - cell "-" [ref=e418]
+            - cell "Pending" [ref=e419]
+            - cell "-" [ref=e420]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e421]
+            - cell "No" [ref=e422]
+            - cell "View | Cancel" [ref=e423]:
+              - link "View" [ref=e424] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=58e8001a-8d2a-4ad5-9d30-ff4680136497&apptId=9653d62f-901b-49dd-89be-6d1d4b1ece1a
+              - text: "|"
+              - link "Cancel" [ref=e425] [cursor=pointer]:
+                - /url: "#"
+          - row "17 SRI67000083 15-07-2026 09:56 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e426]:
+            - cell "17" [ref=e427]
+            - cell "SRI67000083" [ref=e428]
+            - cell "15-07-2026 09:56" [ref=e429]:
+              - text: 15-07-2026
+              - text: 09:56
+            - cell "FAIZUDDIN AUTO TEST" [ref=e430]
+            - cell "-" [ref=e431]
+            - cell "-" [ref=e432]
+            - cell "-" [ref=e433]
+            - cell "1" [ref=e434]
+            - cell "31-07-2026" [ref=e435]
+            - cell "10am - 12pm" [ref=e436]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e437]
+            - cell "-" [ref=e438]
+            - cell "-" [ref=e439]
+            - cell "Pending" [ref=e440]
+            - cell "-" [ref=e441]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e442]
+            - cell "No" [ref=e443]
+            - cell "View | Cancel" [ref=e444]:
+              - link "View" [ref=e445] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=c39f1658-84bb-43b5-854b-fb2ac2b9fe43&apptId=c13f4ccc-6bd5-412f-887a-b46113bafde5
+              - text: "|"
+              - link "Cancel" [ref=e446] [cursor=pointer]:
+                - /url: "#"
+          - row "18 SRI67000082 15-07-2026 09:56 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e447]:
+            - cell "18" [ref=e448]
+            - cell "SRI67000082" [ref=e449]
+            - cell "15-07-2026 09:56" [ref=e450]:
+              - text: 15-07-2026
+              - text: 09:56
+            - cell "FAIZUDDIN AUTO TEST" [ref=e451]
+            - cell "-" [ref=e452]
+            - cell "-" [ref=e453]
+            - cell "-" [ref=e454]
+            - cell "1" [ref=e455]
+            - cell "31-07-2026" [ref=e456]
+            - cell "10am - 12pm" [ref=e457]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e458]
+            - cell "-" [ref=e459]
+            - cell "-" [ref=e460]
+            - cell "Pending" [ref=e461]
+            - cell "-" [ref=e462]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e463]
+            - cell "No" [ref=e464]
+            - cell "View | Cancel" [ref=e465]:
+              - link "View" [ref=e466] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=8aac9a61-0fac-433f-9d51-971efdfa97f4&apptId=f719b168-3949-475c-8318-4b2248cbb7bf
+              - text: "|"
+              - link "Cancel" [ref=e467] [cursor=pointer]:
+                - /url: "#"
+          - row "19 SRI67000081 15-07-2026 09:56 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 2pm - 4pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e468]:
+            - cell "19" [ref=e469]
+            - cell "SRI67000081" [ref=e470]
+            - cell "15-07-2026 09:56" [ref=e471]:
+              - text: 15-07-2026
+              - text: 09:56
+            - cell "FAIZUDDIN AUTO TEST" [ref=e472]
+            - cell "-" [ref=e473]
+            - cell "-" [ref=e474]
+            - cell "-" [ref=e475]
+            - cell "1" [ref=e476]
+            - cell "31-07-2026" [ref=e477]
+            - cell "2pm - 4pm" [ref=e478]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "-" [ref=e479]
+            - cell "-" [ref=e480]
+            - cell "-" [ref=e481]
+            - cell "Pending" [ref=e482]
+            - cell "-" [ref=e483]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e484]
+            - cell "No" [ref=e485]
+            - cell "View | Cancel" [ref=e486]:
+              - link "View" [ref=e487] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=36154cbf-52f2-461f-bff7-441a41294510&apptId=b1a93a9b-3f73-403f-99fe-df5fc01388e9
+              - text: "|"
+              - link "Cancel" [ref=e488] [cursor=pointer]:
+                - /url: "#"
+          - row "20 SRI67000080 15-07-2026 09:55 FAIZUDDIN AUTO TEST - - - 1 21-07-2026 2pm - 4pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e489]:
+            - cell "20" [ref=e490]
+            - cell "SRI67000080" [ref=e491]
+            - cell "15-07-2026 09:55" [ref=e492]:
+              - text: 15-07-2026
+              - text: 09:55
+            - cell "FAIZUDDIN AUTO TEST" [ref=e493]
+            - cell "-" [ref=e494]
+            - cell "-" [ref=e495]
+            - cell "-" [ref=e496]
+            - cell "1" [ref=e497]
+            - cell "21-07-2026" [ref=e498]
+            - cell "2pm - 4pm" [ref=e499]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "-" [ref=e500]
+            - cell "-" [ref=e501]
+            - cell "-" [ref=e502]
+            - cell "Pending" [ref=e503]
+            - cell "-" [ref=e504]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e505]
+            - cell "No" [ref=e506]
+            - cell "View | Cancel" [ref=e507]:
+              - link "View" [ref=e508] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=8e903566-2b33-46ba-90a2-35d76139068d&apptId=77121ce6-2519-445e-95b5-8ffe4661fbac
+              - text: "|"
+              - link "Cancel" [ref=e509] [cursor=pointer]:
+                - /url: "#"
+          - row "21 SRI67000079 15-07-2026 09:55 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e510]:
+            - cell "21" [ref=e511]
+            - cell "SRI67000079" [ref=e512]
+            - cell "15-07-2026 09:55" [ref=e513]:
+              - text: 15-07-2026
+              - text: 09:55
+            - cell "FAIZUDDIN AUTO TEST" [ref=e514]
+            - cell "-" [ref=e515]
+            - cell "-" [ref=e516]
+            - cell "-" [ref=e517]
+            - cell "1" [ref=e518]
+            - cell "31-07-2026" [ref=e519]
+            - cell "10am - 12pm" [ref=e520]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e521]
+            - cell "-" [ref=e522]
+            - cell "-" [ref=e523]
+            - cell "Pending" [ref=e524]
+            - cell "-" [ref=e525]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e526]
+            - cell "No" [ref=e527]
+            - cell "View | Cancel" [ref=e528]:
+              - link "View" [ref=e529] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=a0726fb8-390b-4a6e-8a06-c2763f3bd365&apptId=0ea463ea-07eb-439b-823a-705ad9610717
+              - text: "|"
+              - link "Cancel" [ref=e530] [cursor=pointer]:
+                - /url: "#"
+          - row "22 SRI67000078 15-07-2026 09:55 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e531]:
+            - cell "22" [ref=e532]
+            - cell "SRI67000078" [ref=e533]
+            - cell "15-07-2026 09:55" [ref=e534]:
+              - text: 15-07-2026
+              - text: 09:55
+            - cell "FAIZUDDIN AUTO TEST" [ref=e535]
+            - cell "-" [ref=e536]
+            - cell "-" [ref=e537]
+            - cell "-" [ref=e538]
+            - cell "1" [ref=e539]
+            - cell "31-07-2026" [ref=e540]
+            - cell "10am - 12pm" [ref=e541]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e542]
+            - cell "-" [ref=e543]
+            - cell "-" [ref=e544]
+            - cell "Pending" [ref=e545]
+            - cell "-" [ref=e546]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e547]
+            - cell "No" [ref=e548]
+            - cell "View | Cancel" [ref=e549]:
+              - link "View" [ref=e550] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=7788d68f-2226-4070-addf-51289162e9f8&apptId=50987b5b-fbc1-4382-9b37-885d5465344d
+              - text: "|"
+              - link "Cancel" [ref=e551] [cursor=pointer]:
+                - /url: "#"
+          - row "23 SRI67000077 15-07-2026 09:55 FAIZUDDIN AUTO TEST - - - 1 21-07-2026 2pm - 4pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e552]:
+            - cell "23" [ref=e553]
+            - cell "SRI67000077" [ref=e554]
+            - cell "15-07-2026 09:55" [ref=e555]:
+              - text: 15-07-2026
+              - text: 09:55
+            - cell "FAIZUDDIN AUTO TEST" [ref=e556]
+            - cell "-" [ref=e557]
+            - cell "-" [ref=e558]
+            - cell "-" [ref=e559]
+            - cell "1" [ref=e560]
+            - cell "21-07-2026" [ref=e561]
+            - cell "2pm - 4pm" [ref=e562]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "-" [ref=e563]
+            - cell "-" [ref=e564]
+            - cell "-" [ref=e565]
+            - cell "Pending" [ref=e566]
+            - cell "-" [ref=e567]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e568]
+            - cell "No" [ref=e569]
+            - cell "View | Cancel" [ref=e570]:
+              - link "View" [ref=e571] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=f7d8acc9-67d4-465b-b251-55d107a3de0d&apptId=4498dd8e-56e9-4afb-8e75-3a01134ebb70
+              - text: "|"
+              - link "Cancel" [ref=e572] [cursor=pointer]:
+                - /url: "#"
+          - row "24 SRI67000076 15-07-2026 09:54 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e573]:
+            - cell "24" [ref=e574]
+            - cell "SRI67000076" [ref=e575]
+            - cell "15-07-2026 09:54" [ref=e576]:
+              - text: 15-07-2026
+              - text: 09:54
+            - cell "FAIZUDDIN AUTO TEST" [ref=e577]
+            - cell "-" [ref=e578]
+            - cell "-" [ref=e579]
+            - cell "-" [ref=e580]
+            - cell "1" [ref=e581]
+            - cell "31-07-2026" [ref=e582]
+            - cell "10am - 12pm" [ref=e583]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e584]
+            - cell "-" [ref=e585]
+            - cell "-" [ref=e586]
+            - cell "Pending" [ref=e587]
+            - cell "-" [ref=e588]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e589]
+            - cell "No" [ref=e590]
+            - cell "View | Cancel" [ref=e591]:
+              - link "View" [ref=e592] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=c571455a-a09c-4244-87f5-87715c8c6f68&apptId=9f749f8a-f36b-4580-809f-261c31769a61
+              - text: "|"
+              - link "Cancel" [ref=e593] [cursor=pointer]:
+                - /url: "#"
+          - row "25 SRB67000075 15-07-2026 09:54 FAIZUDDIN AUTO TEST 030311-A 2 - 1 20-07-2026 2pm - 4pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e594]:
+            - cell "25" [ref=e595]
+            - cell "SRB67000075" [ref=e596]
+            - cell "15-07-2026 09:54" [ref=e597]:
+              - text: 15-07-2026
+              - text: 09:54
+            - cell "FAIZUDDIN AUTO TEST" [ref=e598]
+            - cell "030311-A" [ref=e599]
+            - cell "2" [ref=e600]
+            - cell "-" [ref=e601]
+            - cell "1" [ref=e602]
+            - cell "20-07-2026" [ref=e603]
+            - cell "2pm - 4pm" [ref=e604]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e605]
+            - cell "OK" [ref=e606]
+            - cell "New" [ref=e607]
+            - cell "Pending" [ref=e608]
+            - cell "-" [ref=e609]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e610]
+            - cell "No" [ref=e611]
+            - cell "View | Cancel" [ref=e612]:
+              - link "View" [ref=e613] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=cc356263-dd12-4178-9b1c-ddfae54434a4&apptId=857d8ba9-ad3b-48bb-9085-e1e52dacf3d6
+              - text: "|"
+              - link "Cancel" [ref=e614] [cursor=pointer]:
+                - /url: "#"
+          - row "26 SRI67000074 15-07-2026 09:54 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 2pm - 4pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e615]:
+            - cell "26" [ref=e616]
+            - cell "SRI67000074" [ref=e617]
+            - cell "15-07-2026 09:54" [ref=e618]:
+              - text: 15-07-2026
+              - text: 09:54
+            - cell "FAIZUDDIN AUTO TEST" [ref=e619]
+            - cell "-" [ref=e620]
+            - cell "-" [ref=e621]
+            - cell "-" [ref=e622]
+            - cell "1" [ref=e623]
+            - cell "31-07-2026" [ref=e624]
+            - cell "2pm - 4pm" [ref=e625]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "-" [ref=e626]
+            - cell "-" [ref=e627]
+            - cell "-" [ref=e628]
+            - cell "Pending" [ref=e629]
+            - cell "-" [ref=e630]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e631]
+            - cell "No" [ref=e632]
+            - cell "View | Cancel" [ref=e633]:
+              - link "View" [ref=e634] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=e39de4c1-4734-457b-beb9-428594040090&apptId=1635cd73-8e94-48ab-80cb-3153eeae487a
+              - text: "|"
+              - link "Cancel" [ref=e635] [cursor=pointer]:
+                - /url: "#"
+          - row "27 SRB67000073 15-07-2026 09:54 FAIZUDDIN AUTO TEST 030311-A 2 - 1 20-07-2026 2pm - 4pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e636]:
+            - cell "27" [ref=e637]
+            - cell "SRB67000073" [ref=e638]
+            - cell "15-07-2026 09:54" [ref=e639]:
+              - text: 15-07-2026
+              - text: 09:54
+            - cell "FAIZUDDIN AUTO TEST" [ref=e640]
+            - cell "030311-A" [ref=e641]
+            - cell "2" [ref=e642]
+            - cell "-" [ref=e643]
+            - cell "1" [ref=e644]
+            - cell "20-07-2026" [ref=e645]
+            - cell "2pm - 4pm" [ref=e646]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e647]
+            - cell "OK" [ref=e648]
+            - cell "New" [ref=e649]
+            - cell "Pending" [ref=e650]
+            - cell "-" [ref=e651]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e652]
+            - cell "No" [ref=e653]
+            - cell "View | Cancel" [ref=e654]:
+              - link "View" [ref=e655] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=0c7a6d67-e8d5-4937-8f65-d7616646e656&apptId=70957801-bada-42f7-8ccb-278e2470faea
+              - text: "|"
+              - link "Cancel" [ref=e656] [cursor=pointer]:
+                - /url: "#"
+          - row "28 SRI67000072 15-07-2026 09:54 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e657]:
+            - cell "28" [ref=e658]
+            - cell "SRI67000072" [ref=e659]
+            - cell "15-07-2026 09:54" [ref=e660]:
+              - text: 15-07-2026
+              - text: 09:54
+            - cell "FAIZUDDIN AUTO TEST" [ref=e661]
+            - cell "-" [ref=e662]
+            - cell "-" [ref=e663]
+            - cell "-" [ref=e664]
+            - cell "1" [ref=e665]
+            - cell "31-07-2026" [ref=e666]
+            - cell "10am - 12pm" [ref=e667]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e668]
+            - cell "-" [ref=e669]
+            - cell "-" [ref=e670]
+            - cell "Pending" [ref=e671]
+            - cell "-" [ref=e672]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e673]
+            - cell "No" [ref=e674]
+            - cell "View | Cancel" [ref=e675]:
+              - link "View" [ref=e676] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=e09c55e3-3155-4ff3-abf2-1128e70e3e49&apptId=00bd0e88-9879-4ad5-9c89-c0b3be768c71
+              - text: "|"
+              - link "Cancel" [ref=e677] [cursor=pointer]:
+                - /url: "#"
+          - row "29 SRI67000071 15-07-2026 09:54 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 2pm - 4pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e678]:
+            - cell "29" [ref=e679]
+            - cell "SRI67000071" [ref=e680]
+            - cell "15-07-2026 09:54" [ref=e681]:
+              - text: 15-07-2026
+              - text: 09:54
+            - cell "FAIZUDDIN AUTO TEST" [ref=e682]
+            - cell "-" [ref=e683]
+            - cell "-" [ref=e684]
+            - cell "-" [ref=e685]
+            - cell "1" [ref=e686]
+            - cell "31-07-2026" [ref=e687]
+            - cell "2pm - 4pm" [ref=e688]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "-" [ref=e689]
+            - cell "-" [ref=e690]
+            - cell "-" [ref=e691]
+            - cell "Pending" [ref=e692]
+            - cell "-" [ref=e693]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e694]
+            - cell "No" [ref=e695]
+            - cell "View | Cancel" [ref=e696]:
+              - link "View" [ref=e697] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=6a8fa647-520d-4a1c-85ab-17925a4c3bcf&apptId=0b217969-a73b-4c8c-8564-f94b436797ec
+              - text: "|"
+              - link "Cancel" [ref=e698] [cursor=pointer]:
+                - /url: "#"
+          - row "30 SRI67000070 15-07-2026 09:53 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e699]:
+            - cell "30" [ref=e700]
+            - cell "SRI67000070" [ref=e701]
+            - cell "15-07-2026 09:53" [ref=e702]:
+              - text: 15-07-2026
+              - text: 09:53
+            - cell "FAIZUDDIN AUTO TEST" [ref=e703]
+            - cell "-" [ref=e704]
+            - cell "-" [ref=e705]
+            - cell "-" [ref=e706]
+            - cell "1" [ref=e707]
+            - cell "31-07-2026" [ref=e708]
+            - cell "10am - 12pm" [ref=e709]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e710]
+            - cell "-" [ref=e711]
+            - cell "-" [ref=e712]
+            - cell "Pending" [ref=e713]
+            - cell "-" [ref=e714]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e715]
+            - cell "No" [ref=e716]
+            - cell "View | Cancel" [ref=e717]:
+              - link "View" [ref=e718] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=d2c475be-c32f-4bf2-9653-3deca826a420&apptId=3570febf-6d7b-40c9-bb33-dc2008d6dc93
+              - text: "|"
+              - link "Cancel" [ref=e719] [cursor=pointer]:
+                - /url: "#"
+          - row "31 SRI67000069 15-07-2026 09:53 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e720]:
+            - cell "31" [ref=e721]
+            - cell "SRI67000069" [ref=e722]
+            - cell "15-07-2026 09:53" [ref=e723]:
+              - text: 15-07-2026
+              - text: 09:53
+            - cell "FAIZUDDIN AUTO TEST" [ref=e724]
+            - cell "-" [ref=e725]
+            - cell "-" [ref=e726]
+            - cell "-" [ref=e727]
+            - cell "1" [ref=e728]
+            - cell "31-07-2026" [ref=e729]
+            - cell "10am - 12pm" [ref=e730]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e731]
+            - cell "-" [ref=e732]
+            - cell "-" [ref=e733]
+            - cell "Pending" [ref=e734]
+            - cell "-" [ref=e735]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e736]
+            - cell "No" [ref=e737]
+            - cell "View | Cancel" [ref=e738]:
+              - link "View" [ref=e739] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=88036092-f05e-4ab9-a7ba-adafb99409e6&apptId=0834408f-dd03-430b-936c-96719c6a28f3
+              - text: "|"
+              - link "Cancel" [ref=e740] [cursor=pointer]:
+                - /url: "#"
+          - row "32 SRI67000068 15-07-2026 09:53 FAIZUDDIN AUTO TEST - - - 1 31-07-2026 10am - 12pm - - - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e741]:
+            - cell "32" [ref=e742]
+            - cell "SRI67000068" [ref=e743]
+            - cell "15-07-2026 09:53" [ref=e744]:
+              - text: 15-07-2026
+              - text: 09:53
+            - cell "FAIZUDDIN AUTO TEST" [ref=e745]
+            - cell "-" [ref=e746]
+            - cell "-" [ref=e747]
+            - cell "-" [ref=e748]
+            - cell "1" [ref=e749]
+            - cell "31-07-2026" [ref=e750]
+            - cell "10am - 12pm" [ref=e751]:
+              - text: 10am -
+              - text: 12pm
+            - cell "-" [ref=e752]
+            - cell "-" [ref=e753]
+            - cell "-" [ref=e754]
+            - cell "Pending" [ref=e755]
+            - cell "-" [ref=e756]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e757]
+            - cell "No" [ref=e758]
+            - cell "View | Cancel" [ref=e759]:
+              - link "View" [ref=e760] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=0d268fb9-088f-461b-a908-bff45bcab218&apptId=f225e6b3-ce36-4858-a12d-e2457f4aec77
+              - text: "|"
+              - link "Cancel" [ref=e761] [cursor=pointer]:
+                - /url: "#"
+          - row "33 SRI67000067 15-07-2026 09:39 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D - - 1 20-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e762]:
+            - cell "33" [ref=e763]
+            - cell "SRI67000067" [ref=e764]
+            - cell "15-07-2026 09:39" [ref=e765]:
+              - text: 15-07-2026
+              - text: 09:39
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e766]
+            - cell "1406477-D" [ref=e767]
+            - cell "-" [ref=e768]
+            - cell "-" [ref=e769]
+            - cell "1" [ref=e770]
+            - cell "20-07-2026" [ref=e771]
+            - cell "10am - 12pm" [ref=e772]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e773]
+            - cell "OK" [ref=e774]
+            - cell "-" [ref=e775]
+            - cell "Pending" [ref=e776]
+            - cell "-" [ref=e777]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e778]
+            - cell "No" [ref=e779]
+            - cell "View | Cancel" [ref=e780]:
+              - link "View" [ref=e781] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=4c5e2001-7b4a-4482-91d6-d22eec021a3f&apptId=098294ed-62d9-4fc9-a6e4-202c07c1bc01
+              - text: "|"
+              - link "Cancel" [ref=e782] [cursor=pointer]:
+                - /url: "#"
+          - row "34 SRI67000066 15-07-2026 09:33 STAR NOVA SDN BHD 789012-W - - 1 17-07-2026 2pm - 4pm OK OK - Pending - Split into 2 appointments, 2 unit(s) No View | Cancel" [ref=e783]:
+            - cell "34" [ref=e784]
+            - cell "SRI67000066" [ref=e785]
+            - cell "15-07-2026 09:33" [ref=e786]:
+              - text: 15-07-2026
+              - text: 09:33
+            - cell "STAR NOVA SDN BHD" [ref=e787]
+            - cell "789012-W" [ref=e788]
+            - cell "-" [ref=e789]
+            - cell "-" [ref=e790]
+            - cell "1" [ref=e791]
+            - cell "17-07-2026" [ref=e792]
+            - cell "2pm - 4pm" [ref=e793]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e794]
+            - cell "OK" [ref=e795]
+            - cell "-" [ref=e796]
+            - cell "Pending" [ref=e797]
+            - cell "-" [ref=e798]
+            - cell "Split into 2 appointments, 2 unit(s)" [ref=e799]
+            - cell "No" [ref=e800]
+            - cell "View | Cancel" [ref=e801]:
+              - link "View" [ref=e802] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=d8bb9735-d79e-4610-9331-1cdbe1bc8b83&apptId=f7a019e8-1859-4359-b478-09a715ca2e62
+              - text: "|"
+              - link "Cancel" [ref=e803] [cursor=pointer]:
+                - /url: "#"
+          - row "35 SRI67000066 15-07-2026 09:33 STAR NOVA SDN BHD 789012-W - - 1 29-07-2026 10am - 12pm OK OK - Pending - Split into 2 appointments, 2 unit(s) No View | Cancel" [ref=e804]:
+            - cell "35" [ref=e805]
+            - cell "SRI67000066" [ref=e806]
+            - cell "15-07-2026 09:33" [ref=e807]:
+              - text: 15-07-2026
+              - text: 09:33
+            - cell "STAR NOVA SDN BHD" [ref=e808]
+            - cell "789012-W" [ref=e809]
+            - cell "-" [ref=e810]
+            - cell "-" [ref=e811]
+            - cell "1" [ref=e812]
+            - cell "29-07-2026" [ref=e813]
+            - cell "10am - 12pm" [ref=e814]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e815]
+            - cell "OK" [ref=e816]
+            - cell "-" [ref=e817]
+            - cell "Pending" [ref=e818]
+            - cell "-" [ref=e819]
+            - cell "Split into 2 appointments, 2 unit(s)" [ref=e820]
+            - cell "No" [ref=e821]
+            - cell "View | Cancel" [ref=e822]:
+              - link "View" [ref=e823] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=d8bb9735-d79e-4610-9331-1cdbe1bc8b83&apptId=ab340065-c5f9-415a-8ea1-ed8339763faa
+              - text: "|"
+              - link "Cancel" [ref=e824] [cursor=pointer]:
+                - /url: "#"
+          - row "36 SRI67000065 15-07-2026 09:21 STAR NOVA SDN BHD 789012-W - - 1 17-07-2026 2pm - 4pm OK OK - Pending - Split into 2 appointments, 2 unit(s) No View | Cancel" [ref=e825]:
+            - cell "36" [ref=e826]
+            - cell "SRI67000065" [ref=e827]
+            - cell "15-07-2026 09:21" [ref=e828]:
+              - text: 15-07-2026
+              - text: 09:21
+            - cell "STAR NOVA SDN BHD" [ref=e829]
+            - cell "789012-W" [ref=e830]
+            - cell "-" [ref=e831]
+            - cell "-" [ref=e832]
+            - cell "1" [ref=e833]
+            - cell "17-07-2026" [ref=e834]
+            - cell "2pm - 4pm" [ref=e835]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e836]
+            - cell "OK" [ref=e837]
+            - cell "-" [ref=e838]
+            - cell "Pending" [ref=e839]
+            - cell "-" [ref=e840]
+            - cell "Split into 2 appointments, 2 unit(s)" [ref=e841]
+            - cell "No" [ref=e842]
+            - cell "View | Cancel" [ref=e843]:
+              - link "View" [ref=e844] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=c5a35842-1e61-4657-9ef0-e12e69b15706&apptId=fdaa646a-2b4f-4de2-82b3-38aeb67ed8e1
+              - text: "|"
+              - link "Cancel" [ref=e845] [cursor=pointer]:
+                - /url: "#"
+          - row "37 SRI67000065 15-07-2026 09:21 STAR NOVA SDN BHD 789012-W - - 1 30-07-2026 2pm - 4pm OK OK - Pending - Split into 2 appointments, 2 unit(s) No View | Cancel" [ref=e846]:
+            - cell "37" [ref=e847]
+            - cell "SRI67000065" [ref=e848]
+            - cell "15-07-2026 09:21" [ref=e849]:
+              - text: 15-07-2026
+              - text: 09:21
+            - cell "STAR NOVA SDN BHD" [ref=e850]
+            - cell "789012-W" [ref=e851]
+            - cell "-" [ref=e852]
+            - cell "-" [ref=e853]
+            - cell "1" [ref=e854]
+            - cell "30-07-2026" [ref=e855]
+            - cell "2pm - 4pm" [ref=e856]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e857]
+            - cell "OK" [ref=e858]
+            - cell "-" [ref=e859]
+            - cell "Pending" [ref=e860]
+            - cell "-" [ref=e861]
+            - cell "Split into 2 appointments, 2 unit(s)" [ref=e862]
+            - cell "No" [ref=e863]
+            - cell "View | Cancel" [ref=e864]:
+              - link "View" [ref=e865] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=c5a35842-1e61-4657-9ef0-e12e69b15706&apptId=bdf0dfc4-c4a7-4255-a141-9d1a6e4cfc37
+              - text: "|"
+              - link "Cancel" [ref=e866] [cursor=pointer]:
+                - /url: "#"
+          - row "38 SRI67000064 15-07-2026 09:11 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D - - 1 17-07-2026 2pm - 4pm OK OK - Pending - Split into 3 appointments, 3 unit(s) No View | Cancel" [ref=e867]:
+            - cell "38" [ref=e868]
+            - cell "SRI67000064" [ref=e869]
+            - cell "15-07-2026 09:11" [ref=e870]:
+              - text: 15-07-2026
+              - text: 09:11
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e871]
+            - cell "1406477-D" [ref=e872]
+            - cell "-" [ref=e873]
+            - cell "-" [ref=e874]
+            - cell "1" [ref=e875]
+            - cell "17-07-2026" [ref=e876]
+            - cell "2pm - 4pm" [ref=e877]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e878]
+            - cell "OK" [ref=e879]
+            - cell "-" [ref=e880]
+            - cell "Pending" [ref=e881]
+            - cell "-" [ref=e882]
+            - cell "Split into 3 appointments, 3 unit(s)" [ref=e883]
+            - cell "No" [ref=e884]
+            - cell "View | Cancel" [ref=e885]:
+              - link "View" [ref=e886] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=fb44b0f5-55db-44da-bb71-be37e092fc7e&apptId=3d4d552b-ad13-4ca1-8b07-78457fe3c782
+              - text: "|"
+              - link "Cancel" [ref=e887] [cursor=pointer]:
+                - /url: "#"
+          - row "39 SRI67000064 15-07-2026 09:11 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D - - 1 20-07-2026 10am - 12pm OK OK - Pending - Split into 3 appointments, 3 unit(s) No View | Cancel" [ref=e888]:
+            - cell "39" [ref=e889]
+            - cell "SRI67000064" [ref=e890]
+            - cell "15-07-2026 09:11" [ref=e891]:
+              - text: 15-07-2026
+              - text: 09:11
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e892]
+            - cell "1406477-D" [ref=e893]
+            - cell "-" [ref=e894]
+            - cell "-" [ref=e895]
+            - cell "1" [ref=e896]
+            - cell "20-07-2026" [ref=e897]
+            - cell "10am - 12pm" [ref=e898]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e899]
+            - cell "OK" [ref=e900]
+            - cell "-" [ref=e901]
+            - cell "Pending" [ref=e902]
+            - cell "-" [ref=e903]
+            - cell "Split into 3 appointments, 3 unit(s)" [ref=e904]
+            - cell "No" [ref=e905]
+            - cell "View | Cancel" [ref=e906]:
+              - link "View" [ref=e907] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=fb44b0f5-55db-44da-bb71-be37e092fc7e&apptId=f271e982-1733-4171-8a75-cda10fb1b172
+              - text: "|"
+              - link "Cancel" [ref=e908] [cursor=pointer]:
+                - /url: "#"
+          - row "40 SRI67000064 15-07-2026 09:11 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D - - 1 21-07-2026 10am - 12pm OK OK - Pending - Split into 3 appointments, 3 unit(s) No View | Cancel" [ref=e909]:
+            - cell "40" [ref=e910]
+            - cell "SRI67000064" [ref=e911]
+            - cell "15-07-2026 09:11" [ref=e912]:
+              - text: 15-07-2026
+              - text: 09:11
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e913]
+            - cell "1406477-D" [ref=e914]
+            - cell "-" [ref=e915]
+            - cell "-" [ref=e916]
+            - cell "1" [ref=e917]
+            - cell "21-07-2026" [ref=e918]
+            - cell "10am - 12pm" [ref=e919]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e920]
+            - cell "OK" [ref=e921]
+            - cell "-" [ref=e922]
+            - cell "Pending" [ref=e923]
+            - cell "-" [ref=e924]
+            - cell "Split into 3 appointments, 3 unit(s)" [ref=e925]
+            - cell "No" [ref=e926]
+            - cell "View | Cancel" [ref=e927]:
+              - link "View" [ref=e928] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=fb44b0f5-55db-44da-bb71-be37e092fc7e&apptId=106a9567-d65e-473e-b032-79b85ea4b294
+              - text: "|"
+              - link "Cancel" [ref=e929] [cursor=pointer]:
+                - /url: "#"
+          - row "41 SRI67000059 15-07-2026 08:52 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D - - 1 17-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 3 unit(s) No View | Cancel" [ref=e930]:
+            - cell "41" [ref=e931]
+            - cell "SRI67000059" [ref=e932]
+            - cell "15-07-2026 08:52" [ref=e933]:
+              - text: 15-07-2026
+              - text: 08:52
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e934]
+            - cell "1406477-D" [ref=e935]
+            - cell "-" [ref=e936]
+            - cell "-" [ref=e937]
+            - cell "1" [ref=e938]
+            - cell "17-07-2026" [ref=e939]
+            - cell "10am - 12pm" [ref=e940]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e941]
+            - cell "OK" [ref=e942]
+            - cell "-" [ref=e943]
+            - cell "Pending" [ref=e944]
+            - cell "-" [ref=e945]
+            - cell "Split into 1 appointments, 3 unit(s)" [ref=e946]
+            - cell "No" [ref=e947]
+            - cell "View | Cancel" [ref=e948]:
+              - link "View" [ref=e949] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=b1765f1f-0e6a-4d24-a259-29428f8d93c9&apptId=baf6a2a3-6f4c-44f2-be9d-52e6e4c09417
+              - text: "|"
+              - link "Cancel" [ref=e950] [cursor=pointer]:
+                - /url: "#"
+          - row "42 SRI67000059 15-07-2026 08:52 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D - - 1 17-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 3 unit(s) No View | Cancel" [ref=e951]:
+            - cell "42" [ref=e952]
+            - cell "SRI67000059" [ref=e953]
+            - cell "15-07-2026 08:52" [ref=e954]:
+              - text: 15-07-2026
+              - text: 08:52
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e955]
+            - cell "1406477-D" [ref=e956]
+            - cell "-" [ref=e957]
+            - cell "-" [ref=e958]
+            - cell "1" [ref=e959]
+            - cell "17-07-2026" [ref=e960]
+            - cell "10am - 12pm" [ref=e961]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e962]
+            - cell "OK" [ref=e963]
+            - cell "-" [ref=e964]
+            - cell "Pending" [ref=e965]
+            - cell "-" [ref=e966]
+            - cell "Split into 1 appointments, 3 unit(s)" [ref=e967]
+            - cell "No" [ref=e968]
+            - cell "View | Cancel" [ref=e969]:
+              - link "View" [ref=e970] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=b1765f1f-0e6a-4d24-a259-29428f8d93c9&apptId=fd3bc05c-34af-4c3c-830e-80a3721f7aa3
+              - text: "|"
+              - link "Cancel" [ref=e971] [cursor=pointer]:
+                - /url: "#"
+          - row "43 SRI67000054 15-07-2026 06:43 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D - - 1 16-07-2026 2pm - 4pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e972]:
+            - cell "43" [ref=e973]
+            - cell "SRI67000054" [ref=e974]
+            - cell "15-07-2026 06:43" [ref=e975]:
+              - text: 15-07-2026
+              - text: 06:43
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e976]
+            - cell "1406477-D" [ref=e977]
+            - cell "-" [ref=e978]
+            - cell "-" [ref=e979]
+            - cell "1" [ref=e980]
+            - cell "16-07-2026" [ref=e981]
+            - cell "2pm - 4pm" [ref=e982]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e983]
+            - cell "OK" [ref=e984]
+            - cell "-" [ref=e985]
+            - cell "Pending" [ref=e986]
+            - cell "-" [ref=e987]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e988]
+            - cell "No" [ref=e989]
+            - cell "View | Cancel" [ref=e990]:
+              - link "View" [ref=e991] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=a0ad89c1-1aac-4e03-8c6c-fa4c145baf5c&apptId=43228046-4ed1-4eff-a384-0134dc0b68d9
+              - text: "|"
+              - link "Cancel" [ref=e992] [cursor=pointer]:
+                - /url: "#"
+          - row "44 SRI67000045 15-07-2026 00:01 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D - - 1 24-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e993]:
+            - cell "44" [ref=e994]
+            - cell "SRI67000045" [ref=e995]
+            - cell "15-07-2026 00:01" [ref=e996]:
+              - text: 15-07-2026
+              - text: 00:01
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e997]
+            - cell "1406477-D" [ref=e998]
+            - cell "-" [ref=e999]
+            - cell "-" [ref=e1000]
+            - cell "1" [ref=e1001]
+            - cell "24-07-2026" [ref=e1002]
+            - cell "10am - 12pm" [ref=e1003]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e1004]
+            - cell "OK" [ref=e1005]
+            - cell "-" [ref=e1006]
+            - cell "Pending" [ref=e1007]
+            - cell "-" [ref=e1008]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e1009]
+            - cell "No" [ref=e1010]
+            - cell "View | Cancel" [ref=e1011]:
+              - link "View" [ref=e1012] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=927e4d55-7729-49c2-a71d-b987415e23b7&apptId=22bbbe8e-bfb7-418e-8558-2036e7ae8a0b
+              - text: "|"
+              - link "Cancel" [ref=e1013] [cursor=pointer]:
+                - /url: "#"
+          - row "45 SRB67000044 14-07-2026 23:55 FAIZUDDIN AUTO TEST 030311-A 2 - 1 15-07-2026 2pm - 4pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e1014]:
+            - cell "45" [ref=e1015]
+            - cell "SRB67000044" [ref=e1016]
+            - cell "14-07-2026 23:55" [ref=e1017]:
+              - text: 14-07-2026
+              - text: 23:55
+            - cell "FAIZUDDIN AUTO TEST" [ref=e1018]
+            - cell "030311-A" [ref=e1019]
+            - cell "2" [ref=e1020]
+            - cell "-" [ref=e1021]
+            - cell "1" [ref=e1022]
+            - cell "15-07-2026" [ref=e1023]
+            - cell "2pm - 4pm" [ref=e1024]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e1025]
+            - cell "OK" [ref=e1026]
+            - cell "New" [ref=e1027]
+            - cell "Pending" [ref=e1028]
+            - cell "-" [ref=e1029]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e1030]
+            - cell "No" [ref=e1031]
+            - cell "View | Cancel" [ref=e1032]:
+              - link "View" [ref=e1033] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=6bb18f21-c4d2-48de-bc9a-52a7617c1c71&apptId=c9edfce0-daab-4982-8afe-b9d2a213a10d
+              - text: "|"
+              - link "Cancel" [ref=e1034] [cursor=pointer]:
+                - /url: "#"
+          - row "46 SRB67000042 14-07-2026 23:55 CHARRRRRR CHICKCOLI SDN BHD123321 1406477-D 3 - 1 07-08-2026 10am - 12pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e1035]:
+            - cell "46" [ref=e1036]
+            - cell "SRB67000042" [ref=e1037]
+            - cell "14-07-2026 23:55" [ref=e1038]:
+              - text: 14-07-2026
+              - text: 23:55
+            - cell "CHARRRRRR CHICKCOLI SDN BHD123321" [ref=e1039]
+            - cell "1406477-D" [ref=e1040]
+            - cell "3" [ref=e1041]
+            - cell "-" [ref=e1042]
+            - cell "1" [ref=e1043]
+            - cell "07-08-2026" [ref=e1044]
+            - cell "10am - 12pm" [ref=e1045]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e1046]
+            - cell "OK" [ref=e1047]
+            - cell "New" [ref=e1048]
+            - cell "Pending" [ref=e1049]
+            - cell "-" [ref=e1050]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e1051]
+            - cell "No" [ref=e1052]
+            - cell "View | Cancel" [ref=e1053]:
+              - link "View" [ref=e1054] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=a462fc60-2de0-4e1f-bf9a-d0c805ae52cd&apptId=6e12f508-f8e5-41e5-b1a8-b1077ecc86a9
+              - text: "|"
+              - link "Cancel" [ref=e1055] [cursor=pointer]:
+                - /url: "#"
+          - row "47 SRB67000041 14-07-2026 23:55 FAIZUDDIN AUTO TEST 030311-A 2 - 1 15-07-2026 2pm - 4pm OK OK New Pending - Split into 1 appointments, 1 unit(s) No View | Cancel" [ref=e1056]:
+            - cell "47" [ref=e1057]
+            - cell "SRB67000041" [ref=e1058]
+            - cell "14-07-2026 23:55" [ref=e1059]:
+              - text: 14-07-2026
+              - text: 23:55
+            - cell "FAIZUDDIN AUTO TEST" [ref=e1060]
+            - cell "030311-A" [ref=e1061]
+            - cell "2" [ref=e1062]
+            - cell "-" [ref=e1063]
+            - cell "1" [ref=e1064]
+            - cell "15-07-2026" [ref=e1065]
+            - cell "2pm - 4pm" [ref=e1066]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e1067]
+            - cell "OK" [ref=e1068]
+            - cell "New" [ref=e1069]
+            - cell "Pending" [ref=e1070]
+            - cell "-" [ref=e1071]
+            - cell "Split into 1 appointments, 1 unit(s)" [ref=e1072]
+            - cell "No" [ref=e1073]
+            - cell "View | Cancel" [ref=e1074]:
+              - link "View" [ref=e1075] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=9b0d12be-c232-48b6-a3fa-5831cf1c202e&apptId=f64b0d45-339c-496c-8b31-ef470bdfb813
+              - text: "|"
+              - link "Cancel" [ref=e1076] [cursor=pointer]:
+                - /url: "#"
+          - row "48 SRI67000040 14-07-2026 23:50 FAIZUDDIN AUTO TEST 030311-A - - 1 31-07-2026 2pm - 4pm OK OK - Pending - Split into 1 appointments, 2 unit(s) No View | Cancel" [ref=e1077]:
+            - cell "48" [ref=e1078]
+            - cell "SRI67000040" [ref=e1079]
+            - cell "14-07-2026 23:50" [ref=e1080]:
+              - text: 14-07-2026
+              - text: 23:50
+            - cell "FAIZUDDIN AUTO TEST" [ref=e1081]
+            - cell "030311-A" [ref=e1082]
+            - cell "-" [ref=e1083]
+            - cell "-" [ref=e1084]
+            - cell "1" [ref=e1085]
+            - cell "31-07-2026" [ref=e1086]
+            - cell "2pm - 4pm" [ref=e1087]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e1088]
+            - cell "OK" [ref=e1089]
+            - cell "-" [ref=e1090]
+            - cell "Pending" [ref=e1091]
+            - cell "-" [ref=e1092]
+            - cell "Split into 1 appointments, 2 unit(s)" [ref=e1093]
+            - cell "No" [ref=e1094]
+            - cell "View | Cancel" [ref=e1095]:
+              - link "View" [ref=e1096] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=4f7ad03f-7dab-43b7-9689-cafee79dc4ee&apptId=6a9fcba2-06fc-4b7f-b63f-a26eaf87669a
+              - text: "|"
+              - link "Cancel" [ref=e1097] [cursor=pointer]:
+                - /url: "#"
+          - row "49 SRI67000040 14-07-2026 23:50 FAIZUDDIN AUTO TEST 030311-A - - 1 31-07-2026 2pm - 4pm OK OK - Pending - Split into 1 appointments, 2 unit(s) No View | Cancel" [ref=e1098]:
+            - cell "49" [ref=e1099]
+            - cell "SRI67000040" [ref=e1100]
+            - cell "14-07-2026 23:50" [ref=e1101]:
+              - text: 14-07-2026
+              - text: 23:50
+            - cell "FAIZUDDIN AUTO TEST" [ref=e1102]
+            - cell "030311-A" [ref=e1103]
+            - cell "-" [ref=e1104]
+            - cell "-" [ref=e1105]
+            - cell "1" [ref=e1106]
+            - cell "31-07-2026" [ref=e1107]
+            - cell "2pm - 4pm" [ref=e1108]:
+              - text: 2pm -
+              - text: 4pm
+            - cell "OK" [ref=e1109]
+            - cell "OK" [ref=e1110]
+            - cell "-" [ref=e1111]
+            - cell "Pending" [ref=e1112]
+            - cell "-" [ref=e1113]
+            - cell "Split into 1 appointments, 2 unit(s)" [ref=e1114]
+            - cell "No" [ref=e1115]
+            - cell "View | Cancel" [ref=e1116]:
+              - link "View" [ref=e1117] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=4f7ad03f-7dab-43b7-9689-cafee79dc4ee&apptId=b45016e3-6346-4053-af57-c5dc7dcb4dde
+              - text: "|"
+              - link "Cancel" [ref=e1118] [cursor=pointer]:
+                - /url: "#"
+          - row "50 SRI67000039 14-07-2026 23:46 FAIZUDDIN AUTO TEST 030311-A - - 1 31-07-2026 10am - 12pm OK OK - Pending - Split into 1 appointments, 2 unit(s) No View | Cancel" [ref=e1119]:
+            - cell "50" [ref=e1120]
+            - cell "SRI67000039" [ref=e1121]
+            - cell "14-07-2026 23:46" [ref=e1122]:
+              - text: 14-07-2026
+              - text: 23:46
+            - cell "FAIZUDDIN AUTO TEST" [ref=e1123]
+            - cell "030311-A" [ref=e1124]
+            - cell "-" [ref=e1125]
+            - cell "-" [ref=e1126]
+            - cell "1" [ref=e1127]
+            - cell "31-07-2026" [ref=e1128]
+            - cell "10am - 12pm" [ref=e1129]:
+              - text: 10am -
+              - text: 12pm
+            - cell "OK" [ref=e1130]
+            - cell "OK" [ref=e1131]
+            - cell "-" [ref=e1132]
+            - cell "Pending" [ref=e1133]
+            - cell "-" [ref=e1134]
+            - cell "Split into 1 appointments, 2 unit(s)" [ref=e1135]
+            - cell "No" [ref=e1136]
+            - cell "View | Cancel" [ref=e1137]:
+              - link "View" [ref=e1138] [cursor=pointer]:
+                - /url: /uat1/view/bo/service-hub/detail.do?transactionId=6d8c6657-fa7b-4d19-b7f5-3c74c0791999&apptId=0b915fd9-7ec2-477a-97ce-1533e7256a41
+              - text: "|"
+              - link "Cancel" [ref=e1139] [cursor=pointer]:
+                - /url: "#"
+        - rowgroup [ref=e1140]:
+          - row "Prev 1 2 Next" [ref=e1141]:
+            - cell "Prev 1 2 Next" [ref=e1142]:
+              - generic:
+                - generic [ref=e1143]: Prev
+                - generic [ref=e1144]: "1"
+                - link "2" [ref=e1145] [cursor=pointer]:
+                  - /url: "#"
+                - link "Next" [ref=e1146] [cursor=pointer]:
+                  - /url: "#"
+  - table [ref=e1148]:
+    - rowgroup [ref=e1149]:
+      - row "Home | Menu 2 Pending Transaction Found! Jason Seah, My Account | Logout" [ref=e1150]:
+        - cell "Home | Menu 2 Pending Transaction Found!" [ref=e1151]:
+          - generic [ref=e1152]:
+            - list [ref=e1153]:
+              - listitem [ref=e1154]:
+                - link "Home |" [ref=e1155] [cursor=pointer]:
+                  - /url: /uat1/home/
+              - listitem [ref=e1156]:
+                - link "Menu" [ref=e1157] [cursor=pointer]:
+                  - /url: "#"
+                  - text: Menu
+                  - img [ref=e1158]
+            - generic [ref=e1159] [cursor=pointer]: 2 Pending Transaction Found!
+        - cell "Jason Seah, My Account | Logout" [ref=e1160]:
+          - list [ref=e1162]:
+            - listitem [ref=e1163]: Jason Seah,
+            - listitem [ref=e1164]:
+              - link "My Account |" [ref=e1165] [cursor=pointer]:
+                - /url: /uat1/view/ucd/my-account/view.do?type=Office
+            - listitem [ref=e1166]:
+              - link "Logout" [ref=e1167] [cursor=pointer]:
+                - /url: "#"
+  - img [ref=e1169]
+  - table [ref=e1171]:
+    - rowgroup [ref=e1172]:
+      - row "Best Compatible With Mozilla Firefox V36.0.4 Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved. Contact Us | Terms & Conditions | Privacy" [ref=e1173]:
+        - cell [ref=e1174]
+        - cell "Best Compatible With Mozilla Firefox V36.0.4 Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved. Contact Us | Terms & Conditions | Privacy" [ref=e1175]:
+          - text: Best Compatible With Mozilla Firefox V36.0.4
+          - text: Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.
+          - link "Contact Us" [ref=e1176] [cursor=pointer]:
+            - /url: "#"
+          - text: "|"
+          - link "Terms & Conditions" [ref=e1177] [cursor=pointer]:
+            - /url: "#"
+          - text: "|"
+          - link "Privacy" [ref=e1178] [cursor=pointer]:
+            - /url: "#"
+        - cell [ref=e1179]:
+          - img [ref=e1180]
+  - generic [ref=e1181]:
+    - generic [ref=e1182]:
+      - generic "Prev" [ref=e1183]:
+        - generic [ref=e1184]: Prev
+      - generic "Next" [ref=e1185]:
+        - generic [ref=e1186]: Next
+      - generic:
+        - combobox [ref=e1187]:
+          - option "Jan"
+          - option "Feb"
+          - option "Mar"
+          - option "Apr"
+          - option "May"
+          - option "Jun"
+          - option "Jul" [selected]
+          - option "Aug"
+          - option "Sep"
+          - option "Oct"
+          - option "Nov"
+          - option "Dec"
+        - combobox [ref=e1188]:
+          - option "2016"
+          - option "2017"
+          - option "2018"
+          - option "2019"
+          - option "2020"
+          - option "2021"
+          - option "2022"
+          - option "2023"
+          - option "2024"
+          - option "2025"
+          - option "2026" [selected]
+    - table [ref=e1189]:
+      - rowgroup [ref=e1190]:
+        - row "Su Mo Tu We Th Fr Sa" [ref=e1191]:
+          - columnheader "Su" [ref=e1192]
+          - columnheader "Mo" [ref=e1193]
+          - columnheader "Tu" [ref=e1194]
+          - columnheader "We" [ref=e1195]
+          - columnheader "Th" [ref=e1196]
+          - columnheader "Fr" [ref=e1197]
+          - columnheader "Sa" [ref=e1198]
+      - rowgroup [ref=e1199]:
+        - row "1 2 3 4" [ref=e1200]:
+          - cell [ref=e1201]
+          - cell [ref=e1202]
+          - cell [ref=e1203]
+          - cell "1" [ref=e1204]:
+            - link "1" [ref=e1205] [cursor=pointer]:
+              - /url: "#"
+          - cell "2" [ref=e1206]:
+            - link "2" [ref=e1207] [cursor=pointer]:
+              - /url: "#"
+          - cell "3" [ref=e1208]:
+            - link "3" [ref=e1209] [cursor=pointer]:
+              - /url: "#"
+          - cell "4" [ref=e1210]:
+            - link "4" [ref=e1211] [cursor=pointer]:
+              - /url: "#"
+        - row "5 6 7 8 9 10 11" [ref=e1212]:
+          - cell "5" [ref=e1213]:
+            - link "5" [ref=e1214] [cursor=pointer]:
+              - /url: "#"
+          - cell "6" [ref=e1215]:
+            - link "6" [ref=e1216] [cursor=pointer]:
+              - /url: "#"
+          - cell "7" [ref=e1217]:
+            - link "7" [ref=e1218] [cursor=pointer]:
+              - /url: "#"
+          - cell "8" [ref=e1219]:
+            - link "8" [ref=e1220] [cursor=pointer]:
+              - /url: "#"
+          - cell "9" [ref=e1221]:
+            - link "9" [ref=e1222] [cursor=pointer]:
+              - /url: "#"
+          - cell "10" [ref=e1223]:
+            - link "10" [ref=e1224] [cursor=pointer]:
+              - /url: "#"
+          - cell "11" [ref=e1225]:
+            - link "11" [ref=e1226] [cursor=pointer]:
+              - /url: "#"
+        - row "12 13 14 15 16 17 18" [ref=e1227]:
+          - cell "12" [ref=e1228]:
+            - link "12" [ref=e1229] [cursor=pointer]:
+              - /url: "#"
+          - cell "13" [ref=e1230]:
+            - link "13" [ref=e1231] [cursor=pointer]:
+              - /url: "#"
+          - cell "14" [ref=e1232]:
+            - link "14" [ref=e1233] [cursor=pointer]:
+              - /url: "#"
+          - cell "15" [ref=e1234]:
+            - link "15" [ref=e1235] [cursor=pointer]:
+              - /url: "#"
+          - cell "16" [ref=e1236]:
+            - link "16" [ref=e1237] [cursor=pointer]:
+              - /url: "#"
+          - cell "17" [ref=e1238]:
+            - link "17" [ref=e1239] [cursor=pointer]:
+              - /url: "#"
+          - cell "18" [ref=e1240]:
+            - link "18" [ref=e1241] [cursor=pointer]:
+              - /url: "#"
+        - row "19 20 21 22 23 24 25" [ref=e1242]:
+          - cell "19" [ref=e1243]:
+            - link "19" [ref=e1244] [cursor=pointer]:
+              - /url: "#"
+          - cell "20" [ref=e1245]:
+            - link "20" [ref=e1246] [cursor=pointer]:
+              - /url: "#"
+          - cell "21" [ref=e1247]:
+            - link "21" [ref=e1248] [cursor=pointer]:
+              - /url: "#"
+          - cell "22" [ref=e1249]:
+            - link "22" [ref=e1250] [cursor=pointer]:
+              - /url: "#"
+          - cell "23" [ref=e1251]:
+            - link "23" [ref=e1252] [cursor=pointer]:
+              - /url: "#"
+          - cell "24" [ref=e1253]:
+            - link "24" [ref=e1254] [cursor=pointer]:
+              - /url: "#"
+          - cell "25" [ref=e1255]:
+            - link "25" [ref=e1256] [cursor=pointer]:
+              - /url: "#"
+        - row "26 27 28 29 30 31" [ref=e1257]:
+          - cell "26" [ref=e1258]:
+            - link "26" [ref=e1259] [cursor=pointer]:
+              - /url: "#"
+          - cell "27" [ref=e1260]:
+            - link "27" [ref=e1261] [cursor=pointer]:
+              - /url: "#"
+          - cell "28" [ref=e1262]:
+            - link "28" [ref=e1263] [cursor=pointer]:
+              - /url: "#"
+          - cell "29" [ref=e1264]:
+            - link "29" [ref=e1265] [cursor=pointer]:
+              - /url: "#"
+          - cell "30" [ref=e1266]:
+            - link "30" [ref=e1267] [cursor=pointer]:
+              - /url: "#"
+          - cell "31" [ref=e1268]:
+            - link "31" [ref=e1269] [cursor=pointer]:
+              - /url: "#"
+          - cell [ref=e1270]
+```
+
+# Test source
+
+```ts
+  1   | import { type Page, type Locator, expect, test } from "@playwright/test";
+  2   | import { BasePage } from "../BasePage";
+  3   | import { PATHS } from "../../utils/config";
+  4   | 
+  5   | export type FailedReason = "Reappointment" | "Laptop/PC Issues" | "Other";
+  6   | 
+  7   | /**
+  8   |  * eAuto Back Office Portal > Software Installation Details Page
+  9   |  * (SRD 2.3.2.6).
+  10  |  *
+  11  |  * NOTE: BO selectors are inferred from the SRD structure and must be
+  12  |  * verified against the actual BO portal HTML, then tightened.
+  13  |  */
+  14  | export class SoftwareInstallationDetailsPage extends BasePage {
+  15  |   // 1. Page header — verified against the real BO Details HTML:
+  16  |   //   "Installation Failed »"    → button.btn-fail    (onclick opFailOpen())
+  17  |   //   "Installation Completed »" → button.btn-success (onclick opSuccess())
+  18  |   readonly backBtn = this.page.getByText("Back", { exact: false }).first();
+  19  |   readonly serviceRequestNo = this.page.locator("text=/Service Request #/i").first();
+  20  |   readonly installationFailedBtn = this.page.locator(".btn-fail").first();
+  21  |   readonly installationCompletedBtn = this.page.locator(".btn-success").first();
+  22  | 
+  23  |   // 2. Request Details
+  24  |   readonly invoiceBtn = this.page.getByRole("button", { name: /^Invoice$/i }).first();
+  25  |   readonly eInvoiceBtn = this.page.getByRole("button", { name: /e-?Invoice/i }).first();
+  26  | 
+  27  |   // 3. Appointment Details
+  28  |   readonly appointmentStatus = this.page.locator("[class*='appt-status'], .appointment-status").first();
+  29  | 
+  30  |   // 5. Special Remark
+  31  |   readonly specialRemarkInput = this.page.locator('textarea[name="specialRemark"], textarea[placeholder*="Remark"]').first();
+  32  |   readonly updateSpecialRemarkBtn = this.page.getByText("Update Special Remark", { exact: false }).first();
+  33  | 
+  34  |   constructor(page: Page) {
+  35  |     super(page);
+  36  |   }
+  37  | 
+  38  |   async navigate(txnId: string, apptId: string) {
+  39  |     await this.goto(PATHS.boSoftwareInstallationDetails(txnId, apptId));
+  40  |   }
+  41  | 
+  42  |   async goBack() {
+  43  |     await this.backBtn.click();
+  44  |     await this.waitForNav();
+  45  |   }
+  46  | 
+  47  |   async getAppointmentStatus(): Promise<string> {
+  48  |     return (await this.appointmentStatus.textContent())?.trim() ?? "";
+  49  |   }
+  50  | 
+  51  |   /** SRD 2.3.2.6 #5 — enter and save a special remark. */
+  52  |   async updateSpecialRemark(remark: string) {
+  53  |     await this.specialRemarkInput.fill(remark);
+  54  |     await this.updateSpecialRemarkBtn.click();
+  55  |     await this.waitForNav();
+  56  |   }
+  57  | 
+  58  |   /**
+  59  |    * SRD 2.3.2.6 #6 — Mark Completed:
+  60  |    *   "Installation Completed »" → popup
+  61  |    *   "Are you sure want to mark the installation appointment as completed?"
+  62  |    *   [No] [Yes]  → Appointment Status = "Completed".
+  63  |    */
+  64  |   async markCompleted(confirm: boolean = true) {
+  65  |     await test.step("Mark installation Completed", async () => {
+  66  |       await this.installationCompletedBtn.click();
+  67  |       await this.clickDialogButton("Installation Completed", confirm ? "Yes" : "No");
+  68  |       await this.waitForNav();
+  69  |     });
+  70  |   }
+  71  | 
+  72  |   /**
+  73  |    * Click a Yes/No button in a jQuery UI dialog identified by its title.
+  74  |    * The Details-page popups render their buttons as plain
+  75  |    * .ui-dialog-buttonpane <button> ("Yes"/"No") — they do NOT get the
+  76  |    * .confirm-dialog-btn / .cancel-dialog-btn classes that the UCD dialogs
+  77  |    * use, so acceptConfirmDialog()/dismissConfirmDialog() don't apply here.
+  78  |    */
+  79  |   private async clickDialogButton(titleText: string, label: "Yes" | "No") {
+  80  |     const dialog = this.page.locator(".ui-dialog", {
+  81  |       has: this.page.locator(".ui-dialog-title", { hasText: titleText }),
+  82  |     });
+  83  |     await dialog.waitFor({ state: "visible", timeout: 8000 });
+  84  |     await dialog.locator(".ui-dialog-buttonpane button", { hasText: new RegExp(`^${label}$`) }).first().click();
+  85  |   }
+  86  | 
+  87  |   /**
+  88  |    * SRD 2.3.2.6 #7 — Mark Failed:
+  89  |    *   "Installation Failed »" → popup
+  90  |    *   "Please select the reason causing the installation failed:"
+  91  |    *   radio: Reappointment / Laptop/PC Issues / Other
+  92  |    *   (Other → free-text box) → [No] [Yes] → Appointment Status = "Failed".
+  93  |    */
+  94  |   async markFailed(reason: FailedReason, otherText?: string, confirm: boolean = true) {
+  95  |     await test.step(`Mark installation Failed — reason: ${reason}`, () =>
+  96  |       this.markFailedImpl(reason, otherText, confirm));
+  97  |   }
+  98  | 
+  99  |   private async markFailedImpl(reason: FailedReason, otherText?: string, confirm: boolean = true) {
+> 100 |     await this.installationFailedBtn.click();
+      |                                      ^ TimeoutError: locator.click: Timeout 10000ms exceeded.
+  101 |     const dialog = this.page.locator(".ui-dialog", {
+  102 |       has: this.page.locator(".ui-dialog-title", { hasText: "Installation Failed" }),
+  103 |     });
+  104 |     await dialog.waitFor({ state: "visible", timeout: 8000 });
+  105 | 
+  106 |     // Reason radio: input[name="op-fail-reason"] with values Reappointment /
+  107 |     // LaptopIssue / Other (note the value differs from the visible label).
+  108 |     const reasonValue = reason === "Laptop/PC Issues" ? "LaptopIssue" : reason;
+  109 |     await dialog.locator(`input[name="op-fail-reason"][value="${reasonValue}"]`).check();
+  110 |     if (reason === "Other" && otherText) {
+  111 |       await dialog.locator('textarea, input[type="text"]').first().fill(otherText);
+  112 |     }
+  113 | 
+  114 |     await dialog.locator(".ui-dialog-buttonpane button", { hasText: new RegExp(`^${confirm ? "Yes" : "No"}$`) }).first().click();
+  115 |     await this.waitForNav();
+  116 |   }
+  117 | 
+  118 |   async isCompleted(): Promise<boolean> {
+  119 |     return (await this.getAppointmentStatus()).toLowerCase().includes("complete");
+  120 |   }
+  121 | 
+  122 |   async isFailed(): Promise<boolean> {
+  123 |     return (await this.getAppointmentStatus()).toLowerCase().includes("fail");
+  124 |   }
+  125 | }
+  126 | 
+```

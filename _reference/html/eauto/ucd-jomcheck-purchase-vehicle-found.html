@@ -1,0 +1,116 @@
+<!--
+  URL: /uat1/view/ucd/jomcheck/transaction/ (after Submit, vehicle found before payment)
+  Page: UCD "Get JomCheck Reports" after entering Vehicle No. WA0003 and clicking Submit —
+  shows share-with-FI checkboxes, price prompt, and the "Pay Now" button.
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: none.
+-->
+<body>
+<div id="do-payment-dialog" style="display:none;" title="Payment">
+    <span id="do-payment-field"></span>
+</div>
+<div id="sure-to-retry"></div>
+
+<div id="container" class="ucd-container">
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <a onclick="window.location='/uat1/view/ucd/jomcheck/view.do'">JomCheck Report</a>
+        <div class="separator">/</div>
+        <div class="page-name">Get JomCheck Reports</div>
+    </div>
+
+    <div class="common-header-container">
+        <div class="common-header">
+            <h1 style="font-weight:bold; font-size:20px; color: #000000;">Get JomCheck Reports</h1>
+        </div>
+    </div>
+
+    <table id="maintable">
+    <colgroup><col width="80%"><col width="20%"></colgroup>
+    <tbody>
+        <tr>
+            <td class="maintable-td">
+                <div class="mainContent">
+                    <form id="tx-form" enctype="multipart/form-data" method="POST" action="/uat1/ajax/ucd/jomcheck/transaction/save.do">
+                        <input type="hidden" name="transactionId" value="aa55d994-8527-43fd-9da7-e80e14d59fb8">
+                        <div class="container container-input">
+                            <table class="jomcheck-input">
+                            <colgroup><col width="20%"><col width="80%"></colgroup>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" id="jomcheck-title"><span class="title"><b>JomCheck Vehicle Report</b></span><br></td>
+                                </tr>
+                                <tr>
+                                    <td class="label">
+                                        <input type="radio" name="selectedInput" id="vehicleNoRadio" class="radio-item" value="vehicleNo" checked="" disabled="">
+                                        Vehicle Number:&nbsp;
+                                    </td>
+                                    <td class="input" style="text-align: left;">
+                                        <input type="text" id="vehicleRegNo" name="vehicleRegNo" class="is-required form-control" title="Vehicle Number" value="WA0003" readonly="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="label"><input type="radio" id="chassisNoRadio" class="radio-item" name="selectedInput" value="chassisNo" disabled="">
+                                    Chassis Number:&nbsp;
+                                    </td>
+                                    <td class="input" style="text-align: left;">
+                                        <input type="text" maxlength="30" id="vehicleChassisNo" name="vehicleChassisNo" class="is-required form-control field-disabled" title="Chassis Number" value="" readonly="" disabled="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <div class="jomcheck-action">
+                                            <button type="submit" id="to-check-vehicle" class="btn-blue submit-btn" style="cursor: default;">Submit</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+                    </form>
+                </div>
+            </td>
+            <td class="maintable-td supportInfo" rowspan="3">
+                <div class="mainContent container support-info">
+                    <span class="title" style="font-weight:500;"><br><b>Support Info&nbsp;</b><br><br>JomCheck Vehicle Report <br>Support &amp; Helpline<br></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="maintable-td" style="padding:20px 25px;">
+                <div id="jomcheck-share-payment">
+                    <p class="title" style="margin-bottom:0;"><b>Share Report with Financial Institution (Bank and Credit Company)</b> <span class="desc-font" style="font-weight:normal; font-style:italic; font-size:12px;">(Optional)</span></p>
+                    <p class="desc-font" style="margin-top:5px;">You are allowed to share your JomCheck report with other banks or credit companies by ticking the checkbox.</p>
+                    <div id="share-company-list-payment" style="margin-top:15px;">
+                        <div style="margin-bottom:4px;">
+                            <input type="checkbox" class="share-cc-pay" value="76167371-5307-4368-a4e3-c57f1ae45ee6">
+                            mfxstar
+                        </div>
+                        <div style="margin-bottom:4px;">
+                            <input type="checkbox" class="share-cc-pay" value="9ab094bf-a3f4-48a6-b2a5-782a3e1d1499">
+                            YI LINK TEST SDN BHD
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="maintable-td">
+                <div class="container container-result flex flex-row">
+                    <div class="jomcheck-result">
+                        <p class="title"><b>Result&nbsp;</b></p>
+                        <p>
+                            <span id="result" style="color: rgb(0, 142, 0);">Vehicle number found.</span><span id="desc" class="desc-font">&nbsp;Pay now (RM20.00 + 8% Service Tax) to purchase the report.</span>
+                        </p>
+                    </div>
+                    <div class="jomcheck-action flex items-center justify-content-end">
+                        <button type="submit" id="to-pay" class="btn-blue submit-btn">Pay Now</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody></table>
+</div>
+</body>

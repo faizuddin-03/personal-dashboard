@@ -1,21 +1,36 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
-  LayoutDashboard, ChevronDown, Shield, Car,
-  Settings, Download, Upload, Kanban,
+  LayoutDashboard, ChevronDown, Car,
+  Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
-  Briefcase, Send, MessageSquare,
+  Briefcase, Send, Filter, Music2,
+  Tickets, Workflow, Bot, Route, GraduationCap,
 } from "lucide-react";
-import { exportLocalStorage, importLocalStorage } from "@/lib/jira";
 import clsx from "clsx";
+import { useApp } from "@/components/AppShell";
+import { CURRENT_VERSION } from "@/lib/changelog";
+import { TICKET_AUTOMATIONS } from "@/lib/ticketAutomations";
+import { EAUTO_MODULES } from "@/lib/eautoModules";
+import RunningAutomations from "@/components/RunningAutomations";
+import HistoryButtons from "@/components/HistoryButtons";
+import WorkingNow from "@/components/pipeline/WorkingNow";
 
 const nav = [
   { label: "Dashboard",  href: "/",         icon: LayoutDashboard },
-  { label: "Jira",       href: "/jira",     icon: Ticket },
+  {
+    label: "JIRA",
+    icon: Ticket,
+    children: [
+      { label: "Dashboard",    href: "/jira",          icon: LayoutDashboard },
+      { label: "Issue Filter", href: "/jira/filter",   icon: Filter },
+      { label: "TS Tracker",   href: "/tests",         icon: ClipboardList },
+    ],
+  },
   { label: "Kanban",     href: "/kanban",   icon: Kanban },
-  { label: "TS Tracker", href: "/tests",    icon: ClipboardList },
+  { label: "QA Flow",    href: "/qa-flow",  icon: Sparkles },
   { label: "Calendar",   href: "/calendar", icon: CalendarDays },
   {
     label: "Productivity",
@@ -24,41 +39,43 @@ const nav = [
       { label: "To-Do List",    href: "/todo",           icon: CheckSquare },
       { label: "Notes",         href: "/notes",          icon: FileText },
       { label: "Daily Update",  href: "/daily-update",   icon: Send },
+      // { label: "Music",         href: "/music",          icon: Music2 },
     ],
   },
-  {
-    label: "eAuto",
-    icon: Car,
-    children: [
-      { label: "Insurance", href: "/eauto/insurance", icon: Shield },
-    ],
-  },
-  { label: "WA Blaster", href: "/wa-blaster", icon: MessageSquare },
+  // eAuto module pages (Insurance, Shopping Cart, Create eSTM, Checker,
+  // Company Details Checker, Secarang Plate Check, eSIM, Create BDP). Was a
+  // dropdown; since 2026-10-21 it is one link to /eauto, a card / list page
+  // like /tickets. The pages are catalogued in lib/eautoModules.ts — add new
+  // ones there, not here. Hidden but still live by URL: /eauto/estm-legacy
+  // (known-good eSTM baseline), /wa-blaster and /wa-blaster-beta.
+  { label: "eAuto",      href: "/eauto",    icon: Car, matches: EAUTO_MODULES.map(m => m.href) },
+  // eAuto Flows and Modules — module → flow → trigger point → steps, what each
+  // flow affects, cronjobs, access (Faizuddin, 2026-10-23). Data in lib/eautoFlows.
+  { label: "eAuto Flows", href: "/eauto/flows", icon: Workflow },
+  // Automation built for one specific ticket. Was a dropdown of ticket
+  // numbers; since 2026-10-15 it is one link to /tickets, a page listing every
+  // ticket automation (card / list, detailed / simple). The per-ticket pages
+  // themselves are catalogued in lib/ticketAutomations.ts — add new ones
+  // there, not here. The item stays highlighted while on any of those pages.
+  { label: "Tickets",    href: "/tickets",  icon: Tickets, matches: TICKET_AUTOMATIONS.map(t => t.href) },
+  // Scheduled study agents (Jira Scout, SharePoint Scribe) shown as pixel
+  // characters; status from data/agents/ (Faizuddin, 2026-10-27).
+  { label: "Agents",     href: "/agents",   icon: Bot },
+  // QA pipeline: one ticket from study to scenarios, automation, runs and
+  // QA-Issues, worked with the Scout / Scribe / Elf / Dwarf agents (Faizuddin, 2026-10-27).
+  { label: "Pipeline",   href: "/pipeline", icon: Route, matches: ["/pipeline"] },
+  // What the Sage (pipeline knowledge keeper) learned, and the knowledge changes
+  // and pipeline ideas waiting for Faizuddin (2026-10-27).
+  { label: "Learnings",  href: "/pipeline/learnings", icon: GraduationCap },
 ];
 
 export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; onSearch?: () => void }) {
   const pathname = usePathname();
-  const [expanded, setExpanded]   = useState<string[]>(["eAuto", "Productivity"]);
-  const [importMsg, setImportMsg] = useState("");
-  const [confirmImport, setConfirmImport] = useState(false);
-  const importRef = useRef<HTMLInputElement>(null);
+  const [expanded, setExpanded] = useState<string[]>([]);
+  const { openWhatsNew } = useApp();
 
   function toggleGroup(label: string) {
     setExpanded(prev => prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label]);
-  }
-
-  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      await importLocalStorage(file);
-      setImportMsg("Imported! Reload the page.");
-      setTimeout(() => setImportMsg(""), 4000);
-    } catch {
-      setImportMsg("Invalid file.");
-      setTimeout(() => setImportMsg(""), 3000);
-    }
-    e.target.value = "";
   }
 
   return (
@@ -68,7 +85,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
         <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
           <span className="text-white text-xs font-bold">UB</span>
         </div>
-        <span className="text-slate-100 font-semibold text-sm flex-1">Udin's Board</span>
+        <span className="text-slate-100 font-semibold text-sm flex-1">Udin&apos;s Board</span>
         {onClose && (
           <button onClick={onClose} className="text-slate-500 hover:text-slate-300 lg:hidden p-1">
             <X size={16} />
@@ -76,11 +93,12 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
         )}
       </div>
 
-      {/* Search */}
-      <div className="px-2 pt-2">
+      {/* Back / Forward + Search */}
+      <div className="px-2 pt-2 flex items-center gap-1">
+        <HistoryButtons />
         <button
           onClick={onSearch}
-          className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-500 bg-slate-800 border border-slate-700 rounded-lg hover:border-slate-600 hover:text-slate-300 transition-colors"
+          className="flex-1 min-w-0 flex items-center gap-2 px-3 py-2 text-xs text-slate-500 bg-slate-800 border border-slate-700 rounded-lg hover:border-slate-600 hover:text-slate-300 transition-colors"
         >
           <Search size={12} />
           <span className="flex-1 text-left">Search…</span>
@@ -88,11 +106,15 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
         </button>
       </div>
 
+      {/* Automations running right now — click to open their page */}
+      <RunningAutomations onNavigate={onClose} />
+
       {/* Nav */}
       <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
         {nav.map(item => {
           if (!("children" in item)) {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href
+              || ("matches" in item && (item.matches ?? []).some(m => pathname === m || pathname.startsWith(m + "/")));
             return (
               <Link
                 key={item.href}
@@ -110,7 +132,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
           }
 
           const isOpen = expanded.includes(item.label);
-          const hasActive = item.children?.some(c => pathname === c.href) ?? false;
+          const hasActive = item.children?.some(c => pathname === c.href || pathname.startsWith(c.href + "/")) ?? false;
 
           return (
             <div key={item.label}>
@@ -153,26 +175,15 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
 
       {/* Bottom */}
       <div className="border-t border-slate-800 p-3 space-y-1">
-        {importMsg && <p className="text-xs text-center text-blue-400 pb-1">{importMsg}</p>}
-        <div className="flex gap-1">
-          <button onClick={exportLocalStorage} title="Export all data" aria-label="Export all data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
-            <Download size={13} />Export
-          </button>
-          {confirmImport ? (
-            <div className="w-full mt-1 p-2 bg-red-950/40 border border-red-800/50 rounded-lg space-y-2">
-              <p className="text-[10px] text-red-300">This will overwrite all current data. Are you sure?</p>
-              <div className="flex gap-1">
-                <button onClick={() => setConfirmImport(false)} className="flex-1 text-[10px] text-slate-400 border border-slate-700 rounded px-2 py-1 hover:bg-slate-800">Cancel</button>
-                <button onClick={() => { setConfirmImport(false); importRef.current?.click(); }} className="flex-1 text-[10px] text-white bg-red-700 rounded px-2 py-1 hover:bg-red-600">Yes, import</button>
-              </div>
-            </div>
-          ) : (
-            <button onClick={() => setConfirmImport(true)} title="Import data" aria-label="Import data" className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors">
-              <Upload size={13} />Import
-            </button>
-          )}
-          <input ref={importRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
-        </div>
+        <WorkingNow />
+        <button
+          onClick={openWhatsNew}
+          className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors"
+        >
+          <Sparkles size={15} />
+          <span className="flex-1 text-left">What&apos;s New</span>
+          <span className="text-[10px] font-thin text-slate-600">{CURRENT_VERSION}</span>
+        </button>
         <Link
           href="/settings"
           onClick={onClose}

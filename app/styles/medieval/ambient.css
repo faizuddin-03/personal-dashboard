@@ -1,0 +1,7 @@
+/* Medieval style: ambient layer (loaded last). Empty: the mossy-edge brick
+   wall was removed at Faizuddin's request (2026-10-27); the cottage design in
+   base.css sets the background. Kept as a hook for future global overrides. */
+
+/* Labels use the same clear pixel font as body text (DotGothic16, see app/layout.tsx):
+   Silkscreen made Z/2 and S/5 look alike. */
+[data-style="medieval"] { --font-pixel-label: var(--font-pixel-body); }

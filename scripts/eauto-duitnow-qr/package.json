@@ -1,0 +1,13 @@
+{
+  "name": "eauto-duitnow-qr",
+  "private": true,
+  "version": "1.0.0",
+  "description": "EAINT-12257 — DuitNow QR payment channel for UCD Pre-application / Application. Happy flow only.",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0"
+  }
+}

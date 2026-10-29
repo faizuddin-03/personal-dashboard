@@ -1,0 +1,656 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Morning Slot - Book until full|Afternoon Slot - Book until full|Day capacity reach 6/6|Software Installation - Mandatory Booking|Biometric Purchase - Free Install Option|Biometric Purchase - Paid Install Mandatory|Two UCD - Select same last available slot"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-13T02-06-00",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "slot-capacity-boundary.spec.ts",
+      "file": "slot-capacity-boundary.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Slot Capacity Boundary",
+          "file": "slot-capacity-boundary.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "slot-capacity-boundary.spec.ts",
+              "line": 11,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Morning Slot - Book until full",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 12078,
+                          "error": {
+                            "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n",
+                            "stack": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n    at SlotPickerComponent.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:84:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:25:9",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                              "column": 29,
+                              "line": 84
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:84\n\n\u001b[0m \u001b[90m 82 |\u001b[39m     \u001b[36mconst\u001b[39m cell \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mgetDayCell(dateStr)\u001b[33m;\u001b[39m\n \u001b[90m 83 |\u001b[39m     \u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 84 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mmodalOverlay\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m\"visible\"\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 85 |\u001b[39m   }\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m   \u001b[90m/** Get booked count for a slot from the modal capacity text (e.g. \"2 of 3 booked\") */\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                                "column": 29,
+                                "line": 84
+                              },
+                              "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n\n   at ..\\pages\\SlotPickerComponent.ts:84\n\n  82 |     const cell = this.getDayCell(dateStr);\n  83 |     await cell.click();\n> 84 |     await this.modalOverlay.waitFor({ state: \"visible\", timeout: 5000 });\n     |                             ^\n  85 |   }\n  86 |\n  87 |   /** Get booked count for a slot from the modal capacity text (e.g. \"2 of 3 booked\") */\n    at SlotPickerComponent.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:84:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:25:9"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:06:03.443Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                            "column": 29,
+                            "line": 84
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-00b83de16a34bea4e19c",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 17,
+                  "column": 9
+                },
+                {
+                  "title": "Afternoon Slot - Book until full",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 11507,
+                          "error": {
+                            "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n",
+                            "stack": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n    at SlotPickerComponent.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:84:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:49:9",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                              "column": 29,
+                              "line": 84
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:84\n\n\u001b[0m \u001b[90m 82 |\u001b[39m     \u001b[36mconst\u001b[39m cell \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mgetDayCell(dateStr)\u001b[33m;\u001b[39m\n \u001b[90m 83 |\u001b[39m     \u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 84 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mmodalOverlay\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m\"visible\"\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 85 |\u001b[39m   }\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m   \u001b[90m/** Get booked count for a slot from the modal capacity text (e.g. \"2 of 3 booked\") */\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                                "column": 29,
+                                "line": 84
+                              },
+                              "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n\n   at ..\\pages\\SlotPickerComponent.ts:84\n\n  82 |     const cell = this.getDayCell(dateStr);\n  83 |     await cell.click();\n> 84 |     await this.modalOverlay.waitFor({ state: \"visible\", timeout: 5000 });\n     |                             ^\n  85 |   }\n  86 |\n  87 |   /** Get booked count for a slot from the modal capacity text (e.g. \"2 of 3 booked\") */\n    at SlotPickerComponent.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:84:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:49:9"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:06:17.917Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                            "column": 29,
+                            "line": 84
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-25ee8976c9681136e157",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 41,
+                  "column": 9
+                },
+                {
+                  "title": "Day capacity reach 6/6",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 31345,
+                          "error": {
+                            "message": "TimeoutError: locator.textContent: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('td[data-date=\"2026-07-21\"]').locator('.si-badge').first()\u001b[22m\n",
+                            "stack": "TimeoutError: locator.textContent: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('td[data-date=\"2026-07-21\"]').locator('.si-badge').first()\u001b[22m\n\n    at SlotPickerComponent.getSlotBadge (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:60:25)\n    at SlotPickerComponent.getSlotCount (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:64:30)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:86:42",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                              "column": 25,
+                              "line": 60
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:60\n\n\u001b[0m \u001b[90m 58 |\u001b[39m     \u001b[36mconst\u001b[39m cell \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mgetDayCell(dateStr)\u001b[33m;\u001b[39m\n \u001b[90m 59 |\u001b[39m     \u001b[36mconst\u001b[39m badge \u001b[33m=\u001b[39m cell\u001b[33m.\u001b[39mlocator(\u001b[32m\".si-badge\"\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 60 |\u001b[39m     \u001b[36mreturn\u001b[39m (\u001b[36mawait\u001b[39m badge\u001b[33m.\u001b[39mtextContent()) \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[32m\"\"\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 61 |\u001b[39m   }\n \u001b[90m 62 |\u001b[39m\n \u001b[90m 63 |\u001b[39m   \u001b[36masync\u001b[39m getSlotCount(dateStr\u001b[33m:\u001b[39m string)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m{ used\u001b[33m:\u001b[39m number\u001b[33m;\u001b[39m total\u001b[33m:\u001b[39m number }\u001b[33m>\u001b[39m {\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                                "column": 25,
+                                "line": 60
+                              },
+                              "message": "TimeoutError: locator.textContent: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('td[data-date=\"2026-07-21\"]').locator('.si-badge').first()\u001b[22m\n\n\n   at ..\\pages\\SlotPickerComponent.ts:60\n\n  58 |     const cell = this.getDayCell(dateStr);\n  59 |     const badge = cell.locator(\".si-badge\").first();\n> 60 |     return (await badge.textContent()) ?? \"\";\n     |                         ^\n  61 |   }\n  62 |\n  63 |   async getSlotCount(dateStr: string): Promise<{ used: number; total: number }> {\n    at SlotPickerComponent.getSlotBadge (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:60:25)\n    at SlotPickerComponent.getSlotCount (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:64:30)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:86:42"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:06:31.940Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                            "column": 25,
+                            "line": 60
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-2ced81b50ddcbfed25fb",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 65,
+                  "column": 9
+                },
+                {
+                  "title": "Software Installation - Mandatory Booking",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 6584,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m4\u001b[39m\nReceived: \u001b[31m0\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m4\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:98:25",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 25,
+                              "line": 98
+                            },
+                            "snippet": "\u001b[0m \u001b[90m  96 |\u001b[39m\n \u001b[90m  97 |\u001b[39m       \u001b[36mconst\u001b[39m remaining \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mgetRemainingToAllocate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m       expect(remaining)\u001b[33m.\u001b[39mtoBe(\u001b[35m4\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mconst\u001b[39m date1 \u001b[33m=\u001b[39m slotPicker\u001b[33m.\u001b[39mdaysFromToday(\u001b[35m5\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mopenSlotModal(date1)\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 25,
+                                "line": 98
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m4\u001b[39m\nReceived: \u001b[31m0\u001b[39m\n\n   96 |\n   97 |       const remaining = await slotPicker.getRemainingToAllocate();\n>  98 |       expect(remaining).toBe(4);\n      |                         ^\n   99 |\n  100 |       const date1 = slotPicker.daysFromToday(5);\n  101 |       await slotPicker.openSlotModal(date1);\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:98:25"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:07:06.502Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 25,
+                            "line": 98
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-ebcc7d7051e8212def5b",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 91,
+                  "column": 9
+                },
+                {
+                  "title": "Biometric Purchase - Free Install Option",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 17423,
+                          "error": {
+                            "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.confirm-dialog-btn')\u001b[22m\n",
+                            "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.confirm-dialog-btn')\u001b[22m\n\n    at BiometricPurchasePage.acceptConfirmDialog (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts:28:52)\n    at BiometricPurchasePage.makePayment (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts:62:16)\n    at BiometricPurchasePage.purchaseDevice (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts:84:23)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:128:21",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                              "column": 52,
+                              "line": 28
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\BasePage.ts:28\n\n\u001b[0m \u001b[90m 26 |\u001b[39m   \u001b[90m/** Accept the jQuery UI confirmation dialog (clicks the \"Yes\" button) */\u001b[39m\n \u001b[90m 27 |\u001b[39m   \u001b[36masync\u001b[39m acceptConfirmDialog() {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 28 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mlocator(\u001b[32m\".confirm-dialog-btn\"\u001b[39m)\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 29 |\u001b[39m   }\n \u001b[90m 30 |\u001b[39m\n \u001b[90m 31 |\u001b[39m   \u001b[90m/** Dismiss the jQuery UI confirmation dialog (clicks the \"No\" button) */\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                                "column": 52,
+                                "line": 28
+                              },
+                              "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.confirm-dialog-btn')\u001b[22m\n\n\n   at ..\\pages\\BasePage.ts:28\n\n  26 |   /** Accept the jQuery UI confirmation dialog (clicks the \"Yes\" button) */\n  27 |   async acceptConfirmDialog() {\n> 28 |     await this.page.locator(\".confirm-dialog-btn\").click();\n     |                                                    ^\n  29 |   }\n  30 |\n  31 |   /** Dismiss the jQuery UI confirmation dialog (clicks the \"No\" button) */\n    at BiometricPurchasePage.acceptConfirmDialog (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts:28:52)\n    at BiometricPurchasePage.makePayment (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts:62:16)\n    at BiometricPurchasePage.purchaseDevice (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts:84:23)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:128:21"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:07:15.520Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                            "column": 52,
+                            "line": 28
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-abf57fdbc10dcd9e6600",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 124,
+                  "column": 9
+                },
+                {
+                  "title": "Biometric Purchase - Paid Install Mandatory",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 17155,
+                          "error": {
+                            "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\\'+\\')').nth(1)\u001b[22m\n",
+                            "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\\'+\\')').nth(1)\u001b[22m\n\n    at BiometricPurchasePage.setAdditionalInstallations (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts:58:73)\n    at BiometricPurchasePage.purchaseDevice (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts:83:45)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:146:21",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts",
+                              "column": 73,
+                              "line": 58
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\BiometricPurchasePage.ts:58\n\n\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m   \u001b[36masync\u001b[39m setAdditionalInstallations(qty\u001b[33m:\u001b[39m number) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mlet\u001b[39m i \u001b[33m=\u001b[39m \u001b[35m0\u001b[39m\u001b[33m;\u001b[39m i \u001b[33m<\u001b[39m qty\u001b[33m;\u001b[39m i\u001b[33m++\u001b[39m) \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39madditionalInstallIncrement\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m   }\n \u001b[90m 60 |\u001b[39m\n \u001b[90m 61 |\u001b[39m   \u001b[36masync\u001b[39m makePayment()\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33mstring\u001b[39m\u001b[33m>\u001b[39m {\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts",
+                                "column": 73,
+                                "line": 58
+                              },
+                              "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\\'+\\')').nth(1)\u001b[22m\n\n\n   at ..\\pages\\BiometricPurchasePage.ts:58\n\n  56 |\n  57 |   async setAdditionalInstallations(qty: number) {\n> 58 |     for (let i = 0; i < qty; i++) await this.additionalInstallIncrement.click();\n     |                                                                         ^\n  59 |   }\n  60 |\n  61 |   async makePayment(): Promise<string> {\n    at BiometricPurchasePage.setAdditionalInstallations (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts:58:73)\n    at BiometricPurchasePage.purchaseDevice (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts:83:45)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:146:21"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:07:35.144Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BiometricPurchasePage.ts",
+                            "column": 73,
+                            "line": 58
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-f5d21e54a6d85dbe56d6",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 142,
+                  "column": 9
+                },
+                {
+                  "title": "Two UCD - Select same last available slot",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 11780,
+                          "error": {
+                            "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n",
+                            "stack": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n    at SlotPickerComponent.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:84:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:172:9",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                              "column": 29,
+                              "line": 84
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:84\n\n\u001b[0m \u001b[90m 82 |\u001b[39m     \u001b[36mconst\u001b[39m cell \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mgetDayCell(dateStr)\u001b[33m;\u001b[39m\n \u001b[90m 83 |\u001b[39m     \u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 84 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mmodalOverlay\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m\"visible\"\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 85 |\u001b[39m   }\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m   \u001b[90m/** Get booked count for a slot from the modal capacity text (e.g. \"2 of 3 booked\") */\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                                "column": 29,
+                                "line": 84
+                              },
+                              "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n\n   at ..\\pages\\SlotPickerComponent.ts:84\n\n  82 |     const cell = this.getDayCell(dateStr);\n  83 |     await cell.click();\n> 84 |     await this.modalOverlay.waitFor({ state: \"visible\", timeout: 5000 });\n     |                             ^\n  85 |   }\n  86 |\n  87 |   /** Get booked count for a slot from the modal capacity text (e.g. \"2 of 3 booked\") */\n    at SlotPickerComponent.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:84:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:172:9"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:07:54.418Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-06-00\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                            "column": 29,
+                            "line": 84
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-5a6960d6c40a99819d98",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 163,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-13T02:06:02.804Z",
+    "duration": 125192.78199999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 7,
+    "flaky": 0
+  }
+}

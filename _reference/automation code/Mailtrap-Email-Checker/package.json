@@ -1,0 +1,14 @@
+{
+  "name": "eauto-mailtrap-email-checker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone Mailtrap email checker for the eAuto SI/BDP appointment emails (Confirmation / Reschedule), verified against the baseline contracts.",
+  "engines": { "node": ">=18" },
+  "bin": { "check-email": "check-email.js" },
+  "scripts": {
+    "list": "node check-email.js list",
+    "confirmation": "node check-email.js confirmation",
+    "reschedule": "node check-email.js reschedule",
+    "none": "node check-email.js none"
+  }
+}

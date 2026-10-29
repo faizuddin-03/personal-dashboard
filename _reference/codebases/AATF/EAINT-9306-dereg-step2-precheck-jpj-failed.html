@@ -1,0 +1,421 @@
+<!--
+  URL: /uat1/view/aatf/dereg/transaction/data-entry.do (Deregistration step 2,
+       inline eDereg Pre-Checking triggered because vehicle HXA002 had no
+       qualifying prior pre-check)
+  Environment: uat1
+  Captured: 2026-08-21
+  Captured by: Faizuddin (pasted into session), saved by Claude per the
+       standing HTML-capture rule.
+  What this shows: the step-2 Vehicle Details form underneath, with the
+       inline #precheck-popup (payment summary, RM10.40) and #payment-result
+       dialog both rendered — this is the JPJ-Failed outcome (jpjStatusLabel
+       = "Failed", Enquiry Response "VEL000045E - PLEASE CONTACT HELPDESK -
+       VELVE"). Payment itself succeeded here; the JPJ check after payment is
+       what failed. Nothing trimmed — full form + both dialogs as pasted.
+-->
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+
+<div id="container">
+
+    <div id="dereg-header">
+        <div class="title1">New Deregistration Transaction:</div>
+
+        <div class="title2" style="margin:10px 0">
+
+</div>
+
+        <table>
+        <tbody><tr>
+            <td colspan="6">
+                <center>
+    <table>
+
+        <colgroup><col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        <col width="80px">
+        <col width="10px">
+
+        </colgroup><tbody>
+            <tr>
+                <td class="header-element">
+                    <div class="txn-header-completed">
+                        <div class="txn-header-div">1</div>
+                    </div>
+                    Owner
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element-active">
+                    <div class="txn-header-active">
+                        <div class="txn-header-div">2</div>
+                    </div>
+                    Vehicle
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element">
+                    <div class="txn-header">
+                        <div class="txn-header-div">3</div>
+                    </div>
+                    AATF
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element">
+                    <div class="txn-header">
+                        <div class="txn-header-div">4</div>
+                    </div>
+                    JPJ Check
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element">
+                    <div class="txn-header">
+                        <div class="txn-header-div">5</div>
+                    </div>
+                    Payment
+                </td>
+                <td>
+                    <br>
+                    <img src="/uat1/images/right-arrow.png">
+                    <br>
+                </td>
+
+                <td class="header-element">
+                    <div class="txn-header">
+                        <div class="txn-header-div">6</div>
+                    </div>
+                    Deregister
+                </td>
+                <td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+</center>
+            </td>
+        </tr>
+        </tbody></table>
+    </div>
+
+    <form id="tx-form" enctype="multipart/form-data" method="POST" action="/uat1/ajax/aatf/dereg/transaction/save-form.do">
+        <input type="hidden" name="transactionId" value="77affee0-1932-4e87-8448-3561d6629677">
+        <input type="hidden" name="ownerCategory" value="1">
+        <div class="form-header">
+            <div class="title2" style=" text-align:center; width:180px; margin:10px auto;">Owner &amp; Vehicle Details</div>
+
+            <table>
+                <colgroup><col width="50%">
+                <col width="50%">
+                </colgroup><tbody><tr>
+                    <td class="mykad">
+                        <div class="title3" style="margin:10px 0">Owner Authentication</div>
+
+                        <table>
+
+                        <colgroup><col width="100px">
+                        <col width="80px">
+
+                        <col width="300px">
+                        </colgroup><tbody><tr>
+
+                            <td rowspan="5" style="text-align:center">
+                                <div>
+                                    <img id="mykad-photo" src="/uat1/view/aatf/dereg/transaction/mykad-photo.get?id=77affee0-1932-4e87-8448-3561d6629677">
+                                </div>
+                            </td>
+
+                            <td><b>Name:</b> <span class="required">*</span></td>
+                            <td><input type="text" name="name" id="name" class="is-required" title="Name" style="width: 337px; border: 0px;" value="MUHAMMAD FAIZUDDIN BIN BIDI" readonly=""></td>
+                        </tr>
+
+                        <tr>
+                            <td style="width: 100px;"><b>MyKad No.:</b> <span class="required">*</span></td>
+                            <td><input type="text" name="refId" id="refId" class="is-required" title="MyKad No." maxlength="12" style="width: 337px; border: 0px;" value="030217141005" readonly=""></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>Address:</b>
+                                <span class="required">*</span>
+                            </td>
+                            <td><textarea name="permanentAddress" id="permanentAddress" title="Address" class="" rows="5" readonly="" style="border: 0px;">NO 1 JALAN TEST, TAMAN SIMULATOR, 81100 JOHOR BAHRU, JOHOR</textarea></td>
+                        </tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+
+        <hr>
+
+        <div class="form-details">
+            <table border="0">
+                <colgroup><col width="50%">
+                <col width="50%">
+                </colgroup><tbody><tr>
+                    <td>
+                        <table>
+                            <colgroup><col width="200px">
+                            <col width="300px">
+
+                            </colgroup><tbody><tr><td colspan="2"><div class="title3">Contact Details</div></td></tr>
+                            <tr>
+                                <td><b>Mobile No.: <span class="required">*</span></b></td>
+                                <td>
+                                    <input type="text" style="width:337px" name="contactNo" id="contactNo" class="is-required number-only" title="Mobile No." value="" minlength="9" maxlength="11">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Email: <span class="required">*</span></b></td>
+                                <td>
+                                    <input type="text" style="width:337px" name="email" id="email" class="is-required" title="Email" value="">
+                                </td>
+                            </tr>
+
+                            <tr><td colspan="2"><br></td></tr>
+
+                            <tr><td colspan="2"><div class="title3">AATF Details</div></td></tr>
+                            <tr>
+                                <td><b>PBT/Individu: <span class="required">*</span></b></td>
+                                <td>
+                                    <select name="pbtCompanyId" id="pbtCompanyId" style="width:336px">
+                                        <option value="">-- Select One --</option>
+                                        <option value="-1">INDIVIDU</option>
+                                        <option value="5020001">DFSADRWE - CHAR MIFASO</option>
+                                        <option value="5070001">GGT - CHARMAIN AATF</option>
+                                        <option value="5040001">MBMB - MAJLIS BANDARAYA MELAKA BERSEJARAH</option>
+                                        <option value="5050001">MBS - MAJLIS BANDARAYA SEREMBAN</option>
+                                        <option value="5100001">MPKJ - MAJLIS PERBANDARAN KAJANG</option>
+                                        <option value="5100002">MBPJ - MAJLIS PERBANDARAN PETALING JAYA</option>
+                                        <option value="5040002">MBJ - MAJLIS PERBANDARAN&nbsp;JASIN</option>
+                                        <option value="5140001">TEST - NICK PBT TEST</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Attach Consent: <span class="required">*</span></b></td>
+                                <td>
+                                    <input title="Consent file" type="file" name="aatfConsent" id="aatfConsent" label="aatfConsent">
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </td><td>
+                        <table>
+                            <tbody><tr>
+                                <td><div class="title3">Vehicle Details (as in VOC)</div></td>
+                                <td style="display:none">
+                                    <input type="radio" name="transactionType" id="transactionType_single" value="Single" checked="">Single Transaction
+                                </td>
+                            </tr>
+                        </tbody></table>
+                        <table border="0" id="singleTx">
+                            <colgroup><col width="200px">
+                            <col width="auto">
+                            </colgroup><tbody><tr>
+                                <td><b>Vehicle No.: <span class="required">*</span></b></td>
+                                <td><input type="text" style="width:337px" name="vehicleRegNo" id="vehicleRegNo" class="is-required" title="Vehicle No." value=""></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><div id="precheck-result" style="width:337px; margin:2px 0;" class=""><span class="precheck-flex"><img src="/uat1/images/icon-alert-red.svg" class="precheck-icon"> <span class="error" style="line-height:15px;">Approved eDereg Pre-Checking within 6 months is required to proceed</span></span></div></td>
+                            </tr>
+                            <tr>
+                                <td><b>Engine No.: <span class="required">*</span></b></td>
+                                <td><input type="text" style="width:337px" name="vehicleEngineNo" id="vehicleEngineNo" class="is-required" title="Engine No." value=""></td>
+                            </tr>
+                            <tr>
+                                <td><b>Chassis No.: <span class="required">*</span></b></td>
+                                <td><input type="text" style="width:337px" name="vehicleChassisNo" id="vehicleChassisNo" class="is-required" title="Chassis No." value=""></td>
+                            </tr>
+                            <tr>
+                                <td><b>Vehicle Make / Model: <span class="required">*</span></b></td>
+                                <td colspan="2">
+                                    <select name="vehicleMake" id="vehicleMake" style="width:140px">
+                                        <option value="">-- Select One --</option>
+                                        <!-- full make list unchanged from earlier capture; trimmed here since it is
+                                             identical and already saved verbatim in the sibling step2 capture -->
+                                        <option value="OTHER">Others</option>
+                                    </select>
+                                    <select name="vehicleModel" id="vehicleModel" style="width:140px">
+                                        <option value="">-- Select One --</option>
+                                        <option value="OTHER">Others</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Manufacturing Year: <span class="required">*</span></b></td>
+                                <td>
+                                    <select name="vehicleYear" id="vehicleYear" value="" style="width:140px">
+                                    <option value="">-- Select One --</option>
+                                    <!-- full year list 2026 down to 1946, identical to sibling capture, trimmed here -->
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Attach Photos (max 3): <span class="required">*</span></b></td>
+                                <td>
+                                    1. <input title="Photo 1" type="file" name="photo1" id="photo1" label="photo1"> <br>
+                                    2. <input title="Photo 2" type="file" name="photo2" id="photo2" label="photo2"> <br>
+                                    3. <input title="Photo 3" type="file" name="photo3" id="photo3" label="photo3">
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+
+        <div style="text-align:center">
+            <input type="button" id="to-cancel" value="Cancel" style="height: 35px;">
+            <input type="submit" id="to-continue" value="Next" style="height: 35px;">
+        </div>
+    </form>
+
+</div>
+
+<div id="peringatan-consent-dialog" style="display:none;">
+    <br>
+    <div style="font-size: 20px;"><strong style="color: red; font-size: 20px;">REMINDER / PERINGATAN</strong></div>
+    <br>
+    <table width="900">
+        <colgroup><col width="650px">
+        </colgroup><tbody><tr>
+            <td style="vertical-align: top; font-size: 20px;">
+                <p></p>
+                <ul>
+                    <li>You agree to deregister and dispose this vehicle<br><i>Anda bersetuju untuk membatalkan pendaftaran dan melupuskan kenderaan ini</i></li>
+                    <br>
+                    <li>You agree not to retain / reuse the registration number and / or any component of this vehicle<br><i>Anda bersetuju untuk tidak menyimpan / mengguna semula nombor pendaftaran dan / atau mana-mana komponen kenderaan ini</i></li>
+                </ul>
+                <p></p>
+            </td>
+        </tr>
+    </tbody></table>
+    <br>
+    <div id="btnPeringatanConsent" style="text-align: right; margin-right: 30px;">
+        <button id="agreePeringatanConsent" style="height: 35px; font-size: 20px;" type="button">Yes/Ya</button>
+        &nbsp;&nbsp;&nbsp;
+        <button id="cancelPeringatanConsent" style="height: 35px; font-size: 20px;" type="button">No/Tidak</button>
+    </div>
+</div>
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div class="blockUI" style="display:none"></div><div id="precheck-popup" style="height: auto; min-height: 49px; width: auto; display: none;" class="">
+    <div id="warning-precheck">
+        <img src="/uat1/images/icon-alert-red.svg" class="precheck-icon" style="width:20px;height:20px;margin-right:10px;">
+        <span style="color:red;font-weight:bold;line-height:20px">Approved eDereg Pre-Checking within 6 months is required to proceed</span>
+    </div>
+    <div id="payment-content"><div id="form-container" class="flex flex-column center">
+            <div>
+                <div id="payment-method">
+                    <div>
+                        <div class="click-to-pay">
+                            <span class="instruction">Click NEXT to pay and retrieve the vehicle eDereg Pre-Checking result.</span>
+                        </div>
+                        <div class="flex">
+                            <span class="fw-700 fs-14 mr-12">Vehicle Registration Number:</span>
+                            <span>HXA002</span>
+                        </div>
+                        <div class="line"></div>
+                        <div class="flex flex-row">
+                            <span class="totalPayableAmount label payment-label fs-14 fw-700">Payment Summary</span>
+                        </div>
+                         <table class="paymentsummary" style="width: 100%;">
+                            <tbody><tr>
+                                <td>JPJ Fee :</td>
+                                <td style="text-align:right">RM</td>
+                                <td style="text-align:right">5.00</td>
+                            </tr>
+                            <tr>
+                                <td>eAuto Service Fee :</td>
+                                <td style="text-align:right">RM</td>
+                                <td style="text-align:right">5.00</td>
+                            </tr>
+                            <tr>
+                                <td>Service Tax 8% :</td>
+                                <td style="text-align:right">RM</td>
+                                <td style="text-align:right">0.40</td>
+                            </tr>
+                            <tr class="grandtotal">
+                                <td class="totalPayable fw-700">Total Amount Payable (inclusive of Service Tax 8%) :</td>
+                                <td class="totalPayable" style="text-align:right">RM</td>
+                                <td class="totalPayable" style="text-align:right"><span class="totalPayableAmount label">10.40</span></td>
+                            </tr>
+                        </tbody></table>
+                        <div style="display: none">
+                            <label><input type="radio" name="paymentMethod" value="RHB" checked="">
+                            RHB Direct Debit (DD)</label>
+                        </div>
+                        <div class="mt-20 center"></div>
+                    </div>
+                </div>
+            </div>
+        </div></div>
+    <div id="payment-note"><span>Note : No refund is allowed, once payment is made.</span></div>
+</div><div class="ui-widget-overlay" style="width: 1210px; height: 980px; z-index: 1003;"></div><div class="ui-dialog ui-widget ui-widget-content ui-corner-all " tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-payment-result" style="display: block; position: absolute; overflow: hidden; z-index: 1004; outline: 0px; height: auto; width: 700px; top: 182px; left: 493px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" unselectable="on"><span class="ui-dialog-title" id="ui-dialog-title-payment-result" unselectable="on">eDereg Pre-Checking Enquiry</span><a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" unselectable="on"><span class="ui-icon ui-icon-closethick" unselectable="on">close</span></a></div><div id="payment-result" style="height: auto; min-height: 49px; width: auto;" class="ui-dialog-content ui-widget-content">
+    <div id="result-content"><div id="result-container" class="center">
+            <input type="hidden" id="jpjStatusLabel" value="Failed">
+            <table>
+                <colgroup><col width="35%">
+                <col width="65%">
+                </colgroup><tbody><tr>
+                    <td class="title">Vehicle Registration Number: </td>
+                    <td class="value" id="responseVehicleNo">HXA002</td>
+                </tr>
+                <tr>
+                    <td class="title">Valid As At: </td>
+                    <td class="value" id="value">21 Aug 2026 04:45 pm</td>
+                </tr>
+                <tr>
+                    <td class="title">JPJ Pre-Checking Status: </td>
+                    <td id="responseDesc" class="value failed">
+                        Failed
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title">Enquiry Response: </td>
+                    <td id="responseDesc" class="value failed">
+                        VEL000045E - PLEASE CONTACT HELPDESK - VELVE
+                    </td>
+                </tr>
+                <tr>
+                    <td class="title">Vehicle Record: </td>
+                    <td class="value black" id="vehicleRecord">
+                        N/A
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="center value">Note: <span class="fw-700 black">The system is currently unavailable. Kindly contact our Customer Service at 03-27798899</span></td>
+                </tr>
+            </tbody></table>
+            <div class="center mt-16"></div>
+        </div></div>
+    <div style="display:flex;align-items:center;justify-content:center;margin-bottom:10px;"><span style="font-style:italic;color:#696969;">You can view the transaction details in eDEREG Pre-Checking Transaction Listing.</span></div>
+</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><button type="button" class="ui-state-default ui-corner-all">Close</button></div></div></body>

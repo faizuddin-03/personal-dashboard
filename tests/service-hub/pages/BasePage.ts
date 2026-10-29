@@ -1,0 +1,221 @@
+import { type Page, type Locator, expect } from "@playwright/test";
+import { ENV, PATHS } from "../utils/config";
+
+export class BasePage {
+  readonly page: Page;
+  readonly baseUrl: string;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.baseUrl = ENV.baseUrl;
+  }
+
+  async goto(path: string) {
+    const url = `${this.baseUrl}${path}`;
+    try {
+      await this.page.goto(url, { waitUntil: "networkidle" });
+    } catch {
+      // Legacy portals occasionally abort the initial request (a redirect
+      // race right after login) or never reach networkidle. Retry once with
+      // a load-based wait, then best-effort settle.
+      await this.page.goto(url, { waitUntil: "domcontentloaded" });
+      await this.page.waitForLoadState("networkidle").catch(() => {});
+    }
+  }
+
+  async waitForNav() {
+    await this.page.waitForLoadState("networkidle");
+  }
+
+  /**
+   * The transaction identifier from the current URL's query string, as a
+   * ready-to-reuse "key=value" pair (e.g. "txnId=232", "transactionId=a23be953-...",
+   * or "id=4d7196b0-...").
+   *
+   * The app used to redirect with `?txnId=<number>`, then a deployment
+   * changed it to `?transactionId=<uuid>`, and a later one changed it AGAIN
+   * to plain `?id=<uuid>` (confirmed live on SIT2 — same destination page,
+   * just a different id scheme each time). Rather than hardcode one param
+   * name, this returns whichever is actually present, INCLUDING its key, so
+   * callers can splice it straight into a follow-up URL (`?${txnId}`)
+   * without needing to know or guess which scheme this particular record
+   * uses. "id" is checked first since it's the current scheme.
+   */
+  getTxnIdFromUrl(): string {
+    const url = new URL(this.page.url());
+    for (const key of ["id", "txnId", "transactionId"]) {
+      const value = url.searchParams.get(key);
+      if (value) return `${key}=${value}`;
+    }
+    return "";
+  }
+
+  /**
+   * The logged-in UCD account's own company name, read off the small bold
+   * header at the top of the UCD home page — navigates there to read it.
+   *
+   * CONFIRMED LIVE 2026-09-24 (pasted HTML capture, saved to
+   * _reference/html/eauto/ucd-home-page-uat1-2026-09-24.html): the span has
+   * no id/class of its own (`<span style="font-weight:700; color:
+   * #0B4C5F;">FAIZUDDIN AUTO TEST</span>`), but it sits inside `#container`
+   * — which the app reuses (NOT unique) elsewhere on the same page, so
+   * `.first()` is required; the target is confirmed to be the first
+   * occurrence in DOM order. Same value also appears in the Settings >
+   * Manage Branches table and its Company/Branch filter dropdown, per
+   * Faizuddin, 2026-09-24 — the home-page header is used here since it
+   * needs no extra navigation.
+   */
+  async getLoggedInCompanyName(): Promise<string> {
+    await this.goto(PATHS.ucdHome);
+    const span = this.page.locator('#container.ucd-container span[style*="font-weight:700"]').first();
+    return ((await span.textContent().catch(() => "")) ?? "").trim();
+  }
+
+  /** Accept the jQuery UI confirmation dialog (clicks the "Yes" button) */
+  async acceptConfirmDialog() {
+    await this.page.locator(".confirm-dialog-btn").click();
+  }
+
+  /** Dismiss the jQuery UI confirmation dialog (clicks the "No" button) */
+  async dismissConfirmDialog() {
+    await this.page.locator(".cancel-dialog-btn").click();
+  }
+
+  /** Wait for the jQuery UI dialog to appear */
+  async waitForDialog() {
+    await this.page.locator(".ui-dialog").waitFor({ state: "visible", timeout: 5000 });
+  }
+
+  /**
+   * Format a Date as its LOCAL-calendar yyyy-mm-dd. Deliberately NOT
+   * `.toISOString().split("T")[0]` — that converts to UTC first, which
+   * silently rolls the date back by one whenever the local clock is within
+   * the UTC offset of midnight (e.g. every run between 00:00–08:00 in
+   * Malaysia, UTC+8). Every date helper below must funnel through this.
+   */
+  private formatLocalDate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  today(): string {
+    return this.formatLocalDate(new Date());
+  }
+
+  daysFromToday(n: number): string {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    return this.formatLocalDate(d);
+  }
+
+  earliestRescheduleDate(): string {
+    return this.daysFromToday(ENV.reschedule.blackoutDays);
+  }
+
+  /** Yesterday — a "previous" date, ISO yyyy-mm-dd. */
+  yesterday(): string {
+    return this.daysFromToday(-1);
+  }
+
+  /** The next Saturday strictly after today, ISO yyyy-mm-dd (a weekend date). */
+  nextWeekend(): string {
+    const d = new Date();
+    do {
+      d.setDate(d.getDate() + 1);
+    } while (d.getDay() !== 6); // 0 = Sun, 6 = Sat
+    return this.formatLocalDate(d);
+  }
+
+  /** A date `months` months ahead of today, ISO yyyy-mm-dd. */
+  dateMonthsAhead(months: number): string {
+    const d = new Date();
+    d.setMonth(d.getMonth() + months);
+    return this.formatLocalDate(d);
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // Demo mode — slow, highlighted playback for human-reviewable
+  // recordings. Enabled via PW_DEMO=1 (the runner UI's "Demo mode"
+  // toggle, default on). When off, every helper below is a no-op so
+  // normal/CI runs stay fast. Highlighting is best-effort and must
+  // never fail a test.
+  // ──────────────────────────────────────────────────────────────
+
+  private _demoSuppressed = 0;
+
+  protected get demoMode(): boolean {
+    return process.env.PW_DETAILED === "1" && this._demoSuppressed === 0;
+  }
+
+  /**
+   * Run `fn` with demo highlighting/pauses temporarily suppressed. Wrap
+   * calendar scans (finders that open/close many modals just to inspect)
+   * in this so they stay fast and don't flood the recording with pulses on
+   * dates the test never actually acts on.
+   */
+  protected async suppressDemo<T>(fn: () => Promise<T>): Promise<T> {
+    this._demoSuppressed++;
+    try {
+      return await fn();
+    } finally {
+      this._demoSuppressed--;
+    }
+  }
+
+  /** Default pause between steps, in ms (PW_DETAILED_DELAY overrides). */
+  protected get demoDelay(): number {
+    return Number(process.env.PW_DETAILED_DELAY || 1400);
+  }
+
+  /** Pause (demo mode only) so a human watching the recording can keep up. */
+  async demoPause(ms?: number): Promise<void> {
+    if (!this.demoMode) return;
+    await this.page.waitForTimeout(ms ?? this.demoDelay);
+  }
+
+  /**
+   * Highlight an element in the recording (demo mode only): scroll it into
+   * view, draw a temporary amber outline, hold for `hold` ms, then restore.
+   * `color` lets callers distinguish intent — amber (default) for "about to
+   * act on this", green for "here is the result to check". No-op when demo
+   * mode is off. Never throws.
+   */
+  async demoHighlight(
+    target: Locator | string,
+    opts: { hold?: number; color?: "amber" | "green" | "red" } = {},
+  ): Promise<void> {
+    if (!this.demoMode) return;
+    const locator = typeof target === "string" ? this.page.locator(target) : target;
+    const palette = { amber: "#f59e0b", green: "#22c55e", red: "#ef4444" };
+    const color = palette[opts.color ?? "amber"];
+    try {
+      const el = locator.first();
+      await el.scrollIntoViewIfNeeded({ timeout: 2000 });
+      const handle = await el.elementHandle({ timeout: 2000 });
+      if (!handle) return;
+      await this.page.evaluate(
+        ({ node, c }) => {
+          (node as any).__demoPrevOutline = node.style.outline;
+          (node as any).__demoPrevShadow = node.style.boxShadow;
+          (node as any).__demoPrevOffset = node.style.outlineOffset;
+          node.style.outline = `3px solid ${c}`;
+          node.style.outlineOffset = "2px";
+          node.style.boxShadow = `0 0 0 4px ${c}66`;
+          node.scrollIntoView({ block: "center", behavior: "smooth" });
+        },
+        { node: handle, c: color },
+      );
+      await this.page.waitForTimeout(opts.hold ?? this.demoDelay);
+      await this.page.evaluate((node) => {
+        node.style.outline = (node as any).__demoPrevOutline ?? "";
+        node.style.boxShadow = (node as any).__demoPrevShadow ?? "";
+        node.style.outlineOffset = (node as any).__demoPrevOffset ?? "";
+      }, handle);
+      await handle.dispose();
+    } catch {
+      // Highlighting is best-effort — never break a test over it.
+    }
+  }
+}

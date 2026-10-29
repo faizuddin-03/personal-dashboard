@@ -1,0 +1,128 @@
+<!--
+  URL:      https://staging.eauto.my/obs/preOnb/payment/check/0d42d67b-5b6e-4ae9-974e-dd9c8241d23c
+  Captured: 2026-10-22T09:13:26.729Z by the 12153 guided-capture run (page loaded)
+  Trimmed:  nothing
+-->
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Processing</title>
+    <link rel="icon" type="image/x-icon" href="/obs/favicon.ico">
+    <style>
+        body {
+            font-family: Inter, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .processing-container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0B4C5F;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message {
+            color: #333;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="processing-container">
+        <div class="spinner"></div>
+        <div class="message">
+            <span>Payment is pending</span>
+        </div>
+        <div style="font-size: 12px; color: #666; margin-top: 10px;">
+            This window will close automatically...
+        </div>
+    </div>
+
+    <script>
+        /*<![CDATA[*/
+        (function() {
+            var paymentStatus = "PENDING_APPROVAL";
+            var paymentUuid = "0d42d67b-5b6e-4ae9-974e-dd9c8241d23c";
+            var refNo = "0d42d67b-5b6e-4ae9-974e-dd9c8241d23c";
+            var tranID = "200650";
+            var message = "Payment is pending";
+            var isPreOnboarding = true;
+            var preOnboardingNo = null;
+            var preOnboardingUuid = "d3a195b9-350b-4bd7-9044-c06a3afdb826";
+            var obsLink = null;
+            var obsLinkUuid = null;
+
+            // Send message to parent window (opener)
+            if (window.opener && !window.opener.closed) {
+                try {
+                    window.opener.postMessage({
+                        type: 'PAYMENT_RESULT',
+                        status: paymentStatus,
+                        paymentUuid: paymentUuid,
+                        refNo: refNo,
+                        tranID: tranID,
+                        message: message,
+                        preOnboardingNo: preOnboardingNo
+                    }, window.location.origin);
+
+                    // Close popup after sending message
+                    setTimeout(function() {
+                        window.close();
+                    }, 1500);
+                    
+                } catch (e) {
+                    console.error('Error sending message to parent:', e);
+                    // Fallback: just close the window
+                    setTimeout(function() {
+                        window.close();
+                    }, 3000);
+                }
+            } else {
+                // No parent window (user might have closed it)
+                console.warn('No parent window found, redirecting...');
+
+                // Store the payment result in sessionStorage
+                sessionStorage.setItem('paymentResult', JSON.stringify({
+                    type: 'PAYMENT_RESULT',
+                    status: paymentStatus,
+                    paymentUuid: paymentUuid,
+                    refNo: refNo,
+                    tranID: tranID,
+                    message: message,
+                    preOnboardingNo: preOnboardingNo,
+                    timestamp: Date.now()
+                }));
+
+                setTimeout(function() {
+                    var redirectUrl = isPreOnboarding
+                        ? "\/obs\/preOnb\/form\/d3a195b9-350b-4bd7-9044-c06a3afdb826"
+                        : (obsLink || "\/obs\/form\/");
+                    window.location.href = redirectUrl;
+                }, 2000);
+            }
+        })();
+        /*]]>*/
+    </script>
+
+
+</body></html>

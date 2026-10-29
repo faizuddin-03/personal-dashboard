@@ -1,0 +1,373 @@
+<!doctype html>
+<title>Perakuan Scope Study</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #eef0f3;
+    --surface: #ffffff;
+    --surface-2: #f6f7f9;
+    --border: #d7dbe1;
+    --text: #1b2129;
+    --text-muted: #5b6472;
+    --text-faint: #8790a0;
+    --accent: #0f6f6a;
+    --accent-soft: #e2f2f0;
+    --accent-text: #0b5551;
+    --warn: #9a5b1e;
+    --warn-soft: #f7ecdd;
+    --neutral-chip: #eef0f3;
+    --neutral-chip-text: #4b5563;
+    --shadow: 0 1px 2px rgba(20, 24, 30, 0.04), 0 8px 24px -12px rgba(20, 24, 30, 0.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171c;
+      --surface: #1b1f26;
+      --surface-2: #20242c;
+      --border: #2c313b;
+      --text: #e7e9ed;
+      --text-muted: #a3abb8;
+      --text-faint: #6b7280;
+      --accent: #3fbdb0;
+      --accent-soft: #163431;
+      --accent-text: #7fd9cd;
+      --warn: #e2a15c;
+      --warn-soft: #3a2a17;
+      --neutral-chip: #262b33;
+      --neutral-chip-text: #b8c0cc;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px -14px rgba(0, 0, 0, 0.55);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14171c;
+    --surface: #1b1f26;
+    --surface-2: #20242c;
+    --border: #2c313b;
+    --text: #e7e9ed;
+    --text-muted: #a3abb8;
+    --text-faint: #6b7280;
+    --accent: #3fbdb0;
+    --accent-soft: #163431;
+    --accent-text: #7fd9cd;
+    --warn: #e2a15c;
+    --warn-soft: #3a2a17;
+    --neutral-chip: #262b33;
+    --neutral-chip-text: #b8c0cc;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px -14px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", ui-sans-serif, system-ui, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  .mono {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+  }
+
+  header.doc-head {
+    margin-bottom: 32px;
+  }
+
+  .eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .ticket-badge {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent-text);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    padding: 3px 9px;
+  }
+
+  .eyebrow-row .sep {
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+
+  .eyebrow-row .timestamp {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+  }
+
+  h1 {
+    font-size: 27px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin: 0;
+    max-width: 62ch;
+  }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 28px 0;
+    box-shadow: var(--shadow);
+  }
+
+  .callout .label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--warn);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .callout blockquote {
+    margin: 0 0 10px;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text);
+    padding: 0;
+    border: none;
+  }
+
+  .callout p.explain {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+
+  .callout p.explain strong {
+    color: var(--text);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin: 24px 0 8px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot.first { background: var(--accent); }
+  .dot.retry { background: var(--warn); }
+  .dot.reg { background: var(--text-faint); }
+
+  section.group {
+    margin-top: 36px;
+  }
+
+  .group-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+
+  .group-head h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .group-count {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+  }
+
+  ul.ts-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ts-row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ts-row:last-child {
+    border-bottom: none;
+  }
+
+  .ts-id {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+
+  .ts-desc {
+    font-size: 14.5px;
+    color: var(--text);
+  }
+
+  .ts-desc .no-perakuan {
+    color: var(--warn);
+    font-weight: 600;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+    justify-self: end;
+  }
+
+  .tag.first {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+
+  .tag.retry {
+    background: var(--warn-soft);
+    color: var(--warn);
+  }
+
+  .tag.reg {
+    background: var(--neutral-chip);
+    color: var(--neutral-chip-text);
+  }
+
+  footer.doc-foot {
+    margin-top: 48px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 560px) {
+    .ts-row {
+      grid-template-columns: 40px 1fr;
+    }
+    .tag {
+      grid-column: 2;
+      justify-self: start;
+      margin-top: 2px;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <header class="doc-head">
+    <div class="eyebrow-row">
+      <span class="ticket-badge">EAINT-9306</span>
+      <span class="sep">&middot;</span>
+      <span class="timestamp">10/09/2026, 3:35 PM</span>
+    </div>
+    <h1>Perakuan Popup &mdash; Updated Test Scenario Study</h1>
+    <p class="subtitle">Test scenarios for the eDereg Pre-Checking consent popup, revised against the BA's scope call this afternoon: the declaration is first-purchase only.</p>
+  </header>
+
+  <div class="callout">
+    <span class="label">BA update &middot; 10/9, ~3:30 PM</span>
+    <blockquote>&ldquo;The perakuan we just wan to apply to those first time purchase ya. No need to apply to those resubmit &amp; RE case.&rdquo;</blockquote>
+    <p class="explain">Confirmed against the redeployed dev artifact (effective 10 Sep 2026): resume-unpaid, normal-failure retry (<strong>R6</strong>), and RHB-reset countdown (<strong>R7</strong>, code RE) all revert to the original payment window &mdash; <strong>no PERAKUAN declaration</strong> on any of them.</p>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="dot first"></span>First-time purchase &mdash; perakuan shown</span>
+    <span class="legend-item"><span class="dot retry"></span>Resubmit / RE &mdash; no perakuan</span>
+    <span class="legend-item"><span class="dot reg"></span>Regression</span>
+  </div>
+
+  <section class="group">
+    <div class="group-head">
+      <h2>Feature tests</h2>
+      <span class="group-count">18</span>
+    </div>
+    <ul class="ts-list">
+      <li class="ts-row"><span class="ts-id">TS1</span><span class="ts-desc">Vehicle field exit (first-time purchase) triggers popup with full declaration</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS2</span><span class="ts-desc">Declaration shows vehicle no. twice (greyed/locked) + footer agreement sentence renders</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS3</span><span class="ts-desc">Submit empty email &rarr; required-field error</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS4</span><span class="ts-desc">Invalid email format (general) &rarr; format error</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS5</span><span class="ts-desc">Email boundary/invalid characters (e.g. &commat;, spaces, symbols outside a-z/0-9/./_/-) &rarr; format error</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS6</span><span class="ts-desc">Email exceeds 100 characters &rarr; max-length error</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS7</span><span class="ts-desc">Click Cancel &rarr; popup closes, no transaction created</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS8</span><span class="ts-desc">Valid email + Next &rarr; payment processes, result popup, page unlocks</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS9</span><span class="ts-desc">Re-access field after approval &rarr; green success message persists</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS10</span><span class="ts-desc">New vehicle after success &rarr; email field resets (not carried over)</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS11</span><span class="ts-desc">Unpaid resume (R10) &rarr; opens directly to payment history, <span class="no-perakuan">no perakuan</span></span><span class="tag retry">No perakuan</span></li>
+      <li class="ts-row"><span class="ts-id">TS12</span><span class="ts-desc">Normal payment failure retry (R6, e.g. code IF) &rarr; original window, payment history, <span class="no-perakuan">no perakuan</span>, Next available</span><span class="tag retry">No perakuan</span></li>
+      <li class="ts-row"><span class="ts-id">TS13</span><span class="ts-desc">RHB reset failure (R7, code RE) &rarr; original window, payment history + pink countdown box, <span class="no-perakuan">no perakuan</span>, Next hidden</span><span class="tag retry">No perakuan</span></li>
+      <li class="ts-row"><span class="ts-id">TS14</span><span class="ts-desc">Close/reopen during RE countdown &rarr; countdown persists, Next stays hidden, <span class="no-perakuan">no perakuan</span></span><span class="tag retry">No perakuan</span></li>
+      <li class="ts-row"><span class="ts-id">TS15</span><span class="ts-desc">Page refresh during RE countdown &rarr; countdown resumes correctly, Next hidden, <span class="no-perakuan">no perakuan</span></span><span class="tag retry">No perakuan</span></li>
+      <li class="ts-row"><span class="ts-id">TS16</span><span class="ts-desc">RE countdown completes &rarr; pink box gone, Next reappears, payment proceeds, <span class="no-perakuan">no perakuan</span></span><span class="tag retry">No perakuan</span></li>
+      <li class="ts-row"><span class="ts-id">TS17</span><span class="ts-desc">Different (new) vehicle after RE on another &rarr; fresh vehicle gets perakuan (first-time), no countdown leak</span><span class="tag first">First-time</span></li>
+      <li class="ts-row"><span class="ts-id">TS18</span><span class="ts-desc">Laptop-sized viewport &rarr; popup scrolls internally, title/buttons stay visible</span><span class="tag first">First-time</span></li>
+    </ul>
+  </section>
+
+  <section class="group">
+    <div class="group-head">
+      <h2>Regression tests</h2>
+      <span class="group-count">6</span>
+    </div>
+    <ul class="ts-list">
+      <li class="ts-row"><span class="ts-id">TS-R1</span><span class="ts-desc">Standalone eDereg Pre-Checking page unchanged (tick box, prefilled email, payment/result flow)</span><span class="tag reg">Regression</span></li>
+      <li class="ts-row"><span class="ts-id">TS-R2</span><span class="ts-desc">Vehicle with existing approved pre-check &rarr; no popup, green success message</span><span class="tag reg">Regression</span></li>
+      <li class="ts-row"><span class="ts-id">TS-R3</span><span class="ts-desc">Failed JPJ pre-check result &rarr; red error + result popup as before</span><span class="tag reg">Regression</span></li>
+      <li class="ts-row"><span class="ts-id">TS-R4</span><span class="ts-desc">Form submission bypass attempt &rarr; popup reappears, blocked without approval</span><span class="tag reg">Regression</span></li>
+      <li class="ts-row"><span class="ts-id">TS-R5</span><span class="ts-desc">Successful pre-check result &rarr; result popup, no countdown</span><span class="tag reg">Regression</span></li>
+      <li class="ts-row"><span class="ts-id">TS-R6</span><span class="ts-desc">Remaining Dereg form fields unchanged (owner, MyKad, contact, consent, photos, PBT, save)</span><span class="tag reg">Regression</span></li>
+    </ul>
+  </section>
+
+  <footer class="doc-foot">
+    Superseded prior reading: dev artifact originally showed the perakuan reappearing on every reopen (R6/R7). Corrected here per BA's direct instruction, 10/9/2026 ~3:30&ndash;3:35 PM.
+  </footer>
+</div>

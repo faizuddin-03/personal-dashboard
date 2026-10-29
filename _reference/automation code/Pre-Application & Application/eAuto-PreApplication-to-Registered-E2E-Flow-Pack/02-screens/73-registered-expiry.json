@@ -1,0 +1,555 @@
+{
+  "at": "2026-08-31T11:22:12.354Z",
+  "filterOptions": {
+    "hardcopyAccCreated": [
+      "All",
+      "Pending UCD",
+      "Pending UCD - Incomplete Docs",
+      "Pending Assignee",
+      "Registered"
+    ],
+    "applicationStatus": [
+      "All",
+      "New",
+      "Draft",
+      "Pending",
+      "KIV",
+      "Re-evaluate",
+      "Approved",
+      "Rejected",
+      "Expired"
+    ]
+  },
+  "registeredTotal": 75,
+  "recordFields": [
+    "uuid",
+    "createdAt",
+    "createdBy",
+    "submittedAt",
+    "companyName",
+    "companyRoc",
+    "newCompanyRoc",
+    "tradingLicenceNo",
+    "typeOfBusiness",
+    "status",
+    "remark",
+    "assigneeFullName",
+    "applicationNumber",
+    "stage1Status",
+    "stage2Status",
+    "stage3Status",
+    "stage4Status",
+    "stage5Status",
+    "lhdnStatus",
+    "preAppSubmittedAt",
+    "expiredAt",
+    "lastUpdatedAt",
+    "approvedAt",
+    "turnAroundTimeDays"
+  ],
+  "registeredByStatus": {
+    "Approved": 28,
+    "Expired": 47
+  },
+  "expiredAndRegistered": 47,
+  "pastExpiry": [
+    {
+      "applicationNo": "NA66001051",
+      "companyName": "PRE APPLICATION STATUS 2",
+      "uuid": "cd00774f-ebf9-435e-a31f-6a5850b2625c",
+      "status": "Approved",
+      "expiry": "2026-06-28 00:00",
+      "daysPast": 64,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA66001049",
+      "companyName": "TEST",
+      "uuid": "dd95451c-ae53-4be6-a898-d3f4bb3da142",
+      "status": "Approved",
+      "expiry": "2026-06-28 00:00",
+      "daysPast": 64,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000988",
+      "companyName": "CSE TEST SDN BHD",
+      "uuid": "fffe4327-d1d4-4768-ab4e-ec584d141857",
+      "status": "Approved",
+      "expiry": "2026-06-28 09:59",
+      "daysPast": 64,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA63001021",
+      "companyName": "YL TEST LLP 2",
+      "uuid": "9881699b-9543-496a-b97b-73578bf2b7e2",
+      "status": "Expired",
+      "expiry": "2026-06-15 15:55",
+      "daysPast": 77,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA63001015",
+      "companyName": "TYTEST LLP FOR 10083 006",
+      "uuid": "00bb10c2-9410-4c26-a4f8-12e252f1d6bd",
+      "status": "Expired",
+      "expiry": "2026-06-09 15:05",
+      "daysPast": 83,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA63001010",
+      "companyName": "YI LINK TEST ROC 2",
+      "uuid": "c422049f-e4c5-465c-96ff-32fc8fcb0488",
+      "status": "Expired",
+      "expiry": "2026-06-08 16:31",
+      "daysPast": 84,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000974",
+      "companyName": "CHARMAIN APPLICATION 36",
+      "uuid": "09046e2e-b939-4fcc-9976-0d5291669a58",
+      "status": "Expired",
+      "expiry": "2026-05-24 22:45",
+      "daysPast": 98,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000963",
+      "companyName": "YL TEST 12 SDN BHD",
+      "uuid": "15f0c9fd-31a6-45fd-8ad8-cff67e124eb0",
+      "status": "Expired",
+      "expiry": "2026-05-24 14:57",
+      "daysPast": 99,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000957",
+      "companyName": "TYTESTING SDN BHD 0030",
+      "uuid": "7381ecbf-3683-4e4a-9523-e59cbaa5d8ad",
+      "status": "Expired",
+      "expiry": "2026-05-23 19:58",
+      "daysPast": 99,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000955",
+      "companyName": "CHARMAIN APPLICATION 22",
+      "uuid": "3df6fb2a-1284-4445-8a06-710f3d55dae6",
+      "status": "Expired",
+      "expiry": "2026-05-21 16:08",
+      "daysPast": 102,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000949",
+      "companyName": "CHARMAIN APPLICATION 5",
+      "uuid": "5c6ffcd2-d1a3-4a67-9357-bfcc9ec62d6a",
+      "status": "Expired",
+      "expiry": "2026-05-20 15:10",
+      "daysPast": 103,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000948",
+      "companyName": "TEST SSM NICK 16-02",
+      "uuid": "eff1a2b8-ef0f-4978-8fa2-a97e1e5fe3dc",
+      "status": "Expired",
+      "expiry": "2026-05-17 12:31",
+      "daysPast": 106,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000947",
+      "companyName": "TEST SP NICK 16-02-ONE",
+      "uuid": "bd4d19d8-eb45-4473-9204-6ee63d480b14",
+      "status": "Expired",
+      "expiry": "2026-05-17 11:14",
+      "daysPast": 106,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000945",
+      "companyName": "TEST LLP NICK 16-02-ONE",
+      "uuid": "34af5c2e-f5f8-4fab-aef2-65a07988af4a",
+      "status": "Expired",
+      "expiry": "2026-05-17 09:33",
+      "daysPast": 106,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000946",
+      "companyName": "TEST NON-SSM 15-02-THREE",
+      "uuid": "d468b7ad-da7b-46d4-916f-aaf081359bbb",
+      "status": "Expired",
+      "expiry": "2026-05-16 16:48",
+      "daysPast": 107,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000943",
+      "companyName": "NON-SSM NICK 14-02-TWO",
+      "uuid": "92138141-d482-4c06-a3e6-3c6f426e045b",
+      "status": "Expired",
+      "expiry": "2026-05-15 23:12",
+      "daysPast": 107,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000941",
+      "companyName": "TYTEST BT SARAWAK EXPIRY 001",
+      "uuid": "84d92d37-5dc4-480c-8e84-e2fc377cb628",
+      "status": "Expired",
+      "expiry": "2026-05-14 20:31",
+      "daysPast": 108,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000940",
+      "companyName": "TYTEST BT SABAH FOR EXPIRY 003",
+      "uuid": "401d7b21-dea6-49bc-bbe0-5c85004275de",
+      "status": "Expired",
+      "expiry": "2026-05-14 20:18",
+      "daysPast": 108,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000966",
+      "companyName": "CHARMAIN APPLICATION 3",
+      "uuid": "fe05a085-f89b-4a47-a9ba-9c4e1cac0049",
+      "status": "Expired",
+      "expiry": "2026-05-14 17:19",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000936",
+      "companyName": "TEST SSM NICK 13-02-TWO EDIT 2ND",
+      "uuid": "43ee464e-608c-4472-91c6-77c9fd4c6054",
+      "status": "Expired",
+      "expiry": "2026-05-14 14:56",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000934",
+      "companyName": "TYTEST BT SARAWAK REGRESSION 002",
+      "uuid": "878dc506-9986-49b0-bfd6-08ed95953838",
+      "status": "Expired",
+      "expiry": "2026-05-14 14:17",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000935",
+      "companyName": "80808080",
+      "uuid": "441efe68-b4db-42de-a94a-827bc7ae889e",
+      "status": "Expired",
+      "expiry": "2026-05-14 12:56",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000933",
+      "companyName": "SSM NICK 13-02",
+      "uuid": "6d38a83b-3b0a-4459-965c-03199c1ae745",
+      "status": "Expired",
+      "expiry": "2026-05-14 11:47",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000931",
+      "companyName": "TYTEST LLP REGRESSION 0052",
+      "uuid": "4324550a-e310-433a-b3bb-96d9557d947c",
+      "status": "Expired",
+      "expiry": "2026-05-14 11:08",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000930",
+      "companyName": "TYTEST SOLE PROP REGRESSION 0050",
+      "uuid": "7a57da21-bdf5-454d-ad41-7d84329b84e2",
+      "status": "Expired",
+      "expiry": "2026-05-14 09:45",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000929",
+      "companyName": "TEST TRADING NICK 13-02-ONE",
+      "uuid": "3d45ddc1-b9df-4492-8e64-fbb9fd261eae",
+      "status": "Expired",
+      "expiry": "2026-05-14 09:20",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000928",
+      "companyName": "TYTEST SDN BHD REGRESSION 0050",
+      "uuid": "64a890e3-37c8-4211-9d4e-08b2d7c88c87",
+      "status": "Expired",
+      "expiry": "2026-05-14 07:53",
+      "daysPast": 109,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000911",
+      "companyName": "TEST SDNBHD NICK 10-02-TWO",
+      "uuid": "ad4fea04-09be-4ba4-9937-6e1eb1631c83",
+      "status": "Expired",
+      "expiry": "2026-05-11 15:23",
+      "daysPast": 112,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000910",
+      "companyName": "TYTEST BT SBH REGRESSION 002",
+      "uuid": "21b4fd36-2620-4005-bfff-e9c08de12704",
+      "status": "Expired",
+      "expiry": "2026-05-11 15:17",
+      "daysPast": 112,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000909",
+      "companyName": "TYTEST BUSINESS TRADING SARAWAK REGRESSION 002",
+      "uuid": "3f37a377-1ea2-4356-9201-17d06e41814c",
+      "status": "Expired",
+      "expiry": "2026-05-11 14:46",
+      "daysPast": 112,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000906",
+      "companyName": "TY TEST LLP REGRESSION 002",
+      "uuid": "49efc181-5c81-4b2d-a0ec-80b2176c9f0a",
+      "status": "Expired",
+      "expiry": "2026-05-11 12:28",
+      "daysPast": 112,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000904",
+      "companyName": "TY TEST SOLE PROP REGRESSION 002",
+      "uuid": "af8a9ea7-710e-4464-9d5b-e1bd7559c8c9",
+      "status": "Expired",
+      "expiry": "2026-05-11 11:59",
+      "daysPast": 112,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000903",
+      "companyName": "TYTEST SDN BHD REGRESSION 006",
+      "uuid": "fe418815-a772-4205-846a-6295cba6a210",
+      "status": "Expired",
+      "expiry": "2026-05-11 10:31",
+      "daysPast": 112,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA62000905",
+      "companyName": "TEST LLP APPROVAL 10-02-ONE",
+      "uuid": "f9f77ea0-0961-4d81-a5b9-c2bb7176b8da",
+      "status": "Expired",
+      "expiry": "2026-05-11 10:17",
+      "daysPast": 112,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000890",
+      "companyName": "CJ RESUBMIT ROC",
+      "uuid": "264f6f72-1f9c-471e-8d57-9f223c177c96",
+      "status": "Expired",
+      "expiry": "2026-04-30 16:52",
+      "daysPast": 123,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000880",
+      "companyName": "ZUHAIRA ROC",
+      "uuid": "6c79df41-7c9c-49f5-8dfc-78ba68fd4da3",
+      "status": "Expired",
+      "expiry": "2026-04-27 09:15",
+      "daysPast": 126,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000877",
+      "companyName": "TYTEST LLP AGAIN 008",
+      "uuid": "bb09a637-d0e2-4432-87c0-9e3646172949",
+      "status": "Expired",
+      "expiry": "2026-04-22 17:14",
+      "daysPast": 131,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000874",
+      "companyName": "TYTEST LLP AGAIN",
+      "uuid": "5ceeeca4-28b0-4a88-a9ce-112b520427c9",
+      "status": "Expired",
+      "expiry": "2026-04-21 15:32",
+      "daysPast": 132,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000872",
+      "companyName": "TY TEST SOLE PROP 0105",
+      "uuid": "2c47ce7b-d425-4b7a-bb03-88595fabaa3c",
+      "status": "Expired",
+      "expiry": "2026-04-20 12:17",
+      "daysPast": 133,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000871",
+      "companyName": "TYTEST SOLE PROP 0005",
+      "uuid": "48502a4e-c636-4abb-884d-d54af77c472c",
+      "status": "Expired",
+      "expiry": "2026-04-19 16:39",
+      "daysPast": 134,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000870",
+      "companyName": "TY TEST BUSINESS TRADING SBH",
+      "uuid": "95a38993-960a-4a28-bfbb-f84e3ae011cd",
+      "status": "Expired",
+      "expiry": "2026-04-18 18:30",
+      "daysPast": 135,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000868",
+      "companyName": "TY TEST LLP 001",
+      "uuid": "99253158-b0c4-4463-88fb-d201a933ba0b",
+      "status": "Expired",
+      "expiry": "2026-04-18 17:39",
+      "daysPast": 135,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000867",
+      "companyName": "TY TEST SDN BHD",
+      "uuid": "29bbcc2c-b8dc-48d1-973b-c0ccc24264dd",
+      "status": "Expired",
+      "expiry": "2026-04-18 17:23",
+      "daysPast": 135,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000860",
+      "companyName": "TY TEST BT SARAWAK 006",
+      "uuid": "5e668447-3c43-45e2-9dcd-3df97598ea03",
+      "status": "Expired",
+      "expiry": "2026-04-16 12:05",
+      "daysPast": 137,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000859",
+      "companyName": "TYTEST SDN BHD 05",
+      "uuid": "2a35f031-ee3a-45f6-b017-451bf18d9b79",
+      "status": "Expired",
+      "expiry": "2026-04-16 10:45",
+      "daysPast": 137,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000856",
+      "companyName": "TYTESTSOLE003",
+      "uuid": "65baf960-7a08-4652-9d92-5728359baf8f",
+      "status": "Expired",
+      "expiry": "2026-04-15 17:12",
+      "daysPast": 138,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000855",
+      "companyName": "CHIN TECK YUNG",
+      "uuid": "1e1ad49c-bf21-4116-af99-2188ccd8df00",
+      "status": "Expired",
+      "expiry": "2026-04-15 16:18",
+      "daysPast": 138,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000854",
+      "companyName": "TYTESTING0008",
+      "uuid": "2061f1c1-1f27-4084-86c2-388f9006bf9c",
+      "status": "Expired",
+      "expiry": "2026-04-15 16:10",
+      "daysPast": 138,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000851",
+      "companyName": "TEST NNNNN EDIT",
+      "uuid": "4c9d9b9b-c3a1-4d1f-b436-306756774331",
+      "status": "Expired",
+      "expiry": "2026-04-15 11:12",
+      "daysPast": 138,
+      "hardcopy": "Registered"
+    },
+    {
+      "applicationNo": "NA61000848",
+      "companyName": "TEST SDN BHD N2",
+      "uuid": "b127f8b2-677a-43f3-9fd5-1625e7bf14cc",
+      "status": "Expired",
+      "expiry": "2026-04-15 09:32",
+      "daysPast": 138,
+      "hardcopy": "Registered"
+    }
+  ],
+  "opened": [
+    {
+      "applicationNo": "NA63001021",
+      "daysPast": 77,
+      "listingStatus": "Expired",
+      "view": "backoffice",
+      "tab": "Registration Documents",
+      "sidebarStatus": "Expired",
+      "sidebarHardcopy": "",
+      "regDocsSubmittedAt": "2026-03-17 03:58PM",
+      "regDocsVerifiedAt": "2026-03-17 03:59PM",
+      "extendPresent": false,
+      "extendInDom": false,
+      "extendEnabled": false,
+      "extendMessage": ""
+    },
+    {
+      "applicationNo": "NA63001015",
+      "daysPast": 83,
+      "listingStatus": "Expired",
+      "view": "backoffice",
+      "tab": "Registration Documents",
+      "sidebarStatus": "Expired",
+      "sidebarHardcopy": "",
+      "regDocsSubmittedAt": "2026-03-11 03:08PM",
+      "regDocsVerifiedAt": "2026-03-11 03:09PM",
+      "extendPresent": false,
+      "extendInDom": false,
+      "extendEnabled": false,
+      "extendMessage": ""
+    },
+    {
+      "applicationNo": "NA63001010",
+      "daysPast": 84,
+      "listingStatus": "Expired",
+      "view": "backoffice",
+      "tab": "Registration Documents",
+      "sidebarStatus": "Expired",
+      "sidebarHardcopy": "",
+      "regDocsSubmittedAt": "2026-03-10 04:34PM",
+      "regDocsVerifiedAt": "2026-03-10 04:35PM",
+      "extendPresent": false,
+      "extendInDom": false,
+      "extendEnabled": false,
+      "extendMessage": ""
+    }
+  ],
+  "verdict": "R12 CONTRADICTED BY THE BUILD: 47 application(s) are both Registered and Expired. Registration does NOT stop the status flipping. What still needs deciding is whether that is the defect or the ruling — and the regDocsVerifiedAt dates above say whether these were registered BEFORE their expiry (so the job expired a registered record) or after it."
+}

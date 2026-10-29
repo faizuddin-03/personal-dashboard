@@ -1,0 +1,6 @@
+# Run artefacts. `.seq` is the monotonic counter that keeps two runs in the same
+# minute apart — it is machine-local state, not something to share.
+.seq
+fixtures/
+report.json
+test-results/

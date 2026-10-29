@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.modefair.ngrok</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/team05/opt/ngrok/ngrok</string>
+    <string>http</string>
+    <string>--url=https://__STATIC_DOMAIN__</string>
+    <string>3000</string>
+    <string>--log=stdout</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/Users/team05/Library/Logs/chatbot-ngrok.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/team05/Library/Logs/chatbot-ngrok.err.log</string>
+</dict></plist>

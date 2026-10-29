@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 
 const SCRIPT_DIR  = process.env.WA_BLASTER_SCRIPT_DIR
-  ?? path.join(process.cwd(), 'scripts', 'WA-Blaster');
+  ?? path.join(process.cwd(), 'scripts', '_archive', 'WA-Blaster');
 const REPORT_FILE = path.join(SCRIPT_DIR, 'results', 'report.json');
 const TIMEOUT_MS  = 60 * 60 * 1000; // 1 hour
 
@@ -50,12 +50,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (!fs.existsSync(SCRIPT_DIR)) {
-    return NextResponse.json({ error: `Script directory not found: ${SCRIPT_DIR}` }, { status: 500 });
+    return NextResponse.json({ error: 'Script directory not found. Check WA_BLASTER_SCRIPT_DIR configuration.' }, { status: 500 });
   }
 
   if (!fs.existsSync(path.join(SCRIPT_DIR, 'node_modules'))) {
     return NextResponse.json({
-      error: 'Playwright is not installed.\n\nRun: cd scripts/WA-Blaster && npm install',
+      error: 'Playwright is not installed.\n\nRun this once in your terminal:\n\n  cd scripts/WA-Blaster && npm install\n\nChromium will be downloaded automatically via postinstall.',
+      setupRequired: true,
     }, { status: 500 });
   }
 
@@ -63,28 +64,43 @@ export async function POST(req: NextRequest) {
     specFiles:    string[];
     grepPattern?: string;
     env?:         Record<string, string>;
+    headed?:      boolean;
   };
 
-  const { specFiles, grepPattern, env = {} } = body;
+  const { specFiles, grepPattern, env = {}, headed = false } = body;
 
   if (!specFiles?.length) {
     return NextResponse.json({ error: 'No spec files specified.' }, { status: 400 });
   }
 
-  // Clean up previous report
+  const SPEC_RE = /^[a-zA-Z0-9._/-]+\.spec\.ts$/;
+  if (!specFiles.every(f => SPEC_RE.test(f))) {
+    return NextResponse.json({ error: 'Invalid spec file name.' }, { status: 400 });
+  }
+
+  const safeEnv: Record<string, string> = {};
+  for (const [k, v] of Object.entries(env)) {
+    if (/^E2E_/.test(k) || k === 'API_BASE') safeEnv[k] = v;
+  }
+
+  // Clean up previous run artifacts
   fs.mkdirSync(path.join(SCRIPT_DIR, 'results'), { recursive: true });
   if (fs.existsSync(REPORT_FILE)) fs.unlinkSync(REPORT_FILE);
+  const screenshotsDir = path.join(SCRIPT_DIR, 'screenshots');
+  if (fs.existsSync(screenshotsDir)) fs.rmSync(screenshotsDir, { recursive: true, force: true });
+  const pdfPath = path.join(SCRIPT_DIR, 'results', 'report.pdf');
+  if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
 
   runState = { running: true, log: '', exitCode: null, report: null, startedAt: new Date().toISOString() };
 
   const args = ['playwright', 'test', ...specFiles];
   if (grepPattern) args.push('--grep', grepPattern);
+  if (headed) args.push('--headed');
 
   const child = spawn('npx', args, {
     cwd: SCRIPT_DIR,
-    shell: true,
     detached: process.platform !== 'win32',
-    env: { ...process.env, ...env },
+    env: { ...process.env, ...safeEnv },
   });
   currentChild = child;
 
@@ -96,10 +112,10 @@ export async function POST(req: NextRequest) {
     };
   }, TIMEOUT_MS);
 
-  child.stdout.on('data', (d: Buffer) => {
+  child.stdout?.on('data', (d: Buffer) => {
     runState = { ...runState, log: runState.log + d.toString() };
   });
-  child.stderr.on('data', (d: Buffer) => {
+  child.stderr?.on('data', (d: Buffer) => {
     runState = { ...runState, log: runState.log + d.toString() };
   });
 

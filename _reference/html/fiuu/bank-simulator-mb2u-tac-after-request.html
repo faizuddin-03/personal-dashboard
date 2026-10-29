@@ -1,0 +1,222 @@
+<!--
+  URL: https://bank-simulator.fiuu.com/MB2U0227/simulator (Fiuu bank simulator, Maybank2u, after login)
+  Environment: Fiuu sandbox, from eAuto staging /obs pre-application (UDIN ONBOARD TESTING SDN0001, RM 108.00)
+  Captured: 2026-10-21 ~15:09 MYT, pasted by Faizuddin (page source as rendered)
+  State: TAC page AFTER "Request TAC" — #tac-btn hidden, #copybtn and #pay-btn shown (the generated #otp value is set by JS, not in the source).
+  Trimmed: nothing. Tokens/checksum are per-session and expired.
+  Key handles: form[name=fpx_form] action=/MB2U0227/result; #tac-btn generates a 6-digit TAC into #otp
+  (readonly) client-side and reveals #pay-btn; #tac_no = "Enter TAC" (required); select#status_code
+  (00 Approved default, 51 Insufficient Funds, 80/BC buyer cancel, 99 Pending for Authorization (B2B) ...)
+  copies its value into fpx_debitAuthCode / fpx_creditAuthCode and sets statusChanged=true.
+-->
+<body>
+  <div class="blue-bar">
+    <img src="https://bank-simulator.fiuu.com/img/fiuuSimulator.png" alt="Fiuu Logo">
+  </div>
+  <div class="backgroundshadow simulator-shadow">
+    <form name="fpx_form" method="post" action="/MB2U0227/result">
+      <input type="hidden" name="_token" value="YkFZbGYXdJJuMt4akLlbnJabTbVXbPG8C7SInbDx">      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+        <img src="https://bank-simulator.fiuu.com/img/maybank-logo.png" alt="mb2e Logo" style="width: 150px; height: auto;">
+        <img src="https://bank-simulator.fiuu.com/img/fpx-logo.png" alt="FPX Logo" style="width: 70px; height: auto;">
+      </div>
+      <br>
+      <table aria-describedby="mydesc" class="table">
+        <tbody>
+          <tr>
+            <th scope="col">Channel</th>
+            <td>:   MB2U0227</td>
+          </tr>
+          <tr>
+            <th scope="col">Pay To</th>
+            <td>:   FIUU</td>
+          </tr>
+          <tr>
+            <th scope="col">Order ID</th>
+            <td>:   199763</td>
+          </tr>
+          <tr>
+            <th scope="col">Description</th>
+            <td>:   Testing for Bank Simulator</td>
+          </tr>
+          <tr>
+            <th scope="col">Amount (RM)</th>
+            <td>:   MYR 108.00</td>
+          </tr>
+        </tbody>
+      </table>
+      <label for="tac" class="TAC">Transaction Authentication Code : </label>
+        <input class="form-control" name="otp" id="otp" readonly="" style="width:30%">
+        <button class="btn btn-payment" id="tac-btn" style="display: none;">Request TAC</button>
+        <a href="#" onclick="CopyToClipboard('otp');return false;" id="copybtn" class="copy-button" style="display: inline-block;">
+          <em class="fa-solid fa-copy fa-lg"></em>
+          <span class="copy-tooltip" id="copy-tooltip">Copied!</span>
+        </a>
+      <div>
+        <br>
+        <input class="form-control" id="tac_no" name="tac_no" placeholder="Enter TAC" required="" style="width:30%"><br><br>
+      </div>
+      <div>
+        <label>Please set payment status below</label>
+        <br>
+        <div id="form-select" style="margin-bottom:10px;">
+          <select class="form-select" id="status_code">
+            <option value="00" selected="">Approved</option>
+            <option value="03">Invalid Merchant</option>
+            <option value="05">Seller Account Closed</option>
+            <option value="12">Invalid Transaction</option>
+            <option value="13">Invalid Amount</option>
+            <option value="14">Invalid Buyer Amount</option>
+            <option value="20">Invalid Response</option>
+            <option value="22">Pending Response From Bank</option>
+            <option value="30">Transaction Not Supported For Model Or Format Error</option>
+            <option value="31">Invalid Bank</option>
+            <option value="39">No Credit Account</option>
+            <option value="45">Duplicate Seller Order Number</option>
+            <option value="46">Invalid Seller Exchange or Seller</option>
+            <option value="47">Invalid Currency</option>
+            <option value="48">Transaction Limit Exceeded</option>
+            <option value="51">Insufficient Funds</option>
+            <option value="53">No Savings Account</option>
+            <option value="57">Transaction Not Permitted</option>
+            <option value="61">Withdrawal Limit Exceeded</option>
+            <option value="65">Withdrawal Frequency Exceeded</option>
+            <option value="70">Invalid Serial Number</option>
+            <option value="72">Duplicate Exchange Order Number</option>
+            <option value="76">Transaction Not Found</option>
+            <option value="77">Invalid Buyer Name Or Buyer ID</option>
+            <option value="78">Decryption Failed</option>
+            <option value="79">Host Decline When Down</option>
+            <option value="80">Buyer Cancel Transaction</option>
+            <option value="83">Invalid Transaction Model</option>
+            <option value="84">Invalid Transaction Type</option>
+            <option value="85">Internal Error At Bank System</option>
+            <option value="87">Debit Failed Exception Handling</option>
+            <option value="88">Credit Failed Exception Handling</option>
+            <option value="89">Transaction Not Received Exception Handling</option>
+            <option value="93">Transaction Cannot Be Completed</option>
+            <option value="96">System Malfunction</option>
+            <option value="98">MAC Error</option>
+            <option value="99">Pending for Authorization (Applicable for B2B Model)</option>
+            <option value="FE">Internal Error</option>
+            <option value="BC">Transaction Cancelled By Customer</option>
+            <option value="OE">Transaction Rejected As Not In FPX Operating Hours</option>
+            <option value="OF">Transaction Timeout</option>
+            <option value="OA">Session timeout at FPX Entry Page</option>
+            <option value="SB">Invalid Seller Bank Code</option>
+            <option value="XA">Invalid Source IP Address ( Applicable for B2B2 Model)</option>
+            <option value="XE">Invalid Message</option>
+            <option value="XM">Invalid FPX Transaction Model</option>
+            <option value="XN">Transaction Rejected Due To Duplicate Seller Exchange Order Number</option>
+            <option value="XO">Duplicate Exchange Order Number</option>
+            <option value="XS">Seller Does Not Belong To Exchange</option>
+            <option value="XC">Seller Exchange Encryption Error</option>
+            <option value="XI">Invalid Seller Exchange</option>
+            <option value="XB">Ivalid Seller Exchange IP</option>
+            <option value="XF">Invalid Number Of Orders</option>
+            <option value="XT">Invalid Transaction Type</option>
+            <option value="XW">Seller Exchange Date Difference Exceeded</option>
+            <option value="1A">Buyer Session Timeout At IB Login Page</option>
+            <option value="1B">Buyer Failed To Provide The Necessary Info To Login IB Login Page</option>
+            <option value="1C">Buyer Choose Cancel At Login Page</option>
+            <option value="1D">Buyer Session Timeout At Account Selection Page</option>
+            <option value="1E">Buyer Failed To Provide The Necessary Info At Account Selection Page</option>
+            <option value="1F">Buyer Choose Cancel At Account Selection Page</option>
+            <option value="1G">Buyer Session Timeout At TAC Request Page</option>
+            <option value="1H">Buyer Failed To Provide The Necessary Info At TAC Request Page</option>
+            <option value="1I">Buyer Choose Cancel At TAC Request Page</option>
+            <option value="1J">Buyer Session Timeout At Confirmation Page</option>
+            <option value="1K">Buyer Failed To Provide The Necessary Info At Confirmation Page</option>
+            <option value="1L">Buyer Choose Cancel At Confirmation Page</option>
+            <option value="2A">Transaction Amount Is Lower Than Minimum Limit</option>
+            <option value="ZZ">Status/Description not found</option>
+          </select>
+        </div>
+      </div>
+      <div id="credit_info">
+        <input type="hidden" name="fpx_msgType" value="AC">
+        <input type="hidden" name="fpx_msgToken" value="01">
+        <input type="hidden" name="fpx_fpxTxnId" value="2610211509192577">
+        <input type="hidden" name="fpx_sellerExId" value="EX00003995">
+        <input type="hidden" name="fpx_sellerExOrderNo" value="199763">
+        <input type="hidden" name="fpx_sellerTxnTime" value="20261021150721">
+        <input type="hidden" name="fpx_sellerOrderNo" value="199763">
+        <input type="hidden" name="fpx_sellerId" value="SE00007037">
+        <input type="hidden" name="fpx_txnCurrency" value="MYR">
+        <input type="hidden" name="fpx_txnAmount" value="108.00">
+        <input type="hidden" name="fpx_buyerName" value=" ">
+        <input type="hidden" name="fpx_buyerBankId" value="MB2U0227">
+        <input type="hidden" name="fpx_buyerBankBranch" value=" ">
+        <input type="hidden" name="fpx_buyerId" value=" ">
+        <input type="hidden" name="fpx_makerName" value="">
+        <input type="hidden" name="fpx_buyerIban" value="">
+        <input type="hidden" name="fpx_debitAuthNo" value="">
+        <input type="hidden" name="fpx_creditAuthNo" value="">
+        <input type="hidden" name="fpx_productDesc" value="88f5e37487d642be8f263c7ba17ad">
+        <input type="hidden" name="fpx_debitAuthCode" value="00">
+        <input type="hidden" name="fpx_creditAuthCode" value="00">
+        <input type="hidden" name="fpx_checkSum" value="8CA1D988596B18FFB619B3B364757383C44A15A1E1D3EDFAE189D2CDFB35EAB4CC41B79D74F46FB8CE79EBCB3A2DE570A43CD937654353EAD7B588759CEB8ADE08CB6A5E97476271A2C4DE78E0EDE0046899E31772A12FD6F6A5AE0606BCED70C1144B2F39082534BFB711820D5D34C852CBA0291A6676C3D69723F22044BCD4A2DA866FFC7ED526F0D03411B433C6F0EA6862E9C7D6ACE10814D3AE467C14EFC184DA004257969F3810E93BBF3D22B6141C57AE7995F4F6DCC2C5358849A87692868FE14964FD2DEAD0AA5FE70F462FDFF172EEE8BF96BC7D58F11F1191381154B3508169C5DE2DDC66CDB1C2093308423FA4129A0C8ACF128EABC1ECEC6A2D">
+        <input type="hidden" name="statusChanged" value="">
+      </div>
+      <div>
+        <button id="pay-btn" type="submit" class="btn btn-payment" style="display: block; margin-left: auto;">Pay Now</button>
+      </div>
+    </form>
+  </div>
+  <div class="footer-text-container2">
+    <span class="footer-text">Powered by &nbsp; <img src="https://bank-simulator.fiuu.com/img/FiuuBlue.png" style="width: 65px" alt="Fiuu Logo" class="footer-logo"></span>
+  </div>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;2c289d5631264377ad806da7050358cc&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+<script>
+  $("#tac-btn").click(function() {
+    var tacNum = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit TAC
+    document.getElementById('otp').value = tacNum; // Display TAC in the input field
+    document.getElementById('pay-btn').style.display = "block"; // Show pay button
+    document.getElementById('copybtn').style.display = "inline-block"; // Show copy button
+    document.getElementById('tac-btn').style.display = "none"; // Hide the "Request TAC" button
+  });
+
+  $("#status_code").on('change', function() {
+    $('input[name="fpx_debitAuthCode"]').val(this.value);
+    $('input[name="fpx_creditAuthCode"]').val(this.value);
+    $('input[name="statusChanged"]').val("true");
+  });
+
+  function CopyToClipboard(id) {
+    var r = document.createRange();
+    r.selectNode(document.getElementById(id));
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+
+    // Visual feedback logic
+    const copyButton = document.getElementById('copybtn');
+
+    // Add copied effect
+    copyButton.classList.add('copied');
+
+    // Remove effect after 2 seconds
+    setTimeout(() => {
+        copyButton.classList.remove('copied');
+    }, 2000);
+  }
+</script>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="YkFZbGYXdJJuMt4akLlbnJabTbVXbPG8C7SInbDx">
+        <title>Bank Simulator Application</title>
+        <link rel="shortcut icon" href="https://bank-simulator.fiuu.com/sandbox.png">
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <!-- Styles -->
+        <link href="https://bank-simulator.fiuu.com/css/app.css" rel="stylesheet">
+        <div class="flex-center position-ref full-height">
+                    </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>

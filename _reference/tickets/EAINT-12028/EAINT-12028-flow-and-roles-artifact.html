@@ -1,0 +1,346 @@
+<title>Association Payment Flow</title>
+<style>
+  :root{
+    --bg:#eef1f6; --surface:#ffffff; --surface-2:#e3e8f0; --surface-3:#d9e0eb;
+    --ink:#1b2333; --ink-2:#4c5568; --ink-3:#7d879b;
+    --line:#d6dce6; --line-2:#e8ecf2;
+    --accent:#2c4c8c; --accent-bg:#e8edf7;
+    --ok:#1f7a53; --ok-bg:#e6f5ee;
+    --warn:#96650a; --warn-bg:#faf0dc;
+    --bad:#b13636; --bad-bg:#fbebe9;
+    --role-drafter:#2c5f8a; --role-drafter-bg:#e6eef5;
+    --role-reviewer:#7a4fa0; --role-reviewer-bg:#f1e9f6;
+    --role-approver:#0f7a68; --role-approver-bg:#e2f3ef;
+    --role-none:#6b7280; --role-none-bg:#eceef1;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype","Book Antiqua",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#11151d; --surface:#171c26; --surface-2:#1f2632; --surface-3:#28303f;
+    --ink:#e6eaf2; --ink-2:#b7c0d1; --ink-3:#8993a8;
+    --line:#2a3242; --line-2:#232a38;
+    --accent:#7fa0e0; --accent-bg:#1c2740;
+    --ok:#5fcf9e; --ok-bg:#123326;
+    --warn:#e0ab52; --warn-bg:#3a2c12;
+    --bad:#ff8a80; --bad-bg:#3a1e1c;
+    --role-drafter:#7fa0e0; --role-drafter-bg:#1c2740;
+    --role-reviewer:#c9a8ea; --role-reviewer-bg:#2a2038;
+    --role-approver:#4fd6c4; --role-approver-bg:#12312c;
+    --role-none:#9aa3b5; --role-none-bg:#232833;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#11151d; --surface:#171c26; --surface-2:#1f2632; --surface-3:#28303f;
+    --ink:#e6eaf2; --ink-2:#b7c0d1; --ink-3:#8993a8;
+    --line:#2a3242; --line-2:#232a38;
+    --accent:#7fa0e0; --accent-bg:#1c2740;
+    --ok:#5fcf9e; --ok-bg:#123326;
+    --warn:#e0ab52; --warn-bg:#3a2c12;
+    --bad:#ff8a80; --bad-bg:#3a1e1c;
+    --role-drafter:#7fa0e0; --role-drafter-bg:#1c2740;
+    --role-reviewer:#c9a8ea; --role-reviewer-bg:#2a2038;
+    --role-approver:#4fd6c4; --role-approver-bg:#12312c;
+    --role-none:#9aa3b5; --role-none-bg:#232833;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.6; font-size:15.5px; margin:0}
+  .wrap{max-width:920px; margin:0 auto; padding:36px 22px 90px}
+  code{font-family:var(--mono); font-size:.87em; background:var(--surface-2); padding:.12em .4em; border-radius:4px; color:var(--ink)}
+  a{color:var(--accent)}
+  .u{text-underline-offset:3px}
+
+  /* header */
+  header.top{border-bottom:2px solid var(--ink); padding-bottom:20px; margin-bottom:24px}
+  .kicker{font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); font-weight:600}
+  h1{font-family:var(--serif); font-size:clamp(26px,4.4vw,36px); line-height:1.12; margin:.22em 0 .18em; letter-spacing:-.01em; text-wrap:balance}
+  .lede{color:var(--ink-2); font-size:15.5px; max-width:68ch; margin:0}
+  .stamp-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
+  .stamp{font-family:var(--mono); font-size:11.5px; border:1px solid var(--line); color:var(--ink-2); padding:4px 10px; border-radius:3px; background:var(--surface)}
+
+  /* status banner */
+  .banner{border-radius:4px; border:1px solid var(--bad); background:var(--bad-bg); padding:16px 18px; margin:22px 0; display:flex; gap:12px; align-items:flex-start}
+  .banner .mark{font-size:18px; line-height:1; flex:none; margin-top:1px}
+  .banner p{margin:0 0 6px; font-size:13.8px; color:var(--ink)}
+  .banner p:last-child{margin:0}
+  .banner strong{color:var(--bad)}
+
+  h2{font-family:var(--serif); font-size:21px; margin:44px 0 6px; letter-spacing:-.005em}
+  .sub{color:var(--ink-2); margin:0 0 18px; max-width:70ch; font-size:14px}
+
+  /* role legend cards */
+  .roles{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin:18px 0 8px}
+  .role-card{border:1px solid var(--line); border-radius:6px; background:var(--surface); padding:14px 15px; border-top:4px solid var(--rc,var(--ink-3))}
+  .role-card.drafter{--rc:var(--role-drafter)} .role-card.reviewer{--rc:var(--role-reviewer)}
+  .role-card.approver{--rc:var(--role-approver)} .role-card.none{--rc:var(--role-none)}
+  .role-card h3{margin:0 0 8px; font-size:14.5px; font-weight:700; color:var(--ink)}
+  .role-card .ids{display:flex; flex-wrap:wrap; gap:5px; margin-bottom:9px}
+  .role-card .id{font-family:var(--mono); font-size:11px; background:var(--surface-2); border:1px solid var(--line); padding:2px 7px; border-radius:3px; color:var(--ink)}
+  .role-card p{margin:0; font-size:12.6px; color:var(--ink-2)}
+  .role-card.multi{background:var(--accent-bg); border-color:var(--accent)}
+  .role-card.multi h3{color:var(--accent)}
+
+  .callout{border-radius:6px; padding:13px 16px; margin:14px 0; border:1px solid var(--line); background:var(--surface-2); font-size:13.4px; color:var(--ink-2)}
+  .callout b{color:var(--ink)}
+
+  /* diagram */
+  figure{margin:20px 0 6px}
+  .diagram-frame{border:1px solid var(--line); border-radius:8px; background:var(--surface); padding:14px 10px; overflow-x:auto}
+  .diagram-frame svg{display:block; margin:0 auto; max-width:100%; height:auto}
+  figcaption{font-size:12.8px; color:var(--ink-3); margin-top:10px; max-width:70ch}
+
+  .legend-inline{display:flex; flex-wrap:wrap; gap:14px; margin:14px 0 0; font-size:12px; color:var(--ink-2)}
+  .legend-inline span{display:inline-flex; align-items:center; gap:6px}
+  .swatch{width:13px; height:13px; border-radius:3px; display:inline-block; flex:none}
+  .ln{width:18px; height:0; border-top:2px solid; display:inline-block}
+  .ln.dashed{border-top-style:dashed}
+
+  footer{margin-top:56px; padding-top:16px; border-top:1px solid var(--line); color:var(--ink-3); font-size:12px}
+  footer p{margin:0 0 6px}
+
+  @media (prefers-reduced-motion:no-preference){
+    .role-card, .banner{transition:transform .15s ease}
+    .role-card:hover{transform:translateY(-1px)}
+  }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">EAINT-12028 · eAuto BackOffice</div>
+  <h1>Association Payment Listing — Flow &amp; Roles</h1>
+  <p class="lede">One entry point, three sequential approvers, and a PDF at the end. This page
+  is the flow and the login-ID-to-role mapping in one place — kept in sync while the ticket
+  is being worked.</p>
+  <div class="stamp-row">
+    <span class="stamp">SRD v1.1 · 31.07.2026</span>
+    <span class="stamp">REQ-001 → REQ-019</span>
+    <span class="stamp">MR !1 · dev/feat/EAINT-12028</span>
+  </div>
+</header>
+
+<div class="banner">
+  <span class="mark">⚠</span>
+  <div>
+    <p><strong>Not staging-ready as of 2026-09-04.</strong> MR !1 is code-review BLOCKED
+    (1 blocker, 2 high, 7 medium) — a fix pass is in progress. Two findings are test-relevant:
+    <b>H1</b> cross-module role confusion and <b>H2</b> an open redirect on logout. Re-test both
+    once the fix lands.</p>
+    <p>Testing environment is still unconfirmed — the only URLs seen so far are a dev box
+    (localhost), not a shared SIT/UAT/PREPROD environment.</p>
+  </div>
+</div>
+
+<h2>Who acts where</h2>
+<p class="sub">Role is resolved from the logged-in user ID — there is no role picker anywhere in
+the real build (REQ-003).</p>
+
+<div class="roles">
+  <div class="role-card drafter">
+    <h3>Drafter</h3>
+    <div class="ids"><span class="id">eautozara</span><span class="id">mfared</span><span class="id">mfizni</span></div>
+    <p>First-approval signature capture · KIV · re-entry after a Reviewer reject.</p>
+  </div>
+  <div class="role-card reviewer">
+    <h3>Reviewer</h3>
+    <div class="ids"><span class="id">eautonurul</span><span class="id">mfizni</span></div>
+    <p>Approve, or Reject with mandatory remarks.</p>
+  </div>
+  <div class="role-card approver">
+    <h3>Approver</h3>
+    <div class="ids"><span class="id">kmcheah</span><span class="id">mfizni</span></div>
+    <p>Final approve + mandatory future payment date · triggers PDF generation.</p>
+  </div>
+  <div class="role-card none">
+    <h3>No role mapped</h3>
+    <div class="ids"><span class="id">any other user</span></div>
+    <p>Sees the Reports menu link, but the module itself must 403. Visibility ≠ authorization.</p>
+  </div>
+</div>
+
+<div class="callout">
+  <b>mfizni</b> holds all three roles at once — the only account that can solo-walk a month
+  start to finish. Signature capture is <b>per person, not per role</b>: mfizni signs once total,
+  reused silently across all three approval steps.
+</div>
+
+<h2>The flow</h2>
+<p class="sub">Single entry point (no deep link, no email trigger). Sequential approval is
+enforced — a role's buttons stay disabled until the one before it has approved.</p>
+
+<figure>
+  <div class="diagram-frame">
+    <svg viewBox="0 0 760 800" role="img" aria-label="Flow diagram: login through core leads to the Details page, then Drafter, Reviewer and Approver approve in sequence — Reviewer and Approver can reject back one stage — before a Finance payment date and signature step unlocks the two Payment Request PDFs." xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ah-ok" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" class="fill-ok"/>
+        </marker>
+        <marker id="ah-bad" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" class="fill-bad"/>
+        </marker>
+        <marker id="ah-warn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" class="fill-warn"/>
+        </marker>
+        <marker id="ah-neutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" class="fill-neutral"/>
+        </marker>
+        <marker id="ah-none" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" class="fill-none"/>
+        </marker>
+      </defs>
+
+      <!-- 1: Entry -->
+      <rect x="90" y="20" width="380" height="62" rx="5" class="box neutral"/>
+      <circle cx="90" cy="20" r="12" class="badge"/><text x="90" y="24" class="badge-n">1</text>
+      <text x="112" y="45" class="box-t">Login → eAuto core → Reports</text>
+      <text x="112" y="63" class="box-s">Association Payment Listing (SSO hand-off, no 2nd login)</text>
+
+      <!-- no-role branch -->
+      <line x1="470" y1="51" x2="498" y2="51" class="conn none dashed" marker-end="url(#ah-none)"/>
+      <rect x="500" y="20" width="240" height="62" rx="5" class="box none-box"/>
+      <text x="620" y="45" class="box-t center">No role mapped</text>
+      <text x="620" y="63" class="box-s center">→ 403 (module blocks it)</text>
+
+      <line x1="280" y1="82" x2="280" y2="106" class="conn neutral" marker-end="url(#ah-neutral)"/>
+
+      <!-- 2: Details -->
+      <rect x="90" y="108" width="380" height="46" rx="5" class="box neutral"/>
+      <circle cx="90" cy="108" r="12" class="badge"/><text x="90" y="112" class="badge-n">2</text>
+      <text x="112" y="136" class="box-t">Summary → View month → Details page</text>
+
+      <line x1="280" y1="154" x2="280" y2="178" class="conn neutral" marker-end="url(#ah-neutral)"/>
+
+      <!-- 3: Drafter -->
+      <rect x="90" y="180" width="380" height="88" rx="5" class="box drafter"/>
+      <circle cx="90" cy="180" r="12" class="badge"/><text x="90" y="184" class="badge-n">3</text>
+      <text x="112" y="204" class="box-t">Drafter — Pending</text>
+      <text x="112" y="222" class="box-s mono">eautozara · mfared · mfizni</text>
+      <text x="112" y="242" class="box-s">Approve → unlocks Reviewer</text>
+      <text x="112" y="258" class="box-s">KIV → parked (no un-KIV; retry Approve anytime)</text>
+
+      <!-- KIV self-loop, right side -->
+      <path d="M470,196 h18 v52 h-18" class="conn warn" fill="none" marker-end="url(#ah-warn)"/>
+      <text x="497" y="212" class="side-t warn-t">KIV loop</text>
+      <text x="497" y="226" class="side-t muted">no un-KIV button —</text>
+      <text x="497" y="239" class="side-t muted">Drafter retries anytime</text>
+
+      <line x1="280" y1="268" x2="280" y2="292" class="conn ok" marker-end="url(#ah-ok)"/>
+      <text x="292" y="284" class="arrow-label ok-t">Approve</text>
+
+      <!-- 4: Reviewer -->
+      <rect x="90" y="294" width="380" height="88" rx="5" class="box reviewer"/>
+      <circle cx="90" cy="294" r="12" class="badge"/><text x="90" y="298" class="badge-n">4</text>
+      <text x="112" y="318" class="box-t">Reviewer — Pending (unlocked)</text>
+      <text x="112" y="336" class="box-s mono">eautonurul · mfizni</text>
+      <text x="112" y="356" class="box-s">Approve → unlocks Approver</text>
+      <text x="112" y="372" class="box-s">Reject (remarks required) → back to Drafter</text>
+
+      <line x1="280" y1="382" x2="280" y2="406" class="conn ok" marker-end="url(#ah-ok)"/>
+      <text x="292" y="398" class="arrow-label ok-t">Approve</text>
+
+      <!-- 5: Approver -->
+      <rect x="90" y="408" width="380" height="88" rx="5" class="box approver"/>
+      <circle cx="90" cy="408" r="12" class="badge"/><text x="90" y="412" class="badge-n">5</text>
+      <text x="112" y="432" class="box-t">Approver — Pending (unlocked)</text>
+      <text x="112" y="450" class="box-s mono">kmcheah · mfizni</text>
+      <text x="112" y="470" class="box-s">Approve → signature + payment date</text>
+      <text x="112" y="486" class="box-s">Reject (remarks required) → back to Reviewer</text>
+
+      <!-- reject return lane, shared x=50 -->
+      <path d="M90,338 H50 V214 H90" class="conn bad dashed" fill="none" marker-end="url(#ah-bad)"/>
+      <path d="M90,452 H32 V338 H90" class="conn bad dashed" fill="none" marker-end="url(#ah-bad)"/>
+      <text x="15" y="276" class="side-t bad-t" transform="rotate(-90 15 276)">Reject → Review Again</text>
+      <text x="8" y="395" class="side-t bad-t" transform="rotate(-90 8 395)">Reject → Review Again</text>
+
+      <line x1="280" y1="496" x2="280" y2="520" class="conn ok" marker-end="url(#ah-ok)"/>
+      <text x="292" y="512" class="arrow-label ok-t">Approve</text>
+
+      <!-- 6: signature + payment date -->
+      <rect x="90" y="522" width="380" height="58" rx="5" class="box accent"/>
+      <circle cx="90" cy="522" r="12" class="badge"/><text x="90" y="526" class="badge-n">6</text>
+      <text x="112" y="546" class="box-t">Signature (first time only) + Finance Payment Date</text>
+      <text x="112" y="564" class="box-s">Picker only, future date — no typing or pasting</text>
+
+      <line x1="280" y1="580" x2="280" y2="604" class="conn neutral" marker-end="url(#ah-neutral)"/>
+
+      <!-- 7: fully approved -->
+      <rect x="90" y="606" width="380" height="46" rx="5" class="box accent-solid"/>
+      <circle cx="90" cy="606" r="12" class="badge"/><text x="90" y="610" class="badge-n">7</text>
+      <text x="280" y="634" class="box-t center on-accent">Month = Fully Approved</text>
+
+      <line x1="190" y1="652" x2="190" y2="676" class="conn neutral" marker-end="url(#ah-neutral)"/>
+      <line x1="370" y1="652" x2="370" y2="676" class="conn neutral" marker-end="url(#ah-neutral)"/>
+
+      <!-- 8: PDFs -->
+      <rect x="90" y="678" width="180" height="66" rx="5" class="box neutral"/>
+      <circle cx="90" cy="678" r="12" class="badge"/><text x="90" y="682" class="badge-n">8</text>
+      <text x="180" y="702" class="box-t center">FMC PDF</text>
+      <text x="180" y="718" class="box-s center">car transactions</text>
+      <text x="180" y="734" class="box-s center small">Payment Requisition_FMC_&lt;Month Year&gt;.pdf</text>
+
+      <rect x="280" y="678" width="190" height="66" rx="5" class="box neutral"/>
+      <text x="375" y="702" class="box-t center">MMSDA PDF</text>
+      <text x="375" y="718" class="box-s center">motorcycle transactions</text>
+      <text x="375" y="734" class="box-s center small">Payment Requisition_MMSDA_&lt;Month Year&gt;.pdf</text>
+    </svg>
+  </div>
+  <figcaption>Steps 1–2 are role-agnostic (any user with module access). Steps 3–5 are the
+  sequential Drafter → Reviewer → Approver chain — each stays disabled until the one above it
+  approves. Rejects bounce exactly one stage back with mandatory remarks; KIV parks the Drafter's
+  own row without locking it. Step 8's two PDFs only render once step 7 is reached.</figcaption>
+  <div class="legend-inline">
+    <span><i class="ln" style="border-color:var(--ok)"></i> Approve</span>
+    <span><i class="ln dashed" style="border-color:var(--bad)"></i> Reject (remarks required)</span>
+    <span><i class="ln" style="border-color:var(--warn)"></i> KIV (self-loop)</span>
+    <span><i class="ln dashed" style="border-color:var(--ink-3)"></i> No role → blocked</span>
+  </div>
+</figure>
+
+<footer>
+  <p>Full requirement-by-requirement detail, the dev QA test guide, and open items live in
+  <code>knowledge/flow-association-payment-listing.md</code> and
+  <code>lib/ticketStudies.ts</code> (key <code>EAINT-12028</code>) in the dashboard repo.</p>
+  <p>This page is a working diagram for EAINT-12028 — expect it to be redeployed as the ticket
+  progresses (environment confirmed, MR !1 merged, real build replaces mockup-derived detail).</p>
+</footer>
+
+</div>
+
+<style>
+  /* SVG tokens — kept in a second block so the diagram styles sit together */
+  svg text{font-family:var(--sans); fill:var(--ink)}
+  svg .box{stroke:var(--line); stroke-width:1.4}
+  svg .box.neutral{fill:var(--surface-2)}
+  svg .box.accent{fill:var(--accent-bg); stroke:var(--accent)}
+  svg .box.accent-solid{fill:var(--accent); stroke:var(--accent)}
+  svg .box.drafter{fill:var(--role-drafter-bg); stroke:var(--role-drafter)}
+  svg .box.reviewer{fill:var(--role-reviewer-bg); stroke:var(--role-reviewer)}
+  svg .box.approver{fill:var(--role-approver-bg); stroke:var(--role-approver)}
+  svg .none-box{fill:var(--surface-2); stroke:var(--ink-3); stroke-dasharray:4 3}
+  svg .badge{fill:var(--ink); stroke:none}
+  svg .badge-n{font-size:11px; fill:var(--surface); text-anchor:middle; dominant-baseline:middle; font-weight:700}
+  svg .box-t{font-size:14px; font-weight:700; fill:var(--ink)}
+  svg .box-s{font-size:11.5px; fill:var(--ink-2)}
+  svg .box-s.mono{font-family:var(--mono)}
+  svg .box-s.small{font-size:9.6px; font-family:var(--mono)}
+  svg .center{text-anchor:middle}
+  svg .on-accent{fill:var(--surface); font-weight:700; font-size:14px}
+  svg .side-t{font-size:10px; fill:var(--ink-3)}
+  svg .side-t.warn-t{fill:var(--warn); font-weight:700}
+  svg .side-t.bad-t{fill:var(--bad); font-weight:600}
+  svg .side-t.muted{fill:var(--ink-3)}
+  svg .arrow-label{font-size:11px; font-weight:600}
+  svg .arrow-label.ok-t{fill:var(--ok)}
+  svg .conn{stroke-width:2; fill:none}
+  svg .conn.ok{stroke:var(--ok)}
+  svg .conn.bad{stroke:var(--bad)}
+  svg .conn.warn{stroke:var(--warn)}
+  svg .conn.neutral{stroke:var(--ink-3)}
+  svg .conn.none{stroke:var(--ink-3)}
+  svg .conn.dashed{stroke-dasharray:5 4}
+  svg .fill-ok{fill:var(--ok)}
+  svg .fill-bad{fill:var(--bad)}
+  svg .fill-warn{fill:var(--warn)}
+  svg .fill-neutral{fill:var(--ink-3)}
+  svg .fill-none{fill:var(--ink-3)}
+</style>

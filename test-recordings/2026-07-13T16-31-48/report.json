@@ -1,0 +1,367 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Reschedule before the day of the appointment to a future date|Reschedule cancelled appointment — should be blocked|Add Appointment - Partial Booking Call-in"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-13T16-31-48",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "add-appointment-bo.spec.ts",
+      "file": "add-appointment-bo.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Add Appointment (BO)",
+          "file": "add-appointment-bo.spec.ts",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Add Appointment - Partial Booking Call-in",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 35672,
+                      "error": {
+                        "message": "TimeoutError: locator.textContent: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table').first().locator('tbody tr').first().locator('td').nth(1)\u001b[22m\n",
+                        "stack": "TimeoutError: locator.textContent: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table').first().locator('tbody tr').first().locator('td').nth(1)\u001b[22m\n\n    at ServiceRequestListingPage.cellText (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ServiceRequestListingPage.ts:88:51)\n    at ServiceRequestListingPage.getRowReferenceNo (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ServiceRequestListingPage.ts:92:17)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:104:35",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ServiceRequestListingPage.ts",
+                          "column": 51,
+                          "line": 88
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\ServiceRequestListingPage.ts:88\n\n\u001b[0m \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m   \u001b[36mprivate\u001b[39m \u001b[36masync\u001b[39m cellText(row\u001b[33m:\u001b[39m \u001b[33mLocator\u001b[39m\u001b[33m,\u001b[39m colIndex\u001b[33m:\u001b[39m number)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33mstring\u001b[39m\u001b[33m>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 88 |\u001b[39m     \u001b[36mreturn\u001b[39m (\u001b[36mawait\u001b[39m row\u001b[33m.\u001b[39mlocator(\u001b[32m\"td\"\u001b[39m)\u001b[33m.\u001b[39mnth(colIndex)\u001b[33m.\u001b[39mtextContent())\u001b[33m?\u001b[39m\u001b[33m.\u001b[39mtrim() \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[32m\"\"\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 89 |\u001b[39m   }\n \u001b[90m 90 |\u001b[39m\n \u001b[90m 91 |\u001b[39m   \u001b[36masync\u001b[39m getRowReferenceNo(row\u001b[33m:\u001b[39m \u001b[33mLocator\u001b[39m)\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33mstring\u001b[39m\u001b[33m>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ServiceRequestListingPage.ts",
+                            "column": 51,
+                            "line": 88
+                          },
+                          "message": "TimeoutError: locator.textContent: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('table').first().locator('tbody tr').first().locator('td').nth(1)\u001b[22m\n\n\n   at ..\\pages\\ServiceRequestListingPage.ts:88\n\n  86 |\n  87 |   private async cellText(row: Locator, colIndex: number): Promise<string> {\n> 88 |     return (await row.locator(\"td\").nth(colIndex).textContent())?.trim() ?? \"\";\n     |                                                   ^\n  89 |   }\n  90 |\n  91 |   async getRowReferenceNo(row: Locator): Promise<string> {\n    at ServiceRequestListingPage.cellText (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ServiceRequestListingPage.ts:88:51)\n    at ServiceRequestListingPage.getRowReferenceNo (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ServiceRequestListingPage.ts:92:17)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:104:35"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-13T16:31:52.033Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\video.webm"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\test-failed-2.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ServiceRequestListingPage.ts",
+                        "column": 51,
+                        "line": 88
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "6e13112bcd4d9fd61a7a-b874fd8c922860f06f88",
+              "file": "add-appointment-bo.spec.ts",
+              "line": 78,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "reschedule-handling.spec.ts",
+      "file": "reschedule-handling.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Reschedule & Handling",
+          "file": "reschedule-handling.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "reschedule-handling.spec.ts",
+              "line": 15,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Reschedule before the day of the appointment to a future date",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 7708,
+                          "error": {
+                            "message": "Error: Date 2026-07-15 is not bookable (class=\" si-muted si-fullday\") — pick a date from findBookableDates()/findEmptyBookableDate() instead of a hardcoded offset.",
+                            "stack": "Error: Date 2026-07-15 is not bookable (class=\" si-muted si-fullday\") — pick a date from findBookableDates()/findEmptyBookableDate() instead of a hardcoded offset.\n    at ReschedulePage.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:363:13)\n    at ReschedulePage.rescheduleToNewDate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ReschedulePage.ts:72:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:115:7",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                              "column": 13,
+                              "line": 363
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:363\n\n\u001b[0m \u001b[90m 361 |\u001b[39m     \u001b[36mconst\u001b[39m classes \u001b[33m=\u001b[39m (\u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mgetAttribute(\u001b[32m\"class\"\u001b[39m)) \u001b[33m?\u001b[39m\u001b[33m?\u001b[39m \u001b[32m\"\"\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 362 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mclasses\u001b[33m.\u001b[39mincludes(\u001b[32m\"si-book\"\u001b[39m) \u001b[33m||\u001b[39m classes\u001b[33m.\u001b[39mincludes(\u001b[32m\"si-muted\"\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 363 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\n \u001b[90m     |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 364 |\u001b[39m         \u001b[32m`Date ${dateStr} is not bookable (class=\"${classes}\") — pick a date from findBookableDates()/findEmptyBookableDate() instead of a hardcoded offset.`\u001b[39m\n \u001b[90m 365 |\u001b[39m       )\u001b[33m;\u001b[39m\n \u001b[90m 366 |\u001b[39m     }\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                                "column": 13,
+                                "line": 363
+                              },
+                              "message": "Error: Date 2026-07-15 is not bookable (class=\" si-muted si-fullday\") — pick a date from findBookableDates()/findEmptyBookableDate() instead of a hardcoded offset.\n\n   at ..\\pages\\SlotPickerComponent.ts:363\n\n  361 |     const classes = (await cell.getAttribute(\"class\")) ?? \"\";\n  362 |     if (!classes.includes(\"si-book\") || classes.includes(\"si-muted\")) {\n> 363 |       throw new Error(\n      |             ^\n  364 |         `Date ${dateStr} is not bookable (class=\"${classes}\") — pick a date from findBookableDates()/findEmptyBookableDate() instead of a hardcoded offset.`\n  365 |       );\n  366 |     }\n    at ReschedulePage.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:363:13)\n    at ReschedulePage.rescheduleToNewDate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\ReschedulePage.ts:72:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:115:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T16:32:30.989Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                            "column": 13,
+                            "line": 363
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-d91309a7696ca3775919",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 71,
+                  "column": 9
+                },
+                {
+                  "title": "Reschedule cancelled appointment — should be blocked",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 7852,
+                          "error": {
+                            "message": "Error: page.goto: net::ERR_ABORTED at https://staging.eauto.my/uat1/view/bo/service-hub/listing/main.do\nCall log:\n\u001b[2m  - navigating to \"https://staging.eauto.my/uat1/view/bo/service-hub/listing/main.do\", waiting until \"networkidle\"\u001b[22m\n",
+                            "stack": "Error: page.goto: net::ERR_ABORTED at https://staging.eauto.my/uat1/view/bo/service-hub/listing/main.do\nCall log:\n\u001b[2m  - navigating to \"https://staging.eauto.my/uat1/view/bo/service-hub/listing/main.do\", waiting until \"networkidle\"\u001b[22m\n\n    at SoftwareInstallationListingPage.goto (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts:14:21)\n    at SoftwareInstallationListingPage.navigate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationListingPage.ts:79:16)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:269:23",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                              "column": 21,
+                              "line": 14
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\BasePage.ts:14\n\n\u001b[0m \u001b[90m 12 |\u001b[39m\n \u001b[90m 13 |\u001b[39m   \u001b[36masync\u001b[39m goto(path\u001b[33m:\u001b[39m string) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 14 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mgoto(\u001b[32m`${this.baseUrl}${path}`\u001b[39m\u001b[33m,\u001b[39m { waitUntil\u001b[33m:\u001b[39m \u001b[32m\"networkidle\"\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 15 |\u001b[39m   }\n \u001b[90m 16 |\u001b[39m\n \u001b[90m 17 |\u001b[39m   \u001b[36masync\u001b[39m waitForNav() {\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                                "column": 21,
+                                "line": 14
+                              },
+                              "message": "Error: page.goto: net::ERR_ABORTED at https://staging.eauto.my/uat1/view/bo/service-hub/listing/main.do\nCall log:\n\u001b[2m  - navigating to \"https://staging.eauto.my/uat1/view/bo/service-hub/listing/main.do\", waiting until \"networkidle\"\u001b[22m\n\n\n   at ..\\pages\\BasePage.ts:14\n\n  12 |\n  13 |   async goto(path: string) {\n> 14 |     await this.page.goto(`${this.baseUrl}${path}`, { waitUntil: \"networkidle\" });\n     |                     ^\n  15 |   }\n  16 |\n  17 |   async waitForNav() {\n    at SoftwareInstallationListingPage.goto (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts:14:21)\n    at SoftwareInstallationListingPage.navigate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationListingPage.ts:79:16)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:269:23"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T16:32:40.524Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\test-failed-2.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-31-48\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                            "column": 21,
+                            "line": 14
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-280c67160fbb994f0f3b",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 252,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-13T16:31:50.596Z",
+    "duration": 59462.827000000005,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

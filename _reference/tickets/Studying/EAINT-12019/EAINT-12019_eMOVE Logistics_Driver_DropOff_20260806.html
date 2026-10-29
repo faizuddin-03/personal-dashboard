@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Driver Drop-Off Scan (Draft)</title>
+<style>
+  :root{ --orange:#d1481f; --orange-dark:#b23c17; --ink:#1f2d3d; --navy:#1f3a5f; --muted:#6b7683; --line:#d8dde2; --bg:#f2f4f7; --green:#1a7a34; --red:#c0392b; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;padding:26px 14px 60px}
+  .card{max-width:640px;margin:0 auto;background:#fff;border-radius:8px;border-top:5px solid var(--orange);box-shadow:0 4px 18px rgba(0,0,0,.08);padding:26px 28px}
+  h1{color:var(--orange);font-size:24px;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+  label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+  input[type=text]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:16px;color:var(--ink)}
+  input[type=text]::placeholder{color:#9aa4ad}
+  .btn{display:block;width:100%;border:none;border-radius:6px;padding:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:18px}
+  .btn-primary{background:var(--orange);color:#fff}
+  .btn-primary:hover{background:var(--orange-dark)}
+  .btn-primary:disabled{background:#c9cccf;cursor:not-allowed}
+  .btn-ghost{background:#fff;border:1px solid var(--orange);color:var(--orange);margin-top:10px}
+  .btn-ghost:hover{background:#fdf1ec}
+  .infobox{background:#d9edf1;color:#12586b;border-radius:6px;padding:14px 16px;font-size:15px;margin-bottom:18px;text-align:center}
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:16px}
+  .panel h3{color:var(--navy);font-size:16px;margin-bottom:12px}
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:6px 0;font-size:14px}
+  .kv .k{color:var(--muted)}
+  .kv .v{font-weight:700;text-align:right}
+  .hide{display:none}
+  .selbtn{border:2px dashed var(--orange);color:var(--orange);background:#fff;border-radius:8px;padding:14px;width:100%;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:16px}
+  .selbtn:hover{background:#fdf1ec}
+  .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .slot{border:1px dashed var(--line);border-radius:8px;min-height:96px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--muted);font-size:13px;cursor:pointer;text-align:center;position:relative;overflow:hidden;background:#fff}
+  .slot:hover{border-color:var(--orange)}
+  .slot.filled{border:1px solid var(--green);background:#eef8f0;color:var(--green);font-weight:700}
+  .slot.filled .tick{font-size:20px;line-height:1}
+  .counter{text-align:center;color:var(--muted);font-size:14px;margin:16px 0 4px}
+  .counter b{color:var(--ink)}
+  select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:6px;font-size:15px;font-family:inherit;color:var(--ink)}
+  .link{display:inline-block;margin-top:16px;color:var(--red);font-weight:700;font-size:13px;text-decoration:underline;cursor:pointer}
+  .req{color:var(--red)}
+  .tick-big{width:66px;height:66px;border-radius:50%;background:var(--green);color:#fff;font-size:34px;display:flex;align-items:center;justify-content:center;margin:6px auto 14px}
+  .tick-big.fail{background:var(--red)}
+  .center{text-align:center}
+  .demo{font-size:11px;color:#9aa4ad;font-style:italic;margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Driver Drop-Off Scan</h1>
+  <div class="sub">eMOVE Delivery Order &ndash; Drop-Off confirmation</div>
+
+  <!-- STEP 1: enter reg -->
+  <div id="s1">
+    <label>Vehicle Registration Number</label>
+    <input type="text" id="reg" placeholder="E.G. ABC1234" autocomplete="off">
+    <button class="btn btn-primary" onclick="toConfirm()">Next</button>
+    <div class="demo">Demo: try <b>BML8878</b> or <b>WXP1123</b> (any plate also works).</div>
+  </div>
+
+  <!-- STEP 2: confirm details -->
+  <div id="s2" class="hide">
+    <div class="infobox">Please confirm the details below before uploading drop-off photos.</div>
+    <div class="panel">
+      <h3>Vehicle</h3>
+      <div class="kv"><span class="k">Registration No</span><span class="v" id="v_reg">—</span></div>
+      <div class="kv"><span class="k">Make</span><span class="v" id="v_make">—</span></div>
+      <div class="kv"><span class="k">Model</span><span class="v" id="v_model">—</span></div>
+      <div class="kv"><span class="k">Variant</span><span class="v" id="v_variant">—</span></div>
+      <div class="kv"><span class="k">Year</span><span class="v" id="v_year">—</span></div>
+      <div class="kv"><span class="k">Colour</span><span class="v" id="v_colour">—</span></div>
+      <div class="kv"><span class="k">Trx / Listing Ref</span><span class="v" id="v_ref">—</span></div>
+    </div>
+    <div class="panel">
+      <h3>Drop-Off To (Buyer / Dealer)</h3>
+      <div class="kv"><span class="k">Name</span><span class="v" id="v_buyer">—</span></div>
+      <div class="kv"><span class="k">ROC</span><span class="v" id="v_roc">—</span></div>
+      <div class="kv"><span class="k">Drop-Off Address</span><span class="v" id="v_addr">—</span></div>
+    </div>
+    <button class="btn btn-primary" onclick="toPhotos()">Confirm &amp; Upload Photos</button>
+    <button class="btn btn-ghost" onclick="show('s1')">Back</button>
+    <div class="center"><span class="link" onclick="show('sfail')">Can&rsquo;t drop off this vehicle? Report an issue</span></div>
+  </div>
+
+  <!-- STEP 3: photos -->
+  <div id="s3" class="hide">
+    <div style="font-size:17px;font-weight:700;margin-bottom:6px">Vehicle: <span id="p_reg"></span></div>
+    <div class="sub" style="margin-bottom:16px">Upload 12 drop-off photos &mdash; tap <b>Select photos</b> to add several at once, or tap a slot to capture one.</div>
+    <button class="selbtn" onclick="fillSeveral()">Select photos (choose several)</button>
+    <div class="pgrid" id="pgrid"></div>
+    <div class="counter">Uploaded <b><span id="upCount">0</span>/12</b></div>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitPhotos()" disabled>Submit</button>
+    <button class="btn btn-ghost" onclick="show('s2')">Back</button>
+    <div class="demo">Demo: photos are simulated (no real camera needed).</div>
+  </div>
+
+  <!-- FAIL: report drop-off failure -->
+  <div id="sfail" class="hide">
+    <div class="infobox" style="background:#fdecea;color:#8a2013">Report a drop-off problem for <b id="f_reg"></b>.</div>
+    <label>Reason <span class="req">*</span></label>
+    <textarea id="f_reason" rows="3" placeholder="Type the reason for the failed drop-off (required)"></textarea>
+    <div style="margin-top:16px"></div>
+    <label>Evidence Photo <span class="req">*</span> <span style="font-weight:400;color:var(--muted);font-size:12px">(min 1, max 3 &middot; each &le; 5MB)</span></label>
+    <input type="file" id="f_evi" accept="image/*" multiple capture="environment" style="display:none" onchange="addEvidence(this)">
+    <button class="selbtn" onclick="document.getElementById('f_evi').click()" style="margin-top:6px">Add evidence photo</button>
+    <div class="pgrid" id="eviGrid"></div>
+    <div class="counter" id="eviCount" style="display:none">Evidence <b><span id="eviN">0</span>/3</b></div>
+    <button class="btn btn-primary" onclick="submitFail()">Submit Failure Report</button>
+    <button class="btn btn-ghost" onclick="show('s2')">Back</button>
+  </div>
+
+  <!-- SUCCESS: drop-off done -->
+  <div id="sdone" class="hide center">
+    <div class="tick-big">&#10003;</div>
+    <h1 style="color:var(--green);font-size:22px">Drop-Off Confirmed</h1>
+    <p class="sub" id="doneMsg" style="margin:8px 0 4px"></p>
+    <div class="panel" style="text-align:left;margin-top:16px">
+      <div class="kv"><span class="k">Vehicle</span><span class="v" id="d_reg"></span></div>
+      <div class="kv"><span class="k">Photos uploaded</span><span class="v">12 / 12</span></div>
+      <div class="kv"><span class="k">Delivery Status</span><span class="v" style="color:var(--green)">Delivered</span></div>
+      <div class="kv"><span class="k">Confirmed at</span><span class="v" id="d_time"></span></div>
+    </div>
+    <button class="btn btn-primary" onclick="reset()">Done</button>
+  </div>
+
+  <!-- FAIL SUBMITTED -->
+  <div id="sfaildone" class="hide center">
+    <div class="tick-big fail">&#33;</div>
+    <h1 style="color:var(--red);font-size:22px">Drop-Off Marked as Failed</h1>
+    <p class="sub" style="margin:8px 0 4px">BackOffice and the UCD have been notified. The vehicle will be held at the destination hub, re-attempted, or returned.</p>
+    <div class="panel" style="text-align:left;margin-top:16px">
+      <div class="kv"><span class="k">Vehicle</span><span class="v" id="fd_reg"></span></div>
+      <div class="kv"><span class="k">Reason</span><span class="v" id="fd_reason"></span></div>
+      <div class="kv"><span class="k">Delivery Status</span><span class="v" style="color:var(--red)">Delivery Failed</span></div>
+      <div class="kv"><span class="k">Reported at</span><span class="v" id="fd_time"></span></div>
+      <div style="margin-top:8px"><div class="k" style="color:var(--muted);font-size:13px;margin-bottom:6px">Evidence photos (viewable by BackOffice)</div><div id="fd_photos"></div></div>
+    </div>
+    <button class="btn btn-primary" onclick="reset()">Done</button>
+  </div>
+</div>
+
+<script>
+const vdb={
+  'BML8878':{make:'Mercedes',model:'C-Class',variant:'ELEGANCE',year:'2011',colour:'Silver',ref:'EM670000348',buyer:'MJ TEST AUTO SDN. BHD.',roc:'0220220907-A',addr:'Skudai Hub — No. 3, Jalan Skudai, 81300 Skudai, Johor'},
+  'WXP1123':{make:'Toyota',model:'Vios',variant:'1.5 G',year:'2020',colour:'White',ref:'EM670000012',buyer:'PRIMA AUTO GALLERY',roc:'201801077665',addr:'Penang Hub — Medan Perniagaan Pauh Jaya, Jalan Baru, 13700 Perai, Penang'}
+};
+let cur=null, filled=[];
+const screens=['s1','s2','s3','sfail','sdone','sfaildone'];
+function show(id){ screens.forEach(s=>document.getElementById(s).classList.add('hide')); document.getElementById(id).classList.remove('hide'); window.scrollTo({top:0,behavior:'smooth'}); }
+function nowStr(){ const d=new Date(),p=n=>String(n).padStart(2,'0'); let h=d.getHours();const ap=h<12?'am':'pm';h=h%12||12; return p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+d.getFullYear()+' '+p(h)+':'+p(d.getMinutes())+ap; }
+
+function toConfirm(){
+  const reg=(document.getElementById('reg').value||'').trim().toUpperCase();
+  if(!reg){ alert('Please enter the vehicle registration number.'); return; }
+  const v=vdb[reg]||{make:'Perodua',model:'Bezza',variant:'1.3 X',year:'2019',colour:'Grey',ref:'EM670000999',buyer:'DEMO AUTO TRADING SDN. BHD.',roc:'201901099999',addr:'Shah Alam Hub — PT 626, Jalan Mandolin 33/5, 40400 Shah Alam, Selangor'};
+  cur={reg,...v};
+  document.getElementById('v_reg').textContent=reg;
+  document.getElementById('v_make').textContent=v.make;
+  document.getElementById('v_model').textContent=v.model;
+  document.getElementById('v_variant').textContent=v.variant;
+  document.getElementById('v_year').textContent=v.year;
+  document.getElementById('v_colour').textContent=v.colour;
+  document.getElementById('v_ref').textContent=v.ref;
+  document.getElementById('v_buyer').textContent=v.buyer;
+  document.getElementById('v_roc').textContent=v.roc;
+  document.getElementById('v_addr').textContent=v.addr;
+  document.getElementById('f_reg').textContent=reg;
+  show('s2');
+}
+function toPhotos(){
+  document.getElementById('p_reg').textContent=cur.reg;
+  filled=new Array(12).fill(false);
+  renderGrid();
+  show('s3');
+}
+function renderGrid(){
+  const g=document.getElementById('pgrid'); let h='';
+  for(let i=0;i<12;i++){ h+=`<div class="slot ${filled[i]?'filled':''}" onclick="capture(${i})">${filled[i]?('<div class=tick>✓</div>Photo '+(i+1)):('Photo '+(i+1))}</div>`; }
+  g.innerHTML=h;
+  const n=filled.filter(Boolean).length;
+  document.getElementById('upCount').textContent=n;
+  document.getElementById('submitBtn').disabled = n<12;
+}
+function capture(i){ filled[i]=!filled[i]; renderGrid(); }
+function fillSeveral(){ for(let i=0;i<12;i++) filled[i]=true; renderGrid(); }
+function submitPhotos(){
+  if(filled.filter(Boolean).length<12){ alert('Please upload all 12 photos before submitting.'); return; }
+  document.getElementById('doneMsg').textContent='Vehicle '+cur.reg+' delivered. 12 drop-off photos uploaded and delivery status updated.';
+  document.getElementById('d_reg').textContent=cur.reg+' · '+cur.make+' '+cur.model;
+  document.getElementById('d_time').textContent=nowStr();
+  show('sdone');
+}
+let evidence=[];
+function addEvidence(inp){
+  const files=[...inp.files]; inp.value='';
+  for(const f of files){
+    if(evidence.length>=3){ alert('Maximum 3 evidence photos allowed.'); break; }
+    if(!f.type.startsWith('image/')){ alert('Only image files are allowed: '+f.name); continue; }
+    if(f.size>5*1024*1024){ alert('"'+f.name+'" exceeds 5MB and was skipped.'); continue; }
+    evidence.push({name:f.name, url:URL.createObjectURL(f)});
+  }
+  renderEvidence();
+}
+function renderEvidence(){
+  const g=document.getElementById('eviGrid');
+  g.innerHTML=evidence.map((e,i)=>`<div class="slot filled" style="padding:0"><img src="${e.url}" style="width:100%;height:96px;object-fit:cover;border-radius:8px"><span onclick="removeEvidence(${i})" style="position:absolute;top:3px;right:6px;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:20px;height:20px;line-height:20px;text-align:center;cursor:pointer;font-weight:700">&times;</span></div>`).join('');
+  document.getElementById('eviCount').style.display=evidence.length?'block':'none';
+  document.getElementById('eviN').textContent=evidence.length;
+}
+function removeEvidence(i){ evidence.splice(i,1); renderEvidence(); }
+function submitFail(){
+  const reason=(document.getElementById('f_reason').value||'').trim();
+  if(!reason){ alert('Please type the reason for the failed drop-off.'); return; }
+  if(evidence.length<1){ alert('Please add at least 1 evidence photo (max 3).'); return; }
+  document.getElementById('fd_reg').textContent=cur.reg;
+  document.getElementById('fd_reason').textContent=reason;
+  document.getElementById('fd_time').textContent=nowStr();
+  document.getElementById('fd_photos').innerHTML=evidence.map(e=>`<img src="${e.url}" style="width:74px;height:56px;object-fit:cover;border-radius:4px;border:1px solid var(--line);margin-right:6px">`).join('');
+  show('sfaildone');
+}
+function reset(){
+  document.getElementById('reg').value='';
+  document.getElementById('f_reason').value='';
+  evidence=[]; renderEvidence();
+  show('s1');
+}
+</script>
+</body>
+</html>

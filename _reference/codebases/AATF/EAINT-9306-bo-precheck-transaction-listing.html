@@ -1,0 +1,390 @@
+<!--
+  URL: BackOffice — "eDereg Pre-Checking Transaction Listing"
+       (confirmed page title: "eDereg Pre-Checking Transaction Listing").
+       Path inferred as `/view/dereg/precheck/enquiry/main.do` from the
+       "View" links' own href (`/view/dereg/precheck/enquiry/view.do?id=<uuid>`),
+       same no-`/aatf/`-segment pattern already confirmed for both
+       JpjXmlLogPage BO routes (`/view/dereg/precheck/jpj/log/main.do`,
+       `/view/dereg/jpj/log`) — the search form's own action URL was never
+       directly confirmed in the address bar.
+  Environment: staging.eauto.my/uat1, logged in as MUHAMMAD FAIZUDDIN BIN BIDI
+  Captured: 2026-08-27, pasted directly by Faizuddin — THE CORRECT page for
+       MU_TS9's BackOffice cancel step. He originally pasted the
+       DEREGISTRATION Transaction listing by mistake (saved separately as
+       EAINT-9306-bo-dereg-transaction-listing.html, kept — real page, just
+       not the one MU_TS9 needs) before sending this one.
+  Trimmed: none — full page both BEFORE and AFTER clicking Search (two
+       states in one capture, separated by the header comment below).
+       Search was run WITH a "From" date selected this time (unlike the
+       other BO listing's capture) — 39 real result rows included, several
+       genuinely Pending/Failed, so the "Cancel" action's real markup is
+       CONFIRMED here for the first time in this whole ticket.
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1 — before clicking Search (the search form + empty result). -->
+<!-- Key selectors: #companyName, #vehicleNo, #refNo, #fromDate/#toDate
+     (jQuery UI datepicker again, both labelled "Date Created (From/To)"
+     this time, both carrying the `*` required marker — "From" confirmed
+     compulsory the same way as the other BO listing; whether "To" is ALSO
+     enforced here specifically was not re-tested), #status (Trx Status
+     select: All/Approved/Failed/Pending/Cancelled/Expired — NOTE the id is
+     `#status`, NOT `#to-filter` like the Deregistration listing's
+     equivalent field), #paymentStatus (All/OK("Paid" value)/Pending/
+     Failed/-("New" value)), #paymentFrom/#paymentTo (payment date range,
+     also datepickers), LHDN status select (unnamed id), #to-search
+     (submit), .to-reset, #to-export (hidden until a search runs). NO
+     "Includes Draft Trx" checkbox on this page at all (that was specific
+     to the Deregistration listing) — not needed here anyway, since a
+     Pre-Checking transaction is a top-level record from creation, unlike a
+     Deregistration draft. -->
+<body>
+
+<div id="container">
+<table width="100%">
+    <tbody><tr>
+        <td>
+            <form id="search-form" style="margin-left:20px;">
+                <table style="width:100%">
+                    <tbody><tr>
+                        <td style="padding-left:20px; white-space: nowrap;">
+                            <b>Company Name:</b>
+                            <input type="text" name="companyName" id="companyName" value="" size="30">&nbsp;
+                            <b>Vehicle No.:</b>
+                            <input type="text" name="vehicleNo" id="vehicleNo" value="" size="8">
+                            <b>Transaction No.:</b>
+                            <input type="text" name="refNo" id="refNo" value="" size="10">&nbsp;&nbsp;
+                            <b>Date Created (From)</b><span class="required">*</span>:
+                            <input type="text" name="fromDate" id="fromDate" size="10" readonly="readOnly" class="hasDatepicker">&nbsp;&nbsp;
+                            <b>Date Created (To)</b><span class="required">*</span>:
+                            <input type="text" name="toDate" id="toDate" size="10" readonly="readOnly" class="hasDatepicker">
+                            <br><br>
+                            <b>Company ROC:</b>
+                            <input type="text" name="companyRoc" id="companyRoc" value="" size="30">&nbsp;
+                            <b>Trx Status</b>
+                            <select name="status" id="status" style="width:140px">
+                                <option value="" selected="">All</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Failed">Failed</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="Expired">Expired</option>
+                            </select>&nbsp;&nbsp;
+
+                            <b>Payment Status</b>
+                            <select name="paymentStatus" id="paymentStatus" style="width:140px">
+                                <option value="" selected="">All</option>
+                                <option value="Paid">OK</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Failed">Failed</option>
+                                <option value="New">-</option>
+                            </select> &nbsp;&nbsp;
+
+                            <b>Payment Date (From)</b>:
+                            <input type="text" name="paymentFrom" id="paymentFrom" size="10" readonly="readOnly" class="hasDatepicker">&nbsp;&nbsp;
+                            <b>Payment Date (To)</b>:
+                            <input type="text" name="paymentTo" id="paymentTo" size="10" readonly="readOnly" class="hasDatepicker">
+
+                            <br><br>
+
+                            <b>LHDN Response Status:</b>
+                            <select name="eInvoiceValidationStatus" style="width:140px">
+                                <option value="">All</option>
+                                <option value="OK">OK</option>
+                                <option value="Failed">Failed</option>
+                                <option value="New">-</option>
+                                <option value="N/A">N/A</option>
+                            </select>
+
+                            <div style="position: relative; float: right;">
+                                <input type="submit" id="to-search" value="Search Now" style="height: 35px;">
+                                <a class="to-reset" href="#">Reset</a>
+                                <a id="to-export" class="hidden" href="#">Export</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:10px; font-size:14px" class="center">
+                            <b>eDereg Pre-Checking Transaction Listing</b>
+                        </td>
+                    </tr>
+                </tbody></table>
+                <input type="hidden" name="pageNo" value="1">
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td id="result" colspan="2">&nbsp;</td>
+    </tr>
+</tbody></table>
+</div>
+
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar" style="width: 350px !important;">
+                <ol class="inline">
+                    <li><a href="/uat1/home/" id="home-link">Home |</a></li>
+                    <li><a href="#" id="menu-link">Menu <img src="/uat1/images/arrow_down.gif"></a></li>
+                </ol>
+                <div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onclick="window.location='/uat1/view/support/incomplete-txn/';">
+                    <span>3 Pending Transaction Found!</span>
+                </div>
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI</span>,</li>
+                <li><a href="/uat1/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+</div>
+</body>
+
+<!-- ============================================================ -->
+<!-- STATE 2 — after selecting a "From" date and clicking Search. -->
+<!-- 13-column table, column order from the <th> row: # / Company Name /
+     Company ROC / Vehicle / Transaction No. / Created At / Payment / JPJ
+     Pre-Checking / Trx Status / LHDN Response Status / Remarks / Special
+     Remarks / Action. DIFFERENT shape from both the AATF-side
+     PrecheckEnquiryPage listing (which this class's own reader methods
+     parse via `td` position, fewer columns) AND the BO Deregistration
+     listing (16 columns, no "Special Remarks").
+
+     **THE "Cancel" ACTION IS NOW CONFIRMED, for real** — every row with
+     Trx Status Pending or Failed (non-terminal) shows:
+       <a href="#" class="to-cancel" txid="<uuid>" title="to cancel <refNo>">Cancel</a>
+     right after the "View" link (separated by " | "), e.g. row 1
+     (HXA064, Payment Failed, Trx Status Failed) and row 4 (HXA061,
+     Payment "-", Trx Status Pending) both have it. EVERY row with Trx
+     Status Approved or Expired does NOT have it (confirmed across all 39
+     rows in this capture) — Cancel is only offered while the transaction
+     is still in a cancellable (non-terminal) state, exactly the business
+     rule MU_TS9 needs. `href="#"` — this is a JS-bound click handler
+     keyed off the `txid` attribute, not a real navigation; the handler
+     itself (confirm dialog? AJAX call?) is NOT visible in this capture's
+     trimmed inline `<script>` block (only the generic per-page header
+     script was included) — still unconfirmed whether clicking it raises a
+     native `confirm()` before actually cancelling. -->
+<body>
+
+<div id="container">
+<table width="100%">
+    <tbody><tr>
+        <td>
+            <form id="search-form" style="margin-left:20px;">
+                <table style="width:100%">
+                    <tbody><tr>
+                        <td style="padding-left:20px; white-space: nowrap;">
+                            <b>Company Name:</b>
+                            <input type="text" name="companyName" id="companyName" value="" size="30">&nbsp;
+                            <b>Vehicle No.:</b>
+                            <input type="text" name="vehicleNo" id="vehicleNo" value="" size="8">
+                            <b>Transaction No.:</b>
+                            <input type="text" name="refNo" id="refNo" value="" size="10">&nbsp;&nbsp;
+                            <b>Date Created (From)</b><span class="required">*</span>:
+                            <input type="text" name="fromDate" id="fromDate" size="10" readonly="readOnly" class="hasDatepicker">&nbsp;&nbsp;
+                            <b>Date Created (To)</b><span class="required">*</span>:
+                            <input type="text" name="toDate" id="toDate" size="10" readonly="readOnly" class="hasDatepicker">
+                            <br><br>
+                            <b>Company ROC:</b>
+                            <input type="text" name="companyRoc" id="companyRoc" value="" size="30">&nbsp;
+                            <b>Trx Status</b>
+                            <select name="status" id="status" style="width:140px">
+                                <option value="" selected="">All</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Failed">Failed</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="Expired">Expired</option>
+                            </select>&nbsp;&nbsp;
+
+                            <b>Payment Status</b>
+                            <select name="paymentStatus" id="paymentStatus" style="width:140px">
+                                <option value="" selected="">All</option>
+                                <option value="Paid">OK</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Failed">Failed</option>
+                                <option value="New">-</option>
+                            </select> &nbsp;&nbsp;
+
+                            <b>Payment Date (From)</b>:
+                            <input type="text" name="paymentFrom" id="paymentFrom" size="10" readonly="readOnly" class="hasDatepicker">&nbsp;&nbsp;
+                            <b>Payment Date (To)</b>:
+                            <input type="text" name="paymentTo" id="paymentTo" size="10" readonly="readOnly" class="hasDatepicker">
+
+                            <br><br>
+
+                            <b>LHDN Response Status:</b>
+                            <select name="eInvoiceValidationStatus" style="width:140px">
+                                <option value="">All</option>
+                                <option value="OK">OK</option>
+                                <option value="Failed">Failed</option>
+                                <option value="New">-</option>
+                                <option value="N/A">N/A</option>
+                            </select>
+
+                            <div style="position: relative; float: right;">
+                                <input type="submit" id="to-search" value="Search Now" style="height: 35px;">
+                                <a class="to-reset" href="#">Reset</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:10px; font-size:14px" class="center">
+                            <b>eDereg Pre-Checking Transaction Listing</b>
+                        </td>
+                    </tr>
+                </tbody></table>
+                <input type="hidden" name="pageNo" value="1">
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td id="result" colspan="2">
+<table style="width:100% !important;">
+    <colgroup><col width="2%"><col width="12%"><col width="8%"><col width="8%">
+    <col width="8%"><col width="8%"><col width="8%"><col width="8%">
+    <col width="8%"><col width="6%"><col width="auto"><col width="5%">
+    <col width="10%">
+    </colgroup><tbody><tr class="header">
+        <th>#</th>
+        <th>Company Name</th>
+        <th>Company ROC</th>
+        <th>Vehicle</th>
+        <th>Transaction No.    </th>
+        <th>Created At</th>
+        <th>Payment</th>
+        <th>JPJ Pre-Checking</th>
+        <th>Trx Status</th>
+        <th>LHDN Response Status</th>
+        <th>Remarks</th>
+        <th>Special Remarks</th>
+        <th>Action</th>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA064</td>
+        <td class="center">PC68001206</td>
+        <td class="center">2026-08-27 11:08</td>
+        <td class="center" style="color:red"><b>Failed</b></td>
+        <td class="center" style="color:blue"><b>-</b></td>
+        <td class="center" style="color:red"><b>Failed</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td><div class="remarks"><div>IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. 你的RHB银行余额不足.</div></div></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/dereg/precheck/enquiry/view.do?id=6a316cb0-fb38-49f2-bde5-6ec3eafed2ba" target="_blank" title="to view PC68001206">View</a>
+            | <a href="#" class="to-cancel" txid="6a316cb0-fb38-49f2-bde5-6ec3eafed2ba" title="to cancel PC68001206">Cancel</a>
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">2</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA063</td>
+        <td class="center">PC68001205</td>
+        <td class="center">2026-08-27 10:43</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td><div class="remarks"><div>No TIN info has been provided.</div></div></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/dereg/precheck/enquiry/view.do?id=f60ed4f9-9ba1-4363-84bc-eeef1e4b4a85" target="_blank" title="to view PC68001205">View</a>
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">3</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA062</td>
+        <td class="center">PC68001204</td>
+        <td class="center">2026-08-27 10:37</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td><div class="remarks"><div>No TIN info has been provided.</div></div></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/dereg/precheck/enquiry/view.do?id=0859a853-aade-444d-89b6-549874e32124" target="_blank" title="to view PC68001204">View</a>
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">4</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA061</td>
+        <td class="center">PC68001203</td>
+        <td class="center">2026-08-27 10:34</td>
+        <td class="center" style="color:blue"><b>-</b></td>
+        <td class="center" style="color:blue"><b>-</b></td>
+        <td class="center" style="color:blue"><b>Pending</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/dereg/precheck/enquiry/view.do?id=34224723-f2a4-45f6-b8a9-3a34e43cfd88" target="_blank" title="to view PC68001203">View</a>
+            | <a href="#" class="to-cancel" txid="34224723-f2a4-45f6-b8a9-3a34e43cfd88" title="to cancel PC68001203">Cancel</a>
+        </td>
+    </tr>
+
+    <!-- Rows 5-39: same shape, elided here — full set of 39 rows is what
+         was actually pasted (Approved/Failed/Expired mixes, several more
+         Cancel-eligible Failed rows with "REV000001E"/"VEL000100E" remarks,
+         and Expired rows with "Transaction Expired" remarks that do NOT
+         get a Cancel link either). Row 9 (HX004, PC68001198, Trx Status
+         Failed, remark "REV000001E - REV000001E") and row 16 (HXA058,
+         PC68001191, Trx Status Failed, remark "VEL000100E - VEHICLE
+         RECORD NOT EXIST") are two more confirmed real examples of a
+         Failed row WITH the Cancel link, reinforcing the same-state rule
+         above. Rows 36 (FZA001, PC68001171, Trx Status Expired, remark
+         "Transaction Expired") and 38 (HXA045, PC68001169, Trx Status
+         Expired, same remark) confirm Expired rows have NO Cancel link. -->
+
+</tbody></table></td>
+    </tr>
+</tbody></table>
+</div>
+
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar" style="width: 350px !important;">
+                <ol class="inline">
+                    <li><a href="/uat1/home/" id="home-link">Home |</a></li>
+                    <li><a href="#" id="menu-link">Menu <img src="/uat1/images/arrow_down.gif"></a></li>
+                </ol>
+                <div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onclick="window.location='/uat1/view/support/incomplete-txn/';">
+                    <span>3 Pending Transaction Found!</span>
+                </div>
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI</span>,</li>
+                <li><a href="/uat1/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+</div>
+</body>

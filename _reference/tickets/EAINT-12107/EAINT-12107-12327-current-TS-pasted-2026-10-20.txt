@@ -1,0 +1,345 @@
+Pasted by Faizuddin in a Claude Code session, 2026-10-20: "here is my current TS from excel. start changing from here".
+Source: his working copy of the combined 12107 + 12327 TS (QA "Faiz", Pass / Not Started statuses) — not either OneDrive file in "20-21 October Items" (checked 2026-10-20).
+Verbatim, tab-separated as pasted; cells with line breaks are in double quotes. Nothing trimmed.
+
+EAINT-12107 & EAINT-12327 - [Secarang-Fiuu] Enhance Payment Gateway to Enable ShopeePay and GrabPay + [CIBO] Enhance Payment Mode Column Format in Transaction Listing and Payment Report                                
+TS No.    Scenario    Secarang        CIBO        QA    Status (Pass/Fail)    Remarks
+        Steps    Expected Results    Steps    Expected Results            
+12107_TS01    "Successful Pay With Grab
+CIBO - Filter GrabPay"    "1. Enter vehicle number (private car), IC and Postal Code
+2. Proceed until insurance quotation page. Choose Lonpac
+3. Proceed until select payment method page
+4. Select GrabPay, then Full Amount
+5. System will popup the Fiuu GrabPay browser
+6. Set Payment Status = Success
+7. Click [Pay]
+"    "Select Payment Method page
+System will display the method options as follows:
+1. Credit or Debit Card
+2. FPX Online banking
+3. ShopeePay (Full Amount / SPayLater)
+4. GrabPay (Full Amount / PayLater by Grab)
+
+Payment Gateway page
+1. Ensure correct amount is displayed
+
+Payment Success page
+1. Ensure system shows ""thank you"" message
+2. Ensure price is correct
+
+Receipt
+1. Ensure correct amount is displayed
+"    "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search for the transaction and observe the details
+4. Open the transaction details and observe the details
+5. Open Payment Management page
+6. Filter Payment Channel = GrabPay and observe the details
+7. Open Payment Report page
+8. Search for the transaction and observe the details"    "Transaction Management page
+1. Ensure insurance created 
+2. Correct payment amount with Status = Paid
+
+Transaction Details page
+1. Ensure Payment Method Fiuu eWallet   GrabPay Paid
+2. Correct amount displayed
+3. Payment Reference ID contains EW (eg. LON20260908SEW0002) 
+
+Payment Management page
+1. Ensure transaction created
+2. Correct payment amount with Status = Paid
+3. Payment channel displaying Fiuu eWallet
+GrabPay
+4. Payment Reference ID contains EW (eg. LON20260908SEW0002)
+
+Payment Report page
+1. Ensure transaction created
+2. Correct RM amount for all related columns
+3. Payment mode = Fiuu = Fiuu | eWallet – GrabPay – Full Amount – Single Payment
+4. Payment Reference ID contains EW (eg. LON20260908SEW0002)
+"    Faiz    Pass    
+12107_TS02    "Successful ShopeePay
+CIBO - Filter ShopeePay"    "1. Enter vehicle number (company car), IC and Postal Code
+2. Proceed until insurance quotation page. Choose Lonpac
+3. Proceed until select payment method page
+4. Select ShopeePay, then Full Amount
+5. System will popup the Fiuu ShopeePay browser
+6. Set Payment Status = Success
+7. Click [Pay]
+"    "Select Payment Method page
+System will display the method options as follows:
+1. Credit or Debit Card
+2. FPX Online banking
+3. ShopeePay (Full Amount / SPayLater)
+4. GrabPay (Full Amount / PayLater by Grab)
+
+Payment Gateway page
+1. Ensure correct amount is displayed
+
+Payment Success page
+1. Ensure system shows ""thank you"" message
+2. Ensure price is correct
+
+Receipt
+1. Ensure correct amount is displayed
+"    "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search for the transaction and observe the details
+4. Open the transaction details page and observe the details
+5. Open Payment Management page
+6. Filter Payment Channel = GrabPay and observe the details
+7. Open Payment Report page
+8. Search for the transaction and observe the details"    "Transaction Management page
+1. Ensure insurance created 
+2. Correct payment amount with Status = Failed
+
+Transaction Details page
+1. Ensure Payment Method Fiuu eWallet   GrabPay Failed
+2. Correct amount displayed
+3. Payment Reference ID contains EW (eg. LON20260908SEW0002)
+
+Payment Management page
+1. Ensure transaction created
+2. Correct payment amount with Status = Failed
+3. Payment channel displaying Fiuu eWallet
+GrabPay
+4. Payment Reference ID contains EW (eg. LON20260908SEW0002)
+
+Payment Report page
+1. Ensure transaction created
+2. Correct RM amount for all related columns
+3. Payment mode = Fiuu = Fiuu | eWallet – GrabPay – Full Amount – Single Payment
+4. Payment Reference ID contains EW (eg. LON20260908SEW0002)
+"    Faiz    Not Started    
+12107_TS03    CIBO display different payment method    "1. Create successful transaction with Grab Pay (to confirm the actual name to display, as the actual payment is actual Grab Pay, not PayLater by Grab)
+2. Ask dev to patch the transactions to ShopeePay
+"        "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search for the transaction and observe the details
+4. Open the transaction details and observe the details
+5. Open Payment Management page
+6. Filter Payment Channel = [ShopeePay / SPayLater / PayLater by Grab] and observe the details
+7. Open Payment Report page
+8. Search for the transaction and observe the details"    "Transaction Management page
+1. Ensure insurance created 
+2. Correct payment amount with Status = Paid
+
+Transaction Details page
+1. Ensure Payment Method Fiuu eWallet   [Payment Method] Paid
+2. Correct amount displayed
+3. Payment Reference ID contains EW (eg. LON20260908SEW0002) 
+
+Payment Management page
+1. Ensure transaction created
+2. Correct payment amount with Status = Paid
+3. Payment channel displaying Fiuu eWallet [Payment Method]
+4. Payment Reference ID contains EW (eg. LON20260908SEW0002)
+
+Payment Report page
+1. Ensure transaction created
+2. Correct RM amount for all related columns
+3. Payment mode = Fiuu = Fiuu | eWallet – [Payment Method] format, see 12327_TS02
+4. Payment Reference ID contains EW (eg. LON20260908SEW0002)
+"    Faiz    Not Started    
+12107_TS04        "1. Create successful transaction with Grab Pay
+2. Ask dev to patch the transactions to SPayLater
+"                Faiz    Not Started    
+12107_TS05        "1. Create successful transaction with Grab Pay
+2. Ask dev to patch the transactions to PayLater by Grab
+"                Faiz    Not Started    
+12107_TS06    CIBO Filter function            "1. Open and login into CIBO
+2. Open the Payment Management page
+3. Tick the filter Payment Channel = GrabPay
+4. Click [Search]
+5. Click [Export]"    "Ensure listing & excel only show transactions with Payment Channel = GrabPay
+Payment Reference ID of every row contains EW in listing & excel"    Faiz    Not Started    
+                "6. Tick the filter Payment Channel = GrabPay - PayLater by Grab
+7. Click [Search]
+8. Click [Export]"    Ensure listing & excel only show transactions with Payment Channel = GrabPay - PayLater by Grab    Faiz    Not Started    
+                "9. Tick the filter Payment Channel = ShopeePay
+10. Click [Search]
+11. Click [Export]"    Ensure listing & excel only show transactions with Payment Channel = ShopeePay (both ShopeePay and SPayLater nested options)    Faiz    Not Started    
+                "12. Tick the filter Payment Channel = ShopeePay - SPayLater
+13. Click [Search]
+14. Click [Export]"    Ensure listing & excel only show transactions with Payment Channel = ShopeePay - SPayLater    Faiz    Not Started    
+                "15. Click [Clear all]
+16. Tick the filter Payment Channel = Fiuu - eWallet
+17. Click [Search]
+18. Click [Export]"    "Ensure:
+1. Filter will select all 4 options that is nested under Fiuu - eWallet
+2. Listing & excel will show all 4 payment methods"    Faiz    Not Started    
+                19. Untick one of the nested options (eg. ShopeePay)    Ensure only ShopeePay is unticked; GrabPay, GrabPay - PayLater by Grab and ShopeePay - SPayLater stay ticked    Faiz    Not Started    
+                20. Untick the filter Payment Channel = Fiuu - eWallet    Ensure the filter for Payment Channel will de-select all 4 of the nested Fiuu options    Faiz    Not Started    
+REGRESSION                                
+12107_TS07    Payment method = Credit or Debit Card    "1. Enter vehicle number (private car), IC and Postal Code
+2. Proceed until insurance quotation page. Choose Lonpac
+3. Proceed until select payment method page
+4. Select Credit or Debit Card
+5. Set Payment Status = Success
+6. Click [Pay]
+"    "Select Payment Method page
+System will display the method options as follows:
+1. Credit or Debit Card
+2. FPX Online banking
+3. ShopeePay (Full Amount / SPayLater)
+4. GrabPay (Full Amount / PayLater by Grab)
+
+Payment Gateway page
+1. Ensure correct amount is displayed
+
+Payment Success page
+1. Ensure system shows ""thank you"" message
+2. Ensure price is correct
+
+Receipt
+1. Ensure correct amount is displayed
+"    "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search for the transaction and observe the details
+4. Open the transaction details page and observe the details
+5. Open Payment Management page
+6. Filter Payment Channel = Credit or Debit Card and observe the details
+7. Open Payment Report page
+8. Search for the transaction and observe the details"    "Transaction Management page
+1. Ensure insurance created 
+2. Correct payment amount with Status = Paid
+
+Transaction Details page
+1. Ensure Payment Method Fiuu   Credit or Debit Card   Paid
+2. Correct amount displayed
+
+Payment Management page
+1. Ensure transaction created
+2. Correct payment amount with Status = Paid
+3. Payment channel displaying Fiuu
+Credit or Debit Card
+
+Payment Report page
+1. Ensure transaction created
+2. Correct RM amount for all related columns
+3. Payment mode = Fiuu 
+"    Faiz    Not Started    
+12107_TS08    Payment method = FPX    "1. Enter vehicle number (private car), IC and Postal Code
+2. Proceed until insurance quotation page. Choose Lonpac
+3. Proceed until select payment method page
+4. Select FPX, proceed with RHB
+5. Set Payment Status = Success
+6. Click [Pay]
+"    "Select Payment Method page
+System will display the method options as follows:
+1. Credit or Debit Card
+2. FPX Online banking
+3. ShopeePay (Full Amount / SPayLater)
+4. GrabPay (Full Amount / PayLater by Grab)
+
+Payment Gateway page
+1. Ensure correct amount is displayed
+
+Payment Success page
+1. Ensure system shows ""thank you"" message
+2. Ensure price is correct
+
+Receipt
+1. Ensure correct amount is displayed
+"    "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search for the transaction and observe the details
+4. Open the transaction details page and observe the details
+5. Open Payment Management page
+6. Filter Payment Channel = FPX and observe the details
+7. Open Payment Report page
+8. Search for the transaction and observe the details"    "Transaction Management page
+1. Ensure insurance created 
+2. Correct payment amount with Status = Paid
+
+Transaction Details page
+1. Ensure Payment Method Fiuu   FPX   RHB   Paid
+2. Correct amount displayed
+
+Payment Management page
+1. Ensure transaction created
+2. Correct payment amount with Status = Paid
+3. Payment channel displaying Fiuu
+FPX - RHB
+
+Payment Report page
+1. Ensure transaction created
+2. Correct RM amount for all related columns
+3. Payment mode = Fiuu 
+"    Faiz    Pass    
+EAINT-12327 - [CIBO] PAYMENT MODE COLUMN FORMAT                                
+12327_TS09    CIBO - New Payment Mode column in Transaction Listing    Use the transaction from 12107_TS01        "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Set date range = one month covering the transaction
+4. Click [Search]"    "Transaction Listing page
+1. Ensure new column Payment Mode is displayed between Payment and Discount Code
+2. Value format = <gateway> | <method> – <details> (eg. ""BoldPay | eWallet – TouchNGo"")
+3. All other columns unchanged"    Faiz    Not Started    
+12327_TS10    CIBO - Payment Mode value per payment method    "Use these transactions:
+1. 12107_TS01 (GrabPay Full Amount)
+2. 12107_TS03 (patched to ShopeePay)
+3. 12107_TS04 (patched to SPayLater)
+4. 12107_TS05 (patched to PayLater by Grab)
+5. Existing BoldPay transactions paid with TouchNGo, FPX and Credit/Debit Card"        "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search each transaction and observe the Payment Mode column"    "Transaction Listing page
+Ensure Payment Mode displays:
+1. ""BoldPay | eWallet – TouchNGo""
+2. ""BoldPay | Online Banking – FPX-<Bank Name>""
+3. ""BoldPay | Credit/Debit Card – MBBMGATE_MS""
+4. ""Fiuu | eWallet – ShopeePay – Full Amount – Single Payment""
+5. ""Fiuu | eWallet – ShopeePay – BNPL – Installment""
+6. ""Fiuu | eWallet – GrabPay – Full Amount – Single Payment""
+7. ""Fiuu | eWallet – GrabPay – BNPL – Installment"""    Faiz    Pass    
+12327_TS11    CIBO - Transaction with no payment    Use any Secarang transaction left before payment (no payment made)        "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search the transaction"    "Transaction Listing page
+1. Ensure Payment Mode column shows ""-"""    Faiz    Not Started    
+12327_TS12    CIBO - Transaction Listing export    Use the transactions from 12327_TS02 and 12327_TS03        "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search the transactions
+4. Click [Export]
+5. Open the exported file"    "Exported file
+1. Ensure Payment Mode column is between Payment and Discount Code
+2. Payment Mode value is the same as the Transaction Listing for each transaction
+3. Transaction shows ""-""
+4. All other columns unchanged"    Faiz    Pass    
+12327_TS13    CIBO - Payment Report Payment Mode format    Use the transactions from 12327_TS02        "1. Open and login into CIBO
+2. Open Payment Report page
+3. Set date range = one month covering the transactions
+4. Click [Search]"    "Payment Report page
+1. Ensure Payment Mode column position is unchanged
+Ensure Payment Mode displays:
+2. ""BoldPay | eWallet – TouchNGo""
+3. ""BoldPay | Online Banking – FPX-<Bank Name>""
+4. ""BoldPay | Credit/Debit Card – MBBMGATE_MS""
+5. ""Fiuu | eWallet – ShopeePay – Full Amount – Single Payment""
+6. ""Fiuu | eWallet – ShopeePay – BNPL – Installment""
+7. ""Fiuu | eWallet – GrabPay – Full Amount – Single Payment""
+8. ""Fiuu | eWallet – GrabPay – BNPL – Installment"""    Faiz    Not Started    
+12327_TS14    CIBO - Payment Report export    Use the transactions from 12327_TS02        "1. Open and login into CIBO
+2. Open Payment Report page
+3. Set date range = one month covering the transactions
+4. Click [Search]
+5. Click [Export]
+6. Open the exported file"    "Exported file
+1. Ensure Payment Mode value is identical to the Payment Report page for each transaction
+2. All other columns unchanged"    Faiz    Not Started    
+12327_TS15    CIBO - Same value on all 4 pages    Use the transaction from 12107_TS01 (GrabPay Full Amount)        "1. Open and login into CIBO
+2. Locate the transaction in Transaction Management page
+3. Click [Export]
+4. Locate the same transaction in Payment Report page
+5. Click [Export]"    "Ensure Payment Mode = ""Fiuu | eWallet – GrabPay – Full Amount – Single Payment"" on:
+1. Transaction Listing
+2. Exported Transaction Listing
+3. Payment Report
+4. Exported Payment Report"    Faiz    Pass    
+12327_TS16    Regression - Existing transactions    Use an existing Secarang transaction created before this CR was pushed to staging        "1. Open and login into CIBO
+2. Open Transaction Management page
+3. Search the existing transaction
+4. Open Payment Report page
+5. Search the same transaction"    "Transaction Listing page
+1. Ensure Payment Mode displays the new format for the existing transaction
+
+Payment Report page
+1. Ensure Payment Mode displays the new format for the existing transaction"    Faiz    Pass    

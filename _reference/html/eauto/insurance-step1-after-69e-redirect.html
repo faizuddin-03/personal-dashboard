@@ -1,0 +1,474 @@
+<!--
+  Insurance step 1 (insurer cards), reached via the eSTM 69E auto-redirect —
+  the END of the whole "eSTM entry, forced by VEL000069E" chain: eSTM created
+  → JPJ Check confirmed → e-simulator Response Code set to VEL000069E →
+  Make Payment → Payment step completed → auto-redirect into insurance.
+  URL:         https://staging.eauto.my/uat1/... insurance plan/view.do
+               (body id="insurancePlan")
+  Environment: uat1
+  Captured:    2026-08-18, by Faizuddin — logged in as
+               MUHAMMAD FAIZUDDIN BIN BIDI, transaction
+               62afc71f-9ba5-4825-95ed-73c858f0fad2, vehicle HX053
+  Trimmed:     the per-insurer "More Info" marketing dialogs (RHB, Takaful,
+               Takaful-TF, Chubb, Lonpac, TokioMarine, TokioMarine-MA,
+               TokioMarine-MA-TF) and the Takaful-TF-Consent dialog's boilerplate
+               product copy — static marketing content repeated verbatim across
+               every insurance page in this module, no dynamic data, no form
+               inputs of consequence (the TF-Consent dialog's Cancel/Next
+               buttons are kept in the header notes above, not in the body).
+               Everything specific to THIS transaction is intact: vehicle
+               summary, both insurer cards (Chubb, Takaful) with their full
+               plandetails JSON, and the forced-insurance banner at the bottom.
+
+  Why this page matters: it's the FIRST live confirmation that the whole
+  eSTM-entry chain built in scripts/eauto-quotation-reminder/pages/
+  EstmHandoffPage.ts (login → create eSTM → JPJ Check confirm → JPJ-passed
+  render → e-simulator 69E → Make Payment → "Sure to continue?" confirm →
+  Payment step → completePayment()) actually lands here. Confirms:
+
+  - The stepper shows step 1 "Quotes" active — a normal insurance quote flow,
+    NOT a special "forced" variant of the quote page itself.
+  - The FORCED nature only shows up in the banner at the very bottom:
+      <div class="action-row">
+        <img id="estm-info-icon" src="/uat1/images/new-info.svg">
+        The vehicle is eligible for road tax renewal, but no valid motor
+        insurance found. The system has redirected you to purchase insurance.
+        You may skip and return back to eSerahan.
+        <button id="estmBackBtn">Skip, Return to eSerahan</button>
+      </div>
+    So it is NOT actually a "must complete or nothing" force — there is an
+    explicit "Skip, Return to eSerahan" escape (`#estmBackBtn`). This softens
+    the earlier assumption that 69E makes the purchase mandatory; TS06 does
+    not need to complete the purchase to prove its point.
+  - Only TWO insurers quoted for this vehicle (Chubb, Takaful) — confirms
+    "select whichever is first" (no hardcoded insurer name) is the right
+    design, since the e-simulator decides which insurers appear per vehicle.
+  - `#refId`/`#ownerNric` is not visible on this exact capture the same way as
+    the Get Free Quote flow's summary bar — this entry reuses the eSTM's own
+    buyer identity automatically, matching the "no separate login" design.
+
+  Cited by: knowledge/flow-estm.md § eSTM → insurance handoff (69E, confirmed
+  working end-to-end), knowledge/flow-insurance-purchase.md § Entry points.
+-->
+<body id="insurancePlan">
+<div id="container-ins">
+
+<script>
+    $(document).ready(function() {
+        var step = "1";
+        for (var i = 1; i < step; i++){
+            $("#" + i).addClass("done");
+        }
+        $("#" + step).addClass("active");
+    });
+</script>
+
+<div class="md-stepper-horizontal" style="width:80%">
+    <div id="1" class="md-step active">
+        <div class="md-step-circle" style="width:24px;height:24px;"><span style="font-size:14px;">1</span></div>
+        <div class="md-step-title">Quotes</div>
+        <div class="md-step-bar-left"></div>
+        <div class="md-step-bar-right" style="top: 10px;border-top: 2px solid #DDD;"></div>
+    </div>
+    <div id="2" class="md-step">
+        <div class="md-step-circle" style="width:24px;height:24px;"><span style="font-size:14px;">2</span></div>
+        <div class="md-step-title">Optional Coverage</div>
+        <div class="md-step-bar-left" style="top: 10px;border-top: 2px solid #DDD;"></div>
+        <div class="md-step-bar-right" style="top: 10px;border-top: 2px solid #DDD;"></div>
+    </div>
+        <div id="3" class="md-step">
+            <div class="md-step-circle" style="width:24px;height:24px;"><span style="font-size:14px;">3</span></div>
+            <div class="md-step-title">Payment</div>
+            <div class="md-step-bar-left" style="top: 10px;border-top: 2px solid #DDD;"></div>
+            <div class="md-step-bar-right" style="top: 10px;border-top: 2px solid #DDD;"></div>
+        </div>
+        <div id="4" class="md-step">
+            <div class="md-step-circle" style="width:24px;height:24px;"><span style="font-size:14px;">4</span></div>
+            <div class="md-step-title">Confirm</div>
+            <div class="md-step-bar-left" style="top: 10px;border-top: 2px solid #DDD;"></div>
+            <div class="md-step-bar-right" style="top: 10px;border-top: 2px solid #DDD;"></div>
+        </div>
+</div>
+    <div id="retryAction" style="display:none;">
+        <button type="submit" class="btn btn-color3 retry-plan">Retry</button>
+    </div>
+    <div class="vehicle-details-container flex flex-column">
+        <div class="flex flex-row">
+            <div class="flex justify-content-between first-div">
+                        <div class="info-box">
+                            <h4 id="icField" class="text-muted">Owner NRIC
+                                <div style="transform: translateY(12px);">
+                                    <span class="text-dark" id="ownerNric">990909010122</span>
+                                </div>
+                            </h4>
+                        </div>
+                    <div class="info-box">
+                        <h4 class="text-muted" style="width: 120px !important;">Vehicle Reg. Num
+                            <div style="transform: translateY(12px);">
+                                <span class="text-dark" id="vehicleRegNo">HX053</span>
+                            </div>
+                        </h4>
+                    </div>
+                    <div class="info-box">
+                        <h4 class="text-muted">Vehicle
+                            <div style="transform: translateY(12px);">
+                                <span class="text-dark" id="vehicle">MAZDA&nbsp;MAZDA CX-5</span>
+                            </div>
+                        </h4>
+                    </div>
+                    <div class="info-box">
+                        <h4 class="text-muted">Year
+                            <div style="transform: translateY(12px);">
+                                <span class="text-dark" id="vehicleYear">2014</span>
+                            </div>
+                        </h4>
+                    </div>
+                    <div class="info-box">
+                        <h4 class="text-muted">NCD
+                            <div style="transform: translateY(12px);">
+                                <span class="text-dark" id="ncdPercentage">0.0%</span>
+                            </div>
+                        </h4>
+                    </div>
+            </div>
+            <div class="d-flex justify-content-between second-div">
+                    <div class="info-box">
+                        <h4 class="text-muted label1">Capacity
+                            <br>
+                            <span class="text-dark">1497</span>
+                        </h4>
+                    </div>
+                    <div class="info-box">
+                        <h4 class="text-muted label1">Transmission
+                            <br>
+                            <span class="text-dark">6 SP AUTOMATIC CONVENTIONAL</span>
+                        </h4>
+                    </div>
+                    <div class="info-box">
+                        <h4 class="text-muted label1">Variant (Series)
+                            <br>
+                            <span class="text-dark">COMFORT (CKD)&nbsp;</span>
+                        </h4>
+                    </div>
+                <div class="info-box">
+                    <h4 class="text-muted">Transfer NCD
+                        <span class="tooltip">
+                            <img class="img1" id="transfer-ncd-info tooltip" src="/uat1/images/question-mark-circle-gray.png">
+                            <span class="tooltip-text">Do you have any NCD from your previous vehicle? If yes, kindly key in the vehicle number.</span>
+                        </span>
+                        <br>
+                        <input type="text" id="ncdVehicleRegNo" class="input1" style="transform: translateY(6px);" placeholder="Optional" value="">
+                    </h4>
+                </div>
+                <div class="info-box">
+                    <h4 class="text-muted">
+                        Change Postcode
+                        <br>
+                        <input type="text" id="postcode" class="input1" value="52000" style="transform: translateY(6px);">
+                    </h4>
+                </div>
+                <div class="info-box">
+                    <button type="button" class="btn-blue" id="update" style="width: 136px; height: 32px; transform: translateY(30px);">
+                            Apply Changes
+                        </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex">
+        <div id="planList" style="width:100%; margin-top: 20px; margin-bottom: 25px;">
+
+<script>
+    $(document).ready(function() {
+        $("option").each(function(){
+            $(this).css({"font-weight":"normal", "font-size": "16px"});
+        });
+        var errorPopup = "";
+        if(errorPopup != "") {
+            openCustomDialog(errorPopup);
+            $("#retryAction").show();
+        }
+        $("#ncdPercentage").html("0.0%");
+
+        $(".select-plan-btn").click(function() {
+            var errorMsg = 'Please select transmission and variant (series) and click "Apply Changes"';
+            if($("select[id='capacity']").length) {
+                if(!$("select[id='capacity']").val() || $("select[id='capacity']").val() != selectedCapacity) {
+                    enableAllButton();
+                    openCustomDialogWithTitle(errorMsg, "Error");
+                    return false;
+                }
+            }
+            if($("select[id='transmission']").length) {
+                if(!$("select[id='transmission']").val() || $("select[id='transmission']").val() != selectedTransmission) {
+                    enableAllButton();
+                    openCustomDialogWithTitle(errorMsg, "Error");
+                    return false;
+                }
+            }
+            if($("select[id='variantSeries']").length) {
+                if(!$("select[id='variantSeries']").val()  || $("select[id='variantSeries']").val() != selectedVariantSeries) {
+                    enableAllButton();
+                    openCustomDialogWithTitle(errorMsg, "Error");
+                    return false;
+                }
+            }
+            var vehicleCoverageCode = $(this).attr("vehicleCoverageCode");
+            if(vehicleCoverageCode != '' && vehicleCoverageCode == "TF") {
+                showDialog("Takaful-TF-Consent");
+            }else {
+                $(".select-plan-btn").attr("disabled", "disabled");
+                $(".tpft-plan-btn").attr("disabled", "disabled");
+                $("#backBtn").attr("disabled", "disabled");
+                var transactionId = "62afc71f-9ba5-4825-95ed-73c858f0fad2";
+                var planDetails = $(this).attr("planDetails");
+                $.ajax({
+                    type: "POST",
+                    url: "/uat1/ajax/ucd/insurance/quote/savePlanDetails.do",
+                    data: {transactionId : transactionId, planDetails : planDetails},
+                    success: function(response) {
+                        if($(".code", response).text() == "OK") {
+                            window.location = "/uat1/ajax/ucd/insurance/plan/select.do?transactionId=" + transactionId;
+                            return false;
+                        }else if($(".code", response).text() == "ERROR") {
+                            $(".select-plan-btn").removeAttr("disabled");
+                            $("#backBtn").removeAttr("disabled");
+                            openCustomDialog($(".item", response).text());
+                            return false;
+                        }
+                    }
+                });
+            }
+        });
+
+        $("select[name='sumInsuredValue']").live("change", function(ev) {
+            $("#adjustedSumInsured").val($(this).val());
+            var planCode = $(this).attr("planCode");
+            $("#planCode").val(planCode);
+            $("#coverageCode").val($(this).attr("coverageCode"));
+            $.ajax({
+                type: "POST",
+                url: "/uat1/ajax/ucd/insurance/plan/saveAdjustedSumInsured.do",
+                data: $("#adjustSumInsuredForm").serialize(),
+                success: function(response) {
+                    $("#planList").html(response);
+                }
+            });
+        });
+
+        $('#chubb-info-icon').mouseenter(function() {
+            $('#chubb-info-tooltip').show();
+        });
+        $('#chubb-info-icon').mouseleave(function() {
+            $('#chubb-info-tooltip').hide();
+        });
+
+        var chubbMarketValue = null;
+        chubbMarketValue = parseFloat(45000.0);
+        $("#marketValue").html('RM ' + chubbMarketValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+    });
+
+    function proceedTPFT() {
+        $(".select-plan-btn").attr("disabled", "disabled");
+        $("#backBtn").attr("disabled", "disabled");
+        $("#cancel").attr("disabled", "disabled");
+        $("#proceedTPFT").attr("disabled", "disabled");
+        var transactionId = "62afc71f-9ba5-4825-95ed-73c858f0fad2";
+        var planDetails = $(".Takaful-TF").attr("planDetails");
+        $.ajax({
+            type: "POST",
+            url: "/uat1/ajax/ucd/insurance/quote/savePlanDetails.do",
+            data: {transactionId : transactionId, planDetails : planDetails},
+            success: function(response) {
+                if($(".code", response).text() == "OK") {
+                    window.location = "/uat1/ajax/ucd/insurance/plan/select.do?transactionId=" + transactionId;
+                    return false;
+                }else if($(".code", response).text() == "ERROR") {
+                    $(".select-plan-btn").removeAttr("disabled");
+                    $("#backBtn").removeAttr("disabled");
+                    $("#cancel").removeAttr("disabled");
+                    $("#proceedTPFT").removeAttr("disabled");
+                    openCustomDialog($(".item", response).text());
+                    return false;
+                }
+            }
+        });
+    }
+</script>
+
+    <form id="adjustSumInsuredForm" method="post" action="/uat1/ajax/ucd/insurance/plan/saveAdjustedSumInsured.do">
+           <input type="hidden" name="transactionId" value="62afc71f-9ba5-4825-95ed-73c858f0fad2">
+           <input type="hidden" id="adjustedSumInsured" name="adjustedSumInsured">
+           <input type="hidden" id="planCode" name="planCode">
+        <input type="hidden" id="coverageCode" name="coverageCode">
+    </form>
+    <div class="plan-list d-flex justify-content-center">
+                <div class="plan-container Chubb-border Chubb">
+                    <img src="/uat1/images/insurance-cheapest-label.png" class="plan-label Chubb-CO-label cheapest">
+                     <img src="/uat1/images/insurance-cashback-label.png" class="plan-label Chubb-CO-label cashback">
+                    <img src="/uat1/images/insurance-cheapestandcashback-label.png" class="plan-label Chubb-CO-label cheapestandcashback">
+                        <div class="plan-logo">
+                            <img src="/uat1/images/chubb-turquoise.png" style="width: 160px; padding: 15px 0px;" alt="Chubb Insurance Malaysia Berhad" class="elem-center">
+                        </div>
+                    <div class="Chubb-type elem-center Chubb-text Chubb-CO-text">
+                            <p class="center"><b><span class="plan-coverage-en">PRIVATE CAR (ENHANCED)</span><br><span class="plan-coverage-cn">1号保险</span></b></p>
+                    </div>
+                    <div class="plan-sum-insured Chubb">
+                            <p class="center">Sum Insured</p>
+                            <div class="price-range Chubb-price-range-type elem-center">
+                                RM45,000
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:center;">
+                                <select name="sumInsuredValue" id="sumInsuredValue" plancode="Chubb" coveragecode="CO" class="hide-select-arrow revert-select-disabled" disabled="">
+                                    <option value="45000.0" selected="selected" style="font-weight: normal; font-size: 16px;">RM&nbsp;45,000.00
+</option>
+                                </select>
+                                    <span style="position:relative;display:inline-block;">
+                                        <img src="/uat1/images/icn-info-gray.png" id="chubb-info-icon" style="width:18px;cursor:pointer;margin-left:5px;">
+                                        <div id="chubb-info-tooltip" style="display:none;">
+                                            <div style="margin-bottom:8px;"><b>(1) Eligibility:</b> The insured must be the lawful owner of the vehicle, is 18 years old and above, and holds a valid Malaysian driving license.</div>
+                                            <b>(2) Note:</b> You are advised to insure your vehicle at the appropriate current market value (MV). If the vehicle is under-insured, the claim payment will be lesser than the sum insured, and you must bear the balance of the loss in proportion to the difference between the MV and the sum insured. If the vehicle is over-insured, the claim payment offered will not be the sum insured but at the vehicle's MV only. Where the sum insured is on an agreed value basis, payment of claims in the event of (1) actual total loss, (2) the vehicle being beyond economical repair or (3) theft will be based on the agreed value stated in the policy.
+                                            <br>If the vehicle's market value recommended by the ISM-ABI system is lower than the balance amount outstanding on your hire-purchase or any other financing loan on vehicle, please contact Chubb's customer service at (1800-88-3226) or your servicing Chubb intermediary to discuss the availability of insurance to cover the difference between the market value and outstanding loan.
+                                        </div>
+                                    </span>
+                            </div>
+                                <div style="align-items: center; justify-content: center; display: flex; flex-direction: column; margin-top: 7px;">
+                                    <div style="display:flex; align-items: center; justify-content: center;">
+                                        <p style="color:#6C757D; font-size: 12px;">Market Value :
+                                            </p><div class="Chubb-price-range-type" style="padding:0px 15px; margin-left: 5px;">
+                                                <span class="float-right" id="marketValue">RM 45,000.00</span>
+                                            </div>
+                                        <p></p>
+                                    </div>
+                                    <p style="color: #808080; font-style: italic;">(ISM-ABI recommended)</p>
+                                </div>
+                    </div>
+                    <div class="plan-premium-breakdowns border-top Chubb">
+                        <p style="color: #37ad59;" class="center"><b>Insurance Premium</b></p>
+                        <table class="elem-center">
+                            <tbody><tr>
+                                <td class="text-muted td-left">Premium after NCD<span style="padding:0 5px;"></span></td>
+                                <td class="text-muted td-right"><b>RM1,627.13
+</b></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted td-left">Service Tax</td>
+                                <td class="text-muted td-right"><b>RM130.17
+</b></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted td-left">Stamp Duty</td>
+                                <td class="text-muted td-right"><b>RM10.00
+</b></td>
+                            </tr>
+                        </tbody></table>
+                        <hr>
+                    </div>
+                    <div class="plan-premiums Chubb">
+                            <p class="center"><b>RM <span class="price-font">1,767.30
+</span> / year</b></p>
+                        <p class="center text-muted">Inclusive Service Tax and Stamp Duty</p>
+                    </div>
+                    <div class="plan-button Chubb">
+                            <div class="action">
+                                <button type="submit" class="btn ins-btn chubbBtn select-plan-btn elem-center" plandetails="{&quot;planCode&quot;:&quot;Chubb&quot;,&quot;sumInsured&quot;:45000.0,&quot;minAdjustSumInsured&quot;:45000.0,&quot;maxAdjustSumInsured&quot;:45000.0,&quot;originalSumInsured&quot;:45000.0,&quot;basicPremium&quot;:1607.13,&quot;grossPremium&quot;:1627.13,&quot;annualPremium&quot;:1627.13,&quot;ncdPercentage&quot;:0.0,&quot;ncdAmount&quot;:0.0,&quot;sstAmount&quot;:130.17,&quot;stampDuty&quot;:10.0,&quot;isError&quot;:false,&quot;isReferRisk&quot;:false,&quot;vehicleCoverageCode&quot;:&quot;CO&quot;}">
+                                    SELECT CHUBB
+                                </button>
+                            </div>
+                    </div>
+                    <div class="plan-more-info Chubb">
+                        <p class="center dialog-btn Chubb-text Chubb-CO-text" value="Chubb">
+                                <b>+ More Info</b>
+                            </p>
+                    </div>
+                </div>
+                <div class="plan-container Takaful-border Takaful">
+                    <img src="/uat1/images/insurance-cheapest-label.png" class="plan-label Takaful-CO-label cheapest">
+                     <img src="/uat1/images/insurance-cashback-label.png" class="plan-label Takaful-CO-label cashback">
+                    <img src="/uat1/images/insurance-cheapestandcashback-label.png" class="plan-label Takaful-CO-label cheapestandcashback">
+                        <div class="plan-logo">
+                            <img src="/uat1/images/takaful-malaysia.png" alt="Takaful Malaysia Berhad" class="elem-center">
+                        </div>
+                    <div class="Takaful-type elem-center Takaful-text Takaful-CO-text">
+                            <p class="center"><b><span class="plan-coverage-en">COMPREHENSIVE</span><br><span class="plan-coverage-cn">1号保险</span></b></p>
+                    </div>
+                    <div class="plan-sum-insured Takaful">
+                            <p class="center">Sum Covered</p>
+                            <div class="price-range Takaful-price-range-type elem-center">
+                                RM51,500 - RM56,500
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:center;">
+                                <select name="sumInsuredValue" id="sumInsuredValue" plancode="Takaful" coveragecode="CO" class="elem-center ">
+                                    <option value="51500.0" selected="selected" style="font-weight: normal; font-size: 16px;">RM&nbsp;51,500.00
+</option>
+                                    <option value="52500.0" style="font-weight: normal; font-size: 16px;">RM&nbsp;52,500.00
+</option>
+                                    <option value="53500.0" style="font-weight: normal; font-size: 16px;">RM&nbsp;53,500.00
+</option>
+                                    <option value="54500.0" style="font-weight: normal; font-size: 16px;">RM&nbsp;54,500.00
+</option>
+                                    <option value="55500.0" style="font-weight: normal; font-size: 16px;">RM&nbsp;55,500.00
+</option>
+                                    <option value="56500.0" style="font-weight: normal; font-size: 16px;">RM&nbsp;56,500.00
+</option>
+                                </select>
+                            </div>
+                    </div>
+                    <div class="plan-premium-breakdowns border-top Takaful">
+                        <p style="color: #37ad59;" class="center"><b>Takaful Contribution</b></p>
+                        <table class="elem-center">
+                            <tbody><tr>
+                                <td class="text-muted td-left">Contribution after NCD<span style="padding:0 5px;"></span></td>
+                                <td class="text-muted td-right"><b>RM1,704.65
+</b></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted td-left">Service Tax</td>
+                                <td class="text-muted td-right"><b>RM136.37
+</b></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted td-left">Stamp Duty</td>
+                                <td class="text-muted td-right"><b>RM10.00
+</b></td>
+                            </tr>
+                        </tbody></table>
+                        <hr>
+                    </div>
+                    <div class="plan-premiums Takaful">
+                            <p class="center"><b>RM <span class="price-font">1,851.02
+</span> / year</b></p>
+                        <p class="center text-muted">Inclusive Service Tax and Stamp Duty</p>
+                    </div>
+                    <div class="plan-button Takaful">
+                            <div class="action">
+                                <button type="submit" class="btn ins-btn takafulBtn select-plan-btn elem-center Takaful-CO" plandetails="{&quot;planCode&quot;:&quot;Takaful&quot;,&quot;sumInsured&quot;:51500.0,&quot;minAdjustSumInsured&quot;:51500.0,&quot;maxAdjustSumInsured&quot;:56650.00000000001,&quot;originalSumInsured&quot;:51500.0,&quot;basicPremium&quot;:1704.65,&quot;grossPremium&quot;:1704.65,&quot;annualPremium&quot;:1704.65,&quot;ncdPercentage&quot;:0.0,&quot;ncdAmount&quot;:0.0,&quot;sstAmount&quot;:136.37,&quot;stampDuty&quot;:10.0,&quot;isError&quot;:false,&quot;isReferRisk&quot;:false,&quot;vehicleCoverageCode&quot;:&quot;CO&quot;}" vehiclecoveragecode="CO">
+                                    SELECT TAKAFUL
+                                </button>
+                            </div>
+                    </div>
+                    <div class="plan-more-info Takaful">
+                        <p class="center dialog-btn Takaful-text Takaful-CO-text" value="Takaful">
+                                <b>+ More Info</b>
+                            </p>
+                    </div>
+                </div>
+    </div>
+        </div>
+    </div>
+</div>
+
+<div class="action-row" style="border-top: 1px solid #CCCCCC;">
+     <div class="d-flex justify-content-between" style="margin: 12px 24px;">
+         <div class="d-flex" style="align-self: center;">
+             <img id="estm-info-icon" src="/uat1/images/new-info.svg">
+             <div class="estm-action-row-text">
+                 <div>The vehicle is eligible for road tax renewal, but no valid motor insurance found.</div>
+                <div>The system has redirected you to purchase insurance. You may skip and return back to eSerahan.</div>
+             </div>
+         </div>
+         <button type="button" class="estm-back-button btn-blue-outline" id="estmBackBtn" style="cursor: default;">Skip, Return to eSerahan</button>
+     </div>
+</div>
+</body>

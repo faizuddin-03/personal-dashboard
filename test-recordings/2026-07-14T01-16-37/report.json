@@ -1,0 +1,187 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Reschedule failed appointment — should be blocked for UCD"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-14T01-16-37",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-14T01-16-37\\report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "reschedule-handling.spec.ts",
+      "file": "reschedule-handling.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Reschedule & Handling",
+          "file": "reschedule-handling.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "reschedule-handling.spec.ts",
+              "line": 15,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Reschedule failed appointment — should be blocked for UCD",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 24805,
+                          "error": {
+                            "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.confirm-dialog-btn')\u001b[22m\n",
+                            "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.confirm-dialog-btn')\u001b[22m\n\n    at SoftwareInstallationDetailsPage.acceptConfirmDialog (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts:37:52)\n    at SoftwareInstallationDetailsPage.markFailed (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:94:18)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:337:9",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                              "column": 52,
+                              "line": 37
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\BasePage.ts:37\n\n\u001b[0m \u001b[90m 35 |\u001b[39m   \u001b[90m/** Accept the jQuery UI confirmation dialog (clicks the \"Yes\" button) */\u001b[39m\n \u001b[90m 36 |\u001b[39m   \u001b[36masync\u001b[39m acceptConfirmDialog() {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mlocator(\u001b[32m\".confirm-dialog-btn\"\u001b[39m)\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m   }\n \u001b[90m 39 |\u001b[39m\n \u001b[90m 40 |\u001b[39m   \u001b[90m/** Dismiss the jQuery UI confirmation dialog (clicks the \"No\" button) */\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                                "column": 52,
+                                "line": 37
+                              },
+                              "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.confirm-dialog-btn')\u001b[22m\n\n\n   at ..\\pages\\BasePage.ts:37\n\n  35 |   /** Accept the jQuery UI confirmation dialog (clicks the \"Yes\" button) */\n  36 |   async acceptConfirmDialog() {\n> 37 |     await this.page.locator(\".confirm-dialog-btn\").click();\n     |                                                    ^\n  38 |   }\n  39 |\n  40 |   /** Dismiss the jQuery UI confirmation dialog (clicks the \"No\" button) */\n    at SoftwareInstallationDetailsPage.acceptConfirmDialog (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts:37:52)\n    at SoftwareInstallationDetailsPage.markFailed (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationDetailsPage.ts:94:18)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:337:9"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-14T01:16:39.631Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-14T01-16-37\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\test-failed-2.png"
+                            },
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-14T01-16-37\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-14T01-16-37\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-14T01-16-37\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-14T01-16-37\\reschedule-handling-Resche-e8879-—-should-be-blocked-for-UCD-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\BasePage.ts",
+                            "column": 52,
+                            "line": 37
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-e84aa20cca2771e94dae",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 315,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-14T01:16:39.093Z",
+    "duration": 27068.817,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

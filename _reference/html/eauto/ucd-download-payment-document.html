@@ -1,0 +1,218 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/report/download-payment-document  (UCD REPORTS > "DOWNLOAD PAYMENT DOCUMENT")
+Environment: staging.eauto.my/uat1, UCD login MUHAMMAD FAIZUDDIN BIN BIDI (company 1109700)
+Captured: 2026-10-19, pasted into chat by Faizuddin (EAINT-12412 TS11). Two states, one file:
+  STATE 1 — before Generate: Transaction Type panel open (#txn-dropdown-panel display:block),
+            JomCheck ticked, #result empty, #txn-type-error shown.
+  STATE 2 — after Generate (Oct 2026, JomCheck): #result holds table#data, below.
+Trimmed: only the STATE 2 form is shown (identical to STATE 1 except panel display:none and the
+error hidden — differences noted inline). Header, footer, dialogs and the shared header script are
+dropped (same as ucd-reports-menu.html). The form and result table are untrimmed.
+Notes:
+  1. Month select #month (value "01".."12"), Year select[name=year] (2014..current).
+  2. Transaction Type is a custom dropdown: click #txn-dropdown-trigger to open #txn-dropdown-panel,
+     tick the label whose checkbox value is "JCK". Ticking an eAuto Plus item (.grp-b) disables
+     .grp-a / .grp-c ("Deselect Others to enable"). #txn-display-text shows the selection.
+  3. #to-generate is a submit button; the weeks load into td#result.
+  4. Each week row: Period "DD Mon YYYY - DD Mon YYYY", Total Transaction, Action. The Action cell
+     has a "Download" link only for weeks that have ended; the current week (18-24 Oct on 19 Oct)
+     and future weeks have an empty cell.
+  5. Download link: /download/ucd/download-payment-document/zipfile.get with startDate, endDate
+     (YYYY-MM-DD) and transactionType=JCK. Zip name "payment_documents_<companyId>_<start>_to_<end>.zip";
+     inside, folder "<companyId>/" with "<Document Code>_JomCheck_Invoice.pdf" and
+     "<Document Code>_JomCheck_e-Invoice.pdf" (e-Invoice only where one exists). Sample:
+     _reference/tickets/EAINT-12412/payment_documents_1109700_2026-10-01_to_2026-10-03.zip
+     (61 Invoice + 60 e-Invoice).
+-->
+<body>
+    <div id="container" class="ucd-container">
+        <div class="breadcrumb">
+            <a href="/uat1/view/ucd/">Home</a>
+            <div class="separator">/</div>
+            <a href="/uat1/view/ucd/report/view.do">Reports</a>
+            <div class="separator">/</div>
+            <div class="page-name">Download Payment Document</div>
+        </div>
+        <div class="table-title flex flex-row">
+            <h1>Download Payment Document</h1>
+        </div>
+        <form id="search-form" class="not-to-print">
+            <div class="filter-box" style="border-bottom: 0;">
+                <div class="filter-header">
+                    <h6>Generate Report</h6>
+                </div>
+                <div class="filter-body justify-content-between" style="padding-bottom: 0;">
+                    <div class="form-container">
+                        <div class="flex flex-wrap">
+                            <div class="form-group">
+                                <div class="label-box">
+                                    <label>Payment Month:</label>
+                                </div>
+                                <div class="custom-select">
+                                    <select class="select" name="month" id="month">
+                                        <option value="">Month</option>
+                                        <option value="01">January</option>
+                                        <option value="02">February</option>
+                                        <option value="03">March</option>
+                                        <option value="04">April</option>
+                                        <option value="05">May</option>
+                                        <option value="06">June</option>
+                                        <option value="07">July</option>
+                                        <option value="08">August</option>
+                                        <option value="09">September</option>
+                                        <option value="10" selected="">October</option>
+                                        <option value="11">November</option>
+                                        <option value="12">December</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-box">
+                                    <label>Year:</label>
+                                </div>
+                                <div class="custom-select">
+                                    <select class="select" name="year">
+                                        <option value="2014">2014</option>
+                                        <option value="2015">2015</option>
+                                        <option value="2016">2016</option>
+                                        <option value="2017">2017</option>
+                                        <option value="2018">2018</option>
+                                        <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
+                                        <option value="2021">2021</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2024">2024</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2026" selected="">2026</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group txn-type-group">
+                                <div class="txn-type-row">
+                                    <div class="label-box">
+                                        <label>Transaction Type: <span class="required-mark">*</span></label>
+                                    </div>
+                                    <div class="custom-select txn-dropdown-wrap">
+                                        <div id="txn-dropdown-trigger" class="select txn-trigger">
+                                            <span id="txn-display-text" class="txn-display" style="color: rgb(51, 51, 51);">JomCheck
+                                                </span>
+                                        </div>
+                                        <!-- STATE 1: style="display: block;" -->
+                                        <div id="txn-dropdown-panel" class="txn-panel" style="display: none;">
+                                            <div class="txn-group-header">eAuto Core</div>
+                                            <div id="grp-a-items">
+                                                <label class="txn-opt grp-a-opt txn-opt-disabled">
+                                                    <input type="checkbox" class="grp-a" name="transactionType" value="STMS" disabled=""> STMS
+                                                </label>
+                                                <label class="txn-opt grp-a-opt txn-opt-disabled">
+                                                    <input type="checkbox" class="grp-a" name="transactionType" value="APT" disabled=""> APT
+                                                </label>
+                                                <label class="txn-opt grp-a-opt txn-opt-disabled">
+                                                    <input type="checkbox" class="grp-a" name="transactionType" value="ESTM" disabled=""> eSTM
+                                                </label>
+                                            </div>
+                                            <div id="grp-a-locked" class="txn-locked">Deselect Others to enable</div>
+                                            <div class="txn-divider"></div>
+                                            <div class="txn-group-header">eAuto Plus</div>
+                                            <div id="grp-b-items">
+                                                <label class="txn-opt grp-b-opt">
+                                                    <input type="checkbox" class="grp-b" name="transactionType" value="OTH"> Transfer History
+                                                </label>
+                                                <label class="txn-opt grp-b-opt">
+                                                    <input type="checkbox" class="grp-b" name="transactionType" value="BMK"> BMK
+                                                </label>
+                                                <label class="txn-opt grp-b-opt">
+                                                    <input type="checkbox" class="grp-b" name="transactionType" value="LKM"> eLKM
+                                                </label>
+                                                <label class="txn-opt grp-b-opt">
+                                                    <input type="checkbox" class="grp-b" name="transactionType" value="EVOC"> eVOC
+                                                </label>
+                                                <label class="txn-opt grp-b-opt">
+                                                    <input type="checkbox" class="grp-b" name="transactionType" value="LKM_REFUND"> LKM Refund
+                                                </label>
+                                                <label class="txn-opt grp-b-opt">
+                                                    <input type="checkbox" class="grp-b" name="transactionType" value="SSM"> SSM
+                                                </label>
+                                                <label class="txn-opt grp-b-opt">
+                                                    <input type="checkbox" class="grp-b" name="transactionType" value="JCK"> JomCheck
+                                                </label>
+                                                <label class="txn-opt grp-b-opt">
+                                                    <input type="checkbox" class="grp-b" name="transactionType" value="INSURANCE_CANCELLATION"> Insurance Cancellation
+                                                </label>
+                                            </div>
+                                            <div id="grp-b-locked" class="txn-locked">Deselect Transfer to enable</div>
+                                            <div class="txn-divider"></div>
+                                            <div class="txn-group-header">Service Hub</div>
+                                            <div id="grp-c-items">
+                                                <label class="txn-opt grp-c-opt txn-opt-disabled">
+                                                    <input type="checkbox" class="grp-c" name="transactionType" value="SOFTWARE_INSTALLATION" disabled=""> Software Installation
+                                                </label>
+                                                <label class="txn-opt grp-c-opt txn-opt-disabled">
+                                                    <input type="checkbox" class="grp-c" name="transactionType" value="BIOMETRIC_PURCHASE" disabled=""> Biometric Device Purchase
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- STATE 1: no style attribute (shown) -->
+                                <div id="txn-type-error" class="txn-type-error" style="display: none;">
+                                    Please select at least one transaction type.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-action">
+                        <div>
+                            <button type="submit" id="to-generate" class="btn-blue" style="width: 108px; height: 32px; margin-right: 5px; font-size: 13px; padding: 0px; cursor: default;">
+                                Generate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <table style="width: 100%; margin-top: 15px;">
+            <tbody><tr>
+                <!-- STATE 1: <td id="result" colspan="2">&nbsp;</td> -->
+                <td id="result" colspan="2">
+<table id="data" style="width: 100%; margin-left: auto; margin-right: auto;" class="custom-table">
+    <colgroup><col width="200px">
+    <col width="150px">
+    <col width="150px">
+    </colgroup><tbody><tr class="header">
+        <th>Period</th>
+        <th>Total Transaction</th>
+        <th>Action</th>
+    </tr>
+        <tr>
+            <td style="text-align: center;">01 Oct 2026 - 03 Oct 2026</td>
+            <td style="text-align: center;">61 </td>
+                <td style="text-align: center;"><a title="... Click to download" href="/uat1/download/ucd/download-payment-document/zipfile.get?startDate=2026-10-01&amp;endDate=2026-10-03&amp;transactionType=JCK">Download</a></td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">04 Oct 2026 - 10 Oct 2026</td>
+            <td style="text-align: center;">47 </td>
+                <td style="text-align: center;"><a title="... Click to download" href="/uat1/download/ucd/download-payment-document/zipfile.get?startDate=2026-10-04&amp;endDate=2026-10-10&amp;transactionType=JCK">Download</a></td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">11 Oct 2026 - 17 Oct 2026</td>
+            <td style="text-align: center;">16 </td>
+                <td style="text-align: center;"><a title="... Click to download" href="/uat1/download/ucd/download-payment-document/zipfile.get?startDate=2026-10-11&amp;endDate=2026-10-17&amp;transactionType=JCK">Download</a></td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">18 Oct 2026 - 24 Oct 2026</td>
+            <td style="text-align: center;">8 </td>
+                <td style="text-align: center;"></td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">25 Oct 2026 - 31 Oct 2026</td>
+            <td style="text-align: center;">0 </td>
+                <td style="text-align: center;"></td>
+        </tr>
+</tbody></table>
+</td>
+            </tr>
+        </tbody></table>
+    </div>
+</body>

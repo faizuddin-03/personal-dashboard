@@ -1,0 +1,58 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URL: /uat1/view/aatf/dereg/transaction/view.do (Create Deregistration Transaction,
+       category selection screen)
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome (see EAINT-9306-aatf-home-and-menu.html note).
+  Two states: category page, then the jQuery UI confirmation popup after clicking
+  the "Orang Awam Malaysia (MyKad)" category.
+  Used by: knowledge/flow-edereg.md (§2 entry points)
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1: category selection -->
+<!-- ============================================================ -->
+<div id="container">
+    <div id="dereg-header"><div class="title1 big-font">New Deregistration Transaction:</div></div>
+    <div id="dereg-options">
+        <div><b>Sila Pilih Kategori ID:-</b></div>
+        <table id="new-dereg">
+            <tbody>
+                <tr>
+                    <td>
+                        <table id="dereg-category">
+                            <tbody><tr>
+                                <td><a href="#" class="owner-category" data="Orang Awam Malaysia (MyKad)" category="1"><img src="/uat1/images/Mykad.jpeg"></a></td>
+                                <td class="textlink"><a href="#" class="owner-category" data="Orang Awam Malaysia (MyKad)" category="1">Orang Awam Malaysia (MyKad)</a></td>
+                            </tr></tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <table id="dereg-category">
+                            <tbody><tr>
+                                <td><a href="#" class="owner-category" data="Penduduk Tetap Malaysia (MyPR)" category="0"><img src="/uat1/images/MyPR.jpeg"></a></td>
+                                <td class="textlink"><a href="#" class="owner-category" data="Penduduk Tetap Malaysia (MyPR)" category="0">Penduduk Tetap Malaysia (MyPR)</a></td>
+                            </tr></tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr style="border:none;">
+                    <td colspan="3" style="padding:30px;border:none">
+                        <div style="text-align:center; font-size:1.15em; color:red; font-weight:bold;">
+                            Effective immediately, AATF is required to complete the eDereg Pre-checking process prior to proceeding with Deregistration, and Deregistration may only be carried out upon successful completion of the said pre-checking.
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STATE 2: after clicking "Orang Awam Malaysia (MyKad)" -->
+<!-- jQuery UI confirm dialog: -->
+<!--
+<div id="category-confirmation">Pilihan anda: <span id="selected-category">Orang Awam Malaysia (MyKad)</span></div>
+buttons: TIDAK / YA
+-->

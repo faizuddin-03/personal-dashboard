@@ -1,0 +1,67 @@
+/* Masonry columns: card height follows content. Phone = one column. */
+.masonry {
+  column-gap: 0.875rem;
+  columns: 1;
+}
+.masonry > * {
+  break-inside: avoid;
+  margin-bottom: 0.875rem;
+}
+@media (min-width: 640px)  { .masonry { columns: 2; } }
+@media (min-width: 1024px) { .masonry { columns: 3; } }
+@media (min-width: 1536px) { .masonry { columns: 4; } }
+
+@media (min-width: 640px)  { .compact { columns: 3; } }
+@media (min-width: 1024px) { .compact { columns: 4; } }
+@media (min-width: 1536px) { .compact { columns: 6; } }
+
+@media (min-width: 640px)  { .pinned { columns: 2; } }
+@media (min-width: 1280px) { .pinned { columns: 3; } }
+
+/* Card surface. --accent-hex is set inline per note. */
+.card {
+  --tint: 0%;
+  background-color: color-mix(in srgb, var(--accent-hex) var(--tint), var(--bg-panel, #0f172a));
+  border: 1px solid color-mix(in srgb, var(--accent-hex) 22%, var(--border-main, #334155));
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.chosen { --tint: 10%; }
+.card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent-hex) 55%, var(--border-main, #334155));
+  box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--accent-hex) 45%, transparent);
+}
+.card:has(:focus-visible) {
+  border-color: var(--accent-hex);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card, .card:hover { transition: none; transform: none; }
+}
+
+.strip { background-color: var(--accent-hex); }
+.dot   { background-color: var(--accent-hex); }
+.fill  { background-color: var(--accent-hex); }
+.chip {
+  background-color: color-mix(in srgb, var(--accent-hex) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-hex) 30%, transparent);
+}
+
+/* Preview text that fades out at the bottom instead of a hard cut. */
+.fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  mask-image: linear-gradient(to bottom, #000 60%, transparent);
+}
+
+/* Quick actions: hidden until hover/focus on pointer devices, always on touch. */
+.actions {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.card:hover .actions,
+.card:focus-within .actions,
+.actionsOpen {
+  opacity: 1;
+}
+@media (hover: none) {
+  .actions { opacity: 1; }
+}

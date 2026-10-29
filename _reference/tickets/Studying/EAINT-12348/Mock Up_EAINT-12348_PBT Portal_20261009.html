@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mock Up_EAINT-12348_PBT Portal_20261009</title>
+<style>
+:root{ color-scheme: light; }
+html,body{margin:0;padding:0}
+body{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:13px;color:#000;background:#fff;line-height:20px}
+a{color:blue;text-decoration:underline}
+img{border:0}
+.center{text-align:center}
+.right{text-align:right}
+.hidden{display:none}
+
+#page{width:100%;overflow-x:auto}
+#app{min-width:1247px;width:1247px;padding:0 10px}
+
+#top{position:relative;height:68px}
+#logo{position:absolute;left:2px;top:2px}
+#logo svg{width:140px;height:50px;display:block}
+#home-bar{position:absolute;right:5px;top:28px;display:flex;gap:0}
+.tab-button1{width:110px;height:40px;background:#FF4000;color:#fff;border:0;
+  font-family:Arial,Helvetica,sans-serif;font-size:13.3px;cursor:pointer}
+.tab-button1:hover{background:#e63900}
+
+#common-bar{width:1227px;border-collapse:collapse;background:#0B4C5F;margin-top:2px}
+#common-bar td{padding:5px;color:#fff;font-size:13px;font-weight:bold;vertical-align:middle}
+#common-bar .page-title span{font-weight:normal}
+#common-bar ol{margin:0;padding:0}
+#common-bar li{display:inline;list-style:none}
+#common-bar a{color:#fff;text-decoration:none}
+.avatar{display:inline-block;width:18px;height:18px;border-radius:50%;background:#cfd8dc;
+  vertical-align:-4px;margin-right:6px;position:relative}
+.avatar::after{content:"";position:absolute;left:4px;top:3px;width:10px;height:10px;border-radius:50%;background:#6b7c85}
+
+#content{padding:50px 0 0 10px;width:1227px}
+#home-menu{margin-left:30px;width:1215px;border-collapse:collapse}
+#home-menu td{vertical-align:top;padding:5px 0 15px}
+.welcome-row{text-align:center;padding:5px 0 15px !important}
+.welcome{color:#ff0000;font-size:20.8px;font-style:italic;font-family:Verdana,Arial,Helvetica,sans-serif}
+.welcome-co{display:block;font-weight:bold;font-size:13px;margin-top:2px}
+
+.tile-cell{width:270px;text-align:center;padding:5px 0 15px !important}
+.tile-art{height:178px;display:flex;align-items:flex-end;justify-content:center}
+.menu-btn{width:140px;height:39px;background:#F0F0F0;border:2px outset #000;
+  font-family:inherit;font-size:13.3px;font-weight:bold;color:#000;cursor:pointer}
+.tile-cap{font-size:14px;line-height:20.15px;margin-top:4px}
+
+.help-cell{width:400px;padding:5px 0 15px !important;text-align:center}
+fieldset.help{width:366px;height:318px;border:1px solid #ccc;border-radius:10px;
+  margin:0 auto;padding:10px;box-sizing:border-box;text-align:left}
+fieldset.help i{font-style:italic;font-size:13px;display:block;padding:10px}
+fieldset.help table{border-collapse:collapse;width:100%}
+fieldset.help td{padding:0 6px;vertical-align:middle;font-size:12px}
+fieldset.help td.ic{width:60px;text-align:center;padding:10px}
+fieldset.help b{font-size:12px}
+.tv-btn{width:150px;height:40px;background:#6D84B4;border:2px outset #F1F1F1;
+  font-family:inherit;font-size:13.3px;font-weight:bold;color:#000;cursor:pointer}
+
+.notice{color:#ff0000;font-weight:bold;font-size:14.95px;line-height:20.15px;text-align:center;
+  width:695px;margin:0 auto}
+marquee.demo{color:#ff0000;font-size:20.8px;display:block}
+
+.dereg-title{text-align:center;font-weight:bold;font-size:15px;margin:14px 0 26px}
+#dereg-tiles{display:flex;gap:36px;justify-content:center;flex-wrap:wrap}
+.dtile{width:172px;text-align:center}
+.button-height{width:172px;height:116px;background:#ECECEC;border:1px solid #cfcfcf;
+  font-family:inherit;font-size:13px;font-weight:bold;color:#000;cursor:pointer;line-height:19px}
+.dtile .cap{margin-top:8px;line-height:19px}
+
+.sub-title{text-align:center;font-size:15px;margin:0 0 6px}
+.kategori{font-weight:bold;font-size:15px;margin:14px 0 12px}
+table.idpick{border-collapse:collapse;width:100%;max-width:1200px}
+table.idpick td{border:1px solid #d5d5d5;padding:12px;vertical-align:middle}
+.idcard{width:230px;height:145px;border-radius:6px;display:inline-block;vertical-align:middle;margin-right:14px}
+.idcard.mykad{background:linear-gradient(135deg,#bfe3f2,#8fc9e8)}
+.idcard.mypr{background:linear-gradient(135deg,#f4b9bd,#e0555f)}
+
+.steps{display:flex;align-items:flex-start;justify-content:center;gap:0;margin:8px 0 22px}
+.step{width:76px;text-align:center}
+.step .dot{width:60px;height:60px;border-radius:50%;background:#A9A9A9;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto}
+.step.active .dot{background:#4FC3E8;font-size:30px}
+.step.done .dot{background:#8BC34A;font-size:20px}
+.step .nm{margin-top:6px;font-size:12px}
+.step.active .nm{font-weight:bold}
+.arrow{align-self:center;margin:0 4px;color:#2b3a45;font-size:20px;line-height:60px}
+
+.panel{border:1px solid #cfcfcf;padding:22px 26px;margin:0 auto;max-width:1040px}
+.panel h4{color:#d10000;font-weight:bold;margin:0 0 4px}
+.panel h4 em{display:block;font-style:italic}
+.panel ul{margin:16px 0;padding-left:22px}
+.panel li{margin-bottom:12px;line-height:22px}
+.panel li em{display:block;font-style:italic;font-weight:normal}
+.agree{font-weight:bold;margin-top:18px}
+.agree em{display:block;font-style:italic;font-weight:normal}
+.btn-row{text-align:center;margin-top:18px;display:flex;gap:10px;justify-content:center}
+.std-btn{padding:1px 6px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:400;
+  color:#000;background:#F0F0F0;border:2px outset #000;border-radius:0;cursor:pointer;min-height:35px}
+.std-btn:disabled{color:rgba(0,0,0,.35);border-color:rgba(0,0,0,.35);cursor:default}
+.mykad-btn{width:180px;height:40px;font-size:14px;font-weight:bold;font-family:Arial,Helvetica,sans-serif;
+  color:#000;background:#F0F0F0;border:2px outset #000;cursor:pointer}
+.mykad-alert-box-btn{width:180px;height:40px;font-size:14px;font-weight:bold;font-family:Arial,Helvetica,sans-serif;
+  background:#0B4C5F;color:#fff;border:none;border-radius:4px;cursor:pointer}
+.auth-cap{text-align:center;color:#1a5fb4;font-weight:bold;margin:16px 0}
+.dermalog{border:1px solid #cfcfcf;max-width:880px;margin:0 auto;padding:40px;text-align:center}
+.dermalog .icon{width:120px;height:120px;border-radius:50%;background:#e8f4f8;margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;font-size:44px}
+.dermalog h3{color:#0B4C5F;margin:0 0 10px;font-size:19px}
+.dermalog p{color:#555;margin:0 0 20px}
+
+input[type=text]{border:1px solid #767676;border-radius:4px;padding:3px 10px;height:32px;
+  box-sizing:border-box;font-family:inherit;font-size:13px;background:#fff;width:150px}
+select{border:1px solid #767676;padding:2px;font-family:inherit;font-size:13px;background:#fff}
+
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:10px}
+.filters label{font-weight:bold}
+.list-btn{padding:1px 6px;font-family:Arial,Helvetica,sans-serif;font-size:13.3px;color:#000;
+  background:#F0F0F0;border:2px outset #000;cursor:pointer;min-height:28px}
+.hint-red{color:#d10000}
+table.result{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+table.result th{background:#58ACFA;color:#fff;border:1px solid #fff;padding:6px 5px;text-align:center;vertical-align:middle}
+table.result td{border:1px solid #fff;padding:4px 5px}
+table.result tr.even{background:#CEF6F5}
+table.result tr.odd{background:#A9E2F3}
+.empty-msg{text-align:center;padding:8px 0}
+table.result td.ok{color:#127a2e;font-weight:bold;text-align:center}
+table.result td.bad{color:#c0170c;font-weight:bold;text-align:center}
+table.result td.pend{color:#1a3c8c;font-weight:bold;text-align:center}
+table.result td.dash{text-align:center}
+table.result td a{color:blue;text-decoration:underline}
+
+#footer{border-top:1px solid #ccc;margin-top:24px;width:1227px;padding:8px 30px 20px 10px;color:grey;
+  display:flex;align-items:flex-start}
+#footer .txt{flex:1;font-size:11px;line-height:16px}
+#footer .txt a{color:blue}
+#footer svg{width:110px;height:50px}
+
+
+.auth-box{border:1px solid #cfcfcf;max-width:900px;margin:0 auto;padding:26px 30px;background:#f7f8f9}
+table.mk{margin:0 auto;border-collapse:collapse}
+table.mk td{vertical-align:top;padding:0 24px}
+.mk-photo svg{display:block}
+table.mk-fields{border-collapse:collapse}
+table.mk-fields td{padding:3px 6px;font-size:13px}
+table.mk-fields td.mk-lab{text-align:right;width:110px}
+.std-btn.sm{font-size:14px;min-height:28px;padding:1px 10px}
+
+table.own{margin:0 0 0 60px;border-collapse:collapse}
+table.own td{vertical-align:top;padding:0 24px 0 0}
+table.own-f{border-collapse:collapse}
+table.own-f td{padding:2px 8px;vertical-align:top;font-size:13px}
+table.own-f td.k,table.ff td.k,table.jpj td.k,table.res td.k{font-weight:bold;white-space:nowrap}
+hr.rule{border:0;border-top:1px solid #d5d5d5;margin:22px 60px}
+table.cols{width:100%;border-collapse:collapse}
+table.cols>tbody>tr>td{vertical-align:top;width:50%;padding:0 30px 0 60px}
+.grp{color:#1a5fb4;font-weight:bold;margin:0 0 8px}
+table.ff{border-collapse:collapse;margin-bottom:18px}
+table.ff td{padding:3px 8px 3px 0;vertical-align:top;font-size:13px}
+.ph{margin-bottom:4px}
+.okmsg{color:#127a2e;font-size:12px;margin-top:3px}
+
+.panel.decl{position:relative;text-align:left}
+.decl-photo{position:absolute;right:26px;top:24px}
+.decl-t{font-weight:bold;margin:0 0 6px}
+.decl-t2{font-weight:bold;margin:0 0 14px}
+.panel.decl ul{margin:0 0 16px;padding-left:20px}
+.panel.decl li{margin-bottom:10px;line-height:19px;font-size:12.5px}
+.panel.decl li em{display:block;font-style:italic;color:#444}
+.tick{display:block;font-size:12.5px;line-height:19px}
+.tick em{display:block;font-style:italic;color:#444}
+.tick.single{padding-left:60px}
+
+table.jpj{margin:0 0 0 60px;border-collapse:collapse}
+table.jpj td{padding:4px 14px 4px 0;vertical-align:top;font-size:13px}
+table.jpj td.v{min-width:210px}
+table.res{margin:0 auto;border-collapse:collapse}
+table.res td{padding:3px 14px 3px 0;font-size:13px}
+table.res td.good{color:#127a2e;font-weight:bold}
+
+.cr-new{display:inline-block;background:#1e7b34;color:#fff;font-size:10px;font-weight:bold;
+  line-height:14px;padding:0 5px;border-radius:2px;margin-left:6px;vertical-align:1px;
+  letter-spacing:.3px;white-space:nowrap}
+.cr-ask{display:inline-block;background:#c9a200;color:#fff;font-size:10px;font-weight:bold;
+  line-height:14px;padding:0 5px;border-radius:2px;margin-left:6px;vertical-align:1px;
+  letter-spacing:.3px;white-space:nowrap}
+.cr-hl{background:#fff6c4}
+table.result tr.cr-row td{background:#eafbef}
+.cr-legend{border:1px solid #cfcfcf;background:#fafafa;padding:6px 10px;margin:0 0 12px;font-size:12px}
+
+.d-status{color:#127a2e;font-weight:bold;font-size:15px;margin-left:24px}
+table.dtop{border-collapse:collapse;margin:10px 0 18px}
+table.dtop>tbody>tr>td{vertical-align:top;padding-right:46px}
+.dbtns button{margin:0 4px 4px 0}
+.mykad-btn.sm{width:auto;height:26px;padding:0 10px;font-size:12px}
+table.dcols{width:100%;border-collapse:collapse}
+table.dcols>tbody>tr>td{vertical-align:top;width:50%;padding-right:40px}
+
+.pcbox{border:1px solid #cfcfcf;max-width:800px;margin:0 auto;padding:22px 26px}
+.pc-red{color:#d10000;font-weight:bold;margin:0 0 14px}
+.pc-grp{color:#1a5fb4;font-weight:bold;margin:18px 0 8px}
+table.paysum{width:100%;border-collapse:collapse}
+table.paysum td{padding:5px 0;font-size:13px}
+table.paysum td.cur{text-align:right;width:60px}
+table.paysum td.amt{text-align:right;width:80px}
+table.paysum tr.tot td{border-top:1px solid #333;padding-top:8px}
+table.pcres{width:800px;margin:0 auto;border-collapse:collapse;font-size:13px}
+table.pcres td{border-bottom:1px solid #e2e2e2;padding:8px 12px}
+table.pcres td.k{font-weight:bold;width:300px;background:#fafafa}
+table.pcres td.good{color:#127a2e;font-weight:bold}
+table.pcres td.bad2{color:#d10000;font-weight:bold}
+
+ol.payhist{margin:0 0 8px;padding-left:22px;font-size:12.5px;line-height:19px}
+ol.payhist li{margin-bottom:6px}
+.failtxt{color:#d10000;font-weight:bold}
+.failmsg{color:#333}
+.pc-blue{color:#1a5fb4}
+hr.pcrule{border:0;border-top:1px solid #d5d5d5;margin:14px 0}
+
+.cdown{display:flex;gap:10px;justify-content:center}
+.cbox{background:#2196c4;color:#fff;width:66px;padding:6px 0 4px;text-align:center}
+.cnum{font-size:24px;font-weight:bold;line-height:28px}
+.clab{font-size:11px;background:#1b7fa6;margin-top:4px;padding:2px 0}
+
+.spin-box{background:#fff;padding:14px 40px;display:flex;align-items:center;gap:18px;min-width:400px}
+.spin{width:26px;height:26px;border:4px solid #cfe8f5;border-top-color:#2196c4;border-radius:50%}
+.spin-txt{font-size:26px;font-weight:bold}
+.modal.wide{width:640px}
+.modal.pcrem{width:640px;padding:0}
+.rem-bar{background:#eceff1;padding:12px 16px;color:#1a3c8c;font-weight:bold}
+.rem-warn{background:#fdeeee;color:#d10000;font-weight:bold;padding:10px 16px}
+.rem-body{padding:14px 16px}
+
+.verify{display:flex;align-items:center;justify-content:center;gap:16px;margin:22px 0 10px}
+.vtick{width:44px;height:44px;border-radius:50%;background:#6cc04a;color:#fff;font-size:26px;
+  display:flex;align-items:center;justify-content:center}
+.vtxt{font-size:15px}
+.required{color:#f00}
+
+.pc-enq{border:1px solid #d5d5d5;border-radius:4px;padding:18px 26px;margin:14px auto 0;max-width:640px}
+.pc-enq-lead{color:#666;margin:0 0 16px}
+table.pc-enq-t{border-collapse:collapse;width:100%}
+table.pc-enq-t td{padding:4px 6px;vertical-align:middle}
+table.pc-enq-t td.k{font-weight:bold;white-space:nowrap;width:200px}
+table.pc-enq-t input{width:100%;padding:6px 8px;border:1px solid #b9b9b9}
+.pc-enq-hint{color:#777;font-size:12px}
+.screen{display:none}
+.screen.on{display:block}
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center;z-index:50}
+.modal-back.on{display:flex}
+.modal{background:#fff;border:1px solid #aaa;width:370px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.modal .bar{background:#eee;border-bottom:1px solid #ccc;padding:8px 10px;text-align:right}
+.modal .bar button{border:0;background:none;font-size:16px;cursor:pointer}
+.modal .body{padding:18px}
+.modal .foot{padding:0 18px 16px;text-align:right;display:flex;gap:8px;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="brandmark" viewBox="2 82 276 114"><defs><style>.ea-1{fill-rule:evenodd;}.ea-1,.ea-2{fill:#384c68;}.ea-3{fill:#ef4123;}</style></defs><path class="ea-2" d="M51.95,147.43c-1.7,4.24-4.5,7.31-8.41,9.21-3.91,1.9-8.56,2.85-13.96,2.85-3.57,0-6.81-.37-9.71-1.1-2.9-.74-5.39-1.89-7.47-3.45-2.08-1.56-3.68-3.56-4.82-5.99-1.14-2.43-1.71-5.35-1.71-8.74s.57-6.31,1.71-8.74c1.14-2.43,2.75-4.43,4.82-5.99,2.08-1.56,4.56-2.71,7.47-3.45,2.9-.74,6.14-1.11,9.71-1.11,7.77,0,13.55,1.88,17.35,5.63,3.79,3.75,5.69,9,5.69,15.74v1.07H18.07v.13c0,.85.22,1.77.67,2.78.45,1,1.14,1.94,2.08,2.81.94.87,2.13,1.6,3.58,2.18,1.45.58,3.18.87,5.19.87,4.87,0,8.13-1.56,9.78-4.69h12.59ZM40.44,136.38v-.13c0-.49-.18-1.18-.54-2.08-.36-.89-.96-1.77-1.81-2.65-.85-.87-1.99-1.63-3.42-2.28-1.43-.65-3.21-.97-5.36-.97-2.37,0-4.28.38-5.73,1.14-1.45.76-2.59,1.61-3.42,2.54-.83.94-1.38,1.84-1.67,2.71-.29.87-.44,1.4-.44,1.57v.13h22.37Z"/><path class="ea-3" d="M75.19,148.1l-5.58,10.05h-15.95l31.38-57.84h16.41l12.65,57.84h-16.03l-2.17-10.05h-20.71ZM90.42,118.18h-.15l-9.12,18.41h12.5l-3.23-18.41Z"/><path class="ea-3" d="M142.25,118.8l-3.32,21.02c-.79,4.99-.12,8.51,5.63,8.51s7.54-3.53,8.32-8.51l3.32-21.02h13.96l-3.74,23.7c-2.05,12.96-11.81,16.95-23.62,16.95s-20.31-3.99-18.26-16.95l3.74-23.7h13.96Z"/><path class="ea-3" d="M191.95,158.14h-13.96l4.4-27.84h-4.53l1.82-11.51h4.53l1.87-11.81h13.96l-1.87,11.81h7.9l-1.82,11.51h-7.9l-4.4,27.84Z"/><path class="ea-3" d="M255.73,138.51c-2.11,13.35-14.35,20.94-27.01,20.94s-22.51-7.52-20.39-20.94c2.12-13.42,14.37-21.02,27.02-21.02s22.5,7.59,20.38,21.02ZM223.05,138.51c-.79,4.99,1.9,8.82,7.58,8.82s9.58-3.83,10.37-8.82c.76-4.83-1.89-8.9-7.57-8.9s-9.62,4.07-10.38,8.9Z"/><path class="ea-1" d="M112.42,115.23c1.11-.09,4.97-.37,6.67-.54.37-.04,2.68-.7,2.68-.7.07-.1.15-.18.25-.25.09-.06.2-.11.31-.14h0c6.39-3.04,20.07-10.55,27.22-14.48,15.9-8.75,31.79-13.64,49.87-12.24,6.96.55,12.64,2.18,17.93,4.77,5.25,2.56,10.14,6.06,15.57,10.34,5.35.28,12.09,1.4,18.43,2.66,6.36,1.27,12.32,2.69,16.04,3.56h.02c.46.14.92.3,1.37.48.45.19.9.4,1.32.63h0c.17.09.21.22.25.34h0s0,.01,0,.03h0s.18.44.18.44h0c.37.89.62,1.69.79,2.5.16.76.26,1.53.34,2.42l.29.13.03.02c.73.48,1.33,1.01,1.7,1.55.29.41.45.83.44,1.24,0,.43-.18.84-.57,1.21-.34.31-.82.58-1.48.82h-.03s-.33.08-.33.08c-.02.31-.03.59-.05.87-.04.75-.08,1.46-.14,2.19-.35,3.83-1.28,6.13-6.45,5.65-.15-.02-.3-.19-.3-.34v-.2c.01-.16.16-.32.31-.33,4.79-.37,4.86-1.89,5.01-5.61.03-.81.07-1.72.16-2.79h0c.01-.21.16-.36.35-.46.12-.07.26-.12.35-.14h0c1.37-.41,1.88-.79,1.8-1.15-.1-.45-.86-.98-2.02-1.58h0c-.07-.04-.14-.08-.21-.15-.1-.09-.17-.2-.19-.35h0c-.08-.46-.15-.89-.21-1.3-.19-1.25-.34-2.28-.93-3.62v-.02s-.09-.22-.09-.22l-2.11-.78-4.34-1.12h.02c-.8-.17-1.61-.33-2.41-.5-9.18-1.91-18.48-3.84-27.78-4.62-.08,0-.16-.02-.24-.05-.08-.03-.15-.06-.22-.11h0c-4.82-3.93-9.91-7.1-15.32-9.44-5.4-2.35-11.12-3.88-17.19-4.53-15.61-1.68-27.62,2.06-41.86,8.45-7.37,3.31-33.16,17.32-36.2,17.94-4.38.89-7.39.02-9.47.33-.95.15-1.45-.73.48-.88Z"/><path class="ea-2" d="M189.19,180.81c-.36,2.27-2.5,4.16-4.81,4.16s-3.86-1.88-3.5-4.16c.36-2.31,2.51-4.16,4.81-4.16s3.87,1.85,3.5,4.16Z"/><path class="ea-2" d="M201.69,168.3h.07c1.85-2.03,3.86-2.88,6.21-2.88,2.63,0,4.74,1.06,5.67,3.48,1.6-2.27,4.25-3.48,6.73-3.48,4.62,0,5.74,3.02,5.08,7.21l-1.83,11.62h-6.47l1.37-8.71c.3-1.88.86-4.97-1.88-4.97-2.98,0-3.53,2.81-3.87,4.97l-1.37,8.71h-6.47l1.37-8.71c.32-2.03.81-5.12-2.07-5.12s-3.37,3.09-3.69,5.12l-1.37,8.71h-6.47l2.88-18.23h6.47l-.36,2.27Z"/><path class="ea-2" d="M228.08,166.03h7.46l3.39,9.35,6.24-9.35h7.36l-18.91,27.33h-7.25l8.05-11.59-6.33-15.74Z"/><path class="ea-2" d="M266.33,157.74l1.47,5.51,1.49-5.51h2.47v8.13h-1.52v-6.34l-1.66,6.34-1.56-.02-1.57-6.29s-.06.07-.06.07v6.24h-1.49v-8.13h2.43Z"/><polygon class="ea-2" points="262.83 157.74 262.83 159.11 260.42 159.11 260.42 165.87 258.81 165.87 258.81 159.11 256.41 159.11 256.37 159.06 256.37 157.74 262.83 157.74"/></symbol>
+</svg>
+
+<div id="page"><div id="app">
+
+  <div id="top">
+    <div id="logo"><svg viewBox="0 0 276 114" role="img" aria-label="eAuto.my"><use href="#brandmark"/></svg></div>
+    <div id="home-bar">
+      <button class="tab-button1" data-go="home">HOME</button>
+      <button class="tab-button1">REPORTS</button>
+      <button class="tab-button1">SETTINGS</button>
+      <button class="tab-button1">USER GUIDE</button>
+      <button class="tab-button1">DOWNLOAD</button>
+      <button class="tab-button1">CONTACT US</button>
+    </div>
+  </div>
+
+  <table id="common-bar"><tbody><tr>
+    <td class="page-title"><span id="bar-title">Online Services - Home</span></td>
+    <td class="right">
+      <ol>
+        <li><span class="avatar"></span>Welcome, <span class="user-name">TAN WEI MING (RHB:10001234-Active)</span></li>
+        <li>&nbsp;|&nbsp;</li>
+        <li><a href="#">Logout</a></li>
+      </ol>
+    </td>
+  </tr></tbody></table>
+
+  <div id="content">
+
+    <!-- ===== HOME ===== -->
+    <div class="screen on" id="home">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+      <table id="home-menu"><tbody>
+
+        <tr><td colspan="4" class="welcome-row">
+          <span class="welcome">Welcome to eAuto2.0</span>
+          <b class="welcome-co">MAJLIS BANDARAYA PETALING JAYA</b>
+        </td></tr>
+
+        <tr>
+          <td class="tile-cell">
+            <div class="tile-art">
+              <svg width="260" height="178" viewBox="0 0 260 178" role="img" aria-label="Deregistration">
+                <circle cx="130" cy="16" r="13" fill="#c9ccce"/>
+                <line x1="130" y1="28" x2="78" y2="78" stroke="#9aa0a4" stroke-width="2"/>
+                <line x1="130" y1="28" x2="184" y2="78" stroke="#9aa0a4" stroke-width="2"/>
+                <g transform="rotate(-8 130 120)">
+                  <rect x="32" y="78" width="196" height="84" rx="7" fill="#c0392b"/>
+                  <rect x="44" y="90" width="172" height="60" rx="4" fill="#fdf6e3"/>
+                  <circle cx="55" cy="101" r="5" fill="#fff"/>
+                  <circle cx="205" cy="101" r="5" fill="#fff"/>
+                  <text x="130" y="126" text-anchor="middle" font-family="Arial" font-size="17" font-weight="bold" fill="#c0392b">DEREGISTRATION</text>
+                </g>
+              </svg>
+            </div>
+            <button class="menu-btn" data-go="dereg">eDEREG</button>
+            <div class="tile-cap"><span>DEREGISTRATION</span></div>
+            <div class="tile-cap">(View / Create transactions)</div>
+          </td>
+
+          <td class="tile-cell">
+            <div class="tile-art">
+              <svg width="260" height="173" viewBox="0 0 260 173" role="img" aria-label="Settings">
+                <g transform="translate(66,18)">
+                  <path d="M86 6a26 26 0 0 0-24 35L18 85a9 9 0 0 0 13 13l44-44a26 26 0 0 0 33-32l-16 16-13-13z" fill="#8a949c"/>
+                  <path d="M30 100l17-17 10 10-17 17z" fill="#b9c2c8"/>
+                  <rect x="60" y="72" width="19" height="50" rx="9" transform="rotate(-38 70 97)" fill="#3aa6b9"/>
+                </g>
+              </svg>
+            </div>
+            <button class="menu-btn">SETTINGS</button>
+          </td>
+
+          <td class="tile-cell">
+            <div class="tile-art">
+              <svg width="260" height="173" viewBox="0 0 260 173" role="img" aria-label="Reports">
+                <g transform="translate(75,12)">
+                  <rect x="4" y="4" width="104" height="140" fill="#fff" stroke="#9aa0a4" stroke-width="2"/>
+                  <rect x="14" y="16" width="84" height="12" fill="#6d747a"/>
+                  <rect x="14" y="38" width="38" height="30" fill="#2f6fb5"/>
+                  <rect x="58" y="38" width="40" height="30" fill="#cfd6db"/>
+                  <rect x="14" y="78" width="84" height="7" fill="#cfd6db"/>
+                  <rect x="14" y="92" width="84" height="7" fill="#cfd6db"/>
+                  <rect x="14" y="106" width="56" height="7" fill="#cfd6db"/>
+                </g>
+              </svg>
+            </div>
+            <button class="menu-btn">REPORTS</button>
+          </td>
+
+          <td class="help-cell" rowspan="3">
+            <fieldset class="help">
+              <i>Need Help?</i>
+              <table><tbody>
+                <tr>
+                  <td class="ic" rowspan="3">
+                    <svg width="43" height="43" viewBox="0 0 43 43" role="img" aria-label="Phone">
+                      <circle cx="21.5" cy="21.5" r="21.5" fill="#1c6fb8"/>
+                      <path d="M14 12c-1.6 0-3 1.4-3 3 0 9.4 7.6 17 17 17 1.6 0 3-1.4 3-3v-3.2c0-.8-.6-1.5-1.4-1.6l-3.9-.6c-.7-.1-1.4.2-1.7.9l-1 2a14 14 0 0 1-6.9-6.9l2-1c.7-.3 1-1 .9-1.7l-.6-3.9c-.1-.8-.8-1.4-1.6-1.4z" fill="#fff"/>
+                    </svg>
+                  </td>
+                  <td><b>Support Hotline</b></td><td><b>: 1700 816 186</b></td>
+                </tr>
+                <tr><td>Mon to Fri</td><td>: 9am to 6pm</td></tr>
+                <tr><td>Sat, Sun &amp; P.Holiday</td><td>: 10am to 4pm</td></tr>
+                <tr>
+                  <td class="ic">
+                    <svg width="40" height="40" viewBox="0 0 40 40" role="img" aria-label="Email">
+                      <circle cx="20" cy="20" r="20" fill="#1c6fb8"/>
+                      <rect x="10" y="14" width="20" height="13" rx="2" fill="#fff"/>
+                      <path d="M10.5 15.5L20 22l9.5-6.5" fill="none" stroke="#1c6fb8" stroke-width="1.6"/>
+                    </svg>
+                  </td>
+                  <td><b>Email</b></td><td><b>: support@eauto.my</b></td>
+                </tr>
+                <tr>
+                  <td class="ic">
+                    <svg width="40" height="40" viewBox="0 0 40 40" role="img" aria-label="WhatsApp">
+                      <circle cx="20" cy="20" r="20" fill="#25d366"/>
+                      <path d="M20 10a10 10 0 0 0-8.6 15L10 30l5.2-1.3A10 10 0 1 0 20 10zm5.6 13.7c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.6-.1a13 13 0 0 1-5.9-5.1c-.4-.7-.9-1.6-.9-2.5s.5-1.4.7-1.6c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2 0 .4-.1.6l-.4.5c-.1.2-.3.3-.1.6a9.6 9.6 0 0 0 3.5 3.1c.3.2.5.1.6 0l.8-1c.2-.2.4-.2.6-.1l2 .9c.2.1.3.2.3.4s0 .7-.4 1z" fill="#fff"/>
+                    </svg>
+                  </td>
+                  <td><b>WhatsApp</b></td><td><b>: 012-200 1324</b></td>
+                </tr>
+                <tr><td></td><td colspan="2" style="padding-top:14px"><button class="tv-btn">TeamViewer</button></td></tr>
+              </tbody></table>
+            </fieldset>
+          </td>
+        </tr>
+
+        <tr><td colspan="3">
+          <p class="notice">Effective immediately, PBT is required to complete the eDereg Pre-checking process prior to proceeding with Deregistration, and Deregistration may only be carried out upon successful completion of the said pre-checking.</p>
+        </td></tr>
+
+        <tr><td colspan="3">
+          <marquee class="demo" behavior="scroll" direction="left" scrollamount="6">DEMO SYSTEM!! DEMO SYSTEM!! DEMO SYSTEM!!</marquee>
+        </td></tr>
+
+      </tbody></table>
+    </div>
+
+    <!-- ===== eDEREG MODULE ===== -->
+    <div class="screen" id="dereg">
+      <div class="center">
+        <svg width="215" height="200" viewBox="0 0 215 200" role="img" aria-label="Deregistration">
+          <circle cx="107" cy="18" r="13" fill="#c9ccce"/>
+          <line x1="107" y1="30" x2="66" y2="84" stroke="#9aa0a4" stroke-width="2"/>
+          <line x1="107" y1="30" x2="152" y2="84" stroke="#9aa0a4" stroke-width="2"/>
+          <g transform="rotate(-8 107 126)">
+            <rect x="22" y="84" width="172" height="80" rx="6" fill="#c0392b"/>
+            <rect x="32" y="94" width="152" height="60" rx="4" fill="#fdf6e3"/>
+            <circle cx="42" cy="105" r="5" fill="#fff"/>
+            <circle cx="174" cy="105" r="5" fill="#fff"/>
+            <text x="108" y="130" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#c0392b">DEREGISTRATION</text>
+          </g>
+        </svg>
+      </div>
+      <p class="dereg-title">DEREGISTRATION (eDEREG)</p>
+      <div id="dereg-tiles">
+        <div class="dtile"><button class="button-height" data-go="precheck">eDEREG<br>PRE-CHECKING<br>ENQUIRY</button></div>
+        <div class="dtile"><button class="button-height" data-go="precheck-list">eDEREG<br>PRE-CHECKING<br>TRANSACTION<br>LISTING</button></div>
+        <div class="dtile"><button class="button-height" data-go="listing">DEREGISTRATION<br>TRANSACTION<br>LISTING</button>
+          <div class="cap">View / Check Status (submitted transaction)</div></div>
+        <div class="dtile"><button class="button-height" data-go="idpick">CREATE<br>DEREGISTRATION<br>TRANSACTION</button>
+          <div class="cap">Create a new DEREGISTRATION Transaction</div></div>
+      </div>
+      <p class="notice">Effective immediately, PBT is required to complete the eDereg Pre-checking process prior to proceeding with Deregistration, and Deregistration may only be carried out upon successful completion of the said pre-checking.</p>
+    </div>
+
+    <!-- ===== ID CATEGORY ===== -->
+    <div class="screen" id="idpick">
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="kategori">Sila Pilih Kategori ID:-</p>
+      <table class="idpick"><tbody><tr>
+        <td><a href="#" id="pick-mykad"><span class="idcard mykad"></span></a> Orang Awam Malaysia (MyKad)</td>
+        <td><a href="#" id="pick-mypr"><span class="idcard mypr"></span></a> Penduduk Tetap Malaysia (MyPR)</td>
+      </tr></tbody></table>
+      <p class="notice">Effective immediately, PBT is required to complete the eDereg Pre-checking process prior to proceeding with Deregistration, and Deregistration may only be carried out upon successful completion of the said pre-checking.</p>
+    </div>
+
+    <!-- ===== STEP 1 OWNER ===== -->
+    <div class="screen" id="owner">
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="center" style="font-weight:bold;margin:0 0 10px">Vehicle Deregistration From Malaysian</p>
+      <div class="steps">
+        <div class="step active"><div class="dot">1</div><div class="nm">Owner</div></div><div class="arrow">&#10230;</div>
+        <div class="step"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div>
+        <div class="step"><div class="dot">3</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div>
+        <div class="step"><div class="dot">4</div><div class="nm">JPJ Check</div></div><div class="arrow">&#10230;</div>
+        <div class="step"><div class="dot">5</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div>
+        <div class="step"><div class="dot">6</div><div class="nm">Deregister</div></div>
+      </div>
+      <div class="panel">
+        <h4>PERINGATAN KEPADA PEMILIK KENDERAAN. SILA BACA.<em>REMINDER TO VEHICLE OWNER. PLEASE READ.</em></h4>
+        <ul>
+          <li>Anda bersetuju untuk membatalkan pendaftaran dan melupuskan kenderaan ini hanya di lokasi AATF yang berlesen sahaja;
+            <em>You agree to deregister and dispose of this vehicle at licensed AATF locations only;</em></li>
+          <li>Pembatalan pendaftaran kenderaan tidak akan membatal pemilikan nombor pendaftaran kenderaan anda. Anda kekal sebagai pemilik nombor pendaftaran kenderaan ini;
+            <em>Deregistration of the vehicle will not cancel ownership of your vehicle registration number. You remain the owner of this registration number;</em></li>
+          <li>Pembatalan pendaftaran kenderaan ini adalah muktamad dan TIDAK BOLEH dikembalikan kepada status asal setelah proses pembatalan selesai;
+            <em>Deregistration of this vehicle is final and therefore UNABLE to reverse to its original status once the deregistration process has been completed.</em></li>
+        </ul>
+        <div class="agree">Jika bersetuju, sila masukkan MyKad dan cap ibujari pemohon untuk pengesahan.
+          <em>Should you agree, kindly insert applicant's MyKad and thumbprint for authentication purposes.</em></div>
+        <div class="btn-row">
+          <button class="std-btn" id="agree-yes">Ya/Yes</button>
+          <button class="std-btn" id="agree-no">Tidak/No</button>
+        </div>
+      </div>
+      <p class="auth-cap">Owner Authentication</p>
+      <div class="auth-box hidden" id="ownerauth">
+        <table class="mk"><tbody><tr>
+          <td class="mk-photo"><svg width="110" height="140" viewBox="0 0 110 140" role="img" aria-label="Owner photo"><rect width="110" height="140" fill="#e9edf0" stroke="#b9c2c8"/><circle cx="55" cy="52" r="24" fill="#9aa5ae"/><path d="M14 140c0-24 18-40 41-40s41 16 41 40z" fill="#9aa5ae"/></svg></td>
+          <td><table class="mk-fields"><tbody><tr><td class="mk-lab">Name</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">MyKad No</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">Address 1</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">Address 2</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">Address 3</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">Postcode</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">City</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">State</td><td><input type="text" style="width:300px"></td></tr></tbody></table></td>
+        </tr></tbody></table>
+        <p class="center" style="color:#d10000;margin:14px 0">Please insert IC and click [Read Mykad].</p>
+        <div class="btn-row"><button class="mykad-btn" data-go="idpick">Cancel</button><button class="mykad-alert-box-btn" data-go="step2">Read MyKad</button></div>
+      </div>
+    </div>
+
+    <div class="screen" id="step2">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="center" style="font-weight:bold;margin:0 0 10px">Owner &amp; Vehicle Details</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Owner</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">3</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">4</div><div class="nm">JPJ Check</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">5</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">6</div><div class="nm">Deregister</div></div></div>
+
+      <p class="auth-cap" style="text-align:left;padding-left:60px">Owner Authentication</p>
+      <table class="own"><tbody><tr>
+        <td class="own-photo"><svg width="110" height="140" viewBox="0 0 110 140" role="img" aria-label="Owner photo"><rect width="110" height="140" fill="#e9edf0" stroke="#b9c2c8"/><circle cx="55" cy="52" r="24" fill="#9aa5ae"/><path d="M14 140c0-24 18-40 41-40s41 16 41 40z" fill="#9aa5ae"/></svg></td>
+        <td>
+          <table class="own-f"><tbody>
+            <tr><td class="k">Name: <span class="required">*</span></td><td>AZLI BIN AHMAD</td></tr>
+            <tr><td class="k">MyKad No: <span class="required">*</span></td><td>900101015678</td></tr>
+            <tr><td class="k">Address: <span class="required">*</span></td><td>H123, LORONG 456,<br>JALAN 789,<br>56000 KUALA LUMPUR,<br>WILAYAH PERSEKUTUAN KUALA LUMPUR</td></tr>
+          </tbody></table>
+        </td>
+      </tr></tbody></table>
+      <hr class="rule">
+      <table class="cols"><tbody><tr>
+        <td>
+          <p class="grp">Contact Details</p>
+          <table class="ff"><tbody>
+            <tr><td class="k">Mobile No: <span class="required">*</span></td><td><input type="text" style="width:220px"></td></tr>
+            <tr><td class="k">Email: <span class="required">*</span></td><td><input type="text" style="width:220px"></td></tr>
+          </tbody></table>
+          <p class="grp">PBT Details</p>
+          <table class="ff"><tbody>
+            <tr><td class="k">PBT/Individu: <span class="required">*</span><span class="cr-new">NEW</span></td><td><select style="width:320px"><option selected>-- Select One --</option><option>INDIVIDU - INDIVIDU</option><option>MBPJ - MAJLIS BANDARAYA PETALING JAYA</option></select></td></tr>
+            <tr><td class="k">Attach Consent: <span class="required">*</span></td><td><input type="file"></td></tr>
+            
+          </tbody></table>
+        </td>
+        <td>
+          <p class="grp">Vehicle Details (as in VOC)</p>
+          <table class="ff"><tbody>
+            <tr><td class="k">Vehicle No: <span class="required">*</span></td><td><input type="text" value="VAN1234" style="width:226px">
+              <div class="okmsg">&#10003; This vehicle is allowed to create eDereg transaction</div></td></tr>
+            <tr><td class="k">Engine No: <span class="required">*</span></td><td><input type="text" style="width:226px"></td></tr>
+            <tr><td class="k">Chassis No: <span class="required">*</span></td><td><input type="text" style="width:226px"></td></tr>
+            <tr><td class="k">Vehicle Make / Model: <span class="required">*</span></td><td>
+              <select style="width:108px"><option>-- Select One --</option><option>Perodua</option><option>Proton</option></select>
+              <select style="width:108px"><option>-- Select One --</option><option>Myvi</option><option>Axia</option></select></td></tr>
+            <tr><td class="k">Manufacturing Year: <span class="required">*</span></td><td>
+              <select style="width:108px"><option>-- Select One --</option><option>2020</option><option>2021</option></select></td></tr>
+            <tr><td class="k">Attach Photos (max 3): <span class="required">*</span></td><td>
+              <div class="ph">1. <input type="file"></div>
+              <div class="ph">2. <input type="file"></div>
+              <div class="ph">3. <input type="file"></div></td></tr>
+          </tbody></table>
+        </td>
+      </tr></tbody></table>
+      <div class="btn-row"><button class="std-btn sm" data-go="owner">Cancel</button><button class="std-btn sm" id="veh-next">Next</button></div>
+    </div>
+
+    <div class="screen" id="step3">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR &nbsp;&nbsp; <span class="cr-ask">TO CONFIRM</span> pending requestor / dev confirmation</div>
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="center" style="font-weight:bold;margin:0 0 10px">Vehicle Deregistration From Malaysian</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Owner</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">3</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">4</div><div class="nm">JPJ Check</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">5</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">6</div><div class="nm">Deregister</div></div></div>
+
+      <p class="auth-cap">Owner Authentication</p>
+      <div class="panel decl">
+        <div class="decl-photo"><svg width="110" height="140" viewBox="0 0 110 140" role="img" aria-label="Owner photo"><rect width="110" height="140" fill="#e9edf0" stroke="#b9c2c8"/><circle cx="55" cy="52" r="24" fill="#9aa5ae"/><path d="M14 140c0-24 18-40 41-40s41 16 41 40z" fill="#9aa5ae"/></svg></div>
+        <p class="decl-t">SALINAN PEMUNYA BERDAFTAR / <u>REGISTERED OWNER&rsquo;S COPY</u></p>
+        <p class="decl-t2"><u>PERAKUAN PEMUNYA BERDAFTAR KENDERAAN / REGISTERED VEHICLE OWNER&rsquo;S DECLARATION<span class="cr-ask">TO CONFIRM</span></u></p>
+        <ul>
+          <li>Saya, AZLI BIN AHMAD mengaku dan mengesahkan bahawa butiran yang saya nyatakan adalah benar dan tidak mengandungi maklumat yang palsu, tidak betul atau mengelirukan dan kenderaan VAN1234 adalah dalam pemilikan saya;
+            <em>I, AZLI BIN AHMAD declare and confirm that the details I have stated are true and do not contain false, incorrect or misleading information and that the vehicle VAN1234 is in my possession;</em></li>
+          <li>Saya, AZLI BIN AHMAD dengan rela, bersetuju untuk membatalkan pendaftaran dan melupuskan kenderaan dan berjanji tidak akan mengambil sebarang tindakan perundangan dan / atau sebarang tindakan ke atas Jabatan Pengangkutan Jalan, eAuto Sdn Bhd &amp; MAJLIS BANDARAYA PETALING JAYA bagi pembatalan pendaftaran dan pelupusan kenderaan VAN1234 ini;
+            <em>I, AZLI BIN AHMAD willingly, agree to cancel the registration and dispose of the vehicle and promise not to take any legal action and / or any action against the Road Transport Department, eAuto Sdn Bhd &amp; MAJLIS BANDARAYA PETALING JAYA for cancellation of registration and disposal of this vehicle VAN1234;</em></li>
+          <li>Saya, AZLI BIN AHMAD tidak akan menarik balik pembatalan pendaftaran bagi kenderaan VAN1234;
+            <em>I, AZLI BIN AHMAD will not withdraw the cancellation of registration for vehicle VAN1234;</em></li>
+          <li>Saya, AZLI BIN AHMAD juga akan bertanggungjawab sekiranya kenderaan milik saya digunakan atau dikesan di atas jalan raya dan tindakan yang sewajarnya boleh dikenakan terhadap saya;
+            <em>I, AZLI BIN AHMAD will also be responsible if my vehicle is used or detected on the road and appropriate actions can be taken against me;</em></li>
+          <li>Saya, AZLI BIN AHMAD juga faham dan sedar bahawa memberikan maklumat yang sebahagian atau keseluruhannya tidak benar, palsu atau mengelirukan adalah suatu kesalahan di bawah Seksyen 108 (1) Akta Pengangkutan Jalan 1987 dan apabila disabitkan boleh didenda tidak melebihi Lima Ribu Ringgit atau penjara selama tempoh tidak melebihi satu tahun atau kedua-duanya;
+            <em>I, AZLI BIN AHMAD also understand and aware that providing information that is partly or wholly untrue, false or misleading is an offense under Section 108 (1) of the Road Transport Act 1987 and upon conviction may be fined not exceeding Five Thousand Ringgit or imprisoned for period not exceeding one year or both;</em></li>
+          <li>Saya, AZLI BIN AHMAD juga mengaku bahawa wakil TAN WEI MING daripada PBT telah membaca perakuan ini di hadapan saya dan memberikan penerangan yang jelas kepada saya, sebelum saya memberi persetujuan / kebenaran untuk pembatalan dan pelupusan kenderaan VAN1234.
+            <em>I, AZLI BIN AHMAD also acknowledge that the representative TAN WEI MING from PBT read this declaration in my presence and gave a clear explanation to me, before I gave my consent / authorisation for cancellation and disposal of vehicle VAN1234.</em></li>
+        </ul>
+        <label class="tick"><input type="checkbox"> Tanda (&radic;) jika bersetuju dan faham akan isi kandungan perakuan. Sila masukkan MyKad dan cap jari pemohon untuk pengesahan.
+          <em>Tick (&radic;) if you agree and understand the contents of the declaration. Please insert your MyKad and copy the thumbprint for authentication.</em></label>
+      </div>
+      <div class="btn-row"><button class="std-btn sm" data-go="step2">Cancel</button><button class="std-btn sm" data-go="step3b">Next</button></div>
+    </div>
+
+    <div class="screen" id="step3b">
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="center" style="font-weight:bold;margin:0 0 10px">Vehicle Deregistration From Malaysian</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Owner</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">3</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">4</div><div class="nm">JPJ Check</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">5</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">6</div><div class="nm">Deregister</div></div></div>
+
+      <p class="auth-cap">PBT Authentication</p>
+      <div class="auth-box">
+        <table class="mk"><tbody><tr>
+          <td class="mk-photo"><svg width="110" height="140" viewBox="0 0 110 140" role="img" aria-label="Owner photo"><rect width="110" height="140" fill="#e9edf0" stroke="#b9c2c8"/><circle cx="55" cy="52" r="24" fill="#9aa5ae"/><path d="M14 140c0-24 18-40 41-40s41 16 41 40z" fill="#9aa5ae"/></svg></td>
+          <td><table class="mk-fields"><tbody><tr><td class="mk-lab">Name</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">MyKad No</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">Address 1</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">Address 2</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">Address 3</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">Postcode</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">City</td><td><input type="text" style="width:300px"></td></tr><tr><td class="mk-lab">State</td><td><input type="text" style="width:300px"></td></tr></tbody></table></td>
+        </tr></tbody></table>
+        <p class="center" style="color:#d10000;margin:14px 0">Please insert IC and click [Read Mykad].</p>
+        <div class="btn-row"><button class="mykad-btn">Cancel</button><button class="mykad-alert-box-btn">Read MyKad</button></div>
+      </div>
+      <div class="btn-row"><button class="std-btn sm" data-go="step3">Back</button><button class="std-btn sm" data-go="step4">Next</button></div>
+    </div>
+
+    <div class="screen" id="step4">
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="center" style="font-weight:bold;margin:0 0 10px">Vehicle Deregistration From Malaysian</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Owner</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">3</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">4</div><div class="nm">JPJ Check</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">5</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">6</div><div class="nm">Deregister</div></div></div>
+
+      <p class="auth-cap">Submission (JPJ Checking)</p>
+      <table class="jpj"><tbody>
+          <tr><td class="k">Owner's Name:</td><td class="v">AZLI BIN AHMAD</td>
+              <td class="k">PBT's Rep:</td><td class="v">TAN WEI MING</td></tr>
+          <tr><td class="k">MyKad No:</td><td class="v">900101015678</td>
+              <td class="k">PBT's Rep MyKad No:</td><td class="v">880202025678</td></tr>
+          <tr><td class="k">Vehicle No:</td><td class="v">VAN1234</td>
+              <td class="k">PBT Name:</td><td class="v">MAJLIS BANDARAYA PETALING JAYA</td></tr>
+          <tr><td class="k">Engine No: <span class="required">*</span></td><td class="v"><input type="text" value="EN12345678" style="width:230px"></td>
+              <td class="k">Company Reg No:</td><td class="v">AKT/10/1001/0008</td></tr>
+          <tr><td class="k">Chassis No: <span class="required">*</span></td><td class="v"><input type="text" value="CH12345678" style="width:230px"></td>
+              <td class="k">PBT Address:</td><td class="v">JALAN YONG SHOOK LIN, SEKSYEN 52,<br>46200 PETALING JAYA,<br>SELANGOR</td></tr>
+          <tr><td></td><td></td>
+              <td class="k">PBT Contact No:</td><td class="v">0379563544</td></tr>
+        </tbody></table>
+      <hr class="rule">
+      <label class="tick single"><input type="checkbox"> I hereby agree to submit the information for deregistration purpose.</label>
+      <div class="btn-row"><button class="std-btn sm" data-go="step3b">Cancel</button><button class="std-btn sm" data-go="step4b">Submit</button></div>
+    </div>
+
+    <div class="screen" id="step4b">
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="center" style="font-weight:bold;margin:0 0 10px">Vehicle Deregistration From Malaysian</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Owner</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">3</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">4</div><div class="nm">JPJ Check</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">5</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">6</div><div class="nm">Deregister</div></div></div>
+
+      <p class="auth-cap">Submission (JPJ Checking)</p>
+      <table class="jpj"><tbody>
+          <tr><td class="k">Owner's Name:</td><td class="v">AZLI BIN AHMAD</td>
+              <td class="k">PBT's Rep:</td><td class="v">TAN WEI MING</td></tr>
+          <tr><td class="k">MyKad No:</td><td class="v">900101015678</td>
+              <td class="k">PBT's Rep MyKad No:</td><td class="v">880202025678</td></tr>
+          <tr><td class="k">Vehicle No:</td><td class="v">VAN1234</td>
+              <td class="k">PBT Name:</td><td class="v">MAJLIS BANDARAYA PETALING JAYA</td></tr>
+          <tr><td class="k">Engine No: <span class="required">*</span></td><td class="v"><input type="text" value="EN12345678" style="width:230px"></td>
+              <td class="k">Company Reg No:</td><td class="v">AKT/10/1001/0008</td></tr>
+          <tr><td class="k">Chassis No: <span class="required">*</span></td><td class="v"><input type="text" value="CH12345678" style="width:230px"></td>
+              <td class="k">PBT Address:</td><td class="v">JALAN YONG SHOOK LIN, SEKSYEN 52,<br>46200 PETALING JAYA,<br>SELANGOR</td></tr>
+          <tr><td></td><td></td>
+              <td class="k">PBT Contact No:</td><td class="v">0379563544</td></tr>
+        </tbody></table>
+      <hr class="rule">
+      <table class="res"><tbody>
+        <tr><td class="k">Valid As At:</td><td>08 Jan 2026 03:30 pm</td></tr>
+        <tr><td class="k">Blacklisted:</td><td>No</td></tr>
+        <tr><td class="k">Hak Milik Dituntut:</td><td>No</td></tr>
+        <tr><td class="k">Condition Code:</td><td>No</td></tr>
+        <tr><td class="k">JPJ Enquiry Status :</td><td class="good">OK</td></tr>
+        <tr><td class="k">Response Code:</td><td class="good">TRANSACTION SUCCESSFUL</td></tr>
+      </tbody></table>
+      <div class="btn-row"><button class="std-btn sm" data-go="step4">Cancel</button><button class="std-btn sm" data-go="step5">Make Payment</button></div>
+    </div>
+
+    <div class="screen" id="step5">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="center" style="font-weight:bold;margin:0 0 10px">Vehicle Deregistration From Malaysian</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Owner</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">3</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">4</div><div class="nm">JPJ Check</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">5</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">6</div><div class="nm">Deregister</div></div></div>
+
+      <p class="auth-cap">Payment</p>
+      <table class="jpj"><tbody>
+          <tr><td class="k">Owner's Name:</td><td class="v">AZLI BIN AHMAD</td>
+              <td class="k">PBT's Rep:</td><td class="v">TAN WEI MING</td></tr>
+          <tr><td class="k">MyKad No:</td><td class="v">900101015678</td>
+              <td class="k">PBT's Rep MyKad No:</td><td class="v">880202025678</td></tr>
+          <tr><td class="k">Vehicle No:</td><td class="v">VAN1234</td>
+              <td class="k">PBT Name:</td><td class="v">MAJLIS BANDARAYA PETALING JAYA</td></tr>
+          <tr><td class="k">Engine No: <span class="required">*</span></td><td class="v"><input type="text" value="EN12345678" style="width:230px"></td>
+              <td class="k">Company Reg No:</td><td class="v">AKT/10/1001/0008</td></tr>
+          <tr><td class="k">Chassis No: <span class="required">*</span></td><td class="v"><input type="text" value="CH12345678" style="width:230px"></td>
+              <td class="k">PBT Address:</td><td class="v">JALAN YONG SHOOK LIN, SEKSYEN 52,<br>46200 PETALING JAYA,<br>SELANGOR</td></tr>
+          <tr><td></td><td></td>
+              <td class="k">PBT Contact No:</td><td class="v">0379563544</td></tr>
+        </tbody></table>
+      <hr class="rule">
+      <div class="pcbox" style="margin:0 0 14px 60px"><p class="pc-red">Click NEXT to pay and DEREGISTER.</p><p class="pc-grp">Payment Summary<span class="cr-new">NEW</span></p><table class="paysum"><tbody><tr><td>eAuto Service Fee :</td><td class="cur">RM</td><td class="amt">35.00</td></tr><tr><td>Service Tax 8% :</td><td class="cur">RM</td><td class="amt">2.80</td></tr><tr class="tot"><td><b>Total Amount Payable (inclusive of Service Tax 8%) :</b></td><td class="cur"><b>RM</b></td><td class="amt"><b>37.80</b></td></tr></tbody></table></div>
+      <div class="btn-row" style="justify-content:flex-start;padding-left:60px">
+        <button class="std-btn sm" data-go="step4b">Cancel</button>
+        <button class="std-btn sm" id="pay-next">Next</button>
+      </div>
+    </div>
+
+    <div class="screen" id="step6">
+      <p class="sub-title">New Deregistration Transaction:</p>
+      <p class="center" style="font-weight:bold;margin:0 0 10px">Vehicle Deregistration From Malaysian</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Owner</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">3</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">4</div><div class="nm">JPJ Check</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">5</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">6</div><div class="nm">Deregister</div></div></div>
+
+      <p class="auth-cap">Submission (JPJ Deregistration)</p>
+      <table class="jpj"><tbody>
+          <tr><td class="k">Owner's Name:</td><td class="v">AZLI BIN AHMAD</td>
+              <td class="k">PBT's Rep:</td><td class="v">TAN WEI MING</td></tr>
+          <tr><td class="k">MyKad No:</td><td class="v">900101015678</td>
+              <td class="k">PBT's Rep MyKad No:</td><td class="v">880202025678</td></tr>
+          <tr><td class="k">Vehicle No:</td><td class="v">VAN1234</td>
+              <td class="k">PBT Name:</td><td class="v">MAJLIS BANDARAYA PETALING JAYA</td></tr>
+          <tr><td class="k">Engine No: <span class="required">*</span></td><td class="v"><input type="text" value="EN12345678" style="width:230px"></td>
+              <td class="k">Company Reg No:</td><td class="v">AKT/10/1001/0008</td></tr>
+          <tr><td class="k">Chassis No: <span class="required">*</span></td><td class="v"><input type="text" value="CH12345678" style="width:230px"></td>
+              <td class="k">PBT Address:</td><td class="v">JALAN YONG SHOOK LIN, SEKSYEN 52,<br>46200 PETALING JAYA,<br>SELANGOR</td></tr>
+          <tr><td></td><td></td>
+              <td class="k">PBT Contact No:</td><td class="v">0379563544</td></tr>
+        </tbody></table>
+      <hr class="rule">
+      <table class="res"><tbody>
+        <tr><td class="k">JPJ Deregistration Status:</td><td class="good">OK - TRANSACTION SUCCESSFUL</td></tr>
+        <tr><td class="k">Submission Date/Time:</td><td>20 Dec 2026 09:00 am</td></tr>
+      </tbody></table>
+      <div class="btn-row"><button class="std-btn sm" data-go="trx-detail">Done</button></div>
+    </div>
+
+    <!-- ===== PRE-CHECKING ENQUIRY ===== -->
+    <div class="screen" id="precheck">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR &nbsp;&nbsp; <span class="cr-ask">TO CONFIRM</span> pending requestor / dev confirmation</div>
+      <p class="center" style="font-weight:bold;font-size:15px;margin:0 0 10px">eDereg Pre-Checking Enquiry</p>
+      <div class="steps">
+        <div class="step active"><div class="dot">1</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div>
+        <div class="step"><div class="dot">2</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div>
+        <div class="step"><div class="dot">3</div><div class="nm">Result</div></div>
+      </div>
+      <div class="panel">
+        <h4 style="color:#000">PERAKUAN eDEREG PRE-CHECKING - PBT<span class="cr-ask">TO CONFIRM</span></h4>
+        <ul>
+          <li>Saya, TAN WEI MING wakil sah syarikat MAJLIS BANDARAYA PETALING JAYA (AKT/10/1001/0008) bersetuju meneruskan urusniaga eDereg Pre-Checking bagi nombor kenderaan <input type="text" class="pc-mirror" value="VAN1234"> dan membuat bayaran fi yang ditetapkan oleh JPJ dan caj perkhidmatan eAuto bagi urusniaga tersebut;</li>
+          <li>Saya juga bersetuju bahawa kenderaan yang berjaya melalui proses eDereg Pre-Checking ini akan diteruskan dengan proses eDereg;</li>
+          <li>Saya juga bersetuju, resit pembayaran fi JPJ akan disalurkan kepada emel <input type="text" value="weiming@mbpj.gov.my" style="width:320px"> dan sesalinan akan dihantar kepada emel receipt@eauto.my; dan</li>
+          <li>Saya dengan ini bersetuju bahawa semua rekod, tandatangan dan komunikasi dalam bentuk elektronik berhubung dengan urusniaga ini bagi kenderaan bernombor pendaftaran <input type="text" class="pc-mirror" value="VAN1234" readonly style="background:#f2f2f2;color:#777"> adalah sah, mengikat dan mempunyai kesan undang-undang yang sama seperti tandatangan manual, tertakluk kepada peruntukan Akta Keterangan 1950, Akta Tandatangan Digital 1997 dan Akta Perdagangan Elektronik 2006;</li>
+        </ul>
+        <div><label><input type="checkbox"> Saya bagi pihak MAJLIS BANDARAYA PETALING JAYA (AKT/10/1001/0008) faham dan bersetuju dengan terma dan syarat perakuan ini.</label></div>
+      </div>
+        <div class="pc-enq">
+        <p class="pc-enq-lead">Enter vehicle registration number for pre-checking.</p>
+        <table class="pc-enq-t"><tbody>
+          <tr><td class="k">Vehicle Registration Number: <span class="required">*</span></td>
+              <td><input type="text" id="pc-veh" value="VAN1234"></td></tr>
+          <tr><td></td><td class="pc-enq-hint">Please ensure the vehicle registration number is correct. Once payment is made for pre-checking enquiry, no refund is allowed.</td></tr>
+        </tbody></table>
+        <div class="btn-row"><button class="std-btn sm" data-go="pc2">ENQUIRE NOW</button></div>
+      </div>
+      
+    </div>
+
+    <div class="screen" id="pc2">
+      <p class="center" style="font-weight:bold;font-size:15px;margin:0 0 10px">eDereg Pre-Checking Enquiry</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">2</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">3</div><div class="nm">Result</div></div></div>
+      <div class="pcbox">
+        <p class="pc-red">Click NEXT to pay and retrieve the vehicle pre-checking result.</p>
+        <p><b>Vehicle Registration Number:</b> &nbsp;VAN1234</p>
+        <p class="pc-grp">Payment Summary</p>
+        <table class="paysum"><tbody>
+          <tr><td>JPJ Fee :</td><td class="cur">RM</td><td class="amt">5.00</td></tr>
+          <tr><td>eAuto Service Fee :</td><td class="cur">RM</td><td class="amt">5.00</td></tr>
+          <tr><td>Service Tax 8% :</td><td class="cur">RM</td><td class="amt">0.40</td></tr>
+          <tr class="tot"><td><b>Total Amount Payable (inclusive of Service Tax 8%) :</b></td>
+              <td class="cur"><b>RM</b></td><td class="amt"><b>10.40</b></td></tr>
+        </tbody></table>
+        <div class="btn-row">
+          <button class="std-btn sm" data-go="precheck">SAVE &amp; CONTINUE LATER</button>
+          <button class="std-btn sm" id="pc-next">NEXT</button><button class="std-btn sm" data-go="pc2f" title="Insufficient funds">IF failure</button><button class="std-btn sm" data-go="pc2re" title="RHB network delay">RE failure</button><button class="std-btn sm" id="show-spin" title="Loading overlay">Loading</button><button class="std-btn sm" id="show-re" title="RE alert">RE alert</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="pc3">
+      <p class="center" style="font-weight:bold;font-size:15px;margin:0 0 10px">eDereg Pre-Checking Enquiry</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">2</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">3</div><div class="nm">Result</div></div></div>
+      <table class="pcres"><tbody>
+        <tr><td class="k">Vehicle Registration Number:</td><td id="r-veh">VAN1234</td></tr>
+        <tr><td class="k">Valid As At:</td><td>20-09-2026 15:30</td></tr>
+        <tr><td class="k">Enquiry Response:</td><td class="good" id="r-resp">GLB000000I &ndash; ENQUIRY SUCCESSFUL</td></tr>
+        <tr><td class="k">Vehicle Record:</td><td>Exist</td></tr>
+        <tr><td class="k">Vehicle Status:</td><td>Active</td></tr>
+        <tr><td class="k">Verified Status:</td><td>Yes</td></tr>
+        <tr><td class="k">Usage Code:</td><td class="bad2" id="r-usage">No</td></tr>
+        <tr><td class="k">Blacklist (JPJ):</td><td>No</td></tr>
+        <tr><td class="k">Blacklist (JSJ):</td><td>No</td></tr>
+        <tr><td class="k">Blacklist (Agency):</td><td>No</td></tr>
+        <tr><td class="k">Claim Ownership:</td><td>No</td></tr>
+        <tr><td class="k">Vehicle in Investigation:</td><td>No</td></tr>
+        <tr><td class="k">Vehicle Condition:</td><td>No</td></tr>
+      </tbody></table>
+      <p class="center pc-red" id="r-note" style="margin:14px 0">Note: Unable to proceed with eDereg</p>
+      <div class="btn-row"><button class="std-btn sm" data-go="precheck-list">DONE</button></div>
+    </div>
+
+    <!-- ===== DEREG TRANSACTION LISTING ===== -->
+    <div class="screen" id="pc2f">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR &nbsp;&nbsp; <span class="cr-ask">TO CONFIRM</span> pending requestor / dev confirmation</div>
+      <p class="center" style="font-weight:bold;font-size:15px;margin:0 0 10px">eDereg Pre-Checking Enquiry</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">2</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">3</div><div class="nm">Result</div></div></div>
+      <div class="pcbox">
+        <p class="pc-grp" style="margin-top:0">Payment History</p>
+        <ol class="payhist">
+          <li>08-05-2026 12:00pm - RHB (XXX260520000001 - VAN1234)<span class="cr-ask">TO CONFIRM</span> - <span class="failtxt">Failed</span>
+            <span class="failmsg">(IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. &#20320;&#30340;RHB&#38134;&#34892;&#20313;&#39069;&#19981;&#36275;&#12290;)</span></li>
+          <li>08-05-2026 12:00pm - RHB (XXX260520000001)<span class="cr-ask">TO CONFIRM</span> - <span class="failtxt">Failed</span>
+            <span class="failmsg">(IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI. &#20320;&#30340;RHB&#38134;&#34892;&#20313;&#39069;&#19981;&#36275;&#12290;)</span></li>
+        </ol>
+        <hr class="pcrule">
+        <p><b>Vehicle Registration Number:</b> &nbsp;VAN1234</p>
+        <p><b class="pc-blue">Payment Status:</b> &nbsp;<span class="failtxt">Failed</span></p>
+        <p class="pc-grp">Payment Summary</p>
+        <table class="paysum"><tbody>
+          <tr><td>JPJ Fee :</td><td class="cur">RM</td><td class="amt">5.00</td></tr>
+          <tr><td>eAuto Service Fee :</td><td class="cur">RM</td><td class="amt">5.00</td></tr>
+          <tr><td>Service Tax 8% :</td><td class="cur">RM</td><td class="amt">0.40</td></tr>
+          <tr class="tot"><td><b>Total Amount Payable (inclusive of Service Tax 8%) :</b></td>
+              <td class="cur"><b>RM</b></td><td class="amt"><b>10.40</b></td></tr>
+        </tbody></table>
+        <div class="btn-row"><button class="std-btn sm" id="pc-retry">RETRY</button></div>
+      </div>
+    </div>
+
+    <div class="screen" id="pc2re">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR &nbsp;&nbsp; <span class="cr-ask">TO CONFIRM</span> pending requestor / dev confirmation</div>
+      <p class="center" style="font-weight:bold;font-size:15px;margin:0 0 10px">eDereg Pre-Checking Enquiry</p>
+      <div class="steps">
+        <div class="step done"><div class="dot">1</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div>
+        <div class="step active"><div class="dot">2</div><div class="nm">Payment</div></div><div class="arrow">&#10230;</div>
+        <div class="step"><div class="dot">3</div><div class="nm">Result</div></div>
+      </div>
+      <div class="pcbox">
+        <p class="pc-grp" style="margin-top:0">Payment History</p>
+        <ol class="payhist">
+          <li>10-05-2026 12:00pm - RHB (XXX260520000001 - VAN1234)<span class="cr-ask">TO CONFIRM</span> - <span class="failtxt">Failed</span>
+            <span class="failmsg">(RE - Sila TUNGGU 6 minit kemudian klik 'Resubmit'. Sistem RHB sedang diproses. (RHB &#32593;&#32476;&#38556;&#30861;&#65292;&#35831;&#31561;6&#20998;&#38047;&#21518;&#20877;&#28857;&#20987;'Resubmit'&#12290;))</span></li>
+          <li>10-05-2026 12:00pm - RHB (XXX260520000001)<span class="cr-ask">TO CONFIRM</span> - <span class="failtxt">Failed</span>
+            <span class="failmsg">(RE - Sila TUNGGU 6 minit kemudian klik 'Resubmit'. Sistem RHB sedang diproses. (RHB &#32593;&#32476;&#38556;&#30861;&#65292;&#35831;&#31561;6&#20998;&#38047;&#21518;&#20877;&#28857;&#20987;'Resubmit'&#12290;))</span></li>
+        </ol>
+        <hr class="pcrule">
+        <p><b>Vehicle Registration Number:</b> &nbsp;VAN1234</p>
+        <p><b class="pc-blue">Payment Status:</b> &nbsp;<span class="failtxt">Failed</span></p>
+        <p class="pc-grp">Payment Summary</p>
+        <table class="paysum"><tbody>
+          <tr><td>JPJ Fee :</td><td class="cur">RM</td><td class="amt">5.00</td></tr>
+          <tr><td>eAuto Service Fee :</td><td class="cur">RM</td><td class="amt">5.00</td></tr>
+          <tr><td>Service Tax 8% :</td><td class="cur">RM</td><td class="amt">0.40</td></tr>
+          <tr class="tot"><td><b>Total Amount Payable (inclusive of Service Tax 8%) :</b></td>
+              <td class="cur"><b>RM</b></td><td class="amt"><b>10.40</b></td></tr>
+        </tbody></table>
+        <p class="center pc-blue" style="font-weight:bold;margin:20px 0 10px">Waiting for RHB to reset payment</p>
+        <div class="cdown">
+          <div class="cbox"><div class="cnum">05</div><div class="clab">Minutes</div></div>
+          <div class="cbox"><div class="cnum">52</div><div class="clab">Seconds</div></div>
+        </div>
+        <p class="center" style="font-size:12px;margin:8px 0 0">Hotline : 1700 816 186</p>
+      </div>
+    </div>
+
+    <div class="screen" id="listing">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR &nbsp;&nbsp; <span class="cr-ask">TO CONFIRM</span> pending requestor / dev confirmation</div>
+      
+      <div class="cr-hl" style="padding:5px 8px;font-size:12px;margin-bottom:8px">Listing shows only transactions created by the logged-in account. PBT user sees PBT + year + month + 7 digit transactions; AATF user sees their own D + year + month + 7 digit transactions.<span class="cr-new">NEW</span></div>
+      <div class="filters">
+        <label for="l1">Vehicle No.:</label><input id="l1" type="text">
+        <label for="l2">Transaction No.:</label><input id="l2" type="text">
+        <label for="l3">From:</label><input id="l3" type="text" style="width:110px">
+        <label for="l4">To:</label><input id="l4" type="text" style="width:110px">
+        <label for="l5">Filter by</label>
+        <select id="l5"><option>Transaction Status</option><option>Created Date</option><option>Payment Date</option></select>
+      </div>
+      <div class="filters">
+        <label for="l6">Payment From:</label><input id="l6" type="text" style="width:110px">
+        <label for="l7">Payment To:</label><input id="l7" type="text" style="width:110px">
+        <label for="l8">COD:</label><select id="l8"><option>All</option><option>Yes</option><option>No</option></select>
+        <label for="l9">PBT:<span class="cr-new">NEW</span></label><select id="l9" style="width:150px"><option selected>All</option><option>INDIVIDU - INDIVIDU</option><option>MBPJ - MAJLIS BANDARAYA PETALING JAYA</option></select>
+        <button class="list-btn">SEARCH Now</button>
+        <span class="hint-red">&lt;&lt; Please click to show record(s)</span>
+        <a href="#" data-go="listing">Reset</a>
+      </div>
+      <div><a href="#">Export CSV</a></div>
+      <p class="center" style="font-weight:bold;margin:14px 0 6px">Deregistration Transaction Listing</p>
+      <table class="result">
+        <thead><tr>
+          <th>#</th><th>Vehicle</th><th>Transaction No.</th><th>Owner Name</th><th>Created At</th>
+          <th>Method</th><th>JPJ Enquiry</th><th>Payment</th><th>JPJ Dereg</th><th>Tx Status</th>
+          <th>COD</th><th>e-Invoice<br>Status</th><th>Remarks</th><th>Action</th>
+        </tr></thead>
+        <tbody>
+          <tr class="cr-row"><td>1</td><td>WA1234B</td><td>PBT690000003<span class="cr-new">NEW</span><span class="cr-ask">TO CONFIRM</span></td><td>NORAINI BINTI OSMAN</td><td>20-09-2026 10:24</td><td>RHB</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="bad">No</td><td class="ok">OK</td><td></td><td><a href="#" data-go="trx-detail">View</a> | <a href="#" data-go="cod1">Upload COD</a><span class="cr-new">NEW</span></td></tr>
+          <tr class="cr-row"><td>2</td><td>NS8821C</td><td>PBT690000002<span class="cr-new">NEW</span><span class="cr-ask">TO CONFIRM</span></td><td>KAMARUL BIN HASSAN</td><td>19-09-2026 16:02</td><td>RHB</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="ok">Yes</td><td class="ok">OK</td><td></td><td><a href="#" data-go="trx-detail">View</a></td></tr>
+          <tr class="cr-row"><td>3</td><td>BQL5540</td><td>PBT690000001<span class="cr-new">NEW</span><span class="cr-ask">TO CONFIRM</span></td><td>SITI ROHANA BINTI YUSOF</td><td>18-09-2026 09:41</td><td>RHB</td><td class="ok">OK</td><td class="bad">Failed</td><td class="dash">-</td><td class="bad">Failed</td><td class="bad">No</td><td class="dash">-</td><td>VEL000100E - VEHICLE RECORD NOT EXIST</td><td><a href="#" data-go="trx-detail">View</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="screen" id="cod1">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR</div>
+      <p class="sub-title">Upload Certificate of Destruction (COD)<span class="cr-new">NEW</span></p>
+      <div class="steps"><div class="step active"><div class="dot">1</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">3</div><div class="nm">Submit</div></div></div>
+      <p class="auth-cap">PBT Authentication</p>
+      <div class="auth-box">
+        <table class="mk"><tbody><tr>
+          <td class="mk-photo"><svg width="110" height="140" viewBox="0 0 110 140" role="img" aria-label="Representative photo"><rect width="110" height="140" fill="#e9edf0" stroke="#b9c2c8"/><circle cx="55" cy="52" r="24" fill="#9aa5ae"/><path d="M14 140c0-24 18-40 41-40s41 16 41 40z" fill="#9aa5ae"/></svg></td>
+          <td><table class="mk-fields"><tbody><tr><td class="mk-lab">Name</td><td><input type="text" style="width:300px" value="TAN WEI MING"></td></tr><tr><td class="mk-lab">MyKad No</td><td><input type="text" style="width:300px" value="880202025678"></td></tr><tr><td class="mk-lab">Address 1</td><td><input type="text" style="width:300px" value="JALAN YONG SHOOK LIN"></td></tr><tr><td class="mk-lab">Address 2</td><td><input type="text" style="width:300px" value="SEKSYEN 52"></td></tr><tr><td class="mk-lab">Address 3</td><td><input type="text" style="width:300px" value=""></td></tr><tr><td class="mk-lab">Postcode</td><td><input type="text" style="width:300px" value="46200"></td></tr><tr><td class="mk-lab">City</td><td><input type="text" style="width:300px" value="PETALING JAYA"></td></tr><tr><td class="mk-lab">State</td><td><input type="text" style="width:300px" value="SELANGOR"></td></tr></tbody></table></td>
+        </tr></tbody></table>
+        <div class="verify"><svg width="100" height="125" viewBox="0 0 100 125" role="img" aria-label="Thumbprint"><rect width="100" height="125" fill="#fff"/><ellipse cx="50" cy="62" rx="8" ry="10" fill="none" stroke="#777" stroke-width="2.4" stroke-dasharray="3 2"/><ellipse cx="50" cy="62" rx="14" ry="17" fill="none" stroke="#777" stroke-width="2.4" stroke-dasharray="3 2"/><ellipse cx="50" cy="62" rx="20" ry="24" fill="none" stroke="#777" stroke-width="2.4" stroke-dasharray="3 2"/><ellipse cx="50" cy="62" rx="26" ry="31" fill="none" stroke="#777" stroke-width="2.4" stroke-dasharray="3 2"/><ellipse cx="50" cy="62" rx="32" ry="38" fill="none" stroke="#777" stroke-width="2.4" stroke-dasharray="3 2"/><ellipse cx="50" cy="62" rx="38" ry="45" fill="none" stroke="#777" stroke-width="2.4" stroke-dasharray="3 2"/></svg><span class="vtick">&#10004;</span><span class="vtxt">Verification Passed</span></div>
+        <div class="btn-row"><button class="std-btn sm" data-go="listing">Cancel</button><button class="std-btn sm" data-go="cod2">Next</button></div>
+      </div>
+    </div>
+
+    <div class="screen" id="cod2">
+      <p class="sub-title">Upload Certificate of Destruction (COD)</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step"><div class="dot">3</div><div class="nm">Submit</div></div></div>
+      <p class="auth-cap">Upload Date &amp; Certificate</p>
+      <table class="jpj"><tbody>
+          <tr><td class="k">Owner's Name:</td><td class="v">AZLI BIN AHMAD</td>
+              <td class="k">PBT's Rep:</td><td class="v">TAN WEI MING</td></tr>
+          <tr><td class="k">MyKad No.:</td><td class="v">900101015678</td>
+              <td class="k">PBT's Rep MyKad No.:</td><td class="v">880202025678</td></tr>
+          <tr><td class="k">Vehicle No.:</td><td class="v">WA1234B</td>
+              <td class="k">PBT Name:</td><td class="v">MAJLIS BANDARAYA PETALING JAYA</td></tr>
+          <tr><td class="k">Engine No.: <span class="required">*</span></td><td class="v"><input type="text" value="EN12345678" style="width:260px"></td><td></td><td></td></tr><tr><td class="k">Chassis No.: <span class="required">*</span></td><td class="v"><input type="text" value="CH12345678" style="width:260px"></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td class="k">Company Reg No:</td><td class="v">AKT/10/1001/0008</td></tr>
+          <tr><td></td><td></td><td class="k">PBT Address:</td><td class="v">JALAN YONG SHOOK LIN, SEKSYEN 52,<br>46200 PETALING JAYA, SELANGOR</td></tr>
+          <tr><td></td><td></td><td class="k">PBT Contact No.:</td><td class="v">0379563544</td></tr>
+        </tbody></table>
+      <hr class="rule">
+      <p class="grp" style="padding-left:340px">Certificate Of Destruction Information</p>
+      <table class="res" style="margin-left:340px"><tbody>
+        <tr><td class="k">Date of Destruction: <span class="required">*</span></td><td><input type="text" value="21/09/2026" style="width:220px"></td></tr>
+        <tr><td class="k">Upload Certificate:<span class="required">*</span></td><td><input type="file"></td></tr>
+      </tbody></table>
+      <div class="btn-row"><button class="std-btn sm" data-go="cod1">Cancel</button><button class="std-btn sm" data-go="cod3">Submit</button></div>
+    </div>
+
+    <div class="screen" id="cod3">
+      <p class="sub-title">Upload Certificate of Destruction (COD)</p>
+      <div class="steps"><div class="step done"><div class="dot">1</div><div class="nm">PBT</div></div><div class="arrow">&#10230;</div><div class="step done"><div class="dot">2</div><div class="nm">Vehicle</div></div><div class="arrow">&#10230;</div><div class="step active"><div class="dot">3</div><div class="nm">Submit</div></div></div>
+      <p class="auth-cap">COD Submitted</p>
+      <table class="jpj"><tbody>
+          <tr><td class="k">Owner's Name:</td><td class="v">AZLI BIN AHMAD</td>
+              <td class="k">PBT's Rep:</td><td class="v">TAN WEI MING</td></tr>
+          <tr><td class="k">MyKad No.:</td><td class="v">900101015678</td>
+              <td class="k">PBT's Rep MyKad No.:</td><td class="v">880202025678</td></tr>
+          <tr><td class="k">Vehicle No.:</td><td class="v">WA1234B</td>
+              <td class="k">PBT Name:</td><td class="v">MAJLIS BANDARAYA PETALING JAYA</td></tr>
+          <tr><td class="k">Engine No.:</td><td class="v">EN12345678</td><td></td><td></td></tr><tr><td class="k">Chassis No.:</td><td class="v">CH12345678</td><td></td><td></td></tr><tr><td class="k">Date of COD:</td><td class="v">21-09-2026</td><td></td><td></td></tr>
+          <tr><td></td><td></td><td class="k">Company Reg No:</td><td class="v">AKT/10/1001/0008</td></tr>
+          <tr><td></td><td></td><td class="k">PBT Address:</td><td class="v">JALAN YONG SHOOK LIN, SEKSYEN 52,<br>46200 PETALING JAYA, SELANGOR</td></tr>
+          <tr><td></td><td></td><td class="k">PBT Contact No.:</td><td class="v">0379563544</td></tr>
+        </tbody></table>
+      <hr class="rule">
+      <table class="res"><tbody>
+        <tr><td class="k">JPJ Decomposition Status:</td><td>OK - TRANSACTION SUCCESSFUL</td></tr>
+        <tr><td class="k">Submission Date/Time:</td><td>21 Sep 2026 05:31 pm</td></tr>
+      </tbody></table>
+      <div class="btn-row"><button class="std-btn sm" data-go="listing">Done</button></div>
+    </div>
+
+    <div class="screen" id="trx-detail">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR &nbsp;&nbsp; <span class="cr-new">NEW</span> pending requestor / dev confirmation</div>
+
+      <div class="tool-bar">
+        <a class="back-to" href="#" data-go="listing">&laquo; Back</a>
+        <span class="app-title" id="td-title">VAN1234 &nbsp;(Ref No.: PBT690000003)<span class="cr-new">NEW</span><span class="cr-ask">TO CONFIRM</span></span>
+        <span class="d-status" id="td-status">Approved</span>
+      </div>
+
+      <table class="dtop"><tbody><tr>
+        <td>
+          <table class="kv"><tbody>
+            <tr><td class="k">Category:</td><td>Malaysia to PBT</td></tr>
+            <tr><td class="k">Engine No:</td><td>EN12345678</td></tr>
+            <tr><td class="k">Chassis No:</td><td>CH12345678</td></tr>
+            <tr><td class="k">Vehicle Make / Model:</td><td>Perodua Myvi</td></tr>
+            <tr><td class="k">Manufacturing Year:</td><td>2020</td></tr>
+          </tbody></table>
+        </td>
+        <td>
+          <table class="kv"><tbody>
+            <tr><td class="k">Date Created:</td><td>20-09-2026 08:55am</td></tr>
+            <tr><td class="k">e-Invoice Submission Date:</td><td>20-09-2026 09:00am</td></tr>
+            <tr><td class="k">LHDN Response Status:</td><td class="good">OK</td></tr>
+            <tr><td class="k">e-Invoice Validation Date:</td><td>20-09-2026 09:01am</td></tr>
+            <tr><td class="k">eDereg Pre-Checking:</td><td class="good">Yes</td></tr>
+          </tbody></table>
+        </td>
+        <td class="dbtns">
+          <button class="mykad-btn sm">&#128196; Invoice</button>
+          <button class="mykad-btn sm">&#128196; e-Invoice</button><br>
+          <button class="mykad-btn sm">&#128196; COD<span class="cr-new">NEW</span></button>
+          <button class="mykad-btn sm">&#128196; Uploaded Consent</button><br>
+          <button class="mykad-btn sm">&#128196; Perakuan</button>
+        </td>
+      </tr></tbody></table>
+
+      <table class="dcols"><tbody><tr>
+        <td>
+          <p class="grp">Owner</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">Name:</td><td id="td-own">AZLI BIN AHMAD</td></tr>
+            <tr><td class="k">MyKad No:</td><td>900101015678</td></tr>
+            <tr><td class="k">Address:</td><td>H123, LORONG 456,<br>JALAN 789,<br>56000 KUALA LUMPUR,<br>WILAYAH PERSEKUTUAN KUALA LUMPUR</td></tr>
+            <tr><td class="k">Mobile No:</td><td>0123456789</td></tr>
+            <tr><td class="k">Email:</td><td>azli@example.com</td></tr>
+            <tr><td class="k">MyKad/Thumbprint<br>verified on:</td><td>20-09-2026 08:51am</td></tr>
+            <tr><td class="k">Uploaded Document:</td><td><a href="#">Photo 1</a><br><a href="#">Photo 2</a><br><a href="#">Photo 3</a><br><button class="mykad-btn sm" style="margin-top:4px">OPEN ALL</button></td></tr>
+          </tbody></table>
+        </td>
+        <td>
+          <p class="grp">PBT</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">PBT:</td><td>MAJLIS BANDARAYA PETALING JAYA</td></tr>
+            <tr><td class="k">Company Reg. No:</td><td>AKT/10/1001/0008</td></tr>
+            <tr><td class="k">PBT Address:</td><td>JALAN YONG SHOOK LIN, SEKSYEN 52,<br>46200 PETALING JAYA, SELANGOR</td></tr>
+            <tr><td class="k">PBT Contact No:</td><td>0379563544</td></tr>
+          </tbody></table>
+
+          <p class="grp">PBT&rsquo;s Authorised Representative</p>
+          <table class="kv"><tbody>
+            <tr><td class="k">Name:</td><td>TAN WEI MING</td></tr>
+            <tr><td class="k">MyKad No:</td><td>880202025678</td></tr>
+            <tr><td class="k">Mobile No:</td><td>0123456789</td></tr>
+            <tr><td class="k">MyKad/Thumbprint<br>verified on:</td><td>20-09-2026 08:57am</td></tr>
+          </tbody></table>
+
+          <p class="grp">PBT&rsquo;s Authorised Representative (Uploaded COD)<span class="cr-new">NEW</span></p>
+          <table class="kv"><tbody>
+            <tr><td class="k">Name:</td><td>TAN WEI MING</td></tr>
+            <tr><td class="k">MyKad No:</td><td>880202025678</td></tr>
+            <tr><td class="k">Mobile No:</td><td>0123456789</td></tr>
+            <tr><td class="k">Vehicle Destruction Date:</td><td>21-09-2026</td></tr>
+            <tr><td class="k">COD Uploaded on:</td><td>22-09-2026 09:32am</td></tr>
+          </tbody></table>
+        </td>
+      </tr></tbody></table>
+
+      <hr class="rule">
+
+      <table class="dcols"><tbody><tr>
+        <td>
+          <p class="grp">JPJ Enquiry:</p>
+          <div class="plain">1. 20-09-2026 08:56 am - <span class="good">OK</span> (GL80900001)</div>
+          <div class="plain">2. 20-09-2026 08:59 am - <span class="good">OK</span> (GL80900001)</div>
+        </td>
+        <td>
+          <p class="grp">Payment Details:</p>
+          <div class="plain">1. 20-09-2026 08:59am - RHB (<span id="td-pay">XXX260920000001-VAN1234</span>) - <span class="good">OK</span></div>
+        </td>
+      </tr></tbody></table>
+
+      <p class="grp">JPJ Enquiry Status:</p>
+      <table class="kv"><tbody>
+        <tr><td class="k">Valid As At:</td><td>20 Sep 2026 09:00 am</td></tr>
+        <tr><td class="k">Blacklisted:</td><td>No</td></tr>
+        <tr><td class="k">Hak Milik Dituntut:</td><td>No</td></tr>
+        <tr><td class="k">Condition Code:</td><td>No</td></tr>
+      </tbody></table>
+
+      <p class="grp">JPJ Final Submission:</p>
+      <div class="plain">20-09-2026 09:00pm <span class="good">Successful</span></div>
+
+      <p class="grp">JPJ COD Submission:<span class="cr-new">NEW</span></p>
+      <div class="plain">20-09-2026 09:32am - <span class="good">OK</span> (GL80000001)</div>
+    </div>
+
+    <!-- ===== PRE-CHECKING TRANSACTION LISTING ===== -->
+    <div class="screen" id="precheck-list">
+      <div class="cr-legend"><b>EAINT-12348</b> &mdash; <span class="cr-new">NEW</span> added or changed by this CR &nbsp;&nbsp; <span class="cr-ask">TO CONFIRM</span> pending requestor / dev confirmation</div>
+      <div class="filters">
+        <label for="p1">Vehicle No.:</label><input id="p1" type="text" value="VAN1234">
+        <label for="p2">Transaction No.:</label><input id="p2" type="text">
+        <label for="p3">Date Created (From):</label><input id="p3" type="text" style="width:120px">
+        <label for="p4">Date Created (To):</label><input id="p4" type="text" style="width:120px">
+      </div>
+      <div class="filters">
+        <label for="p5">Trx Status:</label>
+        <select id="p5"><option>All</option><option>Approved</option><option>Pending</option><option>Failed</option></select>
+        <label for="p6">Payment Status:</label>
+        <select id="p6"><option>All</option><option>Paid</option><option>Unpaid</option></select>
+        <label for="p7">Payment Date (From):</label><input id="p7" type="text" style="width:120px">
+        <label for="p8">Payment Date (To):</label><input id="p8" type="text" style="width:120px">
+      </div>
+      <div class="filters" style="justify-content:flex-end">
+        <button class="list-btn">Search Now</button>
+        <a href="#" data-go="precheck-list">Reset</a>
+      </div>
+
+      <p class="center" style="font-weight:bold;margin:14px 0 6px">eDereg Pre-Checking Transaction Listing</p>
+      <table class="result">
+        <thead><tr>
+          <th>#</th><th>Vehicle</th><th>Transaction No.</th><th>Created At</th><th>Payment</th>
+          <th>JPJ Pre-<br>Checking</th><th>Trx Status</th><th>e-Invoice<br>Status</th><th>Remarks</th><th>Action</th>
+        </tr></thead>
+        <tbody>
+          <tr class="even">
+            <td>1</td><td>VAN1234</td><td>PBTPC69000006<span class="cr-ask">TO CONFIRM</span></td><td>20-09-2026 10:05</td>
+            <td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="ok">OK</td>
+            <td></td><td><a href="#" class="pc-view">View</a></td>
+          </tr>
+          <tr class="odd">
+            <td>2</td><td>WA1234B</td><td>PBTPC69000005<span class="cr-ask">TO CONFIRM</span></td><td>19-09-2026 16:02</td>
+            <td class="ok">OK</td><td class="ok">OK</td><td class="ok">Approved</td><td class="ok">OK</td>
+            <td></td><td><a href="#" class="pc-view">View</a></td>
+          </tr>
+          <tr class="even">
+            <td>3</td><td>NS8821C</td><td>PBTPC69000004<span class="cr-ask">TO CONFIRM</span></td><td>18-09-2026 09:41</td>
+            <td class="dash">-</td><td class="dash">-</td><td class="pend">Pending</td><td class="dash">-</td>
+            <td></td><td><a href="#" class="pc-view">View</a> | <a href="#" class="pc-cancel">Cancel</a></td>
+          </tr>
+          <tr class="odd">
+            <td>4</td><td>BQL5540</td><td>PBTPC69000003<span class="cr-ask">TO CONFIRM</span></td><td>17-09-2026 14:15</td>
+            <td class="ok">OK</td><td class="bad">Failed</td><td class="bad">Failed</td><td class="dash">-</td>
+            <td>VEL000100E - VEHICLE RECORD NOT EXIST</td><td><a href="#" class="pc-view">View</a> | <a href="#" class="pc-cancel">Cancel</a></td>
+          </tr>
+          <tr class="even">
+            <td>5</td><td>JKL2233</td><td>PBTPC69000002<span class="cr-ask">TO CONFIRM</span></td><td>16-09-2026 11:08</td>
+            <td class="bad">Failed</td><td class="dash">-</td><td class="bad">Failed</td><td class="dash">-</td>
+            <td>IF - Wang di dalam akaun RHB anda TIDAK MENCUKUPI.</td><td><a href="#" class="pc-view">View</a> | <a href="#" class="pc-cancel">Cancel</a></td>
+          </tr>
+          <tr class="odd">
+            <td>6</td><td>PPP4455</td><td>PBTPC69000001<span class="cr-ask">TO CONFIRM</span></td><td>15-09-2026 08:50</td>
+            <td class="bad">Failed</td><td class="dash">-</td><td class="bad">Cancelled</td><td class="dash">-</td>
+            <td>CANCELLED BY TAN WEI MING on 15-09-2026 23:59</td><td><a href="#" class="pc-view">View</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div id="footer">
+    <div class="txt">
+      Best Compatible With Mozilla Firefox V36.0.4<br>
+      Copyright &copy; 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+      <a href="#">Contact Us</a> | <a href="#">Terms &amp; Conditions</a> | <a href="#">Privacy</a>
+    </div>
+    <svg viewBox="0 0 276 114" role="img" aria-label="eAuto.my"><use href="#brandmark"/></svg>
+  </div>
+
+</div></div>
+
+<div class="modal-back" id="spinner">
+  <div class="spin-box"><span class="spin"></span><span class="spin-txt">Please wait for a moment...</span></div>
+</div>
+
+<div class="modal-back" id="realert">
+  <div class="modal wide">
+    <div class="body">RE - Sila TUNGGU 6 minit kemudian klik 'Resubmit'. Sistem RHB sedang diproses. (RHB &#32593;&#32476;&#38556;&#30861;&#65292;&#35831;&#31561;6&#20998;&#38047;&#21518;&#20877;&#28857;&#20987;'Resubmit'&#12290;)</div>
+    <div class="foot"><button class="std-btn sm" id="re-ok">OK</button></div>
+  </div>
+</div>
+
+<div class="modal-back" id="pcreminder">
+  <div class="modal pcrem">
+    <div class="rem-bar">eDereg Pre-Checking Enquiry</div>
+    <div class="rem-warn">&#9888; Approved eDereg Pre-Checking within 6 months is required to proceed</div>
+    <div class="rem-body">
+      <p class="pc-red" style="margin:0 0 6px">Click NEXT to pay and retrieve the vehicle pre-checking result.</p>
+      <p style="margin:0 0 14px"><b>Vehicle Registration Number:</b> &nbsp;VAN1234</p>
+      <p class="pc-grp" style="margin:0 0 6px">Payment Summary</p>
+      <table class="paysum"><tbody>
+        <tr><td>JPJ Fee :</td><td class="cur">RM</td><td class="amt">5.00</td></tr>
+        <tr><td>eAuto Service Fee :</td><td class="cur">RM</td><td class="amt">5.00</td></tr>
+        <tr><td>Service Tax 8% :</td><td class="cur">RM</td><td class="amt">0.40</td></tr>
+        <tr class="tot"><td><b>Total Amount Payable (inclusive of Service Tax 8%) :</b></td>
+            <td class="cur"><b>RM</b></td><td class="amt"><b>10.40</b></td></tr>
+      </tbody></table>
+      <p class="center" style="margin:14px 0 0">Note : No refund is allowed, once payment is made.</p>
+    </div>
+    <div class="foot">
+      <button class="std-btn sm" id="rem-cancel">Cancel</button>
+      <button class="std-btn sm" id="rem-next">Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="payask">
+  <div class="modal">
+    <div class="body">
+      <p style="margin:0 0 10px">Are you sure to make payment? No refund is allowed, once payment is made</p>
+      <p style="margin:0">Adakah anda pasti akan meneruskan pembayaran? Tiada bayaran balik dibenarkan setelah bayaran dibuat.</p>
+    </div>
+    <div class="foot">
+      <button class="std-btn sm" id="pay-no">No</button>
+      <button class="std-btn sm" id="pay-yes">Yes</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="pccancel">
+  <div class="modal">
+    <div class="body" style="font-size:18px">Sure to cancel?</div>
+    <div class="foot">
+      <button class="std-btn sm" id="pcc-no">Cancel</button>
+      <button class="std-btn sm" id="pcc-ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="confirm">
+  <div class="modal">
+    <div class="bar"><button id="modal-x">&#10005;</button></div>
+    <div class="body">Pilihan anda: Orang Awam Malaysia (MyKad)</div>
+    <div class="foot">
+      <button class="std-btn" id="modal-yes">YA</button>
+      <button class="std-btn" id="modal-no">TIDAK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="payconfirm">
+  <div class="modal">
+    <div class="bar"><button id="pay-x">&#10005;</button></div>
+    <div class="body">Sure to submit this payment to DEREGISTER?</div>
+    <div class="foot">
+      <button class="std-btn sm" id="pay-ok">OK</button>
+      <button class="std-btn sm" id="pay-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var TITLES={home:'Online Services - Home',dereg:'Online Service - Home',
+    idpick:'Online Services - DEREGISTRATION SERVICE',owner:'Online Services - DEREGISTRATION SERVICE',
+    precheck:'Online Services - DEREGISTRATION SERVICE','precheck-list':'Online Services - DEREGISTRATION SERVICE',
+    listing:'Online Services - Deregistration SERVICE',
+    step2:'Online Services - DEREGISTRATION SERVICE',step3:'Online Services - DEREGISTRATION SERVICE',
+    step3b:'Online Services - DEREGISTRATION SERVICE',step4:'Online Services - DEREGISTRATION SERVICE',
+    step4b:'Online Services - DEREGISTRATION SERVICE',step5:'Online Services - DEREGISTRATION SERVICE',
+    step6:'Online Services - DEREGISTRATION SERVICE',pc2:'Online Services - DEREGISTRATION SERVICE',pc3:'Online Services - DEREGISTRATION SERVICE',pc2f:'Online Services - DEREGISTRATION SERVICE',pc2re:'Online Services - DEREGISTRATION SERVICE',
+    'trx-detail':'Online Services - Deregistration SERVICE',cod1:'Online Services - DEREGISTRATION SERVICE',cod2:'Online Services - DEREGISTRATION SERVICE',cod3:'Online Services - DEREGISTRATION SERVICE'};
+  function show(id){
+    var all=document.querySelectorAll('.screen');
+    for(var i=0;i<all.length;i++) all[i].classList.remove('on');
+    var t=document.getElementById(id);
+    if(t) t.classList.add('on');
+    var b=document.getElementById('bar-title');
+    if(b&&TITLES[id]) b.textContent=TITLES[id];
+    window.scrollTo(0,0);
+  }
+
+  function txt(td){ var c=td.cloneNode(true); var sp=c.querySelectorAll('span'); for(var i=0;i<sp.length;i++) sp[i].remove(); return c.textContent.trim(); }
+  var ASK2='<span class="cr-ask">TO CONFIRM</span>', NEW2='<span class="cr-new">NEW</span>';
+  function fillTd(tr){
+    var td=tr.querySelectorAll('td');
+    var veh=txt(td[1]), trx=txt(td[2]), own=txt(td[3]), st=txt(td[9]);
+    document.getElementById('td-title').innerHTML=veh+' &nbsp;(Ref No.: '+trx+')'+NEW2+ASK2;
+    var ds=document.getElementById('td-status'); ds.textContent=st; ds.style.color= st==='Approved'?'#127a2e':(st==='Pending'?'#1a3c8c':'#c0170c');
+    document.getElementById('td-own').textContent=own;
+    var pay=document.getElementById('td-pay'); if(pay) pay.textContent='XXX260920000001-'+veh;
+  }
+  function viewPc(tr){
+    var td=tr.querySelectorAll('td');
+    var veh=txt(td[1]), st=txt(td[6]), rem=txt(td[8]);
+    if(st==='Approved' || rem.indexOf('VEL')===0){
+      var ok= st==='Approved';
+      document.getElementById('r-veh').textContent=veh;
+      var r=document.getElementById('r-resp'); r.className= ok?'good':'bad2'; r.textContent= ok ? 'GLB000000I \u2013 ENQUIRY SUCCESSFUL' : rem;
+      var uc=document.getElementById('r-usage'); uc.className= ok?'':'bad2'; uc.textContent= ok?'Yes':'No';
+      var n=document.getElementById('r-note'); n.textContent= ok ? 'Note: Able to proceed with eDereg' : 'Note: Unable to proceed with eDereg';
+      n.style.color= ok ? '#127a2e' : '';
+      show('pc3');
+    } else if(st==='Pending'){ show('pc2'); }
+    else { show('pc2f'); }
+  }
+
+  document.addEventListener('input',function(e){
+    if(e.target.id==='pc-veh'||e.target.classList.contains('pc-mirror')){
+      var v=e.target.value.toUpperCase(), m=document.querySelectorAll('#pc-veh,.pc-mirror');
+      for(var i=0;i<m.length;i++) if(m[i]!==e.target) m[i].value=v;
+    }
+  });
+  document.addEventListener('click',function(e){
+    var tdv=e.target.closest ? e.target.closest('#listing a[data-go="trx-detail"]') : null; if(tdv){ fillTd(tdv.closest('tr')); }
+    var pv=e.target.closest ? e.target.closest('a.pc-view') : null; if(pv){ e.preventDefault(); viewPc(pv.closest('tr')); return; }
+    var pcx=e.target.closest ? e.target.closest('a.pc-cancel') : null; if(pcx){ e.preventDefault(); window.__pcRow=pcx.closest('tr'); document.getElementById('pccancel').classList.add('on'); return; }
+    if(e.target.id==='pcc-no'){ document.getElementById('pccancel').classList.remove('on'); window.__pcRow=null; return; }
+    if(e.target.id==='pcc-ok'){ document.getElementById('pccancel').classList.remove('on'); var tr=window.__pcRow; window.__pcRow=null;
+      if(tr){ var c=tr.querySelectorAll('td'); c[6].className='bad'; c[6].textContent='Cancelled';
+        var d=new Date(), z=function(x){return (x<10?'0':'')+x;};
+        c[8].textContent='CANCELLED BY TAN WEI MING on '+z(d.getDate())+'-'+z(d.getMonth()+1)+'-'+d.getFullYear()+' '+z(d.getHours())+':'+z(d.getMinutes());
+        c[9].innerHTML='<a href="#" class="pc-view">View</a>'; }
+      return; }
+    var n=e.target;
+    while(n&&n!==document&&!(n.getAttribute&&n.getAttribute('data-go'))) n=n.parentNode;
+    if(n&&n!==document){ e.preventDefault(); show(n.getAttribute('data-go')); return; }
+
+    var id=e.target.id;
+    if(id==='pick-mykad'||id==='pick-mypr'||(e.target.parentNode&&/pick-my/.test(e.target.parentNode.id||''))){
+      e.preventDefault();
+      var lbl=(id==='pick-mypr'||(e.target.parentNode||{}).id==='pick-mypr')
+        ?'Pilihan anda: Penduduk Tetap Malaysia (MyPR)':'Pilihan anda: Orang Awam Malaysia (MyKad)';
+      document.querySelector('#confirm .body').textContent=lbl;
+      document.getElementById('confirm').classList.add('on');
+      return;
+    }
+    if(id==='modal-yes'){ document.getElementById('confirm').classList.remove('on'); show('owner'); return; }
+    if(id==='modal-no'||id==='modal-x'){ document.getElementById('confirm').classList.remove('on'); return; }
+    if(id==='show-spin'){ var sp=document.getElementById('spinner'); sp.classList.add('on'); setTimeout(function(){ sp.classList.remove('on'); },1800); return; }
+    if(id==='show-re'){ document.getElementById('realert').classList.add('on'); return; }
+    if(id==='re-ok'){ document.getElementById('realert').classList.remove('on'); return; }
+    if(id==='veh-next'){ document.getElementById('pcreminder').classList.add('on'); return; }
+    if(id==='rem-cancel'){ document.getElementById('pcreminder').classList.remove('on'); return; }
+    if(id==='rem-next'){ document.getElementById('pcreminder').classList.remove('on'); show('step3'); return; }
+    if(id==='pc-next'||id==='pc-retry'){ document.getElementById('payask').classList.add('on'); return; }
+    if(id==='pay-yes'){ document.getElementById('payask').classList.remove('on'); show('pc3'); return; }
+    if(id==='pay-no'){ document.getElementById('payask').classList.remove('on'); show('pc2f'); return; }
+    if(id==='pay-next'){ document.getElementById('payconfirm').classList.add('on'); return; }
+    if(id==='pay-ok'){ document.getElementById('payconfirm').classList.remove('on'); show('step6'); return; }
+    if(id==='pay-cancel'||id==='pay-x'){ document.getElementById('payconfirm').classList.remove('on'); return; }
+    if(id==='agree-yes'||id==='agree-no'){
+      document.getElementById('agree-yes').disabled=true;
+      document.getElementById('agree-no').disabled=true;
+      if(id==='agree-yes') document.getElementById('ownerauth').classList.remove('hidden');
+      return;
+    }
+  });
+})();
+</script>
+</body>
+</html>

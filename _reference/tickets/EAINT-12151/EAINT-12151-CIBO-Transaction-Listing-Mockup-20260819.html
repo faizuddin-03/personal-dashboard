@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIBO Transaction Listing — Mockup (EAINT-12151)</title>
+<style>
+  :root{
+    --blue:#1f6feb; --blue-strong:#1e66ff; --link:#2f6fed;
+    --page:#f4f5f8; --card:#ffffff; --line:#eceff3; --border:#d5d9e0;
+    --label:#6b7280; --ink:#1f2733; --muted:#667085;
+    --new:#0a9c6b; --new-bg:#e6f7f0; --new-tint:#eefaf4;
+    --ren:#1f6feb; --ren-bg:#e8f1ff;
+    --yellow-bg:#fbeeb5; --yellow-ink:#8a6d1a;
+    --purple-bg:#f2e6fb; --purple-ink:#8b3fc0;
+    --sky-bg:#e9f1fb; --sky-ink:#4a72a8;
+    --green-bg:#e3f7ec; --green-ink:#1a7f4b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--page);color:var(--ink);font-size:14px}
+
+  .shell{display:flex;min-height:100vh}
+  .side{width:78px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:18px 0;position:relative;gap:6px;flex-shrink:0}
+  .avatar{width:52px;height:52px;border-radius:50%;background:#cfe3fb;color:#2f6fed;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:20px;margin-bottom:8px}
+  .nav-ico{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:#98a2b3;cursor:pointer}
+  .nav-ico:hover{background:#f2f5f9}
+  .nav-ico.active{color:var(--blue)}
+  .nav-ico svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+  .collapse{position:absolute;top:150px;right:-15px;width:30px;height:30px;border-radius:50%;background:#0e2a47;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .collapse svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.4}
+
+  .main{flex:1;padding:26px 34px;overflow:hidden}
+  .title{font-size:30px;font-weight:700;margin:0 0 14px}
+  .hidefilters{color:var(--blue);font-weight:600;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;cursor:pointer}
+  .hidefilters svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+
+  .filters{padding:22px 24px;margin-bottom:22px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 26px}
+  .field{position:relative}
+  .field .fl{position:absolute;top:-8px;left:12px;background:#fff;padding:0 5px;font-size:12px;color:var(--label);z-index:1}
+  .field.focus .fl{color:var(--blue)}
+  .ctrl{width:100%;height:52px;border:1px solid var(--border);border-radius:7px;background:#fff;display:flex;align-items:center;padding:0 14px;color:#8a94a6}
+  .field.focus .ctrl{border-color:var(--blue);border-width:1.5px}
+  .ctrl.val{color:var(--ink);cursor:pointer}
+  .caret{margin-left:auto;color:#98a2b3;transition:transform .15s}
+  .caret.blue{color:var(--blue)}
+  .open .caret{transform:rotate(180deg)}
+  .split{display:flex;gap:0}
+  .split input.ctrl{border-radius:7px 0 0 7px;font-family:inherit;font-size:14px;color:var(--ink);outline:none}
+  .split input.ctrl+input.ctrl{border-radius:0 7px 7px 0;border-left:none}
+  .split input.ctrl::-webkit-datetime-edit{color:var(--ink)}
+  .split input.ctrl:invalid::-webkit-datetime-edit{color:#98a2b3}
+
+  .dd-wrap{position:relative}
+  .dd-menu{position:absolute;left:0;right:0;top:56px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(16,24,40,.14);z-index:20;overflow:hidden;display:none}
+  .dd-wrap.open .dd-menu{display:block}
+  .dd-item{padding:13px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--ink)}
+  .dd-item:hover{background:#f4f7fb}
+  .dd-item.sel{background:#f7f9fc}
+
+  .searchrow{display:flex;gap:16px;align-items:center;margin-top:22px}
+  .searchbox{flex:1;height:52px;border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;padding:0 14px;color:#98a2b3;gap:10px}
+  .searchbox input{border:none;outline:none;flex:1;font-family:inherit;font-size:14px;color:var(--ink);background:transparent}
+  .searchbox svg{width:18px;height:18px;stroke:#98a2b3;fill:none;stroke-width:2}
+  .btn-primary{height:52px;padding:0 40px;background:var(--blue-strong);color:#fff;border:none;border-radius:7px;font-size:15px;font-weight:600;cursor:pointer}
+  .btn-primary:hover{filter:brightness(.95)}
+  .btn-link{color:var(--blue);font-weight:600;background:none;border:none;cursor:pointer;font-size:15px}
+
+  .listing{padding:22px 24px}
+  .listing-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .listing-head h2{font-size:24px;font-weight:700;margin:0}
+  .actions{display:flex;gap:12px}
+  .btn-out{display:inline-flex;align-items:center;gap:8px;border:1px solid #d7deea;color:var(--blue);background:#fff;border-radius:8px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer}
+  .btn-out svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:1.8}
+  .resultnote{font-size:13px;color:var(--muted);margin:0 0 14px}
+  .resultnote b{color:var(--ink)}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:#eef4fb;color:#3a6bb0;border-radius:20px;padding:3px 12px;font-size:12px;margin-left:8px}
+
+  .scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:1860px}
+  thead th{text-align:left;color:var(--muted);font-size:12.5px;font-weight:700;padding:14px 14px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+  tbody td{padding:16px 14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px;color:var(--ink);white-space:nowrap}
+  tbody tr:hover{background:#fafcff}
+  .reflink{color:var(--link);font-weight:600}
+  .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:6px;font-size:11.5px;font-weight:600;margin-top:6px}
+  .b-sky{background:var(--sky-bg);color:var(--sky-ink)}
+  .b-yellow{background:var(--yellow-bg);color:var(--yellow-ink)}
+  .b-purple{background:var(--purple-bg);color:var(--purple-ink)}
+  .b-green{background:var(--green-bg);color:var(--green-ink)}
+  .sub{color:var(--ink);font-size:13px;margin-top:6px}
+  .muted{color:#98a2b3}
+  .stack{display:flex;flex-direction:column}
+  .empty{padding:34px 14px;text-align:center;color:var(--muted)}
+
+  .tag{display:none;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:5px;margin-left:7px;vertical-align:middle;letter-spacing:.3px}
+  .tag-new{background:var(--new-bg);color:var(--new)}
+  .tag-ren{background:var(--ren-bg);color:var(--ren)}
+  body.hl .tag{display:inline-block}
+  body.hl .col-new{background:var(--new-tint)}
+  body.hl th.col-new{background:#dff3ea}
+  body.hl .col-ren-head{color:var(--ren)}
+  .legend{display:none;gap:16px;font-size:12px;color:var(--muted);padding:16px 24px 4px}
+  body.hl .legend{display:flex;flex-wrap:wrap;align-items:center}
+  .legend .k{display:inline-flex;align-items:center;gap:6px;margin-right:22px}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  /* print view: show only the listing */
+  @media print {
+    .side, .hidefilters, .filters, .actions, .resultnote { display:none !important; }
+    body { background:#fff; }
+    .main { padding:0; }
+    .card { border:none; box-shadow:none; }
+    .title::after { content:" — Transaction Listing"; }
+    table { min-width:0; width:100%; font-size:11px; }
+    thead th, tbody td { padding:6px 8px; }
+    body.hl .col-new { background:transparent !important; }
+    body.hl th.col-new { background:#dff3ea !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .tag { display:none !important; }
+  }
+</style>
+</head>
+<body class="hl">
+  <div class="shell">
+    <div class="side">
+      <div class="avatar">M</div>
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M15 14a6 6 0 0 1 6 6"/></svg></div>
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8 17a4 4 0 0 1 8 0"/></svg></div>
+      <div class="nav-ico active"><svg viewBox="0 0 24 24"><path d="M4 18l5-6 4 4 6-8"/><path d="M3 21h18"/></svg></div>
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg></div>
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 16v-4M12 16V9M16 16v-6"/></svg></div>
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 13h6M9 17h6"/></svg></div>
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg></div>
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 11-3"/><path d="M16 8l5 5M21 8l-5 5"/></svg></div>
+      <div class="collapse"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </div>
+
+    <div class="main">
+      <h1 class="title">Transaction Management</h1>
+      <div class="hidefilters">Hide Filters <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+
+      <div class="card filters">
+        <div class="grid">
+          <div class="field">
+            <span class="fl">Platform</span>
+            <div class="ctrl">Platform <span class="caret">▾</span></div>
+          </div>
+          <div class="field">
+            <span class="fl">Insurance Company</span>
+            <div class="ctrl">Insurance Company <span class="caret">▾</span></div>
+          </div>
+
+          <div class="field focus dd-wrap" id="drt">
+            <span class="fl">Date Range Type</span>
+            <div class="ctrl val" id="drtCtrl"><span id="drtValue">Transaction Creation Date</span><span class="caret blue">▾</span></div>
+            <div class="dd-menu">
+              <div class="dd-item sel" data-val="txn" data-label="Transaction Creation Date">Transaction Creation Date <span class="tag tag-ren">RENAMED</span></div>
+              <div class="dd-item" data-val="ins" data-label="Insurance Creation Date">Insurance Creation Date <span class="tag tag-new">NEW</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <span class="fl" id="rangeLabel">Transaction Creation Date range</span>
+            <div class="split">
+              <input class="ctrl" type="date" id="fromDate" aria-label="From">
+              <input class="ctrl" type="date" id="tillDate" aria-label="Till">
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="fl">Transaction Status</span>
+            <div class="ctrl">Transaction Status <span class="caret">▾</span></div>
+          </div>
+          <div class="field">
+            <span class="fl">Submission to JPJ Status</span>
+            <div class="ctrl">Submission to JPJ Status <span class="caret">▾</span></div>
+          </div>
+
+          <div class="field">
+            <span class="fl">Road Tax</span>
+            <div class="ctrl">Road Tax <span class="caret">▾</span></div>
+          </div>
+          <div class="field">
+            <span class="fl">Discount Code</span>
+            <div class="ctrl">Discount Code <span class="caret">▾</span></div>
+          </div>
+        </div>
+
+        <div class="searchrow">
+          <div class="searchbox"><input type="text" id="searchText" placeholder="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></div>
+          <button class="btn-primary" onclick="applySearch()">Search</button>
+          <button class="btn-link" onclick="clearAll()">Clear all</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="listing">
+          <div class="listing-head">
+            <h2>Transaction Listing</h2>
+            <div class="actions">
+              <button class="btn-out" onclick="printListing()"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="6" y="14" width="12" height="7"/><path d="M6 14H4a2 2 0 0 1-2-2V11a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-2"/></svg> Print</button>
+              <button class="btn-out" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 21h16"/></svg> Export</button>
+            </div>
+          </div>
+          <p class="resultnote" id="resultNote"></p>
+
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Transaction Ref. No.</th>
+                  <th class="col-ren-head">Transaction Created Date <span class="tag tag-ren">RENAMED</span></th>
+                  <th class="col-new">Insurance Created Date <span class="tag tag-new">NEW</span></th>
+                  <th>UCD</th>
+                  <th>UCD Name</th>
+                  <th>Vehicle No</th>
+                  <th>Vehicle Type</th>
+                  <th>Insured</th>
+                  <th>Payment</th>
+                  <th>Discount Code</th>
+                  <th>Road Tax</th>
+                  <th>Ins. Co.</th>
+                  <th>Transaction Status</th>
+                  <th>JPJ</th>
+                  <th>Remark</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="k"><span class="dot" style="background:var(--ren-bg);border:1px solid var(--ren)"></span> Renamed label</span>
+          <span class="k"><span class="dot" style="background:var(--new-tint);border:1px solid var(--new)"></span> New field / column</span>
+          <span class="k">Display rule — <b style="margin:0 4px">Approved</b> shows Insurance Created Date (DD-MM-YYYY HH:mm); <b style="margin:0 4px">not yet approved</b> shows "-".</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ---- dummy transaction data (txn = Transaction Created, ins = Insurance Created; null = not yet approved) ----
+  const TX = [
+    {ref:"BR10000001", txn:"2026-08-01T09:15", ins:"2026-08-01T09:18", plate:"VJK1001", name:"ALI BIN AHMAD",        ic:"900101-14-0001", amt:"RM2,025.00", pay:"01-08-2026 09:17", status:"Approved", insco:"Lonpac"},
+    {ref:"BR10000002", txn:"2026-08-02T14:05", ins:"2026-08-02T14:09", plate:"VJK1002", name:"SITI BINTI OMAR",      ic:"910202-14-0002", amt:"RM1,988.00", pay:"02-08-2026 14:07", status:"Approved", insco:"TokioMarine"},
+    {ref:"BR10000003", txn:"2026-08-04T23:57", ins:"2026-08-04T23:59", plate:"VJK1003", name:"TAN AH KOW",           ic:"880303-14-0003", amt:"RM1,850.00", pay:"04-08-2026 23:58", status:"Approved", insco:"Lonpac"},
+    {ref:"BR10000004", txn:"2026-08-05T10:12", ins:"2026-08-05T10:15", plate:"VJK1004", name:"LEE MEI LING",         ic:"920404-14-0004", amt:"RM2,140.00", pay:"05-08-2026 10:14", status:"Approved", insco:"Zurich"},
+    {ref:"BR10000005", txn:"2026-08-06T16:40", ins:"2026-08-06T16:45", plate:"VJK1005", name:"RAJ A/L KUMAR",        ic:"870505-14-0005", amt:"RM2,310.00", pay:"06-08-2026 16:43", status:"Approved", insco:"Allianz"},
+    {ref:"BR10000006", txn:"2026-08-08T08:22", ins:"2026-08-08T08:26", plate:"VJK1006", name:"WONG LI WEI",          ic:"930606-14-0006", amt:"RM1,760.00", pay:"08-08-2026 08:24", status:"Approved", insco:"Lonpac"},
+    {ref:"BR10000007", txn:"2026-08-11T11:03", ins:"2026-08-11T11:07", plate:"VJK1007", name:"NUR AISYAH BINTI ISMAIL", ic:"950707-14-0007", amt:"RM2,025.00", pay:"11-08-2026 11:05", status:"Approved", insco:"TokioMarine"},
+    {ref:"BR10000008", txn:"2026-08-12T19:48", ins:"2026-08-12T19:52", plate:"VJK1008", name:"CHONG WEI MING",       ic:"890808-14-0008", amt:"RM2,480.00", pay:"12-08-2026 19:50", status:"Approved", insco:"Zurich"},
+    {ref:"BR10000009", txn:"2026-08-14T13:15", ins:"2026-08-14T13:19", plate:"VJK1009", name:"FARIDAH BINTI HASSAN",  ic:"960909-14-0009", amt:"RM1,905.00", pay:"14-08-2026 13:17", status:"Approved", insco:"Lonpac"},
+    {ref:"BR10000010", txn:"2026-08-15T09:30", ins:"2026-08-15T09:34", plate:"VJK1010", name:"KUMARAN A/L SAMY",      ic:"851010-14-0010", amt:"RM2,025.00", pay:"15-08-2026 09:32", status:"Approved", insco:"Allianz"},
+    {ref:"BR10000011", txn:"2026-08-18T17:43", ins:null,              plate:"VJK1011", name:"ABDULLAH BIN YUSOF",    ic:"941111-14-0011", amt:"RM2,025.00", pay:"18-08-2026 17:45", status:"Pending payment", insco:"Lonpac"},
+    {ref:"BR10000012", txn:"2026-08-18T16:45", ins:null,              plate:"VJK1012", name:"MARY TAN",              ic:"921212-14-0012", amt:"RM1,171.22", pay:"18-08-2026 16:47", status:"Pending payment", insco:"TokioMarine"},
+    {ref:"BR10000013", txn:"2026-08-18T13:58", ins:null,              plate:"VJK1013", name:"GANESH A/L RAMAN",      ic:"880113-14-0013", amt:"RM2,025.00", pay:"18-08-2026 14:01", status:"Pending payment", insco:"Lonpac"},
+    {ref:"BR10000014", txn:"2026-08-19T08:20", ins:null,              plate:"VJK1014", name:"NORA BINTI ALI",        ic:"900214-14-0014", amt:"RM2,260.00", pay:"19-08-2026 08:22", status:"Pending payment", insco:"Zurich"},
+    {ref:"BR10000015", txn:"2026-08-19T10:05", ins:null,              plate:"VJK1015", name:"DANIEL WONG",           ic:"930315-14-0015", amt:"RM2,025.00", pay:"19-08-2026 10:07", status:"Pending payment", insco:"Lonpac"}
+  ];
+
+  let rangeType = "txn"; // "txn" | "ins"
+
+  function fmt(iso){
+    if(!iso) return null;
+    const d = iso.slice(0,10).split("-"); // yyyy-mm-dd
+    const t = iso.slice(11,16);
+    return d[2]+"-"+d[1]+"-"+d[0]+" "+t;
+  }
+  function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+
+  function rowHTML(r, i){
+    const approved = r.status === "Approved";
+    const insCell = r.ins
+      ? '<td class="col-new">'+fmt(r.ins)+'</td>'
+      : '<td class="col-new muted">-</td>';
+    const payBadge = approved
+      ? '<span class="badge b-green">Paid</span>'
+      : '<span class="badge b-yellow">Pending</span>';
+    const statusCell = approved
+      ? '<td><span style="color:var(--green-ink);font-weight:600">Approved</span></td>'
+      : '<td>Pending payment</td>';
+    const jpjCell = approved ? '<td><span class="badge b-green">Approved</span></td>' : '<td class="muted">-</td>';
+    return `<tr>
+      <td>${i}</td>
+      <td><div class="stack"><span class="reflink">${r.ref}</span><span class="badge b-sky">Secarang</span></div></td>
+      <td>${fmt(r.txn)}</td>
+      ${insCell}
+      <td class="muted">-</td>
+      <td class="muted">-</td>
+      <td>${r.plate}</td>
+      <td>Car</td>
+      <td><div class="stack">${esc(r.name)}<span class="muted">${r.ic}</span></div></td>
+      <td><div class="stack">${r.amt}<span>${payBadge}</span><span class="sub">${r.pay}</span></div></td>
+      <td class="muted">-</td>
+      <td class="muted">-</td>
+      <td><div class="stack">${r.insco}<span class="badge b-purple">Pemaju Eksklusif</span></div></td>
+      ${statusCell}
+      ${jpjCell}
+      <td class="muted">-</td>
+    </tr>`;
+  }
+
+  function render(list){
+    const tb = document.getElementById("tbody");
+    if(list.length === 0){
+      tb.innerHTML = '<tr><td colspan="16" class="empty">No transactions match the selected date range.</td></tr>';
+    }else{
+      tb.innerHTML = list.map((r,idx)=>rowHTML(r, idx+1)).join("");
+    }
+  }
+
+  function setNote(list, from, till){
+    const note = document.getElementById("resultNote");
+    const label = rangeType === "ins" ? "Insurance Creation Date" : "Transaction Creation Date";
+    let chip = "";
+    if(from || till){
+      const f = from ? from.split("-").reverse().join("-") : "…";
+      const t = till ? till.split("-").reverse().join("-") : "…";
+      chip = '<span class="chip">'+label+' · '+f+' to '+t+'</span>';
+    }
+    note.innerHTML = 'Showing <b>'+list.length+'</b> of <b>'+TX.length+'</b> transactions'+chip;
+  }
+
+  function applySearch(){
+    const from = document.getElementById("fromDate").value; // yyyy-mm-dd or ""
+    const till = document.getElementById("tillDate").value;
+    const list = TX.filter(r=>{
+      const field = rangeType === "ins" ? r.ins : r.txn;
+      if(!field) return false;                 // no Insurance Created Date on pending rows
+      const day = field.slice(0,10);           // yyyy-mm-dd
+      if(from && day < from) return false;
+      if(till && day > till) return false;
+      return true;
+    });
+    render(list);
+    setNote(list, from, till);
+  }
+
+  function clearAll(){
+    document.getElementById("fromDate").value = "";
+    document.getElementById("tillDate").value = "";
+    document.getElementById("searchText").value = "";
+    selectRange("txn", "Transaction Creation Date");
+    render(TX);
+    setNote(TX, "", "");
+  }
+
+  function selectRange(val, label){
+    rangeType = val;
+    document.getElementById("drtValue").textContent = label;
+    document.getElementById("rangeLabel").textContent = label + " range";
+    document.querySelectorAll("#drt .dd-item").forEach(el=>{
+      el.classList.toggle("sel", el.dataset.val === val);
+    });
+  }
+
+  // dropdown open/close
+  const drt = document.getElementById("drt");
+  document.getElementById("drtCtrl").addEventListener("click", function(e){
+    e.stopPropagation();
+    drt.classList.toggle("open");
+  });
+  document.querySelectorAll("#drt .dd-item").forEach(el=>{
+    el.addEventListener("click", function(e){
+      e.stopPropagation();
+      selectRange(el.dataset.val, el.dataset.label);
+      drt.classList.remove("open");
+    });
+  });
+  document.addEventListener("click", ()=> drt.classList.remove("open"));
+
+  let currentList = TX.slice();
+  const _origRender = render;
+  render = function(list){ currentList = list.slice(); _origRender(list); };
+
+  function csvCell(v){ v = (v==null?'':String(v)); return '"' + v.replace(/"/g,'""') + '"'; }
+  function amtNum(a){ return parseFloat(String(a).replace(/[^0-9.]/g,"")) || 0; }
+  function money(n){ return n.toLocaleString("en-MY",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const MODELS=["HONDA HR-V","PERODUA MYVI","TOYOTA VIOS","PROTON X50","HONDA CITY","MAZDA CX-5","NISSAN ALMERA","TOYOTA YARIS","HONDA CIVIC","PROTON SAGA"];
+  function exportCSV(){
+    // Existing "Created At" renamed to "Transaction Created At"; NEW "Insurance Created At" inserted right after it.
+    const cols = ["Transaction Ref. No.","Platform","Transaction Created At","Insurance Created At","Company Name",
+      "Company Registration No.","UCD Name","Vehicle No.","Vehicle Type","Insured Name","Insured ID",
+      "Gross Premium (RM)","Service Tax (RM)","Stamp Duty (RM)","Total Premium (RM)","Road Tax","Discount (RM)",
+      "Discount Code","Payment Amount (RM)","Insurance Commission Amount (RM)","Payment Status","Payment At",
+      "Payment Month","Payment Year","Insurance Company","Agency","Transaction Status",
+      "E-Certificate No. / Policy No.","Coverage Type","Year","Make","UCD City","UCD State","Vehicle Model",
+      "Hire Purchase (Claimed by)","Hire Purchase (User Submission)","Hire Purchase (Returned by JPJ)",
+      "JPJ","Remark","Special Remark"];
+    // Row 1: report title; Row 2: blank; Row 3: column headers (matches portal export)
+    const lines = [csvCell("Transaction Management"), "", cols.map(csvCell).join(",")];
+    currentList.forEach(function(r,i){
+      var approved = r.status === "Approved";
+      var amt = amtNum(r.amt);
+      var row = [
+        r.ref, "Secarang", fmt(r.txn), (r.ins?fmt(r.ins):"-"), "-",
+        "", "-", r.plate, "Car", r.name, r.ic,
+        money(amt), "10", "10", money(amt), "No", "0",
+        "-", money(amt), money(amt*0.1), (approved?"Paid":"Pending"), r.pay,
+        MONTHS[parseInt(r.txn.slice(5,7),10)-1], r.txn.slice(0,4), r.insco, "Pemaju Eksklusif", r.status,
+        (approved? "POL"+r.ref.slice(2) : "-"), "COMPREHENSIVE", "2024", "-", "-", "-", MODELS[i%MODELS.length],
+        "-", "-", "-", (approved?"Approved":"-"), "-", "-"
+      ];
+      lines.push(row.map(csvCell).join(","));
+    });
+    var blob = new Blob(["\ufeff"+lines.join("\r\n")], {type:"text/csv;charset=utf-8;"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var d = new Date();
+    var pad = function(n){ return String(n).padStart(2,"0"); };
+    var stamp = "" + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + pad(d.getHours()) + pad(d.getMinutes());
+    a.href = url; a.download = "Transaction_Management_" + stamp + ".csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function printListing(){ window.print(); }
+
+  // initial render
+  render(TX);
+  setNote(TX, "", "");
+</script>
+</body>
+</html>

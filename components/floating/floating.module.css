@@ -1,0 +1,341 @@
+/* Floating windows + dock. Colours come from the theme variables set by
+   lib/themes.ts, so every theme (dark and light) styles these for free.
+   Stacking: windows z 60–79, dock z 85 — below the z-[90] page modals,
+   the z-[100] search/What's New modals and the z-[200] navigation cover. */
+
+.layer {
+  --fw-panel: var(--bg-panel, #0f172a);
+  --fw-elevated: var(--bg-elevated, #1e293b);
+  --fw-hover: var(--bg-hover, #334155);
+  --fw-border: var(--border-main, #334155);
+  --fw-text: var(--text-primary, #f1f5f9);
+  --fw-text-2: var(--text-secondary, #cbd5e1);
+  --fw-muted: var(--text-label, #94a3b8);
+  --fw-faint: var(--text-faint, #57667b);
+  --fw-accent: var(--accent, #3b82f6);
+}
+
+@media print {
+  .layer { display: none !important; }
+}
+
+/* ── Window ─────────────────────────────────────────────── */
+
+.win {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: var(--fw-panel);
+  color: var(--fw-text);
+  border: 1px solid var(--fw-border);
+  border-radius: 14px;
+  box-shadow:
+    0 18px 48px -12px rgb(0 0 0 / 0.45),
+    0 4px 14px -6px rgb(0 0 0 / 0.3);
+  overflow: hidden;
+  animation: fw-pop-in 180ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  transform-origin: bottom right;
+}
+
+.front {
+  border-color: color-mix(in srgb, var(--fw-accent) 45%, var(--fw-border));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--fw-accent) 18%, transparent),
+    0 22px 56px -12px rgb(0 0 0 / 0.5),
+    0 4px 14px -6px rgb(0 0 0 / 0.3);
+}
+
+.closing {
+  animation: fw-pop-out 140ms ease-in forwards;
+  pointer-events: none;
+}
+
+.dragging { transition: none; user-select: none; }
+
+.snap { transition: left 180ms ease, top 180ms ease, width 180ms ease, height 180ms ease; }
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 6px 0 10px;
+  flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  background: color-mix(in srgb, var(--fw-elevated) 70%, transparent);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border-bottom: 1px solid color-mix(in srgb, var(--fw-border) 70%, transparent);
+}
+
+.dragging .titlebar { cursor: grabbing; }
+
+.titleIcon {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.titleText {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fw-text);
+}
+
+.titleBtn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  color: var(--fw-muted);
+  transition: background-color 120ms, color 120ms;
+}
+.titleBtn:hover { background: var(--fw-hover); color: var(--fw-text); }
+.titleBtn:focus-visible { outline: 2px solid var(--fw-accent); outline-offset: -2px; }
+.closeBtn:hover { background: #dc2626; color: #fff; }
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
+}
+
+.resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
+  touch-action: none;
+  z-index: 2;
+  color: var(--fw-faint);
+}
+.resize::after {
+  content: "";
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  border-bottom-right-radius: 3px;
+  opacity: 0.7;
+}
+.resize:hover { color: var(--fw-accent); }
+
+/* Narrow / touch screens: one window at a time, as a bottom sheet. */
+.sheet {
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  width: 100% !important;
+  height: min(72vh, 560px) !important;
+  border-radius: 18px 18px 0 0;
+  border-bottom: none;
+  animation: fw-sheet-in 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.sheet .titlebar { cursor: default; height: 44px; }
+.sheet.closing { animation: fw-sheet-out 160ms ease-in forwards; }
+.grabber {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 36px;
+  height: 4px;
+  margin-left: -18px;
+  border-radius: 4px;
+  background: var(--fw-border);
+}
+
+/* ── Dock ───────────────────────────────────────────────── */
+
+.dock {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 85;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fw-panel) 78%, transparent);
+  backdrop-filter: blur(14px) saturate(1.5);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  border: 1px solid color-mix(in srgb, var(--fw-border) 80%, transparent);
+  box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.45);
+  color: var(--fw-text-2);
+  opacity: 0.82;
+  transition: opacity 160ms;
+}
+.dock:hover, .dock:focus-within, .dockOpen { opacity: 1; }
+.dockSheetMode { bottom: 12px; right: 12px; }
+
+.dockItems {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  animation: fw-dock-in 160ms ease-out;
+}
+
+.dockBtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  color: var(--fw-muted);
+  transition: background-color 120ms, color 120ms, transform 120ms;
+}
+.dockBtn:hover { background: var(--fw-hover); color: var(--fw-text); transform: translateY(-1px); }
+.dockBtn:active { transform: translateY(0) scale(0.95); }
+.dockBtn:focus-visible { outline: 2px solid var(--fw-accent); outline-offset: 1px; }
+.dockBtnActive { color: var(--fw-text); background: var(--fw-elevated); }
+
+.dockDot {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 4px;
+  background: var(--fw-accent);
+}
+.dockDotMin { background: transparent; box-shadow: inset 0 0 0 1px var(--fw-accent); }
+
+.dockToggle {
+  background: linear-gradient(135deg,
+    var(--fw-accent),
+    color-mix(in srgb, var(--fw-accent) 60%, #8b5cf6));
+  color: #fff;
+}
+.dockToggle:hover { background: linear-gradient(135deg, var(--fw-accent), #8b5cf6); color: #fff; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--fw-text-2);
+  background: var(--fw-elevated);
+  white-space: nowrap;
+}
+.chipButton { cursor: pointer; }
+.chipButton:hover { background: var(--fw-hover); }
+.chipFocus { color: #fb7185; }
+.chipBreak { color: #34d399; }
+.flame { color: #f59e0b; }
+.flameLit { animation: fw-flicker 2.4s ease-in-out infinite; }
+
+.divider {
+  width: 1px;
+  height: 20px;
+  margin: 0 2px;
+  background: var(--fw-border);
+}
+
+/* Tooltip: CSS only, appears above the dock button. */
+.tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  padding: 4px 8px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--fw-text);
+  background: var(--fw-elevated);
+  border: 1px solid var(--fw-border);
+  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.4);
+  opacity: 0;
+  transition: opacity 120ms, transform 120ms;
+}
+.tipRight { left: auto; right: 0; transform: translate(0, 4px); }
+.tip kbd {
+  margin-left: 6px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  color: var(--fw-muted);
+  border: 1px solid var(--fw-border);
+}
+.hasTip:hover > .tip, .hasTip:focus-visible > .tip { opacity: 1; transform: translate(-50%, 0); }
+.hasTip:hover > .tipRight, .hasTip:focus-visible > .tipRight { transform: translate(0, 0); }
+
+/* ── Shared bits for window contents ────────────────────── */
+
+.placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--fw-muted);
+}
+.placeholder a { color: var(--fw-accent); font-weight: 600; }
+.placeholder a:hover { text-decoration: underline; }
+
+/* ── Animations ─────────────────────────────────────────── */
+
+@keyframes fw-pop-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fw-pop-out {
+  to { opacity: 0; transform: translateY(12px) scale(0.95); }
+}
+@keyframes fw-sheet-in {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
+}
+@keyframes fw-sheet-out {
+  to { transform: translateY(100%); }
+}
+@keyframes fw-dock-in {
+  from { opacity: 0; transform: translateX(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fw-flicker {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.08) rotate(-4deg); }
+  60% { transform: scale(0.96) rotate(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .win, .closing, .sheet, .sheet.closing, .dockItems, .flameLit { animation: none !important; }
+  .snap { transition: none; }
+  .dockBtn:hover { transform: none; }
+}

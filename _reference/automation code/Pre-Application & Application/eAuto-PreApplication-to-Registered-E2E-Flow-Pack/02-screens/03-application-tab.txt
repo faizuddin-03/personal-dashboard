@@ -1,0 +1,93 @@
+https://staging.eauto.my/obs/admin/enquiry
+
+Back to Backoffice
+Company Name:
+Application No:
+Application Status:
+All
+New
+Draft
+Pending
+KIV
+Re-evaluate
+Approved
+Rejected
+Expired
+Application Created Date From:
+To:
+Application Submission Date From:
+To:
+Old BRN:
+New BRN:
+Business Trading License Number:
+LHDN Response Status:
+All
+OK
+Failed
+-
+N/A
+Assignee:
+All
+BO ruiluan
+BO User bjGIQ
+BO User bwvzW
+BO User GhFbw
+BO User huWnF
+BO User kbomK
+BO User nPlkY
+BO User sxscg
+BO User sYRlw
+BO user test 1
+BRANDON TEST MIE
+CHARMAIN EA CHIANG chg
+LIM YI LINK
+MUSIC SDN BHD
+sdtPhAPWEMhvmv
+SlcklBI
+traze
+Assignee / UCD:
+All
+Pending UCD
+Pending Assignee
+Checked
+Approver / Assignee:
+All
+Pending Approver
+Pending Assignee
+Checked
+Softcopy Docs:
+All
+Pending UCD
+Pending Assignee
+Checked
+Hardcopy & Acc Created:
+All
+Pending UCD
+Pending UCD - Incomplete Docs
+Pending Assignee
+Registered
+Registration Fee:
+All
+-
+Pending UCD
+Failed
+OK
+Type of Business:
+Sdn Bhd / Bhd
+Sole Proprietorship / Partnership
+LLP
+Business Trading (Sabah)
+Business Trading (Sarawak)
+Reset
+Export
+UCD Application Listing
+1 record(s) in total
+#	Pre-Application Submission Date	Application Created Date	Application No	Company Name	Old BRN	New BRN	Business Trading License Number	Type of Business	Application Submission Date	Approved Date	Turn Around Time (Days)	Application Expiry Date	Assignee	Assignee / UCD	Approver / Assignee	Last Updated Date	LHDN Response Status	Application Status	Softcopy Docs	Registration Fee	Hardcopy & Acc Created	Remarks	Action
+1	2026-08-24 20:36	2026-08-24 21:10	NA68001099	QA11982 MOTORS 260824-2036-021 ENTERPRISE	-	-	KCH/2036021	Business Trading (Sarawak)	2026-08-24 22:18	2026-08-24 22:19	0	2026-11-22 21:10	CHARMAIN EA CHIANG chg	Checked	Checked	2026-08-24 22:30	Failed	Approved	Checked	OK	Pending UCD	TIN verification failed. Kindly provide correct TIN information to eAuto customer service.	Edit
+Best Compatible With Mozilla Firefox V36.0.4
+Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.
+Contact Us
+|
+Terms & Conditions
+|
+Privacy

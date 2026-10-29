@@ -1,0 +1,656 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Morning Slot - Book until full|Afternoon Slot - Book until full|Day capacity reach 6/6|Software Installation - Mandatory Booking|Biometric Purchase - Free Install Option|Biometric Purchase - Paid Install Mandatory|Two UCD - Select same last available slot"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-13T02-52-58",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "slot-capacity-boundary.spec.ts",
+      "file": "slot-capacity-boundary.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Slot Capacity Boundary",
+          "file": "slot-capacity-boundary.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "slot-capacity-boundary.spec.ts",
+              "line": 14,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Morning Slot - Book until full",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 12431,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:28:30",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 30,
+                              "line": 28
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 26 |\u001b[39m       \u001b[36mawait\u001b[39m softwareInstallationPage\u001b[33m.\u001b[39mpurchaseInstallation(\u001b[33mENV\u001b[39m\u001b[33m.\u001b[39mslotCapacity\u001b[33m.\u001b[39mperSlot \u001b[33m+\u001b[39m \u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 27 |\u001b[39m       \u001b[36mconst\u001b[39m targetDate \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mfindEmptyBookableDate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 28 |\u001b[39m       expect(targetDate)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 29 |\u001b[39m\n \u001b[90m 30 |\u001b[39m       \u001b[90m// The modal's capacity indicator (#si-cap0/#si-cap1) reflects\u001b[39m\n \u001b[90m 31 |\u001b[39m       \u001b[90m// committed (saved) bookings, not in-progress stepper clicks — so\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 30,
+                                "line": 28
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n\n  26 |       await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);\n  27 |       const targetDate = await slotPicker.findEmptyBookableDate();\n> 28 |       expect(targetDate).not.toBeNull();\n     |                              ^\n  29 |\n  30 |       // The modal's capacity indicator (#si-cap0/#si-cap1) reflects\n  31 |       // committed (saved) bookings, not in-progress stepper clicks — so\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:28:30"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:53:02.432Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-c57f5-ning-Slot---Book-until-full-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 30,
+                            "line": 28
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-00b83de16a34bea4e19c",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 20,
+                  "column": 9
+                },
+                {
+                  "title": "Afternoon Slot - Book until full",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 10021,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:67:30",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 30,
+                              "line": 67
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 65 |\u001b[39m       \u001b[36mawait\u001b[39m softwareInstallationPage\u001b[33m.\u001b[39mpurchaseInstallation(\u001b[33mENV\u001b[39m\u001b[33m.\u001b[39mslotCapacity\u001b[33m.\u001b[39mperSlot \u001b[33m+\u001b[39m \u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 66 |\u001b[39m       \u001b[36mconst\u001b[39m targetDate \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mfindEmptyBookableDate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 67 |\u001b[39m       expect(targetDate)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 68 |\u001b[39m\n \u001b[90m 69 |\u001b[39m       \u001b[90m// Book and save one unit at a time — the modal's capacity indicator\u001b[39m\n \u001b[90m 70 |\u001b[39m       \u001b[90m// reflects committed bookings, not in-progress stepper clicks.\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 30,
+                                "line": 67
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n\n  65 |       await softwareInstallationPage.purchaseInstallation(ENV.slotCapacity.perSlot + 1);\n  66 |       const targetDate = await slotPicker.findEmptyBookableDate();\n> 67 |       expect(targetDate).not.toBeNull();\n     |                              ^\n  68 |\n  69 |       // Book and save one unit at a time — the modal's capacity indicator\n  70 |       // reflects committed bookings, not in-progress stepper clicks.\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:67:30"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:53:17.508Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-c0242-noon-Slot---Book-until-full-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 30,
+                            "line": 67
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-25ee8976c9681136e157",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 59,
+                  "column": 9
+                },
+                {
+                  "title": "Day capacity reach 6/6",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 9076,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:103:30",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 30,
+                              "line": 103
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 101 |\u001b[39m       \u001b[36mawait\u001b[39m softwareInstallationPage\u001b[33m.\u001b[39mpurchaseInstallation(\u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 102 |\u001b[39m       \u001b[36mconst\u001b[39m targetDate \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mfindEmptyBookableDate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 103 |\u001b[39m       expect(targetDate)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 104 |\u001b[39m\n \u001b[90m 105 |\u001b[39m       \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mopenSlotModal(targetDate\u001b[33m!\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 106 |\u001b[39m       \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mincrementSlot(\u001b[33mMORNING\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 30,
+                                "line": 103
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n\n  101 |       await softwareInstallationPage.purchaseInstallation(1);\n  102 |       const targetDate = await slotPicker.findEmptyBookableDate();\n> 103 |       expect(targetDate).not.toBeNull();\n      |                              ^\n  104 |\n  105 |       await slotPicker.openSlotModal(targetDate!);\n  106 |       await slotPicker.incrementSlot(MORNING, 1);\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:103:30"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:53:30.246Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-a733d--UCD-Day-capacity-reach-6-6-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 30,
+                            "line": 103
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-2ced81b50ddcbfed25fb",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 96,
+                  "column": 9
+                },
+                {
+                  "title": "Software Installation - Mandatory Booking",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 9078,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:151:30",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 30,
+                              "line": 151
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 149 |\u001b[39m\n \u001b[90m 150 |\u001b[39m       \u001b[36mconst\u001b[39m targetDate \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mfindEmptyBookableDate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 151 |\u001b[39m       expect(targetDate)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 152 |\u001b[39m\n \u001b[90m 153 |\u001b[39m       \u001b[90m// Book only 1 of the 2 units\u001b[39m\n \u001b[90m 154 |\u001b[39m       \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mopenSlotModal(targetDate\u001b[33m!\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 30,
+                                "line": 151
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n\n  149 |\n  150 |       const targetDate = await slotPicker.findEmptyBookableDate();\n> 151 |       expect(targetDate).not.toBeNull();\n      |                              ^\n  152 |\n  153 |       // Book only 1 of the 2 units\n  154 |       await slotPicker.openSlotModal(targetDate!);\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:151:30"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:53:41.806Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-fe4f8-llation---Mandatory-Booking-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 30,
+                            "line": 151
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-ebcc7d7051e8212def5b",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 140,
+                  "column": 9
+                },
+                {
+                  "title": "Biometric Purchase - Free Install Option",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 10150,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:195:30",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 30,
+                              "line": 195
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 193 |\u001b[39m\n \u001b[90m 194 |\u001b[39m       \u001b[36mconst\u001b[39m targetDate \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mfindEmptyBookableDate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 195 |\u001b[39m       expect(targetDate)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 196 |\u001b[39m\n \u001b[90m 197 |\u001b[39m       \u001b[90m// Book only 1 of the 2 free installations\u001b[39m\n \u001b[90m 198 |\u001b[39m       \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mopenSlotModal(targetDate\u001b[33m!\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 30,
+                                "line": 195
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n\n  193 |\n  194 |       const targetDate = await slotPicker.findEmptyBookableDate();\n> 195 |       expect(targetDate).not.toBeNull();\n      |                              ^\n  196 |\n  197 |       // Book only 1 of the 2 free installations\n  198 |       await slotPicker.openSlotModal(targetDate!);\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:195:30"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:53:53.378Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 30,
+                            "line": 195
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-abf57fdbc10dcd9e6600",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 178,
+                  "column": 9
+                },
+                {
+                  "title": "Biometric Purchase - Paid Install Mandatory",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 10087,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:234:30",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 30,
+                              "line": 234
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 232 |\u001b[39m\n \u001b[90m 233 |\u001b[39m       \u001b[36mconst\u001b[39m targetDate \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mfindEmptyBookableDate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 234 |\u001b[39m       expect(targetDate)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 235 |\u001b[39m\n \u001b[90m 236 |\u001b[39m       \u001b[90m// Confirm with nothing booked — the mandatory paid unit is missing\u001b[39m\n \u001b[90m 237 |\u001b[39m       \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mconfirmAppointment()\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 30,
+                                "line": 234
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n\n  232 |\n  233 |       const targetDate = await slotPicker.findEmptyBookableDate();\n> 234 |       expect(targetDate).not.toBeNull();\n      |                              ^\n  235 |\n  236 |       // Confirm with nothing booked — the mandatory paid unit is missing\n  237 |       await slotPicker.confirmAppointment();\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:234:30"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:54:06.050Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-15320-se---Paid-Install-Mandatory-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 30,
+                            "line": 234
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-f5d21e54a6d85dbe56d6",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 211,
+                  "column": 9
+                },
+                {
+                  "title": "Two UCD - Select same last available slot",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 9012,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:259:30",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                              "column": 30,
+                              "line": 259
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 257 |\u001b[39m       \u001b[36mawait\u001b[39m softwareInstallationPage\u001b[33m.\u001b[39mpurchaseInstallation(\u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 258 |\u001b[39m       \u001b[36mconst\u001b[39m targetDate \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mfindEmptyBookableDate()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 259 |\u001b[39m       expect(targetDate)\u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoBeNull()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 260 |\u001b[39m\n \u001b[90m 261 |\u001b[39m       \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mopenSlotModal(targetDate\u001b[33m!\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 262 |\u001b[39m       \u001b[36mawait\u001b[39m slotPicker\u001b[33m.\u001b[39mincrementSlot(\u001b[33mMORNING\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                                "column": 30,
+                                "line": 259
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n\n  257 |       await softwareInstallationPage.purchaseInstallation(1);\n  258 |       const targetDate = await slotPicker.findEmptyBookableDate();\n> 259 |       expect(targetDate).not.toBeNull();\n      |                              ^\n  260 |\n  261 |       await slotPicker.openSlotModal(targetDate!);\n  262 |       await slotPicker.incrementSlot(MORNING, 1);\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:259:30"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T02:54:18.623Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T02-52-58\\slot-capacity-boundary-Slo-3db5a-ct-same-last-available-slot-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+                            "column": 30,
+                            "line": 259
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-5a6960d6c40a99819d98",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 252,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-13T02:53:01.502Z",
+    "duration": 87932.37,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 7,
+    "flaky": 0
+  }
+}

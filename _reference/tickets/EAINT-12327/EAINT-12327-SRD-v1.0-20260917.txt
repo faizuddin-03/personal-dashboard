@@ -1,0 +1,310 @@
+Requirement             SYSTEM REQUIREMENT DOCUMENT (SRD)
+Version               [CIBO-Payment Report] To Enhance Payment Mode Column Format in Transaction
+Latest Revision Date  Listing and Payment Report
+
+                      Version 1.0
+
+                      17.09.2026 (Thursday)
+                                                                              CONTENTS
+1.0 DOCUMENT INFORMATION..........................................................................................................3
+
+    1.1 Purpose................................................................................................................................ 3
+    1.2 Intended Audience.................................................................................................................3
+    1.3 Revision History....................................................................................................................3
+    1.4 Glossary of Terms.................................................................................................................. 4
+    1.5 Associated Document(s)........................................................................................................ 4
+2.0 REQUIREMENT........................................................................................................................... 5
+    2.1 High-Level Requirement Overview.......................................................................................... 5
+    2.2 Key Highlights and Baseline Requirements.............................................................................6
+
+         2.2.1 Background.................................................................................................................... 6
+         2.2.2 Existing Issue & Expected Behaviour............................................................................... 7
+         2.2.3 Affected Pages............................................................................................................... 9
+         2.2.4 Payment Mode Display Format......................................................................................10
+         2.2.5 Transaction Listing.......................................................................................................12
+         2.2.6 Payment Report............................................................................................................ 14
+Appendix -- Requirement Change Log.............................................................................................15
+
+                                                                                                                                                               Page 2 of 16
+1.0 DOCUMENT INFORMATION
+
+1.1 Purpose
+
+The System Requirements Document outlines the agreed system specifications. Once approved, it becomes the
+baseline to ensure the system meets business goals. Sign-off is required for development to start, and any changes
+must follow the System Enhancement Management process.
+
+1.2 Intended Audience
+
+The intended audience for this document includes project stakeholders and any team members involved in
+defining, implementing, or validating the system requirements.
+
+1.3 Revision History
+
+This section records all modifications to the document until it reaches Version 1.0, at which point it is finalized and
+established as the baseline for future reference. Once baselined, any new changes will be assessed based on their
+severity -- significant changes may result in an addendum, while less critical updates may be handled through a
+formal change request.
+
+Version No Date          Revised By   Reason for Revision
+
+0.1  17.09.2026 (Thurs)  Lim Yi Link  Initial Draft
+
+1.0  17.09.2026 (Thurs)  Lim Yi Link  This is the baseline of the Change Request.
+
+                                                           Page 3 of 16
+1.4 Glossary of Terms
+
+#  Abbreviation / Term                Interpretation / Description
+
+1.5 Associated Document(s)
+
+#  Item                                Location / URL               Rationale for Relevance
+                                                                    Internal IT ticket
+1  EAINT-12327 -- To Enhance Payment   https://
+                                       mfservices.atlassian.net/    Cross-department ticket
+   Mode Column Format in Transaction   browse/EAINT-12327
+                                                                    Source ticket
+   Listing and Payment Report
+                                                                    Internal IT ticket
+2  CCB-949 -- ESI | To Enhance Payment https://
+
+   Mode Column Format in Transaction   mfservices.atlassian.net/
+
+   Listing and Payment Report          browse/CCB-949
+
+3  ESI-355 -- To enhance transaction   https://
+                                       mfservices.atlassian.net/
+   listing and Payment report Payment  browse/ESI-355
+
+   Mode column
+
+4  EAINT-12107 -- [Secarang-Fiuu]      https://
+
+   Enhance Payment Gateway to Enable mfservices.atlassian.net/
+
+   ShopeePay and GrabPay               browse/EAINT-12107
+
+                                                                    Page 4 of 16
+2.0 REQUIREMENT
+
+2.1 High-Level Requirement Overview
+
+#      Item                   Description
+
+2.1.1  Enhancement Overview   Enhance the Payment Mode column in the Transaction Listing
+                              and the Payment Report to display the payment gateway,
+                              payment method and payment details in 1 standard format.
+
+2.1.2  Key Value(s) Expected  Allow the requestor to identify the payment gateway and
+                              payment method used for each transaction.
+
+                              Allow the requestor to analyse which group of users the
+                              payment under Secarang comes from.
+
+2.1.3  Additional Note(s)     Refer to source ticket ESI-355.
+
+                                                               Page 5 of 16
+2.2 Key Highlights and Baseline Requirements
+
+The following key highlights and requirements were established during the initial sync-up sessions with requestor.
+As this forms the baseline, any changes requested thereafter may result in adjustments to scope, timeline, or
+deliverables, for which requestor will be responsible to review and confirm.
+
+2.2.1 Background
+
+#  Affected Item    Description
+                    CIBO
+1  Project
+
+2  Portal           CIBO
+
+3  Module           1. Transaction Management
+                    2. Payment Report
+
+4  Request          Enhance the Payment Mode column format in the Transaction Listing and
+                    the Payment Report.
+
+5  Additional Note  Key reason for the request: to analyse which group of users the payment
+                    under Secarang comes from. Refer to source ticket ESI-355.
+
+                                               Page 6 of 16
+2.2.2 Existing Issue & Expected Behaviour
+
+#  Item  Description
+
+1  Existing Issue / Behaviour The Payment Mode column is not available in CIBO > Transaction
+
+         Management > Transaction Listing and in the exported file of Transaction
+
+         Listing.
+
+         The Payment Mode column is available in CIBO > Payment Report and in
+         the exported file of Payment Report. The display value shows the
+         payment gateway name only, which is either BoldPay or Fiuu.
+
+                                           Page 7 of 16
+#  Item                     Description
+
+2  Expected New Handling /  A new Payment Mode column is added to the Transaction Listing and to
+
+   Behaviour                the exported file of Transaction Listing.
+
+                            The Payment Mode display value in the Payment Report and in the
+                            exported file of Payment Report is updated.
+
+                            All 4 affected pages display the Payment Mode value in the following
+                            format:
+
+                            1. BoldPay | eWallet ­ TouchNGo
+                            2. BoldPay | Online Banking ­ FPX-Bank Name
+                            3. BoldPay | Credit/Debit Card ­ MBBMGATE_MS
+                            4. Fiuu | eWallet ­ ShopeePay ­ Full Amount ­ Single Payment
+                            5. Fiuu | eWallet ­ ShopeePay ­ BNPL ­ Installment
+                            6. Fiuu | eWallet ­ GrabPay ­ Full Amount ­ Single Payment
+                            7. Fiuu | eWallet ­ GrabPay ­ BNPL ­ Installment
+
+                                                                       Page 8 of 16
+2.2.3 Affected Pages
+
+#  Affected Pages                   Description
+                                    New Payment Mode column added to the listing.
+1  CIBO > Transaction Management
+
+   > Transaction Listing
+
+2  Exported file of Transaction Listing New Payment Mode column added to the exported file.
+
+3  CIBO > Payment Report            Existing Payment Mode display value updated.
+
+4  Exported file of Payment Report  Existing Payment Mode display value updated.
+
+                                                                                             Page 9 of 16
+2.2.4 Payment Mode Display Format
+
+#  Requirement ID Item         Description                     Acceptance Criteria
+
+1  EAINT-12327-  Payment       The existing Payment Mode data  Existing and new transactions
+                 Mode Display  for BoldPay and Fiuu shall be   display the Payment Mode value in
+   REQ-001       Value         updated based on its payment    the format below.
+                               mode.
+                                                               Example 1: BoldPay
+                               The Payment Mode value shall    a. BoldPay | eWallet ­ TouchNGo
+                               be displayed in the following   b. BoldPay | Online Banking ­ FPX-
+                               order: payment gateway,         Bank Name
+                               payment method, then payment    c. BoldPay | Credit/Debit Card ­
+                               details.                        MBBMGATE_MS
+
+                                                               Example 2: Fiuu
+                                                               a. Fiuu | eWallet ­ ShopeePay ­ Full
+                                                               Amount ­ Single Payment
+                                                               b. Fiuu | eWallet ­ ShopeePay ­
+                                                               BNPL ­ Installment
+                                                               c. Fiuu | eWallet ­ GrabPay ­ Full
+                                                               Amount ­ Single Payment
+                                                               d. Fiuu | eWallet ­ GrabPay ­ BNPL ­
+                                                               Installment
+
+                                                                                    Page 10 of 16
+#  Requirement ID Item        Description                      Acceptance Criteria
+
+2  EAINT-12327-  Format       The Payment Mode value shall     The Payment Mode value shown for
+                 Consistency  follow the same format in all 4  the same transaction is identical in
+   REQ-002       Across       pages listed in Section 2.2.3.   the Transaction Listing, the
+                 Affected                                      Payment Report and both exported
+                 Pages                                         files.
+
+                                                                                    Page 11 of 16
+2.2.5 Transaction Listing
+
+#  Requirement ID Item        Description                        Acceptance Criteria
+
+1  EAINT-12327-  New          The existing Transaction Listing   The Transaction Listing displays a
+                                                                 Payment Mode column positioned
+   REQ-003       Payment      columns shall remain               after the Payment column and
+                                                                 before the Discount Code column.
+                 Mode Column unchanged.
+                                                                 The Payment Mode value follows
+                              A new Payment Mode column          the format stated in Section 2.2.4.
+                              shall be added after the
+                              Payment column and before the
+                              Discount Code column.
+
+2  EAINT-12327-  Blank Value  Where a transaction has no         A transaction with no payment
+                 Handling     payment mode recorded, the         mode recorded displays a dash in
+   REQ-004                    Payment Mode column shall          the Payment Mode column of the
+                              display a dash.                    Transaction Listing and of its
+                                                                 exported file.
+                              This handling is applicable to
+                              the Transaction Listing only. The
+                              Payment Report has no blank
+                              value for this field.
+
+                                                                                      Page 12 of 16
+#  Requirement ID Item          Description                      Acceptance Criteria
+
+3  EAINT-12327-  Exported File  The existing export handling     The exported file of Transaction
+                 of             shall remain unchanged.          Listing contains a Payment Mode
+   REQ-005       Transaction                                     column positioned after the
+                 Listing        The exported file shall include  Payment column and before the
+                                the new Payment Mode column      Discount Code column.
+                                in the same column order as the
+                                Transaction Listing page.        The exported value matches the
+                                                                 value displayed in the Transaction
+                                                                 Listing.
+
+                                                                                      Page 13 of 16
+2.2.6 Payment Report
+
+#  Requirement ID Item          Description                      Acceptance Criteria
+
+1  EAINT-12327-  Payment        The existing Payment Mode        The Payment Mode column in the
+                 Mode Display   column position shall remain     Payment Report displays the
+   REQ-006       Value          unchanged.                       updated value for every transaction.
+
+                                The Payment Mode display
+                                value shall be updated to the
+                                format stated in Section 2.2.4.
+
+2  EAINT-12327-  Exported File  The existing export handling     The exported file of Payment Report
+                 of Payment     shall remain unchanged.          displays the same Payment Mode
+   REQ-007       Report                                          value as the Payment Report page.
+                                The exported file shall display
+                                the updated Payment Mode
+                                value.
+
+                                                                 Page 14 of 16
+Appendix -- Requirement Change Log
+
+#  SRD      Requirement ID Status Reason
+
+   Version
+
+1  0.1      EAINT-12327-  Added Payment Mode display value and format
+            REQ-001
+
+2  0.1      EAINT-12327-  Added Format consistency across affected pages
+            REQ-002
+
+3  0.1      EAINT-12327-  Added New Payment Mode column in Transaction Listing
+            REQ-003
+
+4  0.1      EAINT-12327-  Added Blank value handling in Transaction Listing
+            REQ-004
+
+5  0.1      EAINT-12327-  Added Payment Mode column in exported listing file
+            REQ-005
+
+6  0.1      EAINT-12327-  Added Updated display value in Payment Report
+            REQ-006
+
+                                                                                Page 15 of 16
+#  SRD      Requirement ID Status Reason
+
+   Version
+
+7  0.1      EAINT-12327-  Added Updated display value in exported report file
+            REQ-007
+
+                                                                               Page 16 of 16
+

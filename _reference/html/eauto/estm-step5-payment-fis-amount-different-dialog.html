@@ -1,0 +1,328 @@
+<!--
+URL: eSTM Payment step (step 5), same transaction as the automation's own
+untick-eLKM leg (transactionId=9f4892c7-e46a-4cf0-aabc-37f2fe48fd33, vehicle
+HX061)
+Environment: staging uat1
+Captured: 2026-08-19
+Trimmed: none — full Payment step body, both "sure to submit payment" hidden
+dialogs and the actually-OPEN "#fis-amount-different-dialog" jQuery UI dialog,
+plus the page's own <script> blocks (kept verbatim since they show exactly
+which ids/classes drive the addon-fee AJAX call and dialog wiring).
+
+THIS is the dialog that stalled TS02/TS03's automation after unticking eLKM:
+unticking an add-on changes the payable amount, and that pops
+"Sure to make this payment now?" (title, id="fis-amount-different-dialog")
+with buttons "Save & Continue Later" (.continue-dialog-btn) and
+"OK" (.confirm-dialog-btn) — NOT the "Yes"/"Make Payment"/"Next" sequence
+`EstmPaymentPage.submitPayment()` was built to click through (that sequence
+was proven out by TS06, which never touches an add-on and so never sees this
+dialog at all). See knowledge/flow-estm.md for the fix.
+-->
+<body>
+
+<div id="sure-to-continue-later" style="display:none;" title="Exit Confirmation">
+    Sure to continue later?
+</div>
+
+<div id="sure-to-continue" style="display:none;" title="Continue Confirmation">
+    Sure to continue?
+</div>
+
+<div id="sure-to-cancel" style="display:none;" title="Cancel Confirmation">
+    Sure to cancel?
+</div>
+
+<div id="sure-to-retry" style="display:none;" title="Payment">
+    Sure to retry?
+</div>
+
+<div id="confirm-retry" style="display:none;"></div>
+
+<input type="hidden" id="runEnquiry" name="runEnquiry" value="false">
+
+<div id="block-estm" style="display:none;color:#FF4000">
+<div>
+    Our payment system is under maintenance. You can only save the transaction and resubmit on Monday. For URGENT case, kindly bring buyer to JPJ.
+</div>
+</div>
+
+<div id="dialog" title="Payment Processing" style="display:none">
+  <p style="color:#FF4000">Payment is in process. Please do not refresh or close the browser.</p>
+</div>
+
+<div id="container" class="ucd-container">
+
+<div id="estm-header">
+    <div class="title1">New eSerahan Transaction:</div>
+    <div class="title2" style="margin:10px 0">Selling to Individual</div>
+
+    <table>
+    <tbody><tr>
+        <td colspan="6">
+            <center>
+    <div style="display:flex;justify-content:center;width:100%;">
+        <div class="header-element">
+            <div class="txn-header-completed"><div class="txn-header-div">1</div></div>
+            <span style="line-height:14.5px;padding-top:3px;">Buyer<br>(Customer)</span>
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header-completed"><div class="txn-header-div">2</div></div>
+            Vehicle
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header-completed"><div class="txn-header-div">3</div></div>
+            <span style="line-height:14.5px;padding-top:3px;">Seller<br>(Dealer)</span>
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header-completed"><div class="txn-header-div">4</div></div>
+            JPJ Check
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element-active">
+            <div class="txn-header-active"><div class="txn-header-div">5</div></div>
+            Payment
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header"><div class="txn-header-div">6</div></div>
+            Transfer
+        </div>
+    </div>
+</center>
+        </td>
+    </tr>
+    </tbody></table>
+</div>
+
+<div class="estm-header-title">Payment</div>
+
+<script>
+    $(document).ready(function() {
+        $("#to-buy-insurance").click(function() {
+            $("#to-buy-insurance").attr("disabled", "disabled");
+            var data = "transactionId=9f4892c7-e46a-4cf0-aabc-37f2fe48fd33";
+            window.location = "/uat1/view/ucd/insurance/quote/processQuoteFromEstm.do?" + data;
+        });
+    });
+</script>
+
+<div class="tx-details">
+<table>
+<colgroup><col width="50%"><col width="auto"></colgroup>
+<tbody><tr>
+    <td style="padding-right:20px;">
+        <table id="jpjTableLeft">
+        <colgroup><col width="220px"><col width="auto"></colgroup>
+        <tbody>
+        <tr><td><b>Dealer's Representative:</b></td><td><input type="text" name="ucdName" value="MUHAMMAD FAIZUDDIN BIN BIDI" class="notEditable" readonly=""></td></tr>
+        <tr><td><b>Representative MyKad No:</b></td><td><input type="text" name="ucdRefId" value="990909010122" class="notEditable" readonly=""></td></tr>
+        <tr><td><b>Dealer:</b></td><td><input type="text" name="ucdCompanyName" value="FAIZUDDIN AUTO TEST" class="notEditable" readonly=""></td></tr>
+        <tr><td><b>Dealer's Reg No:</b></td><td><input type="text" name="ucdCompanyRocNo" value="030311-A" class="notEditable" readonly=""></td></tr>
+        <tr><td><b>Dealer's Address:</b></td><td><div class="notEditable tx-details-address">24, JALAN SULAM EMPAT, 19/14D, 40300 SHAH ALAM, SELANGOR</div></td></tr>
+        <tr><td><b>Dealer's Contact No:</b></td><td><input type="text" name="ucdContact" value="0189812839" class="notEditable" readonly=""></td></tr>
+        </tbody></table>
+    </td>
+    <td style="padding-left:20px;">
+        <table id="jpjTableRight">
+        <colgroup><col width="200px"><col width="auto"></colgroup>
+        <tbody>
+            <tr><td><b>Buyer's Name:</b></td><td><input type="text" name="name" value="Emily Rodriguez" class="notEditable" readonly=""></td></tr>
+            <tr><td><b>Buyer's MyKad No:</b></td><td><input type="text" name="refId" id="refId" value="990909010122" class="notEditable" readonly=""></td></tr>
+        </tbody>
+        <tbody>
+            <tr><td><b>Vehicle No:</b></td><td><input type="text" name="vehicleRegNo" id="vehicleRegNo" value="HX061" class="notEditable" readonly=""></td></tr>
+            <tr><td><b>Engine No:</b> </td><td><input type="text" maxlength="22" name="vehicleEngineNo" title="Engine No" id="vehicleEngineNo" value="*/ -1231AA" class="notEditable" readonly=""></td></tr>
+            <tr><td><b>Chassis No:</b> </td><td><input type="text" maxlength="30" name="vehicleChassisNo" title="Chassis No" id="vehicleChassisNo" value="913821AA/* --" class="notEditable" readonly=""></td></tr>
+            <tr><td><b>Buyer's Email:</b></td><td><input type="text" name="buyerEmail" id="buyerEmail" value="faizudd3@gmail.com" class="notEditable" readonly=""></td></tr>
+            <tr><td><b>eVOC Email:</b></td><td><input type="text" name="email" id="email" value="faizuddin@modefair.com" class="notEditable" readonly=""></td></tr>
+            <tr><td></td><td><div style="color: #808080;">eVOC will be sent to this email address.</div></td></tr>
+        </tbody>
+        </table>
+    </td>
+</tr></tbody></table>
+</div>
+
+<div id="estm-adds-on" class="estm-adds-on-container">
+    <div class="fs-14 fw-400 mb-5">
+        Make sure the preferred add-on(s) have been added before you proceed by ticking the checkbox(es).
+    </div>
+    <div class="d-flex f-col">
+        <div class="estm-adds-on-title">
+            <span class="fw-700 fs-14">Add-on Services</span> <span class="fs-14 fw-400 gray">(Optional)</span>
+        </div>
+
+        <div id="elkm-addson" class="d-flex adds-on-selection  ">
+            <div class="estm-adds-on-checkbox vh-center">
+                <input type="checkbox" id="lkm-addson-checkbox" name="lkm-addson-checkbox" value="false">
+            </div>
+            <div class="d-flex f-col" style="width:100%">
+                <div class="d-flex ">
+                    <div class="adds-on-section">
+                        <div class="mr-20"><img src="/uat1/images/icon_elkm.svg"></div>
+                        <div>
+                            <div class="fs-16 fw-700">eLKM (Road Tax) Renewal</div>
+                            <div class="fs-14 fw-400" style="color: #696969;">
+                                Make sure your vehicle has active insurance before renewing the road tax.
+                                Digital road tax will be reflected in the vehicle owner MyJPJ App.
+                            </div>
+                        </div>
+                    </div>
+                    <div id="lkm-body" class="adds-on-section space-between addon-disabled">
+                        <div>
+                            <div class="fs-14 fw-400 mb-5">Please select LKM renewal period</div>
+                            <div>
+                                <input type="radio" id="renewalPeriod_6" name="renewalPeriod" value="6" class="hide">
+                                <label for="renewalPeriod_6" id="renewalPeriod_6_label" class="custom-radio mr-20 fs-14 fw-500">6 Months</label>
+                                <input type="radio" id="renewalPeriod_12" name="renewalPeriod" value="12" class="hide" checked="">
+                                <label for="renewalPeriod_12" id="renewalPeriod_12_label" class="custom-radio fs-14 fw-500">12 Months</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="lkm-error-msg" class="fw-500 hide"></div>
+                <div id="lkm-details-container" class="hide">
+                    <div class="d-flex v-center">
+                        <img src="/uat1/images/icon-success-green.svg">
+                        <div class="ml-5 fw-700 fs-14"> LKM Details: </div>
+                        <div class="ml-24 fw-400"> LKM Effective Date : <span id="lkm-effective-date" class="fw-500">19 Aug 2026</span> </div>
+                        <div class="ml-24 fw-400"> LKM Expiry Date : <span id="lkm-expiry-date" class="fw-500">19 Aug 2027</span></div>
+                        <div class="ml-24 fw-400"> Declaration Area : <span id="lkm-region" class="fw-500"></span></div>
+                        <div class="ml-24 fw-400"> Amount : <span id="lkm-amount" class="fw-500">RM 0.00</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="evoc-adds-on" class="d-flex adds-on-selection">
+            <div class="estm-adds-on-checkbox vh-center">
+                <input type="checkbox" id="evoc-addson-checkbox" name="evoc-addson-checkbox" value="false">
+            </div>
+            <div class="d-flex f-col" style="width:100%">
+                <div class="d-flex">
+                    <div class="adds-on-section">
+                        <div class="mr-20"><img src="/uat1/images/icon_evoc.svg"></div>
+                        <div>
+                            <div class="fs-16 fw-700">eVOC (Vehicle Ownership Certificate)</div>
+                            <div class="fs-14 fw-400" style="color: #696969;">VOC in PDF format will be sent to the agreed email address.</div>
+                        </div>
+                    </div>
+                    <div id="evoc-price-info-section" class="adds-on-section">
+                        <div>eAuto Processing Fee : <span class="fw-500">RM 10.00</span></div>
+                        <div class="gray">eAuto processing fee is subject to service tax.</div>
+                    </div>
+                </div>
+                <div id="evoc-error-msg" class="fw-500 hide"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="payment-method" class="disabled">
+    <div class="center-align payment-summary-banner">
+        <div class="w-720">
+            <span class="fs-14 fw-700">Payment Summary</span>
+            <i><span style="color:#0000FF; font-size:14px; font-weight: 400;">(Current amount payable as at <span id="payment-summary-date">19 Aug 2026 11:01 am</span>)</span></i>
+        </div>
+    </div>
+    <div>
+        <div class="center-align">
+            <div class="w-720">
+                <div class="payment-summary-row payment-summary-row--first">
+                    <div><span class="fs-14 fw-700">Description</span></div>
+                    <div><span class="fs-14 fw-700">RM</span></div>
+                </div>
+                <div class="payment-summary-row"><div>JPJ Fee :</div><div id="paymentAmount" style="text-align:right">100.00</div></div>
+                <div class="payment-summary-row"><div>eHakMilik Fee (FIS) :</div><div id="fisAmount" style="text-align:right" class="">50.00</div></div>
+                <div class="payment-summary-row"><div>eSerahan Fee :</div><div id="eautoAmount" style="text-align:right">35.00</div></div>
+                <div class="payment-summary-row">
+                    <div>
+                        <div>eLKM (Road Tax<span id="renewal-text"></span>) :</div>
+                        <div id="lkmAmountExceedMaxError" class="hide" style="display: none;">Maximum LKM Amount RM2,000.00 per transaction, unable to proceed.</div>
+                    </div>
+                    <div id="lkmAmount" style="text-align:right" class="">0.00</div>
+                </div>
+                <div class="payment-summary-row"><div>eAuto Processing Fee - eLKM :</div><div id="lkmEautoServiceFee" style="text-align:right" class="">0.00</div></div>
+                <div class="payment-summary-row"><div>eAuto Processing Fee - eVOC :</div><div id="evocEautoServiceFee" style="text-align:right; font-weight:700;">10.00</div></div>
+                <div class="payment-summary-row"><div>Service Tax 8% :</div><div style="text-align:right" id="taxAmount">3.60</div></div>
+                <div class="payment-summary-row grandtotal">
+                    <div><span class="fs-14 fw-700">Total Amount Payable (inclusive of Service Tax 8%) :</span></div>
+                    <div style="text-align:right"><span id="grandTotalAmount" class="totalPayableAmount label fs-14 fw-700">198.60</span></div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div style="display: none">
+            <label><input type="radio" name="paymentMethod" value="RHB" checked="">RHB Direct Debit (DD)</label>
+        </div>
+        <div class="button-bar">
+            <div id="to-continue" class="save-btn">Save &amp; Continue Later</div>
+            <div id="to-payment" class="next-btn" disabled="true">Next</div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- The dialog that stalled TS02/TS03: appears as soon as the payable amount
+     changes (here, from unticking eLKM), NOT part of submitPayment()'s
+     expected "Yes / Make Payment / Yes / Next / Next / OK / Done" sequence. -->
+<div id="sure-to-submit-payment" style="height: auto; min-height: 0px; width: auto; display: none;" class="" title="Payment">
+    <div style="width:100%;">
+        <div>Sure to proceed with payment?</div>
+        <div id="sure-to-submit-payment-addon-container">
+            <div style="margin: 10px 0px;">You have selected the following add-on service(s) : <span id="sure-to-submit-payment-addon-selected" class="fw-500">eVOC</span></div>
+            <div id="sure-to-submit-payment-addon-pricing" style="white-space: pre-line;">eAuto Processing Fee - eVOC: RM10.00
+</div>
+        </div>
+    </div>
+</div>
+<div class="ui-widget-overlay" style="width: 1265px; height: 1672px; z-index: 1003;"></div>
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all " tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-fis-amount-different-dialog" style="display: block; position: absolute; overflow: hidden; z-index: 1004; outline: 0px; height: auto; width: auto; top: 1102px; left: 259.5px;">
+    <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" unselectable="on">
+        <span class="ui-dialog-title" id="ui-dialog-title-fis-amount-different-dialog" unselectable="on">Sure to make this payment now?</span>
+        <a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" unselectable="on"><span class="ui-icon ui-icon-closethick" unselectable="on">close</span></a>
+    </div>
+    <div id="fis-amount-different-dialog" style="height: auto; min-height: 0px; width: auto;" class="ui-dialog-content ui-widget-content">
+        <div id="payment-popup-container" class="flex justify-content-center">
+            <div>
+                <div class="center-align">
+                    <div class="w-720">
+                        <span class="fs-16 fw-700">Payment Summary</span>
+                        <i><span style="color:#0000FF; font-size:14px; font-weight: 400;">(Current amount payable as at <span id="pu-payment-summary-date">19 Aug 2026 11:02 am</span>)</span></i>
+                    </div>
+                </div>
+                <div class="center-align">
+                    <div class="w-720">
+                        <div class="payment-summary-row payment-summary-row--first">
+                            <div><span class="fs-14 fw-700">Description</span></div>
+                            <div><span class="fs-14 fw-700">RM</span></div>
+                        </div>
+                        <div class="payment-summary-row"><div>JPJ Fee :</div><div id="pu-paymentAmount" style="text-align:right">100.00</div></div>
+                        <div class="payment-summary-row"><div>eHakMilik Fee (FIS) :</div><div id="pu-fisAmount" style="text-align:right" class="">50.00</div></div>
+                        <div class="payment-summary-row"><div id="pu-eautoAmount-desc">eSerahan Fee :</div><div id="pu-eautoAmount" style="text-align:right">35.00</div></div>
+                        <div id="pu-lkm-section" class="hide" style="display: block;">
+                            <div class="payment-summary-row"><div>eLKM (Road Tax<span id="pu-renewal-text"></span>) :</div><div id="pu-lkmAmount" style="text-align:right">0.00</div></div>
+                            <div class="payment-summary-row"><div>eAuto Processing Fee - eLKM :</div><div id="pu-lkmEautoServiceFee" style="text-align:right">0.00</div></div>
+                        </div>
+                        <div id="pu-evoc-section" class="hide" style="display: block;">
+                            <div class="payment-summary-row"><div>eAuto Processing Fee - eVOC :</div><div id="pu-evocEautoServiceFee" style="text-align:right; font-weight: 700;">10.00</div></div>
+                        </div>
+                        <div class="payment-summary-row"><div>Service Tax <span class="pu-sst-rate">8</span>% :</div><div style="text-align:right" id="pu-taxAmount">3.60</div></div>
+                        <div class="payment-summary-row grandtotal">
+                            <div><span class="fs-14 fw-700">Total Amount Payable (inclusive of Service Tax <span class="pu-sst-rate">8</span>%) :</span></div>
+                            <div style="text-align:right"><span id="pu-grandTotalAmount" class="totalPayableAmount label fs-14 fw-700">198.60</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+        <button type="button" class="ui-corner-all continue-dialog-btn width-auto">Save &amp; Continue Later</button>
+        <button type="button" class="ui-corner-all confirm-dialog-btn">OK</button>
+    </div>
+</div>
+</body>

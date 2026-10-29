@@ -1,0 +1,406 @@
+<!--
+  eSTM — step 4 "JPJ Check" AFTER the JPJ enquiry has resolved (Response Code
+  SUCCESS, JPJ Enquiry Status OK). Still the same step-4 page/URL — NOT a
+  separate "step 5" page. Shows a read-only Payment Summary and the button
+  that actually advances to the real Payment step.
+  URL:         https://staging.eauto.my/uat1/view/ucd/estm/transaction/... (JPJ
+               Check step, same URL as estm-step4-jpj-check-submit-dialog.html,
+               just after the "Submit to JPJ for checking?" dialog was
+               confirmed and the enquiry resolved)
+  Environment: uat1
+  Captured:    2026-08-18, by Faizuddin — logged in as
+               MUHAMMAD FAIZUDDIN BIN BIDI, transaction
+               c66c2f31-2fc4-4403-a0f0-009b2a39e3c5, vehicle HX051
+  Trimmed:     nothing. Full page as pasted. Forms are never trimmed.
+
+  Why this page matters: it settles what TS02/TS03/TS06's automation was
+  still missing after fixing the JPJ-dialog confirmation. There is no
+  separate "step 5" page that appears automatically — this SAME step-4 page
+  renders, right below the JPJ Enquiry Status block:
+
+    #jpj-enquiry > table > Payment Summary (JPJ Fee, eHakMilik Fee (FIS),
+      eSerahan Fee, Service Tax 8%, Total Amount Payable) — READ ONLY, no
+      eLKM/eVOC checkboxes anywhere on this page
+    <div class="button-bar">
+      <div id="to-continue" class="save-btn">Save & Continue Later</div>
+      <div id="to-payment" class="next-btn">Make Payment</div>
+    </div>
+
+  #to-payment ("Make Payment") is what actually advances to the real Payment
+  step (where #lkm-addson-checkbox lives) — nothing does this automatically.
+  Per Faizuddin (2026-08-18): for TS06, the e-simulator's Response Code must
+  be set to VEL000069E RIGHT HERE — immediately after the JPJ enquiry passes,
+  BEFORE clicking #to-payment — not later, and not "right before eLKM is
+  unticked" as an earlier reading assumed.
+
+  Also note #to-buy-insurance's click handler is STILL bound on this page via
+  inline <script> (same as the pre-JPJ-resolution capture), confirming it's a
+  page-level binding present throughout step 4, not conditional on JPJ result
+  — though its markup is still not present in this capture either.
+
+  Cited by: knowledge/flow-estm.md § Step 4 — JPJ Check.
+-->
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+
+<div id="sure-to-cancel" style="display:none;" title="Cancel Confirmation">
+    Sure to cancel?
+</div>
+
+<div id="to-continue-dialog" style="display:none; flex-direction: column;" title="Exit Confirmation">
+    <div style="font-size: 14px; font-weight: 400; width: 100%;">Sure to continue later?</div>
+</div>
+
+<div id="to-retry-dialog" style="display:none; flex-direction: column;" title="Submit">
+    <div style="font-size: 14px; font-weight: 400; width: 100%;">Submit to JPJ for checking?</div>
+</div>
+
+<div id="sure-to-continue-payment" style="display:none;" title="Confirmation">
+    Sure to continue?
+</div>
+
+<div id="container" class="ucd-container">
+
+<div id="estm-header">
+    <div class="title1">New e-SERAHAN Transaction:</div>
+    <div class="title2" style="margin:10px 0">
+Selling to Individual
+</div>
+    <table>
+    <tbody><tr>
+        <td colspan="6">
+                <center>
+    <div style="display:flex;justify-content:center;width:100%;">
+        <div class="header-element">
+            <div class="txn-header-completed"><div class="txn-header-div">1</div></div>
+            <span style="line-height:14.5px;padding-top:3px;">Buyer<br>(Customer)</span>
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header-completed"><div class="txn-header-div">2</div></div>
+            Vehicle
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header-completed"><div class="txn-header-div">3</div></div>
+            <span style="line-height:14.5px;padding-top:3px;">Seller<br>(Dealer)</span>
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element-active">
+            <div class="txn-header-active"><div class="txn-header-div">4</div></div>
+            JPJ Check
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header"><div class="txn-header-div">5</div></div>
+            Payment
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header"><div class="txn-header-div">6</div></div>
+            Transfer
+        </div>
+    </div>
+</center>
+        </td>
+    </tr>
+    </tbody></table>
+</div>
+<div class="estm-header-title">Submission (JPJ Checking)</div>
+
+<script>
+    $(document).ready(function() {
+        $("#to-buy-insurance").click(function() {
+            $("#to-buy-insurance").attr("disabled", "disabled");
+            var data = "transactionId=c66c2f31-2fc4-4403-a0f0-009b2a39e3c5";
+            window.location = "/uat1/view/ucd/insurance/quote/processQuoteFromEstm.do?" + data;
+        });
+    });
+    function updateNewOwnerName(name) {
+        $("#newOwnerName").val(name);
+    }
+</script>
+<div class="tx-details">
+<table>
+<colgroup><col width="50%">
+<col width="auto">
+</colgroup><tbody><tr>
+    <td style="padding-right:20px;">
+        <table id="jpjTableLeft">
+        <colgroup><col width="220px">
+        <col width="auto">
+        </colgroup><tbody><tr>
+            <td><b>Dealer's Representative:</b></td>
+            <td><input type="text" name="ucdName" value="MUHAMMAD FAIZUDDIN BIN BIDI" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Representative MyKad No:</b></td>
+            <td><input type="text" name="ucdRefId" value="990909010122" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer:</b></td>
+            <td><input type="text" name="ucdCompanyName" value="FAIZUDDIN AUTO TEST" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Reg No:</b></td>
+            <td><input type="text" name="ucdCompanyRocNo" value="030311-A" class="notEditable" readonly=""></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Address:</b></td>
+            <td><div class="notEditable tx-details-address">24, JALAN SULAM EMPAT, 19/14D, 40300 SHAH ALAM, SELANGOR</div></td>
+        </tr>
+        <tr>
+            <td><b>Dealer's Contact No:</b></td>
+            <td><input type="text" name="ucdContact" value="0189812839" class="notEditable" readonly=""></td>
+        </tr>
+        </tbody></table>
+    </td>
+    <td style="padding-left:20px;">
+        <table id="jpjTableRight">
+        <colgroup><col width="200px">
+        <col width="auto">
+        </colgroup><tbody>
+                <tr>
+                    <td><b>Buyer's Name:</b></td>
+                    <td><input type="text" name="name" value="Emily Rodriguez" class="notEditable" readonly=""></td>
+                </tr>
+                <tr>
+                    <td><b>Buyer's MyKad No:</b></td>
+                    <td><input type="text" name="refId" id="refId" value="990909010122" class="notEditable" readonly=""></td>
+                </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <td><b>Vehicle No:</b></td>
+                <td><input type="text" name="vehicleRegNo" id="vehicleRegNo" value="HX051" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td><b>Engine No:</b> <span class="required" style="display: none;">*</span></td>
+                <td><input type="text" maxlength="22" name="vehicleEngineNo" title="Engine No" id="vehicleEngineNo" value="*/ -1231AA" class="readonly" readonly="" style="background-color: transparent; border-width: medium medium 1px; border-style: none none solid; border-color: currentcolor currentcolor lightgray; border-image: none;"></td>
+            </tr>
+            <tr>
+                <td><b>Chassis No:</b> <span class="required" style="display: none;">*</span></td>
+                <td><input type="text" maxlength="30" name="vehicleChassisNo" title="Chassis No" id="vehicleChassisNo" value="913821AA/* --" class="readonly" readonly="" style="background-color: transparent; border-width: medium medium 1px; border-style: none none solid; border-color: currentcolor currentcolor lightgray; border-image: none;"></td>
+            </tr>
+            <tr>
+                <td><b>Buyer's Email:</b></td>
+                <td><input type="text" name="buyerEmail" id="buyerEmail" value="faizbid3@gmail.com" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td><b>eVOC Email:</b></td>
+                <td><input type="text" name="email" id="email" value="faizuddin@modefair.com" class="notEditable" readonly=""></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><div style="color: #808080;">eVOC will be sent to this email address.</div></td>
+            </tr>
+        </tbody>
+        </table>
+    </td>
+</tr></tbody></table>
+</div>
+
+<div id="jpj-enquiry" style="border-bottom:1px solid #CCC;">
+    <div style="display:flex;">
+        <div id="jpjBoxLeft" style="padding-right: 20px; width: 520px;">
+            <div style="display: flex; flex-direction: row;">
+                <div class="jpj-box-left" style="margin-bottom: 12px; font-size: 14px; font-weight: 700;">Valid As At:</div>
+                <span class="requestAt label">18 Aug 2026 03:59 pm</span>
+            </div>
+            <div style="display: flex; flex-direction: row;">
+                <div class="jpj-box-left" style="margin-bottom: 12px; font-size: 14px; font-weight: 700;">Condition Code:</div>
+                <span class="conditionCodeLabel label" style="color:black">NO</span>
+            </div>
+            <div style="display: flex; flex-direction: row;">
+                <div class="jpj-box-left" style="margin-bottom: 12px; font-size: 14px; font-weight: 700;">Response Code:</div>
+                <span style="color:green;">
+                        <span style="font-weight:700;" class="responseCodeLabel label">SUCCESS</span>
+                </span>
+            </div>
+        </div>
+        <div id="jpjBoxRight" style="padding-left: 20px; width: 520px;">
+            <div style="display: flex; flex-direction: row;">
+                <div class="jpj-box-right" style="margin-bottom: 12px; font-size: 14px; font-weight: 700;">Blacklisted:</div>
+                <span class="blacklisted label" style="color:black">NO</span>
+            </div>
+            <div style="display: flex; flex-direction: row;">
+                <div class="jpj-box-right" style="margin-bottom: 12px; font-size: 14px; font-weight: 700;">JPJ Enquiry Status:</div>
+                <span class="jpjStatus label " style="font-weight:700;color:green;">OK</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ssm-document-section" id="jpj-enquiry" style="border-bottom: 1px solid rgb(204, 204, 204); display: none;">
+    <div style="width: 100%;" class="ssm-upload-title">Buyer Company Information</div>
+    <form id="save-company-attachment" enctype="multipart/form-data" method="POST">
+        <input type="hidden" name="transactionId" value="c66c2f31-2fc4-4403-a0f0-009b2a39e3c5">
+        <div style="display:flex; width:100%">
+            <div class="w-50"></div>
+            <div class="success-upload-document w-50 pl-10" style="display: none;"><span style="color:#008E00;">Document successfully updated.</span></div>
+        </div>
+        <div style="display:flex; width:100%">
+            <div class="w-50"></div>
+            <div class="w-50 pl-10">
+                <input class="save-btn" type="button" id="to-update-document" value="Upload Document" style="height: 35px;">
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="jpj-enquiry">
+    <div>
+    <table>
+    <tbody><tr>
+        <td colspan="2">
+            <div class="center-align payment-summary-banner">
+                <div class="w-720">
+                    <span class="fs-14 fw-700">Payment Summary</span>
+                    <i>
+                        <span style="color:#0000FF; font-size:14px; font-weight: 400;">
+                            (Current amount payable as at 18 Aug 2026 03:59 pm)
+                        </span>
+                    </i>
+                </div>
+            </div>
+            <div class="center-align">
+                <div class="w-720">
+                    <div class="payment-summary-row payment-summary-row--first">
+                        <div><span class="fs-14 fw-700">Description</span></div>
+                        <div><span class="fs-14 fw-700">RM</span></div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>JPJ Fee :</div>
+                        <div style="text-align:right">100.00</div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>eHakMilik Fee (FIS) :</div>
+                        <div style="text-align:right">50.00</div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>eSerahan Fee :</div>
+                        <div style="text-align:right">35.00</div>
+                    </div>
+                    <div class="payment-summary-row">
+                        <div>Service Tax 8% :</div>
+                        <div style="text-align:right">2.80</div>
+                    </div>
+                    <div class="payment-summary-row grandtotal">
+                        <div><span class="fs-14 fw-700">Total Amount Payable (inclusive of Service Tax 8%) :</span></div>
+                        <div style="text-align:right"><span class="totalPayableAmount label fs-14 fw-700">187.80</span></div>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+    </div>
+
+    <div class="button-bar">
+        <div id="to-continue" class="save-btn">Save &amp; Continue Later</div>
+        <div id="to-payment" class="next-btn">Make Payment</div>
+    </div>
+</div>
+
+<div id="buyername-info-dialog" style="display:none;">
+    <div style="width:100%;">
+<div id="buyername-popup-container">
+    <div class="center-align">
+        <div class="buyername-details w-720">
+            <div class="buyername-block">
+                <div class="buyername-title-row">Buyer's Company Name keyed-in by UCD:</div>
+                <div class="buyername-detail-row" id="buyerName"></div>
+            </div>
+            <div class="buyername-block">
+                <div class="buyername-title-row">Response from mySIKAP:</div>
+                <div class="buyername-detail-row" id="newOwnerName">COMPANY FAIZUDDIN</div>
+            </div>
+            <div class="finalbuyername-block">
+                <div class="buyername-title-row">Name will appear on eVOC:</div>
+                <div class="buyername-detail-row" id="finalBuyerName">COMPANY FAIZUDDIN</div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+<div id="insError" style="display:none;">
+    We're unable to retrieve an insurance quotation for this <br>
+    transaction. Kindly reach out to +6018-2884889 or <br>
+    insurance@eauto.my for assistance.
+</div>
+
+<div id="insDoneBuy" style="display:none;">
+    This transaction cannot be processed. Insurance must be <br>
+    purchased through our platform for this vehicle.
+</div>
+
+<div id="blockCase" style="display:none;">
+    You are unable to proceed with the eSerahan transaction for this <br>
+    vehicle. Please contact  at  for further info.
+</div>
+
+</div>
+
+<link rel="stylesheet" type="text/css" href="/uat1/view/ucd/home/screen.css">
+<div id="header">
+    <div id="home-bar">
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/home'" id="home-link">HOME</button>
+    <button class="tab-button1" onclick="" id="insurance-link">INSURANCE</button>
+    <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+    <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/user-guide'" id="user-guide-link">USER GUIDE</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/download'" id="download-link">DOWNLOAD</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/contact'" id="contact-link">CONTACT US</button>
+    </div>
+    <table id="common-bar">
+    <tbody><tr>
+    <td class="page-title" nowrap="">Online Services - eSerahan Service</td>
+    <td>
+    <ol class="inline">
+        <li>
+            <img src="/uat1/images/icon_user.gif" style="position:relative; top:4px">
+            <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI  </span>
+        </li>
+        <li>&nbsp;|&nbsp;</li>
+        <li><a href="#" class="logout" style="position:relative; top:-1px">Logout</a></li>
+    </ol>
+    </td>
+    </tr>
+    </tbody></table>
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:52</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+
+<div id="logout-confirmation" style="display:none;" title="Logout Confirmation">
+    Sure to logout?
+</div>
+
+<div id="access-denied" style="display:none;">
+    Sorry, access denied.
+</div>
+
+<div class="footer">
+    <div class="footer-container" style="display:flex;align-items:flex-end;width:63%;justify-content:space-between;">
+        <div style="display:flex;flex-direction:column;">
+            <div class="footer-row" style="display:flex;">
+                <a href="#" style="padding-right:10px;" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding:0 10px" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding-left:10px" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </div>
+            <div class="footer-row" style="color:#808080;">Best Compatible With Mozilla Firefox V36.0.4</div>
+            <div class="footer-row" style="color:#808080;">Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+        </div>
+    </div>
+    <div style="text-align:right;"><img src="/uat1/images/eAuto_TM_logo.svg" width="126" height="52"></div>
+</div>
+</body>

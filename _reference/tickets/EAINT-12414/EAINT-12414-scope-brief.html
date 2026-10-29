@@ -1,0 +1,332 @@
+<title>Pre-Application Form Fix</title>
+<style>
+  :root {
+    --ink: #1a1e22;
+    --ink-soft: #4a5158;
+    --paper: #f5f4f0;
+    --paper-raised: #ffffff;
+    --line: #d8d5cd;
+    --accent-issue: #a8460f;
+    --accent-issue-soft: #f2e2d6;
+    --accent-fix: #1f5c6b;
+    --accent-fix-soft: #dde9ea;
+    --accent-happy: #2d6a45;
+    --accent-happy-soft: #dfe9e1;
+    --mono: ui-monospace, "Cascadia Code", "SF Mono", "IBM Plex Mono", Consolas, monospace;
+    --serif: Georgia, "Iowan Old Style", "Source Serif Pro", "Noto Serif", serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e8e6e0;
+      --ink-soft: #a8a29a;
+      --paper: #1c1d1c;
+      --paper-raised: #232423;
+      --line: #38393a;
+      --accent-issue: #e08a4f;
+      --accent-issue-soft: #3a2a1e;
+      --accent-fix: #7fc4d1;
+      --accent-fix-soft: #1c2f33;
+      --accent-happy: #7fbf98;
+      --accent-happy-soft: #1e2e23;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e8e6e0;
+    --ink-soft: #a8a29a;
+    --paper: #1c1d1c;
+    --paper-raised: #232423;
+    --line: #38393a;
+    --accent-issue: #e08a4f;
+    --accent-issue-soft: #3a2a1e;
+    --accent-fix: #7fc4d1;
+    --accent-fix-soft: #1c2f33;
+    --accent-happy: #7fbf98;
+    --accent-happy-soft: #1e2e23;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-fix); }
+  :focus-visible { outline: 2px solid var(--accent-fix); outline-offset: 2px; }
+
+  .sheet {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+  }
+
+  header.masthead {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1.75rem;
+    margin-bottom: 2.5rem;
+  }
+  .last-updated {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.7rem;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 0.6em;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .eyebrow .key {
+    color: var(--accent-issue);
+    font-weight: 700;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.05rem);
+    line-height: 1.22;
+    margin: 0.55em 0 0.4em;
+    text-wrap: balance;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    margin-top: 0.9rem;
+  }
+  .meta-row span b { color: var(--ink); font-weight: 600; }
+
+  section { margin-bottom: 3rem; }
+  h2 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 1.1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+  p { max-width: 62ch; }
+  .lede {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    max-width: 60ch;
+  }
+
+  /* Issue cards */
+  .issue {
+    display: grid;
+    grid-template-columns: 2.1rem 1fr;
+    gap: 0.15rem 1rem;
+    padding: 1.3rem 1.3rem 1.4rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent-issue);
+    border-radius: 3px;
+    margin-bottom: 1.1rem;
+  }
+  .issue .num {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-issue);
+    line-height: 1.1;
+  }
+  .issue h3 {
+    grid-column: 2;
+    font-family: var(--serif);
+    font-size: 1.12rem;
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+  }
+  .issue .body { grid-column: 2; }
+  .issue p { margin: 0.4rem 0; font-size: 0.97rem; }
+  .issue p.small-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0.85rem 0 0.15rem;
+  }
+  .quote {
+    font-family: var(--mono);
+    font-size: 0.83rem;
+    background: var(--accent-issue-soft);
+    border-radius: 3px;
+    padding: 0.6rem 0.8rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  /* Scope list */
+  ol.scope { list-style: none; margin: 0; padding: 0; counter-reset: scope; }
+  ol.scope li {
+    counter-increment: scope;
+    display: grid;
+    grid-template-columns: 2.6rem 1fr;
+    gap: 0.1rem 0.9rem;
+    padding: 0.95rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  ol.scope li:last-child { border-bottom: none; }
+  ol.scope li::before {
+    content: counter(scope, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    padding-top: 0.15rem;
+  }
+  ol.scope li .line-title {
+    font-weight: 600;
+    font-size: 0.99rem;
+  }
+  ol.scope li .line-detail {
+    grid-column: 2;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+    max-width: 58ch;
+  }
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    border-radius: 2px;
+    margin-left: 0.55rem;
+    vertical-align: 1px;
+  }
+  .tag.fix { background: var(--accent-fix-soft); color: var(--accent-fix); }
+  .tag.regress { background: var(--accent-happy-soft); color: var(--accent-happy); }
+
+  .happy-flow-item {
+    background: var(--accent-happy-soft);
+    border-radius: 4px;
+    margin: 0 -0.9rem;
+    padding: 0.95rem 0.9rem;
+    border-bottom: none !important;
+  }
+  .happy-flow-item::before { color: var(--accent-happy); }
+
+  footer {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-top: 3rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  @media (max-width: 480px) {
+    .issue { grid-template-columns: 1.6rem 1fr; padding: 1rem; }
+    ol.scope li { grid-template-columns: 2rem 1fr; }
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="last-updated">Last updated: 30 Sept 2026, 9:55 AM</div>
+    <div class="eyebrow">
+      <span class="key">EAINT-12414</span>
+      <span>·</span>
+      <span>eAuto Onboarding · UCD Pre-Application Form</span>
+    </div>
+    <h1>Form resets on reload, and a failed card payment fails silently</h1>
+    <div class="meta-row">
+      <span><b>Status</b> To Do</span>
+      <span><b>Priority</b> Medium</span>
+      <span><b>Environment</b> staging/obs</span>
+      <span><b>Dev</b> Mong Guo Hao</span>
+      <span><b>Fix</b> MR !331 (review)</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>What's going wrong</h2>
+    <p class="lede">Two separate defects, both on the public Pre-Application Form's payment step — one loses the applicant's progress, the other hides a failure they need to know about.</p>
+
+    <div class="issue">
+      <div class="num">1</div>
+      <h3>Reloading the form drops you back to Step 1</h3>
+      <div class="body">
+        <p>An applicant fills in Step 1, moves on to Step 2, then refreshes or reopens the page — expecting to continue where they left off. Instead the form resets to the very beginning, and their progress, including their <b>Type of Business</b> selection, is gone.</p>
+        <p class="small-label">Root cause</p>
+        <p>A list the page needs while loading is only built <i>after</i> loading has already started. The page errors partway through and falls back to Step 1.</p>
+      </div>
+    </div>
+
+    <div class="issue">
+      <div class="num">2</div>
+      <h3>A failed card payment gives no warning</h3>
+      <div class="body">
+        <p>Once issue 1 is fixed, this one surfaces: if a Credit or Debit Card payment fails and the gateway sends the browser back to the <b>same tab</b> (rather than the payment popup), the form reloads with no message. The agreement checkbox is unticked and the payment options vanish — the applicant has no idea the payment failed or how to retry.</p>
+        <p class="small-label">Expected message</p>
+        <div class="quote">Unsuccessful Payment — Something went wrong and your payment didn't go through. Please choose a payment method and retry.</div>
+      </div>
+    </div>
+
+    <p style="font-size:0.88rem; color:var(--ink-soft); max-width:60ch;">No money is deducted on a failed payment — there's no refund exposure — but both bugs risk applicants abandoning the form or contacting support over something that isn't actually broken on their end.</p>
+  </section>
+
+  <section>
+    <h2>Test scope</h2>
+    <ol class="scope">
+      <li>
+        <span class="line-title">Reload restores Step 2, Type of Business intact <span class="tag fix">defect</span></span>
+        <span class="line-detail">Fill to Step 2, refresh, confirm the form resumes at Step 2 with the Type of Business value correctly restored. Pre-Application only.</span>
+      </li>
+      <li>
+        <span class="line-title">Failed card payment, same-tab return <span class="tag fix">defect</span></span>
+        <span class="line-detail">Force a decline via the Fiuu sandbox response picker with the gateway returning in-tab. Confirm the banner appears, the applicant lands on Step 2, T&amp;C stays ticked, payment methods stay visible.</span>
+      </li>
+      <li>
+        <span class="line-title">Failed card payment, popup return <span class="tag regress">regression</span></span>
+        <span class="line-detail">Same forced decline via the popup path — already correct today, confirm it still is.</span>
+      </li>
+      <li>
+        <span class="line-title">Successful card payment <span class="tag regress">regression</span></span>
+        <span class="line-detail">Confirm the happy path for Credit/Debit Card is unchanged by the fix.</span>
+      </li>
+      <li>
+        <span class="line-title">Successful FPX (Personal) payment <span class="tag regress">regression</span></span>
+        <span class="line-detail">Confirm unchanged. FPX B2B is excluded — not deployed yet.</span>
+      </li>
+      <li>
+        <span class="line-title">No repeat banner after a second reload <span class="tag fix">defect</span></span>
+        <span class="line-detail">After seeing the failure message once, reload again — the banner must not reappear on its own.</span>
+      </li>
+      <li>
+        <span class="line-title">Cross-browser spot check <span class="tag regress">regression</span></span>
+        <span class="line-detail">Chrome and Firefox only.</span>
+      </li>
+      <li class="happy-flow-item">
+        <span class="line-title">Regression — Full Pre-Application &amp; Application Happy Flow <span class="tag regress">regression</span></span>
+        <span class="line-detail">One complete walkthrough end to end — gate → pre-application → BO approval → application form → BO assign/approve → registration documents → BO verify → registration fee → record. Default values, one pass, no negative branches. Purpose is narrow: confirm the fix hasn't broken the main path downstream.</span>
+      </li>
+    </ol>
+  </section>
+
+  <footer>
+    Source: Jira EAINT-12414 · Teams CR group (Mong Guo Hao, Mei Jia Chee, May Chin Mei Theng) · scope decisions confirmed by Faizuddin, 2026-09-30. Full capture in <code>_reference/tickets/EAINT-12414/</code>.
+  </footer>
+
+</div>

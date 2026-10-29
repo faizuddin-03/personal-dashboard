@@ -1,0 +1,9 @@
+{
+  "_comment": "Copy this file to config.json and fill in your Mailtrap API token + inbox URL. config.json is git-ignored so your token is never shared. Environment variables MAILTRAP_TOKEN / MAILTRAP_URL override these if set.",
+
+  "mailtrapToken": "PASTE_YOUR_MAILTRAP_API_TOKEN_HERE",
+
+  "mailtrapUrl": "https://mailtrap.io/api/accounts/{accountId}/inboxes/2581833/messages",
+
+  "mailtrapWebUrl": "https://mailtrap.io/sandboxes/2581833/messages"
+}

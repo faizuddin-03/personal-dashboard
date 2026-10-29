@@ -1,0 +1,287 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/estm/transaction (normal URL, NO zzz/<slot> bypass) — step 1 "Buyer Authentication"
+Environment: staging.eauto.my/uat1, UCD login MUHAMMAD FAIZUDDIN BIN BIDI, company FAIZUDDIN AUTO TEST (1109700)
+Captured: 2026-10-19, pasted into chat by Faizuddin (EAINT-12412 TS12, MyKad-emulator route instead of the URL bypass).
+State: page just loaded, no card inserted — #messageBox "No card is detected. Please insert IC and click [Scan IC] to try again.",
+#readMyKadButton "Scan IC" visible, #continueButton "Next" hidden (d-none), #buyer-consent DISABLED,
+#vehicleRegNo and #email READONLY and empty.
+Trimmed:
+  1. Header/footer chrome, insurance dialogs and the shared header script dropped.
+  2. The inline mykad-websocket script: the `api` block, continueIfPassed() and the button handlers are kept
+     verbatim; the long `eventHandlers` map (hNameID ... hTemplate__Quality) and the timer/UI helper
+     functions are dropped — they are identical to the step-3 capture and to the AATF capture
+     (_reference/codebases/AATF/EAINT-9306-dereg-step1-owner-mykad-auth.html). Key handlers:
+     hTotalActiveSession >1 closes with "Your session was closed because you opened the authentication
+     page in another tab."; hSmart__Card__Ready auto-starts the read; hIdentical -> "Verification Passed".
+  3. The base64-free widget markup is kept in full.
+Notes (how the page works):
+  - The widget opens ws to the local reader (createDeviceSocket); the MyKad emulator at localhost:7878
+    answers it (knowledge/mykad-emulator.md). Insert a card -> auto read -> "Verification Completed" ->
+    #continueButton "Next" shows. Clicking it POSTs the card to /ucd/estm/transaction/wskad.do and continues
+    to /view/ucd/estm/transaction/data-entry.do (additionalInfo "category=1").
+  - Whether #vehicleRegNo / #email / #buyer-consent become editable after the read is NOT captured.
+-->
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();">
+<div id="container" class="ucd-container">
+<div id="estm-header">
+    <div class="title1">New e-SERAHAN Transaction:</div>
+    <div class="title2" style="margin:10px 0 20px 0;">
+    Selling to Individual
+    </div>
+    <table>
+    <tbody><tr>
+        <td colspan="6">
+            <center>
+    <div style="display:flex;justify-content:center;width:100%;">
+        <div class="header-element-active">
+            <div class="txn-header-active"><div class="txn-header-div">1</div></div>
+            <span style="line-height:14.5px;padding-top:3px;">Buyer<br>(Customer)</span>
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header"><div class="txn-header-div">2</div></div>
+            Vehicle
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header"><div class="txn-header-div">3</div></div>
+            <span style="line-height:14.5px;padding-top:3px;">Seller<br>(Dealer)</span>
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header"><div class="txn-header-div">4</div></div>
+            JPJ Check
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header"><div class="txn-header-div">5</div></div>
+            Payment
+        </div>
+        <div><br><img src="/uat1/images/right-arrow.png"><br></div>
+        <div class="header-element">
+            <div class="txn-header"><div class="txn-header-div">6</div></div>
+            Transfer
+        </div>
+    </div>
+</center>
+        </td>
+    </tr>
+    </tbody></table>
+    <div class="estm-header-title">Buyer Authentication</div>
+</div>
+<div id="buyer-consent-container" class="">
+    <strong>PERAKUAN eSTM / eVOC / eLKM - PEMUNYA BAHARU</strong>
+    <br><br>
+    <table>
+        <tbody><tr>
+            <td style="vertical-align: top;">
+                <ul>
+                    <li><div><div>
+                        Saya
+                         bersetuju meneruskan urusniaga eSTM dan mengesahkan cap ibu jari secara biometrik bagi tujuan Tukar Hak Milik kenderaan, opsyen bagi pengeluaran Sijil Pemilikan Kenderaan secara digital (eVOC) dan opsyen bagi pembaharuan eLKM;
+                    </div></div></li>
+                    <br>
+                    <li><div><div>
+                        Saya juga bersetuju bahawa eVOC (jika saya memilih opsyen YA) ini digunakan bagi urusniaga Tukar Hak Milik untuk kenderaan nombor pendaftaran
+                        <div class="input-container">
+                            <input maxlength="20" type="text" style="width:200px" name="vehicleRegNo" id="vehicleRegNo" class="is-required" title="Vehicle No" value="" readonly="">;
+                            <div class="is-invalid is-invalid-vehicleRegNo validation-message" style="width: 200px; display: none;">This field is required</div>
+                        </div>
+                    </div></div></li>
+                    <br>
+                    <li><div><div>
+                        Saya juga bersetuju eVOC (jika saya memilih opsyen YA) akan dihantar ke alamat emel
+                        <span style="white-space: nowrap"><div class="input-container">
+                             <input type="text" style="width:200px" name="email" id="email" class="is-required" title="Email" value="" readonly="">
+                             <div class="is-invalid is-invalid-email validation-message" style="width: 200px; white-space: normal; display: none;">This field is required</div>
+                        </div>.</span> Saya bertanggungjawab untuk memastikan bahawa alamat emel yang diberikan adalah tepat dan sah.
+                    </div></div></li>
+                    <br>
+                    <li>Saya dengan ini mengisytiharkan bahawa semua maklumat yang dikemukakan adalah benar ... (statutory declaration, Seksyen 108(1)(c) Akta Pengangkutan Jalan 1987 — text unchanged, shortened here)</li>
+                    <br>
+                    <li>Saya dengan ini bersetuju untuk memenuhi apa jua keperluan ... (unchanged, shortened here)</li>
+                    <br>
+                    <li><div>
+                        Saya mengakui bahawa MUHAMMAD FAIZUDDIN BIN BIDI wakil sah FAIZUDDIN AUTO TEST telah membaca perakuan ini di hadapan saya dan memberikan penerangan yang jelas kepada saya sebelum saya memberikan persetujuan dan kebenaran untuk meneruskan urusniaga Tukar Hak Milik melalui eSTM bagi kenderaan nombor pendaftaran
+                        <input readonly="" maxlength="20" type="text" style="width:200px" name="readonlyVehicleRegNo" id="readonlyVehicleRegNo" class="is-required readonlyVehicleRegNo readonly" title="Vehicle No" value="">.
+                    </div></li>
+                    <br>
+                    <li><div>
+                        Saya dengan ini bersetuju bahawa semua rekod, tandatangan dan komunikasi dalam bentuk elektronik berhubung dengan urusniaga ini bagi kenderaan bernombor pendaftaran
+                        <input readonly="" maxlength="20" type="text" style="width:200px" name="readonlyVehicleRegNo1" id="readonlyVehicleRegNo1" class="is-required readonlyVehicleRegNo readonly" title="Vehicle No" value="">
+                        adalah sah, mengikat dan mempunyai kesan undang-undang yang sama seperti tandatangan manual, tertakluk kepada peruntukan Akta Keterangan 1950, Akta Tandatangan Digital 1997 dan Akta Perdagangan Elektronik 2006.
+                    </div></li>
+                </ul>
+                <br>
+            </td>
+        </tr>
+        <tr id="agree-container">
+            <td style="display:flex">
+                <input type="checkbox" value="1" id="buyer-consent" disabled="">
+                Saya faham dan bersetuju dengan terma dan syarat perakuan ini dan dengan ini memasukkan MyKad saya serta cap ibu jari sebagai pengesahan.
+            </td>
+        </tr>
+    </tbody></table>
+</div>
+
+<div id="ucd-consent-container" class="hidden">
+    <strong>PERAKUAN eSTM / eVOC / eLKM - UCD BERDAFTAR</strong>
+    <!-- hidden on step 1; content shown filled in estm-step3-seller-mykad-auth.html.
+         Contains input#jpjReceiptEmail (empty, editable here) and input#ucd-consent (enabled here). -->
+    <input type="text" style="width:337px" name="jpjReceiptEmail" id="jpjReceiptEmail" class="is-required" title="Email" value="">
+    <input type="checkbox" value="1" id="ucd-consent">
+</div>
+
+<div id="applet-container">
+    <p></p>
+    <div class="websocket-container" style="display: block;">
+<link rel="stylesheet" type="text/css" href="/uat1/common/mykad-websocket/mykad-websocket.css">
+<script src="/uat1/common/mykad-websocket/mykad-websocket-v2.js"></script>
+<script src="/uat1/common/mykad-websocket/mykad-data-model.js"></script>
+<script>
+    $(document).ready(function() {
+        var api = {
+            sendMykadDataPath: "/uat1/ucd/estm/transaction/wskad.do",
+            continueNextPagePath: "/uat1/view/ucd/estm/transaction/data-entry.do",
+            additionalInfo: "category=1",
+            cancelPath: "/uat1/view/ucd/estm/transaction/cancel.do",
+            errorImageResourcePath: "/uat1/common/mykad-websocket/error.png",
+            successImageResourcePath: "/uat1/common/mykad-websocket/success.png",
+            defaultPhotoSrcPath: "/uat1/images/kad_photo_placeholder.svg"
+        };
+        var myKadData = { connected: false };
+        var control = { messageElemId: "#messageBox", readMyKadButtonId: "#readMyKadButton", rereadMyKadButtonId: "#rereadMyKadButton",
+            continueButtonId: "#continueButton", cancelButtonId: "#cancelButton", verificationTextId: "#verificationResultText",
+            reconnectButtonId: "#reconnectButton", resetButtonId: "#resetButton", verified: 0, dataReady: 0, photoReady: 0,
+            readAutoRetryCount: 0, maxReadAutoRetryCount: 3 /* ...other input-box ids trimmed... */ };
+
+        function continueIfPassed() {
+            if(isMyKadDataValid(myKadData) && control.photoReady > 0 && control.dataReady > 0 && control.verified > 0) {
+                $(control.readMyKadButtonId).addClass(displayNoneClass);
+                $(control.readMyKadButtonId).attr("disabled", true);
+                $(control.rereadMyKadButtonId).removeClass(displayNoneClass);
+                $(control.rereadMyKadButtonId).attr("disabled", false);
+                $(control.continueButtonId).removeClass(displayNoneClass);
+                $(control.continueButtonId).attr("disabled", false);
+                displayMesage(control.messageElemId, "Verification Completed", 'text-color-pass');
+                $("#mykadNoteContainer").addClass("background-color-pass-light");
+                closeSocket();
+            } else {
+                /* dataReady<0 / photoReady<0 -> "Unable to read photo. Please try again."
+                   verified<0 -> "Verification failed. Please click on [Scan IC] to try again." */
+            }
+        }
+        /* eventHandlers = { ... } — trimmed, see header */
+        startMyKadSession();
+        $("#readMyKadButton").click(function() {
+            $(control.readMyKadButtonId).attr("disabled", true);
+            startReadButtonTimer();
+            cmdInit();
+        });
+        $("#continueButton").click(function() {
+            sendMyKadData(myKadData, api, control, errorDialog);
+            return false;
+        });
+        /* #rereadMyKadButton, #reconnectButton, #resetButton ("Sure to reset ?"),
+           #cancelButton/#cancelReadButton ("Sure to cancel ?" -> cancelPath), #retryMykadConnection — trimmed */
+    });
+</script>
+<div id="mykad-error-dialog" style="display:none;" title="Error"></div>
+<div id="reset-confirmation" style="display: none;" title="Reset Confirmation">Sure to reset ?</div>
+<div id="cancel-confirmation" style="display: none;" title="Cancel">Sure to cancel ?</div>
+
+<div class="mykad-container-wrapper">
+<div id="mykad-loading-container" class="mykad-container justify-content-center text-center align-items-center d-none">
+    <div id="mykadLoadingContainer" class="mykad-loading-text d-flex justify-content-center text-center align-items-center"><img src="/uat1/images/loading_small.gif">Working...</div>
+    <div id="mykadUpdateContainer" style="border: none; position: absolute; z-index: 50; background: transparent;" class="mykad-container d-none justify-content-center text-center align-items-center">
+        <div style="width: 640px; box-shadow: unset;" class="mykad-alert-box">
+            <div class="mt-3"><img src="/uat1/images/dermalog.svg"></div>
+            <div style="white-space: pre-line; color: #0B4C5F; font-size: 20px; font-weight: 700;" class="mt-2"><span>Update Required</span></div>
+            <div style="line-height: 18px" class="mb-3 mt-1"><span>Please update Dermalog Biometric Device to the latest version or make sure it's installed correctly. If not, use Firefox version 36 to create a transaction.</span></div>
+            <div><button id="downloadInstallerBtn" class="btn-blue-outline" onclick="newTabDownloadFile('https://cdn2.eauto.my/ws/Dermalog%20Biometric%20Software%20Upgrade.msi')">Download Installer</button></div>
+        </div>
+    </div>
+</div>
+<div id="mykad-container" class="mykad-row mykad-container d-block">
+    <div id="mykadAlertContainer" style="border: none; position: absolute; z-index: 50; background: transparent;" class="mykad-container d-none justify-content-center text-center align-items-center">
+        <div style="padding: 20px;" class="mykad-alert-box">
+            <div class="mt-3"><img src="/uat1/images/alertd.png"></div>
+            <div style="white-space: pre-line;" class="mt-2"><span id="mykadErrorDialogMessage"></span></div>
+            <div class="mb-3 mt-1"><span id="mykadErrorDialogMessageSub"></span></div>
+            <div><button id="retryMykadConnection" class="mykad-alert-box-btn">Retry</button></div>
+            <div><button id="closeMykadConnection" onclick="window.location='/uat1/view/ucd/home'" style="width:180px; height:40px" class="btn-blue-outline d-none">Close</button></div>
+        </div>
+    </div>
+    <div id="mykadReadingContainer" style="border: none; position: absolute; z-index: 50; background: transparent;" class="mykad-container justify-content-center text-center align-items-center d-none">
+        <div class="mykad-reading-box">
+            <div class="mt-3 mb-3"><img src="/uat1/images/mykad_scanning.png"></div>
+            <div class="mykad-reading-text d-flex justify-content-center text-center align-items-center">
+                <img src="/uat1/images/loading_small.gif"><span class="ml-2">Scanning IC...</span>
+            </div>
+            <div class="mb-3"><span id="mykadErrorDialogMessage" class="mykad-reading-msg">Please insert IC into the Dermalog Biometric Device if you haven't</span></div>
+            <button type="button" class="mykad-btn btn-blue-outline" id="cancelReadButton">Cancel</button>
+        </div>
+    </div>
+    <div id="mykadContentContainer" class="col h-full d-block" style="border: none; margin: 0px; padding: 0px; position: absolute;">
+        <div class="mykad-row justify-content-center mykad-header">
+            <div class="col-20-percent d-flex justify-content-center text-center align-items-center mykad-container-border-right"><div class="mykad-header-col">NRIC Photo</div></div>
+            <div class="col-60-percent d-flex justify-content-center text-center  align-items-center mykad-container-border-right"><div class="mykad-header-col">NRIC Details</div></div>
+            <div class="col-20-percent d-flex justify-content-center  align-items-center text-center"><div class="mykad-header-col">Thumbprint</div></div>
+        </div>
+        <div class="mykad-row mykad-container-border-bottom mykad-container-body">
+            <div class="d-flex col-20-percent mykad-container-photo mykad-container-border-right justify-content-center align-items-center">
+                <div class="mykad-row"><img class="mykad-photo" id="mykadPhoto" src="/uat1/images/kad_photo_placeholder.svg"></div>
+            </div>
+            <div class="col-60-percent mykad-container-border-right mykad-container-body-data">
+                <div class="mykad-row mykad-data-row mykad-container-label"><div class="col-21-percent text-left"><span>Name</span></div><div class="col-79-percent h-full"><input id="mykadGmpcName" readonly="" autocomplete="off" class="readonly-input h-full" type="text"></div></div>
+                <div class="mykad-row mykad-data-row mykad-container-label"><div class="col-21-percent text-left"><span>NRIC No</span></div><div class="col-79-percent h-full"><input id="myKadNo" readonly="" autocomplete="off" class="readonly-input h-full" type="text"></div></div>
+                <div class="mykad-row mykad-data-row"><div class="col-21-percent text-left"><span>Address 1</span></div><div class="col-79-percent h-full"><input id="mykadAddress1" autocomplete="off" readonly="" class="readonly-input h-full" type="text"></div></div>
+                <div class="mykad-row mykad-data-row"><div class="col-21-percent text-left"><span>Address 2</span></div><div class="col-79-percent h-full"><input id="myKadAddress2" autocomplete="off" readonly="" class="readonly-input h-full" type="text"></div></div>
+                <div class="mykad-row mykad-data-row"><div class="col-21-percent text-left"><span>Address 3</span></div><div class="col-79-percent h-full"><input id="myKadAddress3" autocomplete="off" readonly="" class="readonly-input h-full" type="text"></div></div>
+                <div class="mykad-row mykad-data-row"><div class="col-21-percent text-left"><span>Postcode</span></div><div class="col-79-percent h-full"><input id="mykadPostcode" autocomplete="off" readonly="" class="readonly-input h-full" type="text"></div></div>
+                <div class="mykad-row mykad-data-row"><div class="col-21-percent text-left"><span>City</span></div><div class="col-79-percent h-full"><input id="myKadCity" autocomplete="off" readonly="" class="readonly-input h-full" type="text"></div></div>
+                <div class="mykad-row mykad-data-row"><div class="col-21-percent text-left"><span>State</span></div><div class="col-79-percent h-full"><input id="myKadState" autocomplete="off" readonly="" class="readonly-input h-full" type="text"></div></div>
+            </div>
+            <div class="col-20-percent d-flex" style="position: relative;">
+                <div class="mykad-row mykad-data-row justify-content-center align-items-center w-full"><img id="myKadThumbprint" class="mykad-thumb-print d-none" src=""></div>
+                <div id="verificationResultText" class="mykad-verification-result d-none text-center ml-3 text-black"></div>
+            </div>
+        </div>
+        <div class="mykad-row h-full">
+            <div class="col h-full" id="mykadNoteContainer">
+                <div class="mykad-row justify-content-center align-items-center">
+                    <div id="mykadCompleteFlag" class="d-none" style="margin-right: 5px;"><!-- green tick svg --></div>
+                    <div id="messageBox" class="message-paragraph text-center text-red" style="width: fit-content; font-size: 16px; line-height: 56px">No card is detected. Please insert IC and click [Scan IC] to try again.</div>
+                    <div style="position: absolute; right: 10px;"><button type="button" id="rereadMyKadButton" class="mykad-btn btn-blue-outline d-none" disabled="">Scan IC Again</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="mykad-control-container" class="mykad-row mt-3 d-block">
+    <div class="text-center button-block">
+        <button type="button" class="mykad-btn btn-blue-outline" id="cancelButton">Cancel</button>
+        <button type="button" class="d-none btn-blue-outline" id="resetButton">Reset</button>
+        <button type="button" id="readMyKadButton" class="mykad-btn btn-blue">Scan IC</button>
+        <button type="button" class="mykad-btn btn-blue d-none" id="continueButton">Next</button>
+    </div>
+</div>
+</div>
+    </div>
+     <div class="applet-container" style="display: none;">
+        <center><p align="center"><applet id="applet" code="com.myetrade.eauto.controller.stms.mykad.MyKadApplet.class" archive="lib/MyKadReaderSigned.jar,lib/jacobSigned.jar" width="850" height="0" style="height: 650px;">
+            <param name="app-path" value="https://staging.eauto.my/uat1">
+            <param name="step" value="1">
+            <param name="type" value="estm">
+            <param name="params" value="category=1">
+            <param name="debug" value="true">
+        </applet></p></center>
+    </div>
+</div>
+<div id="estm-consent" class="estm-consent">
+    By submitting your digital biometrics, you hereby agree to share your personal details and agreed to appoint
+    FAIZUDDIN AUTO TEST as your legal representative to handle this vehicle ownership transfer
+    and any other related matters pertaining to this transfer, such as renewal of LKM and/or sourcing of motor insurance which has been presented to you.
+</div>
+</div>
+</body>

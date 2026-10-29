@@ -27,6 +27,8 @@ export interface KanbanCard {
   jiraStatus?: string;
   jiraType?: string;
   jiraProject?: string;
+  /** Card was created by the CR auto-sync (QA field / assignee match) and is moved/removed by it. Manual cards are never touched. */
+  autoSynced?: boolean;
   // TS Tracker link
   linkedTSSuiteId?: string;
   createdAt: string;
@@ -62,14 +64,14 @@ export const PRIORITY_META: Record<Priority, { label: string; color: string; dot
 
 export const ACCENT_COLORS: { label: string; value: string; cls: string; swatch: string }[] = [
   { label: "None",      value: "",          cls: "border-l-slate-700",   swatch: "#334155" },
-  { label: "Red",       value: "red",       cls: "border-l-red-500",     swatch: "#ef4444" },
-  { label: "Sky Blue",  value: "sky",       cls: "border-l-sky-400",     swatch: "#38bdf8" },
-  { label: "Blue",      value: "blue",      cls: "border-l-blue-500",    swatch: "#3b82f6" },
-  { label: "Purple",    value: "purple",    cls: "border-l-purple-500",  swatch: "#a855f7" },
-  { label: "Green",     value: "green",     cls: "border-l-green-500",   swatch: "#22c55e" },
-  { label: "Yellow",    value: "yellow",    cls: "border-l-yellow-500",  swatch: "#eab308" },
-  { label: "Orange",    value: "orange",    cls: "border-l-orange-500",  swatch: "#f97316" },
-  { label: "Pink",      value: "pink",      cls: "border-l-pink-500",    swatch: "#ec4899" },
+  { label: "Red",       value: "red",       cls: "border-l-red-500",     swatch: "#a05252" },
+  { label: "Sky Blue",  value: "sky",       cls: "border-l-sky-400",     swatch: "#4a8aaa" },
+  { label: "Blue",      value: "blue",      cls: "border-l-blue-500",    swatch: "#3a6490" },
+  { label: "Purple",    value: "purple",    cls: "border-l-purple-500",  swatch: "#7a5aa0" },
+  { label: "Green",     value: "green",     cls: "border-l-green-500",   swatch: "#4a8860" },
+  { label: "Yellow",    value: "yellow",    cls: "border-l-yellow-500",  swatch: "#9a8830" },
+  { label: "Orange",    value: "orange",    cls: "border-l-orange-500",  swatch: "#9a5e30" },
+  { label: "Pink",      value: "pink",      cls: "border-l-pink-500",    swatch: "#a04878" },
 ];
 
 export function accentBorderClass(color?: string): string {
@@ -98,17 +100,70 @@ function emptyState(): KanbanState {
   return { urgent: [], todo: [], ongoing: [], "on-hold": [], finished: [] };
 }
 
+// ── Per-column sort by date moved ───────────────────────────
+// "manual" keeps the hand-arranged order stored in KanbanState. The two date modes
+// are display-only — they never rewrite the stored array, so switching back to
+// "manual" restores the arrangement exactly as it was left.
+
+export type ColumnSort = "manual" | "asc" | "desc";
+export type ColumnSortState = Record<ColumnId, ColumnSort>;
+
+export const SORT_META: Record<ColumnSort, { label: string; hint: string }> = {
+  manual: { label: "Manual",      hint: "Default order — drag to arrange" },
+  asc:    { label: "Oldest move", hint: "Sorted by date moved, oldest first — drag to reorder is off" },
+  desc:   { label: "Newest move", hint: "Sorted by date moved, newest first — drag to reorder is off" },
+};
+
+/** Cycles Manual → Oldest → Newest → Manual. */
+export function nextColumnSort(sort: ColumnSort): ColumnSort {
+  return sort === "manual" ? "asc" : sort === "asc" ? "desc" : "manual";
+}
+
+/**
+ * When the card last entered its column. Cards created before `columnEnteredAt`
+ * existed, and cards that have never moved, fall back to their creation date —
+ * the same rule `timeInColumn` uses.
+ */
+export function movedAt(card: KanbanCard): number {
+  const raw = card.columnEnteredAt ?? card.createdAt;
+  const t = new Date(raw).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
+/** Display-only ordering. Equal timestamps keep their relative manual order (stable sort). */
+export function sortCardsByMove(cards: KanbanCard[], sort: ColumnSort): KanbanCard[] {
+  if (sort === "manual") return cards;
+  const dir = sort === "asc" ? 1 : -1;
+  return [...cards].sort((a, b) => (movedAt(a) - movedAt(b)) * dir);
+}
+
+function emptySortState(): ColumnSortState {
+  return { urgent: "manual", todo: "manual", ongoing: "manual", "on-hold": "manual", finished: "manual" };
+}
+
+export function getColumnSort(): ColumnSortState {
+  if (typeof window === "undefined") return emptySortState();
+  try {
+    const raw = localStorage.getItem("kanban_column_sort");
+    return raw ? { ...emptySortState(), ...JSON.parse(raw) } : emptySortState();
+  } catch { return emptySortState(); }
+}
+
+export function saveColumnSort(state: ColumnSortState) {
+  localStorage.setItem("kanban_column_sort", JSON.stringify(state));
+}
+
 export function isOverdue(card: KanbanCard): boolean {
   if (!card.dueDate || card.columnId === "finished") return false;
-  const dateStr = card.dueTime ? `${card.dueDate}T${card.dueTime}` : card.dueDate;
+  const dateStr = card.dueTime ? `${card.dueDate}T${card.dueTime}` : `${card.dueDate}T23:59:59`;
   return new Date(dateStr) < new Date();
 }
 
 export function isDueToday(card: KanbanCard): boolean {
   if (!card.dueDate || card.columnId === "finished") return false;
-  const d = new Date(card.dueDate);
+  const [y, m, d] = card.dueDate.split("-").map(Number);
   const now = new Date();
-  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  return y === now.getFullYear() && m - 1 === now.getMonth() && d === now.getDate();
 }
 
 export function timeInColumn(card: KanbanCard): string {

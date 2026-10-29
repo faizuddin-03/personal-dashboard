@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JomCheck Report Listing</title>
+<style>
+  :root{--page-bg:#e9ebee}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--page-bg:#16191d}}
+  :root[data-theme="dark"]{--page-bg:#16191d}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:#fff;
+       font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+  .wrap{height:100%;margin:0;padding:0;display:flex;flex-direction:column}
+
+  .browser{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:#fff}
+  .viewport{background:#fff;flex:1 1 auto;min-height:0;overflow:auto}
+
+  .app{font:13px/1.45 Arial,Helvetica,sans-serif;color:#000;background:#fff;
+       min-height:100%;display:flex;flex-direction:column}
+  .app a{color:#2b3fc4;text-decoration:none}
+  .app a:hover{text-decoration:underline}
+  .app a.inert{cursor:default}
+  .topbar{display:flex;align-items:stretch;color:#fff;font-weight:600;font-size:14px;
+          position:relative;flex:0 0 auto;
+          background:linear-gradient(100deg,#c8102e 0%,#b00e28 55%,#8e0b22 100%)}
+  .topbar::after{content:"";position:absolute;right:0;top:0;bottom:0;width:38%;
+    background:linear-gradient(115deg,rgba(255,255,255,.14),rgba(255,255,255,0) 60%);pointer-events:none}
+  .brand{background:#fff;padding:5px 16px;display:flex;align-items:center;flex:0 0 auto}
+  .brand .ealogo{height:42px;width:auto;display:block}
+  .navleft{padding:9px 14px;white-space:nowrap;align-self:center}
+  .navleft a{color:#fff}
+  .pending{color:#ffd9df;font-weight:600;align-self:center;white-space:nowrap}
+  .navright{margin-left:auto;padding:9px 16px;white-space:nowrap;position:relative;z-index:1;align-self:center}
+  .navright a{color:#fff}
+  .navright .who{font-weight:700}
+
+  .body{flex:1 1 auto}
+  .page{padding:14px 16px 26px}
+  .greet{font-weight:700;font-size:15px;margin:0 0 12px}
+  .menugrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:2px 24px;align-items:start}
+  .grp{margin-bottom:16px}
+  .grp h3{color:#8B1A1A;font-size:15.5px;margin:0 0 6px;font-weight:700;
+          display:flex;align-items:flex-start;gap:8px}
+  .grp h3 .gi{width:26px;height:26px;flex:0 0 auto;margin-top:-1px}
+  .grp ul{list-style:none;margin:0;padding:0}
+  .grp li{margin:0 0 3px;padding-left:12px;position:relative;line-height:1.35}
+  .grp li::before{content:"\25B8";position:absolute;left:0;color:#555;font-size:11px}
+  .menugrid a:hover{text-decoration:none}
+  .menugrid a.live{font-weight:700}
+  .pagebadge{display:inline-block;margin-left:7px;padding:1px 6px;border-radius:3px;
+    background:#e8710a;color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.4px;
+    vertical-align:middle;text-transform:uppercase}
+
+  .search{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
+  .search label{font-weight:700}
+  .search input[type=text]{font:13px Arial,Helvetica,sans-serif;padding:4px 6px;
+    border:1px solid #9aa0a6;border-radius:2px;background:#fff;color:#000}
+  .search input.veh{width:180px}.search input.chs{width:330px}
+  .search input[type=text]{text-transform:uppercase}
+  .search input[type=text]:disabled{background:#ececec;color:#8a8a8a;cursor:not-allowed}
+  table.rpt th .badge{display:inline-block;margin-left:5px;padding:1px 5px;border-radius:3px;
+    color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.4px;
+    vertical-align:middle;text-transform:uppercase}
+  table.rpt th .badge.upd{background:#e8710a}
+  table.rpt th .badge.new{background:#1e8e3e}
+  table.rpt th .srcnote{display:block;font-weight:400;font-size:10px;color:#0b3c5d;
+    margin-top:3px;white-space:nowrap}
+  table.rpt th.updcol,table.rpt th.newcol{background:#3f97d4}
+  table.rpt td.updcol{background:#FFF0B3}
+  table.rpt td.newcol{background:#D7F0D9}
+  .btn{font:13px Arial,Helvetica,sans-serif;padding:5px 14px;cursor:pointer;background:#e4e4e4;
+       border:1px solid #8a8a8a;border-radius:2px;color:#000}
+  .btn:hover{background:#d8d8d8}
+  .linkbtn{background:none;border:0;padding:0;font:13px Arial,Helvetica,sans-serif;
+           color:#2b3fc4;cursor:pointer}
+  .linkbtn:hover{text-decoration:underline}
+  .linkbtn:focus-visible{outline:2px solid #2b3fc4;outline-offset:2px}
+  .listing-title{text-align:right;font-weight:700;font-size:15px;margin:6px 0 10px}
+  .note{margin:8px 0 12px;font-size:12.5px}
+  .note ol{margin:2px 0 0 18px;padding:0}
+  .count{margin:0 0 6px}
+  .msg{margin:6px 0 0;font-size:12.5px;color:#8B1A1A}
+  .tablewrap{overflow-x:auto;border:1px solid #9fc6e0}
+  table.rpt{border-collapse:collapse;font-size:12px;white-space:nowrap;min-width:100%}
+  table.rpt th{background:#6FB7E9;color:#fff;font-weight:700;text-align:center;padding:7px 9px;
+               border:1px solid #fff;vertical-align:middle}
+  table.rpt td{background:#CFE7F7;padding:7px 9px;border:1px solid #fff;vertical-align:top;text-align:left}
+  table.rpt td.mid{text-align:center}
+  table.rpt td .ln{display:block}
+  .wrapcell{white-space:normal;max-width:230px}
+  .footer{border-top:1px solid #ccc;margin-top:22px;padding:10px 16px 16px;color:#8a8a8a;
+          font-size:12px;flex:0 0 auto}
+  .footer a{color:#2b3fc4}
+  .screen{display:none}.screen.on{display:block}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="browser">
+    <div class="viewport" id="viewport">
+    <div class="app">
+
+      <div class="topbar">
+        <div class="brand"><svg class="ealogo" role="img" aria-label="eAuto.my" xmlns="http://www.w3.org/2000/svg" viewBox="4 85 270 110" preserveAspectRatio="xMidYMid meet"><defs><style>.ea1{fill-rule:evenodd;}.ea1,.ea2{fill:#384c68;}.ea3{fill:#ef4123;}</style></defs><path class="ea2" d="M51.95,147.43c-1.7,4.24-4.5,7.31-8.41,9.21-3.91,1.9-8.56,2.85-13.96,2.85-3.57,0-6.81-.37-9.71-1.1-2.9-.74-5.39-1.89-7.47-3.45-2.08-1.56-3.68-3.56-4.82-5.99-1.14-2.43-1.71-5.35-1.71-8.74s.57-6.31,1.71-8.74c1.14-2.43,2.75-4.43,4.82-5.99,2.08-1.56,4.56-2.71,7.47-3.45,2.9-.74,6.14-1.11,9.71-1.11,7.77,0,13.55,1.88,17.35,5.63,3.79,3.75,5.69,9,5.69,15.74v1.07H18.07v.13c0,.85.22,1.77.67,2.78.45,1,1.14,1.94,2.08,2.81.94.87,2.13,1.6,3.58,2.18,1.45.58,3.18.87,5.19.87,4.87,0,8.13-1.56,9.78-4.69h12.59ZM40.44,136.38v-.13c0-.49-.18-1.18-.54-2.08-.36-.89-.96-1.77-1.81-2.65-.85-.87-1.99-1.63-3.42-2.28-1.43-.65-3.21-.97-5.36-.97-2.37,0-4.28.38-5.73,1.14-1.45.76-2.59,1.61-3.42,2.54-.83.94-1.38,1.84-1.67,2.71-.29.87-.44,1.4-.44,1.57v.13h22.37Z"/><path class="ea3" d="M75.19,148.1l-5.58,10.05h-15.95l31.38-57.84h16.41l12.65,57.84h-16.03l-2.17-10.05h-20.71ZM90.42,118.18h-.15l-9.12,18.41h12.5l-3.23-18.41Z"/><path class="ea3" d="M142.25,118.8l-3.32,21.02c-.79,4.99-.12,8.51,5.63,8.51s7.54-3.53,8.32-8.51l3.32-21.02h13.96l-3.74,23.7c-2.05,12.96-11.81,16.95-23.62,16.95s-20.31-3.99-18.26-16.95l3.74-23.7h13.96Z"/><path class="ea3" d="M191.95,158.14h-13.96l4.4-27.84h-4.53l1.82-11.51h4.53l1.87-11.81h13.96l-1.87,11.81h7.9l-1.82,11.51h-7.9l-4.4,27.84Z"/><path class="ea3" d="M255.73,138.51c-2.11,13.35-14.35,20.94-27.01,20.94s-22.51-7.52-20.39-20.94c2.12-13.42,14.37-21.02,27.02-21.02s22.5,7.59,20.38,21.02ZM223.05,138.51c-.79,4.99,1.9,8.82,7.58,8.82s9.58-3.83,10.37-8.82c.76-4.83-1.89-8.9-7.57-8.9s-9.62,4.07-10.38,8.9Z"/><path class="ea1" d="M112.42,115.23c1.11-.09,4.97-.37,6.67-.54.37-.04,2.68-.7,2.68-.7.07-.1.15-.18.25-.25.09-.06.2-.11.31-.14h0c6.39-3.04,20.07-10.55,27.22-14.48,15.9-8.75,31.79-13.64,49.87-12.24,6.96.55,12.64,2.18,17.93,4.77,5.25,2.56,10.14,6.06,15.57,10.34,5.35.28,12.09,1.4,18.43,2.66,6.36,1.27,12.32,2.69,16.04,3.56h.02c.46.14.92.3,1.37.48.45.19.9.4,1.32.63h0c.17.09.21.22.25.34h0s0,.01,0,.03h0s.18.44.18.44h0c.37.89.62,1.69.79,2.5.16.76.26,1.53.34,2.42l.29.13.03.02c.73.48,1.33,1.01,1.7,1.55.29.41.45.83.44,1.24,0,.43-.18.84-.57,1.21-.34.31-.82.58-1.48.82h-.03s-.33.08-.33.08c-.02.31-.03.59-.05.87-.04.75-.08,1.46-.14,2.19-.35,3.83-1.28,6.13-6.45,5.65-.15-.02-.3-.19-.3-.34v-.2c.01-.16.16-.32.31-.33,4.79-.37,4.86-1.89,5.01-5.61.03-.81.07-1.72.16-2.79h0c.01-.21.16-.36.35-.46.12-.07.26-.12.35-.14h0c1.37-.41,1.88-.79,1.8-1.15-.1-.45-.86-.98-2.02-1.58h0c-.07-.04-.14-.08-.21-.15-.1-.09-.17-.2-.19-.35h0c-.08-.46-.15-.89-.21-1.3-.19-1.25-.34-2.28-.93-3.62v-.02s-.09-.22-.09-.22l-2.11-.78-4.34-1.12h.02c-.8-.17-1.61-.33-2.41-.5-9.18-1.91-18.48-3.84-27.78-4.62-.08,0-.16-.02-.24-.05-.08-.03-.15-.06-.22-.11h0c-4.82-3.93-9.91-7.1-15.32-9.44-5.4-2.35-11.12-3.88-17.19-4.53-15.61-1.68-27.62,2.06-41.86,8.45-7.37,3.31-33.16,17.32-36.2,17.94-4.38.89-7.39.02-9.47.33-.95.15-1.45-.73.48-.88Z"/><path class="ea2" d="M189.19,180.81c-.36,2.27-2.5,4.16-4.81,4.16s-3.86-1.88-3.5-4.16c.36-2.31,2.51-4.16,4.81-4.16s3.87,1.85,3.5,4.16Z"/><path class="ea2" d="M201.69,168.3h.07c1.85-2.03,3.86-2.88,6.21-2.88,2.63,0,4.74,1.06,5.67,3.48,1.6-2.27,4.25-3.48,6.73-3.48,4.62,0,5.74,3.02,5.08,7.21l-1.83,11.62h-6.47l1.37-8.71c.3-1.88.86-4.97-1.88-4.97-2.98,0-3.53,2.81-3.87,4.97l-1.37,8.71h-6.47l1.37-8.71c.32-2.03.81-5.12-2.07-5.12s-3.37,3.09-3.69,5.12l-1.37,8.71h-6.47l2.88-18.23h6.47l-.36,2.27Z"/><path class="ea2" d="M228.08,166.03h7.46l3.39,9.35,6.24-9.35h7.36l-18.91,27.33h-7.25l8.05-11.59-6.33-15.74Z"/><path class="ea2" d="M266.33,157.74l1.47,5.51,1.49-5.51h2.47v8.13h-1.52v-6.34l-1.66,6.34-1.56-.02-1.57-6.29s-.06.07-.06.07v6.24h-1.49v-8.13h2.43Z"/><polygon class="ea2" points="262.83 157.74 262.83 159.11 260.42 159.11 260.42 165.87 258.81 165.87 258.81 159.11 256.41 159.11 256.37 159.06 256.37 157.74 262.83 157.74"/></svg></div>
+        <div class="navleft"><a class="inert" href="#">Home</a> &nbsp;|&nbsp; <a class="inert" href="#">Menu &#9662;</a></div>
+        <div class="pending">&nbsp;&nbsp;7 Pending Transaction Found!</div>
+        <div class="navright"><span class="who">Tan Wei Ming</span>, <a class="inert" href="#">My Account</a> &nbsp;|&nbsp; <a class="inert" href="#">Logout</a></div>
+      </div>
+
+      <div class="body">
+        <section class="screen on" id="screen1">
+          <div class="page">
+            <p class="greet">Good Morning, Tan Wei Ming</p>
+            <div class="menugrid">
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><circle cx="9" cy="10" r="4.4" fill="#5b8ac4"/><path d="M1.5 25c0-4.4 3.4-7.4 7.5-7.4s7.5 3 7.5 7.4z" fill="#5b8ac4"/><circle cx="23" cy="9" r="4" fill="#e07b39"/><path d="M16.5 23.5c0-4 3-6.7 6.5-6.7s6.5 2.7 6.5 6.7z" fill="#e07b39"/><circle cx="16" cy="15" r="4.6" fill="#8d99a6"/><path d="M8 30c0-4.7 3.6-7.9 8-7.9s8 3.2 8 7.9z" fill="#8d99a6"/></svg><span>Account Management</span></h3><ul><li><a class="inert" href="#">Manage Company Accounts</a></li><li><a class="inert" href="#">Manage Backoffice User Accounts</a></li><li><a class="inert" href="#">View UCD User Accounts</a></li><li><a class="inert" href="#">Manage Bank/Credit Company Accounts</a></li><li><a class="inert" href="#">Manage Bank/Credit Company User Accounts</a></li><li><a class="inert" href="#">Manage Bank/Credit Company IP Whitelist</a></li><li><a class="inert" href="#">Company Account Listing (Limited Features For UCD To UCD)</a></li><li><a class="inert" href="#">Manage AATF/PBT Account</a></li><li><a class="inert" href="#">Manage e-Invoice Setup Company Listing</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="2" fill="#fff" stroke="#5b8ac4" stroke-width="2"/><rect x="7" y="18" width="3.6" height="7" fill="#e07b39"/><rect x="12.5" y="14" width="3.6" height="11" fill="#5b8ac4"/><rect x="18" y="10" width="3.6" height="15" fill="#8d99a6"/><path d="M6 9h14" stroke="#c8102e" stroke-width="2" stroke-linecap="round"/></svg><span>Reports</span></h3><ul><li><a class="inert" href="#">JPJ Reports</a></li><li><a class="inert" href="#">Account Balance Summary</a></li><li><a class="inert" href="#">Account Balance Summary (Month / Year)</a></li><li><a class="inert" href="#">Account Deposit / Adjustment Report</a></li><li><a class="inert" href="#">Company POB Balance Report</a></li><li><a class="inert" href="#">POB Payment Report</a></li><li><a class="inert" href="#">Statement of Account (UCD)</a></li><li><a class="inert" href="#">Transaction Summary Report</a></li><li><a class="inert" href="#">Transaction Summary Report (State)</a></li><li><a class="inert" href="#">Vehicle Movement Report (UCD)</a></li><li><a class="inert" href="#">Interim Payment Report</a></li><li><a class="inert" href="#">Reset Payment Report</a></li><li><a class="inert" href="#">Inter-Branch Transfer History Report</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="24" rx="2" fill="#fff" stroke="#8d99a6" stroke-width="2"/><rect x="3" y="5" width="26" height="7" rx="2" fill="#5b8ac4"/><rect x="8" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><rect x="21" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><text x="16" y="25" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#3c4a5a" text-anchor="middle">12</text></svg><span>Insurance</span></h3><ul><li><a class="inert" href="#">Insurance Permission Listing</a></li><li><a class="inert" href="#">Insurance User Permission Log</a></li><li><a class="inert" href="#">Endorsement</a></li><li><a class="inert" href="#">Insurance Transaction Listing</a></li><li><a class="inert" href="#">Insurance Payment Transaction</a></li><li><a class="inert" href="#">Upload Insurance e-Certificate</a></li><li><a class="inert" href="#">Insurance Quote Enquiry</a></li><li><a class="inert" href="#">Refer Risk Log</a></li><li><a class="inert" href="#">Insurance Payment OTP Log</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="24" rx="2" fill="#fff" stroke="#8d99a6" stroke-width="2"/><rect x="3" y="5" width="26" height="7" rx="2" fill="#5b8ac4"/><rect x="8" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><rect x="21" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><text x="16" y="25" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#3c4a5a" text-anchor="middle">12</text></svg><span>Onboarding</span></h3><ul><li><a class="inert" href="#">UCD New Application</a></li><li><a class="inert" href="#">UCD Application Listing</a></li><li><a class="inert" href="#">UCD Pre-Application Listing</a></li><li><a class="inert" href="#">UCD Application Audit Log</a></li><li><a class="inert" href="#">UCD Pre-Application Audit Log</a></li></ul></div>
+            </div>
+              <div class="menugrid">
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="24" rx="2" fill="#fff" stroke="#8d99a6" stroke-width="2"/><rect x="3" y="5" width="26" height="7" rx="2" fill="#5b8ac4"/><rect x="8" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><rect x="21" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><text x="16" y="25" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#3c4a5a" text-anchor="middle">12</text></svg><span>Transactions Relevant</span></h3><ul><li><a class="inert" href="#">STMS Transaction</a></li><li><a class="inert" href="#">APT Transaction</a></li><li><a class="inert" href="#">eSTM Transaction</a></li><li><a class="inert" href="#">Deregistration Transaction</a></li><li><a class="inert" href="#">Jomcheck Transaction</a></li><li><a class="inert" href="#">SSM Transaction</a></li><li><a class="inert" href="#">eDereg Pre-Checking Transaction</a></li><li><a class="inert" href="#">Company Business Document Listing</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="24" rx="2" fill="#fff" stroke="#8d99a6" stroke-width="2"/><rect x="3" y="5" width="26" height="7" rx="2" fill="#5b8ac4"/><rect x="8" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><rect x="21" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><text x="16" y="25" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#3c4a5a" text-anchor="middle">12</text></svg><span>eAuto Plus Relevant</span></h3><ul><li><a class="inert" href="#">BMK Transaction</a></li><li><a class="inert" href="#">RHB Payment Transaction (eAuto Plus)</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><circle cx="9" cy="10" r="4.4" fill="#5b8ac4"/><path d="M1.5 25c0-4.4 3.4-7.4 7.5-7.4s7.5 3 7.5 7.4z" fill="#5b8ac4"/><circle cx="23" cy="9" r="4" fill="#e07b39"/><path d="M16.5 23.5c0-4 3-6.7 6.5-6.7s6.5 2.7 6.5 6.7z" fill="#e07b39"/><circle cx="16" cy="15" r="4.6" fill="#8d99a6"/><path d="M8 30c0-4.7 3.6-7.9 8-7.9s8 3.2 8 7.9z" fill="#8d99a6"/></svg><span>Support Tools</span></h3><ul><li><a class="inert" href="#">STMS Transaction</a></li><li><a class="inert" href="#">Support Audit Log (STMS, APT &amp; eSTM)</a></li><li><a class="inert" href="#">Audit Trail Log</a></li><li><a class="inert" href="#">Company Account Audit Log</a></li><li><a class="inert" href="#">Backoffice User Account Audit Log</a></li><li><a class="inert" href="#">Blacklist Company ROC, MyKad No. &amp; Vehicle No. Audit Log</a></li><li><a class="inert" href="#">Pending/Failed APT Transaction Audit Log</a></li><li><a class="inert" href="#">Pending STMS, APT &amp; eSTM Audit Log</a></li><li><a class="inert" href="#">RHB Reconciliation Audit Log</a></li><li><a class="inert" href="#">JPJ Hasil Audit Log</a></li><li><a class="inert" href="#">Resubmit Pending STMS, APT &amp; eSTM</a></li><li><a class="inert" href="#">Manual APT Trigger</a></li><li><a class="inert" href="#">Manage Pending/Failed APT Transaction</a></li><li><a class="inert" href="#">eSTM Transaction</a></li><li><a class="inert" href="#">JPJ Enquiry</a></li><li><a class="inert" href="#">JPJ Enquiry (New)</a></li><li><a class="inert" href="#">Bulk STMS Cancellation</a></li><li><a class="inert" href="#">Bulk STMS Cancellation Audit Log</a></li><li><a class="inert" href="#">Resubmit JPJ Final Submission (STMS)</a></li><li><a class="inert" href="#">Resubmit JPJ Final Submission (eSTM)</a></li><li><a class="inert" href="#">Resubmit JPJ Final Submission (eDereg Pre-Checking)</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="2" fill="#fff" stroke="#5b8ac4" stroke-width="2"/><rect x="7" y="18" width="3.6" height="7" fill="#e07b39"/><rect x="12.5" y="14" width="3.6" height="11" fill="#5b8ac4"/><rect x="18" y="10" width="3.6" height="15" fill="#8d99a6"/><path d="M6 9h14" stroke="#c8102e" stroke-width="2" stroke-linecap="round"/></svg><span>Proforma Invoice / e-Invoice</span></h3><ul><li><a class="inert" href="#">Generate Proforma Invoice</a></li><li><a class="inert" href="#">Proforma Invoice / e-Invoice Listing</a></li><li><a class="inert" href="#">Credit Note Listing</a></li><li><a class="inert" href="#">Biometric Device Purchase &amp; Software Installation Listing</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="24" rx="2" fill="#fff" stroke="#8d99a6" stroke-width="2"/><rect x="3" y="5" width="26" height="7" rx="2" fill="#5b8ac4"/><rect x="8" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><rect x="21" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><text x="16" y="25" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#3c4a5a" text-anchor="middle">12</text></svg><span>Settings</span></h3><ul><li><a class="inert" href="#">RHB Payment Transaction</a></li><li><a class="inert" href="#">1 Layer Permission Listing</a></li><li><a class="inert" href="#">2 Layer Permission Setup</a></li><li><a class="inert" href="#">eLKM Permission Listing</a></li><li><a class="inert" href="#">eLKM Permission Log</a></li><li><a class="inert" href="#">Blacklist Company ROC (STMS &amp; eSTM)</a></li><li><a class="inert" href="#">Blacklist MyKad No. (STMS &amp; eSTM)</a></li><li><a class="inert" href="#">Blacklist MyKad No. (UCD User)</a></li><li><a class="inert" href="#">Blacklist Vehicle No.</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="24" rx="2" fill="#fff" stroke="#8d99a6" stroke-width="2"/><rect x="3" y="5" width="26" height="7" rx="2" fill="#5b8ac4"/><rect x="8" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><rect x="21" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><text x="16" y="25" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#3c4a5a" text-anchor="middle">12</text></svg><span>Settings (Hub Admin)</span></h3><ul><li><a class="inert" href="#">Manual Payment Processing (STMS, APT, eSTM)</a></li><li><a class="inert" href="#">JPJ XML Log (APT)</a></li><li><a class="inert" href="#">JPJ XML Log (STMS)</a></li><li><a class="inert" href="#">JPJ XML Log (ESTM)</a></li><li><a class="inert" href="#">JPJ XML Log (Deregistration)</a></li><li><a class="inert" href="#">JPJ XML Log (eDereg Pre-Checking)</a></li><li><a class="inert" href="#">JPJ XML Log (BMK)</a></li><li><a class="inert" href="#">SSM XML Log</a></li><li><a class="inert" href="#">Generate Batch Invoice (STMS, APT, eSTM)</a></li><li><a class="inert" href="#">Estm User Permission Log</a></li><li><a class="inert" href="#">Change Director Log</a></li><li><a class="inert" href="#">Customize Display Message</a></li><li><a class="inert" href="#">Bulk Submission Setup (JPJ Enquiry, Payment)</a></li><li><a class="inert" href="#">Bulk Submission Setup (JPJ Enquiry, Payment) Audit Log</a></li><li><a class="inert" href="#">Bulk Submission Control for System Maintenance</a></li><li><a class="inert" href="#">Bypass Purchase SSM (STMS &amp; eSTM)</a></li><li><a class="live" href="#" data-goto="2">JomCheck Report Listing</a><span class="pagebadge">Updated</span></li><li><a class="inert" href="#">Bypass Purchase SSM (STMS &amp; eSTM) Audit Log</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="2" fill="#fff" stroke="#5b8ac4" stroke-width="2"/><rect x="7" y="18" width="3.6" height="7" fill="#e07b39"/><rect x="12.5" y="14" width="3.6" height="11" fill="#5b8ac4"/><rect x="18" y="10" width="3.6" height="15" fill="#8d99a6"/><path d="M6 9h14" stroke="#c8102e" stroke-width="2" stroke-linecap="round"/></svg><span>JPJ Reports</span></h3><ul><li><a class="inert" href="#">eAuto Reconciliation Summary Report</a></li><li><a class="inert" href="#">eAuto STMS, APT and eSTM Transaction Listing</a></li><li><a class="inert" href="#">eAuto Reconciliation Summary Report (eAuto Plus)</a></li><li><a class="inert" href="#">eAuto BMK, HTM dan eLKM Transaction Listing</a></li><li><a class="inert" href="#">eAuto eDereg Pre-Checking Transaction Listing</a></li><li><a class="inert" href="#">eAuto Reconciliation Summary Listing</a></li><li><a class="inert" href="#">JPJ Reconciliation Report (HASIL)</a></li><li><a class="inert" href="#">JPJ eSTM Report (HASIL)</a></li></ul></div>
+<div class="grp"><h3><svg class="gi" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="24" rx="2" fill="#fff" stroke="#8d99a6" stroke-width="2"/><rect x="3" y="5" width="26" height="7" rx="2" fill="#5b8ac4"/><rect x="8" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><rect x="21" y="2" width="3" height="6" rx="1.4" fill="#4a5a6b"/><text x="16" y="25" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#3c4a5a" text-anchor="middle">12</text></svg><span>Wholesale</span></h3><ul><li><a class="inert" href="#">Manage Wholesale Company Account</a></li><li><a class="inert" href="#">Wholesale Transaction Listing</a></li><li><a class="inert" href="#">Wholesale Refund Listing</a></li><li><a class="inert" href="#">Wholesale Vehicle Payment Listing</a></li><li><a class="inert" href="#">Wholesale Rejection Listing</a></li><li><a class="inert" href="#">Wholesale Payment Listing</a></li><li><a class="inert" href="#">Alternative Vehicle Maintenance</a></li><li><a class="inert" href="#">Alternative Vehicle Maintenance Audit Log</a></li></ul></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="screen2">
+          <div class="page">
+            <div class="search">
+              <label for="veh">Vehicle No.:</label>
+              <input type="text" id="veh" class="veh" value="ABC1234">
+              <label for="chs">Chassis No.:</label>
+              <input type="text" id="chs" class="chs" value="">
+              <button class="btn" id="searchbtn" type="button">SEARCH</button>
+              <button class="linkbtn" id="resetbtn" type="button">Reset</button>
+              <button class="linkbtn hidden" id="exportbtn" type="button">Export</button>
+            </div>
+            <div class="listing-title">JomCheck Report Listing</div>
+
+            <div id="results" class="hidden">
+              <div class="note">
+                Note: Before 22 April 2026,
+                <ol type="a">
+                  <li>Avg. Market Value / Avg. Retail Price is displayed as Avg. Market Value.</li>
+                  <li>Approx. New Car Price / Recommended Trade Price is displayed as Approx. New Car Price.</li>
+                </ol>
+              </div>
+              <p class="count" id="count"></p>
+              <div class="tablewrap">
+                <table class="rpt">
+                  <thead><tr id="thead"></tr></thead>
+                  <tbody id="tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <p class="msg hidden" id="msg"></p>
+          </div>
+        </section>
+      </div>
+
+      <div class="footer">
+        Best Compatible With Mozilla Firefox V36.0.4<br>
+        Copyright &copy; 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.<br>
+        <a class="inert" href="#">Contact Us</a> | <a class="inert" href="#">Terms &amp; Conditions</a> | <a class="inert" href="#">Privacy</a>
+      </div>
+
+    </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script>
+(function(){
+  var VW = "MK5 Sedan Petrol - Unleaded (ULP) 5st 4dr Automatic 4cyl 1598cc FWD";
+  var HD = "FD S i-VTEC Sedan Petrol - Unleaded (ULP) 5st 4dr Automatic 4cyl 1799cc FWD";
+
+  var COLS = ["#","Date & Time","Vehicle Number","Chassis Number","Transaction Number",
+    "Total Loss History (Actual)","Possible Total Loss",
+    "Total Loss History (BER)","Possible BER","Make / Brand","Model","Year Make",
+    "Variant","Engine CC","Transmission","Avg. Market Value / Avg. Retail Price",
+    "Approx. New Car Price / Recommended Trade Price","Flood History","Windscreen Claim",
+    "Multiple Registration of Car Plate / Chassis No.","Last Mileage Recorded","Accident Record",
+    "Date of Loss","Date of Authorized","Odometer Reading","Type of Claim",
+    "Total No. of Parts Approved for Change","State in Malaysia","Incidents Severity Scale"];
+
+  var HEAD_HTML = ["#","Date &amp; Time","Vehicle<br>Number","Chassis Number","Transaction<br>Number",
+    "Total Loss<br>History (Actual)","Possible Total<br>Loss",
+    "Total Loss<br>History (BER)","Possible<br>BER","Make /<br>Brand","Model",
+    "Year<br>Make","Variant","Engine<br>CC","Transmission",
+    "Avg. Market Value /<br>Avg. Retail Price","Approx. New Car Price /<br>Recommended Trade Price",
+    "Flood<br>History","Windscreen<br>Claim","Multiple Registration of<br>Car Plate / Chassis No.",
+    "Last Mileage<br>Recorded","Accident<br>Record","Date of Loss","Date of<br>Authorized",
+    "Odometer Reading","Type of Claim",
+    "Total No. of Parts<br>Approved for Change",
+    "State in<br>Malaysia","Incidents<br>Severity Scale"];
+
+  var VWCAR = {mk:"Volkswagen", md:"Polo", yr:"2014", va:VW, cc:"Piston", tr:"Automatic",
+               amv:"19172.0", anc:"14571.0"};
+  var HDCAR = {mk:"Honda", md:"Civic", yr:"2009", va:HD, cc:"1799", tr:"Automatic",
+               amv:"28003.0", anc:"21282.0"};
+
+  var A = { dol:["22 Nov 2019","22 Aug 2021"], doa:["26 Nov 2019","17 Sep 2021"],
+            odo:["0 to 10,000 km","220,001 to 230,000 km"],
+            parts:["1 to 10 parts","1 to 10 parts"], sev:["MEDIUM","SEVERE"] };
+  var B = { dol:["22 Aug 2021","22 Nov 2019"], doa:["17 Sep 2021","26 Nov 2019"],
+            odo:["220,001 to 230,000 km","0 to 10,000 km"],
+            parts:["1 to 10 parts","1 to 10 parts"], sev:["SEVERE","MEDIUM"] };
+  var C = { dol:["13 Mar 2021","13 Mar 2021"], doa:["29 Mar 2021","29 Mar 2021"],
+            odo:["40,001 to 50,000 km","0 to 10,000 km"],
+            parts:["No information available.","11 to 20 parts"],
+            sev:["MEDIUM","HIGH"] };
+
+  function mk(n, dt, chs, txn, car, cl, tla, tlb, ptl, pber){
+    return {n:n, dt:dt, chs:chs, txn:txn, car:car, cl:cl, tla:tla, tlb:tlb,
+            typ:["Own Damage (OD)","Own Damage (OD)"],
+            ptl: ptl || "No", pber: pber || "No"};
+  }
+
+  var rows = [
+    mk(1,"12-05-2026 09:07","PPVZZZ60ZEL003133 (-)","J650007890",VWCAR,A,"-","-"),
+    mk(2,"24-04-2026 11:08","PPVZZZ60ZEL003133 (-)","J640007808",VWCAR,B,"-","-"),
+    mk(3,"16-03-2026 15:25","PPVZZZ60ZEL003133 (-)","J630007496",VWCAR,A,"-","-"),
+    mk(4,"13-03-2026 19:51","PMHFD16309D300066 (PM2M502G002208550)","J630007467",HDCAR,C,"-","-",
+       "Yes", "No"),
+    mk(5,"13-03-2026 18:32","PMHFD16309D300066 (PM18E380905C27412)","J630007466",HDCAR,C,"-","-"),
+    mk(6,"07-10-2025 16:44","PPVZZZ60ZEL003133 (-)","J500007229",VWCAR,B,"-","-",
+       "No", "Yes"),
+    mk(7,"20-03-2025 10:03","PPVZZZ60ZEL003133 (-)","J530006947",VWCAR,A,"-","-"),
+    mk(8,"26-11-2024 10:14","PPVZZZ60ZEL003133 (-)","J4N0006662",VWCAR,A,"-","-")
+  ];
+
+  var URLS = {
+    "1": ["staging.eauto.my","/eauto/home/","Home - eAuto"],
+    "2": ["staging.eauto.my","/eauto/view/jomcheck/report-listing/index.do","JomCheck Report Listing - eAuto"]
+  };
+
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function nHtml(l){ return l.map(function(t,i){ return '<span class="ln">'+(i+1)+'. '+t+'</span>'; }).join(""); }
+  function nFlat(l){ return l.map(function(t,i){ return (i+1)+'. '+t; }).join("\n"); }
+
+  function cells(r){
+    return [r.n, r.dt, "ABC1234", r.chs, r.txn,
+            r.tla, r.ptl, r.tlb, r.pber,
+            r.car.mk, r.car.md, r.car.yr, r.car.va, r.car.cc, r.car.tr,
+            r.car.amv, r.car.anc, "-", "-", "-", "-", "-",
+            r.cl.dol, r.cl.doa, r.cl.odo, r.typ, r.cl.parts, "-", r.cl.sev];
+  }
+
+  var MID = [0,1,2,4,5,6,7,8,11,13,15,16,17,18,19,20,21,27];
+  var WRAPC = [3,12,28];
+  // EAINT-12339: same column, different backend source
+  var UPDATED = [24,25,26];
+  // EAINT-12339: brand new columns
+  var NEWCOLS = [6,8];
+  var NOTES = {
+    24: "Mileage \u2192 MileageRange",
+    25: "ClaimType \u2192 ClaimsType",
+    26: "ApprovedParts \u2192 TotalPartsChanged",
+    6: "PossibleTotalLoss",
+    8: "PossibleBER"
+  };
+
+  function buildTable(){
+    $("thead").innerHTML = HEAD_HTML.map(function(h,i){
+      var upd = UPDATED.indexOf(i) >= 0, nw = NEWCOLS.indexOf(i) >= 0;
+      var cls = upd ? ' class="updcol"' : (nw ? ' class="newcol"' : '');
+      var badge = upd ? '<span class="badge upd">Updated</span>'
+                : (nw ? '<span class="badge new">New</span>' : '');
+      var note = NOTES[i] ? '<span class="srcnote">'+NOTES[i]+'</span>' : '';
+      return "<th"+cls+">"+h+badge+note+"</th>";
+    }).join("");
+    $("tbody").innerHTML = rows.map(function(r){
+      return "<tr>" + cells(r).map(function(v,i){
+        var c = [];
+        if (MID.indexOf(i) >= 0) c.push("mid");
+        if (WRAPC.indexOf(i) >= 0) c.push("wrapcell");
+        if (UPDATED.indexOf(i) >= 0) c.push("updcol");
+        if (NEWCOLS.indexOf(i) >= 0) c.push("newcol");
+        var cls = c.length ? ' class="'+c.join(" ")+'"' : '';
+        var val = Array.isArray(v) ? nHtml(v) : esc(v);
+        return "<td"+cls+">"+val+"</td>";
+      }).join("") + "</tr>";
+    }).join("");
+    $("count").textContent = rows.length + " record(s) in total";
+  }
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function stamp(){
+    var d = new Date();
+    return pad(d.getDate())+pad(d.getMonth()+1)+d.getFullYear()+"_"+pad(d.getHours())+pad(d.getMinutes());
+  }
+
+  var downloads = null;
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("downloads").then(function(d){ downloads = d; }).catch(function(){});
+  }
+
+  function showMsg(t){ var m = $("msg"); m.textContent = t; m.classList.remove("hidden"); }
+  function clearMsg(){ $("msg").classList.add("hidden"); }
+
+  function doExport(){
+    clearMsg();
+    if (typeof ExcelJS === "undefined"){ showMsg("Export unavailable: spreadsheet library did not load."); return; }
+    if (!downloads){ showMsg("Export unavailable in this view."); return; }
+
+    var base = "JomCheck_Report_" + stamp();
+    var UPD_HDR = "FFE8710A", NEW_HDR = "FF1E8E3E";
+    var UPD_CELL = "FFFFF0B3", NEW_CELL = "FFD7F0D9";
+
+    var hdr = COLS.map(function(h,i){
+      if (UPDATED.indexOf(i) >= 0) return h + " (UPDATED)";
+      if (NEWCOLS.indexOf(i) >= 0) return h + " (NEW)";
+      return h;
+    });
+
+    var wb = new ExcelJS.Workbook();
+    var ws = wb.addWorksheet(base.slice(0, 31));
+
+    ws.addRow(hdr);
+    rows.forEach(function(r){
+      ws.addRow(cells(r).map(function(v){
+        return Array.isArray(v) ? nFlat(v) : String(v);
+      }));
+    });
+
+    for (var c = 1; c <= COLS.length; c++){
+      var idx = c - 1;
+      var upd = UPDATED.indexOf(idx) >= 0, nw = NEWCOLS.indexOf(idx) >= 0;
+      ws.getColumn(c).width = (upd || nw) ? 26 : 20;
+
+      for (var r = 1; r <= rows.length + 1; r++){
+        var cell = ws.getCell(r, c);
+        var isHdr = r === 1;
+        cell.alignment = { wrapText: true, vertical: "top" };
+        cell.font = {
+          name: "Arial", size: 10, bold: isHdr,
+          color: { argb: (isHdr && (upd || nw)) ? "FFFFFFFF" : "FF000000" }
+        };
+        if (upd || nw){
+          cell.fill = {
+            type: "pattern", pattern: "solid",
+            fgColor: { argb: isHdr ? (upd ? UPD_HDR : NEW_HDR) : (upd ? UPD_CELL : NEW_CELL) }
+          };
+        }
+      }
+    }
+    ws.views = [{ state: "frozen", ySplit: 1 }];
+
+    wb.xlsx.writeBuffer().then(function(buf){
+      return downloads.save({ filename: base + ".xlsx", data: buf });
+    }).catch(function(e){
+      if (e && e.code === "declined") return;
+      showMsg("Export could not be saved.");
+    });
+  }
+
+  function doSearch(){
+    clearMsg();
+    var v = $("veh").value.trim(), c = $("chs").value.trim();
+    if (!v && !c){ showMsg("Enter a Vehicle No. or Chassis No. before searching."); return; }
+    buildTable();
+    $("results").classList.remove("hidden");
+    $("exportbtn").classList.remove("hidden");
+  }
+
+  function doReset(){
+    clearMsg();
+    $("veh").value = "";
+    $("chs").value = "";
+    $("veh").disabled = false;
+    $("chs").disabled = false;
+    $("results").classList.add("hidden");
+    $("exportbtn").classList.add("hidden");
+    $("veh").focus();
+  }
+
+  var hist = ["1"];
+  function paintUrl(n){}
+  function show(n, push){
+    n = String(n);
+    ["1","2"].forEach(function(k){ $("screen"+k).classList.toggle("on", k === n); });
+    if (push !== false) hist.push(n);
+    paintUrl(n);
+    $("viewport").scrollTop = 0;
+  }
+
+  document.querySelectorAll("[data-goto]").forEach(function(el){
+    el.addEventListener("click", function(e){ e.preventDefault(); show(el.dataset.goto); });
+  });
+  document.querySelectorAll("a.inert").forEach(function(el){
+    el.addEventListener("click", function(e){ e.preventDefault(); });
+  });
+  $("searchbtn").addEventListener("click", doSearch);
+  $("resetbtn").addEventListener("click", doReset);
+  $("exportbtn").addEventListener("click", doExport);
+  // EAINT-8638 2.2.2.1 filter validation: uppercase, strip invalid characters,
+  // allow A-Z 0-9 * / - and space, one filter at a time
+  function clean(v){ return v.toUpperCase().replace(/[^A-Z0-9*\/\- ]/g, ""); }
+
+  function syncFilters(){
+    var v = $("veh"), c = $("chs");
+    v.disabled = c.value.trim().length > 0;
+    c.disabled = v.value.trim().length > 0;
+  }
+
+  ["veh","chs"].forEach(function(id){
+    var el = $(id);
+    el.addEventListener("keydown", function(e){ if (e.key === "Enter") doSearch(); });
+    el.addEventListener("input", function(){
+      var p = el.selectionStart, before = el.value, after = clean(before);
+      if (before !== after){
+        el.value = after;
+        var d = before.length - after.length;
+        el.setSelectionRange(Math.max(0, p - d), Math.max(0, p - d));
+      }
+      syncFilters();
+    });
+    el.addEventListener("paste", function(){ setTimeout(function(){
+      el.value = clean(el.value); syncFilters();
+    }, 0); });
+  });
+
+  // pre-searched state: ABC1234 results already displayed
+  buildTable();
+  $("results").classList.remove("hidden");
+  $("exportbtn").classList.remove("hidden");
+  syncFilters();
+
+  paintUrl("1");
+})();
+</script>
+</body>
+</html>

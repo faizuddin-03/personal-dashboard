@@ -1,0 +1,135 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URLs: /uat1/view/aatf/dereg/precheck/enquiry/view.do?id=<transactionId> (details)
+        /uat1/view/aatf/dereg/precheck/enquiry/listing.do (listing, inferred route —
+        page reached via the "eDEREG PRE-CHECKING TRANSACTION LISTING" button;
+        exact URL not visible in the captured HTML, only the rendered result)
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome (see EAINT-9306-aatf-home-and-menu.html note).
+  Forms kept complete, untrimmed. Listing table shown in full (only 1 row existed).
+  Used by: knowledge/flow-edereg.md (§3 URL map, §5.4 Trx Status values)
+-->
+
+<!-- ============================================================ -->
+<!-- Transaction Details view (after clicking Done on the Result screen) -->
+<!-- ============================================================ -->
+<div id="container">
+<form id="transaction-form">
+<input type="hidden" name="transactionId" id="transactionId" value="961e9b36-434a-426c-b810-f0c9efc2aa64">
+<table>
+    <tbody>
+        <tr>
+            <td colspan="4" class="title1">
+                <input type="button" value="« Back" onclick="location='/uat1/view/aatf/dereg/precheck/enquiry/main.do'" style="height: 35px;">
+                <span style="color:red">HXA001</span> (Ref No.: PC68001111) - Transaction Details
+            </td>
+            <td><span class="approved" style="font-weight:bold; font-size:21px;">Approved</span></td>
+        </tr>
+        <tr>
+            <td><b>Date Created:</b></td>
+            <td>21-08-2026 03:15pm</td>
+            <td></td>
+            <td></td>
+            <td><button class="download-button" id="to-print-invoice">Invoice</button></td>
+        </tr>
+        <tr><td><b>e-Invoice Submission Date:</b></td><td>-</td></tr>
+        <tr>
+            <td><b>LHDN Response Status:</b></td>
+            <td><b><span style="color:#FF4000">Failed</span></b></td>
+            <td colspan="3" rowspan="2">
+                <div style="color: red;">e-Invoices are only available for customers with a valid TIN. e-Invoices can only be issued for transactions within the current calendar month.</div>
+            </td>
+        </tr>
+        <tr><td><b>e-Invoice Validation Date:</b></td><td>-</td></tr>
+    </tbody>
+</table>
+<hr>
+<div class="title2">AATF</div>
+<table>
+    <tbody>
+        <tr><td><b>AATF:</b></td><td>FAIZUDDIN AATF 2</td></tr>
+        <tr><td><b>Company Reg. No:</b></td><td>003001-A</td></tr>
+        <tr><td><b>Company Address:</b></td><td class="address">30, JALAN PERMATA BLOK ANGSANA APARTMENT PUTERI LILIN, 55000 SETAPAK, WILAYAH PERSEKUTUAN KUALA LUMPUR</td></tr>
+        <tr><td><b>Company Contact No:</b></td><td>0111111111</td></tr>
+    </tbody>
+    <tbody>
+        <tr><td colspan="2" class="title3">AATF's Authorised Representative</td></tr>
+        <tr><td><b>Name:</b></td><td>MUHAMMAD FAIZUDDIN BIN BIDI</td></tr>
+        <tr><td><b>MyKad No:</b></td><td>030217141005</td></tr>
+        <tr><td><b>Mobile No:</b></td><td>0189812839</td></tr>
+    </tbody>
+</table>
+<hr>
+<div class="title2">Result</div>
+<!-- same 12-attribute JPJ enquiry result block as EAINT-9306-precheck-payment-and-result.html
+     STATE 3, plus "Note: Able to proceed for eDereg" -->
+<hr>
+<div class="title2">Payment Details</div>
+<table>
+    <tbody>
+        <tr><td>1.</td><td>21-08-2026 03:16pm - RHB (DPC260821000001-HXA001) - <span style="color:green"><b>OK</b></span></td></tr>
+        <tr><td>2.</td><td>21-08-2026 03:16pm - RHB (DPC260821000001) - <span style="color:green"><b>OK</b></span></td></tr>
+    </tbody>
+</table>
+<hr>
+<div class="title2">JPJ Final Submission:</div>
+<table><tbody><tr><td>21-08-2026 03:16pm <span class="successful"><b>Successful</b></span></td></tr></tbody></table>
+</form>
+</div>
+
+<!-- ============================================================ -->
+<!-- eDereg Pre-Checking Transaction Listing -->
+<!-- ============================================================ -->
+<div id="container">
+<form id="search-form">
+    <b>Vehicle No.:</b> <input type="text" name="vehicleNo" id="vehicleNo">
+    <b>Transaction No.:</b> <input type="text" name="refNo" id="refNo" size="10">
+    <b>Date Created (From)</b>: <input type="text" name="fromDate" id="fromDate" readonly="readOnly">
+    <b>Date Created (To)</b>: <input type="text" name="toDate" id="toDate" readonly="readOnly">
+    <b>Trx Status</b>
+    <select name="status" id="status">
+        <option value="" selected="">All</option>
+        <option value="Approved">Approved</option>
+        <option value="Failed">Failed</option>
+        <option value="Pending">Pending</option>
+        <option value="Cancelled">Cancelled</option>
+        <option value="Expired">Expired</option>
+    </select>
+    <b>Payment Status</b>
+    <select name="paymentStatus" id="paymentStatus">
+        <option value="" selected="">All</option>
+        <option value="Paid">OK</option>
+        <option value="Pending">Pending</option>
+        <option value="Failed">Failed</option>
+        <option value="New">-</option>
+    </select>
+    <b>Payment Date (From)</b>: <input type="text" name="paymentFrom" id="paymentFrom" readonly="readOnly">
+    <b>Payment Date (To)</b>: <input type="text" name="paymentTo" id="paymentTo" readonly="readOnly">
+    <input type="submit" id="to-search" value="Search Now">
+    <a class="to-reset" href="#">Reset</a>
+    <div id="result">
+        <table>
+            <tbody>
+                <tr class="header">
+                    <th>#</th><th>Vehicle</th><th>Transaction No.</th><th>Created At</th>
+                    <th>Payment</th><th>JPJ Pre-Checking</th><th>Trx Status</th>
+                    <th>e-Invoice Status</th><th>Remarks</th><th>Action</th>
+                </tr>
+                <tr class="odd">
+                    <td class="center">1</td>
+                    <td class="center">HXA001</td>
+                    <td class="center">PC68001111</td>
+                    <td class="center">2026-08-21 15:15</td>
+                    <td class="center" style="color:green"><b>OK</b></td>
+                    <td class="center" style="color:green"><b>OK</b></td>
+                    <td class="center" style="color:green"><b>Approved</b></td>
+                    <td class="center" style="color:#FF4000"><b>Failed</b></td>
+                    <td><div class="remarks"><div>No TIN info has been provided.</div></div></td>
+                    <td class="center"><a href="/uat1/view/aatf/dereg/precheck/enquiry/view.do?id=961e9b36-434a-426c-b810-f0c9efc2aa64" title="to view PC68001111">View</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+</div>

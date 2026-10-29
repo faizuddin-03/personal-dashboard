@@ -1,0 +1,492 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Book future dates more than 2 months|Reschedule before the day of the appointment to a future date|Reschedule failed appointment — should be blocked for UCD|BO add beyond 6 days limit"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-15T02-33-15",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\report.json"
+        }
+      ],
+      [
+        "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\reporters\\step-reporter.ts",
+        {}
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "bo-calendar-limits.spec.ts",
+      "file": "bo-calendar-limits.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "BO Calendar & Limits",
+          "file": "bo-calendar-limits.spec.ts",
+          "line": 30,
+          "column": 6,
+          "specs": [
+            {
+              "title": "BO add beyond 6 days limit",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 28413,
+                      "error": {
+                        "message": "Error: BO login did not leave the login page — check the BO credentials.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/public\\/login/i\u001b[39m\nReceived string: \u001b[31m\"https://staging.eauto.my/uat1\u001b[7m/public/login\u001b[27m/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - BO login did not leave the login page — check the BO credentials. with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n",
+                        "stack": "Error: BO login did not leave the login page — check the BO credentials.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/public\\/login/i\u001b[39m\nReceived string: \u001b[31m\"https://staging.eauto.my/uat1\u001b[7m/public/login\u001b[27m/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - BO login did not leave the login page — check the BO credentials. with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:48:14\n    at LoginPage.loginAsBO (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:42:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:32:5",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                          "column": 14,
+                          "line": 48
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:48\n\n\u001b[0m \u001b[90m 46 |\u001b[39m       \u001b[90m// listing selector that isn't there.\u001b[39m\n \u001b[90m 47 |\u001b[39m       \u001b[36mawait\u001b[39m expect(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m,\u001b[39m \u001b[32m\"BO login did not leave the login page — check the BO credentials.\"\u001b[39m)\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m         \u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoHaveURL(\u001b[35m/\\/public\\/login/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                            "column": 14,
+                            "line": 48
+                          },
+                          "message": "Error: BO login did not leave the login page — check the BO credentials.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/public\\/login/i\u001b[39m\nReceived string: \u001b[31m\"https://staging.eauto.my/uat1\u001b[7m/public/login\u001b[27m/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - BO login did not leave the login page — check the BO credentials. with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n\n   at ..\\pages\\LoginPage.ts:48\n\n  46 |       // listing selector that isn't there.\n  47 |       await expect(this.page, \"BO login did not leave the login page — check the BO credentials.\")\n> 48 |         .not.toHaveURL(/\\/public\\/login/i);\n     |              ^\n  49 |     });\n  50 |   }\n  51 | }\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:48:14\n    at LoginPage.loginAsBO (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:42:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\bo-calendar-limits.spec.ts:32:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-15T02:33:17.632Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\bo-calendar-limits-BO-Cale-35c4d--BO-add-beyond-6-days-limit-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\bo-calendar-limits-BO-Cale-35c4d--BO-add-beyond-6-days-limit-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\bo-calendar-limits-BO-Cale-35c4d--BO-add-beyond-6-days-limit-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\bo-calendar-limits-BO-Cale-35c4d--BO-add-beyond-6-days-limit-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                        "column": 14,
+                        "line": 48
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2c67c993f3d810cd5b06-e3e6e9e6aecc6210aba8",
+              "file": "bo-calendar-limits.spec.ts",
+              "line": 58,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "calendar-rules.spec.ts",
+      "file": "calendar-rules.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Calendar Rules (UCD)",
+          "file": "calendar-rules.spec.ts",
+          "line": 38,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Book future dates more than 2 months",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 28022,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/view\\/ucd\\/home.do/\u001b[39m\nReceived string:  \u001b[31m\"https://staging.eauto.my/uat1/public/login/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/view\\/ucd\\/home.do/\u001b[39m\nReceived string:  \u001b[31m\"https://staging.eauto.my/uat1/public/login/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:37:31\n    at LoginPage.loginAsUCD (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:35:5)\n    at openCalendar (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:23:3)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:63:11",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                          "column": 31,
+                          "line": 37
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:37\n\n\u001b[0m \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m test\u001b[33m.\u001b[39mstep(\u001b[32m\"Log in as UCD\"\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m 36 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mlogin(username\u001b[33m,\u001b[39m password)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m       \u001b[36mawait\u001b[39m expect(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage)\u001b[33m.\u001b[39mtoHaveURL(\u001b[36mnew\u001b[39m \u001b[33mRegExp\u001b[39m(\u001b[33mPATHS\u001b[39m\u001b[33m.\u001b[39mucdHome))\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m   }\n \u001b[90m 40 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                            "column": 31,
+                            "line": 37
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/view\\/ucd\\/home.do/\u001b[39m\nReceived string:  \u001b[31m\"https://staging.eauto.my/uat1/public/login/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n\n   at ..\\pages\\LoginPage.ts:37\n\n  35 |     await test.step(\"Log in as UCD\", async () => {\n  36 |       await this.login(username, password);\n> 37 |       await expect(this.page).toHaveURL(new RegExp(PATHS.ucdHome));\n     |                               ^\n  38 |     });\n  39 |   }\n  40 |\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:37:31\n    at LoginPage.loginAsUCD (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:35:5)\n    at openCalendar (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:23:3)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:63:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Log in as UCD",
+                          "duration": 26357,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/view\\/ucd\\/home.do/\u001b[39m\nReceived string:  \u001b[31m\"https://staging.eauto.my/uat1/public/login/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/view\\/ucd\\/home.do/\u001b[39m\nReceived string:  \u001b[31m\"https://staging.eauto.my/uat1/public/login/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:37:31\n    at LoginPage.loginAsUCD (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:35:5)\n    at openCalendar (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:23:3)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\calendar-rules.spec.ts:63:11",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                              "column": 31,
+                              "line": 37
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:37\n\n\u001b[0m \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m test\u001b[33m.\u001b[39mstep(\u001b[32m\"Log in as UCD\"\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m 36 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mlogin(username\u001b[33m,\u001b[39m password)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m       \u001b[36mawait\u001b[39m expect(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage)\u001b[33m.\u001b[39mtoHaveURL(\u001b[36mnew\u001b[39m \u001b[33mRegExp\u001b[39m(\u001b[33mPATHS\u001b[39m\u001b[33m.\u001b[39mucdHome))\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m   }\n \u001b[90m 40 |\u001b[39m\u001b[0m"
+                          }
+                        }
+                      ],
+                      "startTime": "2026-07-15T02:33:46.926Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\calendar-rules-Calendar-Ru-a35bb-re-dates-more-than-2-months-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\calendar-rules-Calendar-Ru-a35bb-re-dates-more-than-2-months-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\calendar-rules-Calendar-Ru-a35bb-re-dates-more-than-2-months-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\calendar-rules-Calendar-Ru-a35bb-re-dates-more-than-2-months-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                        "column": 31,
+                        "line": 37
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1dafecb82a963641b800-948117439a37a1cb7821",
+              "file": "calendar-rules.spec.ts",
+              "line": 62,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "reschedule-handling.spec.ts",
+      "file": "reschedule-handling.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Reschedule & Handling",
+          "file": "reschedule-handling.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "reschedule-handling.spec.ts",
+              "line": 16,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Reschedule before the day of the appointment to a future date",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 28749,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/view\\/ucd\\/home.do/\u001b[39m\nReceived string:  \u001b[31m\"https://staging.eauto.my/uat1/public/login/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/view\\/ucd\\/home.do/\u001b[39m\nReceived string:  \u001b[31m\"https://staging.eauto.my/uat1/public/login/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:37:31\n    at LoginPage.loginAsUCD (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:35:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:18:7",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                              "column": 31,
+                              "line": 37
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:37\n\n\u001b[0m \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m test\u001b[33m.\u001b[39mstep(\u001b[32m\"Log in as UCD\"\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m 36 |\u001b[39m       \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mlogin(username\u001b[33m,\u001b[39m password)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 37 |\u001b[39m       \u001b[36mawait\u001b[39m expect(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage)\u001b[33m.\u001b[39mtoHaveURL(\u001b[36mnew\u001b[39m \u001b[33mRegExp\u001b[39m(\u001b[33mPATHS\u001b[39m\u001b[33m.\u001b[39mucdHome))\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 38 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 39 |\u001b[39m   }\n \u001b[90m 40 |\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                                "column": 31,
+                                "line": 37
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/view\\/ucd\\/home.do/\u001b[39m\nReceived string:  \u001b[31m\"https://staging.eauto.my/uat1/public/login/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n\n   at ..\\pages\\LoginPage.ts:37\n\n  35 |     await test.step(\"Log in as UCD\", async () => {\n  36 |       await this.login(username, password);\n> 37 |       await expect(this.page).toHaveURL(new RegExp(PATHS.ucdHome));\n     |                               ^\n  38 |     });\n  39 |   }\n  40 |\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:37:31\n    at LoginPage.loginAsUCD (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:35:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:18:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-15T02:34:15.749Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\reschedule-handling-Resche-963b6-ppointment-to-a-future-date-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                            "column": 31,
+                            "line": 37
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-d91309a7696ca3775919",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 74,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Cross-Portal",
+              "file": "reschedule-handling.spec.ts",
+              "line": 252,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Reschedule failed appointment — should be blocked for UCD",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 27003,
+                          "error": {
+                            "message": "Error: BO login did not leave the login page — check the BO credentials.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/public\\/login/i\u001b[39m\nReceived string: \u001b[31m\"https://staging.eauto.my/uat1\u001b[7m/public/login\u001b[27m/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - BO login did not leave the login page — check the BO credentials. with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n",
+                            "stack": "Error: BO login did not leave the login page — check the BO credentials.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/public\\/login/i\u001b[39m\nReceived string: \u001b[31m\"https://staging.eauto.my/uat1\u001b[7m/public/login\u001b[27m/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - BO login did not leave the login page — check the BO credentials. with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:48:14\n    at LoginPage.loginAsBO (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:42:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:332:7",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                              "column": 14,
+                              "line": 48
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:48\n\n\u001b[0m \u001b[90m 46 |\u001b[39m       \u001b[90m// listing selector that isn't there.\u001b[39m\n \u001b[90m 47 |\u001b[39m       \u001b[36mawait\u001b[39m expect(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m,\u001b[39m \u001b[32m\"BO login did not leave the login page — check the BO credentials.\"\u001b[39m)\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m         \u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoHaveURL(\u001b[35m/\\/public\\/login/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                                "column": 14,
+                                "line": 48
+                              },
+                              "message": "Error: BO login did not leave the login page — check the BO credentials.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/public\\/login/i\u001b[39m\nReceived string: \u001b[31m\"https://staging.eauto.my/uat1\u001b[7m/public/login\u001b[27m/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - BO login did not leave the login page — check the BO credentials. with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n\n   at ..\\pages\\LoginPage.ts:48\n\n  46 |       // listing selector that isn't there.\n  47 |       await expect(this.page, \"BO login did not leave the login page — check the BO credentials.\")\n> 48 |         .not.toHaveURL(/\\/public\\/login/i);\n     |              ^\n  49 |     });\n  50 |   }\n  51 | }\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:48:14\n    at LoginPage.loginAsBO (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:42:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:332:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Log in as BO",
+                              "duration": 26693,
+                              "error": {
+                                "message": "Error: BO login did not leave the login page — check the BO credentials.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/public\\/login/i\u001b[39m\nReceived string: \u001b[31m\"https://staging.eauto.my/uat1\u001b[7m/public/login\u001b[27m/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - BO login did not leave the login page — check the BO credentials. with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n",
+                                "stack": "Error: BO login did not leave the login page — check the BO credentials.\n\n\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/public\\/login/i\u001b[39m\nReceived string: \u001b[31m\"https://staging.eauto.my/uat1\u001b[7m/public/login\u001b[27m/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - BO login did not leave the login page — check the BO credentials. with timeout 5000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"https://staging.eauto.my/uat1/public/login/\"\u001b[22m\n\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:48:14\n    at LoginPage.loginAsBO (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts:42:5)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:332:7",
+                                "location": {
+                                  "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                                  "column": 14,
+                                  "line": 48
+                                },
+                                "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:48\n\n\u001b[0m \u001b[90m 46 |\u001b[39m       \u001b[90m// listing selector that isn't there.\u001b[39m\n \u001b[90m 47 |\u001b[39m       \u001b[36mawait\u001b[39m expect(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m,\u001b[39m \u001b[32m\"BO login did not leave the login page — check the BO credentials.\"\u001b[39m)\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m         \u001b[33m.\u001b[39mnot\u001b[33m.\u001b[39mtoHaveURL(\u001b[35m/\\/public\\/login/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\u001b[0m"
+                              }
+                            }
+                          ],
+                          "startTime": "2026-07-15T02:34:45.300Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\reschedule-handling-Resche-5b7ce-—-should-be-blocked-for-UCD-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\reschedule-handling-Resche-5b7ce-—-should-be-blocked-for-UCD-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-15T02-33-15\\reschedule-handling-Resche-5b7ce-—-should-be-blocked-for-UCD-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\LoginPage.ts",
+                            "column": 14,
+                            "line": 48
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-4a53f1a1ef211583e100",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 316,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-15T02:33:17.072Z",
+    "duration": 116056.45,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

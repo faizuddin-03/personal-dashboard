@@ -1,0 +1,37 @@
+/* Medieval style (cozy cottage): eauto-tools. Scoped to [data-style="medieval"]; see base.css and COTTAGE.md.
+   Pages: every app/eauto/* tool page that is not a runner (estm, estm-legacy,
+   esim, bdp-creator, preapp, checker, company-details-checker(-prod-v-staging),
+   secarang-plate-checker, insurance, edereg-precheck, quotation-reminder,
+   shopping-cart, duitnow-qr). Pass/fail/warn colours untouched. */
+
+/* ── Logs: brighter text and calmer line spacing on the dark well ── */
+[data-style="medieval"]:is([data-page="eauto"], [data-page^="eauto-"]) pre:is(.text-slate-400, .text-slate-500) {
+  color: var(--m-oat);
+  line-height: 1.6;
+}
+/* Small inline log boxes keep a visible 2px well edge */
+[data-style="medieval"][data-page^="eauto-"] pre.border.border-slate-800 {
+  border-color: var(--m-crust);
+  box-shadow: inset 0 0 0 1px var(--m-crust);
+}
+
+/* ── Underline tabs: honey instead of cold blue/indigo (emerald stays) ── */
+[data-style="medieval"][data-page^="eauto-"] button.border-b-2:is(.border-blue-500, .border-indigo-500) {
+  border-bottom-color: var(--m-honey);
+  color: var(--m-honey);
+}
+[data-style="medieval"][data-page^="eauto-"] button.border-b-2 {
+  font-family: var(--font-pixel-body), var(--font-geist-sans), sans-serif;
+}
+[data-style="medieval"][data-page^="eauto-"] button.border-b-2.border-transparent:hover {
+  border-bottom-color: var(--m-crust-hi);
+}
+
+/* ── Pause banner (edereg-precheck): amber stays, its white-tint pills
+      become dark so no pale fill sits on the bar ── */
+[data-style="medieval"][data-page="eauto-edereg-precheck"] .bg-amber-600 :is(.bg-white\/20, .bg-black\/15) {
+  background-color: rgba(22, 17, 13, .35);
+}
+[data-style="medieval"][data-page="eauto-edereg-precheck"] .bg-amber-600 .hover\:bg-white\/30:hover {
+  background-color: rgba(22, 17, 13, .55);
+}

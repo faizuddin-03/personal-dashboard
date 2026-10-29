@@ -1,0 +1,297 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  Page: Back-Office (Hub Admin role) home menu
+  URL: /uat1/home/ (approx — not directly observed, pasted by Faizuddin from a
+       live BO session)
+  Env: uat1
+  Captured: 2026-08-24
+  Pasted directly by Faizuddin (not a file save from DevTools) — saved
+  verbatim per the standing HTML-capture rule. Not trimmed (menu structure is
+  the entire point of this capture); a near-identical BO home already exists
+  at _reference/html/eauto/ucd-home-hub-admin.html (captured 2026-08-21) —
+  this one is kept as its own file because it's what surfaced the
+  ticket-relevant links below, and the two may drift as the BO menu changes.
+  Relevant to THIS ticket:
+    - "Deregistration Transaction" (/uat1/view/dereg/enquiry/main.do) — BO-side
+      listing, distinct from the AATF-side one in EAINT-9306-dereg-details-and-listing.html
+    - "eDereg Pre-Checking Transaction" (/uat1/view/dereg/precheck/enquiry/main.do)
+      — BO-side listing (same base path as the AATF-side listing/search URL,
+      §3 URL map — BO likely reuses the same controller)
+    - "JPJ XML Log (Deregistration)" (/uat1/view/dereg/jpj/log) — captured in
+      EAINT-9306-bo-jpj-xml-log-dereg.html
+    - "JPJ XML Log (eDereg Pre-Checking)" (/uat1/view/dereg/precheck/jpj/log/main.do)
+      — NOT captured yet, this ticket's own JPJ XML Log page (see that file's
+      header note)
+    - "Resubmit JPJ Final Submission (eDereg Pre-Checking)"
+      (/uat1/view/dereg/precheck/enquiry/resubmission/view.do) — not captured
+  Used by: knowledge/flow-edereg.md (JPJ XML Log section, once written)
+-->
+<body>
+
+<div id="container">
+<table>
+    <tbody><tr>
+        <td id="main-content">
+            <div id="home-welcome">
+            Good Afternoon,
+            MUHAMMAD FAIZUDDIN BIN BIDI
+            </div>
+
+            <div id="home-menu">
+
+<table>
+    <tbody><tr>
+        <td>
+            <div class="Admin HubAdmin" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder">
+                        <img src="/uat1/images/system-users.png">
+                    </td>
+                    <td>
+                        <span class="category">Account Management</span>
+                        <ul>
+                            <li><a href="/uat1/view/account/company">Manage Company Accounts</a></li>
+                            <li><a href="/uat1/view/account/user">Manage Backoffice User Accounts</a></li>
+                            <li><a href="/uat1/view/account/user/ucd">View UCD User Accounts</a></li>
+                            <li><a href="/uat1/view/credit-account/company">Manage Bank/Credit Company Accounts</a></li>
+                            <li><a href="/uat1/view/credit-account/user">Manage Bank/Credit Company User Accounts</a></li>
+                            <li><a href="/uat1/view/credit-account/ipwhitelist">Manage Bank/Credit Company IP Whitelist</a></li>
+                            <li><a href="/uat1/view/einvoice/company">Manage e-Invoice Setup Company Listing</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+        <td>
+            <div class="Admin HubAdmin Normal" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/x-office-spreadsheet.png"></td>
+                    <td>
+                        <span class="category">Reports</span>
+                        <ul>
+                            <li><a href="/uat1/view/report/vehicle-movement-report">Vehicle Movement Report (UCD)</a></li>
+                            <li><a href="/uat1/view/report/reset-payment-report">Reset Payment Report</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+        <td>
+            <div class="Admin HubAdmin" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/x-office-calendar.png"></td>
+                    <td>
+                        <span class="category">Insurance</span>
+                        <ul>
+                            <li><a href="/uat1/view/insurance/insurance-permission-listing">Insurance Permission Listing</a></li>
+                            <li><a href="/uat1/view/insurance/user-permission-log">Insurance User Permission Log</a></li>
+                            <li><a href="/uat1/view/insurance/endorsement">Endorsement</a></li>
+                            <li><a href="/uat1/view/insurance/enquiry">Insurance Transaction Listing</a></li>
+                            <li><a href="/uat1/view/insurance/insurance-payment-transaction">Insurance Payment Transaction</a></li>
+                            <li><a href="/uat1/view/insurance/insurance-upload-ecertificate">Upload Insurance e-Certificate</a></li>
+                            <li><a href="/uat1/view/insurance/insurance-quote-enquiry">Insurance Quote Enquiry</a></li>
+                            <li><a href="/uat1/view/insurance/refer-risk-log">Refer Risk Log</a></li>
+                            <li><a href="/uat1/view/insurance/otp-payment-log">Insurance Payment OTP Log</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+        <td style="width: 315px;">
+            <div class="Admin HubAdmin Normal" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/x-office-calendar.png"></td>
+                    <td>
+                        <span class="category">Onboarding</span>
+                        <ul>
+                            <li><a href="/uat1/view/backoffice/support/onboarding/view.do">UCD New Application</a></li>
+                            <li class="obs-auth-required" data-type="OBS_APPLICATION_LISTING"><a href="#">UCD Application Listing</a></li>
+                            <li class="obs-auth-required" data-type="PRE_OBS_APPLICATION_LISTING"><a href="#">UCD Pre-Application Listing</a></li>
+                            <li class="obs-auth-required" data-type="OBS_AUDIT_LOG_LISTING"><a href="#">UCD Application Audit Log</a></li>
+                            <li class="obs-auth-required" data-type="PRE_OBS_AUDIT_LOG_LISTING"><a href="#">UCD Pre-Application Audit Log</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div class="Admin HubAdmin" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/x-office-calendar.png"></td>
+                    <td>
+                        <span class="category">Transactions Relevant</span>
+                        <ul>
+                            <li><a href="/uat1/view/stms/enquiry">STMS Transaction</a></li>
+                            <li><a href="/uat1/view/apt/enquiry">APT Transaction</a></li>
+                            <li><a href="/uat1/view/estm/enquiry">eSTM Transaction</a></li>
+                            <li><a href="/uat1/view/dereg/enquiry/main.do">Deregistration Transaction</a></li>
+                            <li><a href="/uat1/view/jomcheck/enquiry">Jomcheck Transaction</a></li>
+                            <li><a href="/uat1/view/ssm/enquiry">SSM Transaction</a></li>
+                            <li><a href="/uat1/view/dereg/precheck/enquiry/main.do">eDereg Pre-Checking Transaction</a></li>
+                            <li><a href="/uat1/view/system/company-business-document-listing/main.do">Company Business Document Listing</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+        <td>
+            <div class="Admin HubAdmin" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/x-office-calendar.png"></td>
+                    <td>
+                        <span class="category">eAuto Plus Relevant</span>
+                        <ul>
+                            <li><a href="/uat1/view/bmk/enquiry/main.do">BMK Transaction</a></li>
+                            <li><a href="/uat1/view/payment/rhb-payment-transaction/plus">RHB Payment Transaction (eAuto Plus)</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+        <td>
+            <div class="Admin HubAdmin" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/preferences-system.png"></td>
+                    <td>
+                        <span class="category">Support Tools</span>
+                        <ul>
+                            <li><a href="/uat1/view/support/stms/">STMS Transaction</a></li>
+                            <li><a href="/uat1/view/support/support-audit-log/">Support Audit Log (STMS, APT &amp; eSTM)</a></li>
+                            <li><a href="/uat1/view/report/audit-log">Audit Trail Log</a></li>
+                            <li><a href="/uat1/view/report/company-audit-log">Company Account Audit Log</a></li>
+                            <li><a href="/uat1/view/report/backoffice-user-audit-log">Backoffice User Account Audit Log</a></li>
+                            <li><a href="/uat1/view/report/blacklist-audit-log">Blacklist Company ROC, MyKad No. &amp; Vehicle No. Audit Log</a></li>
+                            <li><a href="/uat1/view/apt/resubmission-audit-log/">Pending/Failed APT Transaction Audit Log</a></li>
+                            <li><a href="/uat1/view/support/incomplete-txn-auditlog/">Pending STMS, APT &amp; eSTM Audit Log</a></li>
+                            <li><a href="/uat1/view/support/incomplete-txn/">Resubmit Pending STMS, APT &amp; eSTM</a></li>
+                            <li><a href="/uat1/view/stms/manual-trigger-apt">Manual APT Trigger</a></li>
+                            <li><a href="/uat1/view/apt/enquiry/pending-or-failed">Manage Pending/Failed APT Transaction</a></li>
+                            <li><a href="/uat1/view/support/estm/">eSTM Transaction</a></li>
+                            <li><a href="/uat1/view/system/manual-jpj-enquiry/">JPJ Enquiry</a></li>
+                            <li><a href="/uat1/view/system/new-manual-jpj-enquiry/">JPJ Enquiry (New)</a></li>
+                            <li><a href="/uat1/view/support/bulk-stms-cancellation/">Bulk STMS Cancellation</a></li>
+                            <li><a href="/uat1/view/support/bulk-stms-cancellation-auditlog/">Bulk STMS Cancellation Audit Log</a></li>
+                            <li><a href="/uat1/view/backoffice/jpj/resubmission/stms/view.do">Resubmit JPJ Final Submission (STMS)</a></li>
+                            <li><a href="/uat1/view/backoffice/jpj/resubmission/estm/view.do">Resubmit JPJ Final Submission (eSTM)</a></li>
+                            <li><a href="/uat1/view/dereg/precheck/enquiry/resubmission/view.do">Resubmit JPJ Final Submission (eDereg Pre-Checking)</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+        <td>
+            <div class="Admin HubAdmin" style="display: block;">
+                <table>
+                    <tbody><tr>
+                        <td class="icon-holder"><img src="/uat1/images/x-office-spreadsheet.png"></td>
+                        <td>
+                            <span class="category">Proforma Invoice / e-Invoice</span>
+                            <ul>
+                                <li><a href="/uat1/view/creditnote/enquiry/main.do">Credit Note Listing</a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="HubAdmin Admin" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/applications-system.png"></td>
+                    <td>
+                        <span class="category">Settings</span>
+                        <ul>
+                            <li><a href="/uat1/view/payment/rhb-payment-transaction">RHB Payment Transaction</a></li>
+                            <li><a href="/uat1/view/estm/estm-user-permission-layer1">1 Layer Permission Listing</a></li>
+                            <li><a href="/uat1/view/estm/estm-user-permission">2 Layer Permission Setup</a></li>
+                            <li><a href="/uat1/view/estm/lkm/lkm-user-permission">eLKM Permission Listing</a></li>
+                            <li><a href="/uat1/view/estm/lkm/lkm-user-permission-log">eLKM Permission Log</a></li>
+                            <li><a href="/uat1/view/account/blacklisted/companyroc">Blacklist Company ROC (STMS &amp; eSTM)</a></li>
+                            <li><a href="/uat1/view/account/blacklisted/mykad">Blacklist MyKad No. (STMS &amp; eSTM)</a></li>
+                            <li><a href="/uat1/view/account/blacklisted/mykad-add-ucd-user">Blacklist MyKad No. (UCD User)</a></li>
+                            <li><a href="/uat1/view/account/blacklisted/vehicle">Blacklist Vehicle No.</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+        <td>
+            <div class="HubAdmin Admin" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/preferences-system.png"></td>
+                    <td>
+                        <span class="category">Settings (Hub Admin)</span>
+                        <ul>
+                            <li><a href="/uat1/view/stms/file/">Manual Payment Processing (STMS, APT, eSTM)</a></li>
+                            <li><a href="/uat1/view/apt/jpj/log">JPJ XML Log (APT)</a></li>
+                            <li><a href="/uat1/view/stms/jpj/log">JPJ XML Log (STMS)</a></li>
+                            <li><a href="/uat1/view/estm/jpj/log">JPJ XML Log (ESTM)</a></li>
+                            <li><a href="/uat1/view/dereg/jpj/log">JPJ XML Log (Deregistration)</a></li>
+                            <li><a href="/uat1/view/dereg/precheck/jpj/log/main.do">JPJ XML Log (eDereg Pre-Checking)</a></li>
+                            <li><a href="/uat1/view/bmk/jpj/log">JPJ XML Log (BMK)</a></li>
+                            <li><a href="/uat1/view/ssm/xml-log">SSM XML Log</a></li>
+                            <li><a href="/uat1/view/stms/export-tax-invoice">Generate Batch Invoice (STMS, APT, eSTM)</a></li>
+                            <li><a href="/uat1/view/estm/estm-user-permission-log">Estm User Permission Log</a></li>
+                            <li><a href="/uat1/view/account/change-director-log">Change Director Log</a></li>
+                            <li><a href="/uat1/view/system/display-messages">Customize Display Message</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+        <td></td>
+        <td>
+            <div class="Admin HubAdmin" style="display: block;">
+                <table>
+                <tbody><tr>
+                    <td class="icon-holder"><img src="/uat1/images/x-office-spreadsheet.png"></td>
+                    <td>
+                        <span class="category">Wholesale</span>
+                        <ul>
+                            <li><a href="/uat1/view/wholesale/company/">Manage Wholesale Company Account</a></li>
+                            <li><a href="/uat1/view/wholesale/listing/">Wholesale Transaction Listing</a></li>
+                            <li><a href="/uat1/view/wholesale/refund/">Wholesale Refund Listing</a></li>
+                            <li><a href="/uat1/view/wholesale/vehicle-payment/">Wholesale Vehicle Payment Listing</a></li>
+                            <li><a href="/uat1/view/wholesale/rejection/">Wholesale Rejection Listing</a></li>
+                            <li><a href="/uat1/view/wholesale/payment/">Wholesale Payment Listing</a></li>
+                            <li><a href="/uat1/view/support/alt-vehicles/maintenance.do">Alternative Vehicle Maintenance</a></li>
+                            <li><a href="/uat1/view/support/alt-vehicles/audit-log.do">Alternative Vehicle Maintenance Audit Log</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody></table>
+            </div>
+        </td>
+    </tr>
+</tbody></table>
+
+            </div>
+        </td>
+        <td id="side-bar"></td>
+    </tr>
+</tbody></table>
+</div>
+</body>

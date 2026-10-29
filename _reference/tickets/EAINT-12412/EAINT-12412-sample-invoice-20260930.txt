@@ -1,0 +1,42 @@
+INVOICE
+
+Document Code            : EA-IV-1026-0000001
+Date                     : 15 Oct 2026
+Payment Reference No.    : JOM261015000001-ABC1234
+
+Supplier                 SST Registration Number      Buyer                              Vehicle No.
+Name                     W10-1808-3101-4293           Name                               ABC 1234
+EAUTO SDN BHD                                         SAMPLE MOTOR SDN BHD
+                         Contact Number                                                  Contact Number
+Registration Number      03-2779 8899                 Registration Number                0121234567
+200401038456                                          202001012345
+
+Email                                                 Email
+support@eauto.my                                      sample@example.com
+
+Address                                               Address
+LEVEL 15 SUNWAY TOWER
+JALAN AMPANG 50450 KUALA LUMPUR.                      NO. 1, JALAN CONTOH 1/1, TAMAN CONTOH,
+                                                      47301 PETALING JAYA, SELANGOR, MALAYSIA.
+
+Description                                 Quantity  Unit Price               Subtotal     Tax            Total Price
+                                                 #        RM                      RM     Amount          (including tax)
+
+JomCheck report                             1         18.00                    18.00        RM                   RM
+JomCheck service charge                                                         2.00
+                                            1                     2.00                             1.44                  19.44
+                                                                               20.00               0.16                    2.16
+                                                                                                   1.60
+                                                                                                                         21.60
+                                                            Total Net Amount                                             20.00
+                                                         Total Excluding Tax                                             20.00
+
+                                                                   Tax Amount                                              1.60
+                                                          Total Including Tax                                            21.60
+                                                      Total Payable Amount                                               21.60
+
+ Tax Type    Tax Rate    Tax Amount
+Service Tax     8%             RM
+
+                                      1.60
+

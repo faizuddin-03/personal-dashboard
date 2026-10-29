@@ -1,378 +1,446 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Plus, X, ChevronDown, ChevronRight, Clock, AlertTriangle, CheckCircle2, RefreshCw, SkipForward,
+  Plus, Search, X, List, Columns3, Target, ArrowUpDown, Tag, Flag, Sparkles, CheckCircle2, Keyboard,
 } from "lucide-react";
 import clsx from "clsx";
-import RichTextEditor from "@/components/RichTextEditor";
 import {
-  TodoItem, TodoPriority, TODO_PRIORITY_META,
-  getTodos, saveTodos, isTodoOverdue, isDueToday, advanceRecurring,
+  TodoItem, TodoBucket, TodoPriority, TodoTemplate, TODO_BUCKETS, TODO_PRIORITY_META, TODO_TEMPLATES,
+  todoBucket, stripHtml, formatDuration, getTodos, type ParsedQuickAdd,
 } from "@/lib/todo";
+import { useTodos } from "@/components/todo/useTodos";
+import { useFocusTimer } from "@/components/todo/useFocusTimer";
+import SummaryHeader, { WeeklyReview } from "@/components/todo/SummaryHeader";
+import QuickAdd, { templateToTask } from "@/components/todo/QuickAdd";
+import ListView, { BulkBar } from "@/components/todo/ListView";
+import BoardView, { type BoardBy } from "@/components/todo/BoardView";
+import FocusView from "@/components/todo/FocusView";
+import FocusTimerBar from "@/components/todo/FocusTimerBar";
+import TodoModal from "@/components/todo/TodoModal";
+import Toast from "@/components/todo/Toast";
+import { useStoredJson } from "@/components/todo/store";
+import Popover, { MenuItem } from "@/components/todo/Popover";
+import { PRIORITY_STRIP, labelTone } from "@/components/todo/TaskCard";
 
-function newId() { return crypto.randomUUID(); }
+type ViewMode = "list" | "board" | "focus";
+type StatusTab = "all" | "active" | "done";
+type SortBy = "manual" | "priority" | "due" | "created";
 
-type FilterTab = "all" | "active" | "done";
+interface Prefs { view: ViewMode; boardBy: BoardBy; sortBy: SortBy; status: StatusTab }
+const PREFS_KEY = "todo_view_prefs";
+const COLLAPSE_KEY = "todo_section_collapse";
+const DEFAULT_PREFS: Prefs = { view: "list", boardBy: "group", sortBy: "manual", status: "all" };
+const DEFAULT_COLLAPSE: Record<string, boolean> = { done: true };
 
-function groupTodos(items: TodoItem[]) {
-  const active = items.filter(i => !i.done);
-  const done   = items.filter(i => i.done);
-  return {
-    overdue:  active.filter(isTodoOverdue),
-    today:    active.filter(i => isDueToday(i) && !isTodoOverdue(i)),
-    upcoming: active.filter(i => i.dueDate && !isDueToday(i) && !isTodoOverdue(i)),
-    noDate:   active.filter(i => !i.dueDate),
-    done,
-  };
-}
 
-// ── Add / Edit modal ────────────────────────────────────────
-function TodoModal({ item, onClose, onSave }: {
-  item?: TodoItem;
-  onClose: () => void;
-  onSave: (item: TodoItem) => void;
-}) {
-  const [title, setTitle]       = useState(item?.title ?? "");
-  const [note, setNote]         = useState(item?.note ?? "");
-  const [priority, setPriority] = useState<TodoPriority>(item?.priority ?? "medium");
-  const [dueDate, setDueDate]   = useState(item?.dueDate ?? "");
-  const [labelInput, setLabelInput] = useState("");
-  const [labels, setLabels]     = useState<string[]>(item?.labels ?? []);
-  const [recurring, setRecurring] = useState<"" | "daily" | "weekly" | "monthly">(item?.recurring ?? "");
-  const [jiraKey, setJiraKey]   = useState(item?.jiraKey ?? "");
+const PRIORITY_ORDER: Record<TodoPriority, number> = { high: 0, medium: 1, low: 2 };
 
-  function addLabel(e: React.KeyboardEvent) {
-    if (e.key === "Enter" && labelInput.trim()) {
-      setLabels(p => [...p, labelInput.trim()]);
-      setLabelInput("");
+function sortItems(items: TodoItem[], by: SortBy): TodoItem[] {
+  if (by === "manual") return items;
+  return [...items].sort((a, b) => {
+    if (by === "priority") return PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
+    if (by === "due") {
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return a.dueDate.localeCompare(b.dueDate);
     }
-  }
-
-  function handleSave() {
-    if (!title.trim()) return;
-    onSave({
-      id: item?.id ?? newId(),
-      title: title.trim(),
-      note,
-      done: item?.done ?? false,
-      priority,
-      dueDate: dueDate || undefined,
-      labels,
-      createdAt: item?.createdAt ?? new Date().toISOString(),
-      doneAt: item?.doneAt,
-      recurring: recurring || undefined,
-      jiraKey: jiraKey.trim().toUpperCase() || undefined,
-    });
-    onClose();
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0">
-          <h2 className="text-sm font-semibold text-slate-100">{item ? "Edit Task" : "New Task"}</h2>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={18} /></button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          <div>
-            <label className={lbl}>Title *</label>
-            <input
-              autoFocus
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && handleSave()}
-              placeholder="What needs to be done?"
-              className={inp}
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className={lbl}>Priority</label>
-              <select value={priority} onChange={e => setPriority(e.target.value as TodoPriority)} className={sel}>
-                {Object.entries(TODO_PRIORITY_META).map(([k, v]) => (
-                  <option key={k} value={k}>{v.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className={lbl}>Due Date</label>
-              <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className={inp + " [color-scheme:dark]"} />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className={lbl}>Recurring</label>
-              <select value={recurring} onChange={e => setRecurring(e.target.value as "" | "daily" | "weekly" | "monthly")} className={sel}>
-                <option value="">None</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-              </select>
-            </div>
-            <div>
-              <label className={lbl}>Jira Ticket</label>
-              <input value={jiraKey} onChange={e => setJiraKey(e.target.value)} placeholder="e.g. QA-123" className={inp} />
-            </div>
-          </div>
-          <div>
-            <label className={lbl}>Labels <span className="text-slate-600">(Enter to add)</span></label>
-            <input value={labelInput} onChange={e => setLabelInput(e.target.value)} onKeyDown={addLabel} placeholder="Add label…" className={inp} />
-            {labels.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {labels.map(l => (
-                  <span key={l} className="flex items-center gap-1 bg-slate-800 border border-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-full">
-                    {l}<button onClick={() => setLabels(p => p.filter(x => x !== l))}><X size={10} /></button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className={lbl}>Notes <span className="text-slate-600">(rich text)</span></label>
-            <RichTextEditor content={note} onChange={setNote} placeholder="Add notes, links, or details…" minHeight="140px" />
-          </div>
-        </div>
-        <div className="p-5 border-t border-slate-800 shrink-0">
-          <button onClick={handleSave} disabled={!title.trim()} className="w-full py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-40 font-medium">
-            {item ? "Save Changes" : "Add Task"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  });
 }
 
-// ── Task row ────────────────────────────────────────────────
-function TaskRow({ item, onToggle, onEdit, onDelete, onSkip }: {
-  item: TodoItem;
-  onToggle: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
-  onSkip?: () => void;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const pm = TODO_PRIORITY_META[item.priority];
-  const overdue = isTodoOverdue(item);
-  const today   = isDueToday(item);
-  const hasNote = item.note && item.note !== "<p></p>";
-
-  return (
-    <div className={clsx(
-      "bg-slate-900 border rounded-xl transition-all",
-      item.done ? "border-slate-800 opacity-60" : overdue ? "border-red-800/60" : "border-slate-800 hover:border-slate-700"
-    )}>
-      <div className="flex items-center gap-3 px-4 py-3">
-        {/* Checkbox */}
-        <button
-          onClick={onToggle}
-          aria-label={item.done ? "Mark as active" : "Mark as done"}
-          className={clsx(
-            "w-6 h-6 rounded border-2 shrink-0 flex items-center justify-center transition-colors",
-            item.done ? "bg-blue-600 border-blue-600" : "border-slate-600 hover:border-slate-400"
-          )}
-        >
-          {item.done && <CheckCircle2 size={13} className="text-white" />}
-        </button>
-
-        {/* Title */}
-        <span
-          onClick={onEdit}
-          className={clsx(
-            "flex-1 flex items-center gap-1.5 text-sm cursor-pointer min-w-0",
-            item.done ? "text-slate-500 line-through" : "text-slate-200 hover:text-slate-100"
-          )}
-        >
-          <span className="truncate">{item.title}</span>
-          {item.recurring && <RefreshCw size={11} className="shrink-0 text-blue-400 opacity-75" />}
-          {item.jiraKey && (
-            <span className="shrink-0 bg-slate-800 border border-slate-700 text-blue-400 text-xs font-mono px-1.5 rounded">
-              {item.jiraKey}
-            </span>
-          )}
-        </span>
-
-        {/* Meta */}
-        <div className="flex items-center gap-2 shrink-0">
-          <span className={clsx("flex items-center gap-1 text-xs", pm.color)}>
-            <span className={clsx("w-1.5 h-1.5 rounded-full", pm.dot)} />
-            {pm.label}
-          </span>
-          {item.dueDate && (
-            <span className={clsx(
-              "flex items-center gap-1 text-xs",
-              overdue ? "text-red-400" : today ? "text-yellow-400" : "text-slate-500"
-            )}>
-              {overdue ? <AlertTriangle size={11} /> : <Clock size={11} />}
-              {overdue ? "Overdue" : today ? "Today" : new Date(item.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-            </span>
-          )}
-          {item.labels.map(l => (
-            <span key={l} className="text-xs bg-slate-800 border border-slate-700 text-slate-400 px-1.5 py-0.5 rounded-full hidden sm:inline">{l}</span>
-          ))}
-          {hasNote && (
-            <button onClick={() => setExpanded(v => !v)} aria-label={expanded ? "Collapse note" : "Expand note"} className="text-slate-600 hover:text-slate-400 p-1.5">
-              {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            </button>
-          )}
-          {onSkip && item.recurring && !item.done && (
-            <button onClick={onSkip} aria-label="Skip occurrence" title="Skip this occurrence" className="text-slate-700 hover:text-amber-400 p-1.5"><SkipForward size={13} /></button>
-          )}
-          <button onClick={onDelete} aria-label="Delete task" className="text-slate-700 hover:text-red-400 p-1.5"><X size={13} /></button>
-        </div>
-      </div>
-
-      {/* Note expansion */}
-      {expanded && hasNote && (
-        <div
-          className="px-12 pb-3 text-sm text-slate-400 border-t border-slate-800 pt-3"
-          dangerouslySetInnerHTML={{ __html: item.note }}
-        />
-      )}
-    </div>
-  );
-}
-
-// ── Section ─────────────────────────────────────────────────
-function Section({ title, accent, items, onToggle, onEdit, onDelete, onSkip, defaultCollapsed }: {
-  title: string;
-  accent?: string;
-  items: TodoItem[];
-  onToggle: (id: string) => void;
-  onEdit: (item: TodoItem) => void;
-  onDelete: (id: string) => void;
-  onSkip: (id: string) => void;
-  defaultCollapsed?: boolean;
-}) {
-  const [open, setOpen] = useState(!defaultCollapsed);
-  if (items.length === 0) return null;
-
-  return (
-    <div>
-      <button
-        onClick={() => setOpen(v => !v)}
-        className={clsx("flex items-center gap-2 text-xs font-semibold uppercase tracking-wider mb-2 hover:opacity-80", accent ?? "text-slate-500")}
-      >
-        {open ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
-        {title} <span className="opacity-60">({items.length})</span>
-      </button>
-      {open && (
-        <div className="space-y-2 mb-5">
-          {items.map(item => (
-            <TaskRow key={item.id} item={item} onToggle={() => onToggle(item.id)} onEdit={() => onEdit(item)} onDelete={() => onDelete(item.id)} onSkip={item.recurring && !item.done ? () => onSkip(item.id) : undefined} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Page ────────────────────────────────────────────────────
 export default function TodoPage() {
-  const [todos, setTodos]         = useState<TodoItem[]>([]);
-  const [filter, setFilter]       = useState<FilterTab>("all");
-  const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing]     = useState<TodoItem | undefined>(undefined);
+  const api = useTodos();
+  const { todos, stats, showToast } = api;
+  const onTimerDone = useCallback((title: string, sec: number) => {
+    showToast(`Focus done: ${formatDuration(sec)} on "${title}"`, "party");
+  }, [showToast]);
+  const timer = useFocusTimer(onTimerDone);
 
-  useEffect(() => { setTodos(getTodos()); }, []);
+  const [prefs, updatePrefs]        = useStoredJson<Prefs>(PREFS_KEY, DEFAULT_PREFS);
+  const [collapsed, setCollapsed]   = useStoredJson<Record<string, boolean>>(COLLAPSE_KEY, DEFAULT_COLLAPSE);
+  const [search, setSearch]         = useState("");
+  const [tagFilter, setTagFilter]   = useState<string | null>(null);
+  const [prioFilter, setPrioFilter] = useState<TodoPriority | "all">("all");
+  const [modal, setModal]           = useState<{ item?: TodoItem; isNew?: boolean } | null>(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected]     = useState<Set<string>>(new Set());
+  const quickAddRef = useRef<HTMLInputElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  function persist(items: TodoItem[]) { setTodos(items); saveTodos(items); }
+  // Open ?edit=<id> (sent by the floating mini from another page).
+  useEffect(() => {
+    if (!api.ready) return;
+    let editId: string | null = null;
+    try { editId = new URLSearchParams(window.location.search).get("edit"); } catch { /* ignore */ }
+    if (!editId) return;
+    const found = getTodos().find(t => t.id === editId);
+    try { window.history.replaceState(null, "", "/todo"); } catch { /* ignore */ }
+    if (!found) return;
+    const h = window.setTimeout(() => setModal({ item: found }), 0);
+    return () => window.clearTimeout(h);
+  }, [api.ready]);
+  // The floating mini asks this page to open its editor when already on /todo.
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      const found = getTodos().find(t => t.id === id);
+      if (found) setModal({ item: found });
+    };
+    window.addEventListener("todo-open-edit", onOpen);
+    return () => window.removeEventListener("todo-open-edit", onOpen);
+  }, []);
 
-  function handleSave(item: TodoItem) {
-    persist(todos.some(t => t.id === item.id)
-      ? todos.map(t => t.id === item.id ? item : t)
-      : [item, ...todos]);
+  function toggleCollapse(b: TodoBucket) {
+    setCollapsed({ [b]: !(collapsed[b] ?? b === "done") });
   }
 
-  function handleToggle(id: string) {
-    const target = todos.find(t => t.id === id);
-    if (!target) return;
-    const nowMarkedDone = !target.done;
-    const updated = todos.map(t => t.id === id
-      ? { ...t, done: nowMarkedDone, doneAt: nowMarkedDone ? new Date().toISOString() : undefined }
-      : t);
-    if (nowMarkedDone && target.recurring) {
-      const next = advanceRecurring({ ...target, done: true, doneAt: new Date().toISOString() });
-      // Replace the done item with the fresh recurring copy
-      persist(updated.map(t => t.id === id ? next : t));
-    } else {
-      persist(updated);
+  // Keyboard: N = quick add, / = search, F = focus mode toggle.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (modal || e.ctrlKey || e.metaKey || e.altKey) return;
+      const el = e.target as HTMLElement;
+      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable) return;
+      if (e.key === "n" || e.key === "N") { e.preventDefault(); quickAddRef.current?.focus(); }
+      else if (e.key === "/") { e.preventDefault(); searchRef.current?.focus(); }
+      else if (e.key === "f" || e.key === "F") { e.preventDefault(); updatePrefs({ view: prefs.view === "focus" ? "list" : "focus" }); }
     }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const allLabels = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const t of todos) for (const l of t.labels) m.set(l, (m.get(l) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => b[1] - a[1]).map(([l]) => l);
+  }, [todos]);
+
+  const filtering = !!search.trim() || !!tagFilter || prioFilter !== "all";
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return todos.filter(t => {
+      if (prefs.status === "active" && t.done) return false;
+      if (prefs.status === "done" && !t.done) return false;
+      if (tagFilter && !t.labels.includes(tagFilter)) return false;
+      if (prioFilter !== "all" && t.priority !== prioFilter) return false;
+      if (q) {
+        const hay = `${t.title} ${t.labels.join(" ")} ${t.jiraKey ?? ""} ${stripHtml(t.note)} ${(t.subtasks ?? []).map(s => s.title).join(" ")}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [todos, search, tagFilter, prioFilter, prefs.status]);
+
+  const groups = useMemo(() => {
+    const g = Object.fromEntries(TODO_BUCKETS.map(b => [b, [] as TodoItem[]])) as Record<TodoBucket, TodoItem[]>;
+    const now = new Date();
+    for (const t of filtered) g[todoBucket(t, now)].push(t);
+    for (const b of TODO_BUCKETS) g[b] = sortItems(g[b], prefs.sortBy);
+    // Done: newest first
+    g.done = [...g.done].sort((a, b) => (b.doneAt ?? "").localeCompare(a.doneAt ?? ""));
+    return g;
+  }, [filtered, prefs.sortBy]);
+
+  function handleQuickAdd(p: ParsedQuickAdd) {
+    api.add({
+      title: p.title,
+      priority: p.priority ?? "medium",
+      labels: p.labels,
+      dueDate: p.dueDate,
+      recurring: p.recurring,
+      jiraKey: p.jiraKey,
+    });
   }
 
-  function handleDelete(id: string) { persist(todos.filter(t => t.id !== id)); }
-
-  function handleSkip(id: string) {
-    // Mark done WITHOUT advancing the recurring schedule
-    persist(todos.map(t => t.id === id
-      ? { ...t, done: true, doneAt: new Date().toISOString() }
-      : t));
+  function openTemplate(t: TodoTemplate) {
+    const base = templateToTask(t);
+    setModal({
+      isNew: true,
+      item: {
+        id: crypto.randomUUID(), note: "", done: false, createdAt: new Date().toISOString(), ...base,
+      },
+    });
   }
 
-  const filtered = filter === "active" ? todos.filter(t => !t.done)
-    : filter === "done" ? todos.filter(t => t.done)
-    : todos;
+  function startFocus(item: TodoItem, minutes: number) {
+    timer.start(item.id, item.title, minutes);
+    showToast(`Focus started: ${minutes} min`);
+  }
 
-  const groups = groupTodos(filtered);
+  function toggleSelect(id: string) {
+    setSelected(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  }
 
   const activeCount = todos.filter(t => !t.done).length;
+  const focusTaskId = timer.state?.taskId;
+  const isBoard = prefs.view === "board";
+
+  const viewButtons: { id: ViewMode; label: string; icon: typeof List }[] = [
+    { id: "list", label: "List", icon: List },
+    { id: "board", label: "Board", icon: Columns3 },
+    { id: "focus", label: "Focus", icon: Target },
+  ];
+
+  const sidebar = (
+    <aside className={clsx("space-y-6", isBoard ? "grid md:grid-cols-2 gap-6 space-y-0" : "")}>
+      <WeeklyReview stats={stats} />
+      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-4 sm:p-5">
+        <h2 className="text-sm font-semibold text-slate-100 flex items-center gap-2"><Sparkles size={14} className="text-amber-400" /> QA routines</h2>
+        <p className="text-[11px] text-slate-500 mt-1">One click adds a task with its checklist.</p>
+        <div className="mt-3 grid gap-2">
+          {TODO_TEMPLATES.map(t => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => openTemplate(t)}
+              className="flex items-center gap-2.5 text-left rounded-2xl border border-slate-800 bg-slate-950/40 px-3 py-2.5 hover:border-slate-700 hover:bg-slate-800/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            >
+              <span className={clsx("w-1.5 h-7 rounded-full shrink-0", PRIORITY_STRIP[t.priority])} />
+              <span className="flex-1 min-w-0">
+                <span className="block text-sm text-slate-200">{t.name}</span>
+                <span className="block text-[11px] text-slate-500 truncate">{t.subtasks.length} steps{t.recurring ? ` · repeats ${t.recurring}` : ""}</span>
+              </span>
+              <Plus size={14} className="text-slate-500" />
+            </button>
+          ))}
+        </div>
+        <p className="mt-4 flex items-center gap-1.5 text-[11px] text-slate-500"><Keyboard size={12} /> N add · / search · F focus mode</p>
+      </section>
+    </aside>
+  );
 
   return (
     <div className="flex flex-col min-h-full">
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-sm font-semibold text-slate-200">To-Do List</h1>
+      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800 px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-3 min-w-0">
+          <h1 className="text-sm font-semibold text-slate-200 truncate">To-Do List</h1>
           {activeCount > 0 && (
-            <span className="text-xs bg-blue-600/20 text-blue-400 border border-blue-600/30 px-2 py-0.5 rounded-full">{activeCount} active</span>
+            <span className="hidden sm:inline text-xs bg-blue-600/20 text-sky-400 border border-blue-600/30 px-2 py-0.5 rounded-full">{activeCount} active</span>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          {/* Filter tabs */}
-          <div className="flex gap-0.5 bg-slate-900 border border-slate-800 rounded-lg p-0.5">
-            {(["all", "active", "done"] as FilterTab[]).map(f => (
-              <button key={f} onClick={() => setFilter(f)} className={clsx("px-3 py-1 text-xs rounded-md capitalize transition-colors", filter === f ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
-                {f}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex gap-0.5 bg-slate-900 border border-slate-800 rounded-xl p-0.5" role="tablist" aria-label="View">
+            {viewButtons.map(v => (
+              <button
+                key={v.id}
+                type="button"
+                role="tab"
+                aria-selected={prefs.view === v.id}
+                onClick={() => updatePrefs({ view: v.id })}
+                title={v.label}
+                className={clsx(
+                  "flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-xs rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                  prefs.view === v.id ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300",
+                )}
+              >
+                <v.icon size={13} /><span className="hidden sm:inline">{v.label}</span>
               </button>
             ))}
           </div>
+          {prefs.view !== "focus" && (
+            <button
+              type="button"
+              onClick={() => { setSelectMode(v => !v); setSelected(new Set()); }}
+              className={clsx("px-2.5 sm:px-3 py-1.5 text-xs rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                selectMode ? "bg-blue-600/20 border-blue-600/50 text-sky-300" : "bg-slate-900 border-slate-800 text-slate-500 hover:text-slate-300")}
+            >
+              Select
+            </button>
+          )}
           <button
-            onClick={() => { setEditing(undefined); setShowModal(true); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            type="button"
+            onClick={() => setModal({})}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
-            <Plus size={13} />Add Task
+            <Plus size={13} /><span className="hidden sm:inline">Add</span>
           </button>
         </div>
       </header>
 
-      <div className="flex-1 px-4 py-4 sm:px-6 sm:py-5 max-w-3xl">
-        {todos.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4">
-              <CheckCircle2 size={24} className="text-slate-600" />
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6 min-w-0">
+        <SummaryHeader stats={stats} />
+        <FocusTimerBar timer={timer} />
+
+        {api.ready && todos.length === 0 ? (
+          <div className="rounded-3xl border border-slate-800 bg-slate-900 px-6 py-16 text-center">
+            <div className="w-16 h-16 rounded-3xl bg-green-500/10 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 size={28} className="text-green-400" />
             </div>
-            <p className="text-slate-400 text-sm font-medium mb-1">Nothing to do</p>
-            <p className="text-slate-600 text-xs mb-5">Add your first task to get started</p>
-            <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">Add Task</button>
+            <p className="text-slate-200 font-medium">Nothing to do yet</p>
+            <p className="text-slate-500 text-sm mt-1 mb-6">Type a task below, or start from a QA routine.</p>
+            <div className="max-w-xl mx-auto text-left">
+              <QuickAdd onAdd={handleQuickAdd} onTemplate={openTemplate} inputRef={quickAddRef} />
+            </div>
+            <div className="flex flex-wrap justify-center gap-2 mt-5">
+              {TODO_TEMPLATES.map(t => (
+                <button key={t.id} type="button" onClick={() => openTemplate(t)} className="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+                  {t.name}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
-          <>
-            <Section title="Overdue"  accent="text-red-400"    items={groups.overdue}  onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
-            <Section title="Today"    accent="text-yellow-400" items={groups.today}    onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
-            <Section title="Upcoming" accent="text-blue-400"   items={groups.upcoming} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
-            <Section title="No Date"  accent="text-slate-500"  items={groups.noDate}   onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} />
-            {filter !== "active" && (
-              <Section title="Completed" accent="text-green-600" items={groups.done} onToggle={handleToggle} onEdit={i => { setEditing(i); setShowModal(true); }} onDelete={handleDelete} onSkip={handleSkip} defaultCollapsed />
-            )}
-          </>
+          <div className={clsx("grid gap-6", !isBoard && "lg:grid-cols-[minmax(0,1fr)_300px]")}>
+            <div className="min-w-0 space-y-4">
+              {prefs.view !== "focus" && prefs.status !== "done" && (
+                <QuickAdd onAdd={handleQuickAdd} onTemplate={openTemplate} inputRef={quickAddRef} />
+              )}
+
+              {prefs.view !== "focus" && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative flex-1 min-w-[10rem]">
+                    <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <input
+                      ref={searchRef}
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                      placeholder="Search tasks, tags, Jira keys…"
+                      aria-label="Search tasks"
+                      className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/60 focus-visible:ring-2 focus-visible:ring-blue-500/40"
+                    />
+                    {search && (
+                      <button type="button" onClick={() => setSearch("")} aria-label="Clear search" className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"><X size={13} /></button>
+                    )}
+                  </div>
+
+                  <Popover
+                    title="Filter by tag"
+                    icon={<Tag size={13} />}
+                    label={<span className="text-xs">{tagFilter ? `#${tagFilter}` : "Tag"}</span>}
+                    buttonClassName={clsx("px-2.5 py-1.5 border", tagFilter ? "border-violet-500/40 text-violet-400 bg-violet-500/10" : "border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200")}
+                  >
+                    {close => (
+                      <div className="w-52 max-h-64 overflow-y-auto space-y-0.5">
+                        <MenuItem active={!tagFilter} onClick={() => { setTagFilter(null); close(); }}>All tags</MenuItem>
+                        {allLabels.length === 0 && <p className="px-2.5 py-1.5 text-xs text-slate-500">No tags yet. Add #tag when typing a task.</p>}
+                        {allLabels.map(l => (
+                          <MenuItem key={l} active={tagFilter === l} onClick={() => { setTagFilter(l); close(); }}>
+                            <span className={clsx("text-[11px] px-1.5 rounded border", labelTone(l))}>#{l}</span>
+                          </MenuItem>
+                        ))}
+                      </div>
+                    )}
+                  </Popover>
+
+                  <Popover
+                    title="Filter by priority"
+                    icon={<Flag size={13} />}
+                    label={<span className="text-xs">{prioFilter === "all" ? "Priority" : TODO_PRIORITY_META[prioFilter].label}</span>}
+                    buttonClassName={clsx("px-2.5 py-1.5 border", prioFilter !== "all" ? "border-orange-500/40 text-orange-400 bg-orange-500/10" : "border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200")}
+                  >
+                    {close => (
+                      <div className="w-40 space-y-0.5">
+                        <MenuItem active={prioFilter === "all"} onClick={() => { setPrioFilter("all"); close(); }}>All priorities</MenuItem>
+                        {(["high", "medium", "low"] as TodoPriority[]).map(p => (
+                          <MenuItem key={p} active={prioFilter === p} onClick={() => { setPrioFilter(p); close(); }}>
+                            <span className={clsx("w-2 h-2 rounded-full", PRIORITY_STRIP[p])} /> {TODO_PRIORITY_META[p].label}
+                          </MenuItem>
+                        ))}
+                      </div>
+                    )}
+                  </Popover>
+
+                  <div className="flex gap-0.5 bg-slate-900 border border-slate-800 rounded-xl p-0.5">
+                    {(["all", "active", "done"] as StatusTab[]).map(s => (
+                      <button key={s} type="button" onClick={() => updatePrefs({ status: s })}
+                        className={clsx("px-2.5 py-1 text-xs rounded-lg capitalize transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                          prefs.status === s ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+
+                  {isBoard ? (
+                    <div className="flex gap-0.5 bg-slate-900 border border-slate-800 rounded-xl p-0.5">
+                      {(["group", "priority"] as BoardBy[]).map(b => (
+                        <button key={b} type="button" onClick={() => updatePrefs({ boardBy: b })}
+                          className={clsx("px-2.5 py-1 text-xs rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                            prefs.boardBy === b ? "bg-slate-700 text-slate-100" : "text-slate-500 hover:text-slate-300")}>
+                          By {b === "group" ? "date" : "priority"}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <label className="flex items-center gap-1 text-slate-500 px-1">
+                      <ArrowUpDown size={12} />
+                      <select
+                        value={prefs.sortBy}
+                        onChange={e => updatePrefs({ sortBy: e.target.value as SortBy })}
+                        aria-label="Sort"
+                        className="bg-transparent text-xs text-slate-400 focus:outline-none cursor-pointer rounded focus-visible:ring-2 focus-visible:ring-blue-500"
+                      >
+                        <option value="manual">Manual (drag)</option>
+                        <option value="priority">Priority</option>
+                        <option value="due">Due date</option>
+                        <option value="created">Created</option>
+                      </select>
+                    </label>
+                  )}
+
+                  {filtering && (
+                    <button type="button" onClick={() => { setSearch(""); setTagFilter(null); setPrioFilter("all"); }} className="text-xs text-slate-500 hover:text-slate-300 underline decoration-dotted">
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {prefs.view === "focus" ? (
+                <FocusView todos={todos} api={api} onStartFocus={startFocus} focusTaskId={focusTaskId} onEdit={item => setModal({ item })} />
+              ) : isBoard ? (
+                <BoardView
+                  groups={groups}
+                  by={prefs.boardBy}
+                  api={api}
+                  onEdit={item => setModal({ item })}
+                  onStartFocus={startFocus}
+                  focusTaskId={focusTaskId}
+                  showDone={prefs.status !== "active"}
+                />
+              ) : filtering && filtered.length === 0 ? (
+                <div className="rounded-3xl border border-dashed border-slate-800 py-12 text-center">
+                  <Search size={24} className="mx-auto text-slate-600 mb-2" />
+                  <p className="text-sm text-slate-400">No tasks match these filters.</p>
+                </div>
+              ) : (
+                <ListView
+                  groups={groups}
+                  collapsed={collapsed}
+                  onCollapse={toggleCollapse}
+                  showDone={prefs.status !== "active"}
+                  hideEmpty={filtering || prefs.status === "done"}
+                  api={api}
+                  allTodos={todos}
+                  sortable={prefs.sortBy === "manual" && !selectMode && !filtering}
+                  selectMode={selectMode}
+                  selected={selected}
+                  onSelect={toggleSelect}
+                  onEdit={item => setModal({ item })}
+                  onStartFocus={startFocus}
+                  focusTaskId={focusTaskId}
+                />
+              )}
+            </div>
+            {sidebar}
+          </div>
         )}
       </div>
 
-      {showModal && (
-        <TodoModal item={editing} onClose={() => setShowModal(false)} onSave={handleSave} />
+      {modal && (
+        <TodoModal item={modal.item} isNew={modal.isNew} onClose={() => setModal(null)} onSave={api.upsert} />
       )}
+
+      {selectMode && selected.size > 0 && (
+        <BulkBar
+          count={selected.size}
+          onMarkDone={() => { api.bulkDone(selected); setSelected(new Set()); setSelectMode(false); }}
+          onDelete={() => { api.removeMany(selected); setSelected(new Set()); setSelectMode(false); }}
+          onCancel={() => { setSelectMode(false); setSelected(new Set()); }}
+        />
+      )}
+
+      <Toast toast={api.toast} />
     </div>
   );
 }
-
-const lbl = "block text-xs font-medium text-slate-400 mb-1.5";
-const inp = "w-full px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-800 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600";
-const sel = "w-full px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-800 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600";

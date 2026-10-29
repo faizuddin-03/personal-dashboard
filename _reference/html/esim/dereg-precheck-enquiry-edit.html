@@ -1,0 +1,80 @@
+<!--
+  URL: /esim/dereg-precheck-enquiry-resp/19/edit
+  Env: eSIM (VPN-only simulator), env instance not stated by user
+  Captured: 2026-08-21
+  Trimmed: none — complete form, every field/id/name/type/required marker kept.
+  Record #19, prefix HX (shared testing prefix, also seen on RHB Transfer #140
+  and Dereg Enquiry #57 — see knowledge/esim.md).
+  Used by: knowledge/esim.md § Dereg Precheck
+-->
+<body>
+  <div class="content-body">
+    <div class="page-header">
+      <h1 class="page-title page-title-sm">Edit Dereg Precheck Enquiry Resp #19</h1>
+    </div>
+    <div class="form-card">
+      <form action="/esim/dereg-precheck-enquiry-resp/save" method="post">
+        <input type="hidden" name="id" value="19">
+
+        <input type="text" class="form-input" id="vnStartWith" name="vnStartWith" value="HX" placeholder="Enter Vn Start With" required="required">
+        <input type="text" class="form-input" id="responseCode" name="responseCode" value="GLB000000I" placeholder="Enter Response Code" required="required">
+
+        <select class="form-select" id="vehicleRecord" name="vehicleRecord" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y" selected="selected">Y</option><option value="N">N</option><option value="NA">NA</option>
+        </select>
+        <select class="form-select" id="vehicleStatus" name="vehicleStatus" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y" selected="selected">Y</option><option value="N">N</option><option value="NA">NA</option>
+        </select>
+
+        <select class="form-select" id="verifiedStatus" name="verifiedStatus" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y" selected="selected">Y</option><option value="N">N</option><option value="NA">NA</option>
+        </select>
+        <select class="form-select" id="usageCode" name="usageCode" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y" selected="selected">Y</option><option value="N">N</option><option value="NA">NA</option>
+        </select>
+
+        <select class="form-select" id="jpjBlacklist" name="jpjBlacklist" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y">Y</option><option value="N" selected="selected">N</option><option value="NA">NA</option>
+        </select>
+        <select class="form-select" id="jsjBlacklist" name="jsjBlacklist" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y">Y</option><option value="N" selected="selected">N</option><option value="NA">NA</option>
+        </select>
+
+        <select class="form-select" id="agencyBlacklist" name="agencyBlacklist" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y">Y</option><option value="N" selected="selected">N</option><option value="NA">NA</option>
+        </select>
+        <select class="form-select" id="claimOwnership" name="claimOwnership" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y">Y</option><option value="N" selected="selected">N</option><option value="NA">NA</option>
+        </select>
+
+        <select class="form-select" id="vehicleInInvestigation" name="vehicleInInvestigation" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y">Y</option><option value="N" selected="selected">N</option><option value="NA">NA</option>
+        </select>
+        <select class="form-select" id="vehicleCondition" name="vehicleCondition" required="required">
+          <option value="">-- Select --</option>
+          <option value="Y">Y</option><option value="N" selected="selected">N</option><option value="NA">NA</option>
+        </select>
+
+        <input type="number" step="any" class="form-input" id="delayMiliSeconds" name="delayMiliSeconds" value="0" placeholder="Enter Delay Milliseconds" required="required">
+        <input type="number" step="any" class="form-input" id="receiptDelayMilliSeconds" name="receiptDelayMilliSeconds" value="0" placeholder="Enter Receipt Delay Milliseconds">
+
+        <input type="text" class="form-input" id="remark" name="remark" value="Faiz - REV000001E" placeholder="Enter Remark">
+
+        <div class="form-actions">
+          <a href="/esim/dereg-precheck-enquiry-resp" class="btn btn-outline">Cancel</a>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="/esim/js/app.js"></script>
+</body>

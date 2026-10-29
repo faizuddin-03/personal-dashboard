@@ -1,0 +1,189 @@
+<!--
+  URL:         https://bank-simulator.fiuu.com/fpx-b2b/payment (page shown after the maker clicks "Authorize")
+  Environment: Fiuu sandbox bank simulator, reached from staging.eauto.my Pre-Application payment (FPX B2B, AmBank)
+  Captured:    2026-10-23, pasted by Faizuddin ("now i encounter this page in the payment popup")
+  Trimmed:     <head> not supplied by the user (only <body> pasted). Body, form and scripts kept as pasted.
+  Notes:       NEW step (not seen on 2026-10-22). Shows tranID + one-time "Decide code"; auto-redirects
+               to the merchant after 120 s or on "Continue now"; "Go to checker page" opens
+               /fpx-b2b/pending?tranId=<id> in a new tab and submits authorize_form in this tab.
+-->
+<body>
+
+<div class="blue-bar">
+    <img src="https://bank-simulator.fiuu.com/img/fiuuSimulator.png" alt="Fiuu Logo">
+</div>
+
+<div class="simulator-wrapper">
+    <div class="payment-card">
+        <div class="card-header">
+            <div>
+                <div class="card-header-title">Order Authorized</div>
+                <div class="card-header-subtitle">FPX Business-to-Business</div>
+            </div>
+            <img src="https://bank-simulator.fiuu.com/img/fpx-logo.png" alt="FPX Logo" style="width: 64px; height: auto;">
+        </div>
+
+        <div class="detail-section">
+            <p class="auth-intro-text">
+                Copy <strong>BOTH</strong> values below before continuing - you'll need both to approve/reject this order on the checker page.
+            </p>
+
+            <p class="auth-field-label">1. Transaction No. (tranID)</p>
+            <div class="auth-field-row">
+                <p id="tranIdValue" class="auth-field-value">201198</p>
+                <button type="button" class="copy-btn auth-copy-btn" data-copy-target="tranIdValue">Copy</button>
+            </div>
+
+            <p class="auth-field-label">2. Decide code</p>
+            <div class="auth-field-row" style="margin-bottom: 0;">
+                <p id="decideCodeValue" class="auth-field-value">c6b180d18b1ce62e08734dc7bfac5afc18ae8dc32029c57c1043c3e2def1d8e9</p>
+                <button type="button" class="copy-btn auth-copy-btn" data-copy-target="decideCodeValue">Copy</button>
+            </div>
+
+            <button type="button" id="copyBothBtn" class="auth-copy-both-btn">Copy both (tranID + decide code)</button>
+        </div>
+
+        <div style="padding: 16px 24px 20px; background: #f8fafc; border-top: 1px solid #e8ecf0;">
+            <p class="auth-instructions">
+                Next step: open the checker page below (tranID already filled in), then Approve/Reject. If you're on
+                the <strong>same browser</strong> you're on right now, the decide code is filled in automatically. If
+                you're using a <strong>different browser/session</strong>, you'll need to paste the decide code in
+                manually - copy it above <strong>before</strong> clicking below, since this tab leaves this page
+                immediately once you do (it's shown only here, once, and can't be retrieved again later).
+            </p>
+
+            <button type="button" id="goToCheckerBtn" class="auth-checker-link" data-href="https://bank-simulator.fiuu.com/fpx-b2b/pending?tranId=201198">Go to checker page for order 201198 (opens in new tab)</button>
+        </div>
+
+        <div class="auth-countdown-area">
+            <p id="countdown" class="auth-countdown-text">Redirecting back to merchant in 1m 9s...</p>
+            <button type="button" onclick="sendHandOff()" class="auth-continue-btn">Continue now</button>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        Powered by
+        <img src="https://bank-simulator.fiuu.com/img/FiuuBlue.png" alt="Fiuu Logo">
+    </div>
+</div>
+
+
+<form name="authorize_form" method="post" action="https://sandbox-payment.fiuu.com/fpxindirect.php">
+            <input type="hidden" name="fpx_msgType" value="AE">
+            <input type="hidden" name="fpx_msgToken" value="02">
+            <input type="hidden" name="fpx_sellerExId" value="EX00003995">
+            <input type="hidden" name="fpx_sellerExOrderNo" value="201198">
+            <input type="hidden" name="fpx_sellerTxnTime" value="20261023115607">
+            <input type="hidden" name="fpx_sellerOrderNo" value="201198">
+            <input type="hidden" name="fpx_sellerId" value="SE00007037">
+            <input type="hidden" name="fpx_txnCurrency" value="MYR">
+            <input type="hidden" name="fpx_txnAmount" value="108.00">
+            <input type="hidden" name="fpx_buyerName" value="">
+            <input type="hidden" name="fpx_buyerBankId" value="AMBB0208">
+            <input type="hidden" name="fpx_buyerBankBranch" value="">
+            <input type="hidden" name="fpx_buyerId" value="">
+            <input type="hidden" name="fpx_makerName" value="">
+            <input type="hidden" name="fpx_buyerIban" value="">
+            <input type="hidden" name="fpx_productDesc" value="6ac6092889454a7f8a45cde8bc057">
+            <input type="hidden" name="fpx_checkSum" value="835CA64A588C7AAB69ED3DE6F3FB60A6D6797E230F60C142B2857DC7E7FD928FD5793059FB2F277E549646B071E87AF6963186CB6FD9FCA13061F8357E3900D9B5131F568C2AA95FAD07D345B00AA810D45819B292C9367B6D4FF31175DA6B326ADAF95665464553F2049C051399ED47455BADA38DEE86C27414EDC0072C7C1C4EBBF2B8D503EE4FC1E57CB3CE0AA8214209B0F93E2BB9438EDF8375C920016286BC0520DFE901813626E50B922A3EB6CBD26C55793FE7A1D3C66D67AA8E7E622FAAB1A703E6C112F3A3096F0394CB18D13B48BFCE849F6E31544CBD6D283CE072442C648229A2DE35B6FA24AD680A82C80CDC261A0EDE668EC0E97784FB42B0">
+            <input type="hidden" name="fpx_fpxTxnId" value="2610231156075256">
+            <input type="hidden" name="fpx_fpxTxnTime" value="20261023115607">
+            <input type="hidden" name="fpx_debitAuthCode" value="99">
+            <input type="hidden" name="fpx_creditAuthCode" value="99">
+            <input type="hidden" name="fpx_debitAuthNo" value="">
+            <input type="hidden" name="fpx_creditAuthNo" value="">
+    </form>
+
+<script>
+    var handOffSent = false;
+    var timer;
+
+    function sendHandOff() {
+        if (handOffSent) {
+            return;
+        }
+        handOffSent = true;
+        clearInterval(timer);
+        document.forms['authorize_form'].submit();
+    }
+
+    (function () {
+        var secondsLeft = 120;
+        var el = document.getElementById('countdown');
+        timer = setInterval(function () {
+            secondsLeft -= 1;
+            if (secondsLeft <= 0) {
+                sendHandOff();
+                return;
+            }
+            var mins = Math.floor(secondsLeft / 60);
+            var secs = secondsLeft % 60;
+            var label = mins > 0
+                ? mins + 'm ' + secs + 's'
+                : secs + ' seconds';
+            el.textContent = 'Redirecting back to merchant in ' + label + '...';
+        }, 1000);
+    })();
+
+    document.getElementById('goToCheckerBtn').addEventListener('click', function () {
+        // Open first: sendHandOff() navigates THIS tab away, which some
+        // browsers treat as cancelling any window.open() issued afterward
+        // from the same click handler.
+        window.open(this.getAttribute('data-href'), '_blank', 'noopener');
+        sendHandOff();
+    });
+
+    function copyText(text, button) {
+        // navigator.clipboard requires a secure context (https/localhost) and
+        // isn't available on every browser/setup - fall back to a hidden
+        // textarea + execCommand so "Copy" still works either way.
+        // report(success) must reflect whether the copy actually happened -
+        // a tester who only has a one-time decide code needs to know to
+        // select and copy it manually instead of walking away thinking it's
+        // already on their clipboard.
+        var original = button.textContent;
+        var report = function (success) {
+            button.textContent = success ? 'Copied!' : 'Copy failed - select manually';
+            setTimeout(function () { button.textContent = original; }, success ? 1500 : 3000);
+        };
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(
+                function () { report(true); },
+                function () { fallbackCopy(text, report); }
+            );
+        } else {
+            fallbackCopy(text, report);
+        }
+    }
+
+    function fallbackCopy(text, report) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        var success = false;
+        try { success = document.execCommand('copy'); } catch (e) { success = false; }
+        document.body.removeChild(ta);
+        report(success);
+    }
+
+    document.querySelectorAll('.copy-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var target = document.getElementById(btn.getAttribute('data-copy-target'));
+            copyText(target.textContent.trim(), btn);
+        });
+    });
+
+    document.getElementById('copyBothBtn').addEventListener('click', function () {
+        var tranId = document.getElementById('tranIdValue').textContent.trim();
+        var decideCode = document.getElementById('decideCodeValue').textContent.trim();
+        copyText('tranID: ' + tranId + '\ndecide code: ' + decideCode, this);
+    });
+</script>
+
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;2c289d5631264377ad806da7050358cc&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+
+</body>

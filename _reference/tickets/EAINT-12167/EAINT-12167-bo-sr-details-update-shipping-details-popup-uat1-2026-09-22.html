@@ -1,0 +1,238 @@
+<!--
+URL: staging.eauto.my/uat1/view/bo/service-hub/detail.do?id=7356c3fb-b434-4328-813d-4d677435350c&apptId=0e4a054c-bcd3-4412-8415-5de8337da161
+(Service Request #SR69001391)
+Environment: staging.eauto.my/uat1
+Captured: 2026-09-22, pasted into chat by Faizuddin
+Trimmed: page chrome (header/footer/menu scripts) kept as pasted; nothing
+removed. This capture shows the SR Details page WITH the "Update Shipping
+Details" jQuery UI dialog (#op-ship-dialog) open on top of it, so it covers
+both surfaces in one file — the static Shipping Details table AND the live
+popup markup (6-serial-field grid for a 6-device transaction).
+Significance: first live capture of the popup itself. Confirms several
+previously-unverified/contradicted points — see knowledge/flow-device-purchase.md
+for the full resolution:
+ - Number of Device is plain read-only text in the popup (#op-ship-devcount),
+   not an input — matches REQ-002.
+ - Delivery Status <select> in this New-status popup shows ONLY "Arranged" as
+   a selectable option (already the only <option>) — not a full dropdown of
+   states, confirming "can only select Arranged" from New.
+ - Every serial input carries maxlength="12" and a per-field
+   ".op-ship-serial-err" / "This field is required" div right under it —
+   confirms REQ-005/007 error messages are built to render INLINE per field,
+   reinforcing the QA-Issue already raised (EAINT-12394) that the duplicate-SN
+   message showing as a native browser popup is inconsistent with the rest of
+   this same form's own error-handling design.
+ - Two concurrency dialogs exist in the page (#op-concurrent-dialog,
+   #op-installstate-dialog) with their exact text — direct, dev-confirmed
+   answers to two of the open "Concurrency — questions for dev" items in the
+   combined study artifact.
+ - The static Shipping Details table shows "Number of Device: 6" (transaction
+   total) while the listing page (captured same session) shows "Device: 1"
+   per row for this same SR — live confirmation of REQ-011's "opposite scope"
+   behaviour already documented.
+-->
+<body>
+<div id="container">
+
+    <div id="ins-detail">
+        <table class="ins-topbar">
+            <tbody><tr>
+                <td>
+                    <span class="ins-title">Service Request #SR69001391</span>
+
+                    <button type="button" class="btn-fail" onclick="opFailOpen()">Installation Failed »</button>
+                    <button type="button" class="btn-success" onclick="opSuccess()">Installation Completed »</button>
+
+                </td>
+            </tr>
+        </tbody></table>
+
+
+        <table class="ins-info"><tbody><tr>
+            <td>
+                <table class="ins-kv">
+                    <tbody><tr><td class="k">Date Requested:</td><td>17-09-2026 04:09pm</td></tr>
+                    <tr><td class="k">Company Name:</td><td>CARRO DIGITAL SDN. BHD.</td></tr>
+                    <tr><td class="k">Company ROC:</td><td>8888888888-A</td></tr>
+                </tbody></table>
+            </td>
+            <td style="padding-left:48px;">
+                <table class="ins-kv">
+                    <tbody><tr><td class="k">e-Invoice Submission Date:</td><td>17-09-2026 04:09pm</td></tr>
+
+                    <tr><td class="k">LHDN Response Status:</td><td><b style="color:#008E00;">OK</b></td></tr>
+                    <tr><td class="k">e-Invoice Validation Date:</td><td>17-09-2026 04:09pm</td></tr>
+                </tbody></table>
+            </td>
+            <td class="inv-cell">
+
+                <button type="button" class="btn-inv" onclick="opInvoice()"><img src="/uat1/images/icon-print.png"><span>INVOICE</span></button>
+
+
+                <button type="button" class="btn-inv" onclick="opEInvoice()"><img src="/uat1/images/icon-print.png"><span>e-INVOICE</span></button>
+
+            </td>
+            <td class="inv-spacer">&nbsp;</td>
+        </tr>
+        </tbody></table>
+        <hr>
+
+        <table class="ins-cols"><tbody><tr>
+
+            <td>
+                <div class="ins-h">Shipping Details</div>
+                <table class="ins-kv ins-ship">
+                    <tbody><tr><td class="k">Purchase Device:</td><td>1 unit(s)</td></tr>
+                    <tr><td class="k">Delivery Status:</td><td><b style="color:blue;">New</b></td></tr>
+                    <tr><td class="k">Delivery Date:</td><td>-</td></tr>
+                    <tr><td class="k">Delivery Order Number:</td><td>-</td></tr>
+                    <tr><td class="k">Consignment Number:</td><td>
+-
+                    </td></tr>
+
+                    <tr><td class="k">Number of Device:</td><td>6</td></tr>
+                    <tr><td class="k">Device Serial No.:</td><td>-</td></tr>
+                    <tr><td class="k">Recipient Name:</td><td>MAY CHIN DIRECTOR</td></tr>
+                    <tr><td class="k">Shipping Address:</td><td><div class="ship-addr">Loremipsumdolorsitamet,consecteturadipiscingelit.Seddoeiusmodtemporincididuntutlaboretetdoloremagnaaliqua.Utenimadminimveniam,quisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequat.Duisautemveleneumiruredolorinreprehenderitinvoluptatevelitesse</div></td></tr>
+                    <tr><td class="k">Contact No:</td><td>0162068263</td></tr>
+                </tbody></table>
+                <div><button type="button" class="btn-update" style="font-weight:normal;" onclick="opShipOpen()">Update Shipping Details</button></div>
+            </td>
+
+
+
+            <td>
+                <div class="ins-h">Appointment Details</div>
+
+                <table class="ins-kv ins-appt">
+
+                    <tbody><tr><td class="k">User Name:</td><td>MAY CHIN DIRECTOR</td></tr>
+                    <tr><td class="k">Contact Number:</td><td>60162068263</td></tr>
+                    <tr><td class="k">Software Installation:</td><td>1 request(s)</td></tr>
+                    <tr><td class="k">Appointment Status:</td><td><b style="color:blue;">Pending</b></td></tr>
+                    <tr><td class="k">Appointment Date:</td><td>27-11-2026</td></tr>
+                    <tr><td class="k">Time Slot:</td><td>2:00pm - 4:00pm</td></tr>
+                    <tr><td class="k">Date Completed:</td><td>-</td></tr>
+
+                </tbody></table>
+
+            </td>
+
+        </tr></tbody></table>
+        <hr>
+
+        <div class="ins-h">Payment Details</div>
+        <ul class="pay-lines">
+            <li>1. 17-09-2026 04:09pm - RHB (SR20260917000006-1109616) - <b style="color:#008E00;">OK</b></li>
+        </ul>
+
+        <table class="ins-kv ins-pay" style="margin-top:8px;">
+            <tbody><tr><td class="k">Biometric Device:</td><td class="amt">RM 850.00</td></tr>
+            <tr><td class="k">Software Installation:</td><td class="amt">RM 0.00</td></tr>
+        </tbody></table>
+
+        <div class="sr-title">Special Remark:</div>
+
+        <textarea id="ins-special-remark" maxlength="500"></textarea>
+
+        <div><button type="button" class="btn-update" onclick="opSaveRemark()">Update Special Remark</button></div>
+
+    </div>
+
+</div>
+
+<!-- Installation Failed modal -> fail.do (acts on the single appt) -->
+<div id="op-fail-dialog" title="Installation Failed" style="display:none;">
+    <div>Please select the reason causing the installation failed:</div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="Reappointment"> Reappointment</label></div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="LaptopIssue"> Laptop/PC Issues</label></div>
+
+    <div class="row"><label><input type="radio" name="op-fail-reason" value="Other"> Other</label></div>
+
+    <div class="row" id="op-fail-other-wrap" style="display:none; margin-left:22px;">
+        <textarea id="op-fail-other" rows="3" style="width:100%; box-sizing:border-box; border:1px solid #ccc; padding:6px;" placeholder="Please specify the reason"></textarea>
+        <div id="op-fail-other-err" class="op-err">Reason must not exceed 100 characters.</div>
+    </div>
+</div>
+
+<!-- EAINT-11953: shipping concurrent-update dialog — same chrome as the other BO dialogs; OK refreshes the page. -->
+<div id="op-concurrent-dialog" title="Error" style="display:none;">
+    <div style="padding:4px 0;">Unable to proceed. This record was just updated by another user.</div>
+</div>
+
+<!-- EAINT-11953: installation-status concurrency dialog — another Ops user completed/failed the record (or it
+     expired/was cancelled) first; OK refreshes the page so the latest Installation Status is shown. -->
+<div id="op-installstate-dialog" title="Error" style="display:none;">
+    <div style="padding:4px 0;">Unable to proceed. This Service Request has been completed, failed, expired or cancelled.</div>
+</div>
+
+<div id="op-success-dialog" style="display:none;">Are you sure want to mark the installation appointment as completed?</div>
+
+<!-- Update Shipping Details — live jQuery UI dialog markup, captured OPEN. -->
+<div class="ui-widget-overlay" style="width: 1121px; height: 1236px; z-index: 1001;"></div>
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all op-ship-dlg" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-op-ship-dialog" style="display: block; position: absolute; overflow: hidden; z-index: 1002; outline: 0px; height: auto; width: 480px; top: 201.5px; left: 603px;">
+  <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" unselectable="on"><span class="ui-dialog-title" id="ui-dialog-title-op-ship-dialog" unselectable="on">Update Shipping Details</span><a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" unselectable="on"><span class="ui-icon ui-icon-closethick" unselectable="on">close</span></a></div>
+  <div id="op-ship-dialog" style="height: auto; min-height: 5px; width: auto;" class="ui-dialog-content ui-widget-content">
+    <div class="row row-2col">
+        <div class="col col-l"><label class="k">Delivery Date<span style="color:red">*</span>:</label>
+            <input type="text" id="op-ship-date" readonly="readonly" tabindex="-1" value="" class="hasDatepicker">
+            <div id="op-ship-date-err" class="op-err" style="display: none;">This field is required</div></div>
+        <div class="col col-r"><label class="k">Delivery Status<span style="color:red">*</span>:</label>
+            <select id="op-ship-status">
+                <option value="Arranged" selected="selected">Arranged</option>
+            </select>
+            <div id="op-ship-status-err" class="op-err" style="display: none;">This field is required</div></div>
+    </div>
+    <div class="row"><label class="k">Consignment Number<span style="color:red">*</span>:</label>
+        <input type="text" id="op-ship-consign" value="">
+        <div id="op-ship-consign-err" class="op-err" style="display: none;">This field is required</div></div>
+    <!-- Read-only device count; system-derived, shown as plain text. -->
+    <div class="row row-devcount"><span class="k">Number of Device:</span><span id="op-ship-devcount">6</span></div>
+
+    <!-- REQ-010: a 2-per-row grid filled left to right, each field carrying its 1-based ordinal. DOM order
+         is the id ASC binding order the serials post in. A field locks as soon as its serial is stored. -->
+    <div id="op-ship-serials">
+        <label class="k">Device Serial No.<span style="color:red">*</span>:</label>
+        <div id="op-ship-serial-grid">
+            <div class="op-ship-serial-cell op-ship-serial-cell-l">
+                <span class="op-ship-serial-no">1.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" placeholder="type serial number" value="">
+                <div class="op-err op-ship-serial-err" style="display: none;">This field is required</div></div></div>
+            <div class="op-ship-serial-cell op-ship-serial-cell-r">
+                <span class="op-ship-serial-no">2.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" placeholder="type serial number" value="">
+                <div class="op-err op-ship-serial-err" style="display: none;">This field is required</div></div></div>
+            <div class="op-ship-serial-cell op-ship-serial-cell-l">
+                <span class="op-ship-serial-no">3.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" placeholder="type serial number" value="">
+                <div class="op-err op-ship-serial-err" style="display: none;">This field is required</div></div></div>
+            <div class="op-ship-serial-cell op-ship-serial-cell-r">
+                <span class="op-ship-serial-no">4.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" placeholder="type serial number" value="">
+                <div class="op-err op-ship-serial-err" style="display: none;">This field is required</div></div></div>
+            <div class="op-ship-serial-cell op-ship-serial-cell-l">
+                <span class="op-ship-serial-no">5.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" placeholder="type serial number" value="">
+                <div class="op-err op-ship-serial-err" style="display: none;">This field is required</div></div></div>
+            <div class="op-ship-serial-cell op-ship-serial-cell-r">
+                <span class="op-ship-serial-no">6.</span>
+                <div class="op-ship-serial-in">
+                <input type="text" class="op-ship-serial" maxlength="12" placeholder="type serial number" value="">
+                <div class="op-err op-ship-serial-err" style="display: none;">This field is required</div></div></div>
+
+        </div>
+    </div>
+    <input type="hidden" id="op-ship-recipient" value="MAY CHIN DIRECTOR">
+    <input type="hidden" id="op-ship-address" value="Loremipsumdolorsitamet,consecteturadipiscingelit.Seddoeiusmodtemporincididuntutlaboretetdoloremagnaaliqua.Utenimadminimveniam,quisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequat.Duisautemveleneumiruredolorinreprehenderitinvoluptatevelitesse">
+    <input type="hidden" id="op-ship-contact" value="0162068263">
+  </div>
+  <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><button type="button" class="ui-state-default ui-corner-all">Cancel</button><button type="button" class="ui-state-default ui-corner-all">Update</button></div>
+</div>
+</body>

@@ -1,0 +1,12 @@
+{
+  "name": "eauto-e2e",
+  "version": "1.0.0",
+  "description": "eAuto UCD insurance purchase end-to-end automation (POM)",
+  "scripts": {
+    "test": "playwright test",
+    "install-browsers": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}

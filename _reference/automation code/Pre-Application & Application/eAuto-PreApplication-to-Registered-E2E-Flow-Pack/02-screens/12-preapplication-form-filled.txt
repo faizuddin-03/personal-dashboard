@@ -1,0 +1,96 @@
+https://staging.eauto.my/obs/preOnb/form
+
+Dealer Application
+Working...
+1
+Pre-Application Form
+2
+Business Info Review
+Business Information
+Business Registered Name: *
+Type of Business: *
+SSM Registered:
+Sdn Bhd / Bhd 
+Sole Proprietorship / Partnership 
+LLP
+Non-SSM Registered:
+Business Trading (Sabah) 
+Business Trading (Sarawak)
+Business Trading License No: *
+Trading License: *
+Upload in pdf, png, jpg, jpeg (max 5MB)
+Browse File...
+trading-licence.pdf
+Delete Attachment
+ Add More File
+Tax Identification No (TIN):
+Please ensure you entered the correct TIN for e-invoice
+Showroom Address: *
+ 
+Select State
+SARAWAK
+Select City
+SARAWAK
+ASAJAYA
+BALINGAN
+BARAM
+BAU
+BEKENU
+BELAGA
+BELAWAI
+BETONG
+BINTANGOR
+BINTULU
+DALAT
+DARO
+DEBAK
+ENGKILILI
+JULAU
+KABONG
+KANOWIT
+KAPIT
+KOTA SAMARAHAN
+KUCHING
+LAWAS
+LIMBANG
+LINGGA
+LONG LAMA
+LUBOK ANTU
+LUNDU
+MATU
+MIRI
+MUKAH
+NANGA MEDAMIT
+NIAH
+PEKENU
+PUSA
+ROBAN
+SARATOK
+SARIKEI
+SEBAUH
+SEBUYAU
+SERIAN
+SIMUNJAN
+SONG
+SPAOH
+SRI AMAN
+SUNDAR
+TATAU
+TEBAKANG
+SIBU
+BINTANGOR
+TEBEDU
+PAKAN
+SIBUTI
+OYA
+MALUDAM
+Admin In Charge
+This refers to the representative assisting with this application
+Name: *
+Mobile No: *
+Email Address: *
+We will email an invoice and/or e-invoice once payment is successful.
+Cancel
+Next
+
+For further assistance, please contact out Customer Service 03-27798899.

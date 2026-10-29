@@ -1,0 +1,267 @@
+import { expect, type Page } from '@playwright/test';
+import { CONFIG, ENTITIES, ESIM_BASE, type EntityKey } from '../data/config';
+
+const step = (m: string) => console.log(`[step] ${m}`);
+
+export class LoginPage {
+  constructor(private readonly page: Page) {}
+
+  async login(): Promise<void> {
+    step(`Signing in to eSIM as ${CONFIG.username}`);
+    await this.page.goto(`${ESIM_BASE}/login`, { waitUntil: 'domcontentloaded' });
+
+    await this.page.locator('input[name="username"]').fill(CONFIG.username);
+    await this.page.locator('input[name="password"]').fill(CONFIG.password);
+    await this.page.locator('button.login-btn, button[type="submit"]').first().click();
+
+    // A failed login re-renders the same /esim/login form rather than erroring.
+    await this.page.waitForLoadState('domcontentloaded');
+    await expect(
+      this.page.locator('aside.sidebar'),
+      'eSIM login did not reach the app shell — wrong credentials, or the VPN is not connected.',
+    ).toBeVisible({ timeout: 20_000 });
+    step('Signed in');
+  }
+}
+
+export class EntityListPage {
+  constructor(private readonly page: Page, private readonly entity: EntityKey) {}
+
+  private rows = () => this.page.locator('#dataTable tbody tr');
+
+  async open(): Promise<void> {
+    const { path, label } = ENTITIES[this.entity];
+    step(`Opening ${label}`);
+    await this.page.goto(`${ESIM_BASE}${path}`, { waitUntil: 'domcontentloaded' });
+    await expect(this.page.locator('#dataTable'), `${label} table did not render`).toBeVisible({ timeout: 20_000 });
+  }
+
+  /**
+   * Find the record for a vehicle prefix and return its edit URL.
+   *
+   * The list is paginated at 10 rows but every record is already in the DOM —
+   * #searchInput filters client-side by toggling `display:none`, so searching
+   * reaches records that pagination hides. Rows must therefore be matched on
+   * VISIBILITY, not on presence.
+   */
+  async findEditUrl(prefix: string): Promise<string> {
+    step(`Searching for prefix "${prefix}"`);
+    await this.page.locator('#searchInput').fill(prefix);
+    await this.page.waitForTimeout(600); // client-side filter is synchronous but debounced by keystroke
+
+    const visible = this.rows().locator('visible=true');
+    const count = await visible.count();
+
+    // The search is a substring match, so "AB" also surfaces "ABC". Narrow to an
+    // exact match on the Vn Start With cell before deciding.
+    const matches: { prefix: string; href: string }[] = [];
+    for (let i = 0; i < count; i++) {
+      const row = visible.nth(i);
+      const cell = (await row.locator('td').nth(1).innerText()).trim();
+      const href = await row.locator('a[href*="/edit"]').first().getAttribute('href');
+      if (href) matches.push({ prefix: cell, href });
+    }
+
+    const exact = matches.filter(m => m.prefix.toUpperCase() === prefix.toUpperCase());
+
+    if (exact.length === 0) {
+      const near = matches.map(m => m.prefix).join(', ') || 'nothing';
+      throw new Error(
+        `No record with Vn Start With exactly "${prefix}" in ${ENTITIES[this.entity].label}. ` +
+        `The search surfaced: ${near}. Create the prefix in eSIM first, or check the spelling.`,
+      );
+    }
+    if (exact.length > 1) {
+      throw new Error(
+        `${exact.length} records share the prefix "${prefix}" — refusing to guess which to edit. ` +
+        'Remove the duplicate in eSIM first.',
+      );
+    }
+
+    step(`Found "${prefix}" → ${exact[0].href}`);
+    return exact[0].href;
+  }
+
+}
+
+export class EntityEditPage {
+  constructor(private readonly page: Page) {}
+
+  async open(editUrl: string): Promise<void> {
+    const url = editUrl.startsWith('http') ? editUrl : `https://172.30.202.114:9089${editUrl}`;
+    await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+    await expect(this.page.locator('form[action$="/save"]'), 'Edit form did not render').toBeVisible({ timeout: 20_000 });
+  }
+
+  /**
+   * Resolve a visible field label to its input id via the label's `for`.
+   * Matching on the label rather than a hardcoded id means the same code works
+   * for entities whose form HTML has not been captured — and a renamed field
+   * fails loudly here instead of silently writing nothing.
+   */
+  private async inputIdForLabel(label: string): Promise<string> {
+    const lbl = this.page.locator(`label.form-label:has(span:text-is("${label}"))`).first();
+    if (!(await lbl.count())) {
+      const seen = (await this.page.locator('label.form-label span').first().isVisible().catch(() => false))
+        ? (await this.page.locator('label.form-label > span:not(.required)').allInnerTexts()).map(s => s.trim()).join(', ')
+        : '(none found)';
+      throw new Error(`No field labelled "${label}" on this form.\nFields present: ${seen}`);
+    }
+    const id = await lbl.getAttribute('for');
+    if (!id) throw new Error(`The "${label}" label has no for= attribute, so its input cannot be resolved.`);
+    return id;
+  }
+
+  /**
+   * Every field on the form as label→current value, in form order.
+   *
+   * Reads straight off the edit form rather than the view page, so what comes
+   * back is exactly what a write would be editing — same labels, same values.
+   */
+  async readAllFields(): Promise<{ label: string; value: string }[]> {
+    const labels = this.page.locator('label.form-label');
+    const out: { label: string; value: string }[] = [];
+
+    for (let i = 0; i < await labels.count(); i++) {
+      const lbl = labels.nth(i);
+      const id = await lbl.getAttribute('for');
+      if (!id) continue;
+      // The visible name is the first span; the second is the "*" marker.
+      const name = (await lbl.locator('span').first().innerText()).trim();
+      const value = (await this.page.locator(`#${id}`).inputValue()).trim();
+      out.push({ label: name, value });
+    }
+    return out;
+  }
+
+  /** Apply label→value. Only the given fields are touched. Returns before/after. */
+  async applyChanges(changes: Record<string, string>): Promise<{ label: string; from: string; to: string }[]> {
+    const applied: { label: string; from: string; to: string }[] = [];
+
+    for (const [label, value] of Object.entries(changes)) {
+      const id = await this.inputIdForLabel(label);
+      const field = this.page.locator(`#${id}`);
+      const before = (await field.inputValue()).trim();
+      // `.fill()` only works on <input>/<textarea> — some entities (e.g. Dereg
+      // Precheck's Y/N/NA fields) use a plain <select> instead, which needs
+      // `.selectOption()`. Branch on the actual tag rather than assuming.
+      const tag = await field.evaluate(el => el.tagName.toLowerCase());
+      if (tag === 'select') {
+        await field.selectOption(value);
+      } else {
+        await field.fill(value);
+      }
+      applied.push({ label, from: before || '(empty)', to: value });
+      step(`${label}: "${before || '(empty)'}" → "${value}"`);
+    }
+    return applied;
+  }
+
+  /**
+   * Save, and confirm it took.
+   *
+   * Saving lands on the record's **view** page — `/<entity>/<id>/view`, showing
+   * "… saved successfully." and a Record Details block with every field. It does
+   * NOT return to the list. That page is also all the proof needed, so there is
+   * no going back to the list to re-search.
+   */
+  async save(): Promise<void> {
+    step('Saving');
+    await this.page.locator('form[action$="/save"] button[type="submit"]').click();
+    await this.page.waitForLoadState('domcontentloaded');
+
+    await expect(
+      this.page.getByText(/saved successfully/i),
+      'eSIM did not confirm the save — the record may not have changed.',
+    ).toBeVisible({ timeout: 20_000 });
+    step('Saved');
+  }
+
+  /** Whole-page text of the view page reached after saving, for spot-checking
+   *  that a new value really is on the record. */
+  async viewPageText(): Promise<string> {
+    return (await this.page.locator('body').innerText()).replace(/\s+/g, ' ');
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // `jomcheck-report`-only: the dynamic "Claim Records" sub-form. See
+  // `_reference/html/esim/jomcheck-report-edit.html` — "+ Add Claim Record"
+  // clones a `<template>` client-side (`claimValues[N].*`), "Remove Record"
+  // deletes one `.claim-record` block. Unlike the top-level fields above,
+  // a claim record's own labels carry NO `for` attribute (just plain
+  // `<label class="form-label">Mileage</label>` next to its input) — so
+  // these resolve by walking to the sibling input inside the SAME
+  // `.form-group`, scoped to one `.claim-record` block, not by `for`/`id`.
+  // Added 2026-10-03 for EAINT-12339's TS05-TS19, which need EXACT claim
+  // values (mileage/parts/claim-code boundaries) that purchasing against
+  // the real API can't reliably produce.
+  // ──────────────────────────────────────────────────────────────
+
+  private claimRecordBlocks = () => this.page.locator('.claim-record');
+
+  /** Every existing claim record as a label→value map (blank fields left
+   *  out), in page order — the same shape `addClaimRecords()` takes, so a
+   *  read can be written straight back to restore a shared prefix. */
+  async readClaimRecords(): Promise<Record<string, string>[]> {
+    const out: Record<string, string>[] = [];
+    const blocks = this.claimRecordBlocks();
+    for (let i = 0; i < await blocks.count(); i++) {
+      const groups = blocks.nth(i).locator('.form-group:has(label)');
+      const record: Record<string, string> = {};
+      for (let j = 0; j < await groups.count(); j++) {
+        const group = groups.nth(j);
+        const field = group.locator('input, select').first();
+        if (!(await field.count())) continue;
+        const label = (await group.locator('label').first().innerText()).trim();
+        const value = (await field.inputValue()).trim();
+        if (value) record[label] = value;
+      }
+      out.push(record);
+    }
+    return out;
+  }
+
+  /** Removes every EXISTING claim record (via its own "Remove Record"
+   *  button) — use alone to restore a prefix to "no claim history" after a
+   *  TS that set specific claims finishes, or before adding fresh ones so
+   *  a leftover record from a previous run never bleeds into this one. */
+  async removeAllClaimRecords(): Promise<number> {
+    let removed = 0;
+    while ((await this.claimRecordBlocks().count()) > 0) {
+      await this.claimRecordBlocks().first().locator('button:has-text("Remove Record")').click();
+      removed++;
+    }
+    step(`Removed ${removed} existing claim record(s)`);
+    return removed;
+  }
+
+  /** Adds one claim record per entry in `records`, each a label→value map
+   *  resolved against that NEW record's own fields (e.g. `{"Mileage":
+   *  "9999", "Severity": "MEDIUM"}`) — a `select` field (Possible Total
+   *  Loss/Possible BER) uses `.selectOption()`, same tag-detection as
+   *  `applyChanges()`. Does not touch any record already on the page —
+   *  call `removeAllClaimRecords()` first if a clean slate is needed. */
+  async addClaimRecords(records: Record<string, string>[]): Promise<void> {
+    const addBtn = this.page.getByRole('button', { name: '+ Add Claim Record' });
+    for (const record of records) {
+      const before = await this.claimRecordBlocks().count();
+      await addBtn.click();
+      const block = this.claimRecordBlocks().nth(before);
+      await block.waitFor({ state: 'visible', timeout: 5000 });
+
+      for (const [label, value] of Object.entries(record)) {
+        if (value === '') continue; // blank means "leave this claim field empty", not "type nothing"
+        const field = block
+          .locator(`.form-group:has(label:text-is("${label}")) input, .form-group:has(label:text-is("${label}")) select`)
+          .first();
+        if ((await field.count()) === 0) {
+          throw new Error(`No claim-record field labelled "${label}" — check the spelling against jomcheck-report-edit.html.`);
+        }
+        const tag = await field.evaluate(el => el.tagName.toLowerCase());
+        if (tag === 'select') await field.selectOption(value);
+        else await field.fill(value);
+        step(`Claim ${before + 1} — ${label}: "${value}"`);
+      }
+    }
+  }
+}

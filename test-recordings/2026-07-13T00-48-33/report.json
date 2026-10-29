@@ -1,0 +1,182 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Reschedule on the day of the initial appointment to a future date"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-13T00-48-33",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T00-48-33\\report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "reschedule-handling.spec.ts",
+      "file": "reschedule-handling.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Reschedule & Handling",
+          "file": "reschedule-handling.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "reschedule-handling.spec.ts",
+              "line": 11,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Reschedule on the day of the initial appointment to a future date",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 12513,
+                          "error": {
+                            "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n",
+                            "stack": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n    at SlotPickerComponent.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:84:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:29:7",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                              "column": 29,
+                              "line": 84
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\SlotPickerComponent.ts:84\n\n\u001b[0m \u001b[90m 82 |\u001b[39m     \u001b[36mconst\u001b[39m cell \u001b[33m=\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mgetDayCell(dateStr)\u001b[33m;\u001b[39m\n \u001b[90m 83 |\u001b[39m     \u001b[36mawait\u001b[39m cell\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 84 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mmodalOverlay\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m\"visible\"\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m5000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 85 |\u001b[39m   }\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m   \u001b[90m/** Get booked count for a slot from the modal capacity text (e.g. \"2 of 3 booked\") */\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                                "column": 29,
+                                "line": 84
+                              },
+                              "message": "TimeoutError: locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#si-ovl') to be visible\u001b[22m\n\u001b[2m    14 × locator resolved to hidden <div id=\"si-ovl\" class=\"si-ovl\">…</div>\u001b[22m\n\n\n   at ..\\pages\\SlotPickerComponent.ts:84\n\n  82 |     const cell = this.getDayCell(dateStr);\n  83 |     await cell.click();\n> 84 |     await this.modalOverlay.waitFor({ state: \"visible\", timeout: 5000 });\n     |                             ^\n  85 |   }\n  86 |\n  87 |   /** Get booked count for a slot from the modal capacity text (e.g. \"2 of 3 booked\") */\n    at SlotPickerComponent.openSlotModal (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts:84:29)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:29:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T00:48:36.297Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T00-48-33\\reschedule-handling-Resche-d130d-ppointment-to-a-future-date-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T00-48-33\\reschedule-handling-Resche-d130d-ppointment-to-a-future-date-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T00-48-33\\reschedule-handling-Resche-d130d-ppointment-to-a-future-date-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T00-48-33\\reschedule-handling-Resche-d130d-ppointment-to-a-future-date-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\SlotPickerComponent.ts",
+                            "column": 29,
+                            "line": 84
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-434160537dff32fc2a59",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 21,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-13T00:48:35.222Z",
+    "duration": 15583.136,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

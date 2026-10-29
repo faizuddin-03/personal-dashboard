@@ -1,0 +1,128 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/estm/transaction/... step 3 "Seller Authentication" (normal URL, no bypass)
+Environment: staging.eauto.my/uat1, UCD login MUHAMMAD FAIZUDDIN BIN BIDI, company FAIZUDDIN AUTO TEST 2 (030312-A, account 1109702)
+Captured: 2026-10-19, pasted into chat by Faizuddin (EAINT-12412 TS12). Vehicle HX0001EX, transaction id e7401f61-2d53-43fe-b539-40895e60795a.
+State: widget in "Scanning IC... Please insert IC into the Dermalog Biometric Device if you haven't"
+(#mykadReadingContainer d-block, #mykad-control-container d-none, #readMyKadButton disabled + d-none),
+#ucd-consent DISABLED, #jpjReceiptEmail readonly prefilled.
+Trimmed: identical to estm-step1-buyer-mykad-auth.html except for what is shown here — the header steps
+(1-2 completed, 3 active), the UCD consent block (filled), the widget state above, and the api block below.
+The hidden buyer-consent block (now editable: #vehicleRegNo, #email, #buyer-consent enabled) is summarised.
+Facts this capture establishes:
+  1. Seller rep card = the login user: "Saya, MUHAMMAD FAIZUDDIN BIN BIDI (No. Kad Pengenalan: 030217141005),
+     sebagai wakil sah FAIZUDDIN AUTO TEST 2 (030312-A)".
+  2. The buyer in this run was the same identity: "kepada pembeli, MUHAMMAD FAIZUDDIN BIN BIDI
+     (No. Kad Pengenalan: 030217141005)" — one card works for both auth points.
+  3. Next on step 3 continues to /view/ucd/estm/transaction/estm-enq.do (step 4 JPJ Check).
+-->
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();">
+<div id="container" class="ucd-container">
+<div id="estm-header">
+    <div class="title1">New e-SERAHAN Transaction:</div>
+    <div class="title2" style="margin:10px 0 20px 0;">Selling to Individual</div>
+    <!-- step header: 1 txn-header-completed, 2 txn-header-completed, 3 header-element-active/txn-header-active, 4-6 txn-header -->
+    <div class="estm-header-title">Seller Authentication</div>
+</div>
+
+<div id="buyer-consent-container" class="hidden">
+    <!-- same text as step 1; here #vehicleRegNo and #email have no readonly attribute and
+         #buyer-consent is not disabled; all values empty in the markup. -->
+    <input maxlength="20" type="text" style="width:200px" name="vehicleRegNo" id="vehicleRegNo" class="is-required" title="Vehicle No" value="">
+    <input type="text" style="width:200px" name="email" id="email" class="is-required" title="Email" value="">
+    <input type="checkbox" value="1" id="buyer-consent">
+</div>
+
+<div id="ucd-consent-container" class="">
+    <strong>PERAKUAN eSTM / eVOC / eLKM - UCD BERDAFTAR</strong>
+    <br><br>
+    <table>
+        <tbody><tr>
+            <td style="vertical-align: top;">
+                <ul>
+                    <li>
+                        Saya, MUHAMMAD FAIZUDDIN BIN BIDI (No. Kad Pengenalan: 030217141005), sebagai wakil sah FAIZUDDIN AUTO TEST 2 (030312-A) dengan ini mengisytiharkan bahawa:
+                    </li>
+                    <br>
+                    <ul style="padding-left: 15px; list-style: none;">
+                        <li>-  Kenderaan dengan nombor pendaftaran HX0001EX adalah milik sah FAIZUDDIN AUTO TEST 2 dan tiada sebarang bebanan, cagaran atau tuntutan yang tertunggak terhadap kenderaan tersebut;</li>
+                        <br>
+                        <li>-  Kami bersetuju untuk meneruskan urusniaga eSTM ini bagi kenderaan dengan nombor pendaftaran HX0001EX kepada pembeli,
+                                 MUHAMMAD FAIZUDDIN BIN BIDI (No. Kad Pengenalan: 030217141005);</li>
+                        <br>
+                        <li>-  Alamat emel yang dimasukkan (jika memilih opsyen YA) bagi tujuan pengeluaran Sijil Pemilikan Kenderaan secara digital (eVOC) adalah tepat dan sah;</li>
+                        <br>
+                        <li>-  Semua maklumat yang diberikan oleh Pemunya Baharu dan yang kami kemukakan dalam urusniaga ini adalah benar, tepat dan lengkap mengikut pengetahuan kami; dan</li>
+                        <br>
+                        <li>-  Saya memahami dan bersetuju untuk mematuhi semua keperluan undang-undang dan peraturan yang berkaitan dengan Pertukaran Hak Milik kenderaan ini.</li>
+                    </ul>
+                    <br>
+                    <li>Saya faham dan sedar bahawa memberikan maklumat ... (statutory text unchanged, shortened here)</li>
+                    <br>
+                    <li>Saya mengakui bahawa saya telah membacakan dan menerangkan secara jelas kepada Pemunya Baharu semua terma dan syarat yang berkaitan dengan urusniaga eSTM, pengeluaran eVOC dan pembaharuan eLKM bagi kenderaan bernombor pendaftaran HX0001EX dan MUHAMMAD FAIZUDDIN BIN BIDI telah memahami sepenuhnya semua terma dan syarat tersebut serta telah mendapatkan persetujuan untuk meneruskan urusniaga Tukar Hak Milik melalui eSTM bagi kenderaan nombor pendaftaran HX0001EX.</li>
+                    <br>
+                    <li>
+                        Saya juga bersetuju, resit pembayaran fi JPJ akan disalurkan kepada emel
+                        <div class="input-container">
+                            <input type="text" style="width:337px" name="jpjReceiptEmail" id="jpjReceiptEmail" class="is-required" title="Email" value="faizbidi03@gmail.com" readonly="">
+                            <div class="is-invalid is-invalid-jpjReceiptEmail validation-message" style="display:none; width:337px"></div>
+                        </div>
+                        bagi FAIZUDDIN AUTO TEST 2 dan sesalinan akan dihantar kepada emel receipt@eauto.my;
+                    </li>
+                    <br>
+                    <li>Saya dengan ini bersetuju bahawa semua rekod, tandatangan dan komunikasi ... kenderaan bernombor pendaftaran HX0001EX ... (unchanged, shortened here)</li>
+                </ul>
+                <br>
+            </td>
+           </tr>
+        <tr id="agree-container">
+            <td style="display:flex;">
+                <input type="checkbox" value="1" id="ucd-consent" disabled="">
+                Saya faham dan bersetuju dengan terma dan syarat perakuan ini dan dengan ini memasukkan Kad Pengenalan saya serta cap ibu jari sebagai pengesahan.
+            </td>
+        </tr>
+    </tbody></table>
+</div>
+
+<div id="applet-container">
+    <div class="websocket-container" style="display: block;">
+<script>
+    $(document).ready(function() {
+        var api = {
+            sendMykadDataPath: "/uat1/ucd/estm/transaction/wskad.do",
+            continueNextPagePath: "/uat1/view/ucd/estm/transaction/estm-enq.do",
+            additionalInfo: "category=1&id=e7401f61-2d53-43fe-b539-40895e60795a",
+            cancelPath: "/uat1/view/ucd/estm/transaction/cancel.do",
+            errorImageResourcePath: "/uat1/common/mykad-websocket/error.png",
+            successImageResourcePath: "/uat1/common/mykad-websocket/success.png",
+            defaultPhotoSrcPath: "/uat1/images/kad_photo_placeholder.svg"
+        };
+        /* rest of the script identical to step 1 (see estm-step1-buyer-mykad-auth.html header) */
+    });
+</script>
+<div class="mykad-container-wrapper">
+    <!-- identical widget markup to step 1, except: -->
+    <div id="mykadReadingContainer" class="mykad-container justify-content-center text-center align-items-center d-block">
+        <div class="mykad-reading-box">
+            <div class="mykad-reading-text d-flex justify-content-center text-center align-items-center"><img src="/uat1/images/loading_small.gif"><span class="ml-2">Scanning IC...</span></div>
+            <div class="mb-3"><span id="mykadErrorDialogMessage" class="mykad-reading-msg">Please insert IC into the Dermalog Biometric Device if you haven't</span></div>
+            <button type="button" class="mykad-btn btn-blue-outline" id="cancelReadButton">Cancel</button>
+        </div>
+    </div>
+    <div id="mykadContentContainer" class="col h-full d-none"><!-- same as step 1 --><div id="messageBox" class="message-paragraph text-center text-black"></div></div>
+    <div id="mykad-control-container" class="mykad-row mt-3 d-none">
+        <div class="text-center button-block">
+            <button type="button" class="mykad-btn btn-blue-outline" id="cancelButton">Cancel</button>
+            <button type="button" class="d-none btn-blue-outline" id="resetButton">Reset</button>
+            <button type="button" id="readMyKadButton" class="mykad-btn btn-blue d-none" disabled="">Scan IC</button>
+            <button type="button" class="mykad-btn btn-blue d-none" id="continueButton">Next</button>
+        </div>
+    </div>
+</div>
+    </div>
+    <div class="applet-container" style="display: none;">
+        <!-- applet params: step=3, type=estm, params "category=1&id=e7401f61-2d53-43fe-b539-40895e60795a" -->
+    </div>
+</div>
+<div id="estm-consent" class="estm-consent hidden"></div>
+</div>
+</body>

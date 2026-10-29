@@ -1,0 +1,95 @@
+/* Medieval style (cozy cottage): notes. Scoped to [data-style="medieval"]; see base.css and COTTAGE.md.
+   Pages: /notes (data-page="notes"), components/notes, components/RichTextEditor.tsx. */
+
+/* Let the hearth glow on <main> show through the page wrapper */
+[data-style="medieval"][data-page="notes"] main .flex.flex-col.bg-slate-950.overflow-x-hidden { background-color: transparent; }
+
+/* Gallery title: "Notes" is not in a <header>, so give it the page-title look
+   and the jam icon; the blue notebook tile beside it is decorative. */
+[data-style="medieval"][data-page="notes"] main .w-10.h-10.rounded-xl:has(+ .min-w-0 > h1) { display: none; }
+[data-style="medieval"][data-page="notes"] main .min-w-0 > h1.text-lg {
+  font-family: var(--font-pixel-title), var(--font-pixel-body), sans-serif;
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--m-honey);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .55);
+}
+[data-style="medieval"][data-page="notes"] main .min-w-0 > h1.text-lg::before {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin: -8px 10px -8px 0;
+  vertical-align: middle;
+  background: var(--m-page-ico) center / 32px 32px no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  [data-style="medieval"][data-page="notes"] main .min-w-0 > h1.text-lg { font-size: 1.3rem; }
+  [data-style="medieval"][data-page="notes"] main .min-w-0 > h1.text-lg::before {
+    width: 16px; height: 16px; margin: 0 6px 0 0; background-size: 16px 16px;
+  }
+}
+
+/* Note cards (CSS module .card): 2px edge in the note's own colour, hard shadow */
+[data-style="medieval"][data-page="notes"] [class*="__card"] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-hex) 22%, var(--m-crust)), var(--m-px-shadow);
+}
+[data-style="medieval"][data-page="notes"] [class*="__card"]:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-hex) 55%, var(--m-crust)), 4px 4px 0 rgba(0, 0, 0, .45);
+}
+
+/* Empty states: the lucide tile becomes the 4x jam jar */
+[data-style="medieval"][data-page="notes"] main :is(.text-center, .items-center) > :is(.w-14, .w-16).rounded-2xl:has(> svg) {
+  width: 64px;
+  height: 64px;
+  border: 0;
+  box-shadow: none;
+  background: var(--m-page-ico) center / 64px 64px no-repeat;
+  image-rendering: pixelated;
+}
+[data-style="medieval"][data-page="notes"] main :is(.text-center, .items-center) > :is(.w-14, .w-16).rounded-2xl > svg { display: none; }
+
+/* Selected note in the list column: honey bar on the left */
+[data-style="medieval"][data-page="notes"] main .bg-blue-600\/10 {
+  background-color: rgba(232, 176, 74, .10);
+  box-shadow: inset 3px 0 0 var(--m-honey);
+}
+
+/* Rich text editor (also used in the todo modal) */
+[data-style="medieval"] .ProseMirror blockquote {
+  border-left: 3px solid var(--m-crust-hi);
+  color: var(--m-oat);
+}
+[data-style="medieval"] .ProseMirror code {
+  background: var(--m-well);
+  border-color: var(--m-crust);
+  border-radius: 0;
+  color: var(--m-honey);
+}
+[data-style="medieval"] .ProseMirror pre {
+  background: var(--m-well);
+  border: 1px solid var(--m-crust);
+  border-radius: 0;
+  box-shadow: inset 0 0 0 1px var(--m-crust);
+}
+[data-style="medieval"] .ProseMirror pre code { color: var(--m-cream); background: none; }
+[data-style="medieval"] .ProseMirror hr { border-top: 2px solid var(--m-crust); }
+[data-style="medieval"] .ProseMirror img,
+[data-style="medieval"] .ProseMirror img.ProseMirror-selectednode { border-radius: 0; }
+[data-style="medieval"] .ProseMirror img.ProseMirror-selectednode { outline-color: var(--m-honey); }
+[data-style="medieval"] .ProseMirror :is(td, th) { border-color: var(--m-crust); }
+[data-style="medieval"] .ProseMirror th { background: var(--m-oak); color: var(--m-wheat); }
+[data-style="medieval"] .ProseMirror .selectedCell::after { background: rgba(232, 176, 74, .14); }
+[data-style="medieval"] .ProseMirror .column-resize-handle { background: var(--m-honey); }
+[data-style="medieval"] .ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] {
+  border-color: var(--m-crust-hi);
+  border-radius: 0;
+}
+[data-style="medieval"] .ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"]:checked {
+  background: var(--m-ember);
+  border-color: var(--m-ember-edge);
+}

@@ -1,0 +1,4425 @@
+<!--
+  URL: https://staging.eauto.my/obs/preOnb/form
+  Environment: staging (staging.eauto.my, /obs onboarding)
+  Captured: 2026-10-21T06:20:28.504Z by Claude via Chrome (document.documentElement.outerHTML)
+  State: Type of Business = Business Trading (Sabah) selected, other fields empty
+  Trimmed: nothing
+-->
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Application Form</title>
+    <link rel="icon" type="image/x-icon" href="/obs/favicon.ico">
+    <meta name="_csrf" content="Al5Bdtw5YQQ9cV9BArydLFZuwAp8U7KOYlFEwS1wJ_OZNCbPMjglEOoJWTAQQzpzZJGpFTJZ7TMYatejAGlx90wRFMOhURb4">
+    <meta name="_csrf_header" content="X-CSRF-TOKEN">
+
+    <!-- Import Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+    <script src="/obs/js/jquery-2.2.4.min.js" type="text/javascript"></script>
+    <link href="/obs/jquery-ui-1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <script src="/obs/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    <script src="/obs/js/validators.js" type="text/javascript"></script>
+    <script src="/obs/js/url-utils.js"></script>
+
+    
+        <style>
+            .site-header {
+                background-color: #FFFFFF;
+                position: relative;
+            }
+            
+            .header-container {
+                max-width: 100%;
+                padding: 2px 24px;
+                display: flex;
+                justify-content: flex-start;
+                gap: 20px;
+                align-items: center;
+            }
+            
+            .logo-img {
+                height: 40px;
+                width: auto;
+            }
+            
+            .header-title {
+                font-size: 16px;
+                font-weight: bold;
+                color: #0B4C5F;
+            }
+
+            .header-line-img {
+                width: 100%;
+                height: 10px;
+                display:block;
+            }
+
+            .header-action-btn {
+                position: absolute;
+                right: 24px;
+                bottom: 0px;
+                padding: 8px 20px;
+                background-color: #FFFFFF;
+                color: #0B4C5F;
+                border: 1px solid #0B4C5F;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                white-space: nowrap;
+                z-index: 10;
+            }
+
+            .header-action-btn:hover {
+                background-color: #0B4C5F;
+                color: #FFFFFF;
+            }
+
+            .header-action-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        </style>
+    
+    
+        <style id="claude-agent-animation-styles">
+      @keyframes claude-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      #claude-agent-glow-border-inner {
+        animation: claude-pulse 2s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #claude-agent-glow-border-inner {
+          animation: none;
+        }
+      }
+    </style></head><body><header class="site-header">
+            <img src="/obs/images/header.jpg" alt="header-line" class="header-line-img">
+            <div class="header-container">
+                <div class="logo">
+                    <img src="/obs/images/eauto-logo-tm.png" alt="Logo" class="logo-img">
+                </div>
+                <div class="header-title">Dealer Application</div>
+            </div>
+        </header>
+    
+
+    
+        
+        <style>
+            #overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            
+            .loading-box {
+                background-color: white;
+                border-radius: 1px;
+                border: solid 2px #A6A6A6;
+                padding: 20px 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                width: 400px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            
+            .spinner {
+                border: 3px solid #E0E0E0; /* Light grey */
+                border-top: 3px solid #00BCD4; /* Cyan/turquoise color */
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                animation: spin 0.8s linear infinite;
+                flex-shrink: 0; /* Prevent spinner from shrinking */
+            }
+
+            
+            .loading-text {
+                font-size: 20px;
+                font-weight: bold;
+                color: #000000;
+                font-family: Inter, sans-serif;
+                white-space: nowrap;
+            }
+
+            #payment-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            
+            .payment-loading-box {
+                background-color: white;
+                border-radius: 1px;
+                border: solid 2px #A6A6A6;
+                padding: 20px 30px;
+                display: block;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                width: 400px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .overlay-description {
+                font-size: 13px;
+                color: #FF4000;
+                font-family: Inter, sans-serif;
+                white-space: wrap;
+                text-align:center;
+            }
+
+            
+            .payment-spinner {
+                border: 3px solid #E0E0E0; /* Light grey */
+                border-top: 3px solid #00BCD4; /* Cyan/turquoise color */
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                animation: spin 0.8s linear infinite;
+                flex-shrink: 0; /* Prevent spinner from shrinking */
+            }
+
+            .spinner-and-text {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 10px auto;
+                gap: 10px;
+            }
+
+            
+            .payment-loading-text {
+                font-size: 20px;
+                font-weight: bold;
+                color: #000000;
+                font-family: Inter, sans-serif;
+                white-space: nowrap;
+                line-height: 100%;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    
+    
+        
+        <script>
+            $(document).ready(function() {
+                // Show overlay when any AJAX request starts
+                $(document).ajaxStart(function () {
+                    $("#overlay").fadeIn();
+                });
+
+                // Hide overlay when all AJAX requests complete
+                $(document).ajaxStop(function () {
+                    $("#overlay").fadeOut();
+                });
+            });
+
+            function showPaymentOverlay(){
+                $("#payment-overlay").fadeIn();
+            }
+
+            function hidePaymentOverlay(){
+                $("#payment-overlay").fadeOut();
+            }
+        </script>
+    
+    <div>
+    <div id="overlay" style="display: none;">
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <div class="loading-text">Working...</div>
+        </div>
+    </div>
+    <div id="payment-overlay" style="display: none;">
+        <div class="payment-loading-box">
+            <div class="spinner-and-text">
+                <div class="payment-spinner"></div>
+                <div class="payment-loading-text">Connecting...</div>
+            </div>
+            <div class="overlay-description">Please do not close the browser while connecting to payment gateway</div>
+        </div>
+    </div>
+</div>
+
+    
+        
+        <style>
+
+            .ui-widget-overlay { 
+                background: #000000; 
+                opacity: .50;
+                filter: Alpha(Opacity=50); 
+            }
+
+            .ui-widget-content {
+                border: none !important;
+            }
+
+            .ui-dialog .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_222222_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-state-hover .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_454545_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-widget-header {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border:none !important;
+                color: #FFF;
+            }
+
+            .ui-dialog {
+                border-radius: 4px !important;
+                padding: 0 !important;
+                min-width:350px !important;
+            }
+
+            .ui-dialog * {
+                font-family: "Inter", sans-serif !important;
+                font-size: 14px !important;
+            }
+
+            .ui-dialog-title {
+                font-size: 16px !important;
+            }
+
+            .ui-dialog-titlebar {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border-bottom-left-radius: 0px !important;
+                border-bottom-right-radius: 0px !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog-titlebar-close {
+                display: flex;
+                align-items: center;
+                height: 38px;
+                background:#0B4C5F !important;
+                border: none !important;
+            }
+            
+            .ui-dialog-content {
+                font-size: 14px !important;
+                min-height: 23px !important;
+                padding: 13px !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog.notis-dialog {
+                top:20% !important;
+            }
+
+            .ui-dialog-buttonpane {
+                margin:0 !important;
+                min-height:54px;
+                padding: 0 15px 10px 6px !important;
+                display: flex;
+                align-items:center;
+                justify-content:flex-end;
+            }
+
+            .ui-button-text {
+                padding: 0px !important;
+            }
+            
+            #custom-dialog {
+                display: none;
+            }
+
+            #custom-dialog-content {
+                white-space: pre-line;
+            }
+
+            .custom-dialog-primary-btn {
+                border-radius:4px;
+                color: #FFF !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#0B4C5F !important;
+                background: #0B4C5F !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-primary-btn:hover{
+                background-color: #146478 !important;
+            }
+            .custom-dialog-primary-btn:active {
+                background-color: #0a4353 !important;
+                box-shadow: 0 0 2px #0A4335;
+            } 
+
+            .custom-dialog-secondary-btn {
+                border-radius:4px;
+                color: #0B4C5F !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#FFF !important;
+                background:unset !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-secondary-btn:hover {
+                background-color: #F7F7F7 !important;
+            }
+            .custom-dialog-secondary-btn:active {
+                background-color: #EFEFEF !important;
+                box-shadow: 0 0 2px #0A4335;
+            }
+        </style>
+    
+    
+
+        
+        <script>
+
+
+                /**
+                 * @typedef {Object} CustomDialogConfig
+                 * @property {string} title - The dialog's title
+                 * @property {string} content - The dialog's content
+                 * @property {string} height - The dialog's height
+                 * @property {string} width - The dialog's width
+                 * @property {string} confirmBtnName - confirm button name
+                 * @property {function} onConfirmHandler - function to invoke on confirm
+                 * @property {function} onConfirmCloseHandler - function to invoke on close after clicking confirm
+                 * @property {string} redirectPathOnConfirm - Path to redirect on confirm
+                 * @property {boolean} shouldHideConfirmBtn - hide confirm button
+                 * @property {string} cancelBtnName - cancel button name
+                 * @property {function} onCancelHandler - function to invoke on cancel
+                 * @property {function} onCancelCloseHandler - function to invoke on close after clicking cancel
+                 * @property {string} redirectPathOnCancel - Path to redirect on cancel
+                 * @property {boolean} shouldHideCancelBtn - hide cancel button
+                 * @property {function} onCloseButtonCloseHandler - function to invoke on close when not confirmed and not cancelled
+                 * @property {boolean} shouldReloadPageOnClose - Whether the dialog will reload page on close
+                 * @property {string} redirectPathOnClose - Path to redirect on close; only redirect when shouldReloadPageOnClose is false
+                 * @property {boolean} shouldHideCloseBtn - hide close button
+                 */
+
+                /**
+                 * Process a person's information
+                 * @param {CustomDialogConfig} config
+                 */
+                function openCustomDialog(config) {
+
+
+                    const handleOnClose = function(config) {
+                        if(config.shouldReloadPageOnClose) {
+                            location.reload();
+                        } else if (config.redirectPathOnClose != null){
+                            window.location.href = config.redirectPathOnClose;
+                        }
+                    }
+
+                    const confirmBtnName = config.confirmBtnName != null ? config.confirmBtnName : "OK";
+                    const cancelBtnName = config.cancelBtnName != null ? config.cancelBtnName : "Cancel";
+
+                    var isConfirmed  = false;
+                    var isCancelled = false;
+
+                    $("#custom-dialog-content").text(config.content)
+                    $("#custom-dialog").dialog({
+                        title: config.title,
+                        modal: true,
+                        width: config.width ? config.width : "480",
+                        height: config.height ? config.height: "auto",
+                        resizable: false,
+                        draggable: false,
+                        position: { my: "center", at: "center", of: window },
+                        closeOnEscape: false,
+                        close: function() {
+                            $(this).dialog("destroy");
+                            if(isConfirmed && config.onConfirmCloseHandler) {
+                                config.onConfirmCloseHandler();
+                            } else if(isCancelled && config.onCancelCloseHandler) {
+                                config.onCancelCloseHandler();
+                            } else if (!isConfirmed && !isCancelled && config.onCloseButtonCloseHandler) {
+                                config.onCloseButtonCloseHandler();
+                            }
+                            handleOnClose(config);
+                        },
+                        buttons:
+                        {
+                            [cancelBtnName]: function() {
+                                isCancelled = true;
+                                if(config.onCancelHandler) {
+                                    config.onCancelHandler();
+                                }
+
+                                if(config.redirectPathOnCancel) {
+                                    window.location.href = config.redirectPathOnCancel;
+                                }
+
+                                $(this).dialog("close");
+                            },
+                            [confirmBtnName]: function() {
+                                isConfirmed = true;
+                                if(config.onConfirmHandler) {
+                                    config.onConfirmHandler();
+                                }
+
+                                if(config.redirectPathOnConfirm) {
+                                    window.location.href = config.redirectPathOnConfirm;
+                                }
+
+                                $(this).dialog("close");
+                            }
+                        },
+                        open: function() {
+                            $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).addClass('custom-dialog-primary-btn');
+                            $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).addClass('custom-dialog-secondary-btn');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+
+                            if(config.shouldHideConfirmBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).hide();
+                            if(config.shouldHideCancelBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).hide();
+                            if(config.shouldHideCloseBtn == true) $(".ui-dialog-titlebar-close").hide();
+                        }
+                    }).dialog("open");
+                }
+        </script>
+    
+    <div>
+    <div id="custom-dialog">
+        <span id="custom-dialog-content"></span>
+    </div>
+</div>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background-color: #ffffff;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .outer-container {
+            background: #F7F9FA;
+            margin: 0 20px 10px 20px;
+            border-radius: 10px;
+            padding: 20px 0;
+            min-height: calc(100vh - 10px - 70px);
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 40px;
+            background: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin: 0 60px;
+        }
+
+        .step:first-child {
+            margin-right: 30px;
+        }
+
+        .step:last-child {
+            margin-left: 30px;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: calc(100% + 20px);
+            width: 19px;
+            height: 1px;
+            background: #ECECEC;
+            top: 16px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #ECECEC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #808080;
+            position: relative;
+            z-index: 1;
+            margin-right: 10px;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .step.active .step-number {
+            background: #0B4C5F;
+            border-color: #0B4C5F;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: white;
+            border-color: #0B4C5F;
+            color: #0B4C5F;
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: #A6A6A6;
+            font-weight: bold;
+        }
+
+        .step.active .step-label {
+            color: #0B4C5F;
+        }
+
+        /* Form Content */
+        .form-content {
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2E64FE;
+            margin-bottom: 6px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: flex;
+            margin-bottom: 16px;
+            gap: 20px;
+        }
+
+        .label-column {
+            width: 220px;
+            flex-shrink: 0;
+        }
+
+        .input-column {
+            flex: 1;
+            margin-top:3px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            display: block;
+            padding-top: 8px;
+        }
+
+        label .required {
+            color: #d32f2f;
+            margin-left: 2px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #0B4C5F;
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .error-message {
+            font-size: 13px;
+            color: #d32f2f;
+            margin-top: 4px;
+        }
+
+        input[type='text'].invalid-marker,
+        input[type='email'].invalid-marker,
+        input[type='tel'].invalid-marker,
+        textarea.invalid-marker,
+        select.invalid-marker {
+            background-color: #FFF5F2;
+        }
+
+        /* EAINT-5972: BRN input-group — label sits as a prepended addon inside the box */
+        .brn-input-group {
+            display: flex;
+            align-items: stretch;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .brn-input-group:focus-within {
+            border-color: #0B4C5F;
+        }
+
+        .brn-input-group .brn-addon {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            padding-right: 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .brn-input-group input[type="text"] {
+            flex: 1;
+            border: none;
+            border-radius: 0;
+            background-color: transparent;
+        }
+
+        .brn-input-group input[type="text"]:focus {
+            border-color: transparent;
+        }
+
+        /* the required/error peach fill spans the whole group (addon + input),
+           toggled by JS via .is-invalid so the label cell never looks split off */
+        .brn-input-group.is-invalid {
+            background-color: #FFF5F2;
+        }
+
+        .brn-input-group input[type='text'].invalid-marker {
+            background-color: transparent;
+        }
+
+        .help-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 120px;
+            margin: 0;
+        }
+
+        .btn-cancel {
+            background: white;
+            color: #0B4C5F;
+            border: 1px solid #0B4C5F;
+            min-width: 160px;
+        }
+
+        .btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-next {
+            background: #0B4C5F;
+            color: white;
+            min-width: 160px;
+        }
+
+        .btn-next:hover {
+            background: #094150;
+        }
+
+        .btn-next:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-browse {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 1px solid #0B4C5F;
+            background: white;
+            color: #0B4C5F;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 125px;
+        }
+
+        .btn-browse:hover {
+            background: #f5f5f5;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 24px 0;
+        }
+
+        .confirmation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .confirmation-table td {
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        .confirmation-table td:first-child {
+            font-weight: 500;
+            background-color: #f5f5f5;
+            width: 250px;
+        }
+
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .payment-table td {
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        .payment-table td:first-child {
+            font-weight: 500;
+            width: 250px;
+        }
+
+        .payment-table td.right {
+            text-align: right;
+        }
+
+        .payment-table td.left {
+            border-right-color: #FFFFFF;
+        }
+
+        .address-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            font-family: Inter, sans-serif;
+            resize: none;
+            height: 80px;
+        }
+
+        .address-textarea:focus {
+            outline: none;
+            border-color: #0B4C5F;
+        }
+
+        .address-textarea::placeholder {
+            color: #999;
+        }
+
+        .dropdown-list {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            font-family: Inter, sans-serif;
+            background-color: white;
+            cursor: pointer;
+            color: #000000;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6' viewBox='0 0 12 8'><path fill='none' stroke='%23666' stroke-width='2' d='M1 1l5 5 5-5'/></svg>");
+            background-position: right 10px center;
+            background-repeat: no-repeat;
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .dropdown-list:focus {
+            outline: none;
+            border-color: #0B4C5F;
+        }
+
+        .dropdown-list.invalid-marker {
+            background-color: #FFF5F2;
+        }
+
+        .further-assistance-text p{
+            font-size: 14px;
+            padding: 20px 0;
+            align-items: center;
+            color: #696969;
+            margin: 0 auto;
+            width:fit-content;
+        }
+
+        .business-trading {
+            display: none;
+        }
+
+        .confirm-business-reminder {
+            background-color:#FFF5F2;
+            color: #E72C19;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            font-size:14px;
+        }
+
+        .confirm-business-reminder p {
+            margin-top: 6px;
+        }
+
+        .plus-icon {
+            display: inline-block;
+            position: relative;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: #0000FF;
+            margin-right: 6px;
+            vertical-align: -2px;
+        }
+
+        .plus-icon::before,
+        .plus-icon::after {
+            content: '';
+            position: absolute;
+            background-color: #ffffff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .plus-icon::before {
+            width: 1px;
+            height: 6px;
+        }
+
+        .plus-icon::after {
+            width: 6px;
+            height: 1px;
+        }
+
+        .trading-license-row {
+            display: none;
+        }
+
+        #review-trading-license  {
+            border: solid #CCCCCC 1px;
+            border-radius: 4px;
+        }
+
+        .file-upload-row {
+            padding: 10px 12px;
+            border-bottom: 1px solid #CCCCCC;
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .file-upload-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .file-upload-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-upload-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .addmore-attachment {
+            padding: 12px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: solid #CCCCCC 1px;
+        }
+
+        .delete-row {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            display: none;
+            padding-left: 16px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            border-left: 1px solid #d0d0d0;
+        }
+
+        .delete-row:hover {
+            color: #FF4000;
+            text-decoration: underline;
+            text-decoration-color: #FF4000;
+        }
+
+        .delete-attachment {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            display: none;
+            padding-left: 16px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            margin-left: 0;
+            border-left: 1px solid #d0d0d0;
+        }
+
+        .delete-attachment:hover {
+            color: #FF4000;
+            text-decoration: underline;
+            text-decoration-color: #FF4000;
+        }
+
+        .file-link {
+            color: #0B4C5F;
+            text-decoration: underline;
+            font-size: 14px;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: none;
+            vertical-align: middle;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: #666;
+            display: inline;
+            min-width: 110px;
+        }
+
+        .file-error {
+            color: #d32f2f;
+            font-size: 13px;
+            display: none;
+            flex-basis: 100%;
+            margin-left: 10px;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .payment-method-card {
+            flex: 1;
+            border: 1px solid #CCCCCC;
+            border-radius: 4px;
+            padding: 16px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #F7F9FA;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .payment-method-card:hover {
+            border-color: #0B4C5F;
+            box-shadow: 0 2px 8px rgba(11, 76, 95, 0.1);
+        }
+
+        .payment-method-card.selected {
+            border-color: #0B4C5F;
+            background-color: #FFFFFF;
+        }
+
+        .payment-method-card input[type="radio"] {
+            display: none;
+        }
+
+        .payment-method-icon {
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .payment-method-icon img {
+            max-height: 30px;
+        }
+
+        .payment-method-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Bank Selection Styles */
+        .bank-selection {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .bank-selection.show {
+            display: block;
+        }
+
+        .bank-selection-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .bank-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .bank-grid .bank-card:nth-child(3n+1):last-child {
+            grid-column: 2;
+        }
+
+        .bank-card {
+            border: 1px solid #CCCCCC;
+            border-radius: 4px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #F7F9FA;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+        }
+
+        .bank-card:hover {
+            border-color: #0B4C5F;
+            box-shadow: 0 2px 8px rgba(11, 76, 95, 0.1);
+        }
+
+        .bank-card.selected {
+            border-color: #0B4C5F;
+            background-color: #ffffff;
+        }
+
+        .bank-card input[type="radio"] {
+            display: none;
+        }
+
+        .bank-logo {
+            max-width: 100%;
+            max-height: 40px;
+            object-fit: contain;
+        }
+
+        .unsuccessful-payment-container {
+            background-color:#FFF5F2;
+            color: #E72C19;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            font-size:14px;
+            display: none;
+        }
+
+        .unsuccessful-payment-container p {
+            margin-top: 6px;
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .label-column {
+                width: 100%;
+            }
+
+            label {
+                padding-top: 0;
+            }
+
+            .form-content {
+                padding: 24px;
+            }
+
+            .progress-steps {
+                padding: 20px;
+            }
+
+            .step-label {
+                font-size: 12px;
+            }
+
+            .payment-methods {
+                flex-direction: column;
+            }
+            
+            .bank-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+
+
+    <div class="outer-container">
+        <div class="container">
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Pre-Application Form</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Business Info Review</div>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <form id="preOnboardForm" class="form-content" novalidate="">
+                <!-- Business Information Section -->
+                <div class="confirm-business-reminder business-trading">
+                    <strong>
+                        Please confirm your business information before proceeding.
+                    </strong>
+                    <p>Please check that the business registration number is correct and confirm your business type</p>
+                </div>
+                <div id="business-info-section">
+                <div class="section-title">Business Information</div>
+                <div class="section-subtitle"></div>
+
+                <div class="form-row">
+                    <div class="label-column">
+                        <label for="businessName"><strong>
+                            Business Registered Name: <span class="required">*</span>
+                        </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <input type="text" id="businessName" name="businessName" placeholder="Business Registered Name" class="business-name-validation" maxlength="100">
+                        <div class="error-message" id="businessName-error" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- EAINT-5972 item 1: Type of Business radio (5 options, 2 groups) -->
+                <div class="form-row">
+                    <div class="label-column">
+                        <label><strong>
+                            Type of Business: <span class="required">*</span>
+                        </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <div id="businessType">
+                            <div style="display: flex; align-items: flex-start; margin-bottom: 6px;">
+                                <span style="min-width: 180px; font-weight: bold; font-size: 14px;">SSM Registered:</span>
+                                <div>
+                                    <label style="display: inline-flex; align-items: center; margin-right: 20px; font-weight: bold; padding: 0;">
+                                        <input type="radio" name="businessType" value="SDN_BHD" style="margin-right: 8px;"> Sdn Bhd / Bhd
+                                    </label>
+                                    <label style="display: inline-flex; align-items: center; margin-right: 20px; font-weight: bold; padding: 0;">
+                                        <input type="radio" name="businessType" value="SOLE_PROPRIETORSHIP_PARTNERSHIP" style="margin-right: 8px;"> Sole Proprietorship / Partnership
+                                    </label>
+                                    <label style="display: inline-flex; align-items: center; font-weight: bold; padding: 0;">
+                                        <input type="radio" name="businessType" value="LLP" style="margin-right: 8px;"> LLP
+                                    </label>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start;">
+                                <span style="min-width: 180px; font-weight: bold; font-size: 14px;">Non-SSM Registered:</span>
+                                <div>
+                                    <label style="display: inline-flex; align-items: center; margin-right: 20px; font-weight: bold; padding: 0;">
+                                        <input type="radio" name="businessType" value="TRADING_SABAH" style="margin-right: 8px;"> Business Trading (Sabah)
+                                    </label>
+                                    <label style="display: inline-flex; align-items: center; font-weight: bold; padding: 0;">
+                                        <input type="radio" name="businessType" value="TRADING_SARAWAK" style="margin-right: 8px;"> Business Trading (Sarawak)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="error-message" id="businessType-error" style="display: none; margin-top: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- EAINT-5972 item 2: SSM type -> Old BRN + New BRN are both optional, but at least one must be provided -->
+                <div class="form-row ssm-brn-group" id="ssm-brn-group" style="display: none;">
+                    <div class="label-column">
+                        <label><strong>
+                            Business Registration No (BRN): <span class="required">*</span>
+                        </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <div class="brn-input-group" style="margin-bottom: 8px;">
+                            <label for="oldBrn" class="brn-addon">Old BRN:</label>
+                            <input type="text" id="oldBrn" name="oldBrn" placeholder="Old Business Registration No (BRN)" class="registration-validation" maxlength="35">
+                        </div>
+                        <div class="brn-input-group">
+                            <label for="newBrn" class="brn-addon">New BRN :</label>
+                            <input type="text" id="newBrn" name="newBrn" placeholder="New Business Registration No (BRN)" class="registration-validation" maxlength="35">
+                        </div>
+                        <div class="error-message" id="newBrn-error" style="display: none; margin-top: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- EAINT-5972 item 2: Non-SSM type -> Business Trading License No (required) -->
+                <div class="form-row nonssm-license-group" id="nonssm-license-group" style="display: flex;">
+                    <div class="label-column">
+                        <label for="businessLicenseNo"><strong>
+                            Business Trading License No: <span class="required">*</span>
+                        </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <input type="text" id="businessLicenseNo" name="businessLicenseNo" placeholder="Business Trading License No" class="registration-validation" maxlength="35">
+                        <div class="error-message" id="businessLicenseNo-error" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- EAINT-5972 item 2: Trading License multi-file upload (Non-SSM only) -->
+                <div class="form-row trading-license-row" id="nonssm-trading-license-row" style="display: flex;">
+                    <div class="label-column">
+                        <label><strong>Trading License: <span class="required">*</span></strong><br>
+                        <span style="font-size: 12px; color: #808080; font-weight: normal;">Upload in pdf, png, jpg, jpeg (max 5MB)</span>
+                        </label>
+                    </div>
+                    <div id="review-trading-license" class="input-column">
+                        <div id="file-uploads-container">
+                            <div class="file-upload-row">
+                                <div class="file-upload-left">
+                                    <button type="button" class="btn-browse" onclick="triggerFileInput(this)">Browse File...</button>
+                                    <a href="#" class="file-link" onclick="openFile(event, this)"></a>
+                                    <span class="file-name">No file selected.</span>
+                                    <input type="file" class="file-input" accept="application/pdf,image/png,image/jpeg,image/jpg" style="display: none;" onchange="handleFileSelect(this)">
+                                    <span class="file-error"></span>
+                                </div>
+                                <div class="file-upload-right">
+                                    <a href="#" class="delete-attachment" onclick="deleteAttachment(event, this)">Delete Attachment</a>
+                                    <a href="#" class="delete-row" onclick="deleteRow(event, this)">Delete Row</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="addmore-attachment">
+                            <a href="#" style="font-weight:bold; text-decoration: none; font-size: 14px;" onclick="addMoreFile(event)"><span class="plus-icon"></span> Add More File</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="label-column">
+                        <label for="tin"><strong>
+                            Tax Identification No (TIN):
+                            </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <input type="text" id="tin" name="tin" placeholder="Tax Identification No (TIN)" class="tin-validation" maxlength="15">
+                        <div class="error-message" id="tin-error" style="display: none;"></div>
+                        <div class="help-text">Please ensure you entered the correct TIN for e-invoice</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="label-column">
+                        <label for="showroomAddress"><strong>
+                            Showroom Address: <span class="required">*</span>
+                        </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <textarea id="showroomAddress" class="address-textarea remove-non-ascii" name="showroomAddress" placeholder="Showroom Address" maxlength="300"></textarea>
+                        <div class="error-message" id="showroomAddress-error" style="display: none;"></div>
+                        <input type="text" id="showroomPostcode" name="showroomPostcode" placeholder="Showroom Postcode" class="postcode-validation" maxlength="5" style="margin-top: 12px;">
+                        <div class="error-message" id="showroomPostcode-error" style="display: none;"></div>
+
+                        <!-- State and City dropdowns side by side -->
+                        <div style="display: flex; gap: 12px; margin-top: 12px;">
+                            <div style="flex: 1;">
+                                <select id="showroomState" name="showroomState" class="dropdown-list" onchange="loadCity()"><option value="">Select State</option><option value="12">SABAH</option></select>
+                                <div class="error-message" id="showroomState-error" style="display: none;"></div>
+                            </div>
+                            <div style="flex: 1;">
+                                <select id="showroomCity" name="showroomCity" class="dropdown-list"><option value="">Select City</option><option value="1200">SABAH</option><option value="1201">BEAUFORT</option><option value="1202">BELURAN</option><option value="1203">BONGAWAN</option><option value="1204">INANAM</option><option value="1205">KENINGAU</option><option value="1206">KOTA BELUD</option><option value="1207">KOTA KINABALU</option><option value="1208">KOTA MARUDU</option><option value="1209">KUALA PENYU</option><option value="1210">KUDAT</option><option value="1211">KUNAK</option><option value="1212">LAHAD DATU</option><option value="1213">LAMAG</option><option value="1214">LIKAS</option><option value="1215">MEMBAKUT</option><option value="1216">MENUMBUK</option><option value="1217">NABAWAN</option><option value="1218">PAPAR</option><option value="1219">PENAMPANG</option><option value="1220">RANAU</option><option value="1221">SANDAKAN</option><option value="1222">SEMPORNA</option><option value="1223">SIPITANG</option><option value="1224">TAMBUNAN</option><option value="1225">TAMPARULI</option><option value="1226">TANJUNG ARU</option><option value="1227">TAWAU</option><option value="1228">TENOM</option><option value="1229">TUARAN</option><option value="1230">KOTA KINABATANGAN</option><option value="1231">PAMOL</option><option value="1232">PITAS</option></select>
+                                <div class="error-message" id="showroomCity-error" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+
+                <!-- Admin In Charge Section -->
+                <div class="section-title">Admin In Charge</div>
+                <div class="section-subtitle">This refers to the representative assisting with this application</div>
+
+                <div class="form-row">
+                    <div class="label-column">
+                        <label for="adminName"><strong>
+                            Name: <span class="required">*</span>
+                            </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <input type="text" id="adminName" name="adminName" placeholder="Name" class="admin-name-validation" maxlength="100">
+                        <div class="error-message" id="adminName-error" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="label-column">
+                        <label for="mobileNo"><strong>
+                            Mobile No: <span class="required">*</span>
+                        </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <input type="tel" id="mobileNo" name="mobileNo" placeholder="Mobile No" class="mobile-no-validation" maxlength="11">
+                        <div class="error-message" id="mobileNo-error" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="label-column">
+                        <label for="adminEmail"><strong>
+                            Email Address: <span class="required">*</span>
+                            </strong></label>
+                    </div>
+                    <div class="input-column">
+                        <input type="text" id="adminEmail" name="adminEmail" placeholder="Email Address" class="email-validation" maxlength="100">
+                        <div class="error-message" id="adminEmail-error" style="display: none;"></div>
+                        <div class="help-text">We will email an invoice and/or e-invoice once payment is successful.</div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+                </div>
+                <!-- End Business Info Section -->
+
+                <!-- Business Info Review Section (Step 2) -->
+                <div id="business-review-section" style="display: none;">
+                    <div class="section-title">Business Information Review</div>
+                    <div class="section-subtitle">Please confirm your business information before proceeding</div>
+
+                    <table class="confirmation-table" style="margin-top: 20px;">
+                        <tbody><tr>
+                            <td style="width: 250px;"><strong>Business Registered Name:</strong></td>
+                            <td id="review-businessName"></td>
+                        </tr>
+                        <tr>
+                            <td id="review-registration-label"><strong>Business Registration No:</strong></td>
+                            <td id="review-registrationNo"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tax Identification No (TIN):</strong></td>
+                            <td id="review-tin">
+                                <span id="review-tin-value"></span>
+                                <div style="font-size: 12px; color: #666; margin-top: 4px;">Please ensure you entered the correct TIN for e-invoice</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Business Type:</strong></td>
+                            <td id="review-businessType"></td>
+                        </tr>
+                    </tbody></table>
+                </div>
+                <!-- End Business Review Section -->
+
+                <!-- Step 2.5: Make Payment Section -->
+                <div id="payment-section" style="display: none; margin-top: 30px;">
+                    <div>
+                        <div class="section-title">Payment Summary</div>
+                        <table class="payment-table" style="margin-top: 20px; border-collapse: collapse;">
+                            <tbody><tr>
+                                <td class="left">Pre-Application Fee:</td>
+                                <td class="right">RM 100.00</td>
+                            </tr>
+                            <tr>
+                                <td class="left">Service Tax 8% :</td>
+                                <td class="right">RM 8.00</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="background-color: #f5f5f5;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                        <div>
+                                            <span style="font-size: 14px; font-weight: 700; color: #333;">Total Amount (Inclusive of 8% Service Tax) :</span>
+                                        </div>
+                                        <p style="font-size: 16px; font-weight: 700; color: #FF4000; margin: 0;">RM 108.00</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                        <!-- Checkbox for Terms -->
+                        <div style="margin-top: 20px;">
+                            <div style="display: flex; align-items: flex-start;">
+                                <input type="checkbox" id="agreeTerms" style="width: 16px; height: 16px; margin-right: 10px; margin-top: 2px; cursor: pointer; flex-shrink: 0;">
+                                <div style="font-size: 13px; color: #000000; cursor: pointer; font-weight: 700; line-height: 1.5; margin: 3px 0; gap: 6px;">
+                                    By proceeding with this submission, I hereby:
+                                    <ol style="margin: 8px 0 0 0; padding-left: 20px; list-style-type: lower-alpha; font-family:Inter, sans-serif">
+                                        <li style="margin-bottom: 8px;">
+                                            represent and warrant that all information provided in this Pre-Application is true, accurate, complete, and not misleading in any respect;
+                                        </li>
+                                        <li style="margin-bottom: 8px;">
+                                            acknowledge and agree that the Pre-Application Fee is strictly non-refundable, irrespective of the outcome of the application or any subsequent withdrawal or termination;
+                                        </li>
+                                        <li style="margin-bottom: 8px;">
+                                            understand and accept that the submission of this Pre-Application does not guarantee approval or successful application, which shall remain subject to further review and confirmation by eAuto; and
+                                        </li>
+                                        <li style="margin-bottom: 8px;">
+                                            confirm that I have read, understood, and agree to be bound by the <a onclick="window.open(originalUrl + '/public/terms-condition.jsp', 'TermsConditions','width=900,height=600, scrollbars=yes, resizable=yes');" style="color: #0000FF; text-decoration: underline;">Terms &amp; Conditions</a> and <a onclick="window.open(originalUrl + '/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');" style="color: #0000FF; text-decoration: underline;">Privacy Notice</a>, which collectively govern the submission and processing of this application
+                                        </li>
+                                    </ol>
+                                    As required by the authorities, please confirm that you are a licensed used car/motorcycle dealer. Before making payment, kindly ensure that your company's nature of business and/or business information includes "Wholesale and retail of used motor vehicles" (MSIC 45102). This will help prevent your Pre-Application from being rejected.
+                                </div>
+                            </div>
+                            <div class="error-message" id="terms-error" style="display: none; margin-top: 4px; margin-left: 28px;"></div>
+                        </div>                    </div>
+                    <div class="unsuccessful-payment-container">
+                        <strong>
+                            Unsuccessful Payment
+                        </strong>
+                        <p>Something went wrong and your payment didn’t go through. Please choose a payment method and retry.</p>
+                    </div>
+                    <!--PAYMENT METHOD SECTION -->
+                    <div id="payment-method-section" style="display: none;">
+                    <div class="section-title" style="margin-top: 30px;">Payment Method</div>
+                    <div class="section-subtitle">Select your preferred payment method to proceed</div>
+
+                    <!-- Payment Method Cards (Hardcoded) -->
+                    <div class="payment-methods">
+                        <!-- Credit or Debit Card -->
+                        <label class="payment-method-card" for="payment-credit">
+                            <input type="radio" name="paymentMethod" id="payment-credit" value="credit" data-category="CREDIT_DEBIT">
+                            <div class="payment-method-icon">
+                                <img src="/obs/images/payment/visa-mastercard.png" alt="Credit or Debit Card" style="max-height: 30px;">
+                            </div>
+                            <div class="payment-method-label">Credit or Debit Card</div>
+                        </label>
+
+                        <!-- Online Banking (Business) -->
+                        
+
+                        <!-- Online Banking (Personal) -->
+                        <label class="payment-method-card" for="payment-fpx-personal">
+                            <input type="radio" name="paymentMethod" id="payment-fpx-personal" value="fpx_personal" data-category="FPX_B2C">
+                            <div class="payment-method-icon">
+                                <img src="/obs/images/payment/online-banking-icon.png" alt="Online Banking (Personal)" style="max-height: 30px;">
+                            </div>
+                            <div class="payment-method-label">Online Banking (Personal)</div>
+                        </label>
+                    </div>
+                    <div class="error-message" id="paymentMethod-error" style="display: none; margin-top: 8px;"></div>
+
+                    <!-- FPX B2B Banks Section (Business) - Hidden by default -->
+                    
+
+                    <!-- FPX B2C Banks Section (Personal) - Hidden by default -->
+                    <div class="bank-selection" id="bank-selection-personal">
+                        <div class="bank-selection-title">Please select bank:</div>
+                        <div class="bank-grid">
+                            
+                                <label class="bank-card" for="bank-b2c-1">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-1" value="fpx_mb2u" data-bank-id="1" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-m2u.png" alt="Online Banking - Maybank" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-2">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-2" value="fpx_cimbclicks" data-bank-id="2" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-cimb.png" alt="Online Banking - CIMB Bank" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-3">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-3" value="fpx_amb" data-bank-id="3" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-amb.png" alt="Online Banking - Ambank" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-4">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-4" value="fpx_pbb" data-bank-id="4" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-pbe.png" alt="Online Banking - Public Bank" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-5">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-5" value="fpx_rhb" data-bank-id="5" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-rhb.png" alt="Online Banking - RHB Bank" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-6">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-6" value="fpx_hlb" data-bank-id="6" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-hlb.png" alt="Online Banking - Hong Leong Bank" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-7">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-7" value="fpx_hsbc" data-bank-id="7" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-hsbc.png" alt="Online Banking - HSBC Bank" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-8">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-8" value="fpx_abb" data-bank-id="8" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-affin.png" alt="Online Banking - Affin Bank" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-9">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-9" value="fpx_bkrm" data-bank-id="9" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-br.png" alt="Online Banking - Bank Rakyat" class="bank-logo">
+                                </label>
+                            
+                                <label class="bank-card" for="bank-b2c-10">
+                                    <input type="radio" name="bankSelection" id="bank-b2c-10" value="fpx_bsn" data-bank-id="10" data-category="FPX_B2C">
+                                    <img src="/obs/images/payment/payment-bsn.png" alt="Online Banking - Bank Simpanan Nasional" class="bank-logo">
+                                </label>
+                            
+                        </div>
+                        <div class="error-message" id="bankSelection-b2c-error" style="display: none; margin-top: 8px;"></div>
+                    </div>
+                    </div>
+                    <!-- End Payment Method Section -->
+
+                    <div class="divider"></div>
+                </div>
+                <!-- End Payment Section -->
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" id="cancelBackBtn" class="btn btn-cancel" onclick="sessionStorage.clear(); window.location.href = originalUrl">Cancel</button>
+                    <button type="submit" id="nextSubmitBtn" class="btn btn-next">Next</button>
+                </div>
+            </form>
+        </div>
+        <div class="further-assistance-text">
+            <p>For further assistance, please contact out Customer Service 03-27798899.</p>
+        </div>
+    </div>
+    <script>
+        /*<![CDATA[*/
+        var clearSession = false;
+        var creditDebitMethods = [{"id":11,"paymentChannel":"creditAN","category":"CREDIT_DEBIT","description":"Credit\/Debit","icon":"\/images\/payment\/payment-credit.jpg","status":"ENABLED"}];
+        var originalUrl = "https:\/\/staging.eauto.my\/sit2";
+        var preApplicationFee = 100.0;
+        var sstPercent = 8.0;
+        var taxAmount = 8.0;
+        var totalAmount = 108.0;
+        var existingApplication = null;
+        var isLocked = null;
+        /*]]>*/
+    </script>
+
+    <script>
+        // Clear session storage FIRST before any other code runs
+        if(clearSession === true){
+            sessionStorage.clear();
+            // Set flag to prevent loadFormData from restoring old data
+            sessionStorage.setItem('justCleared', 'true');
+
+            // Remove the 'clear' parameter from URL to prevent re-clearing on refresh
+            if (window.location.search.includes('clear=true')) {
+                // Use history.replaceState to change URL without reload
+                var cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        }
+
+        // Check if redirected due to session lock
+        (function() {
+            if (isLocked === true) {
+                // Show popup after page loads
+                $(document).ready(function() {
+                    showLockDeniedPopup();
+                });
+            }
+        })();
+
+        // Store original state options for filtering
+        var originalStateOptions = [];
+        
+        // Constants
+        var STEP_SECTIONS = {
+            STEP_1: 'business-info-section',
+            STEP_2: 'business-review-section',
+            STEP_2_5: 'payment-section'
+        };
+
+        var step1_fields = ['businessName', 'adminName', 'mobileNo', 'adminEmail', 'showroomAddress', 'showroomPostcode', 'showroomState', 'showroomCity'];
+
+        var ERROR_IDS = {
+            STATE: 'state-error',
+            TRADING_LICENSE: 'tradingLicense-error',
+            TERMS: 'terms-error'
+        };
+
+        // Lock denied message constant
+        var LOCK_DENIED_MESSAGE = 'Another user has updated or is currently accessing this Pre-Application. You are not allowed to edit it.';
+
+        var filesToRemove = [];
+
+        var FILE_UPLOAD_ROW_TEMPLATE = `
+            <div class="file-upload-left">
+                <button type="button" class="btn-browse" onclick="triggerFileInput(this)">Browse File...</button>
+                <a href="#" class="file-link" onclick="openFile(event, this)"></a>
+                <span class="file-name">No file selected.</span>
+                <input type="file" class="file-input" accept="application/pdf,image/png,image/jpeg,image/jpg" style="display: none;" onchange="handleFileSelect(this)">
+                <span class="file-error"></span>
+            </div>
+            <div class="file-upload-right">
+                <a href="#" class="delete-attachment" onclick="deleteAttachment(event, this)">Delete Attachment</a>
+                <a href="#" class="delete-row" onclick="deleteRow(event, this)">Delete Row</a>
+            </div>
+        `;
+
+        var SSM_TYPES = ['SDN_BHD', 'SOLE_PROPRIETORSHIP_PARTNERSHIP', 'LLP'];
+
+
+        var formData = null;
+        // EAINT-5972 item 3 (SRD v1.0) — TIN/BRN mismatch is a NON-BLOCKING warning.
+        // Soft gate: the first Next on a given (TIN|BRN) shows the warning and stays so the UCD
+        // reads it; clicking Next again with the same values proceeds. Auto-resets when TIN/BRN change.
+        var tinMismatchAckKey = null;
+
+        var PaymentStatus = {
+            NEW: /*NEW*/ 'NEW',
+            PENDING: /*PENDING*/ 'PENDING',
+            PAID: /*PAID*/ 'PAID',
+            FAILED: /*FAILED*/ 'FAILED'
+        };
+
+        $(function () {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            $(document).ajaxSend(function (e, xhr) {
+                xhr.setRequestHeader(header, token);
+            });
+        });
+
+        // Listen for payment callback messages from popup window
+        window.addEventListener('message', function(event) {
+            // Verify origin for security
+            if (event.origin !== window.location.origin) {
+                console.warn('Message from unauthorized origin:', event.origin);
+                return;
+            }
+
+            // Check if it's a payment result message
+            if (event.data && event.data.type === 'PAYMENT_RESULT') {
+                hidePaymentOverlay();
+
+                // Redirect based on payment status
+                if (event.data.status === 'PAID') {
+                    // Store necessary data in session if needed
+                    if (event.data.paymentUuid) {
+                        sessionStorage.setItem('paymentUuid', event.data.paymentUuid);
+                    }
+                    if (event.data.preOnboardingNo) {
+                        sessionStorage.setItem('preOnboardingNo', event.data.preOnboardingNo);
+                    }
+                    sessionStorage.setItem('paymentCompleted', 'true');
+
+                    var appUuid = sessionStorage.getItem('appUuid');
+                    window.location.replace('/obs/preOnb/summary/' + appUuid);
+                } else if (event.data.status === 'FAILED') {
+                    // Show error message
+                    $('.unsuccessful-payment-container').css('display', 'block');
+                    $('.unsuccessful-payment-container')[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    // Re-enable form
+                    var agreeTerms = document.getElementById('agreeTerms');
+                    if (agreeTerms) {
+                        agreeTerms.disabled = false;
+                    }
+                }
+            }
+        });
+
+        // Save current step to sessionStorage
+        function saveCurrentStep(stepNumber) {
+            sessionStorage.setItem('currentStep', stepNumber);
+        }
+
+        // Update URL with appUuid when entering step 2
+        function updateUrlWithUuid(appUuid) {
+            if (appUuid) {
+                var newUrl = '/obs/preOnb/form/' + appUuid;
+                window.history.replaceState({ appUuid: appUuid }, '', newUrl);
+                console.log('URL updated to:', newUrl);
+            }
+        }
+
+        // Save form data to sessionStorage
+        function saveFormData() {
+            var formDataToSave = {
+                businessName: document.getElementById('businessName').value,
+                businessType: getSelectedBusinessType(),
+                oldBrn: document.getElementById('oldBrn').value,
+                newBrn: document.getElementById('newBrn').value,
+                businessLicenseNo: document.getElementById('businessLicenseNo').value,
+                tin: document.getElementById('tin').value,
+                adminName: document.getElementById('adminName').value,
+                mobileNo: document.getElementById('mobileNo').value,
+                adminEmail: document.getElementById('adminEmail').value,
+                showroomAddress: document.getElementById('showroomAddress').value,
+                showroomPostcode: document.getElementById('showroomPostcode').value,
+                showroomState: document.getElementById('showroomState').value,
+                showroomCity: document.getElementById('showroomCity').value,
+                isBusinessTrading: sessionStorage.getItem('registered') === 'false'
+            };
+
+            sessionStorage.setItem('formData', JSON.stringify(formDataToSave));
+        }
+
+        // Load form data from sessionStorage
+        async function loadFormData() {
+            // Skip loading if session was just cleared
+            if (sessionStorage.getItem('justCleared') === 'true') {
+                sessionStorage.removeItem('justCleared');
+                return;
+            }
+
+            var savedFormData = sessionStorage.getItem('formData');
+            if (!savedFormData) {
+                sessionStorage.clear();
+                return;
+            }
+
+            try {
+                var formDataObj = JSON.parse(savedFormData);
+
+                // Restore form values
+                if (formDataObj.businessName) document.getElementById('businessName').value = formDataObj.businessName;
+                if (formDataObj.oldBrn) document.getElementById('oldBrn').value = formDataObj.oldBrn;
+                if (formDataObj.newBrn) document.getElementById('newBrn').value = formDataObj.newBrn;
+                if (formDataObj.businessLicenseNo) document.getElementById('businessLicenseNo').value = formDataObj.businessLicenseNo;
+                if (formDataObj.tin) document.getElementById('tin').value = formDataObj.tin;
+                if (formDataObj.adminName) document.getElementById('adminName').value = formDataObj.adminName;
+                if (formDataObj.mobileNo) document.getElementById('mobileNo').value = formDataObj.mobileNo;
+                if (formDataObj.adminEmail) document.getElementById('adminEmail').value = formDataObj.adminEmail;
+                if (formDataObj.showroomAddress) document.getElementById('showroomAddress').value = formDataObj.showroomAddress;
+                if (formDataObj.showroomPostcode) document.getElementById('showroomPostcode').value = formDataObj.showroomPostcode;
+
+                // Handle state and city restoration with async/await
+                if (formDataObj.showroomState) {
+                    document.getElementById('showroomState').value = formDataObj.showroomState;
+
+                    // Wait for cities to load
+                    await loadCity();
+
+                    // Then restore city
+                    if (formDataObj.showroomCity) {
+                        document.getElementById('showroomCity').value = formDataObj.showroomCity;
+                    }
+                }
+
+                // Restore Type-of-Business selection and the radio-driven conditional fields
+                if (formDataObj.businessType) {
+                    var typeRadio = document.querySelector('input[name="businessType"][value="' + formDataObj.businessType + '"]');
+                    if (typeRadio) {
+                        typeRadio.checked = true;
+                    }
+                    applyBusinessTypeUI(formDataObj.businessType);
+
+                    // Load uploaded trading-license files for Non-SSM types
+                    if (!isSsmType(formDataObj.businessType)) {
+                        var appUuid = sessionStorage.getItem('appUuid');
+                        if (appUuid) {
+                            await loadUploadedTradingLicenseFiles(appUuid);
+                        }
+                    }
+                } else {
+                    applyBusinessTypeUI('');
+                }
+
+                // Set formData global variable
+                formData = formDataObj;
+            } catch (e) {
+                console.error('Error loading form data:', e);
+            }
+        }
+
+        // Load step from sessionStorage on page load
+        async function loadSavedStep() {
+            var savedStep = sessionStorage.getItem('currentStep');
+            if (savedStep) {
+                var stepNumber = parseInt(savedStep);
+                // Load form data first and wait for it to complete
+                await loadFormData();
+
+                // Navigate to saved step WITHOUT saving form data
+                navigateToStep(stepNumber, false);
+            } else {
+                // Even if no saved step, try to load form data
+                await loadFormData();
+            }
+        }
+
+        // Load form data from server-side existingApplication (for URL with UUID)
+        async function loadFromExistingApplication() {
+            if (!existingApplication) {
+                console.log('No existing application data from server');
+                return false;
+            }
+            
+            console.log('Loading form data from server:', existingApplication);
+            
+            // Store data in sessionStorage
+            sessionStorage.setItem('appUuid', existingApplication.uuid);
+            if (existingApplication.preOnboardingNo) {
+                sessionStorage.setItem('preOnboardingNo', existingApplication.preOnboardingNo);
+            }
+            if (existingApplication.businessRegistrationNo) {
+                sessionStorage.setItem('refNo', existingApplication.businessRegistrationNo);
+            }
+            if (existingApplication.businessNewRegistrationNo) {
+                sessionStorage.setItem('newRefNo', existingApplication.businessNewRegistrationNo);
+            }
+            if (existingApplication.ssmTransactionId) {
+                sessionStorage.setItem('ssmTransactionId', existingApplication.ssmTransactionId);
+            }
+            
+            // Set registered status based on business type
+            if (existingApplication.isBusinessTrading) {
+                sessionStorage.setItem('registered', 'false');
+            } else if (existingApplication.businessType) {
+                sessionStorage.setItem('registered', 'true');
+            }
+            
+            // Store business type label
+            if (existingApplication.businessType) {
+                var businessTypeLabels = {
+                    'TRADING_SABAH': 'Business Trading (Sabah)',
+                    'TRADING_SARAWAK': 'Business Trading (Sarawak)',
+                    'SOLE_PROPRIETORSHIP_PARTNERSHIP': 'Sole Proprietorship / Partnership',
+                    'SDN_BHD': 'Sdn Bhd / Bhd',
+                    'LLP': 'LLP'
+                };
+                sessionStorage.setItem('businessTypeLabel', businessTypeLabels[existingApplication.businessType] || existingApplication.businessType);
+                var ssmItemType = {
+                    'SOLE_PROPRIETORSHIP_PARTNERSHIP': 'B',
+                    'SDN_BHD': 'C'
+                };
+                sessionStorage.setItem('ssmItemType', ssmItemType[existingApplication.businessType] || '');
+            }
+            
+            // Populate form fields
+            if (existingApplication.businessName) {
+                document.getElementById('businessName').value = existingApplication.businessName;
+            }
+            if (existingApplication.businessLicenseNo) {
+                document.getElementById('businessLicenseNo').value = existingApplication.businessLicenseNo;
+            }
+            if (existingApplication.businessRegistrationNo) {
+                document.getElementById('oldBrn').value = existingApplication.businessRegistrationNo;
+            }
+            if (existingApplication.businessNewRegistrationNo) {
+                document.getElementById('newBrn').value = existingApplication.businessNewRegistrationNo;
+            }
+            // Pre-select the Type-of-Business radio and reveal the matching conditional fields
+            if (existingApplication.businessType) {
+                var typeRadio = document.querySelector('input[name="businessType"][value="' + existingApplication.businessType + '"]');
+                if (typeRadio) typeRadio.checked = true;
+                applyBusinessTypeUI(existingApplication.businessType);
+            }
+            if (existingApplication.tinNo) {
+                document.getElementById('tin').value = existingApplication.tinNo;
+            }
+            if (existingApplication.adminName) {
+                document.getElementById('adminName').value = existingApplication.adminName;
+            }
+            if (existingApplication.adminMobile) {
+                document.getElementById('mobileNo').value = existingApplication.adminMobile;
+            }
+            if (existingApplication.adminEmail) {
+                document.getElementById('adminEmail').value = existingApplication.adminEmail;
+            }
+            if (existingApplication.showroomAddress) {
+                document.getElementById('showroomAddress').value = existingApplication.showroomAddress;
+            }
+            if (existingApplication.showroomPostcode) {
+                document.getElementById('showroomPostcode').value = existingApplication.showroomPostcode;
+            }
+            
+            // Handle state and city
+            if (existingApplication.showroomState) {
+                document.getElementById('showroomState').value = existingApplication.showroomState;
+                await loadCity();
+                
+                if (existingApplication.showroomCity) {
+                    document.getElementById('showroomCity').value = existingApplication.showroomCity;
+                }
+            }
+            
+            // Handle Non-SSM (Business Trading) type: filter the state dropdown + load files
+            if (existingApplication.isBusinessTrading) {
+                if (existingApplication.businessType === 'TRADING_SABAH') {
+                    filterStateDropdownSync('SABAH');
+                } else if (existingApplication.businessType === 'TRADING_SARAWAK') {
+                    filterStateDropdownSync('SARAWAK');
+                }
+
+                // Now load cities and set city value AFTER filtering
+                if (existingApplication.showroomState) {
+                    await loadCity();
+                    if (existingApplication.showroomCity) {
+                        document.getElementById('showroomCity').value = existingApplication.showroomCity;
+                    }
+                }
+
+                // Load uploaded files
+                await loadUploadedTradingLicenseFiles(existingApplication.uuid);
+            }
+
+            // Save to sessionStorage for consistency
+            saveFormData();
+
+            // Set global formData variable so payment processing can access it
+            var existingType = getSelectedBusinessType();
+            formData = {
+                businessName: document.getElementById('businessName').value,
+                businessType: existingType,
+                oldBrn: document.getElementById('oldBrn').value,
+                newBrn: document.getElementById('newBrn').value,
+                businessLicenseNo: document.getElementById('businessLicenseNo').value,
+                tinNo: document.getElementById('tin').value,
+                adminName: document.getElementById('adminName').value,
+                mobileNo: document.getElementById('mobileNo').value,
+                adminEmail: document.getElementById('adminEmail').value,
+                showroomAddress: document.getElementById('showroomAddress').value,
+                showroomPostcode: document.getElementById('showroomPostcode').value,
+                showroomState: document.getElementById('showroomState').value,
+                showroomCity: document.getElementById('showroomCity').value,
+                isBusinessTrading: sessionStorage.getItem('registered') === 'false'
+            };
+
+            console.log('Form populated from server-side existing application');
+            return true;
+        }
+
+        // Capture the full state list before the start-up code below runs: loading a saved
+        // application rebuilds the State dropdown from originalStateOptions (restoreStateDropdown /
+        // filterStateDropdown*), which used to be filled only in $(document).ready - too late.
+        // The select is already in the DOM here, and the function declaration is hoisted.
+        storeOriginalStateOptions();
+
+        (async function() {
+            // Check if URL has a different appUuid than sessionStorage
+            // If so, clear sessionStorage to load the new application
+            var shouldLoadFromServer = false;
+            var storedAppUuid = sessionStorage.getItem('appUuid');
+            
+            if (existingApplication && existingApplication.uuid) {
+                // URL has an appUuid - check if it matches sessionStorage
+                if (storedAppUuid && storedAppUuid !== existingApplication.uuid) {
+                    console.log('Different application UUID detected. Clearing sessionStorage.');
+                    console.log('Stored:', storedAppUuid, 'URL:', existingApplication.uuid);
+                    sessionStorage.clear();
+                    shouldLoadFromServer = true;
+                }
+            } else if (!existingApplication && storedAppUuid) {
+                // URL has no appUuid (new form) but sessionStorage has old data
+                // Check if we're on the base form URL (not a UUID URL)
+                var currentPath = window.location.pathname;
+                var isBaseFormUrl = currentPath.endsWith('/form') || currentPath.endsWith('/form/');
+                if (isBaseFormUrl) {
+                    console.log('Base form URL with existing sessionStorage data. Clearing for new form.');
+                    sessionStorage.clear();
+                }
+            }
+
+            // Check if payment was completed AFTER potential sessionStorage.clear()
+            // Re-read from sessionStorage to get the correct value after clearing
+            var paymentCompleted = sessionStorage.getItem('paymentCompleted');
+            
+            // Additional check: if shouldLoadFromServer is true, paymentCompleted should be ignored
+            // because we just cleared sessionStorage for a different application
+            if (shouldLoadFromServer) {
+                paymentCompleted = null;
+            }
+            
+            // Also verify that the stored appUuid matches current context for payment completion
+            var currentAppUuid = existingApplication ? existingApplication.uuid : sessionStorage.getItem('appUuid');
+            var storedPaymentAppUuid = sessionStorage.getItem('appUuid');
+            
+            // Only honor paymentCompleted if we're on the same application
+            if (paymentCompleted === 'true' && currentAppUuid && storedPaymentAppUuid && currentAppUuid === storedPaymentAppUuid) {
+                // Wait for form data to load completely
+                await loadFormData();
+                navigateToStep(2, false);  // Don't save when loading from payment
+                // Disable all form elements in step 2
+                disableStep2Form();
+            } else if (existingApplication) {
+                // Load from server-side data (URL with UUID)
+                console.log('Loading from server-side existingApplication');
+                await loadFromExistingApplication();
+
+                refreshLock();
+
+                if(sessionStorage.getItem('currentStep')==='2'){
+                    navigateToStep(2, false);
+                }
+            } else {
+                // Load saved step if exists
+                await loadSavedStep();
+            }
+
+            // Fiuu can return to this tab instead of the popup; payment-callback.html then has no
+            // opener to postMessage, so it stores the result here and redirects back to the form.
+            // The reload loses the ticked T&C and the open payment methods, so restore both.
+            var paymentResult = sessionStorage.getItem('paymentResult');
+            if (paymentResult) {
+                sessionStorage.removeItem('paymentResult');
+                try {
+                    var result = JSON.parse(paymentResult);
+                    if (result.status === PaymentStatus.FAILED) {
+                        navigateToStep(2, false);
+                        var agreeTerms = document.getElementById('agreeTerms');
+                        if (agreeTerms) {
+                            agreeTerms.disabled = false;
+                            agreeTerms.checked = true;
+                        }
+                        document.getElementById('payment-method-section').style.display = 'block';
+                        $('.unsuccessful-payment-container').css('display', 'block');
+                        $('.unsuccessful-payment-container')[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                } catch (e) {
+                    console.warn('Unable to read stored payment result:', e);
+                }
+            }
+        })();
+
+        $(document).on('input', '.business-name-validation', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^a-zA-Z0-9,&'<>().\-\s]/g, "").toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('input', '.registration-validation', function () {
+            // EAINT-5972: BRN / license inputs only sanitize; the conditional fields are now
+            // driven by the explicit Type-of-Business radio (applyBusinessTypeUI), not by typing here.
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^a-zA-Z0-9-/]/g, "").toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('input', '.tin-validation', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^a-zA-Z0-9]/g, "").toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('input', '.postcode-validation', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^0-9]/g, "").toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('input', '.admin-name-validation', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^a-zA-Z'/.,:\- ]/g, "").toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('blur', '.admin-name-validation', function () {
+            $(this).val($(this).val().trim());
+        });
+
+        $(document).on('input', '.mobile-no-validation', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^0-9]/g, "").toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('input', '.email-validation', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^a-zA-Z0-9.@_-]/g, "").toLowerCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('input', '.remove-non-ascii', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().replace(/[^\x00-\x7F]/g, ''));
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('input', '#showroomAddress', function () {
+            var caretPosition = getCaretPosition(this);
+            $(this).val($(this).val().toUpperCase());
+            setCaretPosition(this, caretPosition);
+        });
+
+        $(document).on('blur', '#showroomAddress', function () {
+            $(this).val($(this).val().trim());
+        });
+
+        $(document).on('blur', '.business-name-validation', function () {
+            $(this).val($(this).val().trim());
+        });
+        
+        function getCaretPosition(ctrl) {
+            var CaretPos = 0;
+            // IE Support
+            if (document.selection) {
+                ctrl.focus();
+                var Sel = document.selection.createRange();
+                Sel.moveStart('character', -ctrl.value.length);
+                CaretPos = Sel.text.length;
+            }
+            // Firefox support
+            else if (ctrl.selectionStart || ctrl.selectionStart == '0') {
+                CaretPos = ctrl.selectionStart;
+            }
+
+            return CaretPos;
+        }
+
+        function setCaretPosition(ctrl, pos) {
+            // IE Support
+            if (ctrl.setSelectionRange) {
+                ctrl.focus();
+                ctrl.setSelectionRange(pos,pos);
+            }
+            // Firefox support
+            else if (ctrl.createTextRange) {
+                var range = ctrl.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', pos);
+                range.moveStart('character', pos);
+                range.select();
+            }
+        }
+
+        // Helper Functions
+        function toggleError(errorId, show) {
+            var error = document.getElementById(errorId);
+            if (error) {
+                if (show) {
+                    // If showing, ensure text is set (you may need to set textContent before calling this)
+                    error.style.display = 'block';
+                } else {
+                    error.textContent = '';
+                    error.style.display = 'none';
+                }
+            }
+        }
+
+        function updateButtonState(stepNumber) {
+            var cancelBackBtn = document.getElementById('cancelBackBtn');
+            var nextSubmitBtn = document.getElementById('nextSubmitBtn');
+
+            if (stepNumber === 1) {
+                cancelBackBtn.textContent = 'Cancel';
+                cancelBackBtn.onclick = function() { window.location.href = originalUrl; };
+                nextSubmitBtn.textContent = 'Next';
+            } else if (stepNumber === 2) {
+                cancelBackBtn.textContent = 'Back';
+                cancelBackBtn.onclick = function() { navigateToStep(1); };
+                nextSubmitBtn.textContent = 'Submit and Pay';
+                // Re-enable buttons on step 2 (unless payment was completed)
+                var paymentCompleted = sessionStorage.getItem('paymentCompleted');
+                if (paymentCompleted === 'true') {
+                    cancelBackBtn.disabled = true;
+                    cancelBackBtn.style.opacity = '0.6';
+                    cancelBackBtn.style.cursor = 'not-allowed';
+                    nextSubmitBtn.disabled = true;
+                }
+            }
+        }
+
+        function navigateToStep(stepNumber, shouldSave) {
+            // Only save form data when explicitly requested (clicking Next button)
+            // Don't save when loading from sessionStorage on page refresh
+            if (shouldSave !== false && stepNumber === 2) {
+                saveFormData();
+            }
+            
+            // Save the current step
+            saveCurrentStep(stepNumber);
+            
+            // Hide all sections
+            document.getElementById(STEP_SECTIONS.STEP_1).style.display = 'none';
+            document.getElementById(STEP_SECTIONS.STEP_2).style.display = 'none';
+            document.getElementById(STEP_SECTIONS.STEP_2_5).style.display = 'none';
+
+            // Show target section
+            if (stepNumber === 1) {
+                document.getElementById(STEP_SECTIONS.STEP_1).style.display = 'block';
+            } else if (stepNumber === 2) {
+                document.getElementById(STEP_SECTIONS.STEP_2).style.display = 'block';
+                document.getElementById(STEP_SECTIONS.STEP_2_5).style.display = 'block';
+            }
+
+            // Update progress steps
+            var steps = $('.step');
+            steps.removeClass('active completed');
+
+            // Mark all previous steps as completed
+            for (var i = 0; i < stepNumber - 1; i++) {
+                steps.eq(i).addClass('completed');
+            }
+
+            // Mark current step as active
+            steps.eq(stepNumber - 1).addClass('active');
+
+            // Update buttons
+            updateButtonState(stepNumber);
+
+            // Special handling for step 2
+            if (stepNumber === 2) {
+                $(".confirm-business-reminder").css('display', 'none');
+                populateReviewSection();
+                
+                // Update URL with appUuid
+                var appUuid = sessionStorage.getItem('appUuid');
+                if (appUuid) {
+                    updateUrlWithUuid(appUuid);
+                }
+            }
+            
+            // Special handling for step 1 - re-apply the radio-driven conditional fields
+            if (stepNumber === 1) {
+                var registered = sessionStorage.getItem('registered');
+                $(".confirm-business-reminder").css('display', registered === 'false' ? 'block' : 'none');
+                applyBusinessTypeUI(getSelectedBusinessType());
+            }
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function hasUploadedFiles() {
+            var container = document.getElementById('file-uploads-container');
+            if (!container) return false;
+
+            var rows = container.querySelectorAll('.file-upload-row');
+
+            // Check if all rows have either:
+            // 1. Files in the input (newly selected)
+            // 2. data-file-id attribute (already uploaded to server)
+            var allRowsHaveFiles = Array.prototype.every.call(rows, function(row) {
+                var input = row.querySelector('.file-input');
+                var hasNewFile = input.files && input.files.length > 0;
+                var hasUploadedFile = row.hasAttribute('data-file-id');
+                return hasNewFile || hasUploadedFile;
+            });
+
+            // Clear all individual row errors first
+            var fileErrors = container.querySelectorAll('.file-error');
+            Array.prototype.forEach.call(fileErrors, function(error) {
+                error.style.display = 'none';
+                error.textContent = '';
+            });
+
+            if (!allRowsHaveFiles) {
+                // Show error for each empty row
+                Array.prototype.forEach.call(rows, function(row) {
+                    var input = row.querySelector('.file-input');
+                    var hasNewFile = input.files && input.files.length > 0;
+                    var hasUploadedFile = row.hasAttribute('data-file-id');
+
+                    if (!hasNewFile && !hasUploadedFile) {
+                        var fileError = row.querySelector('.file-error');
+                        if (fileError) {
+                            fileError.textContent = 'Please upload the required document(s)';
+                            fileError.style.display = 'inline';
+                        }
+                    }
+                });
+                return false;
+            }
+
+            return true;
+        }
+
+        function validateField(fieldId) {
+            var field = document.getElementById(fieldId);
+            var error = document.getElementById(fieldId + '-error');
+
+            if (!field.value.trim()) {
+                field.classList.add('invalid-marker');
+                if (error) {
+                    error.textContent = 'This field is required';
+                    error.style.display = 'block';
+                }
+                return false;
+            } else {
+                field.classList.remove('invalid-marker');
+                if (error) {
+                    error.textContent = '';
+                    error.style.display = 'none';
+                }
+                return true;
+            }
+        }
+
+        function loadUploadedTradingLicenseFiles(appUuid) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '/obs/preOnb/application/get-trading-license-files.do',
+                    type: 'GET',
+                    data: { appUuid: appUuid },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response && response.files && response.files.length > 0) {
+                            displayUploadedTradingLicenseFiles(response.files);
+                        } else {
+                            console.warn('No trading license files found in backend');
+                        }
+                        resolve(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading trading license files:', error);
+                        resolve(); // Don't block on error, just log it
+                    }
+                });
+            });
+        }
+
+        function displayUploadedTradingLicenseFiles(files) {
+            var container = document.getElementById('file-uploads-container');
+            container.innerHTML = ''; // Clear existing rows
+            
+            files.forEach(function(file, index) {
+                var row = document.createElement('div');
+                row.className = 'file-upload-row';
+                row.setAttribute('data-file-id', file.fileId);
+                var downloadUrl = '/obs/preOnb/download-trading-license/' + file.id;
+                row.innerHTML = `
+                    <div class="file-upload-left">
+                        <button type="button" class="btn-browse" onclick="triggerFileInput(this)">Browse File...</button>
+                        <a href="#" class="file-link" style="display: inline; color: #0B4C5F; font-size: 14px; cursor: pointer;"
+                           onclick="openServerFile(event, '${downloadUrl}')">
+                            ${file.fileName}
+                        </a>
+                        <span class="file-name" style="display: none;">No file selected.</span>
+                        <input type="file" class="file-input" accept="application/pdf,image/png,image/jpeg,image/jpg"
+                               style="display: none;" onchange="handleFileSelect(this)" data-file-id="${file.fileId}">
+                        <span class="file-error"></span>
+                    </div>
+                    <div class="file-upload-right">
+                        <a href="#" class="delete-attachment" onclick="deleteAttachment(event, this)" style="display: inline;">
+                            Delete Attachment
+                        </a>
+                        <a href="#" class="delete-row" onclick="deleteRow(event, this)">Delete Row</a>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+            
+            updateDeleteRowVisibility();
+        }
+
+        function loadCity() {
+            return new Promise((resolve, reject) => {
+                var stateSelect = document.getElementById('showroomState').value;
+                var citySelect = document.getElementById('showroomCity');
+
+                // Clear existing options
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                citySelect.classList.remove('has-value');
+
+                if (!stateSelect) {
+                    citySelect.disabled = true;
+                    resolve();
+                    return;
+                }
+                
+                // Show loading state
+                citySelect.disabled = true;
+                citySelect.innerHTML = '<option value="">Loading...</option>';
+
+                $.ajax({
+                    url: '/obs/f/cities',
+                    type: 'GET',
+                    data: { stateCode: stateSelect },
+                    dataType: 'json',
+                    success: function(cities) {
+                        citySelect.innerHTML = '<option value="">Select City</option>';
+
+                        cities.forEach(function(city) {
+                            var option = document.createElement('option');
+                            option.value = city.cityCode;
+                            option.textContent = city.cityName;
+                            citySelect.appendChild(option);
+                        });
+                        citySelect.disabled = false;
+                        resolve(cities);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading cities:', error);
+                        citySelect.innerHTML = '<option value="">Error loading cities</option>';
+                        citySelect.disabled = true;
+                        reject(error);
+                    }
+                });
+            });
+        }
+
+        // Store original state options on page load. Captured once only: later calls are no-ops so
+        // a dropdown that has since been filtered or emptied can't overwrite the full list.
+        function storeOriginalStateOptions() {
+            if (originalStateOptions.length > 0) {
+                return;
+            }
+            var stateSelect = document.getElementById('showroomState');
+            if (!stateSelect) {
+                return;
+            }
+            Array.prototype.forEach.call(stateSelect.options, function(opt) {
+                originalStateOptions.push({
+                    value: opt.value,
+                    text: opt.text
+                });
+            });
+        }
+
+        // Make sure the full state list has been captured before the dropdown is rebuilt from it.
+        // Returns false if there is nothing to rebuild from - callers must then leave the dropdown alone.
+        function ensureStateOptions() {
+            storeOriginalStateOptions();
+            return originalStateOptions.length > 0;
+        }
+
+        // Filter state dropdown to show only specific state (synchronous - doesn't load cities)
+        function filterStateDropdownSync(stateName) {
+            if (!ensureStateOptions()) {
+                return;
+            }
+            var stateSelect = document.getElementById('showroomState');
+            
+            // Clear current options
+            stateSelect.innerHTML = '';
+            
+            // Add back only the matching state option
+            originalStateOptions.forEach(function(opt) {
+                if (opt.value === '' || opt.text.toUpperCase() === stateName.toUpperCase()) {
+                    var option = document.createElement('option');
+                    option.value = opt.value;
+                    option.text = opt.text;
+                    stateSelect.appendChild(option);
+                }
+            });
+            
+            // Auto-select the state (skip the empty "Select State" option)
+            var stateOption = Array.prototype.find.call(stateSelect.options, function(opt) {
+                return opt.value !== '';
+            });
+            if (stateOption) {
+                stateSelect.value = stateOption.value;
+            }
+            
+            // Clear state error if any
+            var stateError = document.getElementById('showroomState-error');
+            if (stateError) {
+                stateError.textContent = '';
+                stateError.style.display = 'none';
+            }
+            stateSelect.classList.remove('invalid-marker');
+        }
+        
+        // Filter state dropdown to show only specific state
+        function filterStateDropdown(stateName) {
+            if (!ensureStateOptions()) {
+                return;
+            }
+            var stateSelect = document.getElementById('showroomState');
+            var citySelect = document.getElementById('showroomCity');
+            
+            // Clear current options
+            stateSelect.innerHTML = '';
+            
+            // Add back only the matching state option
+            originalStateOptions.forEach(function(opt) {
+                if (opt.value === '' || opt.text.toUpperCase() === stateName.toUpperCase()) {
+                    var option = document.createElement('option');
+                    option.value = opt.value;
+                    option.text = opt.text;
+                    stateSelect.appendChild(option);
+                }
+            });
+            
+            // Auto-select the state (skip the empty "Select State" option)
+            var stateOption = Array.prototype.find.call(stateSelect.options, function(opt) {
+                return opt.value !== '';
+            });
+            if (stateOption) {
+                stateSelect.value = stateOption.value;
+                loadCity(); // Reload cities for the selected state
+            }
+            
+            // Clear state error if any
+            var stateError = document.getElementById('showroomState-error');
+            if (stateError) {
+                stateError.textContent = '';
+                stateError.style.display = 'none';
+            }
+            stateSelect.classList.remove('invalid-marker');
+        }
+        
+        // Restore all state options (when switching back to non-business trading)
+        function restoreStateDropdown() {
+            if (!ensureStateOptions()) {
+                return;
+            }
+            var stateSelect = document.getElementById('showroomState');
+            var currentValue = stateSelect.value;
+            
+            // Clear and restore all options
+            stateSelect.innerHTML = '';
+            originalStateOptions.forEach(function(opt) {
+                var option = document.createElement('option');
+                option.value = opt.value;
+                option.text = opt.text;
+                stateSelect.appendChild(option);
+            });
+            
+            // Try to restore previous selection
+            stateSelect.value = currentValue;
+        }
+        
+        // Initialize: store original state options when page loads
+        $(document).ready(function() {
+            storeOriginalStateOptions();
+        });
+        
+        // EAINT-5972 items 1/2 — explicit Type-of-Business radio model.
+
+        function getSelectedBusinessType() {
+            var r = document.querySelector('input[name="businessType"]:checked');
+            return r ? r.value : '';
+        }
+
+        function isSsmType(t) {
+            return SSM_TYPES.indexOf(t) !== -1;
+        }
+
+        // Show/hide the conditional registration fields based on the selected Type of Business,
+        // and keep the legacy 'registered' session flag in sync (SSM -> true, Non-SSM -> false)
+        // so the existing file-upload / save / navigate logic keeps working unchanged.
+        function applyBusinessTypeUI(typeValue) {
+            var ssm = isSsmType(typeValue);
+            var nonssm = !!typeValue && !ssm;
+
+            var ssmGroup = document.getElementById('ssm-brn-group');
+            var licGroup = document.getElementById('nonssm-license-group');
+            var licRow = document.getElementById('nonssm-trading-license-row');
+            if (ssmGroup) ssmGroup.style.display = ssm ? 'flex' : 'none';
+            if (licGroup) licGroup.style.display = nonssm ? 'flex' : 'none';
+            if (licRow) licRow.style.display = nonssm ? 'flex' : 'none';
+
+            if (ssm) {
+                sessionStorage.setItem('registered', 'true');
+            } else if (nonssm) {
+                sessionStorage.setItem('registered', 'false');
+            } else {
+                sessionStorage.removeItem('registered');
+            }
+
+            // Non-SSM trading types are confined to their state; SSM types use all states.
+            if (typeValue === 'TRADING_SARAWAK') {
+                filterStateDropdown('SARAWAK');
+            } else if (typeValue === 'TRADING_SABAH') {
+                filterStateDropdown('SABAH');
+            } else {
+                restoreStateDropdown();
+            }
+
+            var error = document.getElementById('businessType-error');
+            if (error) {
+                error.textContent = '';
+                error.style.display = 'none';
+            }
+        }
+
+        // EAINT-5972 (SRD v1.0 §2.2.1.2) — BRN entered but not valid / mismatched in SSM: fall back
+        // to the Business Trading path (mirrors prod/master). Auto-switch the Type-of-Business radio
+        // to Non-SSM "Business Trading (Sabah)", clear the Old/New BRN inputs, drop any SSM session
+        // refs, and reveal the Trading License upload. No popup — the visible radio/field switch is
+        // the feedback (the SRD does not specify a not-found popup).
+        function fallbackToBusinessTrading() {
+            var oldBrnEl = document.getElementById('oldBrn');
+            var newBrnEl = document.getElementById('newBrn');
+            if (oldBrnEl) { oldBrnEl.value = ''; oldBrnEl.classList.remove('invalid-marker'); }
+            if (newBrnEl) { newBrnEl.value = ''; newBrnEl.classList.remove('invalid-marker'); }
+
+            var sabah = document.querySelector('input[name="businessType"][value="TRADING_SABAH"]');
+            if (sabah) { sabah.checked = true; }
+            applyBusinessTypeUI('TRADING_SABAH'); // hides BRN, shows Trading License, filters state to Sabah
+            $(".confirm-business-reminder").css('display', 'block');
+
+            sessionStorage.removeItem('newRefNo');
+            sessionStorage.removeItem('refNo');
+            sessionStorage.removeItem('ssmItemType');
+        }
+
+        // Proceed past Step 1 for an SSM type: SSM lookup always runs (old-BRN-only or new-BRN
+        // or both) and always returns both refNo (old) and newRefNo (new). Save the application,
+        // (re)initialise the SSM document purchase, then go to Step 2.
+        async function proceedSsmRegistered() {
+            await saveInitialApplication(formData);
+            if (sessionStorage.getItem('ssmTransactionId') === undefined || sessionStorage.getItem('ssmTransactionId') === null) {
+                await doInitialiseSsm(null);
+            } else {
+                await doInitialiseSsm(sessionStorage.getItem('ssmTransactionId'));
+            }
+            await deleteDatabaseAttachments(sessionStorage.getItem('appUuid'));
+            navigateToStep(2, true);
+        }
+
+        // Proceed past Step 1 for a Non-SSM (Business Trading) type: collect the uploaded
+        // trading-license files, save, drop any stale SSM transaction, then go to Step 2.
+        async function proceedNonSsm() {
+            var container = document.getElementById('file-uploads-container');
+            var rows = container.querySelectorAll('.file-upload-row');
+            formData.tradingLicenseFiles = [];
+            formData.filesToRemove = filesToRemove;
+            Array.prototype.forEach.call(rows, function(row) {
+                var input = row.querySelector('.file-input');
+                if (input.files && input.files.length > 0) {
+                    formData.tradingLicenseFiles.push(input.files[0]);
+                }
+            });
+            await saveInitialApplication(formData);
+            if (sessionStorage.getItem('ssmTransactionId') !== undefined && sessionStorage.getItem('ssmTransactionId') !== null) {
+                deleteSsmTransaction();
+            }
+            navigateToStep(2, true);
+        }
+
+        // Add event listener to clear error when checkbox is checked
+        document.addEventListener('DOMContentLoaded', function() {
+            // EAINT-5972: keep the BRN input-group's peach (error) fill spanning the
+            // whole box — mirror each input's .invalid-marker onto its .brn-input-group
+            // wrapper so the "Old BRN:" / "New BRN :" label cell never looks split off.
+            ['oldBrn', 'newBrn'].forEach(function(id) {
+                var input = document.getElementById(id);
+                if (!input) return;
+                var group = input.closest('.brn-input-group');
+                if (!group) return;
+                var sync = function() {
+                    group.classList.toggle('is-invalid', input.classList.contains('invalid-marker'));
+                };
+                sync();
+                new MutationObserver(sync).observe(input, { attributes: true, attributeFilter: ['class'] });
+            });
+
+            var agreeTerms = document.getElementById('agreeTerms');
+            var businessTypeRadios = document.querySelectorAll('input[name="businessType"]');
+            var paymentCards = document.querySelectorAll('.payment-method-card');
+            var bankCards = document.querySelectorAll('.bank-card');
+            var bankSelectionBusiness = document.getElementById('bank-selection-business');
+            var bankSelectionPersonal = document.getElementById('bank-selection-personal');
+
+
+            if (agreeTerms) {
+                agreeTerms.addEventListener('change', function() {
+                    if (this.checked) {
+                        var termsError = document.getElementById('terms-error');
+                        if (termsError) {
+                            termsError.textContent = '';
+                            termsError.style.display = 'none';
+                        }
+
+                        // Show payment method section
+                        var paymentMethodSection = document.getElementById('payment-method-section');
+                        paymentMethodSection.style.display = 'block';
+
+                        // Scroll to payment method section smoothly
+                        setTimeout(function() {
+                            paymentMethodSection.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }, 100);
+                    } else {
+                        // Hide payment method section if unchecked
+                        document.getElementById('payment-method-section').style.display = 'none';
+                    }
+                });
+
+            }
+
+            Array.prototype.forEach.call(businessTypeRadios, function(radio) {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        applyBusinessTypeUI(this.value);
+                    }
+                });
+            });
+
+            // Payment method selection
+            Array.prototype.forEach.call(paymentCards, function(card) {
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    Array.prototype.forEach.call(paymentCards, function(c) {
+                        c.classList.remove('selected');
+                    });
+
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+
+                    // Check the radio button
+                    var radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+
+                    // Clear error if exists
+                    var error = document.getElementById('paymentMethod-error');
+                    if (error) {
+                        error.textContent = '';
+                        error.style.display = 'none';
+                    }
+
+                    // Get the category from the selected payment method
+                    var category = radio.getAttribute('data-category');
+
+                    // Hide all bank selections first and clear selections
+                    if (bankSelectionBusiness) {
+                        bankSelectionBusiness.classList.remove('show');
+                        var b2bRadios = bankSelectionBusiness.querySelectorAll('input[type="radio"]');
+                        Array.prototype.forEach.call(b2bRadios, function(r) {
+                            r.checked = false;
+                        });
+                        var b2bCards = bankSelectionBusiness.querySelectorAll('.bank-card.selected');
+                        Array.prototype.forEach.call(b2bCards, function(bc) {
+                            bc.classList.remove('selected');
+                        });
+                    }
+
+                    if (bankSelectionPersonal) {
+                        bankSelectionPersonal.classList.remove('show');
+                        var b2cRadios = bankSelectionPersonal.querySelectorAll('input[type="radio"]');
+                        Array.prototype.forEach.call(b2cRadios, function(r) {
+                            r.checked = false;
+                        });
+                        var b2cCards = bankSelectionPersonal.querySelectorAll('.bank-card.selected');
+                        Array.prototype.forEach.call(b2cCards, function(bc) {
+                            bc.classList.remove('selected');
+                        });
+                    }
+
+                    // Show relevant bank selection based on category
+                    if (category === 'FPX_B2B' && bankSelectionBusiness) {
+                        bankSelectionBusiness.classList.add('show');
+                    } else if (category === 'FPX_B2C' && bankSelectionPersonal) {
+                        bankSelectionPersonal.classList.add('show');
+                    }
+                });
+            });
+
+            // Bank selection
+            Array.prototype.forEach.call(bankCards, function(card) {
+                card.addEventListener('click', function() {
+                    // Get the parent bank selection container
+                    var parentContainer = this.closest('.bank-selection');
+                    var banksInContainer = parentContainer.querySelectorAll('.bank-card');
+
+                    // Remove selected class from all banks in this container
+                    Array.prototype.forEach.call(banksInContainer, function(c) {
+                        c.classList.remove('selected');
+                    });
+
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+
+                    // Check the radio button
+                    var radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+
+                    // Clear error for the specific bank selection container
+                    var parentId = parentContainer.id;
+                    var errorId = parentId === 'bank-selection-business' ? 'bankSelection-b2b-error' : 'bankSelection-b2c-error';
+                    var error = document.getElementById(errorId);
+                    if (error) {
+                        error.textContent = '';
+                        error.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        function populateReviewSection() {
+            // Get values from step 1 (EAINT-5972 explicit model)
+            var businessName = document.getElementById('businessName').value;
+            var selectedType = getSelectedBusinessType();
+            var ssm = isSsmType(selectedType);
+            var tin = document.getElementById('tin').value;
+
+            // Populate review fields
+            document.getElementById('review-businessName').textContent = businessName;
+            if (!ssm) {
+                document.getElementById('review-registrationNo').textContent = document.getElementById('businessLicenseNo').value;
+            } else {
+                // EAINT-5972 (SRD v1.0 §2.2.1.2) — show BOTH BRNs. Prefer the SSM-derived values
+                // (refNo = Old, newRefNo = New) so both appear even when the UCD entered only one;
+                // fall back to the typed values. The Step-1 inputs are intentionally NOT backfilled.
+                var ssmOld = sessionStorage.getItem('refNo');
+                var ssmNew = sessionStorage.getItem('newRefNo');
+                var oldBrn = (ssmOld && ssmOld !== 'null') ? ssmOld : document.getElementById('oldBrn').value;
+                var newBrn = (ssmNew && ssmNew !== 'null') ? ssmNew : document.getElementById('newBrn').value;
+                var display = (oldBrn && newBrn) ? (newBrn + ' (' + oldBrn + ')') : (newBrn || oldBrn);
+                document.getElementById('review-registrationNo').textContent = display;
+            }
+            document.getElementById('review-tin-value').textContent = tin || 'Not provided';
+
+            // Update the label based on business type
+            var regNoLabel = document.getElementById('review-registration-label');
+            if (regNoLabel) {
+                regNoLabel.innerHTML = ssm
+                    ? '<strong>Business Registration No:</strong>'
+                    : '<strong>Business Trading License No:</strong>';
+            }
+
+            // Business type display label
+            var typeLabels = {
+                'SDN_BHD': 'Sdn Bhd / Bhd',
+                'SOLE_PROPRIETORSHIP_PARTNERSHIP': 'Sole Proprietorship / Partnership',
+                'LLP': 'LLP',
+                'TRADING_SABAH': 'Business Trading (Sabah)',
+                'TRADING_SARAWAK': 'Business Trading (Sarawak)'
+            };
+            if (selectedType && typeLabels[selectedType]) {
+                document.getElementById('review-businessType').textContent = typeLabels[selectedType];
+            }
+            updateDeleteRowVisibility();
+        }
+
+        function triggerFileInput(button) {
+            // Find the file input within the same row
+            var row = button.closest('.file-upload-row');
+            var fileInput = row.querySelector('.file-input');
+            fileInput.click();
+        }
+
+        function handleFileSelect(input) {
+            if (!input.files[0]) {
+                return;
+            }
+
+            var file = input.files[0];
+            var row = input.closest('.file-upload-row');
+            var fileLink = row.querySelector('.file-link');
+            var fileNameSpan = row.querySelector('.file-name');
+            var fileError = row.querySelector('.file-error');
+            var fileInput = row.querySelector('.file-input');
+            var deleteAttachment = row.querySelector('.delete-attachment');
+
+            // Hide error initially
+            if (fileError) {
+                fileError.style.display = 'none';
+                fileError.textContent = '';
+            }
+
+            // Validate file type (PDF, PNG, JPG, JPEG)
+            var allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+
+            // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+            var exceedSize = file.size > 5 * 1024 * 1024;
+            var invalidType = allowedTypes.indexOf(file.type) === -1;
+
+            if(exceedSize && invalidType) {
+                if (fileError) {
+                    fileError.textContent = 'Invalid file type and size exceeded';
+                    fileError.style.display = 'inline';
+                }
+                input.value = '';
+                removeFileIfError(input);
+                return;
+            }
+            else if (invalidType) {
+                if (fileError) {
+                    fileError.textContent = 'Invalid file type';
+                    fileError.style.display = 'inline';
+                }
+                input.value = '';
+                removeFileIfError(input);
+                return;
+            }
+            else if (exceedSize) {
+                if (fileError) {
+                    fileError.textContent = 'File size exceeded';
+                    fileError.style.display = 'inline';
+                }
+                input.value = '';
+                removeFileIfError(input);
+                return;
+            }
+
+            // Track existing SERVER file for removal (if replacing a file from backend)
+            var fileId = row.getAttribute('data-file-id');
+            if (fileId) {
+                filesToRemove.push(fileId);
+                row.removeAttribute('data-file-id');
+            }
+
+            // Show file link and hide "No file selected"
+            fileLink.textContent = file.name;
+            fileLink.style.display = 'inline';
+            fileLink.href = '#';
+            fileLink.setAttribute('onclick', 'openFile(event, this)');
+            fileLink.removeAttribute('target');
+            fileNameSpan.style.display = 'none';
+
+            // Show delete attachment link
+            deleteAttachment.style.display = 'inline';
+
+            // Update delete row visibility for all rows
+            updateDeleteRowVisibility();
+        }
+
+        function removeFileIfError(input){
+            var row = input.closest('.file-upload-row');
+            var fileLink = row.querySelector('.file-link');
+            var fileNameSpan = row.querySelector('.file-name');
+            var fileInput = row.querySelector('.file-input');
+            var deleteAttachment = row.querySelector('.delete-attachment');
+
+            var fileId = row.getAttribute('data-file-id');
+            if (fileId) {
+                filesToRemove.push(fileId);
+            }
+            row.removeAttribute('data-file-id');
+            // Clear the file input
+            fileInput.value = '';
+
+            // Hide and reset the file link completely
+            fileLink.style.display = 'none';
+            fileLink.textContent = '';
+            fileLink.href = '#';
+
+            // Show and reset the file name span
+            fileNameSpan.textContent = 'No file selected.';
+            fileNameSpan.style.display = 'inline';
+
+            // Hide delete attachment button
+            deleteAttachment.style.display = 'none';
+        }
+
+        function openServerFile(event, url) {
+            event.preventDefault();
+            fetch(url)
+                .then(function(response) { return response.blob(); })
+                .then(function(blob) {
+                    var blobUrl = URL.createObjectURL(blob);
+                    window.open(blobUrl, '_blank');
+                });
+        }
+
+        function openFile(event, link) {
+            event.preventDefault();
+            var row = link.closest('.file-upload-row');
+            var fileInput = row.querySelector('.file-input');
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                var fileURL = URL.createObjectURL(fileInput.files[0]);
+                window.open(fileURL, '_blank');
+            }
+        }
+
+        function deleteAttachment(event, link) {
+            event.preventDefault();
+
+            var row = link.closest('.file-upload-row');
+            var fileInput = row.querySelector('.file-input');
+            var fileLink = row.querySelector('.file-link');
+            var fileNameSpan = row.querySelector('.file-name');
+            var fileError = row.querySelector('.file-error');
+            var deleteAttachment = row.querySelector('.delete-attachment');
+
+            var fileId = row.getAttribute('data-file-id');
+            if (fileId) {
+                filesToRemove.push(fileId);
+                row.removeAttribute('data-file-id');
+            }
+
+            // Clear the file input
+            fileInput.value = '';
+            
+            // Hide and reset the file link completely
+            fileLink.style.display = 'none';
+            fileLink.textContent = '';
+            fileLink.href = '#';
+            
+            // Show and reset the file name span
+            fileNameSpan.textContent = 'No file selected.';
+            fileNameSpan.style.display = 'inline';
+            
+            // Hide delete attachment button
+            deleteAttachment.style.display = 'none';
+            
+            // Hide any error messages
+            if (fileError) {
+                fileError.style.display = 'none';
+                fileError.textContent = '';
+            }
+        }
+
+        function deleteRow(event, link) {
+            event.preventDefault();
+
+            var container = document.getElementById('file-uploads-container');
+
+            if (container.querySelectorAll('.file-upload-row').length > 1) {
+                var row = link.closest('.file-upload-row');
+                var fileId = row.getAttribute('data-file-id');
+
+                if (fileId) {
+                    filesToRemove.push(fileId);
+                }
+                row.remove();
+                updateDeleteRowVisibility();
+                
+                // Show "Add More File" button if we're now below 5 rows
+                if (container.querySelectorAll('.file-upload-row').length < 5) {
+                    document.querySelector('.addmore-attachment').style.display = 'flex';
+                }
+            } else {
+                alert('You must have at least one file upload row.');
+            }
+        }
+
+        function addMoreFile(event) {
+            event.preventDefault();
+
+            var container = document.getElementById('file-uploads-container');
+            var currentRows = container.querySelectorAll('.file-upload-row');
+            
+            // Check if already at maximum of 5 rows
+            if (currentRows.length >= 4) {
+                alert('Maximum of 4 files allowed.');
+                return;
+            }
+            
+            var newRow = document.createElement('div');
+            newRow.className = 'file-upload-row';
+            newRow.innerHTML = FILE_UPLOAD_ROW_TEMPLATE;
+
+            container.appendChild(newRow);
+            updateDeleteRowVisibility();
+            
+            // Hide "Add More File" button if we've reached 5 rows
+            if (container.querySelectorAll('.file-upload-row').length >= 4) {
+                document.querySelector('.addmore-attachment').style.display = 'none';
+            }
+        }
+
+        function updateDeleteRowVisibility() {
+            var container = document.getElementById('file-uploads-container');
+            if (!container) return;
+
+            var rows = container.querySelectorAll('.file-upload-row');
+            var hasMultipleRows = rows.length > 1;
+
+            Array.prototype.forEach.call(rows, function(row) {
+                var deleteRowLink = row.querySelector('.delete-row');
+
+                if (hasMultipleRows) {
+                    deleteRowLink.style.display = 'inline';
+                } else {
+                    deleteRowLink.style.display = 'none';
+                }
+            });
+        }
+
+        function disableStep2Form() {
+            // Disable the terms checkbox
+            var agreeTerms = document.getElementById('agreeTerms');
+            if (agreeTerms) {
+                agreeTerms.disabled = true;
+            }
+
+            // Disable all payment method radio buttons
+            var paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+            Array.prototype.forEach.call(paymentMethods, function(radio) {
+                radio.disabled = true;
+            });
+
+            // Disable all bank selection radio buttons
+            var bankSelections = document.querySelectorAll('input[name="bankSelection"]');
+            Array.prototype.forEach.call(bankSelections, function(radio) {
+                radio.disabled = true;
+            });
+
+            // Disable the submit button
+            var nextSubmitBtn = document.getElementById('nextSubmitBtn');
+            if (nextSubmitBtn) {
+                nextSubmitBtn.disabled = true;
+            }
+
+            // Disable the back button
+            var cancelBackBtn = document.getElementById('cancelBackBtn');
+            if (cancelBackBtn) {
+                cancelBackBtn.disabled = true;
+                cancelBackBtn.style.opacity = '0.6';
+                cancelBackBtn.style.cursor = 'not-allowed';
+            }
+
+            // Disable payment method cards click events
+            var paymentCards = document.querySelectorAll('.payment-method-card');
+            Array.prototype.forEach.call(paymentCards, function(card) {
+                card.style.pointerEvents = 'none';
+                card.style.opacity = '0.6';
+            });
+
+            // Disable bank cards click events
+            var bankCards = document.querySelectorAll('.bank-card');
+            Array.prototype.forEach.call(bankCards, function(card) {
+                card.style.pointerEvents = 'none';
+                card.style.opacity = '0.6';
+            });
+        }
+
+        // Add blur event listeners to validate on field exit
+        step1_fields.forEach(function(fieldId) {
+            document.getElementById(fieldId).addEventListener('blur', function() {
+                validateField(fieldId);
+            });
+
+            // Remove error on input
+            document.getElementById(fieldId).addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('invalid-marker');
+                    var error = document.getElementById(fieldId + '-error');
+                    if (error) {
+                        error.textContent = '';
+                        error.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // Remove error on input
+        document.getElementById('tin').addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('invalid-marker');
+                var error = document.getElementById('tin-error');
+                if (error) {
+                    error.textContent = '';
+                    error.style.display = 'none';
+                }
+            }
+        });
+
+        // EAINT-5972: clear the "at least one of Old BRN / New BRN" error as soon as
+        // either field has a value — typing in EITHER satisfies the requirement, so
+        // remove the invalid marker from BOTH and hide the shared error message.
+        ['oldBrn', 'newBrn'].forEach(function(fieldId) {
+            var field = document.getElementById(fieldId);
+            if (!field) return;
+            field.addEventListener('input', function() {
+                var oldBrnVal = (document.getElementById('oldBrn').value || '').trim();
+                var newBrnVal = (document.getElementById('newBrn').value || '').trim();
+                if (oldBrnVal || newBrnVal) {
+                    document.getElementById('oldBrn').classList.remove('invalid-marker');
+                    document.getElementById('newBrn').classList.remove('invalid-marker');
+                    var error = document.getElementById('newBrn-error');
+                    if (error) {
+                        error.textContent = '';
+                        error.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // EAINT-5972: clear the Business Trading License No error on input
+        (function() {
+            var licenseField = document.getElementById('businessLicenseNo');
+            if (!licenseField) return;
+            licenseField.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('invalid-marker');
+                    var error = document.getElementById('businessLicenseNo-error');
+                    if (error) {
+                        error.textContent = '';
+                        error.style.display = 'none';
+                    }
+                }
+            });
+        })();
+
+        // Add listeners to Type-of-Business radios (NO auto-save) — apply the radio-driven UI
+        document.querySelectorAll('input[name="businessType"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    applyBusinessTypeUI(this.value);
+                }
+            });
+        });
+
+        // Check lock status before form submission
+        async function checkLockBeforeSubmit() {
+            var appUuid = sessionStorage.getItem('appUuid');
+            
+            // If no appUuid yet (new application), no need to check lock
+            if (!appUuid) {
+                return { canProceed: true };
+            }
+            
+            try {
+                var response = await $.ajax({
+                    url: '/obs/preOnb/check-lock/' + appUuid,
+                    type: 'GET',
+                    dataType: 'json',
+                    timeout: 10000
+                });
+                
+                if (response.success && response.isLocked) {
+                    // Application is locked by another user
+                    return { 
+                        canProceed: false, 
+                        isLocked: true
+                    };
+                }
+                
+                return { canProceed: true };
+                
+            } catch (error) {
+                console.error('Error checking lock status:', error);
+                // On error, allow to proceed - the server will catch it anyway
+                return { canProceed: true };
+            }
+        }
+
+        function checkPaymentAndExecute(callback) {
+            var appUuid = sessionStorage.getItem('appUuid');
+            if (!appUuid) {
+                callback();
+                return;
+            }
+            $.ajax({
+                url: '/obs/preOnb/application/check-payment?appUuid=' + appUuid,
+                type: 'GET',
+                success: function(response) {
+                    if (response.paid) {
+                        openCustomDialog({
+                            title: "Payment Completed",
+                            content: "Payment has been made.",
+                            confirmBtnName: "OK",
+                            shouldHideCancelBtn: true,
+                            shouldHideCloseBtn: true,
+                            width: "520",
+                            onConfirmCloseHandler: function() {
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        callback();
+                    }
+                },
+                error: function() {
+                    callback();
+                }
+            });
+        }
+
+        // Form submission with lock check
+        document.getElementById('preOnboardForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Check lock status before proceeding
+            var lockCheck = await checkLockBeforeSubmit();
+            if (!lockCheck.canProceed) {
+                if (lockCheck.isLocked) {
+                    showLockDeniedPopup();
+                }
+                return;
+            }
+
+            var isStep1 = document.getElementById(STEP_SECTIONS.STEP_1).style.display !== 'none';
+            var isStep2 = document.getElementById(STEP_SECTIONS.STEP_2).style.display !== 'none';
+            refreshLock();
+
+            if (isStep1) {
+                await handleStep1Submit();
+            } else if (isStep2) {
+                checkPaymentAndExecute(async function() {
+                    await handleStep2Submit();
+                });
+            }
+        });
+
+        async function handleStep1Submit() {
+            // Validate all required fields
+            let isValid = true;
+            let firstInvalidField = null;
+
+            function validateMinimumLength() {
+                const selectedType = getSelectedBusinessType();
+                if (isSsmType(selectedType)) {
+                    // Both Old BRN and New BRN are optional, but if provided each must be >= 4 chars.
+                    const oldBrn = $("#oldBrn").val();
+                    if (oldBrn && oldBrn.length < 4) {
+                        const field = document.getElementById("oldBrn");
+                        const error = document.getElementById("newBrn-error");
+                        field.classList.add('invalid-marker');
+                        if (error) {
+                            error.textContent = "Old BRN must be at least 4 characters.";
+                            error.style.display = 'block';
+                        }
+                        isValid = false;
+                        if (!firstInvalidField) {
+                            firstInvalidField = field;
+                        }
+                        return;
+                    }
+
+                    const newBrn = $("#newBrn").val();
+                    if (newBrn && newBrn.length < 4) {
+                        const field = document.getElementById("newBrn");
+                        const error = document.getElementById("newBrn-error");
+                        field.classList.add('invalid-marker');
+                        if (error) {
+                            error.textContent = "New BRN must be at least 4 characters.";
+                            error.style.display = 'block';
+                        }
+                        isValid = false;
+                        if (!firstInvalidField) {
+                            firstInvalidField = field;
+                        }
+                        return;
+                    }
+                } else if (selectedType) {
+                    const licenseNo = $("#businessLicenseNo").val();
+                    if (licenseNo.length < 4) {
+                        const field = document.getElementById("businessLicenseNo");
+                        const error = document.getElementById("businessLicenseNo-error");
+                        field.classList.add('invalid-marker');
+                        if (error) {
+                            error.textContent = "Business Trading License No must be at least 4 characters.";
+                            error.style.display = 'block';
+                        }
+                        isValid = false;
+                        if (!firstInvalidField) {
+                            firstInvalidField = field;
+                        }
+                        return;
+                    }
+                }
+
+                const tinNo = $("#tin").val();
+                if(tinNo.length < 9 && tinNo.length > 0) {
+                    const field = document.getElementById("tin");
+                    const error = document.getElementById("tin-error");
+                    field.classList.add('invalid-marker');
+                    if (error) {
+                        error.textContent = "TIN must be at least 9 characters.";
+                        error.style.display = 'block';
+                    }
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                    return;
+                }
+
+                const postcode = $("#showroomPostcode").val();
+                if(postcode.length < 5) {
+                    const field = document.getElementById("showroomPostcode");
+                    const error = document.getElementById("showroomPostcode-error");
+                    field.classList.add('invalid-marker');
+                    if (error) {
+                        error.textContent = "Showroom Postcode must be 5 digits only.";
+                        error.style.display = 'block';
+                    }
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                    return;
+                }
+
+                const mobileNo = $("#mobileNo").val();
+                if(mobileNo.length < 9) {
+                    const field = document.getElementById("mobileNo");
+                    const error = document.getElementById("mobileNo-error");
+                    field.classList.add('invalid-marker');
+                    if (error) {
+                        error.textContent = "Contact number must be between 9 to 11 digits.";
+                        error.style.display = 'block';
+                    }
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                    return;
+                }
+
+                const email = $("#adminEmail").val();
+                const emailRegex = /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+                if (email.length > 0 && !emailRegex.test(email)) {
+                    const field = document.getElementById("adminEmail");
+                    const error = document.getElementById("adminEmail-error");
+                    field.classList.add('invalid-marker');
+                    if (error) {
+                        error.textContent = "Invalid email format.";
+                        error.style.display = 'block';
+                    }
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                    return;
+                }
+
+                return;
+            }
+
+            step1_fields.forEach(function (fieldId) {
+                if (!validateField(fieldId)) {
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = document.getElementById(fieldId);
+                    }
+                }
+            });
+            // EAINT-5972 items 1/2 — Type-of-Business radio + radio-driven required fields.
+            var selectedType = getSelectedBusinessType();
+            var typeError = document.getElementById('businessType-error');
+            if (!selectedType) {
+                if (typeError) {
+                    typeError.textContent = 'This field is required';
+                    typeError.style.display = 'block';
+                }
+                isValid = false;
+                if (!firstInvalidField) {
+                    firstInvalidField = document.querySelector('input[name="businessType"]');
+                }
+            } else if (typeError) {
+                typeError.textContent = '';
+                typeError.style.display = 'none';
+            }
+
+            if (isSsmType(selectedType)) {
+                // SSM type: at least one of Old BRN / New BRN must be filled
+                var oldBrnVal = document.getElementById('oldBrn').value.trim();
+                var newBrnVal = document.getElementById('newBrn').value.trim();
+                var newBrnError = document.getElementById('newBrn-error');
+                if (!oldBrnVal && !newBrnVal) {
+                    if (newBrnError) {
+                        newBrnError.textContent = 'This field is required';
+                        newBrnError.style.display = 'block';
+                    }
+                    document.getElementById('oldBrn').classList.add('invalid-marker');
+                    document.getElementById('newBrn').classList.add('invalid-marker');
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = document.getElementById('oldBrn');
+                    }
+                } else {
+                    if (newBrnError) {
+                        newBrnError.textContent = '';
+                        newBrnError.style.display = 'none';
+                    }
+                    document.getElementById('oldBrn').classList.remove('invalid-marker');
+                    document.getElementById('newBrn').classList.remove('invalid-marker');
+                }
+            } else if (selectedType) {
+                // Non-SSM type: Business Trading License No required + at least one file
+                var licenseVal = document.getElementById('businessLicenseNo').value.trim();
+                var licenseError = document.getElementById('businessLicenseNo-error');
+                if (!licenseVal) {
+                    if (licenseError) {
+                        licenseError.textContent = 'This field is required';
+                        licenseError.style.display = 'block';
+                    }
+                    document.getElementById('businessLicenseNo').classList.add('invalid-marker');
+                    isValid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = document.getElementById('businessLicenseNo');
+                    }
+                }
+                if (!hasUploadedFiles()) {
+                    isValid = false;
+                    var firstEmptyRow = document.querySelector('.file-error[style*="display: inline"]');
+                    if (firstEmptyRow) {
+                        firstEmptyRow.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    }
+                }
+            }
+
+            if (!isValid) {
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+                return;
+            }
+
+            validateMinimumLength();
+
+            if (!isValid) {
+                if (firstInvalidField) {
+                    firstInvalidField.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    firstInvalidField.focus();
+                }
+                return;
+            }
+
+            // Get form data (EAINT-5972 explicit model)
+            var oldBrnVal = document.getElementById('oldBrn').value;
+            var newBrnVal = document.getElementById('newBrn').value;
+            var licenseVal = document.getElementById('businessLicenseNo').value;
+            formData = {
+                businessName: document.getElementById('businessName').value,
+                businessType: selectedType,
+                oldBrn: isSsmType(selectedType) ? oldBrnVal : '',
+                newBrn: isSsmType(selectedType) ? newBrnVal : '',
+                businessLicenseNo: isSsmType(selectedType) ? '' : licenseVal,
+                tinNo: document.getElementById('tin').value,
+                adminName: document.getElementById('adminName').value,
+                mobileNo: document.getElementById('mobileNo').value,
+                adminEmail: document.getElementById('adminEmail').value,
+                showroomAddress: document.getElementById('showroomAddress').value,
+                showroomPostcode: document.getElementById('showroomPostcode').value,
+                showroomState: document.getElementById('showroomState').value,
+                showroomCity: document.getElementById('showroomCity').value,
+                isBusinessTrading: !isSsmType(selectedType)
+            };
+
+            // EAINT-5972 item 3 — TIN-vs-New-BRN validation (runs after the SSM existence check
+            // for SSM types; runs directly for Non-SSM). Returns true if the applicant may proceed.
+            async function validateTinAgainstBrn(ssmNewBrn) {
+                var tinNo = formData.tinNo;
+                if (!tinNo || tinNo.trim() === '') {
+                    return true; // TIN is optional
+                }
+                // EAINT-5972 (SRD v1.0 §2.2.1.3) — TIN is validated against the New BRN for SSM
+                // types, or the Business Trading License No for Non-SSM types. For SSM the New BRN
+                // is the SSM-derived value (ssmNewBrn), so an Old-BRN-only applicant still validates
+                // the TIN against the New BRN that SSM returned.
+                var regNo = isSsmType(selectedType) ? (ssmNewBrn || formData.newBrn) : formData.businessLicenseNo;
+                if (!regNo || regNo.trim() === '') {
+                    return true;
+                }
+                clearTinMismatchError();
+                try {
+                    var result = await $.ajax({
+                        url: '/obs/preOnb/validate-tin.do',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        data: JSON.stringify({ tinNo: tinNo, regNo: regNo })
+                    });
+                    if (result && result.valid === false && result.status === 'UNAVAILABLE') {
+                        // EAINT-5972 (requestor decision 2026-07-04) — LHDN could not be reached, so the
+                        // TIN could NOT be validated. BLOCK: keep the UCD on Step 1 until LHDN answers.
+                        // No ack bypass — every Next click re-validates and re-blocks while unavailable.
+                        errorPopup('Service Unavailable',
+                            'The LHDN e-Invoice validation service is temporarily unavailable. Please try again later.');
+                        return false;
+                    }
+                    if (result && result.valid === false &&
+                        (result.status === 'NOT_FOUND' || result.status === 'INVALID' || result.status === 'MISSING')) {
+                        // SRD v1.0 §2.2.1.3 — mismatch is a NON-BLOCKING warning; still allow submit.
+                        // Soft gate: warn once for this exact (TIN|BRN), then allow the next Next to proceed.
+                        showTinMismatchError();
+                        var ackKey = tinNo.trim() + '|' + regNo.trim();
+                        if (tinMismatchAckKey === ackKey) {
+                            return true; // already warned for these values -> allow submission
+                        }
+                        tinMismatchAckKey = ackKey;
+                        return false; // first time -> stay on Step 1 so the UCD reads the warning
+                    }
+                    return true; // VALID -> proceed
+                } catch (e) {
+                    // Validation call itself failed (onboarding/network unreachable) — the check could
+                    // not be completed, so BLOCK rather than proceed silently (EAINT-5972 decision).
+                    console.error('TIN validation error', e);
+                    errorPopup('Service Unavailable',
+                        'The LHDN e-Invoice validation service is temporarily unavailable. Please try again later.');
+                    return false;
+                }
+            }
+
+            if (isSsmType(selectedType)) {
+                // EAINT-5972 (SRD v1.0 §2.2.1.2/.3) — both Old & New BRN exist in SSM. Always run
+                // the SSM existence check with whichever BRN the UCD supplied (validation guarantees
+                // at least one); SSM returns both refNo (Old) and newRefNo (New). This runs whether
+                // or not a TIN was entered. The TIN (optional) is then validated against the
+                // SSM-derived New BRN — so an Old-BRN-only applicant is still TIN-validated.
+                var queryBrn = (formData.newBrn && formData.newBrn.trim() !== '')
+                        ? formData.newBrn.trim()
+                        : (formData.oldBrn || '').trim();
+                var response;
+                try {
+                    response = await $.ajax({
+                        url: '/obs/preOnb/checkSSM.do',
+                        data: { tradingLicenseOrRegistrationNo: queryBrn },
+                        type: 'GET',
+                        dataType: 'json'
+                    });
+                } catch (xhr) {
+                    errorPopup("Error", (xhr && xhr.responseJSON) ? xhr.responseJSON.message : "SSM check failed. Please try again.");
+                    return;
+                }
+                // EAINT-5972 (SRD v1.0 §2.2.1.2 "otherwise upload Trading License") — if the BRN is
+                // not valid in SSM, OR the UCD entered both BRNs but they don't resolve to the same
+                // SSM company (Old != refNo / New != newRefNo), fall back to the Business Trading
+                // path (matches prod/master's switch-to-business-trading behaviour).
+                // Old BRN may include a check digit suffix (e.g. '123456-A'). The SSM API strips
+                // it via formatRoc before querying, so refNo comes back without it. Normalize both
+                // sides by taking only the part before the first '-', mirroring formatRoc's logic.
+                var brnEq = function (a, b) {
+                    function norm(s) { return (s || '').trim().split('-')[0]; }
+                    return norm(a) === norm(b);
+                };
+                var oldEntered = !!(formData.oldBrn && formData.oldBrn.trim());
+                var newEntered = !!(formData.newBrn && formData.newBrn.trim());
+                var brnMismatch = response.registered === true && (
+                        (oldEntered && response.refNo && !brnEq(formData.oldBrn, response.refNo)) ||
+                        (newEntered && response.newRefNo && !brnEq(formData.newBrn, response.newRefNo))
+                );
+                if (response.registered !== true || brnMismatch) {
+                    fallbackToBusinessTrading();
+                    return;
+                }
+                if (response.itemType) {
+                    sessionStorage.setItem('ssmItemType', response.itemType);
+                }
+                sessionStorage.setItem('registered', 'true');
+                sessionStorage.setItem('newRefNo', response.newRefNo);
+                sessionStorage.setItem('refNo', response.refNo);
+
+                // Validate TIN against the SSM-derived New BRN (covers Old-BRN-only).
+                var tinOk = await validateTinAgainstBrn(response.newRefNo);
+                if (!tinOk) {
+                    return;
+                }
+                await proceedSsmRegistered();
+            } else {
+                // Non-SSM (Business Trading) type: TIN check (b) then proceed.
+                var tinOk = await validateTinAgainstBrn();
+                if (!tinOk) {
+                    return;
+                }
+                await proceedNonSsm();
+            }
+        }
+
+        // EAINT-5972 item 3 (SRD v1.0) — inline TIN/BRN mismatch WARNING (non-blocking).
+        function showTinMismatchError() {
+            var field = document.getElementById('tin');
+            var error = document.getElementById('tin-error');
+            if (field) field.classList.add('invalid-marker');
+            if (error) {
+                error.textContent = 'The TIN is invalid. This may affect e-Invoice submission. Click "Next" to proceed.';
+                error.style.display = 'block';
+            }
+            if (field) {
+                field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                field.focus();
+            }
+        }
+
+        function clearTinMismatchError() {
+            var field = document.getElementById('tin');
+            var error = document.getElementById('tin-error');
+            if (field) field.classList.remove('invalid-marker');
+            if (error) {
+                error.textContent = '';
+                error.style.display = 'none';
+            }
+        }
+
+        async function handleStep2Submit() {
+            var agreeTerms = document.getElementById('agreeTerms');
+            var paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+            var isValid = true;
+            var isPaymentFail = true;
+
+            // Validate terms checkbox
+            var termsError = document.getElementById(ERROR_IDS.TERMS);
+            if (!agreeTerms.checked) {
+                if (termsError) {
+                    termsError.textContent = 'Please tick the checkbox to agree with our Terms and Conditions';
+                    termsError.style.display = 'block';
+                }
+                isValid = false;
+            } else {
+                if (termsError) {
+                    termsError.textContent = '';
+                    termsError.style.display = 'none';
+                }
+            }
+
+            // Validate payment method selection
+            var paymentError = document.getElementById('paymentMethod-error');
+            if (!paymentMethod) {
+                if (paymentError) {
+                    paymentError.textContent = 'Please select a payment method';
+                    paymentError.style.display = 'block';
+                }
+                isValid = false;
+            } else {
+                if (paymentError) {
+                    paymentError.textContent = '';
+                    paymentError.style.display = 'none';
+                }
+
+                var category = paymentMethod.getAttribute('data-category');
+
+                // Validate bank selection for both FPX_B2B and FPX_B2C
+                if (category === 'FPX_B2B') {
+                    var bankSelected = document.querySelector('input[name="bankSelection"]:checked');
+                    var bankError = document.getElementById('bankSelection-b2b-error');
+
+                    if (!bankSelected) {
+                        if (bankError) {
+                            bankError.textContent = 'Please select a payment bank for FPX Online banking';
+                            bankError.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else {
+                        if (bankError) {
+                            bankError.textContent = '';
+                            bankError.style.display = 'none';
+                        }
+                    }
+                } else if (category === 'FPX_B2C') {
+                    var bankSelected = document.querySelector('input[name="bankSelection"]:checked');
+                    var bankError = document.getElementById('bankSelection-b2c-error');
+
+                    if (!bankSelected) {
+                        if (bankError) {
+                            bankError.textContent = 'Please select a payment bank for FPX Online banking';
+                            bankError.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else {
+                        if (bankError) {
+                            bankError.textContent = '';
+                            bankError.style.display = 'none';
+                        }
+                    }
+                }
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            try {
+                showPaymentOverlay();
+                agreeTerms.disabled = true;
+
+                // Prepare payment data
+                var paymentData = {
+                    paymentChannel: paymentMethod.value,
+                    category: paymentMethod.getAttribute('data-category'),
+                    preOnboardingNo: sessionStorage.getItem('preOnboardingNo'),
+                    appUuid: sessionStorage.getItem('appUuid'),
+                    totalAmount: totalAmount,
+                    grossAmount: preApplicationFee,
+                    taxPercent: sstPercent,
+                    taxAmount: taxAmount,
+                };
+
+                // Add bank info if FPX_B2B or FPX_B2C category
+                if (paymentData.category === 'FPX_B2B' || paymentData.category === 'FPX_B2C') {
+                    var selectedBank = document.querySelector('input[name="bankSelection"]:checked');
+                    if (selectedBank) {
+                        paymentData.paymentMethodId = parseInt(selectedBank.getAttribute('data-bank-id'));
+                        paymentData.bankChannel = selectedBank.value;
+                        var bankCard = selectedBank.closest('.bank-card');
+                        var bankImg = bankCard.querySelector('.bank-logo');
+                        paymentData.bankDescription = bankImg ? bankImg.alt : '';
+                    }
+                } else if (paymentData.category === 'CREDIT_DEBIT'){
+                    // Find the payment method ID from creditDebitMethods list
+                    if (creditDebitMethods && creditDebitMethods.length > 0) {
+                        // Assuming you want the first credit/debit method, or you can add logic to select specific one
+                        paymentData.paymentMethodId = creditDebitMethods[0].id;
+                        paymentData.bankChannel = creditDebitMethods[0].paymentChannel;
+                        paymentData.bankDescription = creditDebitMethods[0].description;
+                    } else {
+                        console.error('No credit/debit payment method found');
+                        throw new Error('Credit/Debit payment method not configured');
+                    }                }
+
+                // Process payment
+                await startPayment(paymentData);
+                hidePaymentOverlay();
+
+            } catch (error) {
+                hidePaymentOverlay();
+                console.error('Payment error:', error);
+                errorPopup("Payment Error", error.message || "Payment processing failed");
+                agreeTerms.disabled = false;
+                $(".unsuccessful-payment-container").css('display', 'block');
+            }
+
+        }
+
+        async function deleteDatabaseAttachments(appUuid) {
+            try {
+                var response = await $.ajax({
+                    url: '/obs/preOnb/application/delete-attachments.do?appUuid=' + encodeURIComponent(appUuid),
+                    type: 'DELETE',
+                    data: JSON.stringify({appUuid: appUuid}),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    timeout: 30000
+                });
+
+                if (response && response.success) {
+                    // Clear the filesToRemove array after successful deletion
+                    filesToRemove = [];
+                } else {
+                    var errorMsg = response && response.message
+                        ? response.message
+                        : 'Attachment deletion failed without error message';
+                    console.error('Attachment deletion failed:', errorMsg);
+                }
+            } catch (error) {
+                console.error('Error deleting attachments from database:', error);
+            }
+        }
+
+        /**
+         * Delete existing SSM transaction if user modifies SSM-related data
+         */
+        function deleteSsmTransaction() {
+            var ssmTransactionId = sessionStorage.getItem('ssmTransactionId');
+            var appUuid = sessionStorage.getItem('appUuid');
+
+            $.ajax({
+                url: '/obs/preOnb/application/delete-ssm-transaction.do',
+                type: 'POST',
+                data: JSON.stringify({ appUuid: appUuid, ssmTransactionId: ssmTransactionId }),
+                contentType: 'application/json',
+                dataType: 'json',
+                timeout: 30000,
+                success: function(response) {
+                    if (response && response.success) {
+                        // Clear SSM Transaction ID from session
+                        sessionStorage.removeItem('ssmTransactionId');
+                    } else {
+                        var errorMsg = response && response.message
+                            ? response.message
+                            : 'SSM Transaction deletion failed without error message';
+                        console.error('SSM Transaction deletion failed:', errorMsg);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('=== SSM Transaction Deletion Error ===');
+                    console.error('Status:', status);
+                    console.error('Error:', error);
+                    console.error('Status Code:', xhr.status);
+                    console.error('Response:', xhr.responseText);
+                }
+            });
+        }
+
+        /**
+         * Initialise SSM information before payment
+         * This function calls the backend to initialise SSM data from the SSM API
+         */
+        function doInitialiseSsm(sessionSsmTransactionId) {
+            var appUuid = sessionStorage.getItem('appUuid');
+            var brn = sessionStorage.getItem('refNo');
+            var itemType = sessionStorage.getItem('ssmItemType');
+            var companyName = document.getElementById('businessName').value;
+
+            // Validate required data
+            if (!appUuid || !brn) {
+                console.error('Missing required data for SSM initialise');
+                errorPopup('SSM Initialise Error', 'Missing required information. Please try again.');
+                return;
+            }
+
+            // Prepare request payload
+            var requestPayload = {
+                appUuid: appUuid,
+                brn: brn,
+                itemType: itemType,
+                companyName: companyName,
+                roc: brn,
+                ssmTransactionId: sessionSsmTransactionId
+            };
+
+            $.ajax({
+                url: '/obs/preOnb/application/init-ssm.do',
+                type: 'POST',
+                data: JSON.stringify(requestPayload),
+                contentType: 'application/json',
+                dataType: 'json',
+                timeout: 30000, // 30 second timeout
+                success: function(response) {
+                    if (response && response.success) {
+                        // Extract SSM transaction data from nested structure
+                        var ssmData = response.data;
+                        if (ssmData && ssmData.apiDataDTO) {
+                            var apiData = ssmData.apiDataDTO;
+                            var ssmTransactionId = apiData.transactionId;
+                            var refNo = apiData.refNo;
+                            var responseCode = apiData.responseCode;
+                            var remark = ssmData.remark;
+
+                            // Store in session if needed
+                            if (ssmTransactionId) {
+                                sessionStorage.setItem('ssmTransactionId', ssmTransactionId);
+                            }
+                        } else {
+                            console.error('No apiDataDTO in SSM initialise response');
+                            errorPopup('SSM Initialise Error', 'Invalid response structure from SSM service');
+                        }
+                    } else {
+                        var errorMsg = response && response.message
+                            ? response.message
+                            : 'SSM initialise failed without error message';
+                        console.error('SSM initialise failed:', errorMsg);
+                        errorPopup('SSM initialise Error', errorMsg);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('=== SSM initialise Error ===');
+                    console.error('Status:', status);
+                    console.error('Error:', error);
+                    console.error('Status Code:', xhr.status);
+                    console.error('Response:', xhr.responseText);
+
+                    var errorMessage = 'Failed to initialise SSM information';
+
+                    // Try to parse error response
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.responseText) {
+                        try {
+                            var errorResponse = JSON.parse(xhr.responseText);
+                            if (errorResponse.message) {
+                                errorMessage = errorResponse.message;
+                            }
+                        } catch (e) {
+                            console.error('Could not parse error response');
+                        }
+                    }
+
+                    // Handle specific HTTP status codes
+                    switch(xhr.status) {
+                        case 400:
+                            errorMessage = 'Invalid request data: ' + errorMessage;
+                            break;
+                        case 409:
+                            errorMessage = 'SSM transaction already processed';
+                            break;
+                        case 500:
+                            errorMessage = 'SSM server error. Please contact support.';
+                            break;
+                        case 0:
+                            errorMessage = 'Network error. Please check your connection.';
+                            break;
+                        default:
+                            if (status === 'timeout') {
+                                errorMessage = 'Request timed out. Please try again.';
+                            }
+                    }
+
+                    errorPopup('SSM initialise Error', errorMessage);
+                }
+            });
+        }
+
+        async function startPayment(paymentData){
+            try{
+                const paymentUuid = await createNewPayment(paymentData);
+                // Store payment UUID in session storage
+                sessionStorage.setItem('paymentUuid', paymentUuid);
+                await updatePaymentStatus(paymentUuid, PaymentStatus.PENDING);
+                await processPayment(paymentData, paymentUuid);
+            } catch (error) {
+                $(".unsuccessful-payment-container").css('display', 'block');
+                errorPopup("Payment Error", error);
+            }
+        }
+
+        function createNewPayment(paymentData) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '/obs/preOnb/payment/save-new-payment.do',
+                    type: 'POST',
+                    data: JSON.stringify(paymentData),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    global: false,
+                    success: function(response) {
+                        resolve(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error creating payment:', error);
+                        reject(new Error('Failed to create payment: ' + error));
+                    }
+                });
+            });
+        }
+
+        function processPayment(paymentData, paymentUuid) {
+            return new Promise((resolve, reject) => {
+                if (!formData) {
+                    // Fallback: rebuild formData from DOM elements
+                    formData = {
+                        businessName: document.getElementById('businessName').value,
+                        adminName: document.getElementById('adminName').value,
+                        adminEmail: document.getElementById('adminEmail').value,
+                        mobileNo: document.getElementById('mobileNo').value
+                    };
+                }
+
+                // Prepare data for payment
+                var prepareData = {
+                    businessName: formData.businessName,
+                    adminName: formData.adminName,
+                    adminEmail: formData.adminEmail,
+                    mobileNo: formData.mobileNo,
+                    channel: paymentData.bankChannel || paymentData.paymentChannel,
+                    paymentUuid: paymentUuid
+                };
+
+                // Call backend to prepare payment and get FIUU payment URL
+                $.ajax({
+                    url: '/obs/preOnb/prepare-payment',
+                    type: 'POST',
+                    data: prepareData,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Open FIUU payment in popup window
+                            var paymentWindow = window.open(
+                                response.paymentUrl,
+                                'FiuuPayment',
+                                'width=800,height=600,scrollbars=yes,resizable=yes'
+                            );
+
+                            // Check if popup was blocked
+                            if (!paymentWindow || paymentWindow.closed || typeof paymentWindow.closed === 'undefined') {
+                                reject(new Error('Payment popup was blocked. Please allow popups and try again.'));
+                                return;
+                            }
+
+                            // Monitor popup window
+                            var checkInterval = setInterval(function() {
+                                if (paymentWindow.closed) {
+                                    clearInterval(checkInterval);
+                                    resolve();
+                                }
+                            }, 1000);
+
+                        } else {
+                            reject(new Error(response.error || 'Failed to prepare payment'));
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error preparing payment:', error);
+                        reject(new Error('Failed to prepare payment: ' + error));
+                    }
+                });
+            });
+        }
+
+        function updatePaymentStatus(uuid, paymentStatus) {
+            return new Promise((resolve, reject) => {
+                const requestData = {
+                    uuid: uuid,
+                    paymentStatus: paymentStatus
+                };
+
+                $.ajax({
+                    url: '/obs/preOnb/payment/update-payment-status.do',
+                    type: 'POST',
+                    data: JSON.stringify(requestData),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    global: false,
+                    success: function(response) {
+                        resolve(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error updating status:', error);
+                        reject(new Error('Failed to update status: ' + error));
+                    }
+                });
+            });
+        }
+
+        async function saveInitialApplication(formData) {
+            return new Promise((resolve, reject) => {
+                var formDataToSend = new FormData();
+                var existingAppUuid = sessionStorage.getItem('appUuid');
+
+                // Add form fields (skip file-related arrays)
+                Object.keys(formData).forEach(key => {
+                    if (key !== 'tradingLicenseFiles') {
+                        formDataToSend.append(key, formData[key]);
+                    }
+                });
+
+                // Add NEW files if any
+                if (sessionStorage.getItem('registered') === 'false') {
+                    if (formData.tradingLicenseFiles && formData.tradingLicenseFiles.length > 0) {
+                        formData.tradingLicenseFiles.forEach((file) => {
+                            formDataToSend.append('tradingLicenseFiles', file);
+                        });
+                    }
+                }
+
+                if (existingAppUuid) {
+                    formDataToSend.append('appUuid', existingAppUuid);
+                    formDataToSend.append('paymentUuid', sessionStorage.getItem('paymentUuid'));
+                }
+
+                formDataToSend.append('ssmItemType', sessionStorage.getItem('ssmItemType'));
+                formDataToSend.append('newRefNo', sessionStorage.getItem('newRefNo'));
+                formDataToSend.append('refNo', sessionStorage.getItem('refNo'));
+
+                $.ajax({
+                    url: '/obs/preOnb/application/save-initial.do',
+                    type: 'POST',
+                    data: formDataToSend,
+                    processData: false,
+                    contentType: false,
+                    global: false,
+                    success: function (response) {
+                        sessionStorage.setItem('appUuid', response.uuid);
+                        sessionStorage.setItem('businessTypeLabel', response.businessType);
+                        filesToRemove = []; // Clear files to remove after successful save
+                        if (sessionStorage.getItem('registered') === 'false') {
+                            loadUploadedTradingLicenseFiles(response.uuid)
+                        }
+                        resolve(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error saving application:', error);
+                        
+                        // Check if locked by another user
+                        if (xhr.status === 423 && xhr.responseJSON && xhr.responseJSON.locked) {
+                            showLockDeniedPopup(xhr.responseJSON.message);
+                            reject(new Error('Application locked'));
+                        } else {
+                            reject(new Error('Failed to save application: ' + error));
+                        }
+                    }
+                });
+            });
+        }
+
+        function errorPopup(title, msg) {
+            var nextSubmitBtn = document.getElementById('nextSubmitBtn');
+            if (nextSubmitBtn) {
+                nextSubmitBtn.disabled = true;
+            }
+            openCustomDialog({
+                title: title,
+                content: msg,
+                confirmBtnName: "OK",
+                shouldHideCancelBtn: true,
+                onConfirmCloseHandler: function() {
+                    $('body').css('overflow', '');
+                    if (nextSubmitBtn) {
+                        nextSubmitBtn.disabled = false;
+                    }
+                },
+                onCloseButtonCloseHandler: function() {
+                    $('body').css('overflow', '');
+                    if (nextSubmitBtn) {
+                        nextSubmitBtn.disabled = false;
+                    }
+                }
+            });
+            setTimeout(function() {
+                $('body').css('overflow', 'hidden');
+            }, 10);
+        }
+
+        // ==================== SESSION LOCK MANAGEMENT ====================
+
+        /**
+         * Release the session lock when leaving the page
+         */
+        function releaseLock() {
+            var currentUuid = sessionStorage.getItem('appUuid');
+            if (currentUuid) {
+                var csrfToken = $("meta[name='_csrf']").attr("content");
+
+                // Use sendBeacon for reliable delivery on page unload
+                var formData = new FormData();
+                formData.append('_csrf', csrfToken);
+
+                var url = '/obs/preOnb/release-lock/' + currentUuid;
+
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon(url, formData);
+                    console.log('Lock release beacon sent for:', currentUuid);
+                } else {
+                    // Fallback for older browsers
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        async: false, // Synchronous for unload
+                        data: {}
+                    });
+                }
+            }
+        }
+
+        /**
+         * Call the refresh-lock endpoint
+         */
+        function refreshLock() {
+            var appUuid = sessionStorage.getItem('appUuid');
+            if (!appUuid) {
+                console.log('No appUuid, skipping lock refresh');
+                return;
+            }
+
+            $.ajax({
+                url: '/obs/preOnb/refresh-lock/' + appUuid,
+                type: 'POST',
+                dataType: 'json',
+                global: false, // Don't trigger global ajax handlers
+                success: function(response) {
+                    if (response.success) {
+                        console.log('Lock refreshed successfully for:', appUuid);
+                    } else {
+                        console.warn('Lock refresh failed:', response.message);
+                        // Lock was lost - show warning to user
+                        handleLockLost();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error refreshing lock:', error);
+                    // Don't show error popup for network issues, just log it
+                }
+            });
+        }
+
+        // Show lock denied popup and redirect to original URL
+        function showLockDeniedPopup(message) {
+            openCustomDialog({
+                title: 'Access Denied',
+                content: message || LOCK_DENIED_MESSAGE,
+                confirmBtnName: 'OK',
+                shouldHideCancelBtn: true,
+                onConfirmCloseHandler: function() {
+                    $('body').css('overflow', '');
+                    sessionStorage.clear();
+                    window.location.href = originalUrl;
+                },
+                onCloseButtonCloseHandler: function() {
+                    $('body').css('overflow', '');
+                    sessionStorage.clear();
+                    window.location.href = originalUrl;
+                }
+            });
+            setTimeout(function() {
+                $('body').css('overflow', 'hidden');
+            }, 10);
+        }
+
+        // Release lock when page is closed/navigated away
+        window.addEventListener('beforeunload', function(e) {
+            // Don't release lock if navigating to summary (payment completed)
+            var paymentCompleted = sessionStorage.getItem('paymentCompleted');
+            if (paymentCompleted !== 'true') {
+                releaseLock();
+            }
+        });
+
+        // ==================== END SESSION LOCK MANAGEMENT ====================
+
+    </script>
+
+
+<div id="claude-agent-glow-border" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483646; opacity: 1; transition: opacity 0.3s ease-in-out;"><div id="claude-agent-glow-border-inner" style="position: absolute; inset: 0px; will-change: opacity; box-shadow: rgba(217, 119, 87, 0.7) 0px 0px 15px inset, rgba(217, 119, 87, 0.5) 0px 0px 25px inset, rgba(217, 119, 87, 0.2) 0px 0px 35px inset;"></div></div><div id="claude-phantom-cursor" aria-hidden="true" style="position: fixed; top: 0px; left: 0px; pointer-events: none; z-index: 2147483646; transform: translate3d(897px, 322px, 0px); transition: transform 180ms cubic-bezier(0.2, 0, 0, 1); will-change: transform;"><svg id="claude-phantom-cursor-plain" width="20" height="26" viewBox="0 0 20 26" style="position: absolute; top: 0px; left: 0px; overflow: visible;"><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" stroke="white" stroke-width="3" stroke-linejoin="round" fill="white"></path><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" fill="#111"></path></svg><svg id="claude-phantom-cursor-styled" width="20" height="26" viewBox="0 0 20 26" style="position: absolute; top: 0px; left: 0px; overflow: visible; filter: drop-shadow(rgba(217, 119, 87, 0.9) 0px 0px 4px) drop-shadow(rgba(217, 119, 87, 0.45) 0px 0px 10px);"><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" stroke="#D97757" stroke-width="3" stroke-linejoin="round" fill="#D97757"></path><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" fill="#FAF9F5"></path></svg></div></body></html>

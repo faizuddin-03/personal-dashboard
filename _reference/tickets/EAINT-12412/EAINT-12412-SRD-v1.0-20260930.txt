@@ -1,0 +1,369 @@
+Requirement                   SYSTEM REQUIREMENT DOCUMENT (SRD)
+Version               [eAuto-UCD & BackOffice] JomCheck: Split Invoice & e-Invoice Charge into JomCheck
+Latest Revision Date  Service Charge and eAuto Service Charge
+
+                      Version 1.0
+
+                      30.09.2026 (Wednesday)
+                                                                                CONTENTS
+1.0 DOCUMENT INFORMATION ....................................................................................................................................................3
+
+    1.1 Purpose .............................................................................................................................................................................3
+    1.2 Intended Audience .............................................................................................................................................................3
+    1.3 Revision History.................................................................................................................................................................3
+    1.4 Glossary of Terms .............................................................................................................................................................4
+    1.5 Associated Document(s)....................................................................................................................................................4
+2.0 REQUIREMENT........................................................................................................................................................................5
+    2.1 High-Level Requirement Overview .....................................................................................................................................5
+
+         2.1.1 Assumptions .............................................................................................................................................................6
+         2.1.2 Out-of-Scope.............................................................................................................................................................7
+    2.2 Key Highlights and Baseline Requirements ........................................................................................................................8
+         2.2.1 Background ...............................................................................................................................................................8
+         2.2.2 Existing Issue & Expected Behaviour..........................................................................................................................9
+         2.2.3 Affected Pages ........................................................................................................................................................10
+         2.2.4 Applicability.............................................................................................................................................................11
+         2.2.5 JomCheck Invoice (UCD & BackOffice) ....................................................................................................................12
+         2.2.6 JomCheck e-Invoice (LHDN Submission).................................................................................................................16
+Appendix -- Requirement Change Log..........................................................................................................................................17
+
+                                                                                                                                                                                                   Page 2 of 17
+1.0 DOCUMENT INFORMATION
+
+1.1 Purpose
+
+The System Requirements Document outlines the agreed system specifications. Once approved, it becomes the baseline to ensure
+the system meets business goals. Sign-off is required for development to start, and any changes must follow the System
+Enhancement Management process.
+
+1.2 Intended Audience
+
+The intended audience for this document includes project stakeholders and any team members involved in defining, implementing,
+or validating the system requirements.
+
+1.3 Revision History
+
+This section records all modifications to the document until it reaches Version 1.0, at which point it is finalized and established as
+the baseline for future reference. Once baselined, any new changes will be assessed based on their severity -- significant changes
+may result in an addendum, while less critical updates may be handled through a formal change request.
+
+Version No Date        Revised By                         Reason for Revision
+
+0.1  28.09.2026 (Mon)  Chee Mei Jia                       Initial Draft
+
+0.2  29.09.2026 (Tue)  Chee Mei Jia                       Updated Section 2.1.1 and 2.1.2; Added Revenue
+                                                          Split Assumption and Out-of-Scope Items and
+                                                          Renamed JomCheck Line Item
+
+1.0  30.09.2026 (Wed)  Chee Mei Jia                       This is the baseline of the Change Request.
+
+Note: Update made to the document is highlighted in blue
+
+                                                                               Page 3 of 17
+1.4 Glossary of Terms
+
+#  Abbreviation / Term               Interpretation / Description
+                                     Sales and Service Tax, charged at 8%
+1  SST
+                                     Lembaga Hasil Dalam Negeri, the authority receiving e-Invoice submissions
+2  LHDN
+
+1.5 Associated Document(s)
+
+#  Item                                        Location / URL  Rationale for Relevance
+
+1  EAINT-12412 -- [eAuto-UCD & BackOffice]     https://mfservices.atlassian.net/br Internal IT ticket
+                                               owse/EAINT-12412
+   JomCheck: Split Invoice & e-Invoice Charge
+
+   into JomCheck Service Charge and eAuto
+
+   Service Charge
+
+2  CCB-994 -- EAUTO | JomCheck: Split Invoice https://mfservices.atlassian.net/br Cross-department ticket
+
+   & e-Invoice Charge into JomCheck Service    owse/CCB-994
+
+   Charge and eAuto Service Charge
+
+3  EAUTO-1070 -- JOMCHECK - INVOICE            https://mfservices.atlassian.net/br Source ticket
+                                               owse/EAUTO-1070
+   UPDATE
+
+                                                                                                           Page 4 of 17
+2.0 REQUIREMENT
+
+2.1 High-Level Requirement Overview
+
+#      Item                          Description
+
+2.1.1  Enhancement Overview          Split JomCheck charge on invoice and e-Invoice into 2 line items:
+                                     JomCheck service charge and eAuto service charge.
+
+2.1.2  Key Value(s) Expected         Invoice and e-Invoice show actual fee breakdown, while total amount
+                                     paid by UCD stays same.
+
+2.1.3  Additional Note(s)            Applies only to JomCheck transactions approved after deployment of
+                                     this Change Request.
+
+                                     Page 5 of 17
+2.1.1 Assumptions
+
+#  Assumption
+
+1  Total JomCheck charge remains RM21.60 including SST. No change to JomCheck purchase price.
+
+2  SST at 8% is charged on each line item separately.
+
+3  Revenue split recorded in system stays eAuto RM6 and ezAUTO Asia RM14. Only invoice and e-Invoice display RM18 +
+
+   RM2.
+
+                                                                                               Page 6 of 17
+2.1.2 Out-of-Scope
+
+#  Item                                            Reason
+
+1  Invoice and e-Invoice of JomCheck transactions  Remain as issued. No regeneration and no resubmission to
+                                                   LHDN.
+   approved before deployment
+
+2  Change to JomCheck purchase price               Only breakdown changes. Total charge stays RM21.60.
+
+3  Revenue split in revenue, SST and e-Invoice reports Stays eAuto RM6 and ezAUTO Asia RM14. Only invoice and e-
+
+                                                   Invoice display change.
+
+4  UCD and BackOffice screens                      Only invoice and e-Invoice show 2 line items. Screen price
+                                                   display stays as today.
+
+                                                                                                        Page 7 of 17
+2.2 Key Highlights and Baseline Requirements
+
+The following key highlights and requirements were established during the initial sync-up sessions with requestor. As this forms
+the baseline, any changes requested thereafter may result in adjustments to scope, timeline, or deliverables, for which requestor
+will be responsible to review and confirm.
+
+2.2.1 Background
+
+#  Affected Item    Description
+                    eAuto
+1  Project
+
+2  Portal           1. UCD
+                    2. BackOffice
+
+3  Module           JomCheck ­ Invoice & e-Invoice
+
+4  Request          Split JomCheck charge on invoice into 2 line items to show actual fee breakdown.
+
+5  Additional Note  Only breakdown changes, total payable amount stays same.
+
+                                                                              Page 8 of 17
+2.2.2 Existing Issue & Expected Behaviour
+
+#  Item                        Description
+
+1  Existing Issue / Behaviour  Invoice shows only 1 line item, JomCheck service charge, at RM20.00 plus 8% SST,
+                               which is RM21.60.
+
+                               1. Unit Price: RM20.00
+                               2. Tax Amount: RM1.60
+                               3. Total Price (including tax): RM21.60
+
+                               Amount and fees shown do not reflect actual fee breakdown.
+
+2  Expected New Handling /     JomCheck charge is split into 2 line items, each charged 8% SST:
+                                   1. JomCheck service charge: RM18.00 + SST RM1.44 = RM19.44.
+   Behaviour                       2. eAuto service charge: RM2.00 + SST RM0.16 = RM2.16.
+
+                               Total charge remains RM21.60 including SST.
+                               Same breakdown applies to invoice and e-Invoice.
+                               Applies only to JomCheck transactions approved after deployment.
+
+                                                                                                 Page 9 of 17
+2.2.3 Affected Pages
+
+#  Affected Pages                  Description
+                                   Invoice shows 2 line items instead of 1.
+1  UCD -- JomCheck Invoice         Invoice shows 2 line items instead of 1.
+                                   e-Invoice submitted to LHDN carries 2 line items instead of 1.
+2  BackOffice -- JomCheck Invoice
+
+3  JomCheck e-Invoice (LHDN
+
+   submission)
+
+                                                                                                   Page 10 of 17
+2.2.4 Applicability
+
+#  Requirement ID    Item       Description                           Acceptance Criteria
+
+1  EAINT-12412-REQ-  New        New breakdown applies based on        Example 1: Transaction approved after
+                     Breakdown  transaction approval date and time.   deployment
+   001               Cut-off                                          a. Invoice and e-Invoice show 2 line items
+                                Transactions approved after
+                                deployment use new breakdown.         Example 2: Transaction approved before
+                                                                      deployment, invoice downloaded again
+                                Transactions approved before          after deployment
+                                deployment keep existing single line  a. Invoice still shows 1 line item,
+                                item on invoice and e-Invoice.        JomCheck service charge RM21.60
+                                                                      b. e-Invoice is not resubmitted
+
+                                                                      Example 3: Transaction created before
+                                                                      deployment but approved after
+                                                                      deployment
+                                                                      a. Invoice and e-Invoice show 2 line items
+
+                                                                                           Page 11 of 17
+2.2.5 JomCheck Invoice (UCD & BackOffice)
+
+#  Requirement ID  Item      Description                          Acceptance Criteria
+
+1  EAINT-12412-REQ- Line Item 1 -- Existing:                      Example 1: Transaction approved after
+                                                                  deployment
+   002             JomCheck  1 line item, JomCheck service        a. Line 1 shows JomCheck service
+                                                                  charge
+                   Service Charge charge: Quantity 1, Unit Price  b. Quantity 1, Unit Price RM18.00,
+                                                                  Subtotal RM18.00, Tax Amount RM1.44,
+                             RM20.00, Subtotal RM20.00, Tax       Total Price RM19.44
+
+                             Amount RM1.60, Total Price           Example 2: Transaction approved before
+                                                                  deployment
+                             RM21.60.                             a. Invoice shows existing single line item
+                                                                  JomCheck service charge RM21.60
+                             New Expected:
+                             Line item 1, JomCheck service
+                             charge: Quantity 1, Unit Price
+                             RM18.00, Subtotal RM18.00, Tax
+                             Amount RM1.44, Total Price
+                             RM19.44.
+
+                                                                  Page 12 of 17
+#  Requirement ID  Item    Description                         Acceptance Criteria
+
+2  EAINT-12412-REQ- Line Item 2 -- Existing:                   Example 1: Transaction approved after
+
+   003             eAuto Service No separate eAuto service charge deployment
+
+                   Charge  line item.                          a. Line 2 shows eAuto service charge
+
+                                                               b. Quantity 1, Unit Price RM2.00, Subtotal
+
+                           New Expected:                       RM2.00, Tax Amount RM0.16, Total Price
+
+                           Line item 2, eAuto service charge:  RM2.16
+
+                           Quantity 1, Unit Price RM2.00,
+
+                           Subtotal RM2.00, Tax Amount         Example 2: Transaction approved before
+
+                           RM0.16, Total Price RM2.16.         deployment
+
+                                                               a. No eAuto service charge line item
+
+                                                                                    Page 13 of 17
+#  Requirement ID  Item  Description                      Acceptance Criteria
+
+3  EAINT-12412-REQ- Invoice Totals Existing:              Example 1: Transaction approved after
+
+   004                   Totals based on 1 line item: Subtotal deployment
+
+                         RM20.00, Tax Amount RM1.60, Total a. Subtotal = RM18.00 + RM2.00 =
+
+                         Price RM21.60.                   RM20.00
+
+                                                          b. Tax Amount = RM1.44 + RM0.16 =
+
+                         New Expected:                    RM1.60
+
+                         Totals are sum of 2 line items.  c. Total Payable Amount = RM19.44 +
+
+                         Values stay same:                RM2.16 = RM21.60
+
+                         a. Subtotal row: RM20.00 |       Example 2: Transaction approved before
+                             RM1.60 | RM21.60             deployment
+                                                          a. Totals remain as issued: RM20.00,
+                         b. Total Net Amount: RM20.00     RM1.60, RM21.60
+                         c. Total Excluding Tax: RM20.00
+                         d. Tax Amount: RM1.60
+                         e. Total Including Tax: RM21.60
+                         f. Total Payable Amount:
+
+                             RM21.60
+
+                                                                               Page 14 of 17
+#  Requirement ID  Item        Description                     Acceptance Criteria
+
+4  EAINT-12412-REQ- Same Invoice Invoice viewed or downloaded from Example 1: UCD views or downloads
+
+   005             in UCD and  UCD and BackOffice shows same 2 invoice of transaction approved after
+
+                   BackOffice  line items and totals for same  deployment
+
+                               transaction.                    a. 2 line items and totals as per Section
+
+                                                               2.2.5
+
+                                                               Example 2: BackOffice user views or
+                                                               downloads invoice of same transaction
+                                                               a. Identical line items and totals as UCD
+                                                               invoice
+
+                                                                                    Page 15 of 17
+2.2.6 JomCheck e-Invoice (LHDN Submission)
+
+#  Requirement ID  Item   Description                             Acceptance Criteria
+
+1  EAINT-12412-REQ- e-Invoice Line Existing:                      Example 1: Transaction approved after
+                                                                  deployment
+   006             Items  e-Invoice submitted to LHDN with 1      a. e-Invoice submitted to LHDN with 2
+                                                                  line items
+                          line item, JomCheck service charge      b. Total payable amount RM21.60, same
+                                                                  as invoice
+                          RM20.00 + SST RM1.60 = RM21.60.
+                                                                  Example 2: Transaction approved before
+                          New Expected:                           deployment
+                          e-Invoice submitted to LHDN with 2      a. e-Invoice remains as submitted, no
+                          line items matching invoice:            resubmission
+
+                          a. JomCheck service charge:
+                              RM18.00 + SST RM1.44 =
+                              RM19.44.
+
+                          b. eAuto service charge: RM2.00
+                              + SST RM0.16 = RM2.16.
+
+                          Total payable amount remains
+                          RM21.60.
+
+                          Classification code for each line item
+                          follows existing JomCheck e-Invoice
+                          classification code. Pending
+                          confirmation from Finance.
+
+                                                                  Page 16 of 17
+Appendix -- Requirement Change Log
+
+#  SRD Version Requirement ID  Status Reason
+
+1  1.0  EAINT-12412-REQ- Added  New breakdown cut-off by approval date
+        001
+
+2  1.0  EAINT-12412-REQ- Added  JomCheck service charge line item
+        002
+
+3  1.0  EAINT-12412-REQ- Added  eAuto service charge line item
+        003
+
+4  1.0  EAINT-12412-REQ- Added  Invoice totals from 2 line items
+        004
+
+5  1.0  EAINT-12412-REQ- Added  Same invoice in UCD and BackOffice
+        005
+
+6  1.0  EAINT-12412-REQ- Added  e-Invoice submitted with 2 line items
+        006
+
+                                                                        Page 17 of 17
+

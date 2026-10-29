@@ -7,7 +7,13 @@ export interface Note {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+  /** Optional, added 2026-10-21. Archived notes are hidden from the gallery and can be restored. */
+  archived?: boolean;
+  archivedAt?: string;
 }
+
+/** Window event fired after every saveNotes(); detail = { source?: string }. */
+export const NOTES_EVENT = "notes-updated";
 
 export const NOTE_COLORS: { label: string; value: string; bg: string; border: string }[] = [
   { label: "None",   value: "",       bg: "bg-slate-900",      border: "border-slate-700" },
@@ -35,8 +41,11 @@ export function getNotes(): Note[] {
   } catch { return []; }
 }
 
-export function saveNotes(notes: Note[]) {
+export function saveNotes(notes: Note[], source?: string) {
   localStorage.setItem("notes", JSON.stringify(notes));
+  try {
+    window.dispatchEvent(new CustomEvent(NOTES_EVENT, { detail: { source } }));
+  } catch { /* non-browser */ }
 }
 
 export function stripHtml(html: string): string {

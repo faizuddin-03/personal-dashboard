@@ -13,10 +13,13 @@ import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
-import { Table } from "@tiptap/extension-table";
+import { Table, TableView } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
+import { moveTableRow, moveTableColumn } from "@tiptap/pm/tables";
+import type { EditorView } from "@tiptap/pm/view";
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useState, useCallback } from "react";
 import {
@@ -28,6 +31,10 @@ import {
   Code2, Table as TableIcon, ImagePlus,
   Subscript as SubscriptIcon, Superscript as SuperscriptIcon,
   Minus, IndentIncrease, IndentDecrease,
+  Plus, Trash2, Merge, Split,
+  BetweenHorizontalStart, BetweenHorizontalEnd,
+  BetweenVerticalStart, BetweenVerticalEnd,
+  Columns3, Rows3,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -117,11 +124,244 @@ const Indent = Extension.create({
   },
   addKeyboardShortcuts() {
     return {
-      Tab: () => this.editor.commands.indent(),
-      "Shift-Tab": () => this.editor.commands.outdent(),
+      Tab: () => {
+        if (this.editor.isActive("listItem") || this.editor.isActive("taskItem")) {
+          return false;
+        }
+        return this.editor.commands.indent();
+      },
+      "Shift-Tab": () => {
+        if (this.editor.isActive("listItem") || this.editor.isActive("taskItem")) {
+          return false;
+        }
+        return this.editor.commands.outdent();
+      },
+      Enter: ({ editor }) => {
+        const { $from } = editor.state.selection;
+        const node = $from.parent;
+        if (node.isTextblock && node.content.size === 0 && node.attrs.indent > 0) {
+          return editor.commands.outdent();
+        }
+        return false;
+      },
     };
   },
 });
+
+// Inside a table cell, Table's own keymap normally claims Tab/Shift-Tab to
+// hop between cells before ListItem/TaskItem get a chance to sink/lift.
+// Higher priority makes this extension's shortcuts run first, so a Tab
+// pressed inside a list item nests it instead of moving the cursor.
+const TableListTab = Extension.create({
+  name: "tableListTab",
+  priority: 1000,
+  addKeyboardShortcuts() {
+    return {
+      Tab: () => {
+        const { editor } = this;
+        const inTable = editor.isActive("tableCell") || editor.isActive("tableHeader");
+        if (!inTable) return false;
+        if (editor.isActive("taskItem")) return editor.commands.sinkListItem("taskItem");
+        if (editor.isActive("listItem")) return editor.commands.sinkListItem("listItem");
+        return false;
+      },
+      "Shift-Tab": () => {
+        const { editor } = this;
+        const inTable = editor.isActive("tableCell") || editor.isActive("tableHeader");
+        if (!inTable) return false;
+        if (editor.isActive("taskItem")) return editor.commands.liftListItem("taskItem");
+        if (editor.isActive("listItem")) return editor.commands.liftListItem("listItem");
+        return false;
+      },
+    };
+  },
+});
+
+// ── Draggable table rows/columns ────────────────────────────
+// Extends Tiptap's default resizable TableView with grip handles rendered
+// alongside the table (never inside contentDOM, so ProseMirror never mistakes
+// them for table content) that let the user drag a row or column to a new
+// position. Reordering itself is delegated to prosemirror-tables' own
+// moveTableRow/moveTableColumn, which already understands merged cells.
+type DragKind = "row" | "col";
+
+class DraggableTableView extends TableView {
+  private view: EditorView;
+  private rowGrips: HTMLDivElement;
+  private colGrips: HTMLDivElement;
+  private cleanupHover: () => void;
+  private rafId: number | null = null;
+
+  constructor(node: ProseMirrorNode, cellMinWidth: number, view: EditorView) {
+    super(node, cellMinWidth, view);
+    this.view = view;
+
+    this.dom.style.position = "relative";
+    this.dom.style.paddingTop = "14px";
+    this.dom.style.paddingLeft = "14px";
+
+    this.rowGrips = document.createElement("div");
+    this.rowGrips.style.cssText = "position:absolute;left:0;top:14px;width:12px;pointer-events:none;";
+    this.colGrips = document.createElement("div");
+    this.colGrips.style.cssText = "position:absolute;left:14px;top:0;height:12px;pointer-events:none;";
+    this.dom.appendChild(this.rowGrips);
+    this.dom.appendChild(this.colGrips);
+
+    const showGrips = () => { this.rowGrips.style.opacity = "1"; this.colGrips.style.opacity = "1"; };
+    const hideGrips = () => { this.rowGrips.style.opacity = "0"; this.colGrips.style.opacity = "0"; };
+    this.rowGrips.style.opacity = "0";
+    this.colGrips.style.opacity = "0";
+    this.rowGrips.style.transition = this.colGrips.style.transition = "opacity .15s";
+    this.dom.addEventListener("mouseenter", showGrips);
+    this.dom.addEventListener("mouseleave", hideGrips);
+    this.cleanupHover = () => {
+      this.dom.removeEventListener("mouseenter", showGrips);
+      this.dom.removeEventListener("mouseleave", hideGrips);
+    };
+
+    this.scheduleRefresh();
+  }
+
+  update(node: ProseMirrorNode) {
+    const ok = super.update(node);
+    if (ok) this.scheduleRefresh();
+    return ok;
+  }
+
+  private scheduleRefresh() {
+    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+    this.rafId = requestAnimationFrame(() => { this.rafId = null; this.refreshGrips(); });
+  }
+
+  private tableRows(): HTMLTableRowElement[] {
+    return Array.from(this.table.querySelectorAll(":scope > tbody > tr"));
+  }
+
+  private refreshGrips() {
+    const wrapperRect = this.dom.getBoundingClientRect();
+    const rows = this.tableRows();
+
+    this.rowGrips.innerHTML = "";
+    rows.forEach((rowEl, i) => {
+      const r = rowEl.getBoundingClientRect();
+      const grip = document.createElement("div");
+      grip.title = "Drag to reorder row";
+      grip.style.cssText = [
+        "position:absolute", "left:0", "width:8px", "border-radius:3px",
+        "background:#64748b", "cursor:grab", "pointer-events:auto",
+      ].join(";");
+      grip.style.top = `${r.top - wrapperRect.top}px`;
+      grip.style.height = `${Math.max(r.height - 2, 4)}px`;
+      grip.addEventListener("mousedown", e => this.startDrag(e as MouseEvent, "row", i));
+      this.rowGrips.appendChild(grip);
+    });
+
+    this.colGrips.innerHTML = "";
+    const firstRow = rows[0];
+    if (firstRow) {
+      const cells = Array.from(firstRow.children) as HTMLElement[];
+      cells.forEach((cellEl, i) => {
+        const r = cellEl.getBoundingClientRect();
+        const grip = document.createElement("div");
+        grip.title = "Drag to reorder column";
+        grip.style.cssText = [
+          "position:absolute", "top:0", "height:8px", "border-radius:3px",
+          "background:#64748b", "cursor:grab", "pointer-events:auto",
+        ].join(";");
+        grip.style.left = `${r.left - wrapperRect.left}px`;
+        grip.style.width = `${Math.max(r.width - 2, 4)}px`;
+        grip.addEventListener("mousedown", e => this.startDrag(e as MouseEvent, "col", i));
+        this.colGrips.appendChild(grip);
+      });
+    }
+  }
+
+  private startDrag(e: MouseEvent, kind: DragKind, fromIndex: number) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const rows = this.tableRows();
+    const wrapperRect = this.dom.getBoundingClientRect();
+    const boundaries = kind === "row"
+      ? rows.map(r => r.getBoundingClientRect())
+      : Array.from(rows[0]?.children ?? []).map(c => (c as HTMLElement).getBoundingClientRect());
+    if (boundaries.length === 0) return;
+
+    const indicator = document.createElement("div");
+    indicator.style.position = "absolute";
+    indicator.style.background = "#3b82f6";
+    indicator.style.zIndex = "50";
+    indicator.style.pointerEvents = "none";
+    if (kind === "row") {
+      indicator.style.left = "0"; indicator.style.right = "0"; indicator.style.height = "3px";
+    } else {
+      indicator.style.top = "0"; indicator.style.bottom = "0"; indicator.style.width = "3px";
+    }
+    this.dom.appendChild(indicator);
+
+    let dropIndex = fromIndex;
+
+    const positionIndicator = () => {
+      // dropIndex is an insertion point in the ORIGINAL (pre-drag) array —
+      // "before boundaries[dropIndex]", or "after the last one" if it equals
+      // boundaries.length. moveTableRow/Column instead want the item's final
+      // resting index in the array with the dragged item already removed,
+      // which is one less whenever the drop point is past the source row.
+      const edge = dropIndex < boundaries.length
+        ? (kind === "row" ? boundaries[dropIndex].top - wrapperRect.top : boundaries[dropIndex].left - wrapperRect.left)
+        : (kind === "row" ? boundaries[boundaries.length - 1].bottom - wrapperRect.top : boundaries[boundaries.length - 1].right - wrapperRect.left);
+      if (kind === "row") indicator.style.top = `${edge}px`;
+      else indicator.style.left = `${edge}px`;
+    };
+    positionIndicator();
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const pos = kind === "row" ? moveEvent.clientY : moveEvent.clientX;
+      let next = boundaries.length;
+      for (let i = 0; i < boundaries.length; i++) {
+        const b = boundaries[i];
+        const mid = kind === "row" ? (b.top + b.bottom) / 2 : (b.left + b.right) / 2;
+        if (pos < mid) { next = i; break; }
+      }
+      if (next !== dropIndex) { dropIndex = next; positionIndicator(); }
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+      indicator.remove();
+      const toIndex = dropIndex > fromIndex ? dropIndex - 1 : dropIndex;
+      if (toIndex !== fromIndex) this.commitMove(kind, fromIndex, toIndex);
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  }
+
+  private commitMove(kind: DragKind, fromIndex: number, toIndex: number) {
+    const anchorCell = this.table.querySelector("tbody > tr > *");
+    if (!anchorCell) return;
+    let pos: number;
+    try {
+      pos = this.view.posAtDOM(anchorCell, 0);
+    } catch {
+      return;
+    }
+    const $pos = this.view.state.doc.resolve(pos);
+    let tablePos: number | null = null;
+    for (let d = $pos.depth; d > 0; d--) {
+      if ($pos.node(d).type.name === "table") { tablePos = $pos.before(d); break; }
+    }
+    if (tablePos === null) return;
+    const move = kind === "row" ? moveTableRow : moveTableColumn;
+    move({ from: fromIndex, to: toIndex, pos: tablePos + 1 })(this.view.state, this.view.dispatch);
+  }
+
+  destroy() {
+    this.cleanupHover();
+    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+  }
+}
 
 const FONT_SIZES = ["10px", "12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px", "36px", "48px", "64px"];
 
@@ -173,6 +413,9 @@ export default function RichTextEditor({
   const [showFonts, setShowFonts] = useState(false);
   const [showSizes, setShowSizes] = useState(false);
   const [sizeInput, setSizeInput] = useState("");
+  const [showTablePicker, setShowTablePicker] = useState(false);
+  const [tablePickerHover, setTablePickerHover] = useState<[number, number]>([0, 0]);
+  const [showTableMenu, setShowTableMenu] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -184,6 +427,7 @@ export default function RichTextEditor({
       FontFamily,
       FontSize,
       Indent,
+      TableListTab,
       Highlight.configure({ multicolor: true }),
       Underline,
       Subscript,
@@ -199,7 +443,7 @@ export default function RichTextEditor({
         inline: true,
         HTMLAttributes: { class: "max-w-full rounded-lg" },
       }),
-      Table.configure({ resizable: true }),
+      Table.configure({ resizable: true, View: DraggableTableView as any }),
       TableRow,
       TableHeader,
       TableCell,
@@ -217,6 +461,8 @@ export default function RichTextEditor({
     setShowHighlights(false);
     setShowFonts(false);
     setShowSizes(false);
+    setShowTablePicker(false);
+    setShowTableMenu(false);
   }, []);
 
   if (!editor) return null;
@@ -242,8 +488,9 @@ export default function RichTextEditor({
     if (url) editor!.chain().focus().setImage({ src: url }).run();
   }
 
-  function insertTable() {
-    editor!.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+  function insertTable(rows: number, cols: number) {
+    editor!.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
+    setShowTablePicker(false);
   }
 
   return (
@@ -451,7 +698,75 @@ export default function RichTextEditor({
         <TBtn onClick={insertImage} title="Insert image"><ImagePlus size={14} /></TBtn>
 
         {/* Table */}
-        <TBtn onClick={insertTable} title="Insert table"><TableIcon size={14} /></TBtn>
+        <div className="relative">
+          {editor.isActive("table") ? (
+            <TBtn active onClick={e => { e.stopPropagation(); closeDropdowns(); setShowTableMenu(v => !v); }} title="Table options">
+              <TableIcon size={14} />
+            </TBtn>
+          ) : (
+            <TBtn onClick={e => { e.stopPropagation(); closeDropdowns(); setShowTablePicker(v => !v); }} title="Insert table">
+              <TableIcon size={14} />
+            </TBtn>
+          )}
+
+          {/* Grid picker for inserting new table */}
+          {showTablePicker && (
+            <div className="absolute top-full left-0 mt-1 p-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30" onClick={e => e.stopPropagation()}>
+              <p className="text-[10px] text-slate-400 mb-1.5 text-center">
+                {tablePickerHover[0] > 0 ? `${tablePickerHover[0]} × ${tablePickerHover[1]}` : "Select size"}
+              </p>
+              <div className="grid grid-cols-6 gap-0.5">
+                {Array.from({ length: 36 }, (_, i) => {
+                  const r = Math.floor(i / 6) + 1;
+                  const c = (i % 6) + 1;
+                  const active = r <= tablePickerHover[0] && c <= tablePickerHover[1];
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onMouseEnter={() => setTablePickerHover([r, c])}
+                      onClick={() => insertTable(r, c)}
+                      className={clsx(
+                        "w-5 h-5 rounded-sm border transition-colors",
+                        active ? "bg-blue-500 border-blue-400" : "bg-slate-700/50 border-slate-600 hover:border-slate-500"
+                      )}
+                    />
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => insertTable(3, 3)}
+                className="w-full mt-2 px-2 py-1 text-[10px] text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors"
+              >
+                Default 3×3
+              </button>
+            </div>
+          )}
+
+          {/* Table editing menu */}
+          {showTableMenu && editor.isActive("table") && (
+            <div className="absolute top-full left-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-30 py-1 min-w-[180px]" onClick={e => e.stopPropagation()}>
+              <p className="text-[10px] text-slate-500 px-3 py-1 uppercase tracking-wider">Rows</p>
+              <TableMenuItem icon={<BetweenVerticalStart size={13} />} label="Insert row above" onClick={() => { editor.chain().focus().addRowBefore().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<BetweenVerticalEnd size={13} />} label="Insert row below" onClick={() => { editor.chain().focus().addRowAfter().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Trash2 size={13} />} label="Delete row" onClick={() => { editor.chain().focus().deleteRow().run(); setShowTableMenu(false); }} destructive />
+              <div className="border-t border-slate-700 my-1" />
+              <p className="text-[10px] text-slate-500 px-3 py-1 uppercase tracking-wider">Columns</p>
+              <TableMenuItem icon={<BetweenHorizontalStart size={13} />} label="Insert column left" onClick={() => { editor.chain().focus().addColumnBefore().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<BetweenHorizontalEnd size={13} />} label="Insert column right" onClick={() => { editor.chain().focus().addColumnAfter().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Trash2 size={13} />} label="Delete column" onClick={() => { editor.chain().focus().deleteColumn().run(); setShowTableMenu(false); }} destructive />
+              <div className="border-t border-slate-700 my-1" />
+              <p className="text-[10px] text-slate-500 px-3 py-1 uppercase tracking-wider">Cells</p>
+              <TableMenuItem icon={<Merge size={13} />} label="Merge cells" onClick={() => { editor.chain().focus().mergeCells().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Split size={13} />} label="Split cell" onClick={() => { editor.chain().focus().splitCell().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Rows3 size={13} />} label="Toggle header row" onClick={() => { editor.chain().focus().toggleHeaderRow().run(); setShowTableMenu(false); }} />
+              <TableMenuItem icon={<Columns3 size={13} />} label="Toggle header column" onClick={() => { editor.chain().focus().toggleHeaderColumn().run(); setShowTableMenu(false); }} />
+              <div className="border-t border-slate-700 my-1" />
+              <TableMenuItem icon={<Trash2 size={13} />} label="Delete table" onClick={() => { editor.chain().focus().deleteTable().run(); setShowTableMenu(false); }} destructive />
+            </div>
+          )}
+        </div>
         <Sep />
 
         {/* Clear formatting */}
@@ -460,22 +775,33 @@ export default function RichTextEditor({
         </TBtn>
       </div>
 
+      {/* Floating table context bar */}
+      {editor.isActive("table") && (
+        <div className="flex flex-wrap items-center gap-0.5 px-2 py-1 border-b border-slate-700 bg-slate-850 bg-slate-900/80">
+          <span className="text-[10px] text-slate-500 uppercase tracking-wider mr-1.5 select-none">Table</span>
+          <TBtn onClick={() => editor.chain().focus().addRowBefore().run()} title="Insert row above"><BetweenVerticalStart size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().addRowAfter().run()} title="Insert row below"><BetweenVerticalEnd size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().deleteRow().run()} title="Delete row"><span className="flex items-center gap-0.5"><Rows3 size={13} /><Trash2 size={10} /></span></TBtn>
+          <Sep />
+          <TBtn onClick={() => editor.chain().focus().addColumnBefore().run()} title="Insert column left"><BetweenHorizontalStart size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().addColumnAfter().run()} title="Insert column right"><BetweenHorizontalEnd size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().deleteColumn().run()} title="Delete column"><span className="flex items-center gap-0.5"><Columns3 size={13} /><Trash2 size={10} /></span></TBtn>
+          <Sep />
+          <TBtn onClick={() => editor.chain().focus().mergeCells().run()} title="Merge cells"><Merge size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().splitCell().run()} title="Split cell"><Split size={13} /></TBtn>
+          <Sep />
+          <TBtn onClick={() => editor.chain().focus().toggleHeaderRow().run()} title="Toggle header row"><Rows3 size={13} /></TBtn>
+          <TBtn onClick={() => editor.chain().focus().toggleHeaderColumn().run()} title="Toggle header column"><Columns3 size={13} /></TBtn>
+          <Sep />
+          <TBtn onClick={() => editor.chain().focus().deleteTable().run()} title="Delete table">
+            <span className="flex items-center gap-0.5 text-red-400"><TableIcon size={13} /><Trash2 size={10} /></span>
+          </TBtn>
+        </div>
+      )}
+
       {/* Editor content */}
       <EditorContent editor={editor} />
 
-      {/* Table floating controls */}
-      {editor.isActive("table") && (
-        <div className="flex items-center gap-1 px-2 py-1 border-t border-slate-700 bg-slate-900/80 text-xs">
-          <span className="text-slate-500 mr-1">Table:</span>
-          <button type="button" onClick={() => editor.chain().focus().addColumnAfter().run()} className="px-2 py-0.5 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors">+ Col</button>
-          <button type="button" onClick={() => editor.chain().focus().addRowAfter().run()} className="px-2 py-0.5 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors">+ Row</button>
-          <button type="button" onClick={() => editor.chain().focus().deleteColumn().run()} className="px-2 py-0.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors">- Col</button>
-          <button type="button" onClick={() => editor.chain().focus().deleteRow().run()} className="px-2 py-0.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors">- Row</button>
-          <button type="button" onClick={() => editor.chain().focus().deleteTable().run()} className="px-2 py-0.5 text-slate-400 hover:text-red-400 hover:bg-slate-700 rounded transition-colors">Delete table</button>
-          <button type="button" onClick={() => editor.chain().focus().mergeCells().run()} className="px-2 py-0.5 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors">Merge</button>
-          <button type="button" onClick={() => editor.chain().focus().splitCell().run()} className="px-2 py-0.5 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded transition-colors">Split</button>
-        </div>
-      )}
     </div>
   );
 }
@@ -507,4 +833,28 @@ function TBtn({ active, onClick, title, disabled, children }: {
 
 function Sep() {
   return <span className="w-px h-4 bg-slate-700 mx-0.5" />;
+}
+
+function TableMenuItem({ icon, label, onClick, destructive }: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  destructive?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onMouseDown={e => e.preventDefault()}
+      onClick={onClick}
+      className={clsx(
+        "w-full flex items-center gap-2.5 px-3 py-1.5 text-xs transition-colors",
+        destructive
+          ? "text-slate-400 hover:text-red-400 hover:bg-red-950/30"
+          : "text-slate-300 hover:text-slate-100 hover:bg-slate-700"
+      )}
+    >
+      <span className="shrink-0 opacity-70">{icon}</span>
+      {label}
+    </button>
+  );
 }

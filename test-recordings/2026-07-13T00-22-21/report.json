@@ -1,0 +1,107 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Reschedule on the day of the initial appointment to a future date"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-13T00-22-21",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T00-22-21\\report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "Error: Playwright Test did not expect test.describe() to be called here.\nMost common reasons include:\n- You are calling test.describe() in a configuration file.\n- You are calling test.describe() in a file that is imported by the configuration file.\n- You have two different versions of @playwright/test. This usually happens\n  when one of the dependencies in your package.json depends on @playwright/test.\n- You are calling test.describe() from an async test.describe() block. Only sync ones are supported.",
+      "stack": "Error: Playwright Test did not expect test.describe() to be called here.\nMost common reasons include:\n- You are calling test.describe() in a configuration file.\n- You are calling test.describe() in a file that is imported by the configuration file.\n- You have two different versions of @playwright/test. This usually happens\n  when one of the dependencies in your package.json depends on @playwright/test.\n- You are calling test.describe() from an async test.describe() block. Only sync ones are supported.\n    at _TestTypeImpl._currentSuite (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:2257:13)\n    at _TestTypeImpl._describe (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:2298:24)\n    at Function.describe (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:1220:12)\n    at Object.<anonymous> (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:4:6)",
+      "location": {
+        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts",
+        "column": 6,
+        "line": 4
+      },
+      "snippet": "\u001b[90m   at \u001b[39madd-appointment-bo.spec.ts:4\n\n\u001b[0m \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m { \u001b[33mENV\u001b[39m } \u001b[36mfrom\u001b[39m \u001b[32m\"../utils/config\"\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m\"Add Appointment (BO)\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ loginPage }) \u001b[33m=>\u001b[39m {\n \u001b[90m 6 |\u001b[39m     \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mloginAsBO(\u001b[33mENV\u001b[39m\u001b[33m.\u001b[39mboUsername\u001b[33m,\u001b[39m \u001b[33mENV\u001b[39m\u001b[33m.\u001b[39mboPassword)\u001b[33m;\u001b[39m\n \u001b[90m 7 |\u001b[39m   })\u001b[33m;\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Playwright Test did not expect test.describe() to be called here.\nMost common reasons include:\n- You are calling test.describe() in a configuration file.\n- You are calling test.describe() in a file that is imported by the configuration file.\n- You have two different versions of @playwright/test. This usually happens\n  when one of the dependencies in your package.json depends on @playwright/test.\n- You are calling test.describe() from an async test.describe() block. Only sync ones are supported.",
+      "stack": "Error: Playwright Test did not expect test.describe() to be called here.\nMost common reasons include:\n- You are calling test.describe() in a configuration file.\n- You are calling test.describe() in a file that is imported by the configuration file.\n- You have two different versions of @playwright/test. This usually happens\n  when one of the dependencies in your package.json depends on @playwright/test.\n- You are calling test.describe() from an async test.describe() block. Only sync ones are supported.\n    at _TestTypeImpl._currentSuite (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:2257:13)\n    at _TestTypeImpl._describe (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:2298:24)\n    at Function.describe (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:1220:12)\n    at Object.<anonymous> (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:4:6)",
+      "location": {
+        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts",
+        "column": 6,
+        "line": 4
+      },
+      "snippet": "\u001b[90m   at \u001b[39mreschedule-handling.spec.ts:4\n\n\u001b[0m \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m { \u001b[33mENV\u001b[39m } \u001b[36mfrom\u001b[39m \u001b[32m\"../utils/config\"\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m\"Reschedule & Handling\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m   \u001b[90m// ────────────────────────────────────────────────────────────\u001b[39m\n \u001b[90m 6 |\u001b[39m   \u001b[90m// UCD — Self-service reschedule\u001b[39m\n \u001b[90m 7 |\u001b[39m   \u001b[90m// ────────────────────────────────────────────────────────────\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: Playwright Test did not expect test.describe() to be called here.\nMost common reasons include:\n- You are calling test.describe() in a configuration file.\n- You are calling test.describe() in a file that is imported by the configuration file.\n- You have two different versions of @playwright/test. This usually happens\n  when one of the dependencies in your package.json depends on @playwright/test.\n- You are calling test.describe() from an async test.describe() block. Only sync ones are supported.",
+      "stack": "Error: Playwright Test did not expect test.describe() to be called here.\nMost common reasons include:\n- You are calling test.describe() in a configuration file.\n- You are calling test.describe() in a file that is imported by the configuration file.\n- You have two different versions of @playwright/test. This usually happens\n  when one of the dependencies in your package.json depends on @playwright/test.\n- You are calling test.describe() from an async test.describe() block. Only sync ones are supported.\n    at _TestTypeImpl._currentSuite (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:2257:13)\n    at _TestTypeImpl._describe (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:2298:24)\n    at Function.describe (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\node_modules\\playwright\\lib\\common\\index.js:1220:12)\n    at Object.<anonymous> (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts:4:6)",
+      "location": {
+        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\slot-capacity-boundary.spec.ts",
+        "column": 6,
+        "line": 4
+      },
+      "snippet": "\u001b[90m   at \u001b[39mslot-capacity-boundary.spec.ts:4\n\n\u001b[0m \u001b[90m 2 |\u001b[39m \u001b[36mimport\u001b[39m { \u001b[33mENV\u001b[39m } \u001b[36mfrom\u001b[39m \u001b[32m\"../utils/config\"\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m 3 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 4 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m\"Slot Capacity Boundary\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m   |\u001b[39m      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 5 |\u001b[39m   \u001b[90m// ────────────────────────────────────────────────────────────\u001b[39m\n \u001b[90m 6 |\u001b[39m   \u001b[90m// UCD — Capacity limits enforced\u001b[39m\n \u001b[90m 7 |\u001b[39m   \u001b[90m// ────────────────────────────────────────────────────────────\u001b[39m\u001b[0m"
+    },
+    {
+      "message": "Error: No tests found",
+      "stack": "Error: No tests found"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-07-13T00:22:25.778Z",
+    "duration": 95.077,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

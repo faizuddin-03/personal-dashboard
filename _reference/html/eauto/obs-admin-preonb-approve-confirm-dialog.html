@@ -1,0 +1,2497 @@
+<!--
+  URL: https://staging.eauto.my/obs/admin/preOnb/summary/795778e0-372a-4fb9-a018-f40b1fa17f6b
+  Environment: staging BackOffice (obs admin, logged in as mfared via uat4)
+  Captured: 2026-10-21T07:24:57.212Z by Claude via Chrome
+  State: BO Pre-Application Summary, Approve clicked, confirmation dialog open
+  Trimmed: nothing
+-->
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Application Summary</title>
+    <link rel="icon" type="image/x-icon" href="/obs/favicon.ico">
+    <meta name="_csrf" content="Q2t7GlCF38L-I3X7G7ukpEH9Fi2DeuB3hkGU8sGMRTW-ju-rcw0ffGa15_bTERDJfZaQnSXKOxTnQ4Va5HmhxKDtdgWG69-c">
+    <meta name="_csrf_header" content="X-CSRF-TOKEN">
+
+    <!-- Import Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href="/obs/tailwindcss.css" rel="stylesheet">
+
+    <script src="/obs/js/jquery-2.2.4.min.js" type="text/javascript"></script>
+    <link href="/obs/jquery-ui-1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+    <script src="/obs/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+
+    
+        <style>
+            .site-header {
+                background-color: #FFFFFF;
+                position: relative;
+            }
+            
+            .header-container {
+                max-width: 100%;
+                padding: 2px 24px;
+                display: flex;
+                justify-content: flex-start;
+                gap: 20px;
+                align-items: center;
+            }
+            
+            .logo-img {
+                height: 40px;
+                width: auto;
+            }
+            
+            .header-title {
+                font-size: 16px;
+                font-weight: bold;
+                color: #0B4C5F;
+            }
+
+            .header-line-img {
+                width: 100%;
+                height: 10px;
+                display:block;
+            }
+
+            .header-action-btn {
+                position: absolute;
+                right: 24px;
+                bottom: 0px;
+                padding: 8px 20px;
+                background-color: #FFFFFF;
+                color: #0B4C5F;
+                border: 1px solid #0B4C5F;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                white-space: nowrap;
+                z-index: 10;
+            }
+
+            .header-action-btn:hover {
+                background-color: #0B4C5F;
+                color: #FFFFFF;
+            }
+
+            .header-action-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        </style>
+    
+
+    
+        
+        <style>
+            #overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            
+            .loading-box {
+                background-color: white;
+                border-radius: 1px;
+                border: solid 2px #A6A6A6;
+                padding: 20px 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                width: 400px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            
+            .spinner {
+                border: 3px solid #E0E0E0; /* Light grey */
+                border-top: 3px solid #00BCD4; /* Cyan/turquoise color */
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                animation: spin 0.8s linear infinite;
+                flex-shrink: 0; /* Prevent spinner from shrinking */
+            }
+
+            
+            .loading-text {
+                font-size: 20px;
+                font-weight: bold;
+                color: #000000;
+                font-family: Inter, sans-serif;
+                white-space: nowrap;
+            }
+
+            #payment-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+                z-index: 9999; /* Ensure it is on top of all other elements */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            
+            .payment-loading-box {
+                background-color: white;
+                border-radius: 1px;
+                border: solid 2px #A6A6A6;
+                padding: 20px 30px;
+                display: block;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                width: 400px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .overlay-description {
+                font-size: 13px;
+                color: #FF4000;
+                font-family: Inter, sans-serif;
+                white-space: wrap;
+                text-align:center;
+            }
+
+            
+            .payment-spinner {
+                border: 3px solid #E0E0E0; /* Light grey */
+                border-top: 3px solid #00BCD4; /* Cyan/turquoise color */
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                animation: spin 0.8s linear infinite;
+                flex-shrink: 0; /* Prevent spinner from shrinking */
+            }
+
+            .spinner-and-text {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 10px auto;
+                gap: 10px;
+            }
+
+            
+            .payment-loading-text {
+                font-size: 20px;
+                font-weight: bold;
+                color: #000000;
+                font-family: Inter, sans-serif;
+                white-space: nowrap;
+                line-height: 100%;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    
+    
+        
+        <script>
+            $(document).ready(function() {
+                // Show overlay when any AJAX request starts
+                $(document).ajaxStart(function () {
+                    $("#overlay").fadeIn();
+                });
+
+                // Hide overlay when all AJAX requests complete
+                $(document).ajaxStop(function () {
+                    $("#overlay").fadeOut();
+                });
+            });
+
+            function showPaymentOverlay(){
+                $("#payment-overlay").fadeIn();
+            }
+
+            function hidePaymentOverlay(){
+                $("#payment-overlay").fadeOut();
+            }
+        </script>
+    
+    <style id="claude-agent-animation-styles">
+      @keyframes claude-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      #claude-agent-glow-border-inner {
+        animation: claude-pulse 2s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #claude-agent-glow-border-inner {
+          animation: none;
+        }
+      }
+    </style></head><body style="overflow: hidden;"><div>
+    <div id="overlay" style="display: none;">
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <div class="loading-text">Working...</div>
+        </div>
+    </div>
+    <div id="payment-overlay" style="display: none;">
+        <div class="payment-loading-box">
+            <div class="spinner-and-text">
+                <div class="payment-spinner"></div>
+                <div class="payment-loading-text">Connecting...</div>
+            </div>
+            <div class="overlay-description">Please do not close the browser while connecting to payment gateway</div>
+        </div>
+    </div>
+</div>
+
+    
+        
+        <style>
+
+            .ui-widget-overlay { 
+                background: #000000; 
+                opacity: .50;
+                filter: Alpha(Opacity=50); 
+            }
+
+            .ui-widget-content {
+                border: none !important;
+            }
+
+            .ui-dialog .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_222222_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-state-hover .ui-icon-closethick {
+                background-image: url(\/obs\/jquery-ui-1\.11\.4\/themes\/smoothness\/images\/ui-icons_454545_256x240\.png) !important;
+                filter: brightness(0) invert(1);
+            }
+
+            .ui-dialog .ui-widget-header {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border:none !important;
+                color: #FFF;
+            }
+
+            .ui-dialog {
+                border-radius: 4px !important;
+                padding: 0 !important;
+                min-width:350px !important;
+            }
+
+            .ui-dialog * {
+                font-family: "Inter", sans-serif !important;
+                font-size: 14px !important;
+            }
+
+            .ui-dialog-title {
+                font-size: 16px !important;
+            }
+
+            .ui-dialog-titlebar {
+                background:unset !important;
+                background-color:#0B4C5F !important;
+                border-bottom-left-radius: 0px !important;
+                border-bottom-right-radius: 0px !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog-titlebar-close {
+                display: flex;
+                align-items: center;
+                height: 38px;
+                background:#0B4C5F !important;
+                border: none !important;
+            }
+            
+            .ui-dialog-content {
+                font-size: 14px !important;
+                min-height: 23px !important;
+                padding: 13px !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                padding: 16px 20px !important;
+            }
+
+            .ui-dialog.notis-dialog {
+                top:20% !important;
+            }
+
+            .ui-dialog-buttonpane {
+                margin:0 !important;
+                min-height:54px;
+                padding: 0 15px 10px 6px !important;
+                display: flex;
+                align-items:center;
+                justify-content:flex-end;
+            }
+
+            .ui-button-text {
+                padding: 0px !important;
+            }
+            
+            #custom-dialog {
+                display: none;
+            }
+
+            #custom-dialog-content {
+                white-space: pre-line;
+            }
+
+            .custom-dialog-primary-btn {
+                border-radius:4px;
+                color: #FFF !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#0B4C5F !important;
+                background: #0B4C5F !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-primary-btn:hover{
+                background-color: #146478 !important;
+            }
+            .custom-dialog-primary-btn:active {
+                background-color: #0a4353 !important;
+                box-shadow: 0 0 2px #0A4335;
+            } 
+
+            .custom-dialog-secondary-btn {
+                border-radius:4px;
+                color: #0B4C5F !important;
+                border: 1px solid #0B4C5F !important;
+                background-color:#FFF !important;
+                background:unset !important;
+                font-weight:700 !important;
+                padding:8px 16px !important;
+                height: 40px !important;
+                min-width: 80px !important;
+            }
+            .custom-dialog-secondary-btn:hover {
+                background-color: #F7F7F7 !important;
+            }
+            .custom-dialog-secondary-btn:active {
+                background-color: #EFEFEF !important;
+                box-shadow: 0 0 2px #0A4335;
+            }
+        </style>
+    
+    
+
+        
+        <script>
+
+
+                /**
+                 * @typedef {Object} CustomDialogConfig
+                 * @property {string} title - The dialog's title
+                 * @property {string} content - The dialog's content
+                 * @property {string} height - The dialog's height
+                 * @property {string} width - The dialog's width
+                 * @property {string} confirmBtnName - confirm button name
+                 * @property {function} onConfirmHandler - function to invoke on confirm
+                 * @property {function} onConfirmCloseHandler - function to invoke on close after clicking confirm
+                 * @property {string} redirectPathOnConfirm - Path to redirect on confirm
+                 * @property {boolean} shouldHideConfirmBtn - hide confirm button
+                 * @property {string} cancelBtnName - cancel button name
+                 * @property {function} onCancelHandler - function to invoke on cancel
+                 * @property {function} onCancelCloseHandler - function to invoke on close after clicking cancel
+                 * @property {string} redirectPathOnCancel - Path to redirect on cancel
+                 * @property {boolean} shouldHideCancelBtn - hide cancel button
+                 * @property {function} onCloseButtonCloseHandler - function to invoke on close when not confirmed and not cancelled
+                 * @property {boolean} shouldReloadPageOnClose - Whether the dialog will reload page on close
+                 * @property {string} redirectPathOnClose - Path to redirect on close; only redirect when shouldReloadPageOnClose is false
+                 * @property {boolean} shouldHideCloseBtn - hide close button
+                 */
+
+                /**
+                 * Process a person's information
+                 * @param {CustomDialogConfig} config
+                 */
+                function openCustomDialog(config) {
+
+
+                    const handleOnClose = function(config) {
+                        if(config.shouldReloadPageOnClose) {
+                            location.reload();
+                        } else if (config.redirectPathOnClose != null){
+                            window.location.href = config.redirectPathOnClose;
+                        }
+                    }
+
+                    const confirmBtnName = config.confirmBtnName != null ? config.confirmBtnName : "OK";
+                    const cancelBtnName = config.cancelBtnName != null ? config.cancelBtnName : "Cancel";
+
+                    var isConfirmed  = false;
+                    var isCancelled = false;
+
+                    $("#custom-dialog-content").text(config.content)
+                    $("#custom-dialog").dialog({
+                        title: config.title,
+                        modal: true,
+                        width: config.width ? config.width : "480",
+                        height: config.height ? config.height: "auto",
+                        resizable: false,
+                        draggable: false,
+                        position: { my: "center", at: "center", of: window },
+                        closeOnEscape: false,
+                        close: function() {
+                            $(this).dialog("destroy");
+                            if(isConfirmed && config.onConfirmCloseHandler) {
+                                config.onConfirmCloseHandler();
+                            } else if(isCancelled && config.onCancelCloseHandler) {
+                                config.onCancelCloseHandler();
+                            } else if (!isConfirmed && !isCancelled && config.onCloseButtonCloseHandler) {
+                                config.onCloseButtonCloseHandler();
+                            }
+                            handleOnClose(config);
+                        },
+                        buttons:
+                        {
+                            [cancelBtnName]: function() {
+                                isCancelled = true;
+                                if(config.onCancelHandler) {
+                                    config.onCancelHandler();
+                                }
+
+                                if(config.redirectPathOnCancel) {
+                                    window.location.href = config.redirectPathOnCancel;
+                                }
+
+                                $(this).dialog("close");
+                            },
+                            [confirmBtnName]: function() {
+                                isConfirmed = true;
+                                if(config.onConfirmHandler) {
+                                    config.onConfirmHandler();
+                                }
+
+                                if(config.redirectPathOnConfirm) {
+                                    window.location.href = config.redirectPathOnConfirm;
+                                }
+
+                                $(this).dialog("close");
+                            }
+                        },
+                        open: function() {
+                            $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).addClass('custom-dialog-primary-btn');
+                            $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).addClass('custom-dialog-secondary-btn');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+
+                            if(config.shouldHideConfirmBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${confirmBtnName}")`).hide();
+                            if(config.shouldHideCancelBtn == true) $('.ui-dialog-buttonpane').find(`button:contains("${cancelBtnName}")`).hide();
+                            if(config.shouldHideCloseBtn == true) $(".ui-dialog-titlebar-close").hide();
+                        }
+                    }).dialog("open");
+                }
+        </script>
+    
+    <div>
+    
+</div>
+
+    
+        <style>
+            .dealer-app-tabs-container {
+                background: #DFE8EA;
+                border-radius: 8px 8px 0 0;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .dealer-app-tabs {
+                padding: 8px 12px 0;
+                display: flex;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .dealer-app-tab {
+                padding: 12px 24px;
+                cursor: pointer;
+                border-bottom: 3px solid transparent;
+                font-size: 14px;
+                font-weight: 600;
+                color: #666;
+                transition: all 0.2s;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            .dealer-app-tab.active {
+                background-color: #FFFFFF;
+                border-radius: 4px 8px 0 0;
+                color: black;
+                cursor: default;
+                pointer-events: none;
+            }
+
+            .dealer-app-tab:hover:not(.active):not(.disabled) {
+                color: #333;
+            }
+
+            .dealer-app-tab.disabled {
+                color: #999;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+        </style>
+    
+
+    <style>
+        .alert-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FFF5F2;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+
+        .alert-bar-text {
+            color: #E72C19;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .alert-bar-link {
+            color: #E72C19;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .alert-bar-link:hover {
+            color: #1a4fd6;
+        }
+
+        /* Custom header for payment success */
+        .custom-header-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0B4C5F;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background-color: #FFFFFF;
+        }
+
+        .outer-container {
+            background: #FFFFFF;
+            margin: 0 20px 10px 20px;
+            padding: 20px 0;
+            min-height: calc(100vh - 70px);
+        }
+
+        .main-container {
+            margin: 0 auto;
+        }
+
+        .grid-container {
+            display: flex;
+            gap: 20px;
+            margin: 0 auto;
+            width: fit-content;
+            max-width: 100%;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+
+        .sidebar-column {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            flex-shrink: 0;
+            height: fit-content;
+        }
+
+        .sidebar-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 24px;
+            height: fit-content;
+            width: 100%;
+        }
+
+        .content-container {
+            padding: 20px;
+            background-color: #F7F9FA;
+            border-radius: 0 0 8px 8px;
+            min-height: 600px;
+        }
+
+        /* Content */
+        .tab-content {
+            background-color: #FFFFFF;
+            padding: 30px;
+            flex: 1;
+            max-width: 800px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2E64FE;
+            padding-bottom: 4px;
+        }
+
+        .section-description {
+            font-size: 14px;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .detail-table tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detail-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .detail-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border: 1px solid #CCC;
+        }
+
+        .detail-table td:first-child {
+            font-weight: 700;
+            color: #000000;
+            width: 240px;
+            background-color: #F7F9FA;
+        }
+
+        .detail-table td:last-child {
+            color: #000000;
+            word-break: break-word;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 0;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status-paid {
+            color: #008E00;
+        }
+
+        .status-new {
+            color: #0000FF;
+        }
+
+        .status-active {
+            color: #008E00;
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #0B4C5F;
+            border-radius: 4px;
+            color: #0B4C5F;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-download::before {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+
+        .fee-note {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .email-note {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* Sidebar */
+        .sidebar-header {
+            background: #DBECFF;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .sidebar-header-title {
+            font-size: 12px;
+            color: #666;
+            text-align: left;
+        }
+
+        .sidebar-header-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0B4C5F;
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-value {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .remarks-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: Inter, sans-serif;
+            resize: vertical;
+        }
+
+        .onboarding-link-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: Inter, sans-serif;
+            resize: vertical;
+        }
+
+        .btn-update {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 1px solid #0B4C5F;
+            border-radius: 4px;
+            color: #0B4C5F;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+        }
+
+        .btn-update:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-copy-link {
+            width: 110px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #0B4C5F;
+            border-radius: 4px;
+            color: #0B4C5F;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-copy-link:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-copy-link.copied {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .action-divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 20px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+        }
+
+        .cancel-preapp-link-container {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .cancel-preapp-link {
+            color: #2E64FE;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .cancel-preapp-link:hover {
+            text-decoration: underline;
+        }
+
+        .approved, .ok {
+            color:#008E00;
+            font-weight:700;
+        }
+
+        .rejected-message {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+            border-radius: 8px;
+            color: #808080;
+            font-size: 17px;
+        }
+
+        .rejected, .failed {
+            color: #FF4000;
+            font-weight: 700;
+        }
+
+        .pending, .new {
+            color: #0000FF;
+            font-weight: 700;
+        }
+
+        /* Directors Table Styles */
+        .directors-table {
+            width: auto;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .directors-table thead {
+            background-color: #DFE8EA;
+            color: #000000;
+        }
+
+        .directors-table th,
+        .directors-table td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #CCCCCC;
+            border-right: 1px solid #CCCCCC;
+            min-width: 100px;
+        }
+
+        .directors-table th:first-child,
+        .directors-table td:first-child {
+            border-left: 1px solid #CCCCCC;
+        }
+
+        .directors-table thead tr:first-child th {
+            border-top: 1px solid #CCCCCC;
+        }
+
+        .directors-table thead tr:first-child th:first-child {
+            border-top-left-radius: 4px;
+        }
+
+        .directors-table thead tr:first-child th:last-child {
+            border-top-right-radius: 4px;
+        }
+
+        .directors-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 4px;
+        }
+
+        .directors-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 4px;
+        }
+
+        .directors-table th {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .directors-table td {
+            vertical-align: middle;
+            white-space: nowrap;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .directors-table tbody tr:nth-child(even) {
+            background-color: #F7F9FA;
+        }
+
+        .directors-table tbody tr:hover {
+            background-color: #EEF2F5;
+        }
+
+        .directors-table .status-active {
+            color: #008E00;
+            font-weight: 700;
+        }
+
+        .directors-table .status-inactive {
+            color: #E72C19;
+            font-weight: 700;
+        }
+
+        .blacklist-yes {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #E72C19;
+            font-weight: 700;
+        }
+
+        .blacklist-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Company Table Styles */
+        .company-table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        .company-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .company-table thead {
+            background-color: #DFE8EA;
+            color: #000000;
+        }
+
+        .company-table th,
+        .company-table td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #CCCCCC;
+            border-right: 1px solid #CCCCCC;
+        }
+
+        .company-table th:first-child,
+        .company-table td:first-child {
+            border-left: 1px solid #CCCCCC;
+        }
+
+        .company-table thead tr:first-child th {
+            border-top: 1px solid #CCCCCC;
+        }
+
+        .company-table thead tr:first-child th:first-child {
+            border-top-left-radius: 4px;
+        }
+
+        .company-table thead tr:first-child th:last-child {
+            border-top-right-radius: 4px;
+        }
+
+        .company-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 4px;
+        }
+
+        .company-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 4px;
+        }
+
+        .company-table th {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .company-table td {
+            vertical-align: middle;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .company-table th:first-child,
+        .company-table th:last-child,
+        .company-table td:first-child,
+        .company-table td:last-child {
+            width: 120px;
+            min-width: 120px;
+            max-width: 120px;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        .company-table tbody tr:nth-child(even) {
+            background-color: #F7F9FA;
+        }
+
+        .company-table tbody tr:hover {
+            background-color: #EEF2F5;
+        }
+
+        /* Directors Table Container with Custom Scrollbar */
+        .directors-table-container {
+            overflow-x: scroll;
+            margin-bottom: 30px;
+            padding-bottom: 5px;
+        }
+
+        /* Webkit browsers (Chrome, Safari, Edge) */
+        .directors-table-container::-webkit-scrollbar {
+            height: 12px;
+        }
+
+        .directors-table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 6px;
+        }
+
+        .directors-table-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 6px;
+        }
+
+        .directors-table-container::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        /* Firefox */
+        .directors-table-container {
+            scrollbar-width: thin;
+            scrollbar-color: #c1c1c1 #f1f1f1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tab-content {
+                padding: 20px;
+            }
+
+            .detail-table td:first-child {
+                width: 180px;
+            }
+        }
+    </style>
+
+
+
+
+        <header class="site-header">
+            <img src="/obs/images/header.jpg" alt="header-line" class="header-line-img">
+            <div class="header-container">
+                <div class="logo">
+                    <img src="/obs/images/eauto-logo-tm.png" alt="Logo" class="logo-img">
+                </div>
+                <div class="header-title">Dealer Application - P261021/00889 - UDIN ONBOARD TESTING SDN0001</div>
+            </div>
+        </header>
+    
+<div class="outer-container">
+    <div class="main-container">
+        <!-- Tabs -->
+        
+        <div class="dealer-app-tabs-container">
+            <div class="dealer-app-tabs">
+                <!-- Pre-Application Tab -->
+                <a href="#" class="dealer-app-tab active">
+                    Pre-Application
+                </a>
+
+                <!-- Application Tab -->
+                <a href="#" class="dealer-app-tab disabled">
+                    Application
+                </a>
+
+                <!-- Registration Documents Tab -->
+                
+
+            </div>
+        </div>
+    
+        
+        <!-- Content Container with Grid -->
+        <div class="content-container">
+            <div class="grid-container">
+                <!-- Main Content -->
+                <div class="tab-content">
+                    <!-- Alert Bar - Both company and director details exist -->
+                    <div class="alert-bar">
+                        <span class="alert-bar-text">The company and director existed in eAuto system.</span>
+                        <span class="alert-bar-link" onclick="scrollToExistedDetails()">Click here to view</span>
+                    </div>
+
+                    <!-- Alert Bar - Only company details exist -->
+                    
+
+                    <!-- Alert Bar - Only director details exist -->
+                    
+
+                    <!-- Pre-Application Summary -->
+                    <div class="section-title">Pre-Application Summary</div>
+                    <table class="detail-table">
+                        <tbody><tr>
+                            <td>Pre-Application No:</td>
+                            <td>P261021/00889</td>
+                        </tr>
+                        <tr>
+                            <td>Business Registered Name:</td>
+                            <td>UDIN ONBOARD TESTING SDN0001</td>
+                        </tr>
+                        <tr>
+                            <td>Business Registration No:</td>
+                            <td>201203099294 (KT0307773-P)</td>
+                        </tr>
+                        <tr>
+                            <td>Tax Identification No (TIN):</td>
+                            <td>IG20823923050</td>
+                        </tr>
+                        <tr>
+                            <td>Showroom Address:</td>
+                            <td>LOT 12, JALAN UJIAN QA 3, TAMAN AUTOMASI</td>
+                        </tr>
+                        <tr>
+                            <td>Showroom Postcode:</td>
+                            <td>50450</td>
+                        </tr>
+                        <tr>
+                            <td>State:</td>
+                            <td>WILAYAH PERSEKUTUAN KUALA LUMPUR</td>
+                        </tr>
+                        <tr>
+                            <td>City:</td>
+                            <td>KUALA LUMPUR</td>
+                        </tr>
+                        <tr>
+                            <td>Business Type:</td>
+                            <td>Sdn Bhd / Bhd</td>
+                        </tr>
+                        <tr>
+                            <td>SSM Document:</td>
+                            <td>
+                                <button type="button" class="btn-download" onclick="downloadSsmDocument(this.getAttribute('data-transaction-id'))" data-transaction-id="7d5ab978-d6d2-4ade-be8f-d769fee21baf">
+                                    <img src="/obs/images/download-icon.svg" alt="Download SSM" class="download-icon-btn">
+                                    SSM Document
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>Pre-Application Fee:</td>
+                            <td>
+                                RM <span>108.00</span>
+                                <span class="fee-note"><i>(Inclusive of <span>8</span>% Service Tax + Non-refundable)</i></span>
+                                <div class="fee-note">
+                                    Please note that the Pre-Application payment is non-refundable.
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody></table>
+
+                    <!-- Payment Details -->
+                    <div class="section-title">Payment Details</div>
+                    <table class="detail-table">
+                        <tbody><tr>
+                            <td>Payment ID:</td>
+                            <td>P261021000938</td>
+                        </tr>
+                        <tr>
+                            <td>Payment Method:</td>
+                            <td>FPX Online Banking (Maybank)</td>
+                        </tr>
+                        <tr>
+                            <td>Payment Date Time:</td>
+                            <td>21-10-2026 03:10pm</td>
+                        </tr>
+                        <tr>
+                            <td>Payment Status:</td>
+                            <td>
+                                <span class="status-badge status-paid">Paid</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Payment Document:</td>
+                            <td>
+                                <button type="button" class="btn-download" onclick="downloadInvoice(this.getAttribute('data-invoice-id'))" data-invoice-id="P261021/00889">
+                                    <img src="/obs/images/download-icon.svg" alt="Download Invoice" class="download-icon-btn">
+                                    Invoice
+                                </button>
+                                
+                            </td>
+                        </tr>
+                    </tbody></table>
+
+                    <!-- Admin in Charge -->
+                    <div class="section-title">Admin in Charge</div>
+                    <table class="detail-table">
+                        <tbody><tr>
+                            <td>Name:</td>
+                            <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile No:</td>
+                            <td>0137428615</td>
+                        </tr>
+                        <tr>
+                            <td>Email Address:</td>
+                            <td>
+                                <span>qa.fz.onbtest.k7x29q@testingz.com</span>
+                                <div class="email-note">
+                                    We will email an invoice and/or e-invoice once payment is successful.
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody></table>
+
+                    <!-- SSM Details -->
+                    <div class="section-title">SSM Details</div>
+                    <table class="detail-table">
+                        <tbody><tr>
+                            <td>Business Address:</td>
+                            <td>LOT XXX, XXXXX 1 JALAN ARANG N/A </td>
+                        </tr>
+                        <tr>
+                            <td>Status:</td>
+                            <td>
+                                <span class="status-badge status-active">EXISTING</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Incorporation Date:</td>
+                            <td>24-04-2002</td>
+                        </tr>
+                        <tr>
+                            <td>Nature of Business:</td>
+                            <td>SALE OF SECOND HAND MOTOR VEHICLES</td>
+                        </tr>
+                        <tr>
+                            <td>Total Issued (RM):</td>
+                            <td>350000.00</td>
+                        </tr>
+                        <tr>
+                            <td>Director Details:</td>
+                            <td>
+                                <div style="margin-bottom: 15px;">
+                                    <div style="font-weight: 500;">
+                                        <span>1. </span>
+                                        <span>DOOMFIST DIRECTOR A</span>
+                                    </div>
+                                    <div style="font-size: 13px; color: #666; margin-left: 20px;">IC / Passport : 030217141005</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Revenue (RM):</td>
+                            <td>NA</td>
+                        </tr>
+                        <tr>
+                            <td>Profit / (Loss) after tax (RM):</td>
+                            <td>NA</td>
+                        </tr>
+                    </tbody></table>
+
+                    <!-- Existed Company Details -->
+                    <div id="existedDetailsSection" class="section-title">Existed Company Details</div>
+                    <p class="section-description">This section displays the existing company account in eAuto which belongs to any director of the applicant company.</p>
+                    <div class="company-table-container">
+                        <table class="company-table">
+                            <thead>
+                                <tr>
+                                    <th>Registration Date</th>
+                                    <th>Company Name</th>
+                                    <th>Company ROC</th>
+                                    <th>RHB Status</th>
+                                    <th>Company Account Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>25-02-2015</td>
+                                    <td>TOP MOTORS</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?registrationCompany=SA0228055-X&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">SA0228055-X</a>
+                                        
+                                    </td>
+                                    <td>
+                                        <span>Active</span>
+                                        
+                                    </td>
+                                    <td>Activated</td>
+                                </tr>
+                                <tr>
+                                    <td>03-04-2026</td>
+                                    <td>FAIZUDDIN AUTO TEST</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?registrationCompany=1518238-K&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">1518238-K</a>
+                                        
+                                    </td>
+                                    <td>
+                                        <span>Active</span>
+                                        
+                                    </td>
+                                    <td>Activated</td>
+                                </tr>
+                                <tr>
+                                    <td>06-04-2026</td>
+                                    <td>FAIZUDDIN AUTO TEST 2</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?registrationCompany=1576795-H&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">1576795-H</a>
+                                        
+                                    </td>
+                                    <td>
+                                        <span>Active</span>
+                                        
+                                    </td>
+                                    <td>Activated</td>
+                                </tr>
+                                <tr>
+                                    <td>06-04-2026</td>
+                                    <td>FAIZUDDIN AUTO TEST 3</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?registrationCompany=202312340987&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">202312340987</a>
+                                        
+                                    </td>
+                                    <td>
+                                        <span>Active</span>
+                                        
+                                    </td>
+                                    <td>Activated</td>
+                                </tr>
+                                <tr>
+                                    <td>07-07-2026</td>
+                                    <td>FAIZUDDIN 10164 E2E TS2 3</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?registrationCompany=020311-A&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">020311-A</a>
+                                        
+                                    </td>
+                                    <td>
+                                        
+                                        <span>Inactive</span>
+                                    </td>
+                                    <td>New</td>
+                                </tr>
+                                <tr>
+                                    <td>25-09-2026</td>
+                                    <td>12166_REPORTENGINE_REGRESS</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?registrationCompany=KT0504288-U&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">KT0504288-U</a>
+                                        
+                                    </td>
+                                    <td>
+                                        
+                                        <span>Inactive</span>
+                                    </td>
+                                    <td>Activated</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Existed Directors Details -->
+                    <div class="section-title">Existed Directors Details</div>
+                    <p class="section-description">This section displays existing UCD user account in eAuto which belongs to any director of the applicant company.</p>
+                    <div class="directors-table-container">
+                        <table class="directors-table">
+                            <thead>
+                                <tr>
+                                    <th>Login ID</th>
+                                    <th>Name</th>
+                                    <th>MyKad No</th>
+                                    <th>Company Name</th>
+                                    <th>Old BRN</th>
+                                    <th>User Status</th>
+                                    <th>Authorized At</th>
+                                    <th>Blacklisted MyKad (STMS/ESTM)</th>
+                                    <th>Blacklisted MyKad (MyKad)</th>
+                                    <th>Approved STMS</th>
+                                    <th>Approved eSTM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>topmotors</td>
+                                    <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                                    <td>030217141005</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?name=TOP%20MOTORS&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">TOP MOTORS</a>
+                                        
+                                    </td>
+                                    <td>SA0228055-X</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>25 Feb 2015 03:44pm</td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>faizuddin</td>
+                                    <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                                    <td>030217141005</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?name=FAIZUDDIN%20AUTO%20TEST&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">FAIZUDDIN AUTO TEST</a>
+                                        
+                                    </td>
+                                    <td>1518238-K</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>03 Apr 2026 04:13pm</td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>38</td>
+                                    <td>62</td>
+                                </tr>
+                                <tr>
+                                    <td>faizuddinsub1</td>
+                                    <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                                    <td>030217141005</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?name=FAIZUDDIN%20AUTO%20TEST&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">FAIZUDDIN AUTO TEST</a>
+                                        
+                                    </td>
+                                    <td>1518238-K</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>07 Apr 2026 10:12am</td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>0</td>
+                                    <td>4</td>
+                                </tr>
+                                <tr>
+                                    <td>faizuddin2</td>
+                                    <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                                    <td>030217141005</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?name=FAIZUDDIN%20AUTO%20TEST%202&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">FAIZUDDIN AUTO TEST 2</a>
+                                        
+                                    </td>
+                                    <td>1576795-H</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>06 Apr 2026 11:02am</td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>24</td>
+                                    <td>6</td>
+                                </tr>
+                                <tr>
+                                    <td>faizuddin3</td>
+                                    <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                                    <td>030217141005</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?name=FAIZUDDIN%20AUTO%20TEST%203&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">FAIZUDDIN AUTO TEST 3</a>
+                                        
+                                    </td>
+                                    <td>202312340987</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>06 Apr 2026 11:45am</td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>5</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>faizpreapp01</td>
+                                    <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                                    <td>030217141005</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?name=FAIZUDDIN%2010164%20E2E%20TS2%203&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">FAIZUDDIN 10164 E2E TS2 3</a>
+                                        
+                                    </td>
+                                    <td>020311-A</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>07 Jul 2026 02:41pm</td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>12166REPORTENGINE</td>
+                                    <td>MUHAMMAD FAIZUDDIN BIN BIDI</td>
+                                    <td>030217141005</td>
+                                    <td>
+                                        <a href="https://staging.eauto.my/sit2/view/account/company/?name=12166_REPORTENGINE_REGRESS&amp;autoSearch=true" target="_blank" style="color: #2E64FE; text-decoration: underline; cursor: pointer;">12166_REPORTENGINE_REGRESS</a>
+                                        
+                                    </td>
+                                    <td>KT0504288-U</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>25 Sept 2026 11:32am</td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>
+                                        
+                                        <span>-</span>
+                                    </td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Rejected Message for Application Tab -->
+                
+
+                <!-- Sidebar Panel -->
+                <div class="sidebar-column">
+                <div class="sidebar-panel">
+                <div class="sidebar-header">
+                    <div class="sidebar-header-title">Pre-Application No:
+                        <span class="sidebar-header-value">P261021/00889</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-label">Pre-Application Status:</div>
+                    <div class="sidebar-value">
+                        <span class="status-badge new">NEW</span>
+                    </div>
+                </div>
+
+                
+
+                
+
+                
+
+                <div class="sidebar-section">
+                    <div class="sidebar-label">Pre-Application Submission Date:</div>
+                    <div class="sidebar-value">21-10-2026 02:58pm</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-label">Special Remarks:</div>
+                    <textarea class="remarks-textarea" id="specialRemarks" maxlength="3000"></textarea>
+                </div>
+
+                <button type="button" class="btn-update" onclick="updateRemarks()">Update Special Remarks</button>
+
+                <div class="action-divider"></div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn-action btn-reject" onclick="rejectApplication()">Reject</button>
+                    <button type="button" class="btn-action btn-approve" onclick="approveApplication()">Approve</button>
+                </div>
+                </div>
+
+                <div class="cancel-preapp-link-container">
+                    <a href="javascript:void(0)" class="cancel-preapp-link" onclick="cancelApplication()">Cancel Pre-Application</a>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /*<![CDATA[*/
+    var applicationUuid = "795778e0-372a-4fb9-a018-f40b1fa17f6b";
+    /*]]>*/
+
+    $(function () {
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+
+        $(document).ajaxSend(function (e, xhr) {
+            xhr.setRequestHeader(header, token);
+        });
+
+        // Tab switching functionality
+        $('.tab').on('click', function() {
+            var tabText = $(this).text().trim();
+            
+            // Remove active class from all tabs
+            $('.tab').removeClass('active');
+            
+            // Add active class to clicked tab
+            $(this).addClass('active');
+            
+            // Show/hide content based on tab
+            if (tabText === 'Pre-Application') {
+                $('.tab-content').show();
+                $('.sidebar-column').show();
+                $('.rejected-message').hide();
+            } else if (tabText === 'Application') {
+                $('.tab-content').hide();
+                $('.sidebar-column').hide();
+                $('.rejected-message').show();
+            }
+        });
+    });
+
+    $(document).on('input', '.remove-non-ascii', function () {
+        var caretPosition = getCaretPosition(this);
+        $(this).val($(this).val().replace(/[^\x00-\x7F]/g, ''));
+        setCaretPosition(this, caretPosition);
+    });
+
+    // Define rejection reasons list - easy to maintain and modify
+    var REJECTION_REASONS = [
+        'Incomplete Documentation',
+        'Invalid or Expired Registration',
+        'Data Mismatch',
+        'Not Eligible for eAuto',
+        'Unsupported Vehicle Category',
+        'Duplicate Application',
+        'Inactive or Dormant Company',
+        'Wrong Category Submission',
+        'Compliance Review Unsuccessful'
+    ];
+
+    function updateRemarks() {
+        var remarks = document.getElementById('specialRemarks').value;
+
+        $.ajax({
+            url: "\/obs\/admin\/preOnb\/application\/update-remarks.do",
+            type: 'POST',
+            data: JSON.stringify({
+                uuid: applicationUuid,
+                specialRemarks: remarks
+            }),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    alert('Special remarks updated successfully!');
+                } else {
+                    errorPopup('Update Failed', 'Failed to update remarks: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating remarks:', error);
+                errorPopup('Update Failed', 'Failed to update remarks, please try again.');
+            }
+        });
+    }
+
+    /**
+     * Opens the rejection dialog with checkbox options
+     */
+    function rejectApplication() {
+        showRejectionDialog({
+            onSubmit: function(reasons) {
+                submitRejection(reasons);
+            }
+        });
+    }
+
+    /**
+     * Display rejection dialog with checkbox reasons
+     */
+    function showRejectionDialog(options) {
+        // Build checkboxes from the reasons list
+        var checkboxesHtml = '';
+        REJECTION_REASONS.forEach(function(reason, index) {
+            checkboxesHtml += 
+                '<label class="rejection-checkbox-label">' +
+                    '<input type="checkbox" name="rejectionReason" value="' + reason + '">' +
+                    '<span>' + reason + '</span>' +
+                '</label>';
+        });
+
+        var dialogHtml = 
+            '<div style="text-align: left;">' +
+                '<p style="margin-bottom: 8px; font-weight: 400; color: #000000; font-size: 14px; line-height: 1.5;">' +
+                    'Are you sure to reject the Pre-Application? Please select the reason and system will send an update to the applicant through email.' +
+                '</p>' +
+                '<p style="margin-bottom: 12px; margin-top: 16px; font-weight: 600; color: #000000;">' +
+                    'Reason:' +
+                '</p>' +
+                '<div class="rejection-reasons">' +
+                    checkboxesHtml +
+                    '<label class="rejection-checkbox-label">' +
+                        '<input type="checkbox" id="otherReasonCheckbox" name="rejectionReason" value="other">' +
+                        '<span>Others, please specify :</span>' +
+                    '</label>' +
+                '</div>' +
+                '<div id="otherReasonContainer" style="display: none; margin-left: 24px; margin-top: 8px; margin-bottom: 12px;">' +
+                    '<textarea id="otherReasonText"' +
+                              'style="width: 100%; min-height: 80px; padding: 8px; border: 1px solid #d0d0d0; border-radius: 4px; font-size: 13px; font-family: Inter, sans-serif; resize: vertical;"' +
+                              'maxlength="3000"' +
+                              'class="remove-non-ascii">' +
+                    '</textarea>' +
+                '</div>' +
+                '<div id="rejectionError" style="color: #dc3545; font-size: 13px; margin-top: 12px; display: none;"></div>' +
+            '</div>';
+
+        // Add inline styles for checkbox labels
+        var styles = 
+            '<style>' +
+                '.rejection-checkbox-label {' +
+                    'display: flex;' +
+                    'align-items: center;' +
+                    'padding: 6px 8px;' +
+                    'margin-bottom: 2px;' +
+                    'cursor: pointer;' +
+                    'border-radius: 4px;' +
+                    'transition: background-color 0.2s;' +
+                '}' +
+                '.rejection-checkbox-label:hover {' +
+                    'background-color: #f5f5f5;' +
+                '}' +
+                '.rejection-checkbox-label input[type="checkbox"] {' +
+                    'margin-right: 10px;' +
+                    'cursor: pointer;' +
+                    'width: 16px;' +
+                    'height: 16px;' +
+                '}' +
+                '.rejection-checkbox-label span {' +
+                    'font-size: 14px;' +
+                    'color: #000000;' +
+                '}' +
+            '</style>';
+
+        // Insert content into dialog
+        $('#custom-dialog-content').html(styles + dialogHtml);
+
+        // Handle "Others" checkbox toggle - show/hide textarea
+        $('#otherReasonCheckbox').on('change', function() {
+            if (this.checked) {
+                $('#otherReasonContainer').slideDown(200);
+                $('#otherReasonText').focus(); // Auto-focus textarea for better UX
+            } else {
+                $('#otherReasonContainer').slideUp(200);
+                $('#otherReasonText').val(''); // Clear textarea when unchecked
+            }
+        });
+
+        // Open the dialog
+        $('#custom-dialog').dialog({
+            title: 'Reject Pre-Application',
+            modal: true,
+            width: '520',
+            height: 'auto',
+            resizable: false,
+            draggable: false,
+            position: { my: "center", at: "center", of: window },
+            closeOnEscape: false,
+            buttons: {
+                "No": function() {
+                    $(this).dialog("close");
+                },
+                "Yes": function() {
+                    handleRejectionSubmit(options.onSubmit);
+                }
+            },
+            open: function() {
+                // Style buttons to match your theme
+                var rejectBtn = $('.ui-dialog-buttonpane').find('button:contains("Yes")');
+                rejectBtn.addClass('custom-dialog-primary-btn');
+                rejectBtn.css({
+                    'background-color': '#dc3545',
+                    'border-color': '#dc3545'
+                });
+                rejectBtn.hover(
+                    function() { $(this).css('background-color', '#c82333'); },
+                    function() { $(this).css('background-color', '#dc3545'); }
+                );
+
+                $('.ui-dialog-buttonpane').find('button:contains("No")')
+                    .addClass('custom-dialog-secondary-btn');
+                
+                $('.ui-dialog-buttonpane').find('button')
+                    .removeClass('ui-state-default ui-state-focus');
+            },
+            close: function() {
+                $(this).dialog("destroy");
+                $('#custom-dialog-content').empty();
+                $('body').css('overflow', '');
+            }
+        }).dialog("open");
+
+        setTimeout(function() {
+            $('body').css('overflow', 'hidden');
+        }, 10);
+    }
+
+    $(document).on('input', '#specialRemarks', function () {
+        var caretPosition = getCaretPosition(this);
+        $(this).val($(this).val().replace(/[^\x00-\x7F]/g, ''));
+        setCaretPosition(this, caretPosition);
+    });
+
+    /**
+     * Handle rejection form validation and submission
+     */
+    function handleRejectionSubmit(onSubmitCallback) {
+        var checkboxes = document.querySelectorAll('input[name="rejectionReason"]:checked');
+        var reasons = [];
+        var errorDiv = document.getElementById('rejectionError');
+
+        // Clear previous error
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        // Validation: at least one reason must be selected
+        if (checkboxes.length === 0) {
+            errorDiv.textContent = 'Select the reason by ticking the checkbox(s).';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        // Collect all selected reasons
+        var hasError = false;
+        checkboxes.forEach(function(checkbox) {
+            if (checkbox.value === 'other') {
+                var otherTextElement = document.getElementById('otherReasonText');
+                var otherText = document.getElementById('otherReasonText').value.trim();
+                if (otherText) {
+                    reasons.push('Others: ' + otherText);
+                } else {
+                    errorDiv.textContent = 'This field is required';
+                    errorDiv.style.display = 'block';
+                    otherTextElement.style.backgroundColor = '#FFF5F2';
+                    hasError = true;
+                }
+            } else {
+                reasons.push(checkbox.value);
+            }
+        });
+
+        if (hasError) {
+            return;
+        }
+
+        // Close dialog and execute callback
+        $('#custom-dialog').dialog("close");
+        
+        if (typeof onSubmitCallback === 'function') {
+            onSubmitCallback(reasons);
+        }
+    }
+
+    /**
+     * Submit the rejection to the server
+     */
+    function submitRejection(reasons) {
+        var rejectionReason = reasons.join('; ');
+
+        $.ajax({
+            url:  "\/obs\/admin\/preOnb\/application\/reject.do",
+            type: 'POST',
+            data: JSON.stringify({
+                uuid: applicationUuid,
+                rejectionReason: rejectionReason
+            }),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    errorPopup('Rejection Failed', 'Failed to reject application: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error rejecting application:', error);
+                var message = 'Failed to reject application, please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                    // Check if application was already approved/rejected - show popup and redirect after OK
+                    if (message.includes('has already been approved') || message.includes('has already been rejected')) {
+                        errorPopupWithRedirect('Error', message);
+                        return;
+                    }
+                }
+                errorPopup('Error', message);
+            }
+        });
+    }
+
+    // Cancellation reasons reuse the same list as rejection (EAINT-5972 item 4)
+    var CANCELLATION_REASONS = REJECTION_REASONS;
+
+    /**
+     * Opens the cancellation dialog with checkbox options
+     */
+    function cancelApplication() {
+        showCancellationDialog({
+            onSubmit: function(reasons) {
+                submitCancellation(reasons);
+            }
+        });
+    }
+
+    /**
+     * Display cancellation dialog with checkbox reasons.
+     * Mirrors the rejection dialog but sends NO email (requirement update 2026-06-11),
+     * so the email line is intentionally omitted from the copy.
+     */
+    function showCancellationDialog(options) {
+        var checkboxesHtml = '';
+        CANCELLATION_REASONS.forEach(function(reason, index) {
+            checkboxesHtml +=
+                '<label class="rejection-checkbox-label">' +
+                    '<input type="checkbox" name="cancellationReason" value="' + reason + '">' +
+                    '<span>' + reason + '</span>' +
+                '</label>';
+        });
+
+        var dialogHtml =
+            '<div style="text-align: left;">' +
+                '<p style="margin-bottom: 8px; font-weight: 400; color: #000000; font-size: 14px; line-height: 1.5;">' +
+                    'Are you sure to cancel the Pre-Application? Please select the reason and system will send an update to the applicant through email.' +
+                '</p>' +
+                '<p style="margin-bottom: 12px; margin-top: 16px; font-weight: 600; color: #000000;">' +
+                    'Reason:' +
+                '</p>' +
+                '<div class="rejection-reasons">' +
+                    checkboxesHtml +
+                    '<label class="rejection-checkbox-label">' +
+                        '<input type="checkbox" id="cancelOtherReasonCheckbox" name="cancellationReason" value="other">' +
+                        '<span>Others, please specify :</span>' +
+                    '</label>' +
+                '</div>' +
+                '<div id="cancelOtherReasonContainer" style="display: none; margin-left: 24px; margin-top: 8px; margin-bottom: 12px;">' +
+                    '<textarea id="cancelOtherReasonText"' +
+                              'style="width: 100%; min-height: 80px; padding: 8px; border: 1px solid #d0d0d0; border-radius: 4px; font-size: 13px; font-family: Inter, sans-serif; resize: vertical;"' +
+                              'maxlength="3000"' +
+                              'class="remove-non-ascii">' +
+                    '</textarea>' +
+                '</div>' +
+                '<div id="cancellationError" style="color: #dc3545; font-size: 13px; margin-top: 12px; display: none;"></div>' +
+            '</div>';
+
+        // Add inline styles for checkbox labels (mirror the rejection dialog so the
+        // reasons stack vertically even when the rejection modal hasn't been opened first)
+        var styles =
+            '<style>' +
+                '.rejection-checkbox-label {' +
+                    'display: flex;' +
+                    'align-items: center;' +
+                    'padding: 6px 8px;' +
+                    'margin-bottom: 2px;' +
+                    'cursor: pointer;' +
+                    'border-radius: 4px;' +
+                    'transition: background-color 0.2s;' +
+                '}' +
+                '.rejection-checkbox-label:hover {' +
+                    'background-color: #f5f5f5;' +
+                '}' +
+                '.rejection-checkbox-label input[type="checkbox"] {' +
+                    'margin-right: 10px;' +
+                    'cursor: pointer;' +
+                    'width: 16px;' +
+                    'height: 16px;' +
+                '}' +
+                '.rejection-checkbox-label span {' +
+                    'font-size: 14px;' +
+                    'color: #000000;' +
+                '}' +
+            '</style>';
+
+        $('#custom-dialog-content').html(styles + dialogHtml);
+
+        $('#cancelOtherReasonCheckbox').on('change', function() {
+            if (this.checked) {
+                $('#cancelOtherReasonContainer').slideDown(200);
+                $('#cancelOtherReasonText').focus();
+            } else {
+                $('#cancelOtherReasonContainer').slideUp(200);
+                $('#cancelOtherReasonText').val('');
+            }
+        });
+
+        $('#custom-dialog').dialog({
+            title: 'Cancel Pre-Application',
+            modal: true,
+            width: '520',
+            height: 'auto',
+            resizable: false,
+            draggable: false,
+            position: { my: "center", at: "center", of: window },
+            closeOnEscape: false,
+            buttons: {
+                "No": function() {
+                    $(this).dialog("close");
+                },
+                "Yes": function() {
+                    handleCancellationSubmit(options.onSubmit);
+                }
+            },
+            open: function() {
+                var cancelBtn = $('.ui-dialog-buttonpane').find('button:contains("Yes")');
+                cancelBtn.addClass('custom-dialog-primary-btn');
+                cancelBtn.css({
+                    'background-color': '#dc3545',
+                    'border-color': '#dc3545'
+                });
+                cancelBtn.hover(
+                    function() { $(this).css('background-color', '#c82333'); },
+                    function() { $(this).css('background-color', '#dc3545'); }
+                );
+
+                $('.ui-dialog-buttonpane').find('button:contains("No")')
+                    .addClass('custom-dialog-secondary-btn');
+
+                $('.ui-dialog-buttonpane').find('button')
+                    .removeClass('ui-state-default ui-state-focus');
+            },
+            close: function() {
+                $(this).dialog("destroy");
+                $('#custom-dialog-content').empty();
+                $('body').css('overflow', '');
+            }
+        }).dialog("open");
+
+        setTimeout(function() {
+            $('body').css('overflow', 'hidden');
+        }, 10);
+    }
+
+    /**
+     * Handle cancellation form validation. Produces {reasons: [...], othersText: '...'}.
+     */
+    function handleCancellationSubmit(onSubmitCallback) {
+        var checkboxes = document.querySelectorAll('input[name="cancellationReason"]:checked');
+        var reasons = [];
+        var errorDiv = document.getElementById('cancellationError');
+
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        // Validation: at least one reason must be selected
+        if (checkboxes.length === 0) {
+            errorDiv.textContent = 'Select the reason by ticking the checkbox(s).';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        var hasError = false;
+        checkboxes.forEach(function(checkbox) {
+            if (checkbox.value === 'other') {
+                var otherTextElement = document.getElementById('cancelOtherReasonText');
+                var otherText = otherTextElement.value.trim();
+                if (otherText) {
+                    reasons.push('Others: ' + otherText);
+                } else {
+                    errorDiv.textContent = 'This field is required';
+                    errorDiv.style.display = 'block';
+                    otherTextElement.style.backgroundColor = '#FFF5F2';
+                    hasError = true;
+                }
+            } else {
+                reasons.push(checkbox.value);
+            }
+        });
+
+        if (hasError) {
+            return;
+        }
+
+        $('#custom-dialog').dialog("close");
+
+        if (typeof onSubmitCallback === 'function') {
+            onSubmitCallback(reasons);
+        }
+    }
+
+    /**
+     * Submit the cancellation to the server
+     */
+    function submitCancellation(reasons) {
+        var cancellationReason = reasons.join('; ');
+
+        $.ajax({
+            url:  "\/obs\/admin\/preOnb\/application\/cancel.do",
+            type: 'POST',
+            data: JSON.stringify({
+                uuid: applicationUuid,
+                cancellationReason: cancellationReason
+            }),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    errorPopup('Cancellation Failed', 'Failed to cancel application: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error cancelling application:', error);
+                var message = 'Failed to cancel application, please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                    if (message.includes('has already been approved') || message.includes('has already been rejected') || message.includes('has already been cancelled')) {
+                        errorPopupWithRedirect('Error', message);
+                        return;
+                    }
+                }
+                errorPopup('Error', message);
+            }
+        });
+    }
+
+    function approveApplication() {
+        openCustomDialog({
+            title: 'Approve Pre-Application',
+            content: 'Are you sure to approve the Pre-Application?',
+            confirmBtnName: "Yes",
+            cancelBtnName: "No",
+            shouldHideCloseBtn: true,
+            onConfirmHandler: function() {
+                // Execute approval AJAX only when user clicks Yes
+                $.ajax({
+                    url: "\/obs\/admin\/preOnb\/application\/approve.do",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        uuid: applicationUuid
+                    }),
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            errorPopup('Approval Failed', 'Failed to approve application: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var message = 'Failed to approve application, please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                            // Check if application was already approved/rejected - show popup and redirect after OK
+                            if (message.includes('has already been approved') || message.includes('has already been rejected')) {
+                                errorPopupWithRedirect('Error', message);
+                                return;
+                            }
+                        }
+                        errorPopup('Error', message);
+                    }
+                });
+            },
+            onCancelHandler: function() {
+                $('body').css('overflow', '');
+            }
+        });
+        setTimeout(function() {
+            $('body').css('overflow', 'hidden');
+        }, 10);
+    }
+
+    // Download SSM Document function
+    function downloadSsmDocument(ssmTransactionId) {
+        var downloadUrl = "\/obs\/admin\/preOnb\/download-ssm-document\/";
+        downloadUrl = downloadUrl + ssmTransactionId
+
+        $.ajax({
+            url: downloadUrl,
+            type: 'GET',
+            xhrFields: {
+                responseType: 'blob'  // Important for binary data
+            },
+            success: function(blob, status, xhr) {
+                // Get filename from Content-Disposition header if available
+                var filename = 'ssm-document.pdf';
+                var disposition = xhr.getResponseHeader('Content-Disposition');
+                if (disposition && disposition.indexOf('filename=') !== -1) {
+                    var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    var matches = filenameRegex.exec(disposition);
+                    if (matches != null && matches[1]) {
+                        filename = matches[1].replace(/['"]/g, '');
+                    }
+                }
+
+                // Create download link and trigger download
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(link.href);
+            },
+            error: function(xhr) {
+                // Handle error and show popup
+                var errorMessage = 'Unable to download the SSM Document. Please try later.';
+                if (xhr.status === 503) {
+                    errorMessage = 'SSM (eAuto) server down, please try later.';
+                }
+                errorPopup('Error', errorMessage);
+            }
+        });
+    }
+
+    // Download invoice function
+    function downloadInvoice(preOnboardingNo) {
+        var downloadUrl = "\/obs\/preOnb\/download-invoice?preOnboardingNo=";
+        window.open(downloadUrl + preOnboardingNo, '_blank');
+    }
+
+    // Download e-invoice function
+    function downloadEInvoice(eInvoiceUuid) {
+        var downloadUrl = "\/obs\/preOnb\/download-einvoice\/";
+        window.open(downloadUrl + eInvoiceUuid, '_blank');
+    }
+
+    function errorPopup(title, msg) {
+        openCustomDialog({
+            title: title,
+            content: msg,
+            confirmBtnName: "OK",
+            shouldHideCancelBtn: true,
+            onConfirmCloseHandler: function() {
+                $('body').css('overflow', '');
+            },
+            onCloseButtonCloseHandler: function () {
+                $('body').css('overflow', '');
+            }
+        });
+        setTimeout(function() {
+            $('body').css('overflow', 'hidden');
+        }, 10);
+    }
+
+    function errorPopupWithRedirect(title, msg) {
+        openCustomDialog({
+            title: title,
+            content: msg,
+            confirmBtnName: "OK",
+            shouldHideCancelBtn: true,
+            shouldHideCloseBtn: true,
+            onConfirmCloseHandler: function() {
+                $('body').css('overflow', '');
+                window.location.reload();
+            }
+        });
+        setTimeout(function() {
+            $('body').css('overflow', 'hidden');
+        }, 10);
+    }
+
+    // Copy Application Link function
+    function copyApplicationLink() {
+        var linkTextarea = document.getElementById('onboardingLink');
+        var copyBtn = document.getElementById('copyLinkBtn');
+        
+        // Select and copy the text
+        linkTextarea.select();
+        linkTextarea.setSelectionRange(0, 99999); // For mobile devices
+        
+        navigator.clipboard.writeText(linkTextarea.value).then(function() {
+            // Success feedback
+            copyBtn.classList.add('copied');
+            copyBtn.textContent = 'Copied!';
+            
+            // Reset after 2 seconds
+            setTimeout(function() {
+                copyBtn.classList.remove('copied');
+                copyBtn.textContent = 'Copy Link';
+            }, 2000);
+        }).catch(function(err) {
+            // Fallback for older browsers
+            try {
+                document.execCommand('copy');
+                copyBtn.classList.add('copied');
+                copyBtn.textContent = 'Copied!';
+                
+                setTimeout(function() {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.textContent = 'Copy Link';
+                }, 2000);
+            } catch (e) {
+                alert('Failed to copy link. Please copy manually.');
+            }
+        });
+        
+        // Deselect the text
+        window.getSelection().removeAllRanges();
+    }
+
+    // Download Trading License function
+    function downloadTradingLicense(attachmentId) {
+        // Create download URL
+        var downloadUrl = "\/obs\/preOnb\/download-trading-license\/";
+
+        // Open in new window to trigger download
+        window.open(downloadUrl + attachmentId, '_blank');
+    }
+
+
+    function scrollToExistedDetails() {
+        var element = document.getElementById('existedDetailsSection');
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function getCaretPosition(ctrl) {
+        var CaretPos = 0;
+        // IE Support
+        if (document.selection) {
+            ctrl.focus();
+            var Sel = document.selection.createRange();
+            Sel.moveStart('character', -ctrl.value.length);
+            CaretPos = Sel.text.length;
+        }
+        // Firefox support
+        else if (ctrl.selectionStart || ctrl.selectionStart == '0') {
+            CaretPos = ctrl.selectionStart;
+        }
+
+        return CaretPos;
+    }
+
+    function setCaretPosition(ctrl, pos) {
+        // IE Support
+        if (ctrl.setSelectionRange) {
+            ctrl.focus();
+            ctrl.setSelectionRange(pos,pos);
+        }
+        // Firefox support
+        else if (ctrl.createTextRange) {
+            var range = ctrl.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', pos);
+            range.moveStart('character', pos);
+            range.select();
+        }
+    }
+</script>
+
+
+<div id="claude-agent-glow-border" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483646; opacity: 1; transition: opacity 0.3s ease-in-out;"><div id="claude-agent-glow-border-inner" style="position: absolute; inset: 0px; will-change: opacity; box-shadow: rgba(217, 119, 87, 0.7) 0px 0px 15px inset, rgba(217, 119, 87, 0.5) 0px 0px 25px inset, rgba(217, 119, 87, 0.2) 0px 0px 35px inset;"></div></div><div id="claude-phantom-cursor" aria-hidden="true" style="position: fixed; top: 0px; left: 0px; pointer-events: none; z-index: 2147483646; transform: translate3d(1429px, 487px, 0px); transition: transform 180ms cubic-bezier(0.2, 0, 0, 1); will-change: transform;"><svg id="claude-phantom-cursor-plain" width="20" height="26" viewBox="0 0 20 26" style="position: absolute; top: 0px; left: 0px; overflow: visible;"><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" stroke="white" stroke-width="3" stroke-linejoin="round" fill="white"></path><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" fill="#111"></path></svg><svg id="claude-phantom-cursor-styled" width="20" height="26" viewBox="0 0 20 26" style="position: absolute; top: 0px; left: 0px; overflow: visible; filter: drop-shadow(rgba(217, 119, 87, 0.9) 0px 0px 4px) drop-shadow(rgba(217, 119, 87, 0.45) 0px 0px 10px);"><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" stroke="#D97757" stroke-width="3" stroke-linejoin="round" fill="#D97757"></path><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" fill="#FAF9F5"></path></svg></div><div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons" tabindex="-1" role="dialog" aria-describedby="custom-dialog" aria-labelledby="ui-id-1" style="height: auto; width: 480px; top: 583.5px; left: 712.5px; display: block; z-index: 101;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span id="ui-id-1" class="ui-dialog-title">Approve Pre-Application</span><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" title="Close" style="display: none;"><span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">Close</span></button></div><div id="custom-dialog" class="ui-dialog-content ui-widget-content" style="display: block; width: auto; min-height: 5px; max-height: none; height: auto;">
+        <span id="custom-dialog-content">Are you sure to approve the Pre-Application?</span>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button" class="ui-button ui-widget ui-corner-all ui-button-text-only custom-dialog-secondary-btn" role="button"><span class="ui-button-text">No</span></button><button type="button" class="ui-button ui-widget ui-corner-all ui-button-text-only custom-dialog-primary-btn" role="button"><span class="ui-button-text">Yes</span></button></div></div></div><div class="ui-widget-overlay ui-front" style="z-index: 100;"></div></body></html>

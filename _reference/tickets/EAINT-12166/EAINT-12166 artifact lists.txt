@@ -1,0 +1,37 @@
+EAINT-12166 — artifact lists
+
+[Combined, PRIMARY] Delivery Order & Serial Capture
+https://claude.ai/code/artifact/272e5af6-2f09-475b-aef5-6ea929e24bc9
+Combined EAINT-12166/12167 study — dependency-flow diagram, requirement
+tables for both tickets, an EAINT-12167 click-through flow, shared
+open-questions section (colour-coded green 12166 / indigo 12167). Source
+saved at ../EAINT-12167/EAINT-12167-EAINT-12166-combined-study.html —
+republish that file with url=<this link> to update in place. Last updated
+2026-09-18.
+
+[Dev, source of truth] EAINT-12166 Delivery Order QA Guide
+https://claude.ai/artifact/VZgowBgtmmy4Yu3y7J35Hm?sk=ro0Vq9xrr_jwWL3DAZoOlg
+Dev's own QA test guide (author: tracey), shared 2026-09-22, branch
+dev/feat/EAINT-12166 (also carries EAINT-12167's serial-capture section,
+merged onto this branch 2026-09-03). Read in full 2026-09-21 session — see
+knowledge/flow-device-purchase.md "Dev QA Guide" section for everything
+confirmed/corrected against the SRD. Cross-check this against the combined
+QA-study artifact before trusting either alone. Note: this is a claude.ai
+chat artifact (not Claude Code), so it can't be edited/republished by our
+Artifact tool — see the annotated copy below for that.
+
+[Annotated copy, ours] EAINT-12166 Delivery Order QA Guide (highlighted)
+https://claude.ai/code/artifact/80348fa5-808d-4bb6-ae40-ed377abae304
+Faizuddin's own reconstruction of the dev QA guide above (Claude Code
+artifact, so we can update it), with yellow highlights marking every new
+fact or correction vs. the SRD found in the 2026-09-21 read-through. Source
+saved at EAINT-12166-dev-QA-guide-annotated.html in this folder — republish
+that file with url=<this link> to update in place.
+
+[Superseded, single-ticket] Delivery Order Auto-Generation
+https://claude.ai/code/artifact/9173d311-5c78-4e85-908f-691e7262643a
+QA study of EAINT-12166 (Enable DO Creation for Device Purchase with Interim
+Document Upload Space) — overview, affected pages, requirement manifest,
+scope, and QA notes, built from the Jira ticket + SRD v1.1 (28 Aug 2026).
+Source: EAINT-12166-study.html in this folder. Superseded by the combined
+artifact above as of 2026-09-15.

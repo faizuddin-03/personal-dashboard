@@ -1,0 +1,20 @@
+{
+  "name": "eauto-12153-onboarding-payment-channels",
+  "version": "1.0.0",
+  "description": "EAINT-12153 — UCD onboarding (Pre-Application + Application) payment channels: FPX B2B (incl. Pending Approval), FPX B2C and card regression. Official TS: QATeam SharePoint v38 (12153_TS1–TS8).",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "check": "tsc -p tsconfig.json",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.0",
+    "pdf-parse": "^1.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/pdf-parse": "^1.1.5",
+    "typescript": "^5.3.0"
+  }
+}

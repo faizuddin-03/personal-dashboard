@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: '.',
+  testDir: './tests',
   testMatch: '**/*.spec.ts',
 
   timeout: 0,
@@ -24,11 +24,22 @@ export default defineConfig({
 
   projects: [
     {
+      // /eauto/secarang-plate-checker — error vs proceed per vehicle no. + IC / SSM
+      name: 'plate-checker',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 }, headless: process.env.PW_HEADED !== '1' },
+      testMatch: '**/plate-checker.spec.ts',
+    },
+    {
       name: 'secarang-checker',
-      use: {
-        ...devices['Desktop Chrome'],
-        headless: false,
-      },
+      use: { ...devices['Desktop Chrome'], headless: false },
+      testMatch: '**/secarang-checker.spec.ts',
+    },
+    {
+      name: 'secarang-regression',
+      // video only on this project — the checker runs many vehicles in parallel
+      // contexts and recording all of them is pure overhead.
+      use: { ...devices['Desktop Chrome'], headless: false, video: 'on' },
+      testMatch: '**/secarang-regression.spec.ts',
     },
   ],
 });

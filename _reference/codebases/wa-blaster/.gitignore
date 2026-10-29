@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+
+# Vite internal cache
+.vite/
+
+# Superpowers brainstorm artifacts
+.superpowers/
+
+# Claude
+.claude/
+
+# Local design-render screenshots (verification only)
+.design-render/
+
+# Knowledge-base source PDFs (originals kept locally for re-extraction; not committed)
+apps/api/knowledge/_sources/

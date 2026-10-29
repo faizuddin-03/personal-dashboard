@@ -1,0 +1,84 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/service-hub/... (UCD Biometric Device
+Purchase, step 4 "Submission" of the Selection -> Payment -> Appointment ->
+Submission flow, EAINT-10960)
+Environment: staging.eauto.my/uat1
+Captured: 2026-09-23, pasted into chat by Faizuddin
+Trimmed: header/footer chrome and inline scripts kept as pasted; nothing
+removed from the confirmation-panel body itself.
+Significance: final step of the UCD purchase flow — "Request Submitted"
+confirmation. All 4 stepper circles show "done"/"active" correctly (1-3 done,
+4 active). Confirms:
+ - Purchased Device / Recipient Name / Contact No / Shipping Address / Paid
+   Amount all echo back what was entered in step 1 (this capture: 3 units,
+   RM 2550.00 total = RM 850 x 3).
+ - Payment Details section repeats Biometric Device amount + Total Paid.
+ - "Done" button (a.rs-btn) links straight to
+   /uat1/view/ucd/service-hub/receipt.do?id=<transactionId> — this is the
+   the "UCD Service Request Details page" already captured and renamed from
+   "Receipt" earlier this session (see
+   EAINT-12166-ucd-service-request-details-arranged-uat1-2026-09-23.html) —
+   same underlying page, confirms the URL segment literally says
+   "receipt.do" even though the rendered page is titled "Service Request
+   Details" — the misnomer is baked into the URL itself, not just old notes.
+ - No mention of extra software installations or their cost anywhere on this
+   confirmation screen for this particular 3-unit/no-install-addon capture -
+   per Faizuddin (2026-09-23), the extra-installation flow is otherwise
+   identical to this one; the only difference is an extra slot-selection step
+   inside step 3 (Appointment) - this step 4 page's shape doesn't change for
+   that case, only its content would (extra installation cost/lines), still
+   unconfirmed from a live capture with installations actually selected.
+-->
+<body>
+<div id="container" class="ucd-container">
+    <div>
+        <div class="bio-top">
+            <div class="bio-title">Biometric Device Purchase:</div>
+        </div>
+
+        <div class="flow-steps">
+            <div class="fs-step done"><div class="fs-num">1</div><div class="fs-lbl">Selection</div></div>
+            <div class="fs-arrow">→</div>
+            <div class="fs-step done"><div class="fs-num">2</div><div class="fs-lbl">Payment</div></div>
+            <div class="fs-arrow">→</div>
+            <div class="fs-step done"><div class="fs-num">3</div><div class="fs-lbl">Appointment</div></div>
+            <div class="fs-arrow">→</div>
+            <div class="fs-step active"><div class="fs-num">4</div><div class="fs-lbl">Submission</div></div>
+        </div>
+
+        <div class="rs-wrap">
+            <div class="rs-panel">
+                <div class="rs-head">
+                    <span class="rs-tick-halo"><img class="rs-tick" src="/uat1/images/icon-success-green.svg" alt="Success"></span>
+                    <div class="rs-title">Request Submitted</div>
+                </div>
+                <div class="rs-msg">We have received your request and you will receive an email for confirmation.</div>
+
+                <div class="rs-sections">
+                    <div class="rs-sec">
+                        <div class="rs-sec-title">Biometric Device Purchase Details</div>
+                        <div class="rs-card">
+                            <div class="rs-line"><div class="rs-k">Purchased Device:</div><div class="rs-v">3 unit(s)</div></div>
+                            <div class="rs-line"><div class="rs-k">Recipient Name:</div><div class="rs-v">MUHAMMAD FAIZUDDIN BIN BIDI</div></div>
+                            <div class="rs-line"><div class="rs-k">Contact No:</div><div class="rs-v">0189812839</div></div>
+                            <div class="rs-line"><div class="rs-k">Shipping Address:</div><div class="rs-v">24, JALAN SULAM EMPAT, 19/14D</div></div>
+                            <div class="rs-line"><div class="rs-k">Paid Amount:</div><div class="rs-v">RM 2550.00</div></div>
+                        </div>
+                    </div>
+
+                    <div class="rs-sec">
+                        <div class="rs-sec-title">Payment Details</div>
+                        <div class="rs-card">
+                            <div class="rs-line"><div class="rs-k">Biometric Device:</div><div class="rs-v">RM 2550.00</div></div>
+                            <div class="rs-line"><div class="rs-k">Total Paid:</div><div class="rs-v" style="font-weight:700;">RM 2550.00</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <a class="rs-btn" href="/uat1/view/ucd/service-hub/receipt.do?id=542a0273-d0a1-45b3-b32b-47e7e97ffbe9">Done</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>

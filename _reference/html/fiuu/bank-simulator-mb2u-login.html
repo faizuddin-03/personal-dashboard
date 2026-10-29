@@ -1,0 +1,142 @@
+<!--
+  URL: https://bank-simulator.fiuu.com/MB2U0227/... (Fiuu bank simulator, Maybank2u login) — opened in the
+       Fiuu popup after "Submit and Pay" with Online Banking (Personal) + Maybank on the UCD
+       Pre-Application review step (staging.eauto.my/obs/preOnb/form/795778e0-372a-4fb9-a018-f40b1fa17f6b)
+  Environment: Fiuu sandbox, from eAuto staging (/obs onboarding), company UDIN ONBOARD TESTING SDN0001
+  Captured: 2026-10-21 ~15:07 MYT, pasted by Faizuddin into the Claude session (page source as rendered)
+  Trimmed: nothing. The _token / fpx_checkSum values are per-session and already expired.
+  Notes: login posts via AJAX to /MB2U0227/verify-login (u, p); on status==1 the form is submitted to
+         /MB2U0227/simulator. fpx_txnAmount 108.00, fpx_buyerBankId MB2U0227, fpx_msgType AR.
+-->
+<body>
+  <div class="blue-bar">
+    <img src="https://bank-simulator.fiuu.com/img/fiuuSimulator.png" alt="Fiuu Logo">
+  </div>
+  <div class="backgroundshadoww login-container" style="padding-bottom: 5%; border-radius: 10px; position: relative;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+      <img src="https://bank-simulator.fiuu.com/img/maybank-logo.png" alt="mb2e Logo" style="width: 150px; height: auto;">
+      <img src="https://bank-simulator.fiuu.com/img/fpx-logo.png" alt="FPX Logo" style="width: 70px; height: auto;">
+    </div>
+    <br>
+    <p class="welcome"><strong>Welcome Back to MB2U,</strong></p>
+    <form name="login_form" id="login_form" action="" method="post">
+      <input type="hidden" name="_token" value="YkFZbGYXdJJuMt4akLlbnJabTbVXbPG8C7SInbDx">      <div class="form-group">
+        <input type="text" id="username" name="username" class="form-control p_input inputshadow" style="width: 100%; border-color: #c9c9c9;" placeholder="Username">
+      </div>
+      <div class="form-group">
+        <input type="password" id="password" name="password" class="form-control p_input inputshadow" style="width: 100%; border-color: #c9c9c9;" placeholder="Password">
+        <input type="checkbox" id="show-password" style="margin-top: 10px;"> Show Password
+      </div>
+      <br>
+      <div id="credit_info">
+              <input type="hidden" name="_token" value="YkFZbGYXdJJuMt4akLlbnJabTbVXbPG8C7SInbDx">
+              <input type="hidden" name="fpx_msgType" value="AR">
+              <input type="hidden" name="fpx_msgToken" value="01">
+              <input type="hidden" name="fpx_sellerExId" value="EX00003995">
+              <input type="hidden" name="fpx_sellerExOrderNo" value="199763">
+              <input type="hidden" name="fpx_sellerTxnTime" value="20261021150721">
+              <input type="hidden" name="fpx_sellerOrderNo" value="199763">
+              <input type="hidden" name="fpx_sellerId" value="SE00007037">
+              <input type="hidden" name="fpx_sellerBankCode" value="01">
+              <input type="hidden" name="fpx_txnCurrency" value="MYR">
+              <input type="hidden" name="fpx_txnAmount" value="108.00">
+              <input type="hidden" name="fpx_buyerEmail" value="">
+              <input type="hidden" name="fpx_checkSum" value="8CA1D988596B18FFB619B3B364757383C44A15A1E1D3EDFAE189D2CDFB35EAB4CC41B79D74F46FB8CE79EBCB3A2DE570A43CD937654353EAD7B588759CEB8ADE08CB6A5E97476271A2C4DE78E0EDE0046899E31772A12FD6F6A5AE0606BCED70C1144B2F39082534BFB711820D5D34C852CBA0291A6676C3D69723F22044BCD4A2DA866FFC7ED526F0D03411B433C6F0EA6862E9C7D6ACE10814D3AE467C14EFC184DA004257969F3810E93BBF3D22B6141C57AE7995F4F6DCC2C5358849A87692868FE14964FD2DEAD0AA5FE70F462FDFF172EEE8BF96BC7D58F11F1191381154B3508169C5DE2DDC66CDB1C2093308423FA4129A0C8ACF128EABC1ECEC6A2D">
+              <input type="hidden" name="fpx_buyerName" value="">
+              <input type="hidden" name="fpx_buyerBankId" value="MB2U0227">
+              <input type="hidden" name="fpx_buyerBankBranch" value="">
+              <input type="hidden" name="fpx_buyerAccNo" value="">
+              <input type="hidden" name="fpx_buyerId" value="">
+              <input type="hidden" name="fpx_makerName" value="">
+              <input type="hidden" name="fpx_buyerIban" value="">
+              <input type="hidden" name="fpx_version" value="5.0">
+              <input type="hidden" name="fpx_productDesc" value="88f5e37487d642be8f263c7ba17ad">
+              <input type="hidden" name="randomNumber" value="A0000113512">
+            </div>
+      <div class="text-center">
+        <button type="submit" id="login-btn" name="login-btn" class="bbtn btn-login btn-block enter-btn" style="width: 30%; margin: 0 auto; height: 35px;">Login</button>
+      </div>
+    </form>
+  </div>
+  <div class="footer-text-container1">
+    <span class="footer-text">Powered by &nbsp; <img src="https://bank-simulator.fiuu.com/img/FiuuBlue.png" style="width: 65px" alt="Fiuu Logo" class="footer-logo"></span>
+  </div>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;2c289d5631264377ad806da7050358cc&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="YkFZbGYXdJJuMt4akLlbnJabTbVXbPG8C7SInbDx">
+        <title>Bank Simulator Application</title>
+        <link rel="shortcut icon" href="https://bank-simulator.fiuu.com/sandbox.png">
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <!-- Styles -->
+        <link href="https://bank-simulator.fiuu.com/css/app.css" rel="stylesheet">
+        <div class="flex-center position-ref full-height">
+                    </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  $(function(){
+    $('#show-password').on('change', function() {
+    const passwordField = $('#password');
+    if ($(this).is(':checked')) {
+      passwordField.attr('type', 'text');
+    } else {
+      passwordField.attr('type', 'password');
+    }
+    });
+
+    $("#login-btn").click(function(event) {
+        event.preventDefault();
+
+        var user = $('#username').val();
+        var pwd = $('#password').val();
+
+        $.ajax({
+            type    : "POST",
+            url     : "https://bank-simulator.fiuu.com/MB2U0227/verify-login",
+            data    : { u: user, p: pwd },
+            cache   : false,
+            dataType: 'json',
+            success : function(data)
+            {
+                if(data.status == 1)
+                {
+                  $('#login_form').attr("action", "/MB2U0227/simulator");
+                  $('#login_form').submit();
+                }
+                else
+                {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Wrong username or password'
+                  });
+                  $('#username').val('');
+                  $('#password').val('');
+                  return false;
+                }
+            },
+            beforeSend : function()
+            {
+                // loadingBody.block();
+            },
+            complete : function()
+            {
+                // loadingBody.release();
+            },
+            error: function()
+            {
+                alert('Action fail. Please refresh browser.');
+            }
+        });
+    });
+  });
+</script>
+
+</body>

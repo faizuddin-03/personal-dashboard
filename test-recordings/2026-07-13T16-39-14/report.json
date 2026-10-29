@@ -1,0 +1,359 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+      "--grep",
+      "Reschedule cancelled appointment — should be blocked|Add Appointment - Partial Booking Call-in|Biometric Purchase - Free Install Option"
+    ],
+    "configFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\playwright.config.ts",
+    "rootDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/test-recordings/2026-07-13T16-39-14",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Faizuddin/Documents/GitHub/personal-dashboard/tests/service-hub/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        {
+          "outputFile": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "add-appointment-bo.spec.ts",
+      "file": "add-appointment-bo.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Add Appointment (BO)",
+          "file": "add-appointment-bo.spec.ts",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Add Appointment - Partial Booking Call-in",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 38541,
+                      "error": {
+                        "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#sc-appt-cal')\u001b[22m\n",
+                        "stack": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#sc-appt-cal')\u001b[22m\n\n    at AppointmentCalendarPage.navigate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:61:34)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:124:7",
+                        "location": {
+                          "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts",
+                          "column": 34,
+                          "line": 61
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\bo\\AppointmentCalendarPage.ts:61\n\n\u001b[0m \u001b[90m 59 |\u001b[39m   \u001b[36masync\u001b[39m navigate() {\n \u001b[90m 60 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mgoto(\u001b[33mPATHS\u001b[39m\u001b[33m.\u001b[39mboListing)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mlistingApptCalBtn\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 62 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mcalTable\u001b[33m.\u001b[39mwaitFor({ state\u001b[33m:\u001b[39m \u001b[32m\"visible\"\u001b[39m\u001b[33m,\u001b[39m timeout\u001b[33m:\u001b[39m \u001b[35m15000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 63 |\u001b[39m   }\n \u001b[90m 64 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts",
+                            "column": 34,
+                            "line": 61
+                          },
+                          "message": "TimeoutError: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#sc-appt-cal')\u001b[22m\n\n\n   at ..\\pages\\bo\\AppointmentCalendarPage.ts:61\n\n  59 |   async navigate() {\n  60 |     await this.goto(PATHS.boListing);\n> 61 |     await this.listingApptCalBtn.click();\n     |                                  ^\n  62 |     await this.calTable.waitFor({ state: \"visible\", timeout: 15000 });\n  63 |   }\n  64 |\n    at AppointmentCalendarPage.navigate (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts:61:34)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\add-appointment-bo.spec.ts:124:7"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-13T16:39:17.958Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\video.webm"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\test-failed-2.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\test-failed-3.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\add-appointment-bo-Add-App-a9c89-t---Partial-Booking-Call-in-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\AppointmentCalendarPage.ts",
+                        "column": 34,
+                        "line": 61
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "6e13112bcd4d9fd61a7a-b874fd8c922860f06f88",
+              "file": "add-appointment-bo.spec.ts",
+              "line": 78,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "reschedule-handling.spec.ts",
+      "file": "reschedule-handling.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Reschedule & Handling",
+          "file": "reschedule-handling.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "reschedule-handling.spec.ts",
+              "line": 15,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Reschedule cancelled appointment — should be blocked",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 17001,
+                          "error": {
+                            "message": "TimeoutError: locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select[name=\"status\"]')\u001b[22m\n",
+                            "stack": "TimeoutError: locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select[name=\"status\"]')\u001b[22m\n\n    at SoftwareInstallationListingPage.searchWithFilters (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationListingPage.ts:113:84)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:270:23",
+                            "location": {
+                              "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationListingPage.ts",
+                              "column": 84,
+                              "line": 113
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m..\\pages\\bo\\SoftwareInstallationListingPage.ts:113\n\n\u001b[0m \u001b[90m 111 |\u001b[39m     \u001b[36mif\u001b[39m (opts\u001b[33m.\u001b[39mappointmentDateFrom) \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39msetDateInput(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mappointmentDateFromInput\u001b[33m,\u001b[39m opts\u001b[33m.\u001b[39mappointmentDateFrom)\u001b[33m;\u001b[39m\n \u001b[90m 112 |\u001b[39m     \u001b[36mif\u001b[39m (opts\u001b[33m.\u001b[39mappointmentDateTo) \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39msetDateInput(\u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mappointmentDateToInput\u001b[33m,\u001b[39m opts\u001b[33m.\u001b[39mappointmentDateTo)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 113 |\u001b[39m     \u001b[36mif\u001b[39m (opts\u001b[33m.\u001b[39minstallationStatus \u001b[33m!==\u001b[39m undefined) \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39minstallationStatusSelect\u001b[33m.\u001b[39mselectOption(opts\u001b[33m.\u001b[39minstallationStatus)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                                                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 114 |\u001b[39m     \u001b[36mif\u001b[39m (opts\u001b[33m.\u001b[39mpaymentStatus) \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpaymentStatusSelect\u001b[33m.\u001b[39mselectOption(opts\u001b[33m.\u001b[39mpaymentStatus)\u001b[33m;\u001b[39m\n \u001b[90m 115 |\u001b[39m     \u001b[36mif\u001b[39m (opts\u001b[33m.\u001b[39mlhdnStatus) \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mlhdnStatusSelect\u001b[33m.\u001b[39mselectOption(opts\u001b[33m.\u001b[39mlhdnStatus)\u001b[33m;\u001b[39m\n \u001b[90m 116 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39msearchBtn\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationListingPage.ts",
+                                "column": 84,
+                                "line": 113
+                              },
+                              "message": "TimeoutError: locator.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select[name=\"status\"]')\u001b[22m\n\n\n   at ..\\pages\\bo\\SoftwareInstallationListingPage.ts:113\n\n  111 |     if (opts.appointmentDateFrom) await this.setDateInput(this.appointmentDateFromInput, opts.appointmentDateFrom);\n  112 |     if (opts.appointmentDateTo) await this.setDateInput(this.appointmentDateToInput, opts.appointmentDateTo);\n> 113 |     if (opts.installationStatus !== undefined) await this.installationStatusSelect.selectOption(opts.installationStatus);\n      |                                                                                    ^\n  114 |     if (opts.paymentStatus) await this.paymentStatusSelect.selectOption(opts.paymentStatus);\n  115 |     if (opts.lhdnStatus) await this.lhdnStatusSelect.selectOption(opts.lhdnStatus);\n  116 |     await this.searchBtn.click();\n    at SoftwareInstallationListingPage.searchWithFilters (C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationListingPage.ts:113:84)\n    at C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\specs\\reschedule-handling.spec.ts:270:23"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T16:39:58.920Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\test-failed-2.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\reschedule-handling-Resche-88f64-intment-—-should-be-blocked-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\tests\\service-hub\\pages\\bo\\SoftwareInstallationListingPage.ts",
+                            "column": 84,
+                            "line": 113
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "1d914ff4d7313bb756e1-280c67160fbb994f0f3b",
+                  "file": "reschedule-handling.spec.ts",
+                  "line": 252,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "slot-capacity-boundary.spec.ts",
+      "file": "slot-capacity-boundary.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Slot Capacity Boundary",
+          "file": "slot-capacity-boundary.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "UCD",
+              "file": "slot-capacity-boundary.spec.ts",
+              "line": 20,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "Biometric Purchase - Free Install Option",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 17355,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-07-13T16:40:17.667Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "C:\\Users\\Faizuddin\\Documents\\GitHub\\personal-dashboard\\test-recordings\\2026-07-13T16-39-14\\slot-capacity-boundary-Slo-74cb0-chase---Free-Install-Option-chromium\\video.webm"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c727dc66a0af5e24d07-abf57fdbc10dcd9e6600",
+                  "file": "slot-capacity-boundary.spec.ts",
+                  "line": 173,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-13T16:39:17.021Z",
+    "duration": 78390.60200000001,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

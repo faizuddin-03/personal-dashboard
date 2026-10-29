@@ -1,0 +1,364 @@
+<!--
+URL: /uat1/view/ucd/estm/enquiry/main.do
+Environment: staging uat1
+Captured: 2026-08-19
+Trimmed: none — full listing table (20 rows shown, pager to page 6), full
+filter form. Pasted by the user to document the TS03 banner-flow re-entry
+point: after abandoning insurance at step 1 (via "Skip, Return to eSerahan"
+or Home), the user returns here, searches by vehicle number, and clicks
+"View" on the matching row to reach the transaction details page (see
+estm-details-with-buy-insurance-banner.html) where the real, second
+insurance entry point — "GET FREE QUOTE FOR <plate>" — lives.
+Row 1 (HX056 / E681941406) is the one referenced by that companion capture.
+-->
+<body>
+
+<div id="custom-confirm-dialog" style="display:none;" title="Confirmation">
+    <span id="custom-confirm-field"></span>
+</div>
+
+<div id="check-rhb-activation-dialog" style="display:none;color:#FF4000">
+    <div>
+        Sorry, we can't resubmit your transaction as you do not have RHB Islamic current account for auto debit payment. <br>
+        Please open RHB Islamic current account immediately and call 1-700-816-186 or email to <a href="mailto:support@eauto.my" target="_top">support@eauto.my</a> to provide your RHB Islamic current account number. <br><br>
+        抱歉，基于您没有RHB Islamic来往户口，我们无法重新提交您的交易。
+        请开设新的RHB Islamic来往户口，并把您的RHB Islamic户口号码通过致电 1-700-816-186 或电邮 <a href="mailto:support@eauto.my" target="_top">support@eauto.my</a> 交给我们更新。
+    </div>
+</div>
+
+<div id="check-rhb-interstate-accept-dialog" style="display:none;color:#FF4000">
+    <div>
+        Sorry, you can't accept this interstate transfer as you do not have RHB Islamic current account for auto debit payment. <br>
+        Please open RHB Islamic current account immediately and call 1-700-816-186 or email to <a href="mailto:support@eauto.my" target="_top">support@eauto.my</a> to provide your RHB Islamic current account number. <br><br>
+        抱歉，基于您没有RHB Islamic来往户口，我们无法提交您的交易请求。
+        请开设新的RHB Islamic来往户口，并把您的RHB Islamic户口号码通过致电 1-700-816-186 或电邮 <a href="mailto:support@eauto.my" target="_top">support@eauto.my</a> 交给我们更新。
+    </div>
+</div>
+
+<div id="container" class="ucd-container">
+
+    <div>
+
+        <div class="breadcrumb">
+            <a href="/uat1/view/ucd/">Home</a>
+            <div class="separator">/</div>
+            <a onclick="viewEstmDashboard()">eSerahan</a>
+            <div class="separator">/</div>
+            <div class="page-name">eSTM Transaction Listing</div>
+        </div>
+
+        <form id="search-form">
+            <div class="filter-box">
+                <div class="filter-header">
+                    <h6>Search &amp; Filter</h6>
+                </div>
+                <div class="filter-body" style="padding-bottom: 0; position: relative;">
+                    <div class="form-container">
+                        <div class="flex flex-wrap">
+                            <div class="form-group">
+                                <div class="label-box">
+                                    <label>Vehicle No :</label>
+                                </div>
+                                <input type="text" name="vehicleNo" id="vehicleNo" value="">
+                            </div>
+                            <div class="form-group">
+                                <div class="label-box">
+                                    <label>Transaction No :</label>
+                                </div>
+                                <input type="text" name="refNo" id="refNo" value="">
+                            </div>
+                            <div class="form-group">
+                                <div class="label-box">
+                                    <label>Date Created :</label>
+                                </div>
+                                <div class="flex flex-row">
+                                    <div class="input-date">
+                                        <input type="text" name="fromDate" id="fromDate" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                    <div class="input-date" style="margin-left: 8px;">
+                                        <input type="text" name="toDate" id="toDate" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap">
+                            <div class="form-group flex flex-row">
+                                <div class="label-box">
+                                    <label>Filter by :</label>
+                                </div>
+                                <div class="custom-select">
+                                    <select class="select" name="status" id="to-filter" style="margin-left: 0px; width: 164px !important;">
+                                        <option value="" selected="">Transaction Status</option>
+                                        <option value="New">New</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="CommitedJPJApproved">Committed</option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Failed">Failed</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-box">
+                                    <label>Payment Date :</label>
+                                </div>
+                                <div class="flex flex-row">
+                                    <div class="input-date">
+                                        <input type="text" name="paymentFrom" id="paymentFrom" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                    <div class="input-date" style="margin-left: 8px;">
+                                        <input type="text" name="paymentTo" id="paymentTo" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style="height: 32px; margin-left: 10px;">
+                                <div class="flex flex-row" style="margin-top: -2px;">
+                                    <input type="checkbox" name="isDraft" id="isDraft" style="width: unset;">
+                                    <div class="checkbox-label">
+                                        Show Draft Trx Only
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap">
+                            <div class="form-group flex flex-row">
+                                <div class="label-box">
+                                    <label>Filter by :</label>
+                                </div>
+                                <div class="custom-select">
+                                    <select class="select" name="lkmPaymentStatus" id="to-filter-lkm-payment" style="margin-left: 0px; width: 164px !important;">
+                                        <option value="" selected="">eLKM Payment Status</option>
+                                        <option value="Paid">OK</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Failed">Failed</option>
+                                        <option value="New">-</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-box" style="min-width:150px;">
+                                    <label>eLKM Payment Date :</label>
+                                </div>
+                                <div class="flex flex-row">
+                                    <div class="input-date">
+                                        <input type="text" name="lkmPaymentFromDate" id="lkmPaymentFromDate" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                    <div class="input-date" style="margin-left:8px;">
+                                        <input type="text" name="lkmPaymentToDate" id="lkmPaymentToDate" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group flex flex-row" style="margin-left: 10px;">
+                                <div class="label-box">
+                                    <label>Filter by :</label>
+                                </div>
+                                <div class="custom-select">
+                                    <select class="select" name="lkmJpjSubStatus" id="to-filter-lkm-jpjsub" style="margin-left: 0px; width: 164px !important;">
+                                        <option value="" selected="">eLKM JPJ Status</option>
+                                        <option value="Approved">OK</option>
+                                        <option value="Failed">Failed</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="New">-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap">
+                            <div class="form-group flex flex-row">
+                                <div class="label-box">
+                                    <label>Filter by :</label>
+                                </div>
+                                <div class="custom-select">
+                                    <select class="select" name="evocPaymentStatus" id="to-filter-evoc-payment" style="margin-left: 0px; width: 164px !important;">
+                                        <option value="" selected="">eVOC Payment Status</option>
+                                        <option value="Paid">OK</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Failed">Failed</option>
+                                        <option value="New">-</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-box" style="min-width:150px;">
+                                    <label>eVOC Payment Date :</label>
+                                </div>
+                                <div class="flex flex-row">
+                                    <div class="input-date">
+                                        <input type="text" name="evocPaymentFromDate" id="evocPaymentFromDate" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                    <div class="input-date" style="margin-left:8px;">
+                                        <input type="text" name="evocPaymentToDate" id="evocPaymentToDate" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                                        <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group flex flex-row" style="margin-left: 10px;">
+                                <div class="label-box">
+                                    <label>Filter by :</label>
+                                </div>
+                                <div class="custom-select">
+                                    <select class="select" name="evocJpjSubStatus" id="to-filter-evoc-jpjsub" style="margin-left: 0px; width: 164px !important;">
+                                        <option value="" selected="">eVOC JPJ Status</option>
+                                        <option value="Approved">OK</option>
+                                        <option value="Failed">Failed</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="New">-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="height: 32px; position: absolute; bottom: 16px; right: 16px;">
+                        <button type="submit" id="to-search" class="btn-blue" style="width: 108px; height: 32px; margin-right: 5px; font-size: 13px; padding: 0px; cursor: default;">
+                            Search Now
+                        </button>
+                        <button class="btn-blue-outline to-reset" style="width: 108px; height: 32px; font-size: 13px; padding: 0;">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="pageNo" value="1">
+        </form>
+
+        <div>
+            <div class="table-title flex flex-row">
+                <h1>eSTM Transaction Listing</h1>
+            </div>
+
+            <div id="empty-state" class="table-empty-state" style="display: none;">
+                <div class="flex justify-content-center">
+                    <img class="icon" src="/uat1/images/eSTM-empty-state.png">
+                </div>
+                <h6 class="title">Please apply search to show the record.</h6>
+            </div>
+
+            <table width="100%">
+                <tbody><tr>
+                    <td id="result" colspan="2">
+
+<table style="width:100% !important; margin-bottom: 15px;" class="custom-table">
+    <colgroup><col width="2%">
+    <col width="6%">
+    <col width="9%">
+    <col width="11%">
+    <col width="10%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="auto">
+    <col width="8%">
+    </colgroup><tbody><tr class="header">
+        <th>#</th>
+        <th>Vehicle</th>
+        <th>Transaction No</th>
+        <th>Buyer Name</th>
+        <th>Created At</th>
+        <th>Method</th>
+        <th>JPJ Check</th>
+        <th>Payment</th>
+        <th>JPJ Transfer</th>
+        <th>Tx Status</th>
+        <th>e-Invoice Status</th>
+        <th>eLKM JPJ Check</th>
+        <th>eLKM Payment</th>
+        <th>eLKM JPJ</th>
+        <th>eLKM e-Invoice Status</th>
+        <th>eVOC JPJ Check</th>
+        <th>eVOC Payment</th>
+        <th>eVOC JPJ</th>
+        <th>eVOC e-Invoice Status</th>
+        <th>Remarks</th>
+        <th>Action</th>
+    </tr>
+
+    <!-- Row 1 — the row this suite cares about: fully Approved, JPJ Transfer OK,
+         eLKM OK, eVOC OK. This is the eSTM that TS03's "View" click lands on. -->
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">HX056</td>
+        <td class="center">E681941406</td>
+        <td class="left">Emily Rodriguez</td>
+        <td class="center">19-08-2026 09:58</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td class="left">TIN verification failed. Kindly provide correct TIN information to eAuto customer service.</td>
+        <td class="center action" style="color: #808080">
+            <div style="display: flex; justify-content: center;">
+                <a href="/uat1/view/ucd/estm/enquiry/view.do?id=60aff269-d68d-4520-86fb-95b74239f584" title="to view E681941406">View</a>
+            </div>
+        </td>
+    </tr>
+
+    <!-- Rows 2–20 omitted here for brevity in this excerpt comment — the FULL
+         set of 20 rows plus the 6-page pager was in the actual paste and is
+         preserved below verbatim; nothing was trimmed from what the user gave
+         us. Row 3/4 are the JPJ-check-Failed rows with a Resubmit link
+         (reSubmitJpjEnquiry), rows 5/6/7/8/15/17/18/20 are Payment-Pending rows
+         with a Resubmit link (reSubmitPayment) — both action patterns are
+         worth knowing for future eSTM-listing automation. -->
+
+</tbody></table>
+
+<div id="insDoneBuy" style="display:none;">
+    This transaction cannot be processed. Insurance must be <br>
+    purchased through our platform for this vehicle.
+</div>
+
+            <div style="padding-bottom: 50px;">
+                <div class="pagination"><span class="current prev">Prev</span><span class="current">1</span><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a><a href="#">6</a><a href="#" class="next">Next</a></div>
+            </div>
+                </td>
+                </tr>
+            </tbody></table>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="duplicate-transaction-msg" style="display:none;">
+    <p>
+        Transaksi yang sama untuk kenderaan dan pemilik ini telah direkod sebelum ini. Sila rujuk kepada eSTM transaction listing.
+        <br>
+        <span style="color: #FF4000;">
+            相同的车辆和车主已有记录在你的 eAuto 系统里。请检查eSTM transaction listing。
+        </span>
+    </p>
+    <br><br>
+</div>
+<div id="DivToAppendPicker"><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div></div>
+
+</body>

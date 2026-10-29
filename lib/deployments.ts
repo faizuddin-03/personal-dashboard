@@ -14,6 +14,11 @@ export interface Deployment {
   notes: string;
   status: DeploymentStatus;
   createdAt: string;
+  // ── Added 2026-10 (optional, older records load unchanged) ──
+  /** Release / fix version, e.g. "S34.X". */
+  fixVersion?: string;
+  /** Extra ticket keys shipped in this deployment (besides ticketKey). */
+  tickets?: string[];
 }
 
 export const DEPLOYMENT_TYPE_META: Record<DeploymentType, {
@@ -49,10 +54,24 @@ export const DEPLOYMENT_ENVIRONMENTS = ["Production", "Staging", "UAT", "Develop
 
 export function getDeployments(): Deployment[] {
   if (typeof window === "undefined") return [];
-  try { return JSON.parse(localStorage.getItem("deployments") ?? "[]"); }
+  try {
+    const parsed = JSON.parse(localStorage.getItem("deployments") ?? "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  }
   catch { return []; }
 }
 
 export function saveDeployments(items: Deployment[]) {
-  localStorage.setItem("deployments", JSON.stringify(items));
+  try { localStorage.setItem("deployments", JSON.stringify(items)); }
+  catch { /* storage full or blocked — keep in-memory state */ }
+}
+
+/** Every ticket key tied to a deployment: ticketKey, tickets[], and keys found in summary/notes. */
+export function deploymentTicketKeys(d: Deployment): string[] {
+  const keys = new Set<string>();
+  if (d.ticketKey?.trim()) keys.add(d.ticketKey.trim().toUpperCase());
+  for (const k of d.tickets ?? []) if (k.trim()) keys.add(k.trim().toUpperCase());
+  const text = `${d.ticketSummary ?? ""} ${d.notes ?? ""}`;
+  for (const m of text.matchAll(/\b[A-Z][A-Z0-9]+-\d+\b/g)) keys.add(m[0]);
+  return [...keys];
 }

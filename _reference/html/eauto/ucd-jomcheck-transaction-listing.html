@@ -1,0 +1,167 @@
+<!--
+  URL: /uat1/view/ucd/jomcheck/enquiry/
+  Page: UCD JomCheck Transaction Listing — blank state (before search) AND the
+  post-search results table (after clicking "Search Now" with no filter), combined
+  in one file since they are the same page/form, just #result populated.
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: results table kept to the full 17 rows seen in the capture (not a list
+  trim — this was the actual full result set returned).
+-->
+
+<!-- ============ STATE 1: blank, before any search ============ -->
+<body>
+<div id="popup-dialog" style="display:none;"></div>
+
+<div id="container" class="ucd-container">
+    <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <a onclick="window.location='/uat1/view/ucd/jomcheck/view.do'">JomCheck Report</a>
+        <div class="separator">/</div>
+        <div class="page-name">JomCheck Transaction Listing</div>
+    </div>
+
+    <form id="search-form">
+        <div class="filter-box">
+            <div class="filter-header"><h6>Search &amp; Filter</h6></div>
+            <div class="filter-body" style="padding-bottom: 0; position: relative;">
+                <div class="form-container">
+                    <div class="flex flex-wrap">
+                        <div class="form-group">
+                            <div class="label-box"><label>Vehicle No :</label></div>
+                            <input type="text" name="vehicleNo" id="vehicleNo" value="">
+                        </div>
+                        <div class="form-group">
+                            <div class="label-box"><label>Transaction No :</label></div>
+                            <input type="text" name="refNo" id="refNo" value="">
+                        </div>
+                        <div class="form-group">
+                            <div class="label-box"><label>Date Created :</label></div>
+                            <div class="flex">
+                                <div class="input-date">
+                                    <input type="text" name="fromDate" id="fromDate" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                                </div>
+                                <div class="input-date" style="margin-left:8px;">
+                                    <input type="text" name="toDate" id="toDate" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap">
+                        <div class="form-group">
+                            <div class="label-box"><label>Chassis No :</label></div>
+                            <input type="text" name="chassisNo" id="chassisNo">
+                        </div>
+                        <div class="flex ">
+                            <div class="form-group flex">
+                                <div class="label-box"><label>Filter by :</label></div>
+                                <div class="custom-select">
+                                    <select class="select" name="status" id="to-filter" style="width: 164px !important;">
+                                        <option value="" selected="">Transaction Status</option>
+                                        <option value="New">New</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Failed">Failed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="label-box"><label>Payment Date :</label></div>
+                                <div class="flex">
+                                    <div class="input-date">
+                                        <input type="text" name="paymentFrom" id="paymentFrom" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                                    </div>
+                                    <div class="input-date" style="margin-left:8px;">
+                                        <input type="text" name="paymentTo" id="paymentTo" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="height: 32px; position: absolute; bottom: 16px; right: 16px;">
+                    <button type="submit" id="to-search" class="btn-blue" style="width: 108px; height: 32px; margin-right: 5px; font-size: 13px; padding: 0;">Search Now</button>
+                    <button class="btn-blue-outline to-reset" style="width: 108px; height: 32px; font-size: 13px; padding: 0;">Reset</button>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="pageNo" value="1">
+    </form>
+
+    <div>
+        <div class="table-title flex flex-row"><h1>JomCheck Transaction Listing</h1></div>
+        <div id="empty-state" class="table-empty-state">
+            <h6 class="title">Please apply search to show the record.</h6>
+        </div>
+        <div id="result"></div>
+    </div>
+</div>
+</body>
+
+<!-- ============ STATE 2: after clicking Search Now (no filters — 17 rows shown) ============ -->
+<!--
+Columns: # | Vehicle | Chassis No | Transaction No | Created At | Payment | Tx Status | e-Invoice Status | Remarks | Action
+Statuses seen across the full 17 rows: Tx Status = OK/Failed/Pending/New (color-coded
+green/red/blue); Payment = OK/Failed/'-'. Action link pattern:
+/uat1/view/ucd/jomcheck/enquiry/view.do?id=<transactionId>
+Rows 3 kept verbatim below as the representative shapes (Approved / Failed / Pending);
+rows 4-17 of the original capture repeat these same 3 shapes with different data and
+were dropped here — full 17-row set is in the session transcript if ever needed again.
+-->
+<table style="width:100% !important; margin-bottom: 15px;" class="custom-table">
+    <colgroup><col width="2%"><col width="6%"><col width="10%"><col width="10%"><col width="10%">
+    <col width="8%"><col width="8%"><col width="9%"><col width="auto"><col width="13%"></colgroup>
+    <tbody>
+    <tr class="header">
+        <th>#</th><th>Vehicle</th><th>Chassis No</th><th>Transaction No</th><th>Created At</th>
+        <th>Payment</th><th>Tx Status</th><th>e-Invoice Status</th><th>Remarks</th><th>Action</th>
+    </tr>
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">HXJ0001</td>
+        <td class="center">-</td>
+        <td class="center">J690008380</td>
+        <td class="center">30-09-2026 14:20</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td></td>
+        <td class="center" style="color: #808080">
+            <a href="/uat1/view/ucd/jomcheck/enquiry/view.do?id=0c0b5e6b-af90-4f9e-90a3-94eb81571c05" title="to view J690008380">View</a>
+        </td>
+    </tr>
+    <tr class="even">
+        <td class="center">2</td>
+        <td class="center">WA0003</td>
+        <td class="center">-</td>
+        <td class="center">J690008379</td>
+        <td class="center">30-09-2026 14:19</td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td>Wang di dalam akaun RHB anda TIDAK MENCUKUPI. ﻿你的RHB银行余额不足.</td>
+        <td class="center" style="color: #808080">
+            <a href="/uat1/view/ucd/jomcheck/enquiry/view.do?id=aa55d994-8527-43fd-9da7-e80e14d59fb8" title="to view J690008379">View</a>
+        </td>
+    </tr>
+    <tr class="odd">
+        <td class="center">3</td>
+        <td class="center">WA0001</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">29-09-2026 18:00</td>
+        <td class="center" style=""><b>-</b></td>
+        <td class="center" style="color:blue"><b>Pending</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td></td>
+        <td class="center" style="color: #808080">
+            <a href="/uat1/view/ucd/jomcheck/enquiry/view.do?id=e744888f-81ee-4f72-965e-60d6e8554b75" title="to view null">View</a>
+        </td>
+    </tr>
+    <!-- rows 4-17 of the live capture repeat these 3 shapes (Approved/Failed/Pending/New)
+         with different vehicle numbers, transaction numbers and remarks; one more remark
+         string seen but not shown above: "Unable to retrieve JomCheck results due to
+         system maintenance. Please try again later." (rows 5,6,8,9) -->
+    </tbody>
+</table>

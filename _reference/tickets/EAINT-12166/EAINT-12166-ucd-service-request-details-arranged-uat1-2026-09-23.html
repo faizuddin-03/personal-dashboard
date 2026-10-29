@@ -1,0 +1,116 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/service-hub/detail.do (or equivalent — UCD
+Service Hub Service Request Details page, Service Request #SR69001395)
+Environment: staging.eauto.my/uat1
+Captured: 2026-09-23, pasted into chat by Faizuddin
+Trimmed: header/footer chrome and inline scripts kept as pasted, nothing
+removed from the transaction-details body itself.
+Significance: NAMING CORRECTION. This session's earlier questions referred to
+a "UCD Receipt page" as the place the Delivery Order Number shows on the UCD
+side (per dev's QA guide §5.2 and the combined study's E2E chains). Faizuddin
+confirmed there is NO separate Receipt page — this capture IS that page: the
+UCD-side "Service Request Details" page (breadcrumb: Home / Service Hub /
+Service Request Listing / SR69001395), reached from the UCD's own Service
+Request Listing, same shape as the BO Service Request Details page but
+rendered for the UCD account. The knowledge base and the combined study
+artifact (https://claude.ai/code/artifact/272e5af6-2f09-475b-aef5-6ea929e24bc9)
+have both been corrected to say "UCD Service Request Details page" wherever
+"Receipt" was previously written — see the naming-correction note added to the
+artifact's End-to-end scenarios section, 2026-09-23.
+
+Confirms, live:
+ - Delivery Order Number DOES render here once Arranged: "Delivery Order
+   Number: 20260923/DP-0005" — same number scheme as the BO side, matching
+   dev's guide claim that BO detail and UCD detail show identical DO numbers.
+ - Shipping Details block on this page: Purchased Device, Delivery Status,
+   Delivery Order Number, Consignment Number, Delivery Date, Shipping
+   Address, Recipient Name, Contact No. No Device Serial No. field shown here
+   at all (serials are BO-only, per REQ-010/011 — this UCD-side page never
+   surfaces them).
+ - Only an Invoice button is present (onclick=window.open(...invoice-pdf.do...))
+   — no DO download button on the UCD side. The DO PDF is a BO-only download;
+   UCD only ever sees the DO NUMBER as text, never a way to download the PDF
+   itself. Worth confirming this is intentional scope, not a gap, before
+   writing an assertion that expects a UCD-side DO download control.
+-->
+<body>
+<div id="container" class="ucd-container">
+    <div class="rec-page">
+
+        <div class="breadcrumb">
+            <a href="/uat1/view/ucd/">Home</a>
+            <div class="separator">/</div>
+            <a href="/uat1/view/ucd/service-hub/view.do">Service Hub</a>
+            <div class="separator">/</div>
+            <a href="/uat1/view/ucd/service-hub/listing.do">Service Request Listing</a>
+            <div class="separator">/</div>
+            <div class="page-name">SR69001395</div>
+        </div>
+
+        <div class="rec-titlebar">
+            <button type="button" class="btn-blue-outline" style="font-size: 13px; margin: 4.5px 0; padding: 5px 15px;" onclick="location='/uat1/view/ucd/service-hub/listing.do'">« Back</button>
+            <span class="rec-ref">SR69001395</span>
+            <span class="rec-status" style="color:blue;">Pending</span>
+        </div>
+
+        <div class="rec-card">
+            <div class="rec-cardhd">
+                <h3>Service Request Details</h3>
+
+                <div class="rec-invbtns">
+                    <button type="button" class="rec-inv-btn" onclick="window.open('/uat1/download/ucd/service-hub/invoice-pdf.do?transactionId=31244082-8ee2-484d-a8a0-ad0e4e544bc5'); return false;">Invoice</button>
+                </div>
+            </div>
+
+            <div class="rec-sec">
+                <div class="rec-grid2 rec-topdetail">
+                    <div class="rec-col">
+                        <div class="rec-row"><span class="k">Service Type:</span><span class="v">Biometric Device Purchase</span></div>
+                        <div class="rec-row"><span class="k">Date Requested:</span><span class="v">23-09-2026 11:28am</span></div>
+                    </div>
+                    <div class="rec-col">
+                        <div class="rec-row"><span class="k">e-Invoice Submission Date:</span><span class="v">-</span></div>
+                        <div class="rec-row"><span class="k">LHDN Response Status:</span>
+                            <span class="v"><b style="color:#FF4000;">Failed</b></span>
+                        </div>
+                        <div class="rec-row"><span class="k">e-Invoice Validation Date:</span><span class="v">-</span></div>
+                    </div>
+
+                    <div class="rec-einv-note">e-Invoices are only available for customers with a valid TIN. <br>
+                        e-Invoices can only be issued for transactions within the current calendar month.
+                    </div>
+                </div>
+            </div>
+
+            <div class="rec-sec">
+                <div class="rec-grid2">
+                    <div class="rec-col">
+                        <h4>Shipping Details</h4>
+                        <div class="rec-row"><span class="k">Purchased Device:</span><span class="v">1 unit(s)</span></div>
+                        <div class="rec-row"><span class="k">Delivery Status:</span>
+                            <span class="v"><b style="color:#333;">Arranged</b></span>
+                        </div>
+                        <div class="rec-row"><span class="k">Delivery Order Number:</span><span class="v">20260923/DP-0005</span></div>
+                        <div class="rec-row"><span class="k">Consignment Number:</span><span class="v">b3yywv45</span></div>
+                        <div class="rec-row"><span class="k">Delivery Date:</span><span class="v">24-09-2026</span></div>
+                        <div class="rec-row"><span class="k">Shipping Address:</span><span class="v">24, JALAN SULAM EMPAT, 19/14D</span></div>
+                        <div class="rec-row"><span class="k">Recipient Name:</span><span class="v">MUHAMMAD FAIZUDDIN BIN BIDI</span></div>
+                        <div class="rec-row"><span class="k">Contact No:</span><span class="v">0189812839</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rec-sec">
+                <h4>Payment Details:</h4>
+                <ol class="rec-pay-list">
+                    <li>1. 23-09-2026 11:28am - RHB (SR20260923000002-1109700) - <b style="color:#008E00;">OK</b></li>
+                </ol>
+                <div class="rec-fee">
+                    <div class="rec-fee-row"><span class="k">Biometric Device:</span><span class="v">RM 850.00</span></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>

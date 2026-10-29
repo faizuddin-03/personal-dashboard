@@ -1,0 +1,112 @@
+<!--
+URL: staging.eauto.my/uat1/view/ucd/report/e-statement  (UCD REPORTS > "PAYMENT BREAKDOWN REPORT")
+Environment: staging.eauto.my/uat1, UCD login MUHAMMAD FAIZUDDIN BIN BIDI (company 1109700)
+Captured: 2026-10-19, pasted into chat by Faizuddin (EAINT-12412 TS10). Blank state, before Download.
+Trimmed: header, footer, dialogs and the shared header script dropped (identical to
+ucd-reports-menu.html). The form is untrimmed.
+Notes:
+  1. Payment Date From / To: readonly #startDate / #endDate (class hasDatepicker), EMPTY by
+     default (placeholder "Date (From)" / "Date (To)") — not prefilled with today here.
+  2. The jQuery UI widget #ui-datepicker-div lives inside #DivToAppendPicker and is empty until
+     opened, so its shape (month/year selects or arrows only) is still not captured.
+  3. Transaction Type select#transactionType, JomCheck = "JCK".
+  4. #download (submit, "Download") = PDF; #to-export (submit, "Export") = Excel.
+     Sample PDF: _reference/tickets/EAINT-12412/paymentbreakdownreport_example.pdf
+-->
+<body>
+    <div id="container" class="ucd-container">
+      <div class="breadcrumb">
+        <a href="/uat1/view/ucd/">Home</a>
+        <div class="separator">/</div>
+        <a href="/uat1/view/ucd/report/view.do">Reports</a>
+        <div class="separator">/</div>
+        <div class="page-name">Payment Breakdown Report</div>
+      </div>
+      <div class="table-title flex flex-row">
+        <h1>Payment Breakdown Report</h1>
+      </div>
+      <div>
+        <table>
+          <tbody><tr>
+            <td>
+              <img id="logo" src="/uat1/images/x-office-spreadsheet.png">
+              <span class="app-title"></span>
+<style>
+    .form-container .form-group .label-box {
+    min-width: 135px;
+    }
+    .form-container .form-group {
+        margin-right: 15px;
+    }
+</style>
+<form id="summary-form">
+    <div class="filter-box" style="border-bottom: 0;">
+        <div class="filter-header">
+            <h6>Generate Report</h6>
+        </div>
+        <div class="filter-body justify-content-between" style="padding-bottom: 0;">
+            <div class="form-container">
+                <div class="flex flex-wrap">
+                    <div class="form-group">
+                        <div class="label-box">
+                            <label>Payment Date From:</label>
+                        </div>
+                        <div class="input-date">
+                            <input type="text" name="startDate" id="startDate" readonly="readOnly" placeholder="Date (From)" class="hasDatepicker">
+                            <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-box">
+                            <label>Payment Date To:</label>
+                        </div>
+                        <div class="input-date">
+                            <input type="text" name="endDate" id="endDate" readonly="readOnly" placeholder="Date (To)" class="hasDatepicker">
+                            <img class="calendar-icon" src="/uat1/images/calendar-icon.png">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-box">
+                            <label>Transaction Type:</label>
+                        </div>
+                        <div class="custom-select">
+                            <select class="select" name="transactionType" id="transactionType">
+                                <option value="">All</option>
+                                <option value="STMS">STMS</option>
+                                <option value="APT">APT</option>
+                                <option value="ESTM">eSTM</option>
+                                <option value="OTH">Transfer History</option>
+                                <option value="BMK">BMK</option>
+                                <option value="LKM">eLKM</option>
+                                <option value="EVOC">eVOC</option>
+                                <option value="LKM_REFUND">LKM Refund</option>
+                                <option value="INSURANCE_CANCELLATION">Insurance Cancellation</option>
+                                <option value="SSM">SSM</option>
+                                <option value="JCK">JomCheck</option>
+                                <option value="SOFTWARE_INSTALLATION">Software Installation</option>
+                                <option value="BIOMETRIC_PURCHASE">Biometric Device Purchase</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-action">
+                <div>
+                    <button type="submit" id="download" class="btn-blue" style="width: 108px; height: 32px; margin-right: 5px; font-size: 13px; padding: 0;">
+                        Download
+                    </button>
+                    <button type="submit" id="to-export" class="btn-blue-outline to-reset" style="width: 108px; height: 32px; font-size: 13px; padding: 0;">
+                        Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+            </td>
+          </tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div id="DivToAppendPicker"><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div></div>
+</body>

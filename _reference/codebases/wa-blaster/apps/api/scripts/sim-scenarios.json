@@ -1,0 +1,9 @@
+{
+  "_readme": "HTTP flow-assertion corpus for sim-scenarios.ts. Asserted only in mock LLM mode (deterministic). Each scenario runs its turns in order on a fresh conversation (reset first); the LAST turn is characterized.",
+  "scenarios": [
+    { "id": "optout-01", "phone": "60190000001", "turns": ["stop"], "expectSubKind": "safety_escalate", "expectReason": "opt_out_requested" },
+    { "id": "complaint-01", "phone": "60190000002", "turns": ["this is terrible service"], "expectSubKind": "safety_escalate", "expectReason": "complaint" },
+    { "id": "consent-accept-01", "phone": "60190000003", "turns": ["how much does installation cost?", "yes please"], "expectSubKind": "consent_accepted_escalate" },
+    { "id": "consent-decline-01", "phone": "60190000004", "turns": ["how much does a consultation cost?", "no thanks"], "expectSubKind": "escalation_declined_ack" }
+  ]
+}

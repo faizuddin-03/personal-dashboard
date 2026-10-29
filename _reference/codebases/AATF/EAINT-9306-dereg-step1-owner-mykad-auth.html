@@ -1,0 +1,123 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URL: dereg step 1 "Owner" (header shows Owner active, Vehicle/AATF/JPJ Check/
+       Payment/Deregister pending) - MyKad + thumbprint hardware authentication page
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome; the ~600-line mykad-websocket.js
+  event-handler script is IDENTICAL boilerplate reused on every mykad-auth step in
+  this flow (owner auth here, owner-consent step 3, AATF-consent step 3) - kept
+  once here in full, other captures just reference it by api.sendMykadDataPath.
+  Base64 photo/thumbprint image data in the success state is huge and non-diagnostic;
+  kept the surrounding structure, trimmed the base64 payloads themselves (declared).
+  STATE 2 below is a REAL capture (2026-08-21) of the success outcome produced
+  by the MyKad emulator bypass (see knowledge/mykad-emulator.md) — connect to
+  ws://localhost:7878/IDCard, load the "FaizuddinAATF" profile, click Insert
+  Card, then this page's own auto-read flow (mykad-websocket-v2.js) picks it up.
+  Used by: knowledge/flow-edereg.md (§4 DOM handles), knowledge/mykad-emulator.md
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1: "PERINGATAN" consent + owner MyKad auth widget, before scan -->
+<!-- ============================================================ -->
+<div id="peringatan-consent-container">
+    <strong style="color: red;">PERINGATAN KEPADA PEMILIK KENDERAAN. SILA BACA.</strong>
+    <i>REMINDER TO VEHICLE OWNER. PLEASE READ.</i>
+    <ul>
+        <li>You agree to deregister and dispose of this vehicle at licensed AATF locations only;</li>
+        <li>Vehicle deregistration will not nullify the ownership of your vehicle registration number...;</li>
+        <li>Applicants must carefully read and understand the entire vehicle deregistration application processes; and</li>
+        <li>Deregistration of this vehicle is final and therefore UNABLE to reverse to its original status once the deregistration process has been completed.</li>
+    </ul>
+    <div id="btnPeringatanConsent">
+        <button id="agreePeringatanConsent" type="button">Ya/Yes</button>
+        <button id="cancelPeringatanConsent" type="button">Tidak/No</button>
+    </div>
+</div>
+
+<div id="dereg-header"><div class="title3">Owner Authentication</div></div>
+
+<div id="applet-container-section" style="visibility: hidden;">
+    <div class="websocket-container">
+        <!-- mykad-websocket-v2.js + mykad-data-model.js loaded here -->
+        <script>
+            var api = {
+                sendMykadDataPath: "/uat1/aatf/dereg/transaction/wskad.do",
+                continueNextPagePath: "/uat1/view/aatf/dereg/transaction/data-entry.do",
+                additionalInfo: "category=1",
+                cancelPath: "/uat1/view/aatf/dereg/transaction/cancel.do"
+            };
+            // eventHandlers: hSmart__Card__Ready -> auto-read; hIdentical/hNot__Identical ->
+            // setVerificationResult; continueIfPassed() enables #continueButton once
+            // photoReady, dataReady, verified are all >0.
+        </script>
+        <div id="mykad-container">
+            <div id="mykadContentContainer">
+                <img class="mykad-photo" id="mykadPhoto" src="/uat1/images/kad_photo_placeholder.svg">
+                <input id="mykadGmpcName" readonly="" class="readonly-input" type="text">
+                <input id="myKadNo" readonly="" class="readonly-input" type="text">
+                <img id="myKadThumbprint" class="mykad-thumb-print d-none" src="">
+                <div id="verificationResultText" class="mykad-verification-result d-none"></div>
+            </div>
+        </div>
+        <div id="mykad-control-container">
+            <button type="button" class="mykad-btn btn-blue-outline" id="cancelButton">Cancel</button>
+            <button type="button" id="readMyKadButton" class="mykad-btn btn-blue d-none" disabled="">Scan IC</button>
+            <button type="button" class="mykad-btn btn-blue d-none" id="continueButton">Next</button>
+        </div>
+    </div>
+    <!-- Fallback applet (Firefox/Java path), display:none in this HTML5-websocket build -->
+    <div class="applet-container" style="display: none;">
+        <applet code="com.myetrade.eauto.controller.dereg.mykad.MyKadApplet.class" width="850" height="650">
+            <param name="app-path" value="https://staging.eauto.my/uat1">
+            <param name="step" value="1">
+            <param name="type" value="dereg">
+            <param name="params" value="category=1">
+        </applet>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STATE 2: after the emulator's virtual card is picked up ("Verification Completed") -->
+<!-- REAL CAPTURE, 2026-08-21, via the localhost:7878 MyKad emulator bypass -->
+<!-- (see knowledge/mykad-emulator.md) -->
+<!-- ============================================================ -->
+<div id="mykadContentContainer" class="col h-full d-block">
+    <div class="mykad-row justify-content-center mykad-header">
+        <div class="col-20-percent mykad-header-col">NRIC Photo</div>
+        <div class="col-60-percent mykad-header-col">NRIC Details</div>
+        <div class="col-20-percent mykad-header-col">Thumbprint</div>
+    </div>
+    <div class="mykad-row mykad-container-body">
+        <div class="col-20-percent mykad-container-photo">
+            <img class="mykad-photo" id="mykadPhoto" src="data:image/jpg;base64,[trimmed]">
+        </div>
+        <div class="col-60-percent mykad-container-body-data">
+            <input id="mykadGmpcName" readonly="" class="readonly-input" type="text" value="MUHAMMAD FAIZUDDIN BIN BIDI">
+            <input id="myKadNo" readonly="" class="readonly-input" type="text" value="030217141005">
+            <!-- Address1/2/3, Postcode, City, State also populated, matching the
+                 emulator's "FaizuddinAATF" profile card data -->
+        </div>
+        <div class="col-20-percent">
+            <img id="myKadThumbprint" class="mykad-thumb-print" src="data:image/jpg;base64,[trimmed]">
+            <div id="verificationResultText" class="mykad-verification-result background-color-pass text-white">Verification Passed</div>
+        </div>
+    </div>
+    <div class="mykad-row h-full">
+        <div class="col h-full background-color-pass-light" id="mykadNoteContainer">
+            <div id="mykadCompleteFlag" class="d-inline-block"><!-- green checkmark SVG --></div>
+            <div id="messageBox" class="message-paragraph text-color-pass">Verification Completed</div>
+            <button type="button" id="rereadMyKadButton" class="mykad-btn btn-blue-outline">Scan IC Again</button>
+        </div>
+    </div>
+</div>
+<div id="mykad-control-container" class="mykad-row mt-3 d-block">
+    <button type="button" class="mykad-btn btn-blue-outline" id="cancelButton">Cancel</button>
+    <button type="button" id="readMyKadButton" class="mykad-btn btn-blue d-none" disabled="">Scan IC</button>
+    <button type="button" class="mykad-btn btn-blue" id="continueButton">Next</button>
+</div>
+<!-- Clicking Next (#continueButton) posts to api.sendMykadDataPath, then redirects to
+     api.continueNextPagePath = /uat1/view/aatf/dereg/transaction/data-entry.do -->
+<!-- Note: #readMyKadButton is present but hidden+disabled in this state, NOT
+     removed — a selector waiting for #continueButton to be visible/enabled is
+     the correct signal that the emulator's card was picked up successfully. -->

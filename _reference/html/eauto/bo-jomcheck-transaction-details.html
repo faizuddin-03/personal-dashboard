@@ -1,0 +1,83 @@
+<!--
+  URL: /uat1/view/jomcheck/enquiry/view.do?id=<transactionId>&back=false
+  Page: BO JomCheck Transaction Details (after clicking "View" from the enquiry listing) —
+  HXJ0001, ref J690008380, Approved. Invoice/e-Invoice/Report print buttons, read-only
+  share checkboxes, payment details, Special Remark textarea + update button.
+  Env: uat1
+  Captured: 2026-09-30, by Faizuddin, pasted directly.
+  Trimmed: none.
+  Note: clicking "REPORT" downloads the PDF directly — no further HTML state.
+-->
+<body>
+<div id="container">
+    <form id="transaction-form">
+    <input type="hidden" name="transactionId" id="transactionId" value="0c0b5e6b-af90-4f9e-90a3-94eb81571c05">
+        <table style="width: 1500px !important">
+            <colgroup><col width="220px"><col width="200px"><col width="150px"><col width="250px"><col width="800px"></colgroup>
+            <tbody>
+            <tr>
+                <td colspan="4" class="title1">
+                    <span style="color:red">HXJ0001</span> (Ref No.: J690008380) - Transaction Details
+                </td>
+                <td><span class="approved" style="font-weight:bold; font-size:21px; text-align: left;">Approved</span></td>
+            </tr>
+            <tr>
+                <td><b>Date Created:</b></td>
+                <td colspan="3">30-09-2026 02:20pm</td>
+                <td rowspan="1">
+                    <button id="to-print-invoice" class="view-button"><img src="/uat1/images/icon-print.png"> INVOICE</button>
+                    <button type="button" id="to-print-e-invoice" class="view-button"><img src="/uat1/images/icon-print.png"> e-INVOICE</button>
+                    <br>
+                    <button id="to-print-report" class="view-button"><img src="/uat1/images/icon-print.png"> REPORT</button>
+                </td>
+            </tr>
+            <tr><td><b>e-Invoice Submission Date:</b></td><td>30-09-2026 02:20pm</td></tr>
+            <tr><td><b>LHDN Response Status:</b></td><td><b><span style="color:#008E00">OK</span></b></td></tr>
+            <tr><td><b>e-Invoice Validation Date:</b></td><td>30-09-2026 02:20pm</td></tr>
+            <tr><td colspan="4"><div class="notice">Further enquiry please contact 012-7823796 (ezAUTO Asia Sdn Bhd).</div></td></tr>
+            </tbody></table>
+        <hr>
+        <table>
+            <tbody><tr>
+                <td>
+                    <div class="title2" style="padding-bottom:0;">Share Report with Financial Institution (Bank and Credit Company)</div>
+                    <div style="color:#696969; margin:5px 0;">Report sharing features allowed until 29 October 2026.</div>
+                    <div style="margin-top:10px;">
+                        <div style="margin-bottom:4px;"><input type="checkbox" disabled=""> mfxstar</div>
+                        <div style="margin-bottom:4px;"><input type="checkbox" disabled=""> YI LINK TEST SDN BHD</div>
+                    </div>
+                </td>
+            </tr>
+        </tbody></table>
+        <hr>
+        <table>
+            <tbody><tr>
+                <td>
+                    <div class="title2">Payment Details:</div>
+                    <table>
+                    <colgroup><col width="20px"></colgroup>
+                    <tbody>
+                        <tr>
+                            <td>1.</td>
+                            <td>30-09-2026 02:20pm - RHB (JOM260930000002-HXJ0001) - <span style="color:green"><b>OK</b></span></td>
+                        </tr>
+                    </tbody></table>
+                </td>
+            </tr>
+        </tbody></table>
+        <hr>
+        <table>
+            <colgroup><col width="500px"><col width="500px"></colgroup>
+            <tbody><tr>
+                <td>
+                    <div class="title2">Special Remark:</div>
+                    <textarea rows="10" cols="150" name="specialRemark" id="specialRemark"></textarea>
+                    <br>
+                    <button id="to-specialRemark">Update Special Remark</button>
+                </td>
+                <td><img id="icon-approved" style="display:none" src="/uat1/images/approved.jpg" width="80px" height="80px" title="Approved"></td>
+            </tr>
+        </tbody></table>
+    </form>
+</div>
+</body>

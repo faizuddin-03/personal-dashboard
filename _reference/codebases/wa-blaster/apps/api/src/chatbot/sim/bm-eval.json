@@ -1,0 +1,37 @@
+[
+  { "phone": "60139011", "label": "T01 roadside | EN control  | KB:english-only", "message": "What is the maximum claimable amount for roadside assistance and towing?" },
+  { "phone": "60139012", "label": "T01 roadside | BM pure     | KB:english-only", "message": "Berapakah jumlah maksimum yang boleh dituntut untuk bantuan tepi jalan dan tunda kereta?" },
+  { "phone": "60139013", "label": "T01 roadside | Manglish    | KB:english-only", "message": "roadside assistance & towing ni limit dia berapa eh?" },
+
+  { "phone": "60139021", "label": "T02 windscreen+NCD | EN control | KB:english-only", "message": "Is windscreen damage covered, and will I lose my NCD if I claim for it?", "expect": { "fact": "Windscreen damage is covered as an add-on; with the windscreen endorsement (Endorsement 89) a windscreen-only claim does not affect the NCD." } },
+  { "phone": "60139022", "label": "T02 windscreen+NCD | BM pure    | KB:english-only", "message": "Adakah kerosakan cermin hadapan dilindungi, dan adakah NCD saya akan hilang jika saya menuntutnya?", "expect": { "fact": "Windscreen damage is covered as an add-on; with the windscreen endorsement (Endorsement 89) a windscreen-only claim does not affect the NCD." } },
+  { "phone": "60139023", "label": "T02 windscreen+NCD | Manglish   | KB:english-only", "message": "cermin depan pecah, boleh claim tak? lepas tu NCD hangus ke?" },
+
+  { "phone": "60139031", "label": "T03 flood | EN control | KB:english-only", "message": "Does comprehensive insurance cover flood damage to my car?", "expect": { "fact": "Comprehensive insurance does not cover flood by default; flood (special perils) is an optional add-on for an extra premium." } },
+  { "phone": "60139032", "label": "T03 flood | BM pure    | KB:english-only", "message": "Adakah insurans komprehensif menanggung kerosakan akibat banjir pada kereta saya?", "expect": { "fact": "Comprehensive insurance does not cover flood by default; flood (special perils) is an optional add-on for an extra premium." } },
+  { "phone": "60139033", "label": "T03 flood | Manglish   | KB:english-only", "message": "kereta saya kena banjir semalam, comprehensive cover tak ni?" },
+
+  { "phone": "60139041", "label": "T04 NCD-on-claim | EN control | KB:english-only", "message": "What happens to my No Claim Discount (NCD) if I make a claim this year?", "expect": { "fact": "Making a claim causes the No Claim Discount to drop to 0% (zero) at the next renewal, and the customer must start accumulating NCD again from scratch.", "mustNotSay": ["no longer increase", "tidak lagi meningkat"] } },
+  { "phone": "60139042", "label": "T04 NCD-on-claim | BM pure    | KB:english-only", "message": "Apakah yang berlaku kepada Diskaun Tiada Tuntutan (NCD) saya jika saya membuat tuntutan tahun ini?", "expect": { "fact": "Membuat tuntutan menyebabkan NCD menjadi sifar (0%) pada pembaharuan berikutnya, dan pengumpulan NCD bermula semula.", "mustNotSay": ["tidak lagi meningkat", "kembali ke peratus"] } },
+
+  { "phone": "60139051", "label": "T05 how-to-claim | EN control | KB:english-only", "message": "How do I make a claim after a car accident?" },
+  { "phone": "60139052", "label": "T05 how-to-claim | BM pure    | KB:english-only", "message": "Bagaimanakah cara untuk membuat tuntutan selepas kemalangan kereta?" },
+
+  { "phone": "60139061", "label": "T06 under-21 excess | EN control | KB:english-only", "message": "If a driver under 21 drives my car and we make a claim, is there an extra excess charge?", "expect": { "fact": "If a driver under 21 drives the car and a claim is made, an additional compulsory excess of RM400 applies." } },
+  { "phone": "60139062", "label": "T06 under-21 excess | BM pure    | KB:english-only", "message": "Jika pemandu berumur bawah 21 tahun memandu kereta saya dan kami membuat tuntutan, adakah caj lebihan (excess) tambahan?", "expect": { "fact": "If a driver under 21 drives the car and a claim is made, an additional compulsory excess of RM400 applies." } },
+
+  { "phone": "60139071", "label": "T07 e-hailing | EN control | KB:english-only", "message": "Can I use my private car for e-hailing such as Grab under this policy?" },
+  { "phone": "60139072", "label": "T07 e-hailing | BM pure    | KB:english-only", "message": "Bolehkah saya menggunakan kereta persendirian saya untuk e-hailing seperti Grab di bawah polisi ini?" },
+
+  { "phone": "60139081", "label": "T08 agreed-vs-market | EN control | KB:english-only", "message": "What is the difference between agreed value and market value for my car's sum insured?" },
+  { "phone": "60139082", "label": "T08 agreed-vs-market | BM pure    | KB:english-only", "message": "Apakah perbezaan antara nilai dipersetujui (agreed value) dan nilai pasaran (market value) bagi jumlah dilindungi kereta saya?" },
+
+  { "phone": "60139091", "label": "T09 RHB PA benefits | EN control | KB:has-BM-doc", "message": "For RHB Motorist Personal Accident cover, what benefits are included?" },
+  { "phone": "60139092", "label": "T09 RHB PA benefits | BM pure    | KB:has-BM-doc", "message": "Untuk perlindungan RHB Motorist Personal Accident, apakah faedah yang disertakan?" },
+
+  { "phone": "60139101", "label": "T10 Zurich exclusions | EN control | KB:has-BM-doc", "message": "Under the Zurich private car policy, what is excluded from cover?" },
+  { "phone": "60139102", "label": "T10 Zurich exclusions | BM pure    | KB:has-BM-doc", "message": "Di bawah polisi kereta persendirian Zurich, apakah yang dikecualikan daripada perlindungan?" },
+
+  { "phone": "60139111", "label": "T11 e-hailing (Manglish) | KB:added", "message": "i drive grab part time, my normal car insurance can cover ah?", "expect": { "fact": "A standard private car policy does not cover using the car for e-hailing/ride-hailing such as Grab (carriage of passengers for hire or reward); an e-hailing add-on/extension or commercial policy is needed." } },
+  { "phone": "60139112", "label": "T12 panel workshops count | KB:added", "message": "how many panel workshops does RHB insurance have?", "expect": { "fact": "RHB has a nationwide panel of approximately 650 approved workshops across Malaysia (as at January 2019); confirm the current panel with RHB." } }
+]

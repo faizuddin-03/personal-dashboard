@@ -1,0 +1,553 @@
+=== PAGE 1 ===
+SYSTEM REQUIREMENT DOCUMENT (SRD)
+Requirement [eAuto-Application] To Implement Email Reminders, Expiry Extension & Application Link
+Reactivation
+Version Version 1.4
+Latest Revision Date 26.08.2026 (Wed)
+=== PAGE 2 ===
+CONTENTS
+1.0 DOCUMENT INFORMATION .................................................................................................................................................... 3
+1.1 Purpose ............................................................................................................................................................................. 3
+1.2 Intended Audience ............................................................................................................................................................. 3
+1.3 Revision History ................................................................................................................................................................. 3
+1.4 Glossary of Terms ............................................................................................................................................................. 5
+1.5 Associated Document(s) .................................................................................................................................................... 5
+2.0 REQUIREMENT ........................................................................................................................................................................ 7
+2.1 High-Level Requirement Overview ..................................................................................................................................... 7
+2.2 Key Highlights and Baseline Requirements ........................................................................................................................ 8
+2.2.1 Background ............................................................................................................................................................... 8
+2.2.2 Existing Issue & Expected Behaviour.......................................................................................................................... 9
+2.2.3 Affected Pages ........................................................................................................................................................ 10
+2.2.4 Automated Reminder Emails .................................................................................................................................... 11
+2.2.5 Application Expiry Extension .................................................................................................................................... 22
+2.2.6 Application Link Reactivation ................................................................................................................................... 27
+=== PAGE 3 ===
+1.0 DOCUMENT INFORMATION
+1.1 Purpose
+The System Requirements Document outlines the agreed system specifications. Once approved, it becomes the baseline to ensure
+the system meets business goals. Sign-off is required for development to start, and any changes must follow the System
+Enhancement Management process.
+1.2 Intended Audience
+The intended audience for this document includes project stakeholders and any team members involved in defining, implementing,
+or validating the system requirements.
+1.3 Revision History
+This section records all modifications to the document until it reaches Version 1.0, at which point it is finalized and established as
+the baseline for future reference. Once baselined, any new changes will be assessed based on their severity — significant changes
+may result in an addendum, while less critical updates may be handled through a formal change request.
+Version No Date Revised By Reason for Revision
+0.1 23.07.2026 (Thurs) Lim Yi Link Initial Draft
+0.2 30.07.2026 (Thurs) Lim Yi Link a. Added sample scenario in Section 2.2.5
+b. Added expected behaviour in Section 2.2.6
+1.0 30.07.2026 (Thurs) Lim Yi Link Send out for external review
+1.1 04.08.2026 (Tues) Lim Yi Link Added Email Notification Specifications under
+Section 2.2.4 (2.2.4.1 Reminder Scenarios; 2.2.4.2
+Email templates with sender/recipient, subject and
+content).
+1.2 10.08.2026 (Mon) Lim Yi Link a. Added expiry reminder conditions (Email 2 & 3)
+=== PAGE 4 ===
+Version No Date Revised By Reason for Revision
+b. Updated expiry date calculation for application
+extensions
+c. Updated sender for Email 1–5
+d. Bolded expiry references in email content
+1.3 10.08.2026 (Mon) Lim Yi Link Updated the New expiry date calculation logic in
+Section 2.2.5 (before-expiry and after-expiry
+scenarios).
+1.4 26.08.2026 (Wed) Lim Yi Link a. Added reminder behaviours under Section 2.2.4
+(reactivation reminder; scheduling, single-send and
+cycle reset).
+b. Added extension behaviours under Section 2.2.5
+(status returns to Approved; Extend button hidden
+after the 3-month window; BackOffice user access;
+concurrent-click handling).
+c. Added reactivation behaviours under Section
+2.2.6 (Reactivate button click flow; expected
+behaviour after reactivation incl. SSM data refresh;
+failed-payment reactivation).
+d. Added Application Listing expiry-date update on
+extension and reactivation.
+Note: Changes made are highlighted in yellow.
+=== PAGE 5 ===
+1.4 Glossary of Terms
+# Abbreviation / Term Interpretation / Description
+1 Potential UCD Prospective Used Car Dealer going through the onboarding journey.
+2 Assignee eAuto internal staff / BackOffice reviewer handling the application.
+3 PA Pre-Application
+1.5 Associated Document(s)
+# Item Location / URL Rationale for Relevance
+1 EAINT-11868 — [eAuto-Application] To Implement https://mfservices.atlassian.net/browse Main enhancement ticket
+Email Reminders, Expiry Extension & Application /EAINT-11868
+Link Reactivation
+2 EAUTO-947 — ENHANCEMENT REQUEST FOR https://mfservices.atlassian.net/browse Source enhancement
+PRE-ONBOARDING AND ONBOARDING /EAUTO-947 request
+(REMINDER, EXTENSION & REACTIVATION)
+3 CCB-824 — EAUTO | To Implement Email https://mfservices.atlassian.net/browse Change Control Board
+Reminders, Expiry Extension & Application Link /CCB-824 ticket
+Reactivation
+=== PAGE 6 ===
+# Item Location / URL Rationale for Relevance
+4 Figma Design (UI/UX Reference) a. Extend feature: UI/UX design reference
+https://www.figma.com/design/0S3hEt for the Extend and
+bYShUSNS3OZS6PyC/Onboarding- Reactivation features
+form?node-id=9058-
+29823&t=DVf2SGZndP8SaMCJ-1
+b. Reactive feature:
+https://www.figma.com/design/0S3hEt
+bYShUSNS3OZS6PyC/Onboarding-
+form?node-id=9058-
+33746&t=DVf2SGZndP8SaMCJ-1
+=== PAGE 7 ===
+2.0 REQUIREMENT
+2.1 High-Level Requirement Overview
+# Item Description
+2.1.1 Enhancement Overview Implement three enhancements to the eAuto Application flow for potential
+UCDs: automated reminder emails, a one-time application expiry
+extension, and application link reactivation.
+2.1.2 Key Value(s) Expected Reduce onboarding drop-off by proactively reminding UCDs of pending
+actions, give assignees flexibility to extend an application once, and allow
+expired application links to be reactivated after payment.
+2.1.3 Additional Note(s) Ops team to provide 5 email templates in total: 6 reminder scenarios.
+=== PAGE 8 ===
+2.2 Key Highlights and Baseline Requirements
+The following key highlights and requirements were established during the initial sync-up sessions with the requestor. As this
+forms the baseline, any changes requested thereafter may result in adjustments to scope, timeline, or deliverables, for which the
+requestor will be responsible to review and confirm.
+2.2.1 Background
+# Affected Item Description
+1 Project eAuto
+2 Portal Potential UCD
+3 Module UCD Application Form
+4 Request Implement automated reminder emails, a one-time application expiry extension, and
+application link reactivation for potential UCDs.
+5 Additional Note -
+=== PAGE 9 ===
+2.2.2 Existing Issue & Expected Behaviour
+# Item Description
+1 Existing Issue / Behaviour There are currently no automated reminders sent to potential UCDs, no mechanism
+for an assignee to extend an application before it expires, and expired application
+links cannot be reactivated.
+2 Expected New Handling / The system sends automated reminder emails at defined triggers, allows the
+Behaviour assignee to extend an application once, and allows expired application links to be
+reactivated via email after payment (valid for 90 days from payment date).
+=== PAGE 10 ===
+2.2.3 Affected Pages
+# Affected Pages Description
+1 Application (Assignee / BackOffice view) Extend button and entry of extension remarks.
+2 Application – Right Sidebar Display of extension remarks.
+3 Email Templates 6 email templates to be provided / updated:
+a. Application approval reminder
+b. Application expiry reminder (2 months)
+c. Application expiry reminder (1 month)
+d. Payment reminder
+e. Hardcopy submission reminder
+f. Reactivation email
+Note: A button will be added in the existing expiration email template for
+application reactivation.
+4 Reactivation Confirmation Page Redirect to a new tab for the UCD to confirm application link reactivation.
+=== PAGE 11 ===
+2.2.4 Automated Reminder Emails
+2.2.4.1 Reminder Scenarios
+# Item Description Acceptance Criteria
+1 Application System sends a reminder email to the potential Reminder email is sent automatically 3 days
+approval reminder UCD 3 days after the Assignee approves the after application approval when the
+application, prompting them to complete the application is still incomplete.
+application.
+2 Application expiry System sends a reminder email 2 months before Reminder email is sent automatically 2
+reminder (2 the application expiration date to complete the months before the application expiry date.
+months) application.
+3 Application expiry System sends a reminder email 1 month before Reminder email is sent automatically 1 month
+reminder (1 month) the application expiration date to complete the before the application expiry date.
+application.
+4 Payment reminder System sends a payment reminder email 1 day Payment reminder email is sent automatically
+after the Softcopy Docs status = "Checked" if the 1 day after Softcopy Docs = "Checked" when
+UCD has not made payment. no payment has been received.
+5 Hardcopy System sends a reminder email 3 days after the Hardcopy reminder email is sent
+submission UCD has made payment, prompting them to automatically 3 days after payment is
+reminder submit the required hardcopy documents. completed.
+=== PAGE 12 ===
+# Item Description Acceptance Criteria
+6 Email templates 5 email templates (one per scenario above) to be All 5 reminder email templates provided by
+(Ops) provided by the Ops team. Ops are configured and used for the correct
+scenario.
+7 Reminder on A reminder email is sent when the form is Reminder email is sent automatically upon
+reactivation reactivated. reactivation.
+8 Reminder The 2-month and 1-month reminders are triggered Each reminder fires once on its scheduled
+scheduling & only on the exact scheduled date. date; the cycle restarts after extension or
+frequency Each reminder is sent only once. reactivation.
+The reminder cycle resets whenever the
+application is extended or reactivated.
+=== PAGE 13 ===
+2.2.4.2 Email Notification Specifications
+The following specifies the sender and recipient, email subject, and email content for each reminder email. The reactivation email
+(Email 6) is triggered under Section 2.2.6. Email content is to be provided by the Ops team based on the samples below.
+Onboarding Details - Field Definitions
+# Field Definition
+1 [Application No] System-generated application number. (E.g.: NA50000802)
+2 [Company Name] Registered company name of the Potential UCD.
+3 [Expiration Date] Refers to the expiry date of the onboarding form, which is valid for 90 days from the created
+date of the onboarding form.
+Date format: DD MMMM YYYY
+E.g.: 10 September 2025
+Note: Display the full name of the month for the expiration date.
+4 [Application Link] Unique link for the Potential UCD to access and complete the application.
+5 [Payment Link] Link for the Potential UCD to complete the required payment.
+6 [Reactivate Application Button embedded in the expiry email that opens the Reactivation Confirmation page in a new
+button] tab.
+=== PAGE 14 ===
+Email 1 - Application Completion Reminder (After Approval)
+# Element Description
+1 Sender imonitor@eauto.my
+2 Recipient To: Potential UCD's registered email address (retrieved from the Application details).
+CC: apply@eauto.my
+3 Email Subject [Application No] [Company Name]: Reminder - Submit Required Documents in Application
+E.g.: NA50000802 ABC Motors Sdn Bhd: Reminder - Submit Required Documents in Application
+4 Email Content Dear [Company Name],
+This is a friendly reminder to complete and submit the required documents for your eAuto application.
+Please ensure that all required information and supporting documents are completed and submitted as
+soon as possible to avoid any delay in the application review process.
+Please upload all supporting documents through the Application Link below: [Application Link]
+Your application link will expire on [Expiration Date] at 12:00 PM.
+Should you require any assistance, please contact our team.
+Thank you for your prompt attention and cooperation.
+Best regards,
+eAuto Sdn Bhd
+Level 15, Sunway Tower
+Jalan Ampang, 50450 Kuala Lumpur
+Customer Service: 03-27798899
+WhatsApp: 012-2001324
+[eAuto Logo]
+=== PAGE 15 ===
+Email 2 - Application Expiry Reminder (2 Months Before Expiry)
+# Element Description
+1 Sender imonitor@eauto.my
+2 Recipient To: Potential UCD's registered email address (retrieved from the Application details).
+CC: apply@eauto.my
+3 Email Subject [Application No] - [Company Name]: Reminder - Two Months Remaining to Submit Required
+Documents in Application
+E.g.: NA50000802 - ABC Motors Sdn Bhd: Reminder - Two Months Remaining to Submit Required
+Documents in Application
+4 Email Content Dear [Company Name],
+Please be informed that you have approximately two (2) months remaining to complete and submit all
+required documents for your eAuto application.
+Please upload all supporting documents through the Application Link below: [Application Link]
+Kindly ensure that all application details and supporting documents are submitted before the application
+link expires on [Expiration Date] at 12:00 PM.
+Incomplete applications may delay the review and approval process, so we encourage you to complete
+your submission early.
+Should you require any assistance, please contact our team.
+Thank you for your cooperation.
+Best regards,
+eAuto Sdn Bhd
+Level 15, Sunway Tower
+=== PAGE 16 ===
+Jalan Ampang, 50450 Kuala Lumpur
+Customer Service: 03-27798899
+WhatsApp: 012-2001324
+[eAuto Logo]
+5 Sending This reminder email shall NOT be sent when the "Hardcopy & Acc Created" status is NOT "Registered"
+Condition and "Pending Assignee".
+=== PAGE 17 ===
+Email 3 - Application Expiry Reminder (1 Month Before Expiry)
+# Element Description
+1 Sender imonitor@eauto.my
+2 Recipient To: Potential UCD's registered email address (retrieved from the Application details).
+CC: apply@eauto.my
+3 Email Subject [Application No] - [Company Name]: Final Reminder - One Month Remaining to Complete Your
+Application
+E.g.: NA50000802 - ABC Motors Sdn Bhd: Final Reminder - One Month Remaining to Complete Your
+Application
+4 Email Content Dear [Company Name],
+Please be informed that one (1) month remains to complete and submit all required documents for
+your eAuto application.
+Please upload all supporting documents through the Application Link below: [Application Link]
+Kindly ensure that all application details and supporting documents are submitted before the
+application link expires on [Expiration Date] at 12:00 PM.
+Failure to complete your submission before the expiry date may cause the application link to
+become inactive and could delay the application process.
+We strongly encourage you to complete your submission as soon as possible. Should you require
+any assistance, please contact our team.
+Thank you for your prompt attention and cooperation.
+Best regards,
+eAuto Sdn Bhd
+=== PAGE 18 ===
+Level 15, Sunway Tower
+Jalan Ampang, 50450 Kuala Lumpur
+Customer Service: 03-27798899
+WhatsApp: 012-2001324
+[eAuto Logo]
+5 Sending Condition This reminder email shall NOT be sent when the "Hardcopy & Acc Created" status is NOT
+"Registered" and "Pending Assignee".
+=== PAGE 19 ===
+Email 4 - Payment Reminder
+# Element Description
+1 Sender imonitor@eauto.my
+2 Recipient To: Potential UCD's registered email address (retrieved from the Application details).
+CC: apply@eauto.my
+3 Email Subject [Application No] - [Company Name]: Reminder - Complete Payment for Your eAuto Application
+E.g.: NA50000802 - ABC Motors Sdn Bhd: Reminder - Complete Payment for Your eAuto
+Application
+4 Email Content Dear [Company Name],
+Thank you for submitting the required documents for your eAuto application.
+We noticed that payment has not yet been received. Kindly proceed with the payment to continue
+processing your application and avoid any unnecessary delay: [Payment Link]
+Please note that the Application Link will expire on [Expiration Date] at 12:00 PM, after which the
+link will no longer be accessible and your application may be deemed withdrawn.
+Should you require any assistance with the payment process, please contact our team.
+Thank you for your cooperation.
+Best regards,
+eAuto Sdn Bhd
+Level 15, Sunway Tower
+Jalan Ampang, 50450 Kuala Lumpur
+Customer Service: 03-27798899
+WhatsApp: 012-2001324
+[eAuto Logo]
+=== PAGE 20 ===
+Email 5 - Hardcopy Submission Reminder
+# Element Description
+1 Sender imonitor@eauto.my
+2 Recipient To: Potential UCD's registered email address (retrieved from the Application details).
+CC: apply@eauto.my
+3 Email Subject [Application No] - [Company Name]: Follow-Up Reminder - Submission of Original Hardcopy
+Document
+E.g.: NA50000802 - ABC Motors Sdn Bhd: Follow-Up Reminder - Submission of Original Hardcopy
+Document
+4 Email Content Dear [Company Name],
+We refer to our previous email regarding the submission of the original hardcopy documents for
+your eAuto application.
+Our records indicate that we have not yet received your original hardcopy documents. To avoid
+any delay in processing your application, please courier or deliver the completed original
+documents to the following address as soon as possible:
+eAuto Sdn. Bhd.
+Level 15, Sunway Tower
+Jalan Ampang
+50450 Kuala Lumpur
+Please ensure that all required documents are duly signed and, where applicable, stamped with
+your company's official stamp.
+=== PAGE 21 ===
+Once the documents have been sent, kindly provide us with the courier tracking number for our
+reference.
+Thank you for your prompt attention and cooperation.
+Best regards,
+eAuto Sdn Bhd
+Level 15, Sunway Tower
+Jalan Ampang, 50450 Kuala Lumpur
+Customer Service: 03-27798899
+WhatsApp: 012-2001324
+[eAuto Logo]
+=== PAGE 22 ===
+2.2.5 Application Expiry Extension
+# Item Description Acceptance Criteria
+1 Extend button The Extend button is available only when BOTH Extend button is visible/enabled only when
+availability conditions are met: both conditions are met and the application
+a. The UCD can submit registration documents has not been extended before.
+(Softcopy & Hardcopy) after Application Status =
+Approved; AND
+b. The "Hardcopy & Acc Created" status is NOT
+"Registered".
+Note: The Extend button is displayed regardless of
+the current status of Softcopy Docs and Hardcopy &
+Acc Created (except when Hardcopy & Acc Created
+= Registered).
+2 Extend button The Extend button is not available when the Extend button is hidden/disabled when
+unavailable Hardcopy status = "Registered". Hardcopy status is "Registered".
+3 One-time extension Each application is eligible for one (1) 30-day System prevents a second extension; the
+extension only. Extend button becomes unavailable after one
+extension.
+Special Scenario:
+a. If the application expires after the 30-day
+extension, the Assignee must pay the
+RM108 reactivation fee to reactivate the
+application.
+b. Once reactivated, the application is not
+eligible for any further extension.
+=== PAGE 23 ===
+# Item Description Acceptance Criteria
+c. If the application expires again, it cannot be
+extended and another reactivation is
+required.
+Loop scenario: Application Expired → Extended →
+Expired → Reactivated → Expired Again →
+Reactivated (No Extension Allowed)
+4 No auto email No automated email is triggered by the extension No email is sent when an extension is
+action. performed.
+5 Extension remarks a. The assignee can enter remarks for each Assignee can enter remarks during extension;
+extension. remarks are saved and displayed in the right
+b. The Remarks field follows the existing behaviour sidebar.
+of the Remarks field in the Application.
+c. Remarks are displayed on the right sidebar.
+=== PAGE 24 ===
+# Item Description Acceptance Criteria
+6 New expiry date Example expiry date: 1 August 2026 New expiry date is calculated based on when
+calculation 1. Before expiry date — 30 days before expiry (2 the [Extend] button is clicked: it counts from
+Jul 2026 – 1 Aug 2026) the original expiry date when clicked before
+• BO user can view and click the [Extend] expiry (within 30 days before), and from the
+button. Extend-click date when clicked after expiry (up
+• Expected behaviour: New expiry date counts to 3 months after).
+from the original expiry date.
+Original expiry date + 30 days = New expiry
+date.
+• Example: If BO extends on 20 Jul 2026, the
+new expiry still counts from 1 Aug 2026.
+2. After expiry date — up to 3 months after expiry
+(1 Aug 2026 – 1 Nov 2026)
+• BO user can view and click the [Extend]
+button.
+• Expected behaviour: New expiry date starts
+counting from the date the [Extend] button is
+clicked.
+• Example: If BO extends on 15 Sep 2026, the
+new expiry counts from 15 Sep 2026 → New
+expiry date = 15 Oct 2026
+7 Status after The application status returns to Approved when Application status = Approved after extension.
+extension the application is extended.
+8 Extend button The Extend button is no longer displayed once the Extend button is hidden after the 3-month
+availability window 3-month extension window (after the expiry date) window.
+has passed.
+=== PAGE 25 ===
+# Item Description Acceptance Criteria
+9 BackOffice user All BO users are allowed to view and click the Only the listed BO users are blocked from
+access [Extend] button, except the following: Extend; all other BO users can view and click
+a. eautohamal it.
+b. eautojenilyn
+c. eautojrjaya
+d. eautonashwa
+e. eautoshamini
+f. eautovegas
+g. eautoxiayuan
+h. kokping
+i. tempstaff
+j. wahidahzaki
+k. mfnabila
+l. mfnadhirah
+m. mfzuhaira
+n. eautochinwei
+o. mfaliah
+p. mfmaisarah
+q. mfnicholas
+r. mfteckyung
+10 Application Listing When the application is extended, the Application Application Listing shows the updated expiry
+update Expiry Date is updated in the Application Listing. date after extension.
+=== PAGE 26 ===
+# Item Description Acceptance Criteria
+11 Concurrent a. If two users (or two tabs) click Extend on the Only the first concurrent Extend click
+extension same application at the same time, only the first succeeds; the application is extended once.
+user's click will succeed.
+b. The other click fails with the message: "Action
+could not be completed because some details
+have changed. Please refresh and try again."
+c. The application is extended once, not twice.
+=== PAGE 27 ===
+2.2.6 Application Link Reactivation
+# Item Description Acceptance Criteria
+1 Reactivate button in a. Add a button in the existing email template to Reactivate button appears in the email; clicking
+email reactivate the application. it opens a new tab displaying the reactivation
+b. On the 1st click, the UCD pays the Pre- confirmation page.
+Application (AP) fee.
+c. On the 2nd click, the UCD is redirected to the
+(reactivated) application form.
+2 Reactivation The UCD confirms reactivation on the Confirmation page loads in a new tab and
+confirmation page confirmation page. allows the UCD to proceed with reactivation.
+3 Reactivation validity Once the UCD has successfully paid the Pre- a. After successful payment of the Pre-
+(90 days) Application Fee (RM108), the system shall: Application Fee (RM108), the application
+link shall be reactivated and remain valid for
+a. Reactivate the application link for 90 days, 90 days, calculated from the payment date.
+calculated from the payment date. b. A new Pre-Application (PA)
+record/transaction shall be created for each
+b. Create a new Pre-Application (PA) record for successful reactivation.
+each reactivation. c. The latest Pre-Application (PA) record and
+the associated Application Form (A Form)
+c. Allow the UCD to continue the onboarding for SSM Registered Company shall display
+process using the same application link. the latest SSM document information.
+d. Ensure the latest Pre-Application (PA) record
+and the associated Application reflect the latest
+SSM document information for SSM Registered
+Company.
+=== PAGE 28 ===
+# Item Description Acceptance Criteria
+4 Technical limitation a. An Application can only be associated with Only the latest Pre-Application (PA) record shall
+(backend) the latest Pre-Application (PA) record. retain the application link. Previous PA records
+shall no longer contain the application link.
+b. Previous PA records (e.g. PA v1) will no
+longer contain the application link after a
+reactivation.
+c. After reactivation, the Application is linked
+only to the latest PA record (e.g. PA v2)
+5 No maximum There is no maximum limit on the number of The UCD can reactivate the application any
+reactivation limit reactivations. number of times.
+6 Reactivation after re- Special scenario: When an extended application expires again,
+expiry (extended a. If an application that was previously extended the UCD must pay RM108 before the link is
+application) expires again, the potential UCD is required to reactivated; the application is then valid for 90
+pay RM108 to reactivate the link again. days from the payment date.
+b. Upon successful payment, the application is
+reactivated for 90 days from the payment date.
+7 Email template Edit and add reactivate button to existing Reactivation email template with a working
+expired email template. reactivate button.
+Updated Email Template:
+Dear Sir / Madam,
+=== PAGE 29 ===
+# Item Description Acceptance Criteria
+We regret to inform you that your application
+has expired due to no action being taken within
+the stipulated validity period of 90 days, which
+expired on [Expiration Date] at 12:00 PM.
+If you still wish to proceed with the application
+process, you may reactivate your application by
+clicking the button below. Once reactivated, you
+may continue your application through the
+eAuto portal.
+[Reactivate Application button]
+For further assistance or inquiries, please
+contact us at apply@eauto.my.
+Best regards,
+eAuto Sdn Bhd
+Level 15 Sunway Tower
+Jalan Ampang, 50450 Kuala Lumpur
+Customer Service: 03-27798899
+WhatsApp: 012-2001324
+[eAuto Logo]
+=== PAGE 30 ===
+8 Expected behaviour a. The application status returns to Approved. After reactivation: status = Approved, the
+after reactivation b. The Application Expiry Date is updated in the Application Listing expiry date is updated, and
+Application Listing. SSM-changed fields follow the refresh and
+c. SSM data refresh — triggered only before editability rules.
+Step 4:
+i. At Step 2, director IC files are matched
+to each director's name.
+ii. If a director is removed, their existing
+IC file is removed along with them.
+iii. A newly added director has no ID file
+by default.
+iv. The director count is overwritten
+based on the latest SSM data.
+v. For the e-Invoice PIC, the "Same as
+Director/Business Owner in Charge"
+selection is not stored.
+vi. It is cleared through name matching
+only when the e-Invoice contact name
+matches the previous Director-in-Charge
+and that director has changed.
+vii. Editability of the SSM-changed fields
+depends on the application status:
+a. Reverted form during
+reactivation: the SSM-changed
+fields (Director, e-Invoice, etc.) are
+added to the reverted-fields set so
+the UCD can edit them.
+b. Submitted-for-Approval form:
+the UCD still cannot edit these
+=== PAGE 31 ===
+# Item Description Acceptance Criteria
+fields; BO handles any empty
+required fields.
+c. When BO clicks Submit for
+Approval, an error popup titled
+"Unable to proceed" appears with
+the message "Submission failed.
+Please try again."
+d. After BO clicks OK, the system
+shows "This field is required." on
+each blank required field.
+9 Failed-payment a. A failed-payment reactivation PA record does Failed reactivation payment is excluded from
+reactivation not appear in the PA listing. the PA listing; the link stays on the latest
+b. The onboarding link remains available on the expired PA record.
+latest expired PA record.

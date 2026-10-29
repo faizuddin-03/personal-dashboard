@@ -14,9 +14,9 @@ export async function POST(req: NextRequest) {
     headers: { Authorization: `Basic ${token}`, Accept: "application/json" },
   });
 
-  const data = await res.json();
+  const data = await res.json().catch(() => ({})) as Record<string, unknown>;
   if (!res.ok) {
-    return NextResponse.json({ error: data.message ?? "Auth failed" }, { status: res.status });
+    return NextResponse.json({ error: (data.message as string) ?? "Auth failed — check your base URL and API token" }, { status: res.status });
   }
   return NextResponse.json(data);
 }

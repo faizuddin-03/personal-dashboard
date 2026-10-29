@@ -1,0 +1,80 @@
+# https://staging.eauto.my/obs/preOnb/summary/cd404c0b-8746-4bfb-9846-73edc6a0d187
+- banner:
+  - img "header-line"
+  - img "Logo"
+  - text: Dealer Application - P260831/00838
+- img "Success"
+- text: Pre-Application Submitted for Review. Thank you! Your payment is completed and your application has been submitted for review. An invoice and/or e-Invoice will be emailed to
+- strong: qa.eaint11982260831-1744-139@modefair.com
+- text: . Pre-Application Summary
+- table:
+  - rowgroup:
+    - 'row "Pre-Application No: P260831/00838"':
+      - cell "Pre-Application No:"
+      - cell "P260831/00838"
+    - 'row "Business Registered Name: CHARMAIN QA11982 260831-1744-139 ENTERPRISE"':
+      - cell "Business Registered Name:"
+      - cell "CHARMAIN QA11982 260831-1744-139 ENTERPRISE"
+    - 'row "Business Trading License No: KCH/1744139"':
+      - cell "Business Trading License No:"
+      - cell "KCH/1744139"
+    - 'row "Tax Identification No (TIN): C3117441390"':
+      - cell "Tax Identification No (TIN):"
+      - cell "C3117441390"
+    - 'row "Showroom Address: LOT 12, JALAN QA, TAMAN AUTOMATION"':
+      - cell "Showroom Address:"
+      - cell "LOT 12, JALAN QA, TAMAN AUTOMATION"
+    - 'row "Showroom Postcode: 93100"':
+      - cell "Showroom Postcode:"
+      - cell "93100"
+    - 'row "State: SARAWAK"':
+      - cell "State:"
+      - cell "SARAWAK"
+    - 'row "City: KUCHING"':
+      - cell "City:"
+      - cell "KUCHING"
+    - 'row "Business Type: Business Trading (Sarawak)"':
+      - cell "Business Type:"
+      - cell "Business Trading (Sarawak)"
+    - 'row "Trading License: Download trading-licence.pdf"':
+      - cell "Trading License:"
+      - cell "Download trading-licence.pdf":
+        - button "Download trading-licence.pdf":
+          - img "Download"
+          - text: trading-licence.pdf
+    - 'row "Pre-Application Fee: RM 108.00 (Inclusive of 8% Service Tax • Non-refundable) Please note that the Pre-Application payment is non-refundable."':
+      - cell "Pre-Application Fee:"
+      - cell "RM 108.00 (Inclusive of 8% Service Tax • Non-refundable) Please note that the Pre-Application payment is non-refundable."
+- text: Payment Details
+- table:
+  - rowgroup:
+    - 'row "Payment ID: P260831000879"':
+      - cell "Payment ID:"
+      - cell "P260831000879"
+    - 'row "Payment Method: FPX Online Banking (Maybank)"':
+      - cell "Payment Method:"
+      - cell "FPX Online Banking (Maybank)"
+    - 'row "Payment Date Time: 31-08-2026 05:45pm"':
+      - cell "Payment Date Time:"
+      - cell "31-08-2026 05:45pm"
+    - 'row "Payment Status: Paid"':
+      - cell "Payment Status:"
+      - cell "Paid"
+    - 'row "Payment Document: Download Invoice"':
+      - cell "Payment Document:"
+      - cell "Download Invoice":
+        - button "Download Invoice":
+          - img "Download"
+          - text: Invoice
+- text: Admin In Charge
+- table:
+  - rowgroup:
+    - 'row "Name: QA ADMIN -"':
+      - cell "Name:"
+      - cell "QA ADMIN -"
+    - 'row "Mobile No: 0126083117"':
+      - cell "Mobile No:"
+      - cell "0126083117"
+    - 'row "Email Address: qa.eaint11982260831-1744-139@modefair.com We will email an invoice and/or e-invoice once payment is successful."':
+      - cell "Email Address:"
+      - cell "qa.eaint11982260831-1744-139@modefair.com We will email an invoice and/or e-invoice once payment is successful."

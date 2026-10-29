@@ -1,0 +1,83 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  URL: /uat1/view/aatf/dereg/precheck/enquiry/main.do
+  Env: uat1
+  Captured: 2026-08-21
+  Trimmed: repeated header/nav/footer chrome (see EAINT-9306-aatf-home-and-menu.html
+  header note / ucd-home-hub-admin.html for the verbatim boilerplate).
+  Forms kept complete, untrimmed.
+  This file holds 3 sequential states of the SAME page (Vehicle step, header
+  "1 Vehicle" active) captured click-by-click:
+    STATE 1 - blank, before entering vehicle no. / ticking consent
+    STATE 2 - after ticking the declaration checkbox (form-container becomes visible,
+              consent inputs become readonly, checkbox itself becomes disabled)
+    STATE 3 - after clicking ENQUIRE NOW (button becomes disabled, jQuery UI confirm
+              dialog "#enquire-dialog" opens asking to confirm the vehicle no.)
+  Used by: knowledge/flow-edereg.md (§2 entry points, §4 DOM handles)
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1: blank -->
+<!-- ============================================================ -->
+<div id="custom-header">
+    <div class="header-title center">eDereg Pre-Checking Enquiry</div>
+    <!-- step header: 1 Vehicle (active) -> 2 Payment -> 3 Result -->
+</div>
+
+<div id="consent-container">
+    <strong>PERAKUAN eDEREG PRE-CHECKING - AATF</strong>
+    <ul>
+        <li>
+            Saya, MUHAMMAD FAIZUDDIN BIN BIDI wakil sah syarikat FAIZUDDIN AATF 2 (003001-A) bersetuju meneruskan urusniaga eDereg Pre-Checking bagi nombor kenderaan
+            <input maxlength="20" type="text" style="width:150px" name="vehicleRegNo" id="vehicleRegNo" class="is-required" title="Vehicle No" value="">
+            dan membuat bayaran fi yang ditetapkan oleh JPJ dan caj perkhidmatan eAuto bagi urusniaga tersebut;
+        </li>
+        <li>Saya juga bersetuju bahawa kenderaan yang berjaya melalui proses eDereg Pre-Checking ini akan diteruskan dengan proses eDereg;</li>
+        <li>
+            Saya juga bersetuju, resit pembayaran fi JPJ akan disalurkan kepada emel
+            <input type="text" style="width:337px" name="jpjReceiptEmail" id="jpjReceiptEmail" class="is-required" title="Email" value="">
+            dan sesalinan akan dihantar kepada emel receipt@eauto.my; dan
+        </li>
+        <li>
+            Saya dengan ini bersetuju bahawa semua rekod, tandatangan dan komunikasi dalam bentuk elektronik berhubung dengan urusniaga ini bagi kenderaan bernombor pendaftaran
+            <input readonly="" maxlength="20" type="text" style="width:150px" class="readonly readonlyVehicleRegNo" title="Vehicle No" value="">
+            adalah sah, mengikat dan mempunyai kesan undang-undang yang sama seperti tandatangan manual...
+        </li>
+    </ul>
+    <div id="agree-container">
+        <input type="checkbox" value="1" id="aatf-consent">
+        Saya bagi pihak FAIZUDDIN AATF 2 (003001-A) faham dan bersetuju dengan terma dan syarat perakuan ini.
+    </div>
+</div>
+
+<div id="form-container" class="flex flex-column center hidden">
+    <div class="form-box">
+        <div class="note">Enter vehicle registration number for eDereg Pre-Checking:</div>
+        <div class="custom-group flex flex-row">
+            <div class="label-text flex items-center">Vehicle Registration Number:<span class="field-required">*</span></div>
+            <div class="input-container flex flex-column">
+                <input readonly="" maxlength="20" type="text" class="readonly readonlyVehicleRegNo" title="Vehicle No" value="">
+                <div class="note mt-8">Please ensure the vehicle registration number is correct. Once payment is made for eDereg Pre-Checking enquiry, no refund is allowed.</div>
+            </div>
+        </div>
+        <div class="center"><button type="button" id="to-enquiry" class="custom-btn">ENQUIRE NOW</button></div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STATE 2: after ticking consent checkbox -->
+<!-- vehicleRegNo/jpjReceiptEmail inputs gain readonly="", #aatf-consent gains disabled="" -->
+<!-- #form-container loses "hidden" class -->
+<!-- ============================================================ -->
+
+<!-- ============================================================ -->
+<!-- STATE 3: after clicking ENQUIRE NOW -->
+<!-- #to-enquiry gains disabled="" -->
+<!-- jQuery UI confirm dialog opens: -->
+<!--
+<div id="enquire-dialog" class="ui-dialog-content">
+    <div>Are you sure the vehicle registration number is correct?</div>
+    <div>Adakah anda pasti nombor pendaftaran kenderaan adalah betul?</div>
+</div>
+buttons: Yes / No
+-->

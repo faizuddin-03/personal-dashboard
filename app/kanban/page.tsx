@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   DndContext, DragOverlay, closestCenter,
   useDroppable,
@@ -9,18 +9,22 @@ import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } 
 import { CSS } from "@dnd-kit/utilities";
 import {
   Plus, ExternalLink, Clock, AlertTriangle, CheckSquare,
-  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight,
+  Loader2, X, GripVertical, Zap, Search, Archive, RotateCcw, Timer, ChevronLeft, ChevronRight, RefreshCw, Bug,
+  ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
-import { reporterIs } from "@/lib/jira";
+import { reporterIs, statusColor, searchJiraIssues } from "@/lib/jira";
 import Linkified from "@/components/Linkified";
 import {
   KanbanCard, KanbanState, ColumnId, Priority,
   COLUMN_IDS, COLUMN_META, PRIORITY_META, ACCENT_COLORS, accentBorderClass,
   ChecklistItem, getKanbanState, saveKanbanState, isOverdue, checklistProgress,
   timeInColumn, getArchivedCards, saveArchivedCards,
+  ColumnSort, ColumnSortState, SORT_META, nextColumnSort, sortCardsByMove,
+  getColumnSort, saveColumnSort,
 } from "@/lib/kanban";
+import { syncCrTickets, getChildBugs, ChildBugMap, bugStats, isRecentlyFixed } from "@/lib/crSync";
 
 function newId() { return crypto.randomUUID(); }
 
@@ -39,17 +43,6 @@ function findSuite(suiteId: string, tsData: _TSCREntry[]): { cr: _TSCREntry; sui
     if (suite) return { cr, suite };
   }
   return null;
-}
-
-function buildJiraJql(q: string, projectKey?: string): string {
-  const escaped = q.trim().replace(/"/g, "");
-  const isId  = /^\d+$/.test(escaped);
-  const isKey = /^[A-Za-z]+-\d+$/.test(escaped);
-  const resolvedKey = isId && projectKey ? `${projectKey}-${escaped}` : null;
-  if (resolvedKey) return `key = "${resolvedKey}" ORDER BY updated DESC`;
-  if (isId)        return `id = ${escaped} ORDER BY updated DESC`;
-  if (isKey)       return `key = "${escaped}" ORDER BY updated DESC`;
-  return `text ~ "${escaped}" ORDER BY updated DESC`;
 }
 
 function parseJiraResults(data: { issues?: unknown[] }): JiraResult[] {
@@ -118,8 +111,6 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
   const [jiraSearchLoading, setJiraSearchLoading] = useState(false);
   const [jiraError, setJiraError]       = useState("");
 
-  const buildJql = (q: string) => buildJiraJql(q, creds?.defaultProjectKey);
-
   // Initial load: assigned/reported tickets
   useEffect(() => {
     if (tab !== "jira" || !creds || allJira.length > 0) return;
@@ -146,23 +137,13 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
     if (tab !== "jira" || !creds || jiraQuery.length < 2) return;
     const timer = setTimeout(() => {
       setJiraSearchLoading(true);
-      fetch("/api/jira/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...creds,
-          jql: buildJql(jiraQuery),
-          maxResults: 50,
-          fields: ["summary", "status", "issuetype", "project", "updated"],
-        }),
-      })
-        .then(r => r.json())
+      searchJiraIssues(creds, jiraQuery)
         .then(data => setAllJira(parseJiraResults(data)))
         .catch(() => {})
         .finally(() => setJiraSearchLoading(false));
     }, 500);
     return () => clearTimeout(timer);
-  }, [jiraQuery, tab, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [jiraQuery, tab, creds]);
 
   const filteredJira = jiraQuery.length >= 2 ? allJira : allJira.filter(r => {
     const q = jiraQuery.toLowerCase();
@@ -194,23 +175,13 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
     if (!showJiraLink || !creds || jiraLinkQuery.length < 2) return;
     const timer = setTimeout(() => {
       setJiraLinkSearching(true);
-      fetch("/api/jira/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...creds,
-          jql: buildJql(jiraLinkQuery),
-          maxResults: 50,
-          fields: ["summary", "status", "issuetype", "project", "updated"],
-        }),
-      })
-        .then(r => r.json())
+      searchJiraIssues(creds, jiraLinkQuery)
         .then(data => setJiraLinkResults(parseJiraResults(data)))
         .catch(() => {})
         .finally(() => setJiraLinkSearching(false));
     }, 500);
     return () => clearTimeout(timer);
-  }, [jiraLinkQuery, showJiraLink, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [jiraLinkQuery, showJiraLink, creds]);
 
   function addLabel(e: React.KeyboardEvent) {
     if (e.key === "Enter" && labelInput.trim()) { setLabels(p => [...p, labelInput.trim()]); setLabelInput(""); }
@@ -506,9 +477,9 @@ function AddCardModal({ targetColumn, onClose, onAdd, creds }: {
 }
 
 // ── Card view ─────────────────────────────────────────────
-function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
+function CardView({ card, baseUrl, onClick, dragHandle, tsData, allCards, childBugs }: {
   card: KanbanCard; baseUrl?: string; onClick?: () => void; dragHandle?: React.ReactNode;
-  tsData?: _TSCREntry[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const { done, total } = checklistProgress(card);
   const over = isOverdue(card);
@@ -516,10 +487,33 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
 
   const isCR = card.boardType === "cr";
 
+  // Task progress for CR cards — all task cards sharing the same jiraKey
+  const linkedTasks = isCR && card.jiraKey && allCards
+    ? allCards.filter(c => c.boardType === "task" && c.jiraKey === card.jiraKey)
+    : [];
+  const tasksTotal = linkedTasks.length;
+  const tasksDone = linkedTasks.filter(c => c.columnId === "finished").length;
+
+  // Child QA-Issue bug progress for CR cards
+  const bugs = isCR && card.jiraKey ? bugStats(childBugs?.[card.jiraKey]) : null;
+
   // TS Suite progress
-  const tsLinked = card.linkedTSSuiteId && tsData ? findSuite(card.linkedTSSuiteId, tsData) : null;
+  const isAllSuites = card.linkedTSSuiteId?.startsWith("__all__:") ?? false;
+  const tsLinked = card.linkedTSSuiteId && !isAllSuites && tsData
+    ? findSuite(card.linkedTSSuiteId, tsData) : null;
+  const tsAllCR = isAllSuites && tsData
+    ? tsData.find(cr => cr.id === card.linkedTSSuiteId!.slice(8)) ?? null : null;
+
   const tsStats = tsLinked ? (() => {
     const activeCases = tsLinked.suite.cases.filter(c => !c.disabled);
+    const tsTotal = activeCases.length;
+    const pass = activeCases.filter(c => c.status === "pass").length;
+    const fail = activeCases.filter(c => c.status === "fail").length;
+    const inProgress = activeCases.filter(c => c.status === "in-progress").length;
+    const notRun = activeCases.filter(c => c.status === null).length;
+    return { tsTotal, pass, fail, inProgress, notRun };
+  })() : tsAllCR ? (() => {
+    const activeCases = tsAllCR.suites.flatMap(s => s.cases).filter(c => !c.disabled);
     const tsTotal = activeCases.length;
     const pass = activeCases.filter(c => c.status === "pass").length;
     const fail = activeCases.filter(c => c.status === "fail").length;
@@ -546,10 +540,12 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
               ? <span className="text-xs bg-indigo-900/60 text-indigo-300 border border-indigo-700/50 px-1.5 py-0.5 rounded-full font-medium">CR</span>
               : <span className="text-xs bg-slate-700/80 text-slate-400 border border-slate-600/50 px-1.5 py-0.5 rounded-full font-medium">Task</span>
             }
+            {card.autoSynced && (
+              <span title="Auto-synced from Jira (QA field / assignee)" className="text-xs bg-emerald-900/60 text-emerald-300 border border-emerald-700/50 px-1.5 py-0.5 rounded-full font-medium">Auto</span>
+            )}
             {card.jiraKey && (
               <>
                 <span className="text-xs font-mono text-blue-400 font-bold">{card.jiraKey}</span>
-                <span className="text-xs bg-slate-700 text-slate-500 px-1 rounded">{card.jiraStatus}</span>
                 {baseUrl && (
                   <a href={`${baseUrl}/browse/${card.jiraKey}`} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-slate-700 hover:text-blue-400 opacity-0 group-hover:opacity-100">
                     <ExternalLink size={10} />
@@ -577,6 +573,34 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
           <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
             <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(done / total) * 100}%` }} />
           </div>
+        </div>
+      )}
+      {isCR && tasksTotal > 0 && (
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-slate-500">Tasks</span>
+            <span className="text-xs text-slate-500">{tasksDone}/{tasksTotal} done</span>
+          </div>
+          <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+            <div className="h-full bg-green-500 rounded-full transition-all" style={{ width: `${(tasksDone / tasksTotal) * 100}%` }} />
+          </div>
+        </div>
+      )}
+      {bugs && bugs.total > 0 && (
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="flex items-center gap-1 text-xs text-slate-500"><Bug size={10} />Bugs</span>
+            <span className="text-xs text-slate-500">{bugs.open > 0 ? `${bugs.open} open · ` : ""}{bugs.fixed}/{bugs.total} fixed</span>
+          </div>
+          <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden flex">
+            {bugs.fixed > 0 && <div className="bg-green-500" style={{ width: `${(bugs.fixed / bugs.total) * 100}%` }} />}
+            {bugs.open > 0 && <div className="bg-red-500/70" style={{ width: `${(bugs.open / bugs.total) * 100}%` }} />}
+          </div>
+          {bugs.recentlyFixed > 0 && (
+            <span className="inline-flex items-center gap-1 mt-1.5 text-xs bg-amber-900/50 text-amber-300 border border-amber-700/50 px-1.5 py-0.5 rounded-full font-medium animate-pulse">
+              <Bug size={9} />{bugs.recentlyFixed} recently fixed — retest?
+            </span>
+          )}
         </div>
       )}
       {tsStats && tsStats.tsTotal > 0 && (
@@ -618,9 +642,9 @@ function CardView({ card, baseUrl, onClick, dragHandle, tsData }: {
 }
 
 // ── Draggable card ────────────────────────────────────────
-function DraggableCard({ card, baseUrl, onCardClick, tsData }: {
+function DraggableCard({ card, baseUrl, onCardClick, tsData, allCards, childBugs }: {
   card: KanbanCard; baseUrl?: string; onCardClick: (c: KanbanCard) => void;
-  tsData?: _TSCREntry[];
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
@@ -630,6 +654,8 @@ function DraggableCard({ card, baseUrl, onCardClick, tsData }: {
         card={card}
         baseUrl={baseUrl}
         tsData={tsData}
+        allCards={allCards}
+        childBugs={childBugs}
         onClick={() => onCardClick(card)}
         dragHandle={
           <button {...attributes} {...listeners} aria-label="Drag to reorder" className="mt-0.5 p-1 -ml-1 text-slate-600 hover:text-slate-300 cursor-grab active:cursor-grabbing shrink-0" onClick={e => e.stopPropagation()}>
@@ -641,12 +667,36 @@ function DraggableCard({ card, baseUrl, onCardClick, tsData }: {
   );
 }
 
+// ── Sort-by-date-moved toggle ─────────────────────────────
+function SortToggle({ sort, onCycle, tone = "slate" }: {
+  sort: ColumnSort; onCycle: () => void; tone?: "slate" | "red";
+}) {
+  const Icon = sort === "asc" ? ArrowUp : sort === "desc" ? ArrowDown : ArrowUpDown;
+  const active = sort !== "manual";
+  return (
+    <button
+      onClick={onCycle}
+      title={SORT_META[sort].hint}
+      aria-label={`Sort by date moved: ${SORT_META[sort].label}. Click to change.`}
+      className={clsx(
+        "p-0.5 rounded transition-colors",
+        tone === "red"
+          ? clsx("hover:bg-red-900/30", active ? "text-red-300" : "text-red-500 hover:text-red-300")
+          : clsx("hover:bg-black/20", active ? "text-blue-400" : "text-slate-500 hover:text-slate-200"),
+      )}
+    >
+      <Icon size={15} />
+    </button>
+  );
+}
+
 // ── Column ────────────────────────────────────────────────
-function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, tsData }: {
+function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggleCollapse, sort, onCycleSort, tsData, allCards, childBugs }: {
   id: ColumnId; cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
   collapsed?: boolean; onToggleCollapse?: () => void;
-  tsData?: _TSCREntry[];
+  sort: ColumnSort; onCycleSort: () => void;
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const meta = COLUMN_META[id];
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -659,6 +709,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
           <span className="text-xs bg-black/20 text-slate-400 px-1.5 py-0.5 rounded-full">{cards.length}</span>
         </div>
         <div className="flex items-center gap-0.5">
+          <SortToggle sort={sort} onCycle={onCycleSort} />
           {onToggleCollapse && (
             <button
               onClick={onToggleCollapse}
@@ -682,7 +733,7 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
           ref={setNodeRef}
           className={clsx("flex-1 space-y-2 rounded-xl p-2 overflow-y-auto transition-colors", isOver ? "bg-slate-800/60 ring-1 ring-slate-600" : "bg-transparent")}
         >
-          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} />)}
+          {cards.map(card => <DraggableCard key={card.id} card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} allCards={allCards} childBugs={childBugs} />)}
           {cards.length === 0 && (
             <div className="flex items-center justify-center h-20 text-xs text-slate-700 border border-dashed border-slate-800 rounded-xl">Drop here</div>
           )}
@@ -694,13 +745,29 @@ function Column({ id, cards, baseUrl, onAddCard, onCardClick, collapsed, onToggl
 }
 
 // ── Card detail drawer ────────────────────────────────────
-function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds, tsData }: {
+function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUrl, creds, tsData, allCards, childBugs }: {
   card: KanbanCard; onClose: () => void;
   onUpdate: (c: KanbanCard) => void; onDelete: (id: string) => void;
   onArchive?: (c: KanbanCard) => void; baseUrl?: string;
   creds: ReturnType<typeof useApp>["creds"];
   tsData: _TSCREntry[];
+  allCards: KanbanCard[];
+  childBugs?: ChildBugMap;
 }) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   const [editing, setEditing] = useState(false);
   const [title, setTitle]     = useState(card.title);
   const [description, setDesc] = useState(card.description ?? "");
@@ -716,11 +783,13 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
   const [accentColor, setAccentColor] = useState(card.accentColor ?? "");
   const [cardBoardType, setCardBoardType] = useState<"task" | "cr">(card.boardType ?? "task");
   const [confirmArchive, setConfirmArchive] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   // TS Suite link
   const [linkedTSSuiteId, setLinkedTSSuiteId] = useState<string>(card.linkedTSSuiteId ?? "");
   const [showSuitePicker, setShowSuitePicker] = useState(false);
   const [pickedCRId, setPickedCRId] = useState("");
+
 
   // Jira link (custom cards only)
   const [editLinkedKey, setEditLinkedKey]           = useState(card.jiraKey ?? "");
@@ -748,16 +817,12 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
     if (!showJiraLinkEdit || !creds || jiraEditQuery.length < 2) return;
     const t = setTimeout(() => {
       setJiraEditSearching(true);
-      fetch("/api/jira/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...creds, jql: buildJiraJql(jiraEditQuery, creds.defaultProjectKey), maxResults: 50, fields: ["summary", "status", "issuetype", "project", "updated"] }),
-      })
-        .then(r => r.json()).then(d => setJiraEditResults(parseJiraResults(d)))
+      searchJiraIssues(creds, jiraEditQuery)
+        .then(d => setJiraEditResults(parseJiraResults(d)))
         .catch(() => {}).finally(() => setJiraEditSearching(false));
     }, 500);
     return () => clearTimeout(t);
-  }, [jiraEditQuery, showJiraLinkEdit, creds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [jiraEditQuery, showJiraLinkEdit, creds]);
 
   function save() {
     onUpdate({ ...card, title, description: description || undefined, dueDate: dueDate || undefined, dueTime: dueTime || undefined, assignee: assignee || undefined, estimatedHours: estimatedHours ? Number(estimatedHours) : undefined, checklist, priority, labels, accentColor: accentColor || undefined, boardType: cardBoardType, jiraKey: editLinkedKey || undefined, linkedTSSuiteId: linkedTSSuiteId || undefined });
@@ -802,7 +867,15 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
                 <button onClick={() => setConfirmArchive(false)} className="px-2 py-0.5 text-xs border border-slate-700 text-slate-400 rounded hover:bg-slate-800">No</button>
               </div>
             )}
-            <button onClick={() => { onDelete(card.id); onClose(); }} className="px-2.5 py-1 text-xs text-red-400 hover:bg-slate-800 rounded-lg" aria-label="Delete card">Delete</button>
+            {!confirmDelete ? (
+              <button onClick={() => setConfirmDelete(true)} className="px-2.5 py-1 text-xs text-red-400 hover:bg-slate-800 rounded-lg" aria-label="Delete card">Delete</button>
+            ) : (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-red-400">Delete?</span>
+                <button onClick={() => { onDelete(card.id); onClose(); }} className="px-2 py-0.5 text-xs bg-red-700 text-white rounded hover:bg-red-600">Yes</button>
+                <button onClick={() => setConfirmDelete(false)} className="px-2 py-0.5 text-xs border border-slate-700 text-slate-400 rounded hover:bg-slate-800">No</button>
+              </div>
+            )}
             <button onClick={onClose} aria-label="Close" className="p-1 text-slate-500 hover:text-slate-300"><X size={16} /></button>
           </div>
         </div>
@@ -885,11 +958,41 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
               )}
             </div>
             {linkedTSSuiteId ? (() => {
+              const clearLink = () => { setLinkedTSSuiteId(""); onUpdate({ ...card, linkedTSSuiteId: undefined }); };
+              const changeLink = () => { setShowSuitePicker(true); setPickedCRId(""); };
+
+              // "All suites" mode — show CR-level aggregate
+              if (linkedTSSuiteId.startsWith("__all__:")) {
+                const cr = tsData.find(c => c.id === linkedTSSuiteId.slice(8));
+                if (!cr) return (
+                  <div className="flex items-center justify-between px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
+                    <span className="text-xs text-slate-500 italic">CR not found</span>
+                    <button onClick={clearLink} className="text-slate-600 hover:text-red-400 ml-2"><X size={13} /></button>
+                  </div>
+                );
+                const activeCases = cr.suites.flatMap(s => s.cases).filter(c => !c.disabled);
+                const tsPass = activeCases.filter(c => c.status === "pass").length;
+                return (
+                  <div className="flex items-center justify-between px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
+                    <div className="min-w-0">
+                      <span className="text-xs font-mono text-blue-400 font-bold">{cr.crKey}</span>
+                      <span className="text-xs text-slate-400"> (all suites)</span>
+                      <p className="text-xs text-slate-500 mt-0.5">{tsPass}/{activeCases.length} pass · {cr.suites.length} suite{cr.suites.length !== 1 ? "s" : ""}</p>
+                    </div>
+                    <div className="flex gap-2 ml-2 shrink-0">
+                      <button onClick={changeLink} className="text-xs text-slate-500 hover:text-slate-300">Change</button>
+                      <button onClick={clearLink} className="text-slate-600 hover:text-red-400"><X size={13} /></button>
+                    </div>
+                  </div>
+                );
+              }
+
+              // Single suite mode
               const found = findSuite(linkedTSSuiteId, tsData);
               if (!found) return (
                 <div className="flex items-center justify-between px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg">
                   <span className="text-xs text-slate-500 italic">Suite not found</span>
-                  <button onClick={() => { setLinkedTSSuiteId(""); onUpdate({ ...card, linkedTSSuiteId: undefined }); }} className="text-slate-600 hover:text-red-400 ml-2"><X size={13} /></button>
+                  <button onClick={clearLink} className="text-slate-600 hover:text-red-400 ml-2"><X size={13} /></button>
                 </div>
               );
               const activeCases = found.suite.cases.filter(c => !c.disabled);
@@ -903,8 +1006,8 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
                     <p className="text-xs text-slate-500 mt-0.5">{tsPass}/{tsTotal} pass</p>
                   </div>
                   <div className="flex gap-2 ml-2 shrink-0">
-                    <button onClick={() => { setShowSuitePicker(true); setPickedCRId(""); }} className="text-xs text-slate-500 hover:text-slate-300">Change</button>
-                    <button onClick={() => { setLinkedTSSuiteId(""); onUpdate({ ...card, linkedTSSuiteId: undefined }); }} className="text-slate-600 hover:text-red-400"><X size={13} /></button>
+                    <button onClick={changeLink} className="text-xs text-slate-500 hover:text-slate-300">Change</button>
+                    <button onClick={clearLink} className="text-slate-600 hover:text-red-400"><X size={13} /></button>
                   </div>
                 </div>
               );
@@ -922,15 +1025,17 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
                   <select
                     value=""
                     onChange={e => {
-                      const suiteId = e.target.value;
-                      if (!suiteId) return;
-                      setLinkedTSSuiteId(suiteId);
-                      onUpdate({ ...card, linkedTSSuiteId: suiteId });
+                      const val = e.target.value;
+                      if (!val) return;
+                      const newId = val === "__all__" ? `__all__:${pickedCRId}` : val;
+                      setLinkedTSSuiteId(newId);
+                      onUpdate({ ...card, linkedTSSuiteId: newId });
                       setShowSuitePicker(false);
                     }}
                     className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600"
                   >
                     <option value="">— Select Suite —</option>
+                    <option value="__all__">All suites (CR-level)</option>
                     {tsData.find(cr => cr.id === pickedCRId)?.suites.map(s => (
                       <option key={s.id} value={s.id}>{s.title}</option>
                     ))}
@@ -1048,6 +1153,38 @@ function CardDetailDrawer({ card, onClose, onUpdate, onDelete, onArchive, baseUr
               }
           </div>
 
+          {card.boardType === "cr" && card.jiraKey && (childBugs?.[card.jiraKey]?.length ?? 0) > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-slate-600 flex items-center gap-1"><Bug size={11} />Bugs raised (QA-Issues)</p>
+                <span className="text-xs text-slate-500">
+                  {childBugs![card.jiraKey!].filter(b => b.statusCategory !== "done").length} open / {childBugs![card.jiraKey!].length}
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {childBugs![card.jiraKey!].map(bug => (
+                  <div key={bug.key} className={clsx("flex items-start gap-2 p-2 rounded-lg border", isRecentlyFixed(bug) ? "bg-amber-950/30 border-amber-800/50" : "bg-slate-800/60 border-slate-800")}>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-xs font-mono text-blue-400 font-bold">{bug.key}</span>
+                        <span className={clsx("text-xs px-1.5 py-0.5 rounded-full", statusColor(bug.statusCategory))}>{bug.status}</span>
+                        {isRecentlyFixed(bug) && (
+                          <span className="text-xs bg-amber-900/50 text-amber-300 border border-amber-700/50 px-1.5 py-0.5 rounded-full font-medium">retest?</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 leading-snug line-clamp-2">{bug.summary}</p>
+                    </div>
+                    {baseUrl && (
+                      <a href={`${baseUrl}/browse/${bug.key}`} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-blue-400 shrink-0 mt-0.5">
+                        <ExternalLink size={12} />
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs text-slate-600">Checklist</p>
@@ -1137,10 +1274,11 @@ function ArchiveDrawer({ cards, onClose, onUnarchive }: {
 }
 
 // ── Urgent droppable section ──────────────────────────────
-function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData }: {
+function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, sort, onCycleSort, tsData, allCards, childBugs }: {
   cards: KanbanCard[]; baseUrl?: string;
   onAddCard: (col: ColumnId) => void; onCardClick: (c: KanbanCard) => void;
-  tsData?: _TSCREntry[];
+  sort: ColumnSort; onCycleSort: () => void;
+  tsData?: _TSCREntry[]; allCards?: KanbanCard[]; childBugs?: ChildBugMap;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: "urgent" });
 
@@ -1153,7 +1291,10 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData }: {
             <span className="text-sm font-semibold text-red-300">Urgent</span>
             <span className="text-xs bg-red-900/40 text-red-400 px-1.5 py-0.5 rounded-full">{cards.length}</span>
           </div>
-          <button onClick={() => onAddCard("urgent")} className="text-red-500 hover:text-red-300 p-0.5 hover:bg-red-900/30 rounded transition-colors"><Plus size={15} /></button>
+          <div className="flex items-center gap-0.5">
+            <SortToggle sort={sort} onCycle={onCycleSort} tone="red" />
+            <button onClick={() => onAddCard("urgent")} className="text-red-500 hover:text-red-300 p-0.5 hover:bg-red-900/30 rounded transition-colors"><Plus size={15} /></button>
+          </div>
         </div>
         <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
         <div
@@ -1162,7 +1303,7 @@ function UrgentSection({ cards, baseUrl, onAddCard, onCardClick, tsData }: {
         >
           {cards.map(card => (
             <div key={card.id} className="w-64 shrink-0">
-              <DraggableCard card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} />
+              <DraggableCard card={card} baseUrl={baseUrl} onCardClick={onCardClick} tsData={tsData} allCards={allCards} childBugs={childBugs} />
             </div>
           ))}
           {cards.length === 0 && (
@@ -1187,16 +1328,61 @@ export default function KanbanPage() {
   const [collapsedCols, setCollapsedCols] = useState<Partial<Record<ColumnId, boolean>>>({ finished: false });
   const [activeBoardType, setActiveBoardType] = useState<"task" | "cr">("task");
   const [tsData, setTsData] = useState<_TSCREntry[]>([]);
+  const [crSyncing, setCrSyncing]   = useState(false);
+  const [crSyncMsg, setCrSyncMsg]   = useState("");
+  const [childBugs, setChildBugs]   = useState<ChildBugMap>({});
+
+  const [columnSort, setColumnSort] = useState<ColumnSortState>({
+    urgent: "manual", todo: "manual", ongoing: "manual", "on-hold": "manual", finished: "manual",
+  });
 
   function toggleCollapse(col: ColumnId) {
     setCollapsedCols(prev => ({ ...prev, [col]: !prev[col] }));
   }
 
+  function cycleSort(col: ColumnId) {
+    setColumnSort(prev => {
+      const next = { ...prev, [col]: nextColumnSort(prev[col]) };
+      saveColumnSort(next);
+      return next;
+    });
+  }
+
   useEffect(() => {
+    setColumnSort(getColumnSort());
     setBoardState(getKanbanState());
     setArchivedCards(getArchivedCards());
     setTsData(loadTSData());
+    setChildBugs(getChildBugs());
   }, []);
+
+  // Auto-sync CR tickets (QA field / assignee) on load + every 5 minutes
+  const runCrSync = useCallback(async () => {
+    if (!creds) return;
+    setCrSyncing(true);
+    try {
+      const r = await syncCrTickets(creds);
+      setBoardState(getKanbanState());
+      setChildBugs(getChildBugs());
+      const parts = [`${r.total} CRs`, `${r.bugs} bugs`];
+      if (r.added) parts.push(`+${r.added} new`);
+      if (r.moved) parts.push(`${r.moved} moved`);
+      if (r.removed) parts.push(`${r.removed} removed`);
+      if (r.warning) parts.push(r.warning);
+      setCrSyncMsg(`Last sync ${new Date(r.syncedAt).toLocaleTimeString()}: ${parts.join(" · ")}`);
+    } catch (e) {
+      setCrSyncMsg(e instanceof Error ? `CR sync failed: ${e.message}` : "CR sync failed");
+    } finally {
+      setCrSyncing(false);
+    }
+  }, [creds]);
+
+  useEffect(() => {
+    if (!creds) return;
+    runCrSync();
+    const t = setInterval(runCrSync, 5 * 60 * 1000);
+    return () => clearInterval(t);
+  }, [creds, runCrSync]);
 
   function persist(state: KanbanState) { setBoardState(state); saveKanbanState(state); }
 
@@ -1251,6 +1437,10 @@ export default function KanbanPage() {
     if (!sourceCol || !destCol) return;
 
     if (sourceCol === destCol) {
+      // A date-sorted column owns its own order — reordering by hand is off there.
+      // Dragging the card to a *different* column still works, since that's the move
+      // being recorded.
+      if (columnSort[sourceCol] !== "manual") return;
       const items = boardState[sourceCol];
       const oldIdx = items.findIndex(c => c.id === cardId);
       const newIdx = COLUMN_IDS.includes(overId as ColumnId)
@@ -1268,10 +1458,11 @@ export default function KanbanPage() {
     }
   }
 
-  const activeCard = activeId ? COLUMN_IDS.flatMap(c => boardState[c]).find(c => c.id === activeId) : null;
-  const totalCards = COLUMN_IDS.reduce((s, c) => s + boardState[c].length, 0);
+  const allCards = COLUMN_IDS.flatMap(col => boardState[col]);
+  const activeCard = activeId ? allCards.find(c => c.id === activeId) : null;
   function visibleCards(col: ColumnId) {
-    return boardState[col].filter(c => (c.boardType ?? "task") === activeBoardType);
+    const cards = boardState[col].filter(c => (c.boardType ?? "task") === activeBoardType);
+    return sortCardsByMove(cards, columnSort[col]);
   }
 
   return (
@@ -1298,6 +1489,17 @@ export default function KanbanPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {creds && (
+            <button
+              onClick={runCrSync}
+              disabled={crSyncing}
+              title={crSyncMsg || "Sync CR tickets where you are in the QA field or assignee"}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <RefreshCw size={13} className={crSyncing ? "animate-spin" : undefined} />
+              {crSyncing ? "Syncing…" : "Sync CRs"}
+            </button>
+          )}
           <button onClick={() => setShowArchive(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors">
             <Archive size={13} />Archive{archivedCards.length > 0 && <span className="bg-slate-700 text-slate-400 text-xs px-1 rounded-full">{archivedCards.length}</span>}
           </button>
@@ -1314,7 +1516,11 @@ export default function KanbanPage() {
           baseUrl={creds?.baseUrl}
           onAddCard={setAddTarget}
           onCardClick={setSelectedCard}
+          sort={columnSort.urgent}
+          onCycleSort={() => cycleSort("urgent")}
           tsData={tsData}
+          allCards={allCards}
+          childBugs={childBugs}
         />
 
         <div className="flex-1 flex flex-col px-6 py-5 overflow-x-auto overflow-y-hidden">
@@ -1325,14 +1531,18 @@ export default function KanbanPage() {
                 onAddCard={setAddTarget} onCardClick={setSelectedCard}
                 collapsed={collapsedCols[col] ?? false}
                 onToggleCollapse={() => toggleCollapse(col)}
+                sort={columnSort[col]}
+                onCycleSort={() => cycleSort(col)}
                 tsData={tsData}
+                allCards={allCards}
+                childBugs={childBugs}
               />
             ))}
           </div>
         </div>
 
         <DragOverlay>
-          {activeCard && <div className="rotate-1 opacity-90 w-72"><CardView card={activeCard} tsData={tsData} /></div>}
+          {activeCard && <div className="rotate-1 opacity-90 w-72"><CardView card={activeCard} tsData={tsData} allCards={allCards} childBugs={childBugs} /></div>}
         </DragOverlay>
       </DndContext>
 
@@ -1340,7 +1550,7 @@ export default function KanbanPage() {
         <AddCardModal targetColumn={addTarget} onClose={() => setAddTarget(null)} onAdd={handleAddCard} creds={creds} />
       )}
       {selectedCard && (
-        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} tsData={tsData} />
+        <CardDetailDrawer card={selectedCard} onClose={() => setSelectedCard(null)} onUpdate={handleUpdateCard} onDelete={handleDeleteCard} onArchive={handleArchiveCard} baseUrl={creds?.baseUrl} creds={creds} tsData={tsData} allCards={allCards} childBugs={childBugs} />
       )}
       {showArchive && (
         <ArchiveDrawer cards={archivedCards} onClose={() => setShowArchive(false)} onUnarchive={handleUnarchiveCard} />

@@ -1,0 +1,438 @@
+<!--
+URL: staging.eauto.my/uat1/view/bo/service-hub/listing/main.do
+Environment: staging.eauto.my/uat1
+Captured: 2026-09-22, pasted into chat by Faizuddin
+Trimmed: table body cut from 33 result rows to the first 9 (all "33 record(s)
+in total" / header markup preserved) — representative rows only, same
+reference SR69001391/SR69001390/SR69001389 repeated with different appointment
+slots. The full page chrome (filter form, jQuery UI datepicker markup,
+header/footer, inline scripts) is otherwise unchanged from the pasted capture.
+Significance: this is the FIRST live capture of this listing since EAINT-12167
+shipped its record-display change (REQ-011). It resolves the previously
+recorded SRD-vs-dev-guide contradiction in knowledge/flow-device-purchase.md
+("dev's guide says no serial column exists at all") — the live thead clearly
+shows both "Device" and "Device Serial No." columns, and each Biometric
+Device Purchase row shows Device = 1 with its own serial slot ("-" when
+unkeyed), matching REQ-011's described behaviour, not dev's guide's claim.
+See the corresponding knowledge-file update for the full resolution.
+-->
+<body>
+<div id="container">
+    <form id="sc-filter-form" class="not-to-print" method="GET" action="/uat1/api/admin/service-hub/listing/list.get">
+        <input type="hidden" name="pageNo" value="1">
+        <div class="sc-row">
+            <span class="sc-fg"><label class="sc-lbl">Reference No.:</label>
+                <input type="text" name="referenceNo" size="16"></span>
+            <span class="sc-fg"><label class="sc-lbl">Company Name:</label>
+                <input type="text" name="companyName" size="22"></span>
+            <span class="sc-fg"><label class="sc-lbl">Date Requested From<span class="sc-req">*</span>:</label>
+                <input type="text" name="requestedFrom" size="12" readonly="readonly" class="sc-datepicker hasDatepicker" id="dp1790065437969"></span>
+            <span class="sc-fg"><label class="sc-lbl">Date Requested To<span class="sc-req">*</span>:</label>
+                <input type="text" name="requestedTo" size="12" readonly="readonly" class="sc-datepicker hasDatepicker" id="dp1790065437970"></span>
+        </div>
+        <div class="sc-row">
+            <span class="sc-fg"><label class="sc-lbl">Company ROC:</label>
+                <input type="text" name="roc" size="14"></span>
+            <span class="sc-fg"><label class="sc-lbl">Delivery Date From:</label>
+                <input type="text" name="deliveryDateFrom" size="12" readonly="readonly" class="sc-datepicker hasDatepicker" id="dp1790065437971"></span>
+            <span class="sc-fg"><label class="sc-lbl">Delivery Date To:</label>
+                <input type="text" name="deliveryDateTo" size="12" readonly="readonly" class="sc-datepicker hasDatepicker" id="dp1790065437972"></span>
+            <span class="sc-fg"><label class="sc-lbl">Delivery Status:</label>
+                <select name="deliveryStatus" style="width:130px">
+                    <option value="">All</option>
+                    <option value="-">-</option>
+
+                    <option value="New">New</option>
+
+                    <option value="Arranged">Arranged</option>
+
+                    <option value="Delivered">Delivered</option>
+
+                </select></span>
+        </div>
+        <div class="sc-row">
+            <span class="sc-fg"><label class="sc-lbl">Appointment Date From:</label>
+                <input type="text" name="appointmentDateFrom" size="12" readonly="readonly" class="sc-datepicker hasDatepicker" id="dp1790065437973"></span>
+            <span class="sc-fg"><label class="sc-lbl">Appointment Date To:</label>
+                <input type="text" name="appointmentDateTo" size="12" readonly="readonly" class="sc-datepicker hasDatepicker" id="dp1790065437974"></span>
+            <span class="sc-fg"><label class="sc-lbl">Installation Status:</label>
+                <select name="status" style="width:130px">
+                    <option value="">All</option>
+                    <option value="-">-</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="FAILED">Failed</option>
+                    <option value="CANCELLED">Cancelled</option>
+                    <option value="EXPIRED">Expired</option>
+                </select></span>
+            <span class="sc-fg"><label class="sc-lbl">Time Slot:</label>
+                <span id="sc-slot-dd">
+                    <select id="sc-slot-face" tabindex="-1" style="margin-left:0"><option>All</option></select>
+                    <span id="sc-slot-overlay"></span>
+                    <div id="sc-slot-panel" style="display:none;">
+                        <label><input type="checkbox" id="sc-slot-all" name="timeSlotAll" value="1" checked="checked"> All</label>
+                        <label><input type="checkbox" class="sc-slot-item" name="timeSlot" value="__NONE__" checked="checked"> -</label>
+
+                        <label><input type="checkbox" class="sc-slot-item" name="timeSlot" value="1000_1200" checked="checked"> 10am - 12pm</label>
+
+                        <label><input type="checkbox" class="sc-slot-item" name="timeSlot" value="1400_1600" checked="checked"> 2pm - 4pm</label>
+
+                    </div>
+                </span>
+            </span>
+        </div>
+        <div class="sc-row sc-row-last">
+            <span class="sc-fg"><label class="sc-lbl">Service Type:</label>
+                <select name="serviceType" style="width:185px">
+                    <option value="">All</option>
+                    <option value="SOFTWARE_INSTALLATION">Software Installation</option>
+                    <option value="BIOMETRIC_PURCHASE">Biometric Device Purchase</option>
+                </select></span>
+            <span class="sc-fg"><label class="sc-lbl">Payment Status:</label>
+                <select name="paymentStatus" style="width:130px">
+                    <option value="">All</option>
+                    <option value="Paid">OK</option>
+                    <option value="Failed">Failed</option>
+                </select></span>
+            <span class="sc-fg"><label class="sc-lbl">LHDN Response Status:</label>
+                <select name="lhdnStatus" style="width:130px">
+                    <option value="">All</option>
+                    <option value="OK">OK</option>
+                    <option value="Failed">Failed</option>
+                    <option value="New">-</option>
+                </select></span>
+            <div id="sc-button-group">
+                <input type="button" id="sc-search" value="Search">
+
+                <a id="sc-export" style="">Export</a>
+
+                <a id="sc-reset">Reset</a>
+                <span class="sc-divider">|</span>
+                <input type="button" id="sc-appt-cal" value="Appointment Calendar">
+            </div>
+        </div>
+    </form>
+
+    <div id="sc-title">Biometric Device Purchase &amp; Software Installation Listing</div>
+
+    <div id="sc-result-region">
+<style>
+#sc-combined-tbl { width:100%; font-family:Verdana, Arial, sans-serif; font-size:11px; }
+#sc-combined-tbl td { white-space:nowrap; padding:5px 5px; vertical-align:middle; text-align:center; }
+#sc-combined-tbl th { white-space:normal; padding:5px 5px; vertical-align:middle; text-align:center; }
+#sc-combined-tbl td.rmk { white-space:normal; text-align:left; } /* Remarks wraps to show FAILED text */
+#sc-combined-tbl td.svc { white-space:normal; } /* Service Type wraps so the column can be narrower (FF36-safe) */
+</style>
+
+
+<div style="overflow:hidden;"><span>33 record(s) in total</span></div>
+<input type="hidden" id="sc-result-count" value="33">
+
+
+<table id="sc-combined-tbl">
+    <colgroup>
+        <col style="width:26px">    <!-- 1  # -->
+        <col style="width:78px">    <!-- 2  Reference No. -->
+        <col style="width:84px">    <!-- 3  Service Type (EAINT: title-case, e.g. "Software Installation") -->
+        <col style="width:80px">    <!-- 4  Date Requested (date / time) -->
+        <col style="width:84px">    <!-- 4  Company Name -->
+        <col style="width:78px">    <!-- 5  Company ROC -->
+        <col style="width:46px">    <!-- 6  Device — biometric only -->
+        <col style="width:90px">    <!-- 6a Device Serial No. — biometric device rows only -->
+        <col style="width:66px">    <!-- 7  Delivery Date -->
+        <col style="width:64px">    <!-- 8  Installation Request -->
+        <col style="width:74px">    <!-- 9  Appointment Date -->
+        <col style="width:72px">    <!-- 10 Time Slot -->
+        <col style="width:60px">    <!-- 11 Payment Status -->
+        <col style="width:74px">    <!-- 12 LHDN Response Status -->
+        <col style="width:64px">    <!-- 13 Delivery Status — biometric only -->
+        <col style="width:78px">    <!-- 14 Installation Status -->
+        <col style="width:70px">    <!-- 15 Date Completed -->
+        <col style="width:150px">   <!-- 16 Remarks (wraps to show FAILED text) -->
+        <col style="width:54px">    <!-- 17 Special Remarks -->
+        <col style="width:58px">    <!-- 18 Action -->
+    </colgroup>
+    <thead>
+    <tr class="header">
+        <th>#</th>
+        <th>Reference No.</th>
+        <th>Service Type</th>
+        <th>Date Requested</th>
+        <th>Company Name</th>
+        <th>Company ROC</th>
+        <th>Device</th>
+        <th>Device Serial No.</th>
+        <th>Delivery Date</th>
+        <th>Installation Request</th>
+        <th>Appointment Date</th>
+        <th>Time Slot</th>
+        <th>Payment Status</th>
+        <th>LHDN Response Status</th>
+        <th>Delivery Status</th>
+        <th>Installation Status</th>
+        <th>Date Completed</th>
+        <th>Remarks</th>
+        <th>Special Remarks</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">SR69001391</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>16:09</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">27-11-2026</td>
+        <td class="center">2pm -<br>4pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=7356c3fb-b434-4328-813d-4d677435350c&amp;apptId=0e4a054c-bcd3-4f12-84f5-5de8337da161" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('0e4a054c-bcd3-4f12-84f5-5de8337da161');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">2</td>
+        <td class="center">SR69001391</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>16:09</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">27-11-2026</td>
+        <td class="center">2pm -<br>4pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=7356c3fb-b434-4328-813d-4d677435350c&amp;apptId=b3300ce5-501f-403e-bf49-8a455c724af4" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('b3300ce5-501f-403e-bf49-8a455c724af4');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">3</td>
+        <td class="center">SR69001391</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>16:09</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">26-11-2026</td>
+        <td class="center">10am -<br>12pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=7356c3fb-b434-4328-813d-4d677435350c&amp;apptId=bc0d74aa-aed6-47cb-bf95-77673df38a82" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('bc0d74aa-aed6-47cb-bf95-77673df38a82');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">4</td>
+        <td class="center">SR69001391</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>16:09</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">26-11-2026</td>
+        <td class="center">2pm -<br>4pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=7356c3fb-b434-4328-813d-4d677435350c&amp;apptId=c402b42a-fdf0-42b2-a213-f0cd888e7080" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('c402b42a-fdf0-42b2-a213-f0cd888e7080');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">5</td>
+        <td class="center">SR69001391</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>16:09</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">26-11-2026</td>
+        <td class="center">2pm -<br>4pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=7356c3fb-b434-4328-813d-4d677435350c&amp;apptId=c9b55946-dc91-433f-8e62-2e050854be7d" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('c9b55946-dc91-433f-8e62-2e050854be7d');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">6</td>
+        <td class="center">SR69001391</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>16:09</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">25-11-2026</td>
+        <td class="center">2pm -<br>4pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=7356c3fb-b434-4328-813d-4d677435350c&amp;apptId=f2cfbc3f-f8e3-48a3-9f96-46622a6dd005" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('f2cfbc3f-f8e3-48a3-9f96-46622a6dd005');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">7</td>
+        <td class="center">SR69001390</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>16:08</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">29-10-2026</td>
+        <td class="center">10am -<br>12pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=c37bbb63-fc40-4164-86be-8c5a01212bb3&amp;apptId=0536ca64-f0c3-4f66-868a-79c9ed1036ce" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('0536ca64-f0c3-4f66-868a-79c9ed1036ce');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">8</td>
+        <td class="center">SR69001389</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>16:04</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">27-10-2026</td>
+        <td class="center">10am -<br>12pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=ad12e8b2-a2ca-4145-a2eb-785eea8de4bb&amp;apptId=5a5f3871-a010-46da-840d-553333dd8777" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('5a5f3871-a010-46da-840d-553333dd8777');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">9</td>
+        <td class="center">SR69001388</td>
+        <td class="center svc">Biometric Device Purchase</td>
+        <td class="center">17-09-2026<br>15:55</td>
+        <td>CARRO DIGITAL SDN. BHD.</td>
+        <td class="center">8888888888-A</td>
+        <td class="center">1</td>
+        <td class="center">-</td>
+        <td class="center">-</td>
+        <td class="center">1</td>
+        <td class="center">29-10-2026</td>
+        <td class="center">10am -<br>12pm</td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:green">OK</b></td>
+        <td class="center"><b style="color:blue">New</b></td>
+        <td class="center"><b style="color:blue">Pending</b></td>
+        <td class="center">-</td>
+        <td class="rmk"></td>
+        <td class="center"><b style="color:blue">No</b></td>
+        <td class="center">
+            <a href="/uat1/view/bo/service-hub/detail.do?id=ad12e8b2-a2ca-4145-a2eb-785eea8de4bb&amp;apptId=5a5f3871-a010-46da-840d-553333dd8777" target="_blank" rel="noopener" style="color:#0B4C5F;text-decoration:underline;">View</a>
+
+            <span style="color:#bbb;"> |</span><br><a href="#" onclick="return scCancel('5a5f3871-a010-46da-840d-553333dd8777');" style="color:#8a1538;text-decoration:underline;">Cancel</a>
+
+        </td>
+    </tr>
+
+    </tbody>
+</table>
+</div>
+<div id="sc-cancel-dialog" style="display:none;"><div style="padding:22px 0;">Sure to cancel?</div></div>
+</div>
+</body>

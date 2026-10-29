@@ -1,0 +1,71 @@
+<!--
+  CAPTURE
+  url         https://172.30.202.114:9089/esim/login
+  system      eSIM (eAuto Simulator) — single shared internal instance, VPN only
+  captured    2026-08-17
+  trimmed     nothing — full <body>
+  notes       Credentials are admin / admin. The form posts to /esim/login.
+              A failed login re-renders this same page rather than erroring,
+              which is why automation asserts on the app shell after submitting
+              instead of asserting the absence of an error.
+  see also    knowledge/esim.md
+-->
+<body>
+  <div class="login-page">
+    <div class="login-brand">
+      <div class="login-brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-2-2.2-3.2C12.9 5.6 11.4 5 10 5H5.2C3.4 5 2 6.4 2 8.2V14c0 1.1.9 2 2 2h1"></path><circle cx="7" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle><path d="M14 17H9"></path></svg>
+      </div>
+      <h1>eAuto Simulator</h1>
+      <p class="login-brand-subtitle">Internal vehicle simulation &amp; testing platform</p>
+      <div class="login-brand-divider"></div>
+      <div class="login-features">
+        <div class="login-feature">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+          <span>Secure &amp; reliable testing environment</span>
+        </div>
+        <div class="login-feature">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Configurable vehicle parameters</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-form-panel">
+      <div class="login-form">
+        <h2>Welcome back</h2>
+        <p class="subtitle">Internal use only. Sign in with your credentials.</p>
+
+        <form action="/esim/login" method="post">
+          <div class="form-group">
+            <label class="form-label">USERNAME</label>
+            <div class="login-input-wrap">
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <input type="text" name="username" placeholder="Enter your username" required="" autofocus="">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" style="margin-bottom:0">PASSWORD</label>
+            </div>
+            <div class="login-input-wrap">
+              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <input type="password" name="password" placeholder="Enter your password" required="">
+            </div>
+          </div>
+
+          <div class="login-remember">
+            <input type="checkbox" id="remember-me" name="remember-me">
+            <label for="remember-me">Remember me</label>
+          </div>
+
+          <button type="submit" class="login-btn">
+            <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            Sign In
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>

@@ -1,0 +1,152 @@
+<!--
+  Ticket: EAINT-9306 (eDereg Pre-Checking compulsory gate)
+  Page: BO "JPJ XML Log (Deregistration)" — search form + results
+  URL: /uat1/view/dereg/jpj/log (Settings (Hub Admin) > "JPJ XML Log
+       (Deregistration)", linked from EAINT-9306-bo-home-menu.html)
+  Env: uat1
+  Captured: 2026-08-24
+  Pasted directly by Faizuddin (not a file save from DevTools) — saved
+  verbatim per the standing HTML-capture rule. Forms kept complete, untrimmed.
+  Results table shown in full (only 4 rows existed for this search).
+
+  NOTE — this is the DEREGISTRATION log, not the eDereg Pre-Checking one. The
+  BO home menu (EAINT-9306-bo-home-menu.html) lists BOTH "JPJ XML Log
+  (Deregistration)" and "JPJ XML Log (eDereg Pre-Checking)" as separate
+  links (/uat1/view/dereg/jpj/log vs. /uat1/view/dereg/precheck/jpj/log/main.do)
+  — Faizuddin captured this one. Given TS1's own flow creates BOTH a
+  Pre-Checking transaction AND a Deregistration transaction for the same
+  vehicle no. (knowledge/flow-edereg.md §2), checking THIS log for the
+  Deregistration leg's JPJ traffic is a legitimate, distinct check from
+  whatever "JPJ XML Log" the SRD's TS1 checklist item meant — flagged back to
+  Faizuddin to confirm which one (or both) the checklist item covers before
+  automating, since the eDereg-Pre-Checking-specific log has NOT been
+  captured and may have a different form-field/result shape.
+
+  STATE 1: blank search form (radio: Vehicle No. / Transaction Ref No.)
+  STATE 2: after searching by Vehicle No. "HXA021" — 4 rows (one "Submission",
+  one "SecondEnquiry", two "Enquiry" — same D680000566 transaction, 4 separate
+  JPJ round trips logged against it)
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1: blank search form -->
+<!-- ============================================================ -->
+<div id="container">
+<table width="100%">
+<tbody><tr>
+    <td class="not-to-print">
+    <form id="search-form" style="margin-left:20px;">
+    <table style="width:100%">
+    <tbody><tr>
+        <td style="padding-left:20px">
+            <label>
+                <input type="radio" checked="checked" value="vehicleNo" id="type" name="type">
+                <b>Vehicle No.:</b>
+                <input type="text" name="vehicleNo" id="vehicleNo" value="" size="15">
+            </label>
+            <label>
+                <input type="radio" value="refNo" id="type" name="type">
+                <b>Transaction Ref No.:</b>
+                <input type="text" name="refNo" id="refNo" value="" size="30">
+            </label>
+            <input type="submit" id="to-search" value="SEARCH Now">
+        </td>
+        <td style="padding-top:10px; font-size:14px"><b>DEREG Transaction Enquiry</b></td>
+        <td style="text-align:right"></td>
+    </tr>
+    </tbody></table>
+    </form>
+    </td>
+</tr>
+<tr>
+    <td id="result" colspan="2">&nbsp;</td>
+</tr>
+</tbody></table>
+</div>
+
+<!-- ============================================================ -->
+<!-- STATE 2: after searching by Vehicle No. "HXA021" -->
+<!-- ============================================================ -->
+<div id="container">
+<table width="100%">
+<tbody><tr>
+    <td class="not-to-print">
+    <form id="search-form" style="margin-left:20px;">
+    <table style="width:100%">
+    <tbody><tr>
+        <td style="padding-left:20px">
+            <label>
+                <input type="radio" checked="checked" value="vehicleNo" id="type" name="type">
+                <b>Vehicle No.:</b>
+                <input type="text" name="vehicleNo" id="vehicleNo" value="" size="15">
+            </label>
+            <label>
+                <input type="radio" value="refNo" id="type" name="type">
+                <b>Transaction Ref No.:</b>
+                <input type="text" name="refNo" id="refNo" value="" size="30">
+            </label>
+            <input type="submit" id="to-search" value="SEARCH Now">
+        </td>
+        <td style="padding-top:10px; font-size:14px"><b>DEREG Transaction Enquiry</b></td>
+        <td style="text-align:right"></td>
+    </tr>
+    </tbody></table>
+    </form>
+    </td>
+</tr>
+<tr>
+    <td id="result" colspan="2">
+<table style="width: 100% !important">
+    <colgroup><col width="30px"><col width="100px"><col width="100px"><col width="100px"><col width="150px"><col width="100px"><col width="150px"></colgroup>
+    <tbody>
+    <tr class="header">
+        <th>#</th><th>Vehicle</th><th>Transaction No.</th><th>Type</th>
+        <th>Submitted At</th><th>Request Data</th>
+        <th>Responded At</th><th>Response Data</th>
+    </tr>
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">HXA021</td>
+        <td class="center"><a href="/uat1/view/dereg/jpj/log/view.do?id=8cc71800-be69-4c92-8bb8-5a62f7f39424"><b>D680000566</b></a></td>
+        <td class="center">Submission</td>
+        <td class="center">24-08-2026 15:08</td>
+        <td>030217141005~0~HXA021~CHS55249419~ENG55249419~faizuddin@modefair.com~faizuddin@modefair.com~4100020~FAIZUDDIN AATF ACC~INDIVIDU</td>
+        <td class="center">24-08-2026 15:08</td>
+        <td>GLB000000I~030217141005~0~HXA021</td>
+    </tr>
+    <tr class="even">
+        <td class="center">2</td>
+        <td class="center">HXA021</td>
+        <td class="center"><a href="/uat1/view/dereg/jpj/log/view.do?id=6823384f-c62f-4a0a-b278-9ce316bdfb56"><b>D680000566</b></a></td>
+        <td class="center">SecondEnquiry</td>
+        <td class="center">24-08-2026 15:08</td>
+        <td>HXA021~030217141005~0~CHS55249419~ENG55249419</td>
+        <td class="center">24-08-2026 15:08</td>
+        <td>GLB000000I~030217141005~0~HXA021</td>
+    </tr>
+    <tr class="odd">
+        <td class="center">3</td>
+        <td class="center">HXA021</td>
+        <td class="center"><a href="/uat1/view/dereg/jpj/log/view.do?id=6a0f98d8-ed35-4d2f-ac04-9166f9436f4e"><b>D680000566</b></a></td>
+        <td class="center">Enquiry</td>
+        <td class="center">24-08-2026 15:08</td>
+        <td>HXA021~030217141005~0~CHS55249419~ENG55249419</td>
+        <td class="center">24-08-2026 15:08</td>
+        <td>GLB000000I~030217141005~0~HXA021</td>
+    </tr>
+    <tr class="even">
+        <td class="center">4</td>
+        <td class="center">HXA021</td>
+        <td class="center"><a href="/uat1/view/dereg/jpj/log/view.do?id=18f4e115-5454-422e-87dc-fbac8a92595c"><b>D680000566</b></a></td>
+        <td class="center">Enquiry</td>
+        <td class="center">24-08-2026 15:08</td>
+        <td>HXA021~030217141005~0~CHS55249419~ENG55249419</td>
+        <td class="center">24-08-2026 15:08</td>
+        <td>GLB000000I~030217141005~0~HXA021</td>
+    </tr>
+    </tbody>
+</table>
+    </td>
+</tr>
+</tbody></table>
+</div>

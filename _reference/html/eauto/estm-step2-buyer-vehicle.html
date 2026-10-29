@@ -1,0 +1,955 @@
+<!--
+  eSTM — step 2 "Vehicle": Buyer & Vehicle Details form
+  URL:         https://staging.eauto.my/uat1/view/ucd/estm/transaction/... (form posts to
+               /uat1/ajax/ucd/estm/transaction/save-form.do?category=1&companyCategory=)
+  Environment: uat1
+  Captured:    2026-08-18, by Faizuddin, logged in as MUHAMMAD FAIZUDDIN BIN BIDI
+  Trimmed:     nothing. Full page as pasted, including the header/footer chrome and
+               all inline <script> blocks. Forms are never trimmed.
+
+  Why this page matters: it settles the eVOC-email vs buyer-email question.
+  #email (eVOC Email) is READONLY and must always be faizuddin@modefair.com;
+  #reconfirmEmail must match it; #buyerEmail (labelled "Email Address", under
+  "Buyer Details") must be a DIFFERENT address. Note the capture was taken with
+  the buyer-email validation firing — `.is-invalid-buyer-email-buyer`
+  ("Please enter Buyer's Email Address.") is visible, style="" rather than
+  display:none, while every other error span is hidden.
+
+  Cited by: knowledge/flow-estm.md § The two email fields on step 2
+-->
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+
+<div id="sure-to-continue" style="display:none;" title="Confirmation">
+    Sure to continue?
+</div>
+
+<div id="sure-to-cancel" style="display:none;" title="Cancel Confirmation">
+    Are you sure you want to cancel this transaction?
+</div>
+
+<div id="clear-mailing-address" style="display:none;" title="Proceed Confirmation">
+    This will clear the Latest Address, sure to proceed?
+</div>
+
+<div id="container" class="ucd-container">
+<div>
+    <div id="estm-header">
+        <div class="title1">New eSerahan Transaction:</div>
+
+        <div class="title2" style="margin:10px 0 20px 0;">
+
+
+
+Selling to Individual
+
+</div>
+
+        <table>
+        <tbody><tr>
+            <td colspan="6">
+
+                <center>
+    <div style="display:flex;justify-content:center;width:100%;">
+        <div class="header-element">
+            <div class="txn-header-completed">
+                <div class="txn-header-div">1</div>
+            </div>
+            <span style="line-height:14.5px;padding-top:3px;">Buyer<br>(Customer)</span>
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element-active">
+            <div class="txn-header-active">
+                <div class="txn-header-div">2</div>
+            </div>
+            Vehicle
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header">
+                <div class="txn-header-div">3</div>
+            </div>
+            <span style="line-height:14.5px;padding-top:3px;">Seller<br>(Dealer)</span>
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header">
+                <div class="txn-header-div">4</div>
+            </div>
+            JPJ Check
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header">
+                <div class="txn-header-div">5</div>
+            </div>
+            Payment
+        </div>
+        <div>
+            <br>
+            <img src="/uat1/images/right-arrow.png">
+            <br>
+        </div>
+
+        <div class="header-element">
+            <div class="txn-header">
+                <div class="txn-header-div">6</div>
+            </div>
+            Transfer
+        </div>
+    </div>
+</center>
+
+            </td>
+        </tr>
+        </tbody></table>
+    </div>
+
+
+
+    <form id="tx-form" style="display:block;" enctype="multipart/form-data" method="POST" action="/uat1/ajax/ucd/estm/transaction/save-form.do?category=1&amp;companyCategory=">
+        <input type="hidden" name="transactionId" value="19804c6a-4275-418f-930f-c1409ed3155e">
+        <input type="hidden" name="buyerCategory" value="1">
+        <!-- <input type="hidden" name="companycategory" value="1"/> -->
+        <input type="hidden" name="bypass" value="false">
+        <input type="hidden" name="cancelLkm" value="Yes">
+
+
+
+        <div class="form-header-title">Buyer &amp; Vehicle Details</div>
+
+        <div class="form-header">
+
+        <table>
+
+            <colgroup><col width="100%">
+            <col>
+
+        </colgroup><tbody><tr>
+            <td class="mykad" style="padding-right:20px;">
+                <div class="title3">Buyer Authentication</div>
+
+                <div style="display:flex;">
+                    <div style="padding-right:20px;">
+                        <div><img id="mykad-photo" src="/uat1/view/ucd/estm/transaction/mykad-photo.get?id=19804c6a-4275-418f-930f-c1409ed3155e"></div>
+                    </div>
+                    <div>
+                        <table>
+                            <colgroup><col width="110px">
+                            <col width="auto">
+                            </colgroup><tbody><tr>
+                                <td>
+                                    <b>Name:</b>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="80" style="width: 100%; border: 0px; background-color: transparent;" name="name" class="is-required" title="Name" value="Emily Rodriguez" readonly="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>MyKad No:</b>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="12" style="width: 100%; border: 0px; background-color: transparent;" name="refId" id="refId" class="is-required" title="MyKad No" value="990909010122" readonly="">
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+                </div>
+
+            </td>
+            <td class="company" style="padding-left:20px;">
+
+            </td>
+        </tr>
+        </tbody></table>
+        </div>
+
+        <div class="form-details">
+            <p style="font-size:12px;text-align:start;margin:10px 0 0 0;">Fields with asterisk (<span style="color:#FF4000;">*</span>) symbol is compulsory to fill in.</p>
+
+            <table>
+            <colgroup><col width="50%">
+            <col width="50%">
+            </colgroup><tbody><tr>
+                <td style="padding-right:20px;">
+                    <div class="title3">eVOC Details</div>
+
+                    <table class="buyer-details">
+                        <colgroup><col width="200px">
+                        <col width="300px">
+                        </colgroup><tbody><tr>
+                            <td><b>eVOC Email: <span class="required">*</span></b></td>
+                            <td>
+                                <input type="text" readonly="" maxlength="100" name="email" id="email" class="is-required grey-text" title="eVOC Email" value="faizbidi03@gmail.com">
+                                <span class="is-invalid is-invalid-email-format" style="display:none;">Invalid email format</span>
+                                <span class="is-invalid is-invalid-email-length" style="display:none;">Email exceed maximum character limit(100)</span>
+                            </td>
+                        </tr>
+                            <tr>
+                                <td><b>Reconfirm eVOC Email: <span class="required">*</span></b></td>
+                                <td>
+                                    <input type="text" maxlength="100" name="reconfirmEmail" id="reconfirmEmail" class="is-required" title="Reconfirm eVOC Email" "="">
+                                    <span class="is-invalid is-invalid-reconfirmEmail" style="display:none;">This field is required</span>
+                                    <span class="is-invalid is-invalid-reconfirmEmail-mismatch" style="display:none;">Different email address detected</span>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <div style="color: #808080;">eVOC will be sent to this email address.</div>
+                            </td>
+                        </tr>
+                    </tbody></table>
+
+                    <div class="line"></div>
+
+                    <div class="title3">Buyer Details</div>
+
+                    <table class="contact-details">
+                    <colgroup><col width="200px">
+                    <col width="300px">
+                    </colgroup><tbody><tr>
+                        <td><b>Email Address: <span class="required">*</span></b></td>
+                        <td>
+                            <input type="text" maxlength="100" name="buyerEmail" id="buyerEmail" class="is-required mandatory" title="Email Address">
+                            <span class="is-invalid is-invalid-buyerEmail" style="display:none;">This field is required</span>
+                            <span class="is-invalid is-invalid-buyer-email-format" style="display:none;">Invalid email format</span>
+                            <span class="is-invalid is-invalid-buyer-email-length" style="display:none;">Email exceed maximum character limit(100)</span>
+                            <span class="is-invalid is-invalid-buyer-email-buyer" style="">Please enter Buyer's Email Address.</span>
+                            <span class="is-invalid is-invalid-buyer-email-buyer-threshold" style="display:none;">Email address has reached its max number (3) of usages within the last 30 days</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Mobile No: <span class="required">*</span></b></td>
+                        <td>
+                            <input type="text" maxlength="11" name="contactNo" id="contactNo" class="is-required valid-contact" title="Mobile No" value="">
+                            <span class="is-invalid is-invalid-contactNo" style="display:none;">This field is required</span>
+                            <span class="is-invalid is-invalid-contactNo-format" style="display:none;"></span>
+                            <span class="is-invalid is-invalid-contactNo-buyer" style="display:none;">Please enter Buyer's Mobile Number.</span>
+                            <span class="is-invalid is-invalid-contactNo-buyer-threshold" style="display:none;">Mobile no. has reached its max number (3) of usages within the last 30 days</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">
+
+                            <b>Latest Address: <span class="required">*</span></b><br>
+
+                            <span id="same-address-option-container">
+                                <label><input type="checkbox" id="to-same-address" style="width: auto;"></label>
+                                Same as MyKad
+                            </span>
+
+                        </td>
+                        <td>
+                            <input type="text" maxlength="30" name="mailingAddress1" id="mailingAddress1" title="Latest Address Line 1" class="is-required" value="">
+                            <span class="is-invalid is-invalid-mailingAddress1" style="display:none;">This field is required</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" maxlength="30" name="mailingAddress2" id="mailingAddress2" title="Latest Address Line 2" value="" class="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" maxlength="30" name="mailingAddress3" id="mailingAddress3" title="Latest Address Line 3" value="" class="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Postcode: <span class="required">*</span></b><br>
+                        </td>
+                        <td>
+                            <input type="text" maxlength="5" class="is-required" name="postCode" id="postCode" title="Postcode" value="">
+                            <span class="is-invalid is-invalid-postCode" style="display:none;">This field is required</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>State: <span class="required">*</span></b><br>
+                        </td>
+                        <td>
+                            <div class="custom-select">
+                                <select class="select is-required" name="state" id="state" label="State" style="margin-left: 0px; width: 100% !important;">
+                                    <option value="">Select State</option>
+
+<option value="01">JOHOR (01)</option>
+<option value="02">KEDAH (02)</option>
+<option value="03">KELANTAN (03)</option>
+<option value="04">MELAKA (04)</option>
+<option value="05">NEGERI SEMBILAN (05)</option>
+<option value="06">PAHANG (06)</option>
+<option value="07">PULAU PINANG (07)</option>
+<option value="08">PERAK (08)</option>
+<option value="09">PERLIS (09)</option>
+<option value="10">SELANGOR (10)</option>
+<option value="11">TERENGGANU (11)</option>
+<option value="12">SABAH (12)</option>
+<option value="13">SARAWAK (13)</option>
+<option value="14">WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</option>
+<option value="15">WILAYAH PERSEKUTUAN LABUAN (15)</option>
+<option value="16">WILAYAH PERSEKUTUAN PUTRAJAYA (16)</option>
+
+</select>
+                            </div>
+                            <span class="is-invalid is-invalid-state" style="display:none;">This field is required</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>City: <span class="required">*</span></b><br>
+                        </td>
+                        <td>
+                            <div class="custom-select">
+                                <select class="select is-required" name="district" id="district" label="District" style="margin-left: 0px; width: 100% !important;">
+                                    <option value="">Select City</option>
+
+<option value="1400">WILAYAH PERSEKUTUAN (1400)</option>
+<option value="1401">KUALA LUMPUR (1401)</option>
+<option value="1402">SETAPAK (1402)</option>
+
+<option value="9999">LAIN-LAIN (9999)</option></select>
+                            </div>
+                            <span class="is-invalid is-invalid-district" style="display:none;">This field is required</span>
+                        </td>
+                    </tr>
+                    </tbody></table>
+                </td>
+                <td style="padding-left:20px;">
+                    <div class="title3">Vehicle Details (as per VOC)</div>
+
+                    <table class="vehicle-details">
+                    <colgroup><col width="200px">
+                    <col width="300px">
+                    </colgroup><tbody><tr>
+                        <td><b>Vehicle No: <span class="required">*</span></b></td>
+                        <td>
+                            <input type="text" readonly="" maxlength="20" name="vehicleRegNo" id="vehicleRegNo" class="is-required grey-text" title="Vehicle No" value="HX042">
+                            <span class="is-invalid is-invalid-vehicleRegNo" style="display:none;">This field is required</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Engine No: <span class="required">*</span></b></td>
+                        <td>
+                            <input type="text" maxlength="22" name="vehicleEngineNo" id="vehicleEngineNo" class="is-required" title="Engine No" value="">
+                            <span class="is-invalid is-invalid-vehicleEngineNo" style="display:none;">This field is required</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Chassis No: <span class="required">*</span></b></td>
+                        <td>
+                            <input type="text" maxlength="30" name="vehicleChassisNo" id="vehicleChassisNo" class="is-required" title="Chassis No" value="">
+                            <span class="is-invalid is-invalid-vehicleChassisNo" style="display:none;">This field is required</span>
+                        </td>
+                    </tr>
+                    </tbody></table>
+                </td>
+            </tr></tbody></table>
+
+            <div style="text-align:center;height:40px;margin:16px 0 32px 0;">
+                <input type="button" id="to-cancel" value="Cancel" style="height: 35px;border:1px solid #0B4C5F;color:#0B4C5F;width:180px;background-color:#FFFFFF;font-weight:700;border-radius:4px;">
+                <!--input type="reset" id="to-reset" value="Reset"-->
+                <input type="submit" id="to-continue" value="Next" style="height: 35px; color: rgb(255, 255, 255); background-color: rgb(11, 76, 95); width: 180px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; font-weight: 700; border-radius: 4px; cursor: default;">
+            </div>
+
+        </div>
+    </form>
+</div>
+
+</div>
+
+<div id="duplicate-transaction-msg" style="display:none;">
+    <p>
+        Transaksi yang sama untuk kenderaan dan pemilik ini telah direkod sebelum ini. Sila rujuk kepada eSTM transaction listing.
+        <br>
+        <span style="color: #FF4000;">
+            相同的车辆和车主已有记录在你的 eAuto 系统里。请检查eSTM transaction listing。
+        </span>
+    </p>
+    <br><br>
+</div>
+
+<div id="missing-postcode-city-state" style="display:none;">
+    <p>
+        Postcode/State/City/Address 1 is missing. Please fill in Postcode/State/City/Address 1 field again.
+    </p>
+    <br><br>
+</div>
+
+<div id="blockCase" style="display:none;">
+    You are unable to proceed with the eSerahan transaction for this <br>
+    vehicle. Please contact  at  for further info.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/uat1/view/ucd/home/screen.css">
+<script>
+$(document).ready(function() {
+    $("#common-bar .page-title").text($("head title").text());
+    $("#header a.logout").click(function() {
+            $("#logout-confirmation").dialog({
+                modal: true,
+                width: "300",
+                minHeight: "150",
+                resizable: false,
+                draggable: false,
+                position: "center",
+                closeOnEscape: false,
+                close: function() {
+                    $(this).dialog("destroy");
+                },
+                buttons:
+                {
+                    "No": function() {
+                        $(this).dialog("close");
+                        $(this).dialog("destroy");
+                    },
+                    "Yes": function() {
+                        window.location.href = "/uat1/user/logout.do";
+                    }
+                },
+                open: function() {
+                    $('.ui-dialog-buttonpane').find('button:contains("No")').addClass('cancel-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button:contains("Yes")').addClass('confirm-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                }
+        }).dialog("open");
+        return false;
+    });
+
+    LoginSessionTimer.startCountdown();
+
+    $("#deposit-info").click(function() {
+        window.location.href = "/uat1/view/ucd/deposit/generate.do?companyAccountId=" + 1109700;
+        return false;
+    });
+
+    $("#payment-history").click(function() {
+        window.location.href = "/uat1/view/ucd/topup-pob/payment-history.do?companyId=" + 1109700;
+        return false;
+    });
+
+    $(":button, :submit").mouseenter(function() {
+        $(this).css({'cursor': 'pointer'});
+    }).mouseleave(function() {
+        $(this).css({'cursor': 'default'});
+    });
+
+    $("#settings-link").click(function() {
+
+
+            window.location="/uat1/view/ucd/settings/view.do";
+
+
+    });
+
+    $("#reports-link").click(function() {
+
+            window.location="/uat1/view/ucd/report/view.do";
+
+    });
+
+    $("#insurance-link").click(function() {
+        window.location="/uat1/view/ucd/insurance";
+    });
+
+    $("#econtract").live("click", function() {
+        var conf = "width=800,height=450,scrollbars=yes,location=no,menubar=no,status=no,toolbar=no,directories=no";
+        popup_window = window.open("/uat1/view/ucd/insurance/enquiry/generate-econtract-page.do","",conf);
+
+    });
+});
+
+function openAccessDeniedDialog() {
+    $("#access-denied").dialog({
+        modal: true,
+        width: "300",
+        minHeight: "150",
+        resizable: false,
+        draggable: false,
+        position: "center",
+        closeOnEscape: false,
+        close: function() {
+            $(this).dialog("destroy");
+        },
+        buttons:
+        {
+            "Ok": function() {
+                $(this).dialog("close");
+                $(this).dialog("destroy");
+            }
+        },
+        open: function() {
+            $('.ui-dialog-buttonpane').find('button:contains("Ok")').addClass('confirm-dialog-btn');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+            $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+        }
+    }).dialog("open");
+}
+</script>
+
+<!--[if lte IE 8]>
+<style>
+.tab-button1{ padding-left: 10px; padding-right: 10px; margin-left: 5px;}
+#home-bar{margin: 20px 0px 0 0 !important}
+</style>
+<!--<![endif]-->
+
+<style>
+a#deposit-log {text-decoration:underline !important; color:#FF4000!important;}
+.new {
+    position: absolute;
+    top: 10px;
+    color: #FF4000;
+    font-weight:bold;
+    font-size:16px;
+    margin-left:30px;
+}
+
+.terms {padding: 3px; width: 10px;}
+</style>
+<div id="header">
+
+    <div id="home-bar">
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/home'" id="home-link">HOME</button>
+
+    <button class="tab-button1" onclick="" id="insurance-link">INSURANCE</button>
+
+    <button class="tab-button1" onclick="" id="reports-link">REPORTS</button>
+    <button class="tab-button1" onclick="" id="settings-link">SETTINGS</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/user-guide'" id="user-guide-link">USER GUIDE</button>
+
+
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/download'" id="download-link">DOWNLOAD</button>
+    <button class="tab-button1" onclick="window.location='/uat1/view/ucd/contact'" id="contact-link">CONTACT US</button>
+
+
+    </div>
+
+    <table id="common-bar">
+    <tbody><tr>
+    <td class="page-title" nowrap="">Online Services - eSerahan Service</td>
+    <!--td class="scroll-message"><marquee behavior="scroll" direction="left" scrollamount="3"  width="70%"><div id="scroll-message" name="scroll-message">You have 7 of APT transactions pending for Payment. Please make payment to complete APT process. Thank you.</div></marquee></td-->
+    <td>
+    <ol class="inline">
+
+        <li>
+            <img src="/uat1/images/icon_user.gif" style="position:relative; top:4px">
+            <span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI  </span>
+        </li>
+        <li>
+            &nbsp;|&nbsp;
+        </li>
+        <li><a href="#" class="logout" style="position:relative; top:-1px">Logout</a></li>
+    </ol>
+    </td>
+    </tr>
+    </tbody></table>
+
+
+    <div id="countdown-screen-timeout" class="hidden hasCountdown"><span class="countdown_row countdown_amount">1439:40</span></div>
+    <div id="session-timeout-dialog" class="hidden">
+        <img src="/uat1/images/info-big.png"><br>
+        You still have <span id="countdown-dialog-timeout"></span>&nbsp;sec before this login session expired.<br><br>
+        Do you want to continue login?<br><br>
+    </div>
+</div>
+<div id="logo">
+    <img src="/uat1/images/eAuto_TM_logo.svg">
+</div>
+<div id="allow-insurance-dialog" style="display:none;color:#FF4000">
+    <div>
+        <form id="checkboxForm" style="color:black">
+            <div class="flex flex-row">
+                <input type="checkbox" class="terms" value="1" style="padding: 3px; width: 10px;">
+                <span>By clicking this checkbox and the "I Accept" button below, you agree to participate in our Insurance Programme.</span>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="dialog-insurance-not-add-as-user" style="display: none">
+Anda belum dibenarkan menggunakan Insurance. Sila rujuk User Guide (<a href="/uat1/view/ucd/user-guide/Add_New_Insurance1.pdf" target="_new"><b>sini</b></a>) untuk mengetahui cara <b>Main user/Director</b> menambah
+<br>pengguna Insurance. <br>Support Hotline: 1700-816-186.
+<br><br>
+您还未被授权使用 Insurance 。请参阅用户指南 (<a href="/uat1/view/ucd/user-guide/Add_New_Insurance1.pdf" target="_new"><b>此处</b></a>) 以了解 <b>主要用户</b> 如何增加 Insurance 用户。 <br>Support Hotline: 1700-816-186 。
+</div>
+<div id="dialog-insurance-access-denied" style="display:none;color:#FF4000">
+    <form id="checkboxForm" style="color:black"><br>
+            This user named MUHAMMAD FAIZUDDIN BIN BIDI will be chosen to participate in Insurance<br>
+            18/08/2026 <br>
+        <br>
+        <input type="checkbox" class="terms" value="1" style="padding: 3px; width: 10px;">By clicking this checkbox and the "I Accept" button below, you agree to participate in our Insurance Programme.
+    </form>
+</div>
+
+<div id="logout-confirmation" style="display:none;" title="Logout Confirmation">
+    Sure to logout?
+</div>
+
+<div id="access-denied" style="display:none;">
+    Sorry, access denied.
+</div>
+
+
+
+
+
+<style>
+    .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 60px;
+        border-top: 1px solid #CCCCCC;
+    }
+
+    .footer .footer-container {
+        height: 60px;
+    }
+
+    .footer .footer-container .footer-row {
+        height: 20px;
+    }
+
+    .ucd-container, .aatf-container {
+        min-height: calc(100vh - 221px);
+    }
+    @media screen and (max-width: 693px) {
+      .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 90px;
+        border-top: 1px solid #CCCCCC;
+      }
+
+      .ucd-container, .aatf-container {
+        min-height: calc(100vh - 251px);
+      }
+
+      .footer .footer-container {
+        height: 90px;
+      }
+
+      .footer .footer-container .footer-row {
+        height: auto;
+      }
+    }
+
+
+    @media screen and (max-width: 500px) {
+      .footer {
+        font-size:13px;
+        background-color:#F7F9FA;
+        padding:20px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        height: 131px;
+        border-top: 1px solid #CCCCCC;
+      }
+
+      .ucd-container, .aatf-container {
+        min-height: calc(100vh - 292px);
+      }
+
+      .footer .footer-container {
+        height: 131px;
+      }
+
+      .footer .footer-container .footer-row {
+        height: auto;
+      }
+    }
+
+    .footer a {
+        color:#0B4C5F!important;
+        font-weight:500;
+    }
+    .footer .separator {
+        color:#CCC;
+    }
+    #footer table tr td{font-size:11px!important;}
+</style>
+
+<!-- <script>
+    $(document).ready(function() {
+        setInterval(function() {
+            if($(".ui-dialog").length > 0) {
+                $("body").css("overflow","hidden");
+            } else {
+                $("body").css("overflow","auto");
+            }
+        }, 1000);
+    })
+</script> -->
+
+
+<div class="footer">
+    <div class="footer-container" style="display:flex;align-items:flex-end;width:63%;justify-content:space-between;">
+        <div style="display:flex;flex-direction:column;">
+            <div class="footer-row" style="display:flex;">
+                <a href="#" style="padding-right:10px;" onclick="window.open('/uat1/public/contact-us.jsp', 'ContactUs','width=900,height=600, scrollbars=yes, resizable=yes');">Contact Us</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding:0 10px" ;="" onclick="window.open('/uat1/public/terms-condition.jsp', 'TermsConditions','width=800,height=500, scrollbars=yes, resizable=yes');">Terms &amp; Conditions</a>
+                <span class="separator">|</span>
+                <a href="#" style="padding-left:10px" ;="" onclick="window.open('/uat1/public/privacy.jsp', 'Privacy','width=800,height=500, scrollbars=yes, resizable=yes');">Privacy</a>
+            </div>
+            <div class="footer-row" style="color:#808080;">Best Compatible With Mozilla Firefox V36.0.4</div>
+            <div class="footer-row" style="color:#808080;">Copyright © 2026 eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+        </div>
+    </div>
+
+    <div style="text-align:right;">
+        <img src="/uat1/images/eAuto_TM_logo.svg" width="126" height="52">
+    </div>
+
+
+</div>
+
+<script>
+function eautoAlert(msg){
+    $("#vwPb2W0IDFmi1FEg").html(msg);
+    $("#vwPb2W0IDFmi1FEg").dialog({
+        title: "",
+        modal: true,
+        resizable: false,
+        draggable: false,
+        position: "center",
+        closeOnEscape: false,
+        buttons: {
+            "OK": function(ex) {
+                $("#vwPb2W0IDFmi1FEg").dialog("close");
+            }
+        },
+        close: function() {
+            $("#vwPb2W0IDFmi1FEg").html("");
+            $("#vwPb2W0IDFmi1FEg").dialog("destroy");
+        }
+    });
+}
+</script>
+<div id="vwPb2W0IDFmi1FEg" style="display: none"></div>
+<script>
+    function trimSpacing(objid)
+    {
+        return $("#" + objid).val().trim();
+    }
+
+    $(function(){
+        setInterval(function(){
+            $("input, textarea").each(function(){
+
+                //Ignore file upload
+                if($(this).attr('type').toLowerCase() == 'file') return true;
+
+                //Ignore checkbox
+                if($(this).attr('type').toLowerCase() == 'checkbox') return true;
+
+                //Ignore radio
+                if($(this).attr('type').toLowerCase() == 'radio') return true;
+
+                // #vehicleEngineNo, #vehicleChassisNo, #bulkVehicleEngineNo, #bulkVehicleChassisNo
+                if(/vehicleEngineNo/.test($(this).attr('name')) || /vehicleChassisNo/.test($(this).attr('name'))){
+                    $(this).bind('paste', function(){
+                        // Do nothing...
+                    });
+                } else {
+                    $(this).bind('paste', function(){
+                        return false;
+                    });
+                }
+
+                // Ignore focus fields
+                if($(this).attr('id') == document.activeElement.id){
+                    return true;
+                }
+
+                // No ~
+                $(this).val($(this).val().replace(/[~]/g, ""));
+
+                // No spacing.
+                if($(this).attr('type') == 'text' || $(this).attr("tagName") == 'TEXTAREA'){
+                    $(this).val($(this).val().trim());
+                }
+
+            })
+        }, 500);
+    });
+
+    function showDuplicationMessageDialog() {
+        $("#duplicate-transaction-msg").dialog({
+            title: "Transaksi yang sama",
+            modal: true,
+            width: "480",
+            height: "100",
+            resizable: false,
+            draggable: false,
+            position: "center",
+            closeOnEscape: false,
+            open: function(event, ui) {
+                $(".ui-dialog-titlebar-close").each(function(){
+                    if(/Transaksi yang sama/.test($(this).parent().html())) {
+                        $(this).remove();
+                    }
+                });
+                    $('.ui-dialog-buttonpane').find('button:contains("OK")').addClass('confirm-dialog-btn');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                    $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                    $('button').blur();
+            },
+
+            buttons: {
+                "OK": function(ex) {
+                        window.location=_contextPath + "/view/ucd/estm/transaction/view.do";
+                }
+            },
+            close: function() {
+                        window.location=_contextPath + "/view/ucd/estm/transaction/view.do";
+            }
+        });
+
+        $("#duplicate-transaction-msg").after($("#rhb-account-no-dialog").parent());
+        $("#duplicate-transaction-msg").css('width', '450px');
+        $("#duplicate-transaction-msg").css('height', '100px');
+        $("#duplicate-transaction-msg").parent().css('position', 'absolute');
+        $("#duplicate-transaction-msg").parent().css('top', '50px');
+        $("#duplicate-transaction-msg").dialog("open");
+        $("body").scrollTop(0);
+    }
+
+    function showMissingPostcodeCityStateErrorMessagePopup() {
+
+        $("#postCode").val("");
+        $("#district").val("");
+        $("#state").val("");
+        $("#mailingAddress1").val("");
+
+        $("#postCode").addClass("mandatory");
+        $("#district").addClass("mandatory");
+        $("#state").addClass("mandatory");
+        $("#mailingAddress1").addClass("mandatory");
+
+        openCustomDialog("Postcode/State/City/Address 1 is missing. Please fill in Postcode/State/City/Address 1 field again.");
+
+        /*
+        $("#missing-postcode-city-state").dialog({
+            title: "Missing Postcode/City/State",
+            modal: true,
+            width: "1000",
+            height: "150",
+            resizable: false,
+            draggable: false,
+            position: "center",
+            closeOnEscape: false,
+            open: function(event, ui) {
+                $(".ui-dialog-titlebar-close").each(function(){
+                    if(/Missing Postcode/.test($(this).parent().html())) {
+                        $(this).remove();
+                    }
+                });
+            },
+            buttons: {
+                "OK": function(ex) {
+                    $("#postCode").val("");
+                    $("#district").val("");
+                    $("#state").val("");
+
+                    $("#postCode").addClass("warning");
+                    $("#district").addClass("warning");
+                    $("#state").addClass("warning");
+
+                    $("#missing-postcode-city-state").dialog("close");
+                }
+            },
+            close: function() {
+                // Do nothing
+            }
+        });
+
+        $("#missing-postcode-city-state").after($("#rhb-account-no-dialog").parent());
+        $("#missing-postcode-city-state").css('width', '1000px');
+        $("#missing-postcode-city-state").css('height', '150px');
+        $("#missing-postcode-city-state").parent().css('position', 'absolute');
+        $("#missing-postcode-city-state").parent().css('top', '50px');
+        $("#missing-postcode-city-state").dialog("open");
+        $("body").scrollTop(0);
+        */
+    }
+
+    function showDialogForInsError(desc) {
+        $("#"+desc).dialog({
+            title: "Unable to Proceed",
+            modal: true,
+            width: "480",
+            resizable: false,
+            draggable: false,
+            position: "center",
+            closeOnEscape: false,
+            close: function() {
+                $(this).dialog("destroy");
+                window.location=_contextPath + "/view/ucd/estm/view.do";
+            },
+            open: function(event, ui) {
+                $('.ui-dialog-titlebar-close').hide();
+                $('.ui-dialog-buttonpane').find('button:contains("OK")').addClass('confirm-dialog-btn');
+                $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-default');
+                $('.ui-dialog-buttonpane').find('button').removeClass('ui-state-focus');
+                $('button').blur();
+            },
+
+            buttons: {
+                "OK": function() {
+                    window.location=_contextPath + "/view/ucd/estm/view.do";
+                }
+
+            }
+        }).dialog("open");
+
+        $("#"+desc).css('width', '450px');
+        $("#"+desc).parent().css('position', 'absolute');
+        $("#"+desc).parent().css('top', '100px');
+        $("#"+desc).dialog("open");
+        $("body").scrollTop(0);
+    }
+</script>
+
+
+
+<div id="root-menu-div" style="position:absolute;top:0;left:0;"></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div><div id="custom-dialog" style="display:none;"><span id="custom-field" style="white-space: pre-line;"></span></div></body>

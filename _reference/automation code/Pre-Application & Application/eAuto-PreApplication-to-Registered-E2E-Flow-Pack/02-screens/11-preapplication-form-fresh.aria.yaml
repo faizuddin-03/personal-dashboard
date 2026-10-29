@@ -1,0 +1,63 @@
+# https://staging.eauto.my/obs/preOnb/form
+- banner:
+  - img "header-line"
+  - img "Logo"
+  - text: Dealer Application
+- text: 1 Pre-Application Form 2 Business Info Review Business Information
+- strong: "Business Registered Name: *"
+- 'textbox "Business Registered Name: *"':
+  - /placeholder: Business Registered Name
+- strong: "Type of Business: *"
+- text: "SSM Registered:"
+- radio "Sdn Bhd / Bhd"
+- text: Sdn Bhd / Bhd
+- radio "Sole Proprietorship / Partnership"
+- text: Sole Proprietorship / Partnership
+- radio "LLP"
+- text: "LLP Non-SSM Registered:"
+- radio "Business Trading (Sabah)"
+- text: Business Trading (Sabah)
+- radio "Business Trading (Sarawak)"
+- text: Business Trading (Sarawak)
+- strong: "Tax Identification No (TIN):"
+- textbox "Tax Identification No (TIN):":
+  - /placeholder: Tax Identification No (TIN)
+- text: Please ensure you entered the correct TIN for e-invoice
+- strong: "Showroom Address: *"
+- 'textbox "Showroom Address: *"':
+  - /placeholder: Showroom Address
+- textbox "Showroom Postcode"
+- combobox:
+  - option "Select State" [selected]
+  - option "JOHOR"
+  - option "KEDAH"
+  - option "KELANTAN"
+  - option "MELAKA"
+  - option "NEGERI SEMBILAN"
+  - option "PAHANG"
+  - option "PULAU PINANG"
+  - option "PERAK"
+  - option "PERLIS"
+  - option "SELANGOR"
+  - option "TERENGGANU"
+  - option "SABAH"
+  - option "SARAWAK"
+  - option "WILAYAH PERSEKUTUAN KUALA LUMPUR"
+  - option "WILAYAH PERSEKUTUAN LABUAN"
+  - option "WILAYAH PERSEKUTUAN PUTRAJAYA"
+- combobox [disabled]:
+  - option "Select City" [selected]
+- text: Admin In Charge This refers to the representative assisting with this application
+- strong: "Name: *"
+- 'textbox "Name: *"':
+  - /placeholder: Name
+- strong: "Mobile No: *"
+- 'textbox "Mobile No: *"':
+  - /placeholder: Mobile No
+- strong: "Email Address: *"
+- 'textbox "Email Address: *"':
+  - /placeholder: Email Address
+- text: We will email an invoice and/or e-invoice once payment is successful.
+- button "Cancel"
+- button "Next"
+- paragraph: For further assistance, please contact out Customer Service 03-27798899.

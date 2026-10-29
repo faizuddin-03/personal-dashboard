@@ -1,0 +1,583 @@
+<!--
+  URL: BackOffice — "Deregistration Transaction" enquiry/listing page
+       (BO equivalent of the AATF-side DeregTransactionListingPage's
+       /view/aatf/dereg/enquiry/main.do, distinct BO route not yet confirmed
+       from a live address bar — path unknown, only the rendered page body
+       was pasted).
+  Environment: staging.eauto.my/uat1, logged in as MUHAMMAD FAIZUDDIN BIN BIDI
+  Captured: 2026-08-27, pasted directly by Faizuddin for MU_TS9's BackOffice
+       cancel step (BO needs to cancel a Deregistration transaction via this
+       listing — no page object exists for it yet, only the AATF-side one).
+  Trimmed: none — full page both BEFORE and AFTER clicking Search, pasted
+       verbatim (two states in one capture, separated by the header comment
+       below). Faizuddin's own note: there SHOULD be a "Cancel" button next
+       to "View" in the Action column for a Pending transaction, but this
+       capture happened to have zero Pending transactions at the time, so
+       that button is NOT visible in either state below — still unconfirmed.
+-->
+
+<!-- ============================================================ -->
+<!-- STATE 1 — before clicking Search (the search form + empty result). -->
+<!-- Key selectors: #companyName, #vehicleNo, #refNo, #fromDate/#toDate
+     (jQuery UI datepicker, readonly text inputs — "From" is REQUIRED
+     before Search can be clicked, confirmed by Faizuddin directly:
+     "in order to search, will need to first choose 'From' date. Only
+     after that can click search"), #to-filter (Transaction Status select:
+     Approved/Failed/Pending/Cancelled/Expired), #companyRoc, payment
+     method/date-range selects, #to-cod, #to-pbt, LHDN status select,
+     #includeDraft checkbox, #to-search (submit), .to-reset, #to-export
+     (hidden until a search has run). Result area is `#result`, empty
+     ("&nbsp;") before any search. -->
+<body>
+
+<div id="container">
+<table width="100%">
+<tbody><tr>
+    <td class="not-to-print">
+    <form id="search-form" style="margin-left:20px;">
+    <table style="width:100%">
+    <tbody><tr>
+        <td style="padding-left:20px; white-space: nowrap;">
+            <b>Company Name:</b>
+            <input type="text" name="companyName" id="companyName" value="" size="30">&nbsp;
+            <b>Vehicle No.:</b>
+            <input type="text" name="vehicleNo" id="vehicleNo" value="" size="8">&nbsp;
+            <b>Transaction No.:</b>
+            <input type="text" name="refNo" id="refNo" value="" size="10">&nbsp;
+            <b>From</b><span class="required">*</span>:
+            <input type="text" name="fromDate" id="fromDate" size="10" readonly="readOnly" class="hasDatepicker">
+            <b>To</b><span class="required">*</span>:
+            <input type="text" name="toDate" id="toDate" size="10" readonly="readOnly" class="hasDatepicker">
+            <b>Filter by</b>
+            <select name="status" id="to-filter" style="width:140px">
+                <option value="">Transaction Status</option>
+                <option value="Approved">Approved</option>
+                <option value="Failed">Failed</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Expired">Expired</option>
+            </select>
+            <br><br>
+            <b>Company ROC:</b>
+            <input type="text" name="companyRoc" id="companyRoc" value="" size="30">&nbsp;
+            <b>Payment Method:</b>
+            <select name="paymentMethod" style="width:140px">
+                <option value="">All</option>
+                <option value="DD">DD MBB</option>
+                <option value="FPX">FPX</option>
+                <option value="POB">POB</option>
+                <option value="RHB">RHB</option>
+            </select>
+            <b>Payment From:</b>
+            <input type="text" name="paymentFrom" id="paymentFrom" size="10" readonly="readOnly" class="hasDatepicker">
+            <b>Payment To:</b>
+            <input type="text" name="paymentTo" id="paymentTo" size="10" readonly="readOnly" class="hasDatepicker">
+
+            <br><br>
+            <b>Category Type:</b>
+            <select name="categoryType" style="width:140px">
+                <option value="">All</option>
+                <option value="4">Company</option>
+                <option value="9">Foreigner</option>
+                <option value="5">Government</option>
+                <option value="1">Malaysian</option>
+                <option value="3">Military</option>
+                <option value="S">MyKas</option>
+                <option value="0">Pemastautin Tetap</option>
+                <option value="2">Police</option>
+                <option value="6">Statutory Body</option>
+            </select>
+            <b>COD:</b>
+            <select name="isJpjDecApproved" id="to-cod" style="width:140px">
+                <option value="" selected="">All</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+            <b>PBT</b>:
+           <select name="pbtCompanyId" id="to-pbt" style="width:140px">
+                <option value="" selected="">All</option>
+                <option value="INDIVIDU">INDIVIDU</option>
+
+                <option value="5020001">DFSADRWE - CHAR MIFASO</option>
+
+                <option value="5070001">GGT - CHARMAIN AATF</option>
+
+                <option value="5040001">MBMB - MAJLIS BANDARAYA MELAKA BERSEJARAH</option>
+
+                <option value="5050001">MBS - MAJLIS BANDARAYA SEREMBAN</option>
+
+                <option value="5100001">MPKJ - MAJLIS PERBANDARAN KAJANG</option>
+
+                <option value="5100002">MBPJ - MAJLIS PERBANDARAN PETALING JAYA</option>
+
+                <option value="5040002">MBJ - MAJLIS PERBANDARAN&nbsp;JASIN</option>
+
+                <option value="5140001">TEST - NICK PBT TEST</option>
+
+           </select>
+           <b>LHDN Response Status:</b>
+            <select name="eInvoiceValidationStatus" style="width:140px">
+                <option value="">All</option>
+                <option value="OK">OK</option>
+                <option value="Failed">Failed</option>
+                <option value="New">-</option>
+                <option value="N/A">N/A</option>
+            </select>
+
+            <div style="position: relative; top: -20px; float: right; display: inline-block;">
+                    <input type="checkbox" name="includeDraft" id="includeDraft"> Includes Draft Trx
+                    &nbsp;&nbsp;
+                                <input type="submit" id="to-search" value="SEARCH Now" style="height: 35px;">
+                    <a class="to-reset" href="#">Reset</a>
+
+                    <a id="to-export" class="hidden" href="#">Export CSV</a>
+
+            </div>
+
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-top:10px; font-size:14px" class="center">
+            <b>Deregistration Transaction Enquiry</b>
+        </td>
+    </tr>
+    </tbody></table>
+    <input type="hidden" name="pageNo" value="1">
+    </form>
+
+    </td>
+</tr>
+<tr>
+    <td id="result" colspan="2">&nbsp;</td>
+</tr>
+</tbody></table>
+</div>
+
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar" style="width: 350px !important;">
+                <ol class="inline">
+                    <li>
+                        <a href="/uat1/home/" id="home-link">Home |</a>
+                    </li>
+                    <li><a href="#" id="menu-link">Menu <img src="/uat1/images/arrow_down.gif"></a></li>
+                </ol>
+                <div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onclick="window.location='/uat1/view/support/incomplete-txn/';">
+                    <span>3 Pending Transaction Found!</span>
+                </div>
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI</span>,</li>
+                <li><a href="/uat1/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+</div>
+</body>
+
+<!-- ============================================================ -->
+<!-- STATE 2 — after selecting a "From" date and clicking Search. -->
+<!-- #result now holds the results table. Column order (confirmed from the
+     <th> row): # / Company Name / Company ROC / Vehicle / Transaction No. /
+     Owner Name / Created At / Method / JPJ Enquiry / Payment / JPJ Dereg /
+     Tx Status / COD / LHDN Response Status / Remarks / Action. NOTE this is
+     a DIFFERENT column set/order than the AATF-side listing
+     (DeregTransactionListingPage) — this BO listing has 16 columns
+     (Company Name/ROC and 3 separate status columns: JPJ Enquiry, JPJ
+     Dereg, Tx Status, plus COD/LHDN/Remarks), not the AATF-side's simpler
+     set. Row status cells use inline `style="color:green/black/#FF4000"` +
+     bold text, same shape as other listings in this suite. Action column
+     currently shows only a "View" link
+     (`<a href="/uat1/view/dereg/enquiry/view.do?id=<uuid>" target="_blank"
+     title="to view <refNo>">View</a>`) for every row in this capture — ALL
+     9 rows are Approved. Faizuddin's own note, unconfirmed by this capture:
+     a Pending row should show a "Cancel" button alongside "View" — no
+     Pending row existed at capture time to confirm the selector/shape. -->
+<body>
+
+<div id="container">
+<table width="100%">
+<tbody><tr>
+    <td class="not-to-print">
+    <form id="search-form" style="margin-left:20px;">
+    <table style="width:100%">
+    <tbody><tr>
+        <td style="padding-left:20px; white-space: nowrap;">
+            <b>Company Name:</b>
+            <input type="text" name="companyName" id="companyName" value="" size="30">&nbsp;
+            <b>Vehicle No.:</b>
+            <input type="text" name="vehicleNo" id="vehicleNo" value="" size="8">&nbsp;
+            <b>Transaction No.:</b>
+            <input type="text" name="refNo" id="refNo" value="" size="10">&nbsp;
+            <b>From</b><span class="required">*</span>:
+            <input type="text" name="fromDate" id="fromDate" size="10" readonly="readOnly" class="hasDatepicker">
+            <b>To</b><span class="required">*</span>:
+            <input type="text" name="toDate" id="toDate" size="10" readonly="readOnly" class="hasDatepicker">
+            <b>Filter by</b>
+            <select name="status" id="to-filter" style="width:140px">
+                <option value="">Transaction Status</option>
+                <option value="Approved">Approved</option>
+                <option value="Failed">Failed</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Expired">Expired</option>
+            </select>
+            <br><br>
+            <b>Company ROC:</b>
+            <input type="text" name="companyRoc" id="companyRoc" value="" size="30">&nbsp;
+            <b>Payment Method:</b>
+            <select name="paymentMethod" style="width:140px">
+                <option value="">All</option>
+                <option value="DD">DD MBB</option>
+                <option value="FPX">FPX</option>
+                <option value="POB">POB</option>
+                <option value="RHB">RHB</option>
+            </select>
+            <b>Payment From:</b>
+            <input type="text" name="paymentFrom" id="paymentFrom" size="10" readonly="readOnly" class="hasDatepicker">
+            <b>Payment To:</b>
+            <input type="text" name="paymentTo" id="paymentTo" size="10" readonly="readOnly" class="hasDatepicker">
+
+            <br><br>
+            <b>Category Type:</b>
+            <select name="categoryType" style="width:140px">
+                <option value="">All</option>
+                <option value="4">Company</option>
+                <option value="9">Foreigner</option>
+                <option value="5">Government</option>
+                <option value="1">Malaysian</option>
+                <option value="3">Military</option>
+                <option value="S">MyKas</option>
+                <option value="0">Pemastautin Tetap</option>
+                <option value="2">Police</option>
+                <option value="6">Statutory Body</option>
+            </select>
+            <b>COD:</b>
+            <select name="isJpjDecApproved" id="to-cod" style="width:140px">
+                <option value="" selected="">All</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+            <b>PBT</b>:
+           <select name="pbtCompanyId" id="to-pbt" style="width:140px">
+                <option value="" selected="">All</option>
+                <option value="INDIVIDU">INDIVIDU</option>
+
+                <option value="5020001">DFSADRWE - CHAR MIFASO</option>
+
+                <option value="5070001">GGT - CHARMAIN AATF</option>
+
+                <option value="5040001">MBMB - MAJLIS BANDARAYA MELAKA BERSEJARAH</option>
+
+                <option value="5050001">MBS - MAJLIS BANDARAYA SEREMBAN</option>
+
+                <option value="5100001">MPKJ - MAJLIS PERBANDARAN KAJANG</option>
+
+                <option value="5100002">MBPJ - MAJLIS PERBANDARAN PETALING JAYA</option>
+
+                <option value="5040002">MBJ - MAJLIS PERBANDARAN&nbsp;JASIN</option>
+
+                <option value="5140001">TEST - NICK PBT TEST</option>
+
+           </select>
+           <b>LHDN Response Status:</b>
+            <select name="eInvoiceValidationStatus" style="width:140px">
+                <option value="">All</option>
+                <option value="OK">OK</option>
+                <option value="Failed">Failed</option>
+                <option value="New">-</option>
+                <option value="N/A">N/A</option>
+            </select>
+
+            <div style="position: relative; top: -20px; float: right; display: inline-block;">
+                    <input type="checkbox" name="includeDraft" id="includeDraft"> Includes Draft Trx
+                    &nbsp;&nbsp;
+                                <input type="submit" id="to-search" value="SEARCH Now" style="height: 35px;">
+                    <a class="to-reset" href="#">Reset</a>
+
+                    <a id="to-export" class="hidden" href="#" style="display: inline;">Export CSV</a>
+
+            </div>
+
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-top:10px; font-size:14px" class="center">
+            <b>Deregistration Transaction Enquiry</b>
+        </td>
+    </tr>
+    </tbody></table>
+    <input type="hidden" name="pageNo" value="1">
+    </form>
+
+    </td>
+</tr>
+<tr>
+    <td id="result" colspan="2">
+<table style="width:100% !important;">
+    <colgroup><col width="2%">
+    <col width="12%">
+    <col width="8%">
+    <col width="8%">
+    <col width="5%">
+    <col width="8%">
+    <col width="8%">
+    <col width="4%">
+    <col width="5%">
+    <col width="5%">
+    <col width="5%">
+    <col width="6%">
+    <col width="5%">
+    <col width="6%">
+    <col width="auto">
+    <col width="7%">
+    </colgroup><tbody><tr class="header">
+        <th>#</th>
+        <th>Company Name</th>
+        <th>Company ROC</th>
+        <th>Vehicle</th>
+        <th>Transaction No.</th>
+        <th>Owner Name</th>
+        <th>Created At</th>
+        <th>Method</th>
+        <th>JPJ Enquiry</th>
+        <th>Payment</th>
+        <th>JPJ Dereg</th>
+        <th>Tx Status</th>
+        <th>COD</th>
+        <th>LHDN Response Status</th>
+        <th>Remarks</th>
+        <th>Action</th>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">1</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA063</td>
+        <td class="center">D680000580</td>
+        <td class="center">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+        <td class="center">27-08-2026 10:45</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td>No TIN info has been provided.</td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=ecc85730-b332-4838-b994-018ba50f618e" target="_blank" title="to view D680000580">View</a>
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">2</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA060</td>
+        <td class="center">D680000579</td>
+        <td class="center">MUHAMMAD FAIZUDDIN SUB2</td>
+        <td class="center">27-08-2026 10:30</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td>No TIN info has been provided.</td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=c9c73c35-a132-401c-9622-190ac8152a55" target="_blank" title="to view D680000579">View</a>
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">3</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA059</td>
+        <td class="center">D680000578</td>
+        <td class="center">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+        <td class="center">27-08-2026 10:04</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td>No TIN info has been provided.</td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=4f704635-35d7-4e42-8c84-546a10ae73d5" target="_blank" title="to view D680000578">View</a>
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">4</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA058</td>
+        <td class="center">D680000577</td>
+        <td class="center">MUHAMMAD FAIZUDDIN SUB2</td>
+        <td class="center">26-08-2026 17:46</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td>No TIN info has been provided.</td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=2d54aa47-7308-438d-9c5f-b872c335b8b6" target="_blank" title="to view D680000577">View</a>
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">5</td>
+        <td class="center">AZFARAATF, A</td>
+        <td class="center">202501234568</td>
+        <td class="center">HXA051</td>
+        <td class="center">D680000576</td>
+        <td class="center">23 , 24,25</td>
+        <td class="center">26-08-2026 15:46</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td></td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=dcc1cd81-58bd-48fd-9582-6dd044ea6a89" target="_blank" title="to view D680000576">View</a>
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">6</td>
+        <td class="center">AZFARAATF, A</td>
+        <td class="center">202501234568</td>
+        <td class="center">HXA050</td>
+        <td class="center">D680000575</td>
+        <td class="center">23 , 24,25</td>
+        <td class="center">26-08-2026 14:47</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:black"><b>-</b></td>
+        <td></td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=fdfaf459-af19-465d-9eb4-96573f81ac55" target="_blank" title="to view D680000575">View</a>
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">7</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA049</td>
+        <td class="center">D680000574</td>
+        <td class="center">MUHAMMAD FAIZUDDIN SUB2</td>
+        <td class="center">26-08-2026 14:03</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td>No TIN info has been provided.</td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=5c626a58-4cbd-47e1-ad50-b304d13050cc" target="_blank" title="to view D680000574">View</a>
+        </td>
+    </tr>
+
+    <tr class="even">
+        <td class="center">8</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA027</td>
+        <td class="center">D680000572</td>
+        <td class="center">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+        <td class="center">26-08-2026 10:19</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td>No TIN info has been provided.</td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=21617d52-4972-4f41-a2f3-46a81976f91a" target="_blank" title="to view D680000572">View</a>
+        </td>
+    </tr>
+
+    <tr class="odd">
+        <td class="center">9</td>
+        <td class="center">FAIZUDDIN AATF ACC</td>
+        <td class="center">202208153901</td>
+        <td class="center">HXA022</td>
+        <td class="center">D680000571</td>
+        <td class="center">MUHAMMAD FAIZUDDIN BIN BIDI</td>
+        <td class="center">26-08-2026 10:11</td>
+        <td class="center">RHB</td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>OK</b></td>
+        <td class="center" style="color:green"><b>Approved</b></td>
+        <td class="center"><b style="color:red">No</b></td>
+        <td class="center" style="color:#FF4000"><b>Failed</b></td>
+        <td>No TIN info has been provided.</td>
+        <td class="center">
+            <a href="/uat1/view/dereg/enquiry/view.do?id=fa12095d-0d82-4811-8486-33b6b8bba8b4" target="_blank" title="to view D680000571">View</a>
+        </td>
+    </tr>
+
+</tbody></table></td>
+</tr>
+</tbody></table>
+</div>
+
+<div id="header">
+    <table class="header-box">
+    <tbody><tr>
+        <td>
+            <div id="home-bar" style="width: 350px !important;">
+                <ol class="inline">
+                    <li>
+                        <a href="/uat1/home/" id="home-link">Home |</a>
+                    </li>
+                    <li><a href="#" id="menu-link">Menu <img src="/uat1/images/arrow_down.gif"></a></li>
+                </ol>
+                <div id="incomplete-txn-notification-wrapper" class="inline" style="margin-left: 10px; color: white; cursor: pointer;" onclick="window.location='/uat1/view/support/incomplete-txn/';">
+                    <span>3 Pending Transaction Found!</span>
+                </div>
+            </div>
+        </td>
+        <td style="text-align:right !important;">
+            <div id="common-bar">
+            <ol class="inline">
+                <li><span class="user-name">MUHAMMAD FAIZUDDIN BIN BIDI</span>,</li>
+                <li><a href="/uat1/view/ucd/my-account/view.do?type=Office" class="my-account">My Account |</a></li>
+                <li><a href="#" class="logout">Logout</a></li>
+            </ol>
+            </div>
+        </td>
+    </tr>
+    </tbody></table>
+</div>
+</body>

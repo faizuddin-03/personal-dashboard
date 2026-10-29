@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1280" />
+  <title>WhatsApp Blaster — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    @page { size: landscape; margin: 0.5cm; }
+    @media print {
+      html, body, .app, .main, .page {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #fff; }
+      .app { display: grid !important; grid-template-columns: var(--sidebar-w) 1fr !important; }
+      .topbar { position: relative !important; }
+      .page { overflow: visible !important; }
+      .page-inner { padding: 16px 20px !important; max-width: none !important; }
+      /* Hide interactive overlays / chrome that don't belong in a printed snapshot. */
+      .twk-launcher, .twk-panel,
+      .toast-host,
+      .sheet, .sheet-backdrop,
+      .inbox-ctx-backdrop,
+      [role="dialog"]:not(.um-dropdown),
+      .um-dropdown { display: none !important; }
+      /* Don't animate. */
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+      /* Card-heavy pages: keep cards intact on a single page where possible. */
+      .card, .stat, .ccard, .ctx-group, .bot-draft { break-inside: avoid; }
+      /* Tables: keep rows together; let the table itself span pages. */
+      .table tr, .ctable tr { break-inside: avoid; }
+      thead { display: table-header-group; }
+      /* Inbox: kill its hard viewport sizing so all three panes lay out top-to-bottom. */
+      .inbox { display: block !important; height: auto !important; }
+      .inbox-pane { border-right: 0 !important; border-bottom: 0.5px solid var(--border) !important; }
+      .conv-list, .thread, .ctx-pane { overflow: visible !important; max-height: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <!-- Plain JS data first -->
+  <script src="data.js"></script>
+
+  <!-- JSX modules (order matters: icons → ui → shell → screens → tweaks → app) -->
+  <script type="text/babel" src="icons.jsx"></script>
+  <script type="text/babel" src="ui.jsx"></script>
+  <script type="text/babel" src="keyboard.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="shell.jsx"></script>
+  <script type="text/babel" src="screens/workflows.jsx"></script>
+  <script type="text/babel" src="screens/inbox.jsx"></script>
+  <script type="text/babel" src="screens/overview.jsx"></script>
+  <script type="text/babel" src="screens/contacts.jsx"></script>
+  <script type="text/babel" src="screens/import-wizard.jsx"></script>
+  <script type="text/babel" src="screens/segments.jsx"></script>
+  <script type="text/babel" src="screens/segment-builder.jsx"></script>
+  <script type="text/babel" src="screens/templates.jsx"></script>
+  <script type="text/babel" src="screens/campaigns.jsx"></script>
+  <script type="text/babel" src="screens/campaign-detail.jsx"></script>
+  <script type="text/babel" src="screens/reports.jsx"></script>
+  <script type="text/babel" src="screens/compare.jsx"></script>
+  <script type="text/babel" src="screens/users.jsx"></script>
+  <script type="text/babel" src="screens/audit.jsx"></script>
+  <script type="text/babel" src="screens/knowledge.jsx"></script>
+  <script type="text/babel" src="screens/settings.jsx"></script>
+  <script type="text/babel" src="screens/misc.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+
+  <!-- Auto-print: fire once fonts, Babel scripts, and a settle delay are all ready. -->
+  <script type="text/babel">
+    (async () => {
+      try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+      await new Promise((r) => setTimeout(r, 500));
+      window.print();
+    })();
+  </script>
+</body>
+</html>
