@@ -9,13 +9,13 @@ blocks in full detail, for Faizuddin to pick what to raise: `FAILS-AND-BLOCKS.md
 `scripts/claude-run/results/EAINT-12028.json`; screenshot `ts-tracker-12028.png`.
 
 ```
-69 TS   28 pass · 20 fail · 18 blocked · 1 left for Faizuddin (TS36) · 2 not in this run   (66 of 67 done)
+69 TS   32 pass · 16 fail · 18 blocked · 1 left for Faizuddin (TS36) · 2 not in this run   (66 of 67 done)
 ```
 
 | Status | Count | TS |
 |---|---|---|
-| ✅ Pass | 28 | 01–05, 08, 10, 14, 22, 23, 27, 31, 34, 40, 41, 44, 45, 50, 51, 52, 53, 55, 64, 65, 66, 67, 68, 69 |
-| ❌ Fail | 20 | **Wording (mock-up rule, 2026-11-04 evening; log only, do not raise yet):** 07, 25, 26, 28, 30, 32, 33, 35, 37, 38, 39, 46, 48, 49 (F3–F8, F10, F12, F14–F16) · **58** (header, EAINT-12752) · **59, 60, 63** (bare "Unauthorized" page, F1, **possible new bug**) · **61** (still signed in after 16 min idle, F9, **possible new bug**) · **54** (PDF address ignores the month, F11, low) |
+| ✅ Pass | 32 | 01–05, 08, 10, 14, 22, 23, 27, 31, 34, 40, 41, 44, 45, 50, 51, 52, 53, 54, 55, 59, 60, 63, 64, 65, 66, 67, 68, 69 (59/60/63: F1 accepted as pass by Faizuddin) |
+| ❌ Fail | 16 | **Wording (mock-up rule, 2026-11-04 evening; log only, do not raise yet):** 07, 25, 26, 28, 30, 32, 33, 35, 37, 38, 39, 46, 48, 49 (F3–F8, F10, F12, F14–F16) · **58** (header, EAINT-12752) · **61** (still signed in after 16 min idle, F9, **possible new bug**) |
 | ⛔ Blocked | 18 | 09, 21, 47 (no fitting month) · 11, 12, 13 (month-close) · 15 (no Super Admin) · 16–19 (test transactions) · 24, 43 (BA rules) · 29, 42 (no unsigned Reviewer / Approver left) · 56, 57 (PDF names; PDFs saved, F13) · 62 (header, EAINT-12752) |
 | ⏳ Faizuddin | 1 | 36 (Approver `kmcheah` first signature, 2026-11-05) |
 | — Not in this run | 2 | 06, 20 (ran on the main laptop 2–3 Nov) |

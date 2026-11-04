@@ -276,6 +276,54 @@ async (page) => {
     await R.page.waitForTimeout(2500);
     return { padShown, dateModal, dialogs: R.dialogs.splice(0) };
   };
+  // Wording evidence: a tight, cropped screenshot with a solid red (ok=false) or green (ok=true) box
+  // drawn around exactly `target`, plus a small label tag above it. `ctx` = the area to keep around it
+  // (defaults to the target itself); the crop is that area padded by `pad` px. Works on any page,
+  // including the SA mock-up. Returns the file path.
+  R.boxShot = async (target, name, { ok = false, ctx, label, pad = 28 } = {}) => {
+    const p = R.page;
+    const loc = (typeof target === 'string' ? p.locator(target) : target).first();
+    await loc.scrollIntoViewIfNeeded({ timeout: 5000 }).catch(() => {});
+    const c = ok ? '#16a34a' : '#dc2626';
+    const h = await loc.elementHandle({ timeout: 5000 });
+    await p.evaluate(({ node, c, label }) => {
+      node.scrollIntoView({ block: 'center' });
+      const r = node.getBoundingClientRect();
+      const b = document.createElement('div'); b.className = '__wbox';
+      b.style.cssText = `position:fixed;left:${r.left - 5}px;top:${r.top - 5}px;width:${r.width + 10}px;height:${r.height + 10}px;border:4px solid ${c};border-radius:4px;z-index:2147483646;pointer-events:none;box-sizing:border-box`;
+      document.body.appendChild(b);
+      if (label) {
+        const t = document.createElement('div'); t.className = '__wbox';
+        t.style.cssText = `position:fixed;left:${r.left - 5}px;top:${Math.max(0, r.top - 34)}px;background:${c};color:#fff;font:600 14px Segoe UI,Arial;padding:4px 9px;border-radius:4px;z-index:2147483647;pointer-events:none;white-space:nowrap`;
+        t.textContent = label; document.body.appendChild(t);
+      }
+    }, { node: h, c, label });
+    await p.waitForTimeout(250);
+    const area = ctx ? (typeof ctx === 'string' ? p.locator(ctx) : ctx).first() : loc;
+    const bx = await area.boundingBox(); const ex = await loc.boundingBox();
+    const vp = p.viewportSize();
+    const x1 = Math.max(0, Math.min(bx.x, ex.x) - pad), y1 = Math.max(0, Math.min(bx.y, ex.y) - pad - 34);
+    const x2 = Math.min(vp.width, Math.max(bx.x + bx.width, ex.x + ex.width) + pad), y2 = Math.min(vp.height, Math.max(bx.y + bx.height, ex.y + ex.height) + pad);
+    R.shots++;
+    const f = `${R.dir}/${String(R.shots).padStart(2, '0')}-${name}.png`;
+    await p.screenshot({ path: f, clip: { x: x1, y: y1, width: x2 - x1, height: y2 - y1 } });
+    await p.evaluate(() => document.querySelectorAll('.__wbox').forEach(e => e.remove()));
+    return f;
+  };
+  // Browser alerts cannot be screenshotted: this draws the alert's exact text into the page as a box
+  // ("Browser alert:" + text) so R.boxShot can capture it. Returns a locator for the box.
+  R.alertCard = async (text) => {
+    await R.page.evaluate((t) => {
+      const d = document.createElement('div'); d.id = '__alert';
+      d.style.cssText = 'position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);background:#fff;color:#111;font:16px Segoe UI,Arial;padding:18px 22px;border:1px solid #999;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:2147483645;max-width:640px';
+      d.innerHTML = '<div style="font:600 12px Segoe UI,Arial;color:#666;margin-bottom:6px">Browser alert (text copied exactly from the alert box)</div>';
+      const s = document.createElement('div'); s.id = '__alert-text'; s.textContent = t; d.appendChild(s);
+      document.body.appendChild(d);
+    }, text);
+    return R.page.locator('#__alert-text');
+  };
+  R.clearAlertCard = () => R.page.evaluate(() => document.getElementById('__alert')?.remove());
+
   R.isoDate = (addDays = 0) => { const d = new Date(); d.setDate(d.getDate() + addDays); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
   R.today = () => { const d = new Date(); return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`; };
   // Rows in the Audit Log for role+action (case-insensitive, e.g. 'Drafter','Approved').

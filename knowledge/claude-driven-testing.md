@@ -113,6 +113,74 @@ When a ticket uses Azfar's style:
 - After `R.finish()`, Claude saves the object it returns as `<TS>/_raw/finish.json`.
 - Claude then runs `node scripts/claude-run/finish-ts.mjs <TS folder> <TS>/_raw/finish.json`.
 
+## Running TS without the Playwright plugin: `run-ts.mjs` (EAINT-12406, 2026-11-04)
+
+`[verified: EAINT-12406 runs of 04.11.2026, _reference/tickets/EAINT-12406/claude-run-2026-11-04/]`
+
+**Faizuddin's way of working (04.11.2026).** "the testing will be done by you, using claude, instead of me clicking
+the playwright". Claude drives the browser and records every TS. Faizuddin guides and decides; he does not run the
+automation suite himself.
+
+**Why the plugin was not enough.** Two Claude sessions on one laptop (12028 and 12406) share the plugin's Chrome
+profile, and the second one gets "Browser is already in use … use --isolated". Two fixes exist:
+- **(a) A second, isolated MCP server**, after which the session must be restarted:
+  `claude mcp add playwright-iso -s local -- npx @playwright/mcp@latest --isolated`. Its tools are `mcp__playwright-iso__*`.
+  This config is local to each laptop, so repeat it there.
+- **(b) The local runner (what was used).** It needs no MCP and no restart, and launches its own Chrome:
+  `node scripts/claude-run/run-ts.mjs scripts/claude-run/<ticket>/<steps>.mjs`
+
+**What the runner does.**
+1. Loads Playwright from `scripts/eauto-12406/automation/node_modules` (run `npm ci` there once).
+2. Launches Chrome (`channel: 'chrome'`, headed), loads `scripts/claude-run/recorder-azfar.js`, and sets `page.__ROOT` to
+   the run folder (default `_reference/tickets/EAINT-12406/claude-run-2026-11-04`; `--root <dir>` for another ticket).
+3. Imports the step file. A step file exports:
+   - `ts`: the folder name;
+   - `situation`;
+   - `points`, or `pointsFrom` (an id in `scripts/eauto-12406/cr/EAINT-12406/01-intake/ts.json`);
+   - `default async (R, { cfg, util })`.
+4. `cfg` holds the logins, read at run time from the dashboard defaults in `app/eauto/12107/page.tsx` DEFAULT_CREDS:
+   site password, CIBO, FPX simulator, card, owner email and phone. Nothing secret is written into the step files.
+5. `util` is `scripts/claude-run/secarang-steps.mjs`, the shared Secarang / CIBO steps:
+   - quote, Car Details (variant pop-up), cards, buy, Continue, owner details, pricing, Confirm and Pay;
+   - payments: FPX (bank + status code), card (3D Secure OTP), PayLater by Grab, SPayLater / ShopeePay;
+   - Success page and receipt;
+   - CIBO login / search / Transaction Details;
+   - receipt PDF text (pdftotext) and showing a PDF or text lines on screen for a proof.
+6. At the end: `R.finish()`, `_raw/finish.json`, then `scripts/claude-run/finish-ts.mjs`. That writes `checks.txt`,
+   `proofs.json` and `gate.json` (VALID / DEFECT / EVIDENCE) and lays the payment window into the video. The runner
+   prints the proofs so Claude can report them.
+
+**One-time set-up on a laptop.**
+- `npm ci` in `scripts/eauto-12406/automation`.
+- `npx playwright install ffmpeg` in the same folder. Playwright's own ffmpeg is needed for video.
+- WinGet `Gyan.FFmpeg`, for the picture-in-picture merge.
+- `pdftotext`, which comes with Git for Windows' mingw64.
+- `exceljs` (repo root `node_modules`), to read the checker xlsx.
+
+**Rules that held up on 04.11.**
+- Each TS gets its own folder, `<TS>_rerun-YYYYMMDD` or `<TS>_real-YYYYMMDD`. A failed try is **renamed** with a
+  suffix (`-a-…`) before a new try, never overwritten. Do not `cd` into a run folder: Windows then refuses the rename
+  ("Device or resource busy").
+- A stop caused by a **script fault** (selector, parser, wait) is fixed and the TS run again from the start; note it
+  in RESULTS.md. A stop caused by **the system** is a result. Never re-run to get a green.
+- If the gate's verdict is wrong because of a script comparison, do not re-buy. Write `CORRECTION.txt` in the TS folder
+  that cites the evidence (example: `12406_E2E_TS2_rerun-20261104/CORRECTION.txt`).
+- Record each TS on one line in the run folder's `RESULTS.md`, and keep `SESSION-LOG.md` current. The handoff points
+  to both.
+
+**Choosing real-API test data (Secarang /ia/ on Allianz's real UAT API).**
+- Plates and ICs come from the checker xlsx (`_reference/tickets/EAINT-12406/secarang-insurance-checker_2026-11-02 (1).xlsx`,
+  PROCEED rows).
+- `node scripts/claude-run/quote-scan.mjs '[[row,"PLATE","IC"],…]'` is an **unrecorded** quote-only scan that lists which
+  insurers quote each car. Use it to find "all three quote" / "X unavailable" cars before a recorded run.
+- A car that was bought shows "You may renew as early as 2 months prior to current policy expiry date" (a visitor
+  form). Never fill it: it creates a CIBO lead. Every purchase needs a fresh row.
+- Owner Full Name: **not "QA SECARANG TEST"**. The real Allianz API refuses it after payment ("Invalid fullName",
+  EAINT-12766). "FAIZUDDIN TEST ALLIANZ" works.
+- Fiuu sandbox: FPX and card refuse over MYR 2,000, and PayLater by Grab opens a blank window over about RM2,000. Keep
+  a purchase under RM2,000.
+- Car Details variants change the quote. `VARIANT_AVOID="TYPE R"` (env) makes the runner skip a variant.
+
 ## Showing progress on the dashboard TS Tracker
 
 "update this repo and the dashboard TS tracker with the progress, so i have a visual sign on
@@ -151,3 +219,92 @@ These are all `[Faizuddin, session chat, 2026-11-04]`.
 4. **First-signature TS** (a user's first-ever approval with the signature pad) are run by
    Faizuddin himself. Do not approve as that role's user on any month until he has run them,
    or the first signature is used up.
+
+## Kick-off on any laptop: "Claude, run the TS yourself"
+
+This is what Faizuddin says, and what Claude does, to have Claude test instead of running the
+dashboard automation. Written 2026-11-04 so the next session on either laptop can start cold.
+
+**What to say:** "pick up from the 2026-11-04 handoff, and run <TS list> on <instance> yourself
+with the Playwright plugin, with recordings". Claude then:
+
+1. **Reads** `_reference/handoffs/Session-Handoff-<latest>.md` ("START HERE" block first), this
+   file, and the module's `knowledge/flow-<module>.md`.
+2. **Checks the plugin:** `claude plugin list` must show `playwright@claude-plugins-official`.
+   If it is missing: install it, then restart Claude Code (the tools only appear after a restart).
+3. **Logins:** the user names and roles come from the dashboard defaults
+   (`app/eauto/<ticket>/Runner.tsx` and `scripts/eauto-<ticket>/data/users.ts`). The password
+   is `SHARED_STAGING_PASS` in the same Runner, set at runtime as `page.__PASS`. Never written
+   into a tracked file.
+4. **Evidence root:** on the main laptop (Windows user `Faizuddin`) set
+   `page.__ROOT = 'C:/Users/Faizuddin/.../_reference/tickets/<KEY>/claude-run-<date>'`. The default
+   in `recorder.js` is the second laptop's (user `faizu`) path.
+5. **Shows the plan first:** which TS, which records or months, which user, and any setup steps.
+   It waits for Faizuddin's "yes" before the first state-changing click.
+6. **Per TS:** `R.start` → steps → `R.check`/`R.boxShot` → `R.stop`. Then it writes the outcome
+   to `<run folder>/RESULTS.md`, a fail/block to `FAILS-AND-BLOCKS.md`, and the TS Tracker
+   (`build-results-<n>.mjs` → `results/<KEY>.json`). Jira is untouched until Faizuddin says
+   which to raise.
+7. **Keeps the handoff current** as it goes, not only at the end.
+
+### Recorder API (`scripts/claude-run/recorder.js`, attached as `page.__R`)
+
+| Call | What it does |
+| --- | --- |
+| `R.start(ts)` / `R.stop()` | Opens a recorded 1920×1080 context; stops it and writes `<TS>.webm` |
+| `R.caption(text)` | Bottom-left step caption |
+| `R.hl(target, 'amber'/'green'/'red')`, `R.unhl()` | Highlights like `BasePage.demoHighlight` |
+| `R.click(target, text)` | Amber highlight + caption, then click |
+| `R.check(target, text, ok, name)` | Green/red highlight + screenshot `NN-<name>.png` |
+| `R.shot(name)` | Plain numbered screenshot |
+| `R.boxShot(target, name, {ok, ctx, label, pad})` | **Tight crop** with a solid red (`ok:false`) or green (`ok:true`) box and a label. `ctx` widens the crop to a surrounding element. Used for the wording pairs. |
+| `R.alertCard(text)` / `R.clearAlertCard()` | Native alerts cannot be screenshotted: this draws the alert's exact text into the page so `boxShot` can capture it |
+| `R.download(target, text, name)` | Saves the download into the TS folder; returns the server file name |
+| `R.doLogin(user)`, `R.openListing()` | BO login (uses `page.__PASS`), opens the module from BO Home |
+| 12028 helpers | `R.goMonth`, `R.viewMonth`, `R.state()` (statuses, buttons, note, log), `R.btn`, `R.approve`, `R.kiv`, `R.undoKiv`, `R.rejectOpen/Type/Submit`, `R.approverApprove(iso)`, `R.drawSignature`, `R.watchDialogs`, `R.logCount`, `R.isoDate`, `R.today` |
+
+### Traps that already cost time (2026-11-04)
+
+- **Loading by `filename` echoes the whole file** back into the conversation each time. Load
+  once per session and reuse `page.__R`.
+- **"Browser is already in use" / profile lock:** a previous plugin Chrome is still alive. Kill
+  the `ms-playwright-mcp` Chrome processes (PowerShell: the `chrome` processes whose command
+  line contains `ms-playwright-mcp`), then retry. If it stays locked, the 12406 session's
+  fallback works: a local script (`scripts/claude-run/run-ts.mjs`) with its own Chrome.
+- **BO login field:** `input[name=username]` does not match; use the `placeholder="Username"`
+  input.
+- **Never put the password in a tracked file.** The push was refused as a credential leak.
+- **Run-code sandbox has no `node:fs`:** files are written only through Playwright
+  (`screenshot`, `video.saveAs`, `download.saveAs`). Anything else is a separate Bash step.
+
+### Comparing with the SA mock-up (wording, layout, PDFs)
+
+- **Expected wording comes from the mock-up** (EAINT-12028 rule, see
+  `knowledge/flow-association-payment-listing.md`, "Wording rule"). Every wording item gets a
+  pair: the live build with a **red** box (`WORDING-live/`) and the mock-up with a **green** box
+  (`WORDING-mockup/`), from `R.boxShot`.
+- **Serving the mock-up:** copy `_reference/tickets/<KEY>/<mockup>.html` to a scratch folder and
+  serve it (`python -m http.server 8765`), then open `http://127.0.0.1:8765/`. Drive it through
+  its own JS rather than clicking: for 12028, `getSt(m)`, `changeRole`, `showDetails`,
+  `refresh`, `askDate`, `askReject`, `addLog`, `downloadInvoice` (saves an HTML page named
+  `.pdf`; render that to PNG to compare). Month index: `months.indexOf('May')` = 4.
+
+### Post-processing evidence (Bash, after the run)
+
+- Python packages on the second laptop: `openpyxl`, `pymupdf` (render PDF pages to PNG),
+  `imageio-ffmpeg` (a full ffmpeg binary), `pillow` (stack or crop images). Install with
+  `pip install` on the other laptop if missing.
+- **Clip with a timestamp** (F9 example: `12028_TS61/12028_TS61-clip-with-time.mp4`): ffmpeg
+  `trim` segments joined with `concat`, a `drawtext` MYT clock and idle counter. This build's
+  ffmpeg refuses `-filter_complex_script`; write the filter to a file and pass it as
+  `-/filter_complex <file>`.
+- **Jira images:** one image per table cell. Uploading while an image is selected replaces it,
+  so stack several pictures into one with Pillow first. Placing the caret: see the
+  `eauto-qa-issue-ticket` skill, "Caveats".
+
+### Rules carried from Claude memory (memory is per laptop; these are the repo copies)
+
+- Every TS Claude runs gets a highlighted video; screenshots alone are not enough.
+- Bug evidence folders under a ticket are named `Bug - <BUG-KEY>`.
+- Nothing goes to Jira until Faizuddin says which to raise. Commit or push only when he asks.
+- On the second laptop the usage plugin is `mf-statusline@aitools`, never `mf-usage-report`.

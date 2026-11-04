@@ -61,7 +61,7 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
 
 | # | TS | Kind | Short | Decision |
 |---|---|---|---|---|
-| F1 | 12028_TS60 | Possible defect | Core logout → refresh module tab gives a bare "Unauthorized" page, not the BO login | open |
+| F1 | 12028_TS60 | **Pass (Faizuddin, 2026-11-04 evening: "considered pass")** | Core logout → refresh module tab gives a bare "Unauthorized" page, not the BO login | closed: pass |
 | F2 | 12028_TS58 | Already raised (EAINT-12752) / blocked part | Module page has no Logout; the logout + Back steps can't be done | open |
 | F3 | 12028_TS28 | TS out of date | Not-your-turn line and note replaced by role-specific notes (Reviewer) | open |
 | F4 | 12028_TS35 | TS out of date | Same, for the Approver | open |
@@ -69,7 +69,7 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
 | F6 | 12028_TS49 | TS out of date / SA question | PDF pending note "become available" vs SRD "will be available"; RRA part not run | open |
 | F7 | 12028_TS07 | TS out of date / BA question | Total row label "YEAR TO DATE TOTAL" vs mock-up "YEAR TO DATE (Jan – Oct)" | open |
 | F8 | 12028_TS26 | TS out of date (same as F3) | All actions pass; only the June not-your-turn wording fails ("Waiting for the Reviewer.") | open |
-| F1 also covers | 12028_TS59, TS63 (c) | Possible defect (same cause) | Used hand-off / logged-out expiry address → bare "Unauthorized" page instead of "Token already used" / BO login; the security part passes | open |
+| F1 also covers | 12028_TS59, TS63 (c) | Pass (same decision) | Used hand-off / logged-out expiry address → bare "Unauthorized" page instead of "Token already used" / BO login; the security part passes | open |
 | B12 | 12028_TS21 | Blocked | No all-Pending month left (Undo KIV restores the earlier state) | open |
 | B13 | 12028_TS62 | Blocked by EAINT-12752 item 2 (header) | The module header has no Logout; Shane says it is "expected", Faizuddin says the header is incorrect | open |
 | Retest | EAINT-12752 item 1 | Pass | Favicon now the same eAuto icon (identical file) | ready to comment DONE on item 1 if Faizuddin wants |
@@ -475,3 +475,70 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
 - **On hold:**
   - TS37, TS39, TS40, TS41, TS42, TS50–TS57, TS66
   - the Full parts of TS25 and TS33
+
+
+---
+
+## Evening review decisions and new evidence (2026-11-04, Faizuddin)
+
+| Entry | Decision / finding | Evidence |
+|---|---|---|
+| **F1** | **Considered pass.** TS59, TS60 and TS63 are now pass. | — |
+| **F9** | Still possible defect. A cropped clip with the wall-clock time (MYT) and the idle time on every frame: 1/4 login + March opened 12:08; 2/4 warning at 13 min 30 s idle; 3/4 15 min idle, nothing happens; 4/4 16 min idle, refresh, still signed in. | `12028_TS61/12028_TS61-clip-with-time.mp4` (made from `12028_TS61.webm`; start 12:08:19.5 = file end minus 16:27.08, idle from 12:08:40.9 = `01-start.png`) |
+| **F11** | Explained in plain terms on the review page (parcel locker: the long id is the key, the month is a label the server ignores; no unapproved month leaked). | — |
+| **F12 correction** | The server's banner reads exactly **"The finance payment date must be a future date (got 2026-11-04)."** Earlier notes said "payment date must be a future date (got …)". | `WORDING-live/32-TS37-today-server-message.png` |
+| **F13 header** | Faizuddin: the header must be **"Sdn. Bhd."**. The build has "Sdn .Bhd." on both PDFs. | `F13-pdf-boxes/*-header-crop.png`, `*-page1-boxed.png` |
+| **F13 address** | Faizuddin: the Address row should show the real address. FMC shows "(PPM-001-14-11041979)"; MMSDA is empty. **No source gives the addresses:** the SRD fixed rows have no Address row; the mock-up row is blank (line 433); in the sample xlsx the "Address" row holds the account name's second line (R21 / R20), which is likely where "(PPM-…)" came from. The real FMCCAM / MMSDA addresses are needed from the BA before raising. | `F13-pdf-boxes/*-address-crop.png` |
+| **F13 names** | Faizuddin asked whether "EAUTO NURUL" / "EAUTO ZARA" are the full names set on the accounts. **Yes:** My Account → Edit (not saved) shows Full Name "EAUTO NURUL" (eautonurul) and "EAUTO ZARA" (eautozara); mfizni's is "Nur Izni Binti Zurni". The PDF prints the account Full Name correctly, so this is **test data, not a defect**. Real names need the accounts' Full Name updated, then a newly approved month. | `F13-account-names/02-…, 11-…, 21-…png` (+ videos) |
+| **Wording** | Every wording item now has a pair: a mock-up screenshot with a **green** box and a live screenshot with a **red** box (21 items, W1–W21 on the review page). June was put in KIV temporarily as `mfared` and Undo KIV restored it to Review Again. March was only opened as `mfizni` (date popup opened, blank Confirm, Cancel): still RA. | `WORDING-live/`, `WORDING-mockup/` |
+| **New, TS33 RA** | Reviewer on Reviewer Approved (March) shows "Waiting for the Approver."; the mock-up says "Reviewer has already approved. Waiting for the Approver." This adds to F10. | `WORDING-live/13-TS33-reviewer-RA-note.png` |
+| **F11** | **Considered pass** (Faizuddin, 2026-11-04 evening). TS54 is now pass. | — |
+| **F13** | Faizuddin: raise the header and Address items; **not** the names (they are the test accounts' Full Names). | — |
+
+### F13 cross-check: SRD vs SA mock-up PDF vs live PDF (2026-11-04 evening)
+
+- **Source:** the newest mock-up on EAINT-12028 is `association-payment-listing-mockup_20260731.html`
+  (Jira attachment 152843, 31 Jul, Chee Mei Jia). It is the same file as our copy; only the line
+  endings differ.
+- **How the mock-up PDF was made:** its [FMC / MMSDA Payment Request] buttons (`downloadInvoice`,
+  lines 373-457) save an HTML page named "Payment Requisition_<FMC|MMSDA>_May 2026.pdf". It was
+  downloaded from a fully approved May.
+- **Evidence:** `F13-mockup-pdf/` (mock-up) and `F13-pdf-boxes/` (live).
+
+| Field | SRD v1.1 §2.2.10 / §2.2.11 | Mock-up PDF | Live PDF (May, uat1) |
+|---|---|---|---|
+| Header | "eAuto **Sdn. Bhd.** 200401038456 (676967-T)" | "eAuto **Sdn .Bhd.**" (typo) | "eAuto **Sdn .Bhd.**", copied from the mock-up |
+| Adds | "Level 15, Sunway Tower; 86, Jalan Ampang; 50450 Kuala Lumpur" | Three lines, no semicolons | "Level 15, Sunway Tower; 86, Jalan Ampang;" / "50450 Kuala Lumpur": the semicolons are printed |
+| Pay to: Account Holder Name | FMC "FED OF MOTOR & CREDIT COMPANIES ASSO MSI **(PPM-001-14-11041979)**"; MMSDA "MALAYSIA MOTORCYCLE & SCOOTER DEALERS ASSOCIATION (MMSDA)" | **Blank** | FMC without the PPM number; MMSDA in full |
+| Pay to: Address | **No such field** | Row exists, **blank** | FMC "(PPM-001-14-11041979)"; MMSDA blank |
+| Pay to: bank, person in charge, contact, email | Fixed values | **Blank** | SRD values |
+| Requestor | Full name of the Drafter who approved | "Muhammad Fared" (hard-coded) | "EAUTO ZARA" (ZARA approved May; her account Full Name) |
+| Prepared / Checked / Approved by | Full names | "Muhammad Fared" / "Nurul Saadiah" / "Chia Ket Ming" (hard-coded real names) | Account Full Names "EAUTO ZARA" / "EAUTO NURUL" / "Nur Izni Binti Zurni" |
+| Title, To, Attn, Reason, Date, amount in words | as SRD | as SRD | as SRD |
+
+**Conclusions:**
+- **Header:** the build matches the **mock-up**, typo included. The SRD says "Sdn. Bhd.", and so
+  does Faizuddin ("header need to change to Sdn. Bhd."). So this is raised per the SRD; it is an
+  exception to the mock-up wording rule.
+- **Address:** the mock-up has the row but **leaves every Pay to value blank**, so it gives no
+  address either. The SRD has no Address field. Faizuddin is asking the developer to check the
+  real value in the database.
+- **Names:** the mock-up shows real full names, but they are hard-coded. The build prints each
+  account's Full Name, so this is not raised.
+- **New, minor:** "Adds" prints the SRD's "; " separators as text; the mock-up shows three plain
+  lines. Not raised yet.
+
+### F13 raised: **EAINT-12768** (2026-11-04, Faizuddin's OK)
+
+- **Ticket:** https://mfservices.atlassian.net/browse/EAINT-12768 , "[eAuto - BackOffice] FMC and MMSDA
+  Payment Request PDFs show the wrong company name in the header and a wrong Address row".
+- **Fields:** QA-Issue under EAINT-12028, Low, staging/uat1, assignee and Developer Shane, QA
+  Faizuddin, To Do.
+- **Row 1, header:** "Sdn .Bhd." should be "Sdn. Bhd.", per SRD v1.1 §2.2.10 / §2.2.11 field 1.
+  Evidence inline: `F13-pdf-boxes/jira-actual-1-header.png` (Actual) and
+  `jira-expected-1-srd.png` (Expected).
+- **Row 2, Address: KIV**, shown on the ticket as a big orange "KIV" heading. The developer is
+  checking the actual Address value in the DB (Faizuddin asked them); do not fix or close this
+  row until the value is confirmed. Evidence inline: `jira-actual-2-address.png`.
+- **Not raised:** the names (they are the test accounts' Full Names), F1, F11.
+- **Next:** when the developer gives the address, update row 2's Expected Result and remove the KIV.

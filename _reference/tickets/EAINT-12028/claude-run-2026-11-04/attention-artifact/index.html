@@ -1,0 +1,339 @@
+<title>EAINT-12028 Review Queue</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600&display=swap">
+<style>
+/* Layout: one reading column; triage sections; wording = side-by-side mockup (green) vs live (red) pairs */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#1c2230; --muted:#5b6475; --line:#dde1e8; --accent:#2f5d8a;
+  --bug:#b42318; --bug-bg:#fdecea; --word:#9a6700; --word-bg:#fff4d6;
+  --block:#5b4bb7; --block-bg:#efecfb; --ok:#1a7f4b; --ok-bg:#e5f5ec;
+  --display:"Fraunces",Georgia,serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --surface:#1a2029; --fg:#e4e8ef; --muted:#9aa4b5; --line:#2c3441; --accent:#7fb0e0;
+  --bug:#ff8a80; --bug-bg:#3a1d1d; --word:#f0c060; --word-bg:#352b14; --block:#b3a6ff; --block-bg:#262143; --ok:#6fd49c; --ok-bg:#16301f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --surface:#1a2029; --fg:#e4e8ef; --muted:#9aa4b5; --line:#2c3441; --accent:#7fb0e0;
+  --bug:#ff8a80; --bug-bg:#3a1d1d; --word:#f0c060; --word-bg:#352b14; --block:#b3a6ff; --block-bg:#262143; --ok:#6fd49c; --ok-bg:#16301f; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:36px}
+h1{font-family:var(--display);font-size:clamp(26px,4vw,34px);margin:0;text-wrap:balance;line-height:1.15}
+h2{font-family:var(--display);font-size:22px;margin:0;text-wrap:balance}
+h3{font-size:16px;margin:0;font-weight:600}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:70ch;margin:6px 0 0}
+.tally{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pill{font-family:var(--mono);font-size:12.5px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-variant-numeric:tabular-nums}
+.pill b{font-weight:500}
+section{display:grid;gap:14px}
+.sec-head{display:grid;gap:4px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.sec-head p{margin:0;color:var(--muted);max-width:75ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:grid;gap:10px;min-width:0}
+.card-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px}
+.id{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:4px;font-weight:500}
+.c-bug{color:var(--bug);background:var(--bug-bg)} .c-word{color:var(--word);background:var(--word-bg)}
+.c-block{color:var(--block);background:var(--block-bg)} .c-ok{color:var(--ok);background:var(--ok-bg)}
+.card p{margin:0;max-width:75ch}
+.cmp{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;min-width:0}
+.cmp dt{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:2px}
+.cmp dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.bad{color:var(--bug)} .good{color:var(--ok)}
+.ask{border-left:3px solid var(--accent);padding:6px 12px;background:var(--bg);border-radius:0 6px 6px 0;font-size:14px}
+.ask b{color:var(--accent)}
+.shots{display:flex;flex-wrap:wrap;gap:10px}
+.shot{display:grid;gap:4px;width:min(300px,100%)}
+.shot button{all:unset;cursor:zoom-in;display:grid;gap:4px}
+.shot img{width:100%;max-height:170px;object-fit:contain;object-position:top left;border:1px solid var(--line);border-radius:6px;background:#fff}
+.shot span{font-size:12px;color:var(--muted)}
+.shot button:focus-visible img{outline:2px solid var(--accent);outline-offset:2px}
+.open-link{font-size:12px;color:var(--accent);text-decoration:none;justify-self:start}
+.open-link:hover{text-decoration:underline}
+.path{font-family:var(--mono);font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tr:last-child td{border-bottom:0}
+td:first-child{font-family:var(--mono);font-size:13px;white-space:nowrap}
+.today{background:var(--surface);border:1px solid var(--accent);border-radius:8px;padding:16px 18px;display:grid;gap:8px}
+ol{margin:0;padding-left:20px;display:grid;gap:4px}
+video{width:100%;border-radius:8px;border:1px solid var(--line);background:#000}
+/* wording pairs */
+.pair{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;gap:10px;min-width:0}
+.pair-head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.pair-head .n{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.cols{grid-template-columns:1fr}}
+.col{display:grid;gap:6px;align-content:start;min-width:0}
+.col .tag{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:500}
+.col.m .tag{color:var(--ok)} .col.l .tag{color:var(--bug)}
+.col q{font-size:14px;quotes:"“" "”"}
+.col .shot{width:100%}
+.col .shot img{max-height:150px}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button{font:500 12.5px var(--body);padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+dialog{border:0;padding:0;background:transparent;max-width:96vw;max-height:96vh;overflow:visible}
+dialog::backdrop{background:rgba(0,0,0,.8)}
+dialog img{max-width:96vw;max-height:82vh;display:block;border-radius:6px;margin:0 auto;background:#fff}
+.lb-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.lb-bar p{color:#fff;font-size:13px;margin:0 8px 0 0}
+.lb-btn{font:500 13px var(--body);padding:7px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;text-decoration:none}
+.lb-btn:hover{background:rgba(255,255,255,.22)}
+.lb-btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#lb-status{color:#fff;font-size:12.5px;min-height:1em;width:100%;text-align:center}
+@media (max-width:520px){.cmp{grid-template-columns:1fr}.cmp dt{padding-top:6px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">EAINT-12028 · Claude run on staging uat1 · 4 Nov 2026</div>
+    <h1>What needs your call</h1>
+    <p class="lede">Every fail, block and open question from today's run. Nothing has gone to Jira. Click any picture to enlarge it, copy it, or open it full size. Full detail lives in <span class="path">_reference/tickets/EAINT-12028/claude-run-2026-11-04/FAILS-AND-BLOCKS.md</span>.</p>
+    <div class="tally">
+      <span class="pill"><b>31</b> pass</span>
+      <span class="pill"><b>17</b> fail</span>
+      <span class="pill"><b>18</b> blocked</span>
+      <span class="pill"><b>1</b> yours (TS36)</span>
+      <span class="pill"><b>2</b> run on main laptop</span>
+    </div>
+  </header>
+
+  <div class="today">
+    <div class="eyebrow">Tomorrow, 5 Nov</div>
+    <h3>Run TS36 on March as kmcheah</h3>
+    <ol>
+      <li>Log in as <code>kmcheah</code>, then go to Reports → Association Payment Listing → View <b>March</b>. I checked again this evening: March is still Reviewer Approved and waiting for the Approver.</li>
+      <li>Click Approve. The signature pad should appear, because <code>kmcheah</code> has never approved.</li>
+      <li>Optional: run TS42 as <code>kmcheah</code> too. Draw a signature, then press Cancel.</li>
+    </ol>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Decide · raise or not</div>
+      <h2>Possible defects</h2>
+    </div>
+
+    <article class="card">
+      <div class="card-top"><span class="id">F9 · TS61</span><h3>Still signed in after 16 minutes idle</h3><span class="chip c-bug">possible defect</span></div>
+      <p>The page config says the session times out after 900 seconds (15 minutes) of no activity. This clip keeps four moments from the 16-minute recording. The top corner shows the real clock time (MYT) and how long the page had been idle.</p>
+      <video controls preload="metadata" src="vid/ts61.mp4"></video>
+      <dl class="cmp">
+        <dt>1/4</dt><dd>12:08: logged in as <code>mfared</code>, March opened, then no mouse, keyboard or scroll.</dd>
+        <dt>2/4</dt><dd>At 13 min 30 s idle, the "Still there?" warning appears. <span class="good">This is correct.</span></dd>
+        <dt>3/4</dt><dd>At 15 min idle the session should end. Nothing happens on the page.</dd>
+        <dt>4/4</dt><dd>At 16 min idle, a refresh shows March again. <span class="bad">The user is still signed in.</span></dd>
+      </dl>
+      <div class="shots" data-shots>
+        <div class="shot"><button data-full="img/ts61a.png"><img src="img/ts61a.png" alt="Idle warning popup"><span>13 min 30 s: the warning</span></button></div>
+        <div class="shot"><button data-full="img/ts61b.png"><img src="img/ts61b.png" alt="Still signed in after refresh"><span>16 min: still signed in</span></button></div>
+      </div>
+      <p class="path">Clip: 12028_TS61/12028_TS61-clip-with-time.mp4 · full recording: 12028_TS61.webm (on this laptop only)</p>
+      <div class="ask"><b>Your call:</b> raise it now, or first ask the developer what the server's session timeout is.</div>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="id">F13 · TS56/57 PDFs</span><h3>Header typo, Address row, and the printed names</h3><span class="chip c-bug">header + address</span></div>
+      <dl class="cmp">
+        <dt>Header</dt><dd class="bad">"eAuto Sdn <b>.Bhd.</b>" should be "eAuto Sdn. Bhd." It's wrong on both PDFs.</dd>
+        <dt>FMC Address</dt><dd class="bad">Shows "(PPM-001-14-11041979)", which is part of the account name, not an address.</dd>
+        <dt>MMSDA Address</dt><dd class="bad">Empty.</dd>
+      </dl>
+      <div class="shots" data-shots>
+        <div class="shot"><button data-full="f13/fmc-header-crop.png"><img src="f13/fmc-header-crop.png" alt="FMC header typo boxed"><span>FMC: header</span></button></div>
+        <div class="shot"><button data-full="f13/fmc-address-crop.png"><img src="f13/fmc-address-crop.png" alt="FMC address row boxed"><span>FMC: Address row</span></button></div>
+        <div class="shot"><button data-full="f13/mmsda-address-crop.png"><img src="f13/mmsda-address-crop.png" alt="MMSDA address row boxed"><span>MMSDA: Address row</span></button></div>
+        <div class="shot"><button data-full="f13/fmc-page1-boxed.png"><img src="f13/fmc-page1-boxed.png" alt="FMC page 1 with both boxes"><span>FMC: whole page</span></button></div>
+        <div class="shot"><button data-full="f13/mmsda-page1-boxed.png"><img src="f13/mmsda-page1-boxed.png" alt="MMSDA page 1 with both boxes"><span>MMSDA: whole page</span></button></div>
+      </div>
+      <div class="ask"><b>Before raising the Address part:</b> none of our documents gives the associations' real addresses. The SRD's fixed PDF fields have no Address row. The mockup leaves it blank. In the sample Excel, the "Address" row holds only the second line of the account name. That last one is probably how "(PPM-…)" ended up there. To raise it with an expected value, we need the real FMCCAM and MMSDA addresses from the BA.</div>
+
+      <h3>Cross-check with the mockup's own PDF download</h3>
+      <p>I downloaded the PDFs from the newest mockup on Jira (<span class="path">association-payment-listing-mockup_20260731.html</span>, the FMC/MMSDA Payment Request buttons on a fully approved May).</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Field</th><th>SRD v1.1</th><th>Mockup PDF</th><th>Live PDF</th></tr></thead>
+        <tbody>
+          <tr><td>Header</td><td>eAuto <b>Sdn. Bhd.</b></td><td>eAuto <b>Sdn .Bhd.</b> (typo)</td><td class="bad">eAuto Sdn .Bhd. (copied from the mockup)</td></tr>
+          <tr><td>Account Holder Name</td><td>FMC: …ASSO MSI <b>(PPM-001-14-11041979)</b></td><td>blank</td><td class="bad">FMC: …ASSO MSI (no PPM number)</td></tr>
+          <tr><td>Address</td><td><b>no such field</b></td><td>row exists, blank</td><td class="bad">FMC: (PPM-001-14-11041979) · MMSDA: blank</td></tr>
+          <tr><td>Bank, person, contact, email</td><td>fixed values</td><td>blank</td><td class="good">SRD values</td></tr>
+          <tr><td>Adds</td><td>…Tower; 86, Jalan Ampang; 50450…</td><td>3 lines, no semicolons</td><td>semicolons printed</td></tr>
+          <tr><td>Sign-off names</td><td>full names</td><td>Muhammad Fared / Nurul Saadiah / Chia Ket Ming (hard-coded)</td><td>account Full Names</td></tr>
+        </tbody>
+      </table></div>
+      <div class="shots" data-shots>
+        <div class="shot"><button data-full="f13/mock-fmc.png"><img src="f13/mock-fmc.png" alt="Mockup FMC PDF"><span>Mockup: FMC PDF</span></button></div>
+        <div class="shot"><button data-full="f13/mock-mmsda.png"><img src="f13/mock-mmsda.png" alt="Mockup MMSDA PDF"><span>Mockup: MMSDA PDF</span></button></div>
+        <div class="shot"><button data-full="f13/mock-header.png"><img src="f13/mock-header.png" alt="Mockup header"><span>Mockup: header has the same typo</span></button></div>
+        <div class="shot"><button data-full="f13/mock-payto.png"><img src="f13/mock-payto.png" alt="Mockup Pay to"><span>Mockup: Pay to is all blank</span></button></div>
+      </div>
+      <div class="ask"><b>What it means:</b> the build copied the mockup's header typo, so the header goes in per the SRD ("Sdn. Bhd."), as you asked. The mockup gives no address either: its Pay to block is empty, so the developer's database check is the only source.</div>
+
+      <h3>Are "EAUTO NURUL" and "EAUTO ZARA" their full names? Yes, on their accounts.</h3>
+      <p>I opened My Account (Edit) for each user and didn't save anything. The PDF prints exactly what is in each account's <b>Full Name</b> field. Izni's account holds a real name, while the two test accounts hold placeholder names. So the build is <span class="good">doing the right thing</span>, and this is test data, not a bug. To get real names on the PDF, those two accounts' Full Name would need updating, and then a new month would need approving. The names on May's PDF were stored when May was approved.</p>
+      <div class="shots" data-shots>
+        <div class="shot"><button data-full="f13/acct-nurul.png"><img src="f13/acct-nurul.png" alt="eautonurul account Full Name"><span>eautonurul: Full Name "EAUTO NURUL"</span></button></div>
+        <div class="shot"><button data-full="f13/acct-zara.png"><img src="f13/acct-zara.png" alt="eautozara account Full Name"><span>eautozara: Full Name "EAUTO ZARA"</span></button></div>
+        <div class="shot"><button data-full="f13/acct-izni.png"><img src="f13/acct-izni.png" alt="mfizni account Full Name"><span>mfizni: Full Name "Nur Izni Binti Zurni"</span></button></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="id">F11 · TS54</span><h3>The PDF address ignores the month (in plain terms)</h3><span class="chip c-bug">low risk</span></div>
+      <p>Every month's PDF has its own web address, for example <span class="path">…/association/2026/<b>5</b>/<b>7f66cb31-…</b>/pdf?type=FMC</span>. It has two parts: the month number ("5" = May) and a long code that is the month's real ID.</p>
+      <p>Think of a parcel locker. The long code is the locker key, and the month number is just a name written on the slip. I changed the slip from "5" (May) to "1" (January) but kept May's key. The server ignored the slip, opened the locker with the key, and handed over <b>May's</b> PDF.</p>
+      <dl class="cmp">
+        <dt>Harm</dt><dd class="good">None found. It only ever gave May's PDF, which was already approved and downloadable. Trying January's own key was refused, so no unapproved month leaked.</dd>
+        <dt>Why log it</dt><dd>The TS expects an edited address to be refused. A tidy server would check that the slip matches the key, and refuse if they don't.</dd>
+      </dl>
+      <p>Related, from TS69: a forced Reject on fully approved May was refused correctly, but the message says "cannot act until the <b>Reviewer</b> has approved", and May's Reviewer has already approved.</p>
+      <div class="shots" data-shots>
+        <div class="shot"><button data-full="img/ts54.png"><img src="img/ts54.png" alt="TS54 result"><span>TS54: edited address result</span></button></div>
+        <div class="shot"><button data-full="img/ts69.png"><img src="img/ts69.png" alt="TS69 server response"><span>TS69: refusal message</span></button></div>
+      </div>
+      <div class="ask"><b>Your call:</b> raise as Low, or accept.</div>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="id">F1 · TS59, TS60, TS63</span><h3>"Unauthorized" page instead of the BO login</h3><span class="chip c-ok">pass (your call)</span></div>
+      <p>You said to consider this a pass. In each case the user can't get back into the module, which is what matters. TS59, TS60 and TS63 now count as passes.</p>
+    </article>
+  </section>
+
+  <section id="wording">
+    <div class="sec-head">
+      <div class="eyebrow">Logged as fail · not raised · mockup = expected</div>
+      <h2>Wording: mockup (green) next to live (red)</h2>
+      <p>Each row puts the mockup's wording, boxed in green, next to what uat1 shows today, boxed in red. I took the live pictures this evening. KIV months: June was put in KIV for a minute and then restored. I didn't click anything on March, except opening and cancelling the payment-date popup as <code>mfizni</code>. Where a state no longer exists live (Pending, Reviewer Review Again), the live picture shows another state that uses the same live wording, and the row says which.</p>
+      <div class="filters" role="group" aria-label="Filter by TS" id="filters"></div>
+    </div>
+    <div id="pairs" style="display:grid;gap:12px"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Decide · reply to Shane</div>
+      <h2>Module header (EAINT-12752 item 2)</h2>
+    </div>
+    <article class="card">
+      <div class="card-top"><span class="id">F2 · B13 · TS58, TS62</span><h3>The module header shows only "Back to Backoffice"</h3><span class="chip c-block">blocks 2 TS</span></div>
+      <p>There's no name, My Account or Logout, so the logout steps in TS58 and all of TS62 can't be done. Shane says it's "expected, not a bug … removed on purpose", but gives no source. You said the header itself is incorrect.</p>
+      <div class="shots" data-shots><div class="shot"><button data-full="img/ts58.png"><img src="img/ts58.png" alt="Module header"><span>TS58: module header</span></button></div></div>
+    </article>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Answer · inputs I need</div>
+      <h2>Blocked</h2>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>TS</th><th>Blocked because</th><th>What unblocks it</th></tr></thead>
+      <tbody>
+        <tr><td>TS11–13</td><td>Month-close runs on a cron job</td><td>From the dev: the cron interval and how to trigger month-close</td></tr>
+        <tr><td>TS15</td><td>No Super Admin login</td><td>A Super Admin account</td></tr>
+        <tr><td>TS16–19</td><td>No known test transactions</td><td>The state, vehicle type and expected counts for each case</td></tr>
+        <tr><td>TS24</td><td>KIV rule not final (the build shows Undo KIV)</td><td>From the BA: "can act" or "locked"</td></tr>
+        <tr><td>TS43</td><td>Signature rule not final (looks like one per person)</td><td>From the BA: per role or per person</td></tr>
+        <tr><td>TS29</td><td><code>eautonurul</code> has already signed</td><td>A Reviewer who has never signed, or accept the 3 Nov run</td></tr>
+        <tr><td>TS42</td><td>Only <code>kmcheah</code> has never signed</td><td>Run it yourself tomorrow</td></tr>
+        <tr><td>TS56/57</td><td>Names: the build matches the accounts (see F13). The addresses aren't documented anywhere.</td><td>The real association addresses</td></tr>
+        <tr><td>TS09</td><td>No closed month has zero transactions</td><td>The dev seeds an empty month</td></tr>
+        <tr><td>TS47</td><td>Every closed month has Audit Log rows</td><td>A dev reset, or wait for November to close</td></tr>
+        <tr><td>TS21</td><td>No all-Pending month left</td><td>A dev reset of one month</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Ready · just say go</div>
+      <h2>Retest comments I can post</h2>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Ticket</th><th>Result</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr><td>EAINT-12716</td><td><span class="chip c-ok">done</span> The no-role user no longer sees the link (TS05 pass)</td><td class="path">12028_TS05/</td></tr>
+        <tr><td>EAINT-12752 #1</td><td><span class="chip c-ok">done</span> The favicon is now the same eAuto icon</td><td class="path">EAINT-12752-retest-favicon/</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</div>
+
+<dialog id="lightbox" aria-label="Screenshot">
+  <img id="lb-img" alt="">
+  <div class="lb-bar">
+    <p id="lb-cap"></p>
+    <button type="button" class="lb-btn" id="lb-copy">Copy image</button>
+    <a class="lb-btn" id="lb-open" href="#" target="_blank" rel="noopener">Open full size ↗</a>
+    <button type="button" class="lb-btn" id="lb-close">Close</button>
+    <div id="lb-status" role="status"></div>
+  </div>
+</dialog>
+<script>
+const W = [
+  {ts:'TS28', t:'Reviewer on Pending / Drafter Review Again', m:'Waiting for the Drafter to approve first.', l:'Waiting for the Drafter. You can act once the Drafter has approved.', mi:['w/m-01-TS28-reviewer-DRA-note.png','w/m-02-TS28-reviewer-Pending-note.png'], li:['w/l-11-TS28-reviewer-DRA-note.png'], note:'Live picture is January (Review Again). Pending months show the same live note (seen on October this morning).'},
+  {ts:'TS28', t:'Reviewer on a KIV month', m:'Waiting for the Drafter to approve first.', l:'On hold. The Drafter put this month in KIV on 04-11-2026. Nothing to do until the Drafter resumes it.', mi:['w/m-03-TS28-reviewer-KIV-note.png'], li:['w/l-12-TS28-reviewer-KIV-note.png']},
+  {ts:'TS35', t:'Approver on Pending / Drafter Review Again', m:'Waiting for the Reviewer to approve first.', l:'Waiting for the Drafter.', mi:['w/m-04-TS35-approver-DRA-note.png','w/m-05-TS35-approver-Pending-note.png'], li:['w/l-21-TS35-approver-DRA-note.png'], note:'Live picture is January (Review Again); Pending shows the same.'},
+  {ts:'TS35', t:'Approver on Drafter Approved / Reviewer Review Again', m:'Waiting for the Reviewer to approve first.', l:'Waiting for the Reviewer. You can act once the Reviewer has approved.', mi:['w/m-06-TS35-approver-DA-note.png','w/m-07-TS35-approver-RRA-note.png'], li:['w/l-22-TS35-approver-DA-note.png'], note:'Live picture is April (Drafter Approved); Reviewer Review Again showed the same this morning (January).'},
+  {ts:'TS35', t:'Approver on a KIV month', m:'Waiting for the Reviewer to approve first.', l:'On hold. The Drafter put this month in KIV on 04-11-2026. Nothing to do until the Drafter resumes it.', mi:['w/m-08-TS35-approver-KIV-note.png'], li:['w/l-24-TS35-approver-KIV-note.png']},
+  {ts:'TS25 · TS26', t:'Drafter on Drafter Approved / Reviewer Review Again', m:'Drafter has already approved this month. Waiting for the Reviewer.', l:'Waiting for the Reviewer.', mi:['w/m-09-TS25-TS26-drafter-DA-note.png','w/m-10-TS25-drafter-RRA-note.png'], li:['w/l-02-TS25-TS26-drafter-DA-note.png']},
+  {ts:'TS25', t:'Drafter on a fully approved month', m:'Drafter has already approved this month. Waiting for the Reviewer.', l:'Fully approved on 04-11-2026. Finance pay date: 05-11-2026. The FMC and MMSDA Payment Request PDFs are ready below.', mi:['w/m-11-TS25-drafter-Full-note.png'], li:['w/l-03-TS25-drafter-Full-note.png']},
+  {ts:'TS33', t:'Reviewer on Reviewer Approved', m:'Reviewer has already approved. Waiting for the Approver.', l:'Waiting for the Approver.', mi:['w/m-12-TS33-reviewer-RA-note.png'], li:['w/l-13-TS33-reviewer-RA-note.png'], note:'New this evening: this state was not checked in the morning run.'},
+  {ts:'TS33', t:'Reviewer on a fully approved month', m:'Reviewer has already approved. Waiting for the Approver.', l:'Fully approved on 04-11-2026. Finance pay date: 05-11-2026. The FMC and MMSDA Payment Request PDFs are ready below.', mi:['w/m-13-TS33-reviewer-Full-note.png'], li:['w/l-14-TS33-reviewer-Full-note.png']},
+  {ts:'TS39', t:'Approver on a fully approved month', m:'Fully approved.', l:'Fully approved on 04-11-2026. Finance pay date: 05-11-2026. The FMC and MMSDA Payment Request PDFs are ready below.', mi:['w/m-14-TS39-approver-Full-note.png'], li:['w/l-25-TS39-approver-Full-note.png']},
+  {ts:'TS49', t:'Payment Request pending note (SRD says the same as the mockup)', m:'Payment Request documents will be available for download once the Drafter, Reviewer and Approver have all approved.', l:'Payment Request documents become available for download once the Drafter, Reviewer and Approver have all approved.', mi:['w/m-15-TS49-pending-note.png'], li:['w/l-23-TS49-pending-note.png']},
+  {ts:'TS07', t:'Summary total row label', m:'YEAR TO DATE (Jan–Jun)  (range ends at the last closed month)', l:'YEAR TO DATE TOTAL', mi:['w/m-25-TS07-total-label.png'], li:['w/l-01-TS07-total-label.png']},
+  {ts:'TS37', t:'Payment date left blank, [Confirm Approve]', m:'Please select a payment date.', l:'Please pick a future payment date.', mi:['w/m-16-TS37-blank-date-alert.png'], li:['w/l-31-TS37-blank-date-alert.png'], note:'Both are browser alerts, which cannot be screenshotted, so the exact alert text is drawn into the page and boxed.'},
+  {ts:'TS37', t:"Today's or a past date", m:'Payment date must be a future date.', l:'The finance payment date must be a future date (got 2026-11-04).', mi:['w/m-17-TS37-today-date-alert.png'], li:['w/l-32-TS37-today-server-message.png'], note:'Live: the date picker blocks it; forced in, the server refuses with this banner (February, this morning).'},
+  {ts:'TS30 · TS38', t:'Reject with blank remarks', m:'Remarks are required to reject.', l:'(no message — [Submit Reject] just stays disabled)', mi:['w/m-18-TS30-TS38-reject-blank-alert.png'], li:['w/l-15-TS30-TS38-reject-blank-no-message.png']},
+  {ts:'TS30 · TS38', t:'Reject with spaces only', m:'Remarks are required to reject.', l:'(no message — [Submit Reject] just stays disabled)', mi:['w/m-19-TS30-TS38-reject-spaces-alert.png'], li:['w/l-16-TS30-TS38-reject-spaces-no-message.png']},
+  {ts:'TS48', t:'Audit Log columns', m:'#  ·  Date / Time  ·  Role  ·  Action / Status  ·  Remarks', l:'When  ·  Actor  ·  Role  ·  Action  ·  Payment Date  ·  Remarks', mi:['w/m-21-TS48-log-columns.png'], li:['w/l-04-TS48-log-columns.png']},
+  {ts:'TS48', t:'Audit Log row order', m:'Oldest first (row 1 = first action; new rows added at the bottom)', l:'Newest first (top row = 04-11-2026 12:35)', mi:['w/m-22-TS48-log-order-oldest-first.png'], li:['w/l-05-TS48-log-order-newest-first.png']},
+  {ts:'TS30 · TS32', t:'Audit Log Action for a Reviewer reject', m:'Rejected — returned to Drafter', l:'Rejected (returned to Drafter)', mi:['w/m-23-TS30-TS32-log-reject-to-drafter.png'], li:['w/l-06-TS30-TS32-log-reject-to-drafter.png'], note:'Your TS workbook and SRD REQ-015 say "Rejected (returned to Drafter)", the same as live. You may want to overrule this one.'},
+  {ts:'TS38 · TS46', t:'Audit Log Action for an Approver reject', m:'Rejected — returned to Reviewer', l:'Rejected (returned to Reviewer)', mi:['w/m-24-TS38-TS46-log-reject-to-reviewer.png'], li:['w/l-07-TS38-TS46-log-reject-to-reviewer.png'], note:'Same as above: the TS workbook and SRD match live.'},
+  {ts:'TS47', t:'Empty Audit Log', m:'No activity yet.', l:'(not seen live: every month has actions; the 2 Nov capture said "No workflow actions recorded yet.")', mi:['w/m-20-TS47-empty-log.png'], li:[]},
+];
+const pairs = document.getElementById('pairs');
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shot = (src, cap) => `<div class="shot"><button data-full="${src}"><img src="${src}" alt="${esc(cap)}" loading="lazy"><span>${esc(cap)}</span></button></div>`;
+W.forEach((w, i) => {
+  const el = document.createElement('article'); el.className = 'pair'; el.dataset.ts = w.ts;
+  el.innerHTML = `<div class="pair-head"><span class="n">W${i + 1} · ${esc(w.ts)}</span><h3>${esc(w.t)}</h3></div>
+    <div class="cols">
+      <div class="col m"><span class="tag">Mockup · expected</span><q>${esc(w.m)}</q>${w.mi.map(s => shot(s, 'Mockup')).join('')}</div>
+      <div class="col l"><span class="tag">Live uat1 · actual</span><q>${esc(w.l)}</q>${w.li.length ? w.li.map(s => shot(s, 'Live uat1')).join('') : '<span class="path">No live picture: state not available</span>'}</div>
+    </div>${w.note ? `<p class="path" style="font-family:var(--body);font-size:13px">${esc(w.note)}</p>` : ''}`;
+  pairs.appendChild(el);
+});
+const tsSet = [...new Set(W.flatMap(w => w.ts.split(' · ')))].sort();
+const fl = document.getElementById('filters');
+['All', ...tsSet].forEach(t => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.setAttribute('aria-pressed', t === 'All' ? 'true' : 'false');
+  b.onclick = () => { fl.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true');
+    pairs.querySelectorAll('.pair').forEach(p => { p.hidden = !(t === 'All' || p.dataset.ts.split(' · ').includes(t)); }); };
+  fl.appendChild(b);
+});
+// lightbox + open/copy
+const dlg=document.getElementById('lightbox'),im=document.getElementById('lb-img'),cap=document.getElementById('lb-cap'),
+      openA=document.getElementById('lb-open'),copyB=document.getElementById('lb-copy'),lbStatus=document.getElementById('lb-status');
+const abs=src=>new URL(src,location.href).href;
+document.querySelectorAll('.shot button').forEach(b=>{
+  const a=document.createElement('a');a.className='open-link';a.href=abs(b.dataset.full);a.target='_blank';a.rel='noopener';a.textContent='Open full size ↗';
+  b.parentNode.appendChild(a);
+  b.addEventListener('click',()=>{im.src=b.dataset.full;im.alt=b.querySelector('img').alt;cap.textContent=b.querySelector('span').textContent;openA.href=abs(b.dataset.full);lbStatus.textContent='';dlg.showModal();});
+});
+copyB.addEventListener('click',()=>{
+  lbStatus.textContent='Copying…';
+  const fail=()=>{lbStatus.textContent='This view blocks copying images. Use "Open full size", then right-click the image and choose Copy image.';};
+  try{
+    const blob=fetch(im.src).then(r=>r.blob()).then(bl=>bl.type==='image/png'?bl:new Blob([bl],{type:'image/png'}));
+    navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(()=>{lbStatus.textContent='Copied. Paste it into Teams, Jira or an email.';}).catch(fail);
+  }catch(e){fail();}
+});
+document.getElementById('lb-close').addEventListener('click',()=>dlg.close());
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
+</script>

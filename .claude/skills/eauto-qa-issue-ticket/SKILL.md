@@ -320,6 +320,13 @@ it, as they've done before.
 
 ### Caveats (all learned the hard way)
 
+- **Placing the cursor: never rely on the `End` key.** In the Jira editor a ref-click lands mid-line
+  and `End` does not move to the end of the paragraph, so `Return` splits the caption and the image
+  lands inside it (EAINT-12765, 04.11.2026). Put the caret at the end of the target paragraph with
+  `javascript_tool`: find the `p` in `[contenteditable="true"]` whose text starts with the caption,
+  build a Range at the end of its last text node, `getSelection().addRange(r)`. Then press `Return`
+  and `file_upload`. Before Save, list the editor's children (caption / IMG / caption …) to confirm no
+  caption was split. Cancelling an edit leaves no orphan attachment.
 - **10 MB cap per `file_upload` call.** A 5.9 MB clip uploads fine; many Snagit videos are 25–130 MB
   and will be rejected. For an oversized file, tell the QA and ask them to drag it onto the ticket
   manually. Always check `size` before staging.

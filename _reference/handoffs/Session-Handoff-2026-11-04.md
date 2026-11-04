@@ -10,6 +10,72 @@ laptop (folder named after the Windows user), so **the repo is the record, not m
 
 ---
 
+## ★ START HERE (written end of 2026-11-04, for 2026-11-05 on either laptop)
+
+**How the testing works now.** Faizuddin no longer runs the dashboard automation for these
+tickets. **Claude runs the TS itself** in a real browser through the Playwright plugin, records a
+highlighted video per TS, and writes every result into the repo. The full how-to, including what to
+say, set-up, recorder API, traps and evidence post-processing, is
+**`knowledge/claude-driven-testing.md`** (section "Kick-off on any laptop"). Read it before
+touching the browser.
+
+**First steps on the other laptop**
+1. `git pull` on branch `claude/qa-dashboard-jira-OUEhf`.
+2. `claude plugin list`. If `playwright@claude-plugins-official` is missing, install it and restart
+   Claude Code.
+3. Set `page.__ROOT` to that laptop's repo path. `recorder.js` defaults to the `faizu` path.
+4. `.webm` videos are git-ignored and stay on the second laptop (`faizu`). Screenshots, PDFs, the
+   MP4 clip and the results are in git.
+
+**EAINT-12028 (Association Payment Listing, staging uat1): state at end of day**
+- **Run:** 69 TS. **32 pass · 16 fail · 18 blocked**, 1 left for Faizuddin (TS36), 2 not in this
+  run.
+  - Results: `_reference/tickets/EAINT-12028/claude-run-2026-11-04/RESULTS.md`.
+  - Every fail and block: `FAILS-AND-BLOCKS.md` in the same folder (F1–F16, B1–B11, the evening
+    decisions table, the F13 cross-check).
+  - TS Tracker feed: `scripts/claude-run/results/EAINT-12028.json`.
+- **Wording rule:** expected wording is the SA mock-up's. Mismatches are logged as fail and **not
+  raised** until Faizuddin says. See `knowledge/flow-association-payment-listing.md`, "Wording
+  rule".
+  - Evidence pairs: `WORDING-live/` (red box) and `WORDING-mockup/` (green box).
+- **Decisions made:** F1 pass; F11 pass. F13 names are the accounts' Full Names, so not a bug.
+- **Raised:** **EAINT-12768** (Low, Shane, To Do).
+  - Row 1: header "Sdn .Bhd." should be "Sdn. Bhd.".
+  - Row 2: the Address, marked **KIV**. When the developer reports the DB address value, update
+    row 2's Expected Result and remove the KIV.
+- **Attention page:** https://claude.ai/artifact/99UFiPfUgJuD2ZztbCJ8W6. It covers wording pairs
+  W1–W21, the F9 clip, F13 and F11 in plain words.
+  - Source: `claude-run-2026-11-04/attention-artifact/index.html`. Republish from there; don't
+    rebuild it.
+- **Automation:** `scripts/eauto-12028` is cross-checked against the live run and expects the
+  mock-up wording (sections 4h and 4i).
+- **Data state:** June went KIV then Undo KIV, so it's back to DRA. March is still RA, kept for
+  TS36. `kmcheah` has **never signed**: don't approve as `kmcheah`.
+
+**To do on 2026-11-05**
+1. **Faizuddin** runs **TS36** on March as `kmcheah` (first signature), and TS42 too if he wants.
+   After that, Claude runs the TS that waited on it (see "Open items" item 3 below; TS66, TS37,
+   TS40, TS41 and the Full-month TS).
+2. **Faizuddin decides:**
+   - F16: overrule the mock-up? The workbook and SRD say "Rejected (returned to …)", which
+     matches the live build.
+   - Hidden vs disabled buttons.
+   - F9: ask the developer which idle timeout is intended. No document states 15 min; only the
+     build's `#session-cfg data-idle=900` does.
+   - Which wording fails, if any, to raise.
+3. **Blocked inputs** to get from Faizuddin or the developer: TS09, TS11–19, TS21, TS24, TS29,
+   TS43, TS47.
+4. **Ready to post when he says:**
+   - EAINT-12716 retest comment (TS05 passed).
+   - EAINT-12752 item 1 retest comment.
+   - EAINT-12752 item 2: the header dispute with Shane is still open.
+
+**EAINT-12406 (Secarang, Azfar's recording style)** is a separate session. Its state is in the
+"Session: EAINT-12406" section below and in
+`_reference/tickets/EAINT-12406/claude-run-2026-11-04/RESULTS.md` and `FOR-AZFAR-2026-11-04.md`.
+
+---
+
 ## Session 0745bd69 + follow-ons: second laptop set-up, usage plugin, Claude-driven testing for EAINT-12028
 
 Laptop: **second laptop**, Windows user `faizu`, machine `UdinHoue`. The main laptop (user
@@ -421,7 +487,25 @@ TS36 (Faizuddin), then TS37, TS39–TS42, TS50–TS57 and TS66.
 - Faizuddin is asking Dev. The page sent to Dev (two questions, screenshots):
   https://claude.ai/artifact/EskjT37xJYtnDVRxBkbG7t
 
-**Next:** when Dev answers which owner data to use, make a new E2E_TS1 attempt. E2E_TS9 needs a car
+- **D1 and D2 raised** (they were never in Jira before):
+  - **EAINT-12764** (D1, Low): On Hold for the BA.
+  - **EAINT-12765** (D2, High): On Hold for a QA check.
+  - Both are assigned to Faizuddin, with Developer Mong Guo Hao.
+  - The evidence images are not attached yet. They are in the run folder's `jira-evidence/`.
+
+- E2E_TS1 attempt 2 (row 6 JXP4235, Maybank, same name) also failed: BR6N006389 "Invalid fullName".
+  The Dev's made-up "MONG TEST ALLIANZ 2" works (BR6N006385).
+- Attempt 3 was stopped. Dev confirmed the naming problem is a bug, and it is raised as **EAINT-12766**
+  (High, On Hold, assigned to Faizuddin).
+
+- 15:23: all three were moved to **To Do** and assigned to Mong Guo Hao. EAINT-12766 now shows only the first run (BR6N006388).
+
+- 15:36: the screenshots are embedded in all three tickets (under the captions) and verified.
+
+**Next:**
+- Wait for Dev on EAINT-12766 (name). Then make a new E2E_TS1 attempt on the real API: E6–E8 and Q44 (cover note).
+- E2E_TS9 E4 (gender re-pricing) on the real API. Row 6 JXP4235 quotes all three insurers.
+- When Dev answers which owner data to use, make a new E2E_TS1 attempt. E2E_TS9 needs a car
 that Tokio Marine also quotes.
 
 ## 4h. Evening: automation (`scripts/eauto-12028`) cross-checked against the live run
@@ -475,3 +559,109 @@ names and the newest-first order. Totals are now 32 pass · 16 fail · 18 blocke
     Faizuddin may overrule it.
   - The buttons are hidden, while the mock-up shows them disabled. This is not wording, so the
     automation was not changed.
+
+## 4j. Evening review: F1 pass, F9 clip, F13 checks, wording pairs (2026-11-04)
+
+- **Faizuddin's decisions:**
+  - F1 is considered **pass**, so TS59, TS60 and TS63 are now pass.
+  - F13: the header must be "Sdn. Bhd.", the Address row must show the real address, and the
+    names should be full names. He asked to check the account names before anything is raised.
+  - Wording: every item needs a live screenshot with a red box and a mock-up screenshot with a
+    green box.
+- **Done:**
+  - **F9:** made a cropped clip with the time drawn on it,
+    `12028_TS61/12028_TS61-clip-with-time.mp4`, using ffmpeg from `pip install imageio-ffmpeg`.
+  - **F13 names:** the account Full Names really are "EAUTO NURUL" and "EAUTO ZARA". The build
+    prints the account Full Name correctly, so this is test data, not a defect.
+  - **F13 PDFs:** red boxes drawn on the header and Address rows (`F13-pdf-boxes/`, made with
+    PyMuPDF).
+  - **F13 address:** none of our sources gives the real addresses. This is needed from the BA
+    before raising.
+  - **Wording pairs:** 21 of them, in `WORDING-live/` (red) and `WORDING-mockup/` (green). The
+    mock-up was served from a scratch copy on localhost and driven by its own JS: `getSt`,
+    `changeRole`, `showDetails`, `askDate`, `askReject`, `addLog`.
+  - **Recorder:** added `R.boxShot` (a tight crop with a solid box and a label) and
+    `R.alertCard` (draws an alert's text into the page so it can be screenshotted).
+  - **F12 correction:** the server says "The finance payment date must be a future date (got …)."
+  - **New:** a Reviewer on a Reviewer Approved month sees "Waiting for the Approver."
+- **Data touched:** June KIV, then Undo KIV, as `mfared`, so June is Review Again again.
+  March was opened as `mfizni`; the date popup was cancelled and March is still RA for TS36.
+- **Totals:** 31 pass · 17 fail · 18 blocked · 1 for Faizuddin · 2 not in this run.
+- **Review page (Artifact):** https://claude.ai/artifact/99UFiPfUgJuD2ZztbCJ8W6 , version 5.
+
+- **Late afternoon (≈15:45):**
+  - Note for Azfar written: `claude-run-2026-11-04/FOR-AZFAR-2026-11-04.md`.
+  - Added an isolated Playwright MCP (`playwright-iso`) so 12406 no longer fights 12028 for the browser. It needs a
+    session restart.
+  - The rerun plan is in `SESSION-LOG.md` under "PICK UP HERE": Azfar's fails/blockers first, then other runnable TS.
+  - New purchases use the name "FAIZUDDIN TEST ALLIANZ".
+
+## 4k. F11 pass; F13 raised as EAINT-12768, with the Address row KIV (2026-11-04)
+
+- **F11** is considered pass, so TS54 is pass. Totals are now **32 pass · 16 fail · 18 blocked**.
+- **F9 source:** neither the SRD, the mock-up nor Jira states a timeout. The 15 min comes from the
+  build's own `#session-cfg` (`data-idle=900`; the code comments mention "AC7/8/9/10", which are
+  in no document we have). So F9 is the build contradicting itself; ask the developer which is
+  intended.
+- **F13 address check:**
+  - No association record exists in BO (searched company, bank/credit and e-Invoice accounts).
+  - The Pay to block is fixed text per the SRD.
+  - The SRD has no Address field. FMC's Account Holder Name in the SRD includes "(PPM-…)", which
+    the build moved to an "Address" row.
+  - The mock-up PDF (its own download, from the newest Jira attachment 152843) has the header
+    typo too and leaves the whole Pay to box blank. See `FAILS-AND-BLOCKS.md`, "F13 cross-check".
+  - Faizuddin is asking the developer to check the address value in the DB.
+- **Raised EAINT-12768** (Low, Shane): row 1 is the header; row 2 is the Address, marked with a
+  big **KIV**. The three evidence images were embedded inline through Chrome. One image per cell
+  works best: a second upload replaces the selected image, so the pictures were stacked into one
+  image per cell.
+- **Open:** fill in row 2 when the developer replies.
+
+- **Evening:**
+  - Because the plugin browser stayed locked, Part 1 (reruns of Azfar's fails and blockers) and Part 2 (other TS) were
+    run through `scripts/claude-run/run-ts.mjs` (local Playwright, own Chrome, recorded in Azfar's style).
+  - The results table is in the run folder's `RESULTS.md`. Summary for Azfar: `FOR-AZFAR-2026-11-04.md`.
+    The artifact is updated: https://claude.ai/artifact/EskjT37xJYtnDVRxBkbG7t
+  - **Part 1:**
+    - RC_TS1/2/8 still FAIL (D1/D2).
+    - QT_TS7 KIV (BA).
+    - E2E_TS1/2/3 KIV (Q44: no Allianz cover note even when Insurance created; Lonpac gets one).
+    - E2E_TS12 BLOCKED (over RM2,000; Grab blank).
+  - **Part 2 PASS:** QT_TS1, QT_TS2, QT_TS4, QT_TS5, QT_TS6, RG_TS2, E2E_TS4, E2E_TS9, E2E_TS10.
+  - **Next:** E2E_TS5, RC_TS4 E5, RC_TS11 E2, RC_TS7. Then decide which observations to raise.
+
+### EAINT-12406: HOW TO RESUME ON ANY LAPTOP (read this first)
+
+Faizuddin does not run the automation. **Claude runs every TS itself, recorded**, and Faizuddin guides.
+
+1. Open this repo. Run `git pull`.
+2. One-time set-up on a new laptop (details in `knowledge/claude-driven-testing.md` § "Running TS without the
+   Playwright plugin"):
+   - `npm ci` in `scripts/eauto-12406/automation`
+   - `npx playwright install ffmpeg` (same folder)
+   - WinGet `Gyan.FFmpeg`
+   - Git for Windows (pdftotext)
+   - `npm ci` at the repo root (exceljs)
+3. Tell Claude: **"pick up from the 2026-11-04 handoff, EAINT-12406"**. Claude reads, in this order:
+   1. `_reference/tickets/EAINT-12406/claude-run-2026-11-04/SESSION-LOG.md` (decisions, purchases made, what's next)
+   2. `RESULTS.md` (one line per TS run)
+   3. `FOR-AZFAR-2026-11-04.md` (the summary for Azfar)
+4. To run a TS: `node scripts/claude-run/run-ts.mjs scripts/claude-run/12406/<file>.mjs`. Step files are in
+   `scripts/claude-run/12406/`; the shared steps are `scripts/claude-run/secarang-steps.mjs`.
+5. Recording is in **Azfar's style** (Faizuddin's choice for 12406): `scripts/claude-run/recorder-azfar.js` + `finish-ts.mjs`.
+6. **Videos (`*.webm`) are git-ignored** and stay on the second laptop (`faizu`). Screenshots, checks.txt, proofs.json,
+   gate.json, receipts and PDFs are in git.
+
+**Open items for 12406:**
+- Run E2E_TS5, RC_TS4 E5, RC_TS11 E2 and RC_TS7 (the e-receipt email).
+- Decide whether to raise:
+  - the price jump (All Quotations card → Add-ons);
+  - Grab blank above ~RM2,000;
+  - Tokio Marine RM0.00 on row 32.
+- Wait for Dev on EAINT-12764/12765/12766, Q44 (Allianz cover note) and Q46 (over RM2,000).
+- Share `FOR-AZFAR-2026-11-04.md` with Azfar.
+- Jira tickets raised today, all To Do, assigned to Mong Guo Hao, screenshots embedded:
+  - EAINT-12764 (D1)
+  - EAINT-12765 (D2)
+  - EAINT-12766 (name)
+- Dev question page: https://claude.ai/artifact/EskjT37xJYtnDVRxBkbG7t

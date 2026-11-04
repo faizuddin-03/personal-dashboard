@@ -1,0 +1,944 @@
+### 12028_TS01 | Verify the Drafter sees the new Reports menu item and it opens the Summary page.
+STEPS:
+1. Login to BO as Drafter
+2. Go to Reports
+3. Click Association Payment Listing
+EXPECT:
+Ensure:
+1. BackOffice Home -> Association Payment Listing listed under Reports
+2. Association Payment Listing -> Summary page opens
+REMARK: 
+
+### 12028_TS02 | Verify the Reviewer sees the new Reports menu item and it opens the Summary page.
+STEPS:
+1. Login to BO as Reviewer
+2. Go to Reports
+3. Click Association Payment Listing
+EXPECT:
+Ensure:
+1. BackOffice Home -> Association Payment Listing listed under Reports
+2. Association Payment Listing -> Summary page opens
+REMARK: 
+
+### 12028_TS03 | Verify the Approver sees the new Reports menu item and it opens the Summary page.
+STEPS:
+1. Login to BO as Approver
+2. Go to Reports
+3. Click Association Payment Listing
+EXPECT:
+Ensure:
+1. BackOffice Home -> Association Payment Listing listed under Reports
+2. Association Payment Listing -> Summary page opens
+REMARK: 
+
+### 12028_TS04 | Verify the multi-role user sees the new Reports menu item and it opens the Summary page.
+STEPS:
+1. Login to BO as multi-role user (Drafter + Reviewer + Approver)
+2. Go to Reports
+3. Click Association Payment Listing
+EXPECT:
+Ensure:
+1. BackOffice Home -> Association Payment Listing listed under Reports
+2. Association Payment Listing -> Summary page opens
+REMARK: 
+
+### 12028_TS05 | Verify the Reports menu for a BO user with no Association role follows the BA's answer on visibility.
+STEPS:
+1. Login to BO as BO user with no Association role
+2. Go to Reports
+EXPECT:
+Ensure:
+1. Reports -> Association Payment Listing visible or hidden per BA answer (Open)
+REMARK: 
+
+### 12028_TS06 | Verify a BO user with no Association role cannot open the Summary page or a month's Details page by address.
+STEPS:
+1. Login to BO as Drafter
+2. Go to Reports > Association Payment Listing; copy the page address
+3. Click [View] on any closed month; copy the page address
+4. Logout
+5. Login to BO as BO user with no Association role
+6. Open the copied Summary address
+7. Open the copied Details address
+EXPECT:
+Ensure:
+1. Summary page address -> Access blocked; Summary listing not shown
+2. Details page address -> Access blocked
+3. Details page address -> [Approve], [KIV], [Reject] not shown
+REMARK: 
+
+### 12028_TS07 | Verify Search lists all 12 months of the selected year with the SRD columns, the total row label and Payment Date.
+STEPS:
+1. Login to BO as Drafter
+2. Go to Reports > Association Payment Listing
+3. Open the Year filter
+4. Select Year 2026
+5. Click [Search]
+6. Observe a month with Approver Status Pending
+EXPECT:
+Ensure:
+1. Year filter -> First option 2026
+2. Year filter -> 2025 and earlier not listed
+3. Summary -> 12 rows, January to December
+4. Summary -> Columns Car Transactions, Cars (RM), Motorcycle Transactions, Motorcycles (RM), Drafter Status, Reviewer Status, Approver Status, Payment Date, View shown
+5. Summary -> Total row label starts with "YEAR TO DATE" and names the month range
+6. Summary -> Payment Date shows "-" for the month with Approver Status Pending
+REMARK: 
+
+### 12028_TS08 | Verify each closed month shows its counts and amounts at RM1.00 per car and RM2.00 per motorcycle, and the total row adds up all months.
+STEPS:
+1. Login to BO as Drafter
+2. Search Year 2026
+3. Observe the closed months with data
+4. Add up each column of all months
+EXPECT:
+Ensure:
+1. Summary -> Closed months show Car Transactions, Cars (RM), Motorcycle Transactions, Motorcycles (RM) values and View
+2. Summary -> Each month Cars (RM) = Car Transactions x 1.00
+3. Summary -> Each month Motorcycles (RM) = Motorcycle Transactions x 2.00
+4. Summary -> Total row Car Transactions and Cars (RM) = sum of months
+5. Summary -> Total row Motorcycle Transactions and Motorcycles (RM) = sum of months
+REMARK: 
+
+### 12028_TS09 | Verify a closed month with no qualifying transactions shows 0.00 and its workflow still works.
+STEPS:
+1. Run month-close for a month with no approved car or motorcycle transactions
+2. Login to BO as Drafter
+3. Search Year 2026
+4. Click [View] on that month
+EXPECT:
+Ensure:
+1. Summary -> Cars (RM) and Motorcycles (RM) show 0.00
+2. Details -> [Approve] and [KIV] enabled
+REMARK: 
+
+### 12028_TS10 | Verify View opens the chosen month's Details page, its TOTAL matches the Summary row, and Back to Summary returns.
+STEPS:
+1. Login to BO as Drafter
+2. Search Year 2026
+3. Observe one closed month's four figures
+4. Click [View] on that month
+5. Click [← Back to Summary]
+EXPECT:
+Ensure:
+1. Details -> Opens for the chosen month and year
+2. Details -> TOTAL row equals the Summary row for Car Transactions, Cars (RM), Motorcycle Transactions, Motorcycles (RM)
+3. Summary -> Opens with Year 2026 listing
+REMARK: 
+
+### 12028_TS11 | Verify a past month shows No data before month-close and its figures, View and Pending statuses after it.
+STEPS:
+1. Login to BO as Drafter
+2. Search Year 2026
+3. Observe a past month not yet closed
+4. Run month-close for that month (manual trigger)
+5. Click [Search] again
+EXPECT:
+Ensure:
+1. Summary (before) -> Month shows "No data"
+2. Summary (before) -> View not shown for that month
+3. Summary (after) -> Month shows counts and amounts
+4. Summary (after) -> View shown
+5. Summary (after) -> Drafter Status, Reviewer Status, Approver Status all Pending
+REMARK: 
+
+### 12028_TS12 | Verify running month-close again on a closed month does not change its figures.
+STEPS:
+1. Login to BO as Drafter
+2. Search Year 2026
+3. Observe a closed month's four figures
+4. Run month-close for that month again
+5. Click [Search] again
+EXPECT:
+Ensure:
+1. Summary -> Month figures unchanged
+REMARK: 
+
+### 12028_TS13 | Verify running month-close again on a fully approved month does not reset its statuses or Payment Date.
+STEPS:
+1. Login to BO as Drafter
+2. Search Year 2026
+3. Observe a fully approved month
+4. Run month-close for that month again
+5. Click [Search] again
+EXPECT:
+Ensure:
+1. Summary -> Drafter Status, Reviewer Status, Approver Status stay Approved
+2. Summary -> Payment Date unchanged
+REMARK: 
+
+### 12028_TS14 | Verify the Details page lists all 16 states with a TOTAL row, separate car and motorcycle figures at the association rates, in #,##0.00 format.
+STEPS:
+1. Login to BO as Drafter
+2. Search Year 2026
+3. Click [View] on a closed month with an amount of 1,000 or more
+4. Compare each state's counts and amounts
+5. Add up each column of the 16 states
+EXPECT:
+Ensure:
+1. Details -> 16 states listed: Johor (01), Kedah (02), Kelantan (03), Melaka (04), Negeri Sembilan (05), Pahang (06), Pulau Pinang (07), Perak (08), Perlis (09), Selangor (10), Terengganu (11), Sabah (12), Sarawak (13), W.P. Kuala Lumpur (14), W.P. Labuan (15), W.P. Putrajaya (16)
+2. Details -> TOTAL row shown
+3. Details -> Each state Cars (RM) = Car Transactions x 1.00
+4. Details -> Each state Motorcycles (RM) = Motorcycle Transactions x 2.00
+5. Details -> TOTAL Car Transactions and TOTAL Cars (RM) = sum of states
+6. Details -> TOTAL Motorcycle Transactions and TOTAL Motorcycles (RM) = sum of states
+7. Details -> Amounts shown as #,##0.00 (eg. "38,785.00")
+8. Details -> Car and Motorcycle values in separate columns; no combined car + motorcycle amount
+REMARK: 
+
+### 12028_TS15 | Verify each state's car and motorcycle counts equal the approved counts in Transaction Summary Report (State) for STMS, eSTM and APT together.
+STEPS:
+1. Login to BO as Super Admin
+2. Go to Reports > Transaction Summary Report (State)
+3. Set From -> To to the first and last day of the month under test
+4. Click [Search]
+5. Add up approved car and motorcycle counts of STMS, eSTM and APT per state
+6. Compare with the Details page of that month
+EXPECT:
+Ensure:
+1. Details -> Each state Car Transactions = report's approved car count
+2. Details -> Each state Motorcycle Transactions = report's approved motorcycle count
+REMARK: 
+
+### 12028_TS16 | Verify company car and company motorcycle transactions are counted together with private ones.
+STEPS:
+1. Find an approved and paid company car transaction and company motorcycle transaction in a closed month (Find data)
+2. Login to BO as Drafter
+3. Click [View] on that month
+EXPECT:
+Ensure:
+1. Details -> Company car included in Car Transactions of the dealer's state
+2. Details -> Company motorcycle included in Motorcycle Transactions of the dealer's state
+REMARK: 
+
+### 12028_TS17 | Verify a transaction created in one month and JPJ-approved in the next is counted in the JPJ approval month.
+STEPS:
+1. Find a transaction created at month end and JPJ-approved in the next month (Find data)
+2. Login to BO as Drafter
+3. Click [View] on the creation month
+4. Click [View] on the JPJ approval month
+EXPECT:
+Ensure:
+1. Details (JPJ approval month) -> Transaction counted
+2. Details (creation month) -> Transaction not counted
+REMARK: 
+
+### 12028_TS18 | Verify an approved transaction without payment is left out of the month's counts.
+STEPS:
+1. Find an approved but unpaid transaction in a closed month (Find data)
+2. Login to BO as Drafter
+3. Click [View] on that month
+EXPECT:
+Ensure:
+1. Details -> Unpaid transaction not counted in the dealer's state
+REMARK: 
+
+### 12028_TS19 | Verify a transaction is grouped under the dealer company's registered state, not the vehicle's plate state.
+STEPS:
+1. Find an approved transaction whose dealer state differs from the plate state (Find data)
+2. Login to BO as Drafter
+3. Click [View] on that month
+EXPECT:
+Ensure:
+1. Details -> Transaction counted under the dealer's registered state
+2. Details -> Not counted under the plate state
+REMARK: 
+
+### 12028_TS20 | Verify the Drafter is offered Approve and KIV only, and the first approval needs a signature before Drafter Status turns Approved.
+STEPS:
+1. Login to BO as Drafter (never signed before)
+2. Search Year 2026
+3. Click [View] on a month with all statuses Pending
+4. Click [Approve]
+5. Draw a signature; click [Clear]
+6. Click [Save & Approve] with the pad empty
+7. Click [Cancel]
+8. Click [Approve]
+9. Sign on the pad
+10. Click [Save & Approve]
+EXPECT:
+Ensure:
+1. Details -> [Approve] and [KIV] enabled
+2. Details -> [Reject] not shown
+3. Details -> Sign to Approve signature pad shown
+4. Signature pad -> Pad empty after [Clear]
+5. Signature pad (empty, Save & Approve) -> Approval not completed; "Please provide your signature." shown
+6. Details (after Cancel) -> Drafter Status stays Pending; no "Drafter — Approved" row in Audit Log
+7. Details -> Drafter Status Approved
+8. Details -> Audit Log "Drafter — Approved" with date/time
+9. Summary -> Drafter Status Approved
+REMARK: 
+
+### 12028_TS21 | Verify Drafter KIV sets Drafter Status KIV and logs it.
+STEPS:
+1. Login to BO as Drafter
+2. Click [View] on a month with all statuses Pending
+3. Click [KIV]
+EXPECT:
+Ensure:
+1. Details -> Drafter Status KIV
+2. Details -> Audit Log "Drafter — KIV" with date/time
+3. Summary -> Drafter Status KIV
+REMARK: 
+
+### 12028_TS22 | Verify the Drafter can approve a month the Reviewer sent back.
+STEPS:
+1. Login to BO as Drafter
+2. Click [View] on a month with Drafter Status Review Again
+3. Click [Approve]
+EXPECT:
+Ensure:
+1. Details -> Drafter Status Approved
+2. Details -> New Audit Log row "Drafter — Approved"
+REMARK: 
+
+### 12028_TS23 | Verify the Drafter can KIV a month the Reviewer sent back.
+STEPS:
+1. Login to BO as Drafter
+2. Click [View] on a month with Drafter Status Review Again
+3. Click [KIV]
+EXPECT:
+Ensure:
+1. Details -> Drafter Status KIV
+2. Details -> New Audit Log row "Drafter — KIV"
+REMARK: 
+
+### 12028_TS24 | Verify what the Drafter can do on a month already set to KIV.
+STEPS:
+1. Login to BO as Drafter
+2. Click [View] on a month with Drafter Status KIV
+EXPECT:
+Ensure:
+1. Details -> [Approve] / [KIV] state per final KIV rule (Open)
+REMARK: 
+
+### 12028_TS25 | Verify the Drafter cannot act on a month the Drafter already approved, a month sent back to the Reviewer, or a fully approved month.
+STEPS:
+1. Login to BO as Drafter
+2. Click [View] on a month with Drafter Status Approved and Reviewer Status Pending
+3. Click [View] on a month with Reviewer Status Review Again
+4. Click [View] on a fully approved month
+EXPECT:
+Ensure:
+1. Details (Drafter Approved) -> [Approve] and [KIV] disabled; Note "Drafter has already approved this month. Waiting for the Reviewer." shown
+2. Details (Reviewer Review Again) -> [Approve] and [KIV] disabled
+3. Details (fully approved) -> [Approve] and [KIV] disabled or not shown; Note "Drafter has already approved this month. Waiting for the Reviewer." shown
+4. Summary -> Drafter Status stays Approved on the fully approved month
+REMARK: 
+
+### 12028_TS26 | Verify the second mapped Drafter user can approve as Drafter but cannot approve a month another Drafter already approved.
+STEPS:
+1. Login to BO as second Drafter user
+2. Click [View] on a month with all statuses Pending
+3. Click [Approve]; sign if asked; click [Save & Approve]
+4. Click [View] on a month the first Drafter approved (Reviewer Status Pending)
+EXPECT:
+Ensure:
+1. Details -> Drafter Status Approved
+2. Details -> Audit Log "Drafter — Approved"
+3. Details (month approved by the first Drafter) -> [Approve] and [KIV] disabled; Note "Drafter has already approved this month. Waiting for the Reviewer." shown
+REMARK: 
+
+### 12028_TS27 | Verify a Drafter who has signed is not asked to sign again.
+STEPS:
+1. Login to BO as the Drafter from 12028_TS20
+2. Click [View] on another month with all statuses Pending
+3. Click [Approve]
+EXPECT:
+Ensure:
+1. Details -> Signature pad not shown
+2. Details -> Drafter Status Approved
+REMARK: 
+
+### 12028_TS28 | Verify the Reviewer cannot act on a Pending, KIV or Drafter Review Again month.
+STEPS:
+1. Login to BO as Reviewer
+2. Click [View] on a month with all statuses Pending
+3. Click [View] on a month with Drafter Status KIV
+4. Click [View] on a month with Drafter Status Review Again
+EXPECT:
+Ensure:
+1. Details (Pending) -> [Approve] and [Reject] disabled; Note "Waiting for the Drafter to approve first." shown
+2. Details (KIV) -> [Approve] and [Reject] disabled; Note "Waiting for the Drafter to approve first." shown
+3. Details (Drafter Review Again) -> [Approve] and [Reject] disabled; Note "Waiting for the Drafter to approve first." shown
+REMARK: 
+
+### 12028_TS29 | Verify the Reviewer is offered Approve and Reject only, and the first approval needs a signature before Reviewer Status turns Approved.
+STEPS:
+1. Login to BO as Reviewer (never signed before)
+2. Click [View] on a month with Drafter Status Approved and Reviewer Status Pending
+3. Click [Approve]
+4. Sign; click [Save & Approve]
+EXPECT:
+Ensure:
+1. Details -> [Approve] and [Reject] enabled
+2. Details -> [KIV] not shown
+3. Details -> Sign to Approve signature pad shown
+4. Details -> Reviewer Status Approved
+5. Details -> Audit Log "Reviewer — Approved" with date/time
+6. Summary -> Reviewer Status Approved
+REMARK: 
+
+### 12028_TS30 | Verify Reviewer Reject is blocked without remarks, cancel changes nothing, and Reject with remarks returns the month to the Drafter.
+STEPS:
+1. Login to BO as Reviewer
+2. Click [View] on a month with Drafter Status Approved and Reviewer Status Pending
+3. Click [Reject]; leave remarks blank (no value); click [Submit Reject]
+4. Enter spaces only; click [Submit Reject]
+5. Enter remarks; click [Cancel]
+6. Click [Reject]; enter remarks; click [Submit Reject]
+EXPECT:
+Ensure:
+1. Reject popup (blank) -> Reject not submitted; "Remarks are required to reject." shown
+2. Reject popup (spaces only) -> Reject not submitted; "Remarks are required to reject." shown
+3. Details (after Cancel) -> Drafter Status stays Approved; Reviewer Status stays Pending; no "Reviewer — Rejected" row in Audit Log
+4. Details -> Drafter Status Review Again
+5. Details -> Audit Log "Reviewer — Rejected (returned to Drafter)" with the remarks
+6. Summary -> Drafter Status Review Again
+REMARK: 
+
+### 12028_TS31 | Verify the Reviewer can act on and re-approve a month the Approver sent back.
+STEPS:
+1. Login to BO as Reviewer
+2. Click [View] on a month with Reviewer Status Review Again
+3. Click [Approve]
+EXPECT:
+Ensure:
+1. Details -> [Approve] and [Reject] enabled
+2. Details -> Reviewer Status Approved
+3. Details -> New Audit Log row "Reviewer — Approved"
+REMARK: 
+
+### 12028_TS32 | Verify the Reviewer can pass a month the Approver rejected back to the Drafter.
+STEPS:
+1. Login to BO as Reviewer
+2. Click [View] on a month with Reviewer Status Review Again
+3. Click [Reject]
+4. Enter remarks
+5. Click [Submit Reject]
+EXPECT:
+Ensure:
+1. Details -> Drafter Status Review Again
+2. Details -> Audit Log "Reviewer — Rejected (returned to Drafter)" with the remarks
+REMARK: 
+
+### 12028_TS33 | Verify the Reviewer cannot act on a month the Reviewer already approved or a fully approved month.
+STEPS:
+1. Login to BO as Reviewer
+2. Click [View] on a month with Reviewer Status Approved and Approver Status Pending
+3. Click [View] on a fully approved month
+EXPECT:
+Ensure:
+1. Details (Reviewer Approved) -> [Approve] and [Reject] disabled; Note "Reviewer has already approved. Waiting for the Approver." shown
+2. Details (fully approved) -> [Approve] and [Reject] disabled or not shown; Note "Reviewer has already approved. Waiting for the Approver." shown
+3. Summary -> Reviewer Status stays Approved on the fully approved month
+REMARK: 
+
+### 12028_TS34 | Verify a Reviewer who has signed is not asked to sign again.
+STEPS:
+1. Login to BO as the Reviewer from 12028_TS29
+2. Click [View] on another month with Drafter Status Approved and Reviewer Status Pending
+3. Click [Approve]
+EXPECT:
+Ensure:
+1. Details -> Signature pad not shown
+2. Details -> Reviewer Status Approved
+REMARK: 
+
+### 12028_TS35 | Verify the Approver cannot act on a Pending, KIV, Drafter Approved, Drafter Review Again or Reviewer Review Again month.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a month with all statuses Pending
+3. Click [View] on a month with Drafter Status KIV
+4. Click [View] on a month with Drafter Status Approved and Reviewer Status Pending
+5. Click [View] on a month with Drafter Status Review Again
+6. Click [View] on a month with Reviewer Status Review Again
+EXPECT:
+Ensure:
+1. Details (Pending) -> [Approve] and [Reject] disabled; Note "Waiting for the Reviewer to approve first." shown
+2. Details (KIV) -> [Approve] and [Reject] disabled; Note "Waiting for the Reviewer to approve first." shown
+3. Details (Drafter Approved) -> [Approve] and [Reject] disabled; Note "Waiting for the Reviewer to approve first." shown
+4. Details (Drafter Review Again) -> [Approve] and [Reject] disabled; Note "Waiting for the Reviewer to approve first." shown
+5. Details (Reviewer Review Again) -> [Approve] and [Reject] disabled; Note "Waiting for the Reviewer to approve first." shown
+REMARK: 
+
+### 12028_TS36 | Verify the Approver is offered Approve and Reject only, signs, picks a future payment date, and the month is fully approved.
+STEPS:
+1. Login to BO as Approver (never signed before)
+2. Click [View] on a month with Reviewer Status Approved and Approver Status Pending
+3. Click [Approve]
+4. Sign; click [Save & Approve]
+5. Pick tomorrow's date from the date picker
+6. Click [Confirm Approve]
+7. Search Year 2026 on Summary
+EXPECT:
+Ensure:
+1. Details -> [Approve] and [Reject] enabled
+2. Details -> [KIV] not shown
+3. Details -> Sign to Approve signature pad shown
+4. Details -> Approve — Finance Payment Date popup shown after signing
+5. Details -> Approver Status Approved
+6. Details -> Audit Log "Approver — Approved" with date/time and the Finance payment date
+7. Summary -> Approver Status Approved
+8. Summary -> Payment Date shows the picked date as DD-MM-YYYY (eg. "31-07-2026")
+REMARK: 
+
+### 12028_TS37 | Verify the Finance payment date accepts only a future date picked from the date picker.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a month with Reviewer Status Approved and Approver Status Pending
+3. Click [Approve]; sign if asked
+4. Click [Cancel] on the payment date popup
+5. Click [Approve] again
+6. Leave the date blank (no value); click [Confirm Approve]
+7. Try to pick today's date; click [Confirm Approve]
+8. Try to pick yesterday's date; click [Confirm Approve]
+9. Type a future date into the date field
+10. Paste a future date into the date field
+EXPECT:
+Ensure:
+1. Details (after Cancel) -> Approver Status stays Pending; no "Approver — Approved" row in Audit Log
+2. Summary (after Cancel) -> Payment Date "-"
+3. Payment date popup (blank) -> "Please select a payment date." shown
+4. Payment date popup (today) -> Today not selectable, or "Payment date must be a future date." shown
+5. Payment date popup (yesterday) -> Yesterday not selectable, or "Payment date must be a future date." shown
+6. Payment date popup (typed, pasted) -> Field stays empty
+7. Details -> Approver Status stays Pending
+REMARK: 
+
+### 12028_TS38 | Verify Approver Reject is blocked without remarks, cancel changes nothing, and Reject with remarks returns the month to the Reviewer with no payment date.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a month with Reviewer Status Approved and Approver Status Pending
+3. Click [Reject]; leave remarks blank (no value); click [Submit Reject]
+4. Enter spaces only; click [Submit Reject]
+5. Enter remarks; click [Cancel]
+6. Click [Reject]; enter remarks; click [Submit Reject]
+7. Search Year 2026 on Summary
+EXPECT:
+Ensure:
+1. Reject popup (blank) -> Reject not submitted; "Remarks are required to reject." shown
+2. Reject popup (spaces only) -> Reject not submitted; "Remarks are required to reject." shown
+3. Details (after Cancel) -> Reviewer Status stays Approved; Approver Status stays Pending; no "Approver — Rejected" row in Audit Log
+4. Details -> Reviewer Status Review Again
+5. Details -> Audit Log "Approver — Rejected (returned to Reviewer)" with the remarks
+6. Summary -> Reviewer Status Review Again
+7. Summary -> Payment Date "-"
+REMARK: 
+
+### 12028_TS39 | Verify the Approver cannot act again on a fully approved month.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a fully approved month
+EXPECT:
+Ensure:
+1. Details -> [Approve] and [Reject] disabled or not shown; Note "Fully approved." shown
+2. Summary -> Payment Date unchanged
+REMARK: 
+
+### 12028_TS40 | Verify an Approver who has signed skips the pad but still picks a payment date.
+STEPS:
+1. Login to BO as the Approver from 12028_TS36
+2. Click [View] on another month with Reviewer Status Approved and Approver Status Pending
+3. Click [Approve]
+EXPECT:
+Ensure:
+1. Details -> Signature pad not shown
+2. Details -> Approve — Finance Payment Date popup shown
+REMARK: 
+
+### 12028_TS41 | Verify a month that went through Approver Reject can still be fully approved.
+STEPS:
+1. Use the month from 12028_TS31 (Reviewer re-approved)
+2. Login to BO as Approver
+3. Click [View] on that month
+4. Click [Approve]; pick tomorrow's date; click [Confirm Approve]
+EXPECT:
+Ensure:
+1. Details -> Approver Status Approved
+2. Details -> [FMC Payment Request] and [MMSDA Payment Request] shown
+REMARK: 
+
+### 12028_TS42 | Verify the Approver's signature is kept when the Finance Payment Date popup is cancelled, so the next Approve opens the date popup directly.
+STEPS:
+1. Login to BO as Approver (never signed before)
+2. Click [View] on a month with Reviewer Status Approved and Approver Status Pending
+3. Click [Approve]
+4. Sign; click [Save & Approve]
+5. Click [Cancel] on the Approve — Finance Payment Date popup
+6. Click [Approve] again
+EXPECT:
+Ensure:
+1. Details (after Cancel) -> Drafter Status Approved, Reviewer Status Approved, Approver Status stays Pending
+2. Details (after Cancel) -> No new Audit Log row
+3. Details (second Approve) -> Signature pad not shown
+4. Details (second Approve) -> Approve — Finance Payment Date popup opens directly
+REMARK: 
+
+### 12028_TS43 | Verify one multi-role user can take a month through all three approvals and appears in all three sign-off blocks of the FMC Payment Request.
+STEPS:
+1. Login to BO as multi-role user (Drafter + Reviewer + Approver, never signed before)
+2. Click [View] on a month with all statuses Pending
+3. Click [Approve]; sign; click [Save & Approve]
+4. Click [Approve] (Reviewer step)
+5. Click [Approve] (Approver step); pick tomorrow's date; click [Confirm Approve]
+6. Search Year 2026 on Summary
+7. Click [View] on the month; click [FMC Payment Request]; open the PDF
+EXPECT:
+Ensure:
+1. Details -> [Approve] and [KIV] enabled on the Pending month
+2. Details -> Sign to Approve signature pad shown on the first [Approve]
+3. Details (Reviewer step) -> Signature pad shown or not per final rule (Open)
+4. Details (Approver step) -> Approve — Finance Payment Date popup shown
+5. Summary -> Drafter Status, Reviewer Status, Approver Status Approved
+6. Details -> [FMC Payment Request] and [MMSDA Payment Request] shown
+7. Details -> Audit Log rows "Drafter — Approved", "Reviewer — Approved", "Approver — Approved"
+8. FMC PDF -> Prepared by, Checked by, Approved by show the multi-role user's full name
+9. FMC PDF -> Signatures per final signature rule (Open)
+REMARK: 
+
+### 12028_TS44 | Verify the multi-role user can KIV a month as Drafter.
+STEPS:
+1. Login to BO as multi-role user
+2. Click [View] on a month with all statuses Pending
+3. Click [KIV]
+EXPECT:
+Ensure:
+1. Details -> Drafter Status KIV
+2. Details -> Audit Log "Drafter — KIV"
+REMARK: 
+
+### 12028_TS45 | Verify the multi-role user can reject as Reviewer and then approve again as Drafter.
+STEPS:
+1. Login to BO as multi-role user
+2. Click [View] on a month with Drafter Status Approved and Reviewer Status Pending
+3. Click [Reject]; enter remarks; click [Submit Reject]
+4. Click [Approve] (Drafter step)
+EXPECT:
+Ensure:
+1. Details -> Drafter Status Review Again after Reject
+2. Details -> Drafter Status Approved after Approve
+REMARK: 
+
+### 12028_TS46 | Verify the multi-role user can reject as Approver.
+STEPS:
+1. Login to BO as multi-role user
+2. Click [View] on a month with Reviewer Status Approved and Approver Status Pending
+3. Click [Reject]; enter remarks; click [Submit Reject]
+EXPECT:
+Ensure:
+1. Details -> Reviewer Status Review Again
+2. Details -> Audit Log "Approver — Rejected (returned to Reviewer)"
+REMARK: 
+
+### 12028_TS47 | Verify a month with no workflow action shows an empty Audit Log message.
+STEPS:
+1. Login to BO as Drafter
+2. Click [View] on a month with all statuses Pending and no action yet
+EXPECT:
+Ensure:
+1. Details -> Audit Log shows "No activity yet."
+REMARK: 
+
+### 12028_TS48 | Verify the Audit Log carries date/time, role, action/status and remarks, keeps every workflow update, and shows no signature image.
+STEPS:
+1. Login to BO as Drafter
+2. Click [View] on the month from 12028_TS41
+EXPECT:
+Ensure:
+1. Details -> Audit Log columns Date/Time, Role, Action/Status, Remarks
+2. Details -> Reject row shows its remarks in Remarks
+3. Details -> Audit Log keeps all rows in time order: Drafter Approved, Reviewer Approved, Approver Rejected, Reviewer Approved, Approver Approved
+4. Details -> No earlier row removed
+5. Details -> "Drafter — Approved" row shows no signature image
+REMARK: 
+
+### 12028_TS49 | Verify the Payment Request buttons are hidden and the pending note is shown on every month not fully approved.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a month with all statuses Pending
+3. Click [View] on a month with Drafter Status KIV
+4. Click [View] on a month with Drafter Status Approved and Reviewer Status Pending
+5. Click [View] on a month with Drafter Status Review Again
+6. Click [View] on a month with Reviewer Status Approved and Approver Status Pending
+7. Click [View] on a month with Reviewer Status Review Again
+EXPECT:
+Ensure:
+1. Details (each month) -> [FMC Payment Request] and [MMSDA Payment Request] not shown
+2. Details (each month) -> Note "Payment Request documents will be available for download once the Drafter, Reviewer and Approver have all approved."
+REMARK: 
+
+### 12028_TS50 | Verify both Payment Request buttons show once all three roles approved.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a fully approved month
+EXPECT:
+Ensure:
+1. Details -> [FMC Payment Request] and [MMSDA Payment Request] shown
+2. Details -> Pending note not shown
+REMARK: 
+
+### 12028_TS51 | Verify the Drafter can download both Payment Requests of a fully approved month.
+STEPS:
+1. Login to BO as Drafter
+2. Click [View] on a fully approved month
+3. Click [FMC Payment Request]
+4. Click [MMSDA Payment Request]
+EXPECT:
+Ensure:
+1. Browser -> FMC PDF downloaded
+2. Browser -> MMSDA PDF downloaded
+REMARK: 
+
+### 12028_TS52 | Verify the Reviewer can download both Payment Requests of a fully approved month.
+STEPS:
+1. Login to BO as Reviewer
+2. Click [View] on a fully approved month
+3. Click [FMC Payment Request]
+4. Click [MMSDA Payment Request]
+EXPECT:
+Ensure:
+1. Browser -> FMC PDF downloaded
+2. Browser -> MMSDA PDF downloaded
+REMARK: 
+
+### 12028_TS53 | Verify a BO user with no Association role cannot download a Payment Request by its address.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a fully approved month
+3. Copy the [FMC Payment Request] download address
+4. Logout
+5. Login to BO as BO user with no Association role
+6. Open the copied address
+EXPECT:
+Ensure:
+1. Browser -> Access blocked; no PDF downloaded
+REMARK: Manual
+
+### 12028_TS54 | Verify a Payment Request cannot be downloaded by address for a month not fully approved.
+STEPS:
+1. Login to BO as Approver
+2. Copy the [FMC Payment Request] address of a fully approved month
+3. Change the month in the address to a month with Approver Status Pending
+4. Open the changed address
+EXPECT:
+Ensure:
+1. Browser -> Access blocked; no PDF downloaded
+REMARK: Manual
+
+### 12028_TS55 | Verify downloading the same Payment Request twice gives the same document.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a fully approved month
+3. Click [FMC Payment Request] twice
+4. Compare both files
+EXPECT:
+Ensure:
+1. FMC PDF -> Both files show the same content and dates
+REMARK: 
+
+### 12028_TS56 | Verify the FMC Payment Request PDF has the SRD file name, fixed fields, flexible fields and the month's TOTAL Cars (RM) in figures and words.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a fully approved month; note TOTAL Cars (RM) and the Drafter, Reviewer and Approver rows in the Audit Log
+3. Click [FMC Payment Request]
+4. Open the PDF
+EXPECT:
+Ensure:
+1. File name -> "Payment Requisition_FMC_<Month> <Year>.pdf" (eg. "Payment Requisition_FMC_January 2026.pdf")
+2. FMC PDF -> Header "eAuto Sdn. Bhd. 200401038456 (676967-T); Level 15, Sunway Tower; 86, Jalan Ampang; 50450 Kuala Lumpur"
+3. FMC PDF -> Title "ONLINE PAYMENT REQUISITION"
+4. FMC PDF -> To "Finance @ eAuto Sdn Bhd"
+5. FMC PDF -> Attn "Marie Ann"
+6. FMC PDF -> Adds "Level 15, Sunway Tower; 86, Jalan Ampang; 50450 Kuala Lumpur"
+7. FMC PDF -> Date = Approver's approved date as DD-MM-YYYY (eg. "29-07-2026"); not the Finance payment date
+8. FMC PDF -> Requestor = full name of the Drafter who approved
+9. FMC PDF -> Reason for Payment line 1 "eAUTO PAYMENT TO FMCCAM"
+10. FMC PDF -> Reason for Payment line 2 = record month as MON YYYY (eg. "JUN 2026")
+11. FMC PDF -> Account Holder Name "FED OF MOTOR & CREDIT COMPANIES ASSO MSI (PPM-001-14-11041979)"
+12. FMC PDF -> Bank Name "Alliance Bank Malaysia Berhad"
+13. FMC PDF -> Bank Account No. "1404-6001-0016-661"
+14. FMC PDF -> Person in charge "Lai Wooi Ping"
+15. FMC PDF -> Contact Number "03-9200 6880 / 012-4801052"
+16. FMC PDF -> Email Address "cpanet@gmail.com"
+17. FMC PDF -> Amount Payable = Details TOTAL Cars (RM), format XX,XXX.00; motorcycle amount not used
+18. FMC PDF -> Amount in words = Amount Payable figures
+19. FMC PDF -> Prepared by = Drafter's signature + full name + Drafter's approved date as DD-MM-YYYY
+20. FMC PDF -> Checked by = Reviewer's signature + full name + Reviewer's approved date as DD-MM-YYYY
+21. FMC PDF -> Approved by = Approver's signature + full name + Approver's approved date as DD-MM-YYYY
+REMARK: 
+
+### 12028_TS57 | Verify the MMSDA Payment Request PDF has the SRD file name, fixed fields, flexible fields and the month's TOTAL Motorcycles (RM) in figures and words.
+STEPS:
+1. Login to BO as Approver
+2. Click [View] on a fully approved month; note TOTAL Motorcycles (RM) and the Drafter, Reviewer and Approver rows in the Audit Log
+3. Click [MMSDA Payment Request]
+4. Open the PDF
+EXPECT:
+Ensure:
+1. File name -> "Payment Requisition_MMSDA_<Month> <Year>.pdf"
+2. MMSDA PDF -> Header "eAuto Sdn. Bhd. 200401038456 (676967-T); Level 15, Sunway Tower; 86, Jalan Ampang; 50450 Kuala Lumpur"
+3. MMSDA PDF -> Title "ONLINE PAYMENT REQUISITION"
+4. MMSDA PDF -> To "Finance @ eAuto Sdn Bhd"
+5. MMSDA PDF -> Attn "Marie Ann"
+6. MMSDA PDF -> Adds "Level 15, Sunway Tower; 86, Jalan Ampang; 50450 Kuala Lumpur"
+7. MMSDA PDF -> Date = Approver's approved date as DD-MM-YYYY; not the Finance payment date
+8. MMSDA PDF -> Requestor = full name of the Drafter who approved
+9. MMSDA PDF -> Reason for Payment line 1 "eAUTO PAYMENT TO MMSDA"
+10. MMSDA PDF -> Reason for Payment line 2 = record month as MON YYYY in English (eg. "MAY 2026"); no Malay month (eg. "MEI")
+11. MMSDA PDF -> Account Holder Name "MALAYSIA MOTORCYCLE & SCOOTER DEALERS ASSOCIATION (MMSDA)"
+12. MMSDA PDF -> Bank Name "PBB"
+13. MMSDA PDF -> Bank Account No. "308-208-810-3"
+14. MMSDA PDF -> Person in charge "Wee Hong (President)"
+15. MMSDA PDF -> Contact Number "603 9285 6666"
+16. MMSDA PDF -> Email Address "mmsda.kl@gmail.com"
+17. MMSDA PDF -> Amount Payable = Details TOTAL Motorcycles (RM), format XX,XXX.00; car amount not used
+18. MMSDA PDF -> Amount in words = Amount Payable figures
+19. MMSDA PDF -> Prepared by = Drafter's signature + full name + Drafter's approved date as DD-MM-YYYY
+20. MMSDA PDF -> Checked by = Reviewer's signature + full name + Reviewer's approved date as DD-MM-YYYY
+21. MMSDA PDF -> Approved by = Approver's signature + full name + Approver's approved date as DD-MM-YYYY
+REMARK: 
+
+### 12028_TS58 | Verify BO login and the hand-off into Association Payment Listing still work after the core login change, and logging out from the module returns to BO login.
+STEPS:
+1. Login to BO as Drafter
+2. Go to Reports > Association Payment Listing
+3. Click Logout
+4. Press browser Back
+EXPECT:
+Ensure:
+1. BackOffice Home -> Login successful
+2. Association Payment Listing -> Summary page opens; no second login page
+3. Logout -> BO login page shown
+4. Browser Back -> Summary not shown; BO login page shown
+REMARK: 
+
+### 12028_TS59 | Verify a hand-off address that was already used cannot open a second session.
+STEPS:
+1. Login to BO as Drafter
+2. Click Reports > Association Payment Listing; copy the hand-off address from browser history
+3. Logout
+4. Open the copied hand-off address
+EXPECT:
+Ensure:
+1. Browser -> "Token already used" shown; Summary not opened
+REMARK: Manual
+
+### 12028_TS60 | Verify logging out of BO Home also ends the open module tab.
+STEPS:
+1. Login to BO as Drafter
+2. Open Reports > Association Payment Listing in a new tab
+3. Logout from BackOffice Home in the first tab
+4. Refresh the Association Payment Listing tab
+EXPECT:
+Ensure:
+1. Association Payment Listing tab -> Summary not shown; BO login page shown
+REMARK: 
+
+### 12028_TS61 | Verify an expired session on the module returns to the BO login page.
+STEPS:
+1. Login to BO as Drafter
+2. Go to Reports > Association Payment Listing
+3. Leave the page idle past the session timeout
+4. Click [Search]
+EXPECT:
+Ensure:
+1. Browser -> BO login page shown on the eAuto address
+2. Browser -> No error page
+REMARK: 
+
+### 12028_TS62 | Verify a logout address with an outside redirect target still lands on eAuto.
+STEPS:
+1. Login to BO as Drafter
+2. Go to Reports > Association Payment Listing
+3. Change the logout address redirect target to an outside site
+4. Open the changed address
+EXPECT:
+Ensure:
+1. Browser -> Lands on the eAuto BO login page
+2. Browser -> Outside site not opened
+REMARK: Manual
+
+### 12028_TS63 | Verify a session-expiry address with an outside redirect target still lands on eAuto.
+STEPS:
+1. Login to BO as Drafter
+2. Go to Reports > Association Payment Listing
+3. Let the session expire
+4. Change the expiry redirect target to an outside site
+5. Open the changed address
+EXPECT:
+Ensure:
+1. Browser -> Lands on the eAuto BO login page
+2. Browser -> Outside site not opened
+REMARK: Manual
+
+### 12028_TS64 | Verify the same Drafter approving one month from two tabs is recorded once.
+STEPS:
+1. Login to BO as Drafter
+2. Open the same Pending month's Details in two tabs
+3. Click [Approve] in tab 1
+4. Click [Approve] in tab 2
+EXPECT:
+Ensure:
+1. Tab 2 -> Approval rejected
+2. Details -> One "Drafter — Approved" row in Audit Log
+REMARK: 
+
+### 12028_TS65 | Verify the same Reviewer approving one month from two tabs is recorded once.
+STEPS:
+1. Login to BO as Reviewer
+2. Open the same month (Drafter Status Approved) in two tabs
+3. Click [Approve] in tab 1
+4. Click [Approve] in tab 2
+EXPECT:
+Ensure:
+1. Tab 2 -> Approval rejected
+2. Details -> One "Reviewer — Approved" row in Audit Log
+REMARK: 
+
+### 12028_TS66 | Verify the same Approver approving one month from two tabs is recorded once.
+STEPS:
+1. Login to BO as Approver
+2. Open the same month (Reviewer Status Approved) in two tabs
+3. Approve in tab 1 with tomorrow's date
+4. Approve in tab 2 with the day after tomorrow
+EXPECT:
+Ensure:
+1. Tab 2 -> Approval rejected
+2. Details -> One "Approver — Approved" row in Audit Log
+3. Summary -> Payment Date = tab 1 date
+REMARK: 
+
+### 12028_TS67 | Verify the server rejects a Reviewer approval sent before the Drafter approves.
+STEPS:
+1. Login to BO as Reviewer
+2. Send the Reviewer approve request for a month with all statuses Pending (browser dev tools)
+3. Refresh the Details page
+EXPECT:
+Ensure:
+1. Details -> Reviewer Status stays Pending
+2. Details -> No "Reviewer — Approved" row in Audit Log
+REMARK: Manual
+
+### 12028_TS68 | Verify the server rejects an Approver approval sent before the Reviewer approves.
+STEPS:
+1. Login to BO as Approver
+2. Send the Approver approve request for a month with Reviewer Status Pending (browser dev tools)
+3. Refresh the Details page
+EXPECT:
+Ensure:
+1. Details -> Approver Status stays Pending
+2. Summary -> Payment Date "-"
+REMARK: Manual
+
+### 12028_TS69 | Verify the server rejects a Reject request on a fully approved month.
+STEPS:
+1. Login to BO as Approver
+2. Send the Approver reject request for a fully approved month (browser dev tools)
+3. Refresh the Details page
+EXPECT:
+Ensure:
+1. Details -> Approver Status stays Approved
+2. Details -> [FMC Payment Request] and [MMSDA Payment Request] still shown
+REMARK: Manual
+
