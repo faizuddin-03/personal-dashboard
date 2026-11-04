@@ -25,3 +25,18 @@ Plan: `RUN-PLAN.md`. Status values: pass · fail · observed · blocked (environ
 | 12406_QT_TS5 (first run) | **real**, row 44 WXQ3008 (Peugeot 3008 2013) | **PASS** | Allianz (logo) → Tokio Marine → Lonpac "Quotation unavailable" in 3rd place (Q13 position recorded). | `12406_QT_TS5_real-20261104/` |
 | 12406_E2E_TS10 (real API, try c) | **real**, row 44 WXQ3008, FPX RHB | **PASS** | Allianz → Confirmation → plan Edit → "Change your insurance plan?" → Change → Tokio Marine, RM682.66. Confirmation and Success do not name Allianz. Receipt Insurer "Tokio Marine Insurans (Malaysia) Berhad" / "198601000381 (149520-U)", no Allianz number. CIBO **BR6N006404** "TokioMarine / Pemaju Eksklusif", Details "Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)". | `12406_E2E_TS10_real-20261104-c-WXQ3008/` |
 | 12406_E2E_TS4 (real API) | **real**, row 29 WA7788X (Ativa 2022), SPayLater | **PASS** | ShopeePay simulator (QR link → Success → Proceed to Pay). Receipt 26110421300014, RM1,307.40 = Confirmation. CIBO **BR6N006405** "Fiuu \| eWallet – ShopeePay", Insurance created, Ref ID ALZ20261104SEW0011. Cover Note "-" (Q44), D2 again (RM1,221.30). | `12406_E2E_TS4_real-20261104/` |
+
+## Progress at end of day 2026-11-04 (Azfar 30.10 + Claude 04.11)
+
+Latest result per TS (today's run where it ran, else Azfar's hand-over result), out of 46:
+**24 pass · 3 fail · 7 KIV · 1 blocked · 1 re-run · 9 not run · 1 deprioritised = 24/46 (52.17%) pass only.**
+
+- Pass 24: Azfar's 19 (CP_TS1–6, CP_TS8, QT_TS1, E2E_TS4/5/9/10, RC_TS3/5/6/9/10, RG_TS1/3) + new today QT_TS2, QT_TS4, QT_TS5, QT_TS6, RG_TS2. QT_TS1, E2E_TS4, E2E_TS9, E2E_TS10 also passed again on the real API.
+- Fail 3: RC_TS1, RC_TS2, RC_TS8 (D1 = EAINT-12764, D2 = EAINT-12765).
+- KIV 7: E2E_TS1–3 (Q44 no Allianz cover note), QT_TS7 (BA, document dates), RC_TS11, CP_TS7 and E2E_TS8 (production, after go-live).
+- Blocked 1: E2E_TS12 (Q46, over MYR 2,000 on the Fiuu sandbox).
+- Re-run 1: RC_TS4 (E5). Not run 9: the 8 orange ON HOLD + RC_TS7. Deprioritised: RG_TS4.
+- Raised today: EAINT-12764 (D1, Low), EAINT-12765 (D2, High), EAINT-12766 ("Invalid fullName", High), all To Do, Dev Mong Guo Hao.
+
+Dashboard: `/eauto/12406` (Azfar + Claude chips, overall line), TS Tracker via `scripts/claude-run/results/EAINT-12406.json`
+(built by `node scripts/claude-run/build-results-12406.mjs` from `lib/eauto12406.ts`), `/jira/studies`.

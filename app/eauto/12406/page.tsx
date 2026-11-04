@@ -4,7 +4,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { ShieldCheck, Play, Square, Loader2, Copy, Check, ChevronDown, ChevronRight, FolderOpen, BookOpen, AlertTriangle } from "lucide-react";
 import { DeploySoonHeader } from "@/lib/useDeployReminder";
-import { TS_12406, SHEETS_12406, type AzfarResult } from "@/lib/eauto12406";
+import { TS_12406, SHEETS_12406, CLAUDE_12406, latest12406, type AzfarResult } from "@/lib/eauto12406";
 
 // EAINT-12406 — [Secarang-Allianz] To Allow and Display Allianz in Secarang
 // Including Logo and Wording. Release S35.5, 6 Nov 2026.
@@ -185,6 +185,11 @@ export default function Page() {
     for (const t of TS_12406) c[t.azfar] = (c[t.azfar] ?? 0) + 1;
     return c;
   }, []);
+  const latestCounts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const t of TS_12406) { const r = latest12406(t); c[r] = (c[r] ?? 0) + 1; }
+    return c;
+  }, []);
 
   async function run() {
     setError("");
@@ -229,7 +234,9 @@ export default function Page() {
       <div className="p-4 sm:p-6 space-y-5">
         <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-xs text-slate-400 space-y-1.5">
           <p><span className="text-slate-200 font-medium">Handed over by Azfar, 2026-11-03.</span> This page runs his automation as is (scripts/eauto-12406, copy of github.com/modefair/eauto-qa-azfar). His gate decides each TS; evidence goes to cr/EAINT-12406/05-evidence.</p>
-          <p>His result at hand-over (30.10): {(["pass", "fail", "kiv", "blocked", "rerun", "none", "deprio"] as AzfarResult[]).map(r => `${AZFAR_CHIP[r].label} ${counts[r] ?? 0}`).join(" · ")}. Defects D1 and D2 are drafted, not raised.</p>
+          <p>His result at hand-over (30.10): {(["pass", "fail", "kiv", "blocked", "rerun", "none", "deprio"] as AzfarResult[]).map(r => `${AZFAR_CHIP[r].label} ${counts[r] ?? 0}`).join(" · ")}.</p>
+          <p><span className="text-slate-200 font-medium">Claude-driven run, 04.11 (real Allianz UAT API):</span> {Object.keys(CLAUDE_12406).length} TS run. Latest per TS: {(["pass", "fail", "kiv", "blocked", "rerun", "none", "deprio"] as AzfarResult[]).map(r => `${AZFAR_CHIP[r].label} ${latestCounts[r] ?? 0}`).join(" · ")}. <span className="text-emerald-300 font-medium">Overall {latestCounts.pass ?? 0}/{TS_12406.length} ({+(((latestCounts.pass ?? 0) / TS_12406.length) * 100).toFixed(2)}%) pass only.</span></p>
+          <p>Raised 04.11: <a href="https://mfservices.atlassian.net/browse/EAINT-12764" target="_blank" rel="noreferrer" className="text-indigo-300 hover:text-indigo-200">EAINT-12764</a> D1 company number line (Low) · <a href="https://mfservices.atlassian.net/browse/EAINT-12765" target="_blank" rel="noreferrer" className="text-indigo-300 hover:text-indigo-200">EAINT-12765</a> D2 Premium after NCD (High) · <a href="https://mfservices.atlassian.net/browse/EAINT-12766" target="_blank" rel="noreferrer" className="text-indigo-300 hover:text-indigo-200">EAINT-12766</a> &quot;Invalid fullName&quot; (High). Waiting on Dev: Q44 Allianz cover note, Q46 sandbox over RM2,000. Results: _reference/tickets/EAINT-12406/claude-run-2026-11-04/RESULTS.md.</p>
           <p className="flex flex-wrap gap-3">
             <Link href="/jira/studies" className="inline-flex items-center gap-1 text-indigo-300 hover:text-indigo-200"><BookOpen size={12} /> Ticket study</Link>
             <a href="https://claude.ai/artifact/7xguCHVWNb2oXDKgpDyZWT" target="_blank" rel="noreferrer" className="text-indigo-300 hover:text-indigo-200">Azfar&apos;s TS board</a>
@@ -334,6 +341,7 @@ export default function Page() {
                         </span>
                         {!t.automated && <span className="text-[10px] text-slate-600 shrink-0">manual / on hold</span>}
                         <span title="Azfar's result at hand-over (30.10)" className={clsx("text-[10px] px-1.5 py-0.5 rounded border shrink-0", AZFAR_CHIP[t.azfar].cls)}>Azfar: {AZFAR_CHIP[t.azfar].label}</span>
+                        {CLAUDE_12406[t.id] && <span title={`Claude-driven run 04.11, real API: ${CLAUDE_12406[t.id].note}`} className={clsx("text-[10px] px-1.5 py-0.5 rounded border shrink-0", AZFAR_CHIP[CLAUDE_12406[t.id].r].cls)}>Claude 04.11: {AZFAR_CHIP[CLAUDE_12406[t.id].r].label}</span>}
                         {mine && (
                           <button onClick={e => { e.stopPropagation(); setOpen(isOpen ? null : t.id); }} title={`Last run on this PC: ${mine.run ?? ""} ${mine.at ?? ""}`} className={clsx("inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border shrink-0", verdictCls(mine.verdict))}>
                             <FolderOpen size={10} /> {verdictLabel(mine.verdict)}

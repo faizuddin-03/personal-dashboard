@@ -425,3 +425,31 @@ export const TS_12406: Ts12406[] = [
     "note": "Deprioritised: eAuto and Secarang are different systems"
   }
 ];
+
+// ── Claude-driven run, 2026-11-04 (Faizuddin's session; Claude ran the TS in its own browser, Azfar's
+// recording style). Staging /ia/ is on Allianz's REAL UAT API since 04.11, so these are real-API results.
+// Source: _reference/tickets/EAINT-12406/claude-run-2026-11-04/RESULTS.md (evidence folders listed there).
+// scripts/claude-run/build-results-12406.mjs reads this block (one entry per line) for the TS Tracker.
+export const CLAUDE_12406_DATE = "2026-11-04";
+export const CLAUDE_12406: Record<string, { r: AzfarResult; note: string }> = {
+  "12406_RC_TS1": { r: "fail", note: "Rerun: D1 (EAINT-12764) on today's receipt 26110421300001 and CIBO BR60006350-52; E10 D2 (EAINT-12765) 379.88 vs 359.88" },
+  "12406_RC_TS2": { r: "fail", note: "Rerun: CIBO receipt BR60006349 still has D1 (EAINT-12764); E3/E4 match" },
+  "12406_RC_TS8": { r: "fail", note: "Rerun: BR55004010 receipt still D1 (EAINT-12764); E4 Transaction Details match" },
+  "12406_QT_TS7": { r: "kiv", note: "Rerun, real API: PDS 03/06/2020 and Privacy Notice 3 March 2020 are not 2022 (BA); Claim Guide image-only" },
+  "12406_E2E_TS1": { r: "kiv", note: "Real API BR6N006394: E1-E6 pass, no cover note / policy / e-Cert (Q44). First tries failed 'Invalid fullName' (EAINT-12766)" },
+  "12406_E2E_TS2": { r: "kiv", note: "Real API BR6N006396, card + RJC7: E1, E2, E4 match; no cover note (Q44)" },
+  "12406_E2E_TS3": { r: "kiv", note: "Real API BR6N006397, PayLater by Grab settled: no cover note (Q44)" },
+  "12406_E2E_TS12": { r: "blocked", note: "Real API: RM6,219.60 over the MYR 2,000 sandbox limit, Grab window blank (Q46)" },
+  "12406_QT_TS1": { r: "pass", note: "Real API row 22 JXH1451: Lonpac > Allianz > Tokio Marine, postcode Edit re-quotes" },
+  "12406_QT_TS2": { r: "pass", note: "First run, real API row 33: Allianz 'Quotation unavailable' after Tokio Marine" },
+  "12406_QT_TS4": { r: "pass", note: "First run, real API: Lonpac bought BR6N006399, got Cover Note A2984745 at once (Q44 is Allianz-only)" },
+  "12406_QT_TS5": { r: "pass", note: "First run, real API row 44: Allianz > Tokio Marine > Lonpac unavailable" },
+  "12406_QT_TS6": { r: "pass", note: "First run, real API row 29: Lonpac > Allianz > Tokio Marine unavailable" },
+  "12406_RG_TS2": { r: "pass", note: "Rerun (was RE-RUN): BR60006309 and today's BR6N006399 show Lonpac Insurance Berhad unchanged" },
+  "12406_E2E_TS9": { r: "pass", note: "Real API BR6N006401: all 7 points; gender does not re-price on the real API (recorded)" },
+  "12406_E2E_TS10": { r: "pass", note: "Real API BR6N006404: Allianz > plan Edit > Change > Tokio Marine; receipt and CIBO Tokio Marine only" },
+  "12406_E2E_TS4": { r: "pass", note: "Real API BR6N006405: SPayLater (ShopeePay simulator) Success, CIBO 'eWallet - ShopeePay'" },
+};
+
+/** Latest result per TS: today's Claude run where it ran, else Azfar's at hand-over. */
+export const latest12406 = (t: Ts12406): AzfarResult => CLAUDE_12406[t.id]?.r ?? t.azfar;

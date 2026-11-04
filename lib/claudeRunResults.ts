@@ -55,10 +55,12 @@ export function readClaudeRunResults(): { results: ClaudeRunResult[]; errors: { 
  * TS only in the run file are appended. The official sheet's own cells come first.
  */
 export function mergeRunIntoCases(official: OfficialCase[], run: ClaudeRunResult): OfficialCase[] {
-  const norm = (ts: string) => ts.replace(/\s+/g, "").toUpperCase();
+  // "12028_TS01" matches "TS01"; the ticket-number prefix is dropped, the rest must be equal
+  // (a last-segment match would pair 12406_QT_TS10 with 12406_TS10 or RC_TS10).
+  const norm = (ts: string) => ts.replace(/\s+/g, "").toUpperCase().replace(/^\d+_/, "");
   const out = official.map(c => ({ ...c, cells: [...c.cells] }));
   for (const rc of run.cases) {
-    const hit = out.find(c => norm(c.ts) === norm(rc.ts) || norm(c.ts).endsWith("_" + norm(rc.ts).split("_").pop()));
+    const hit = out.find(c => norm(c.ts) === norm(rc.ts));
     if (hit) hit.cells.push(...rc.cells.filter(x => !hit.cells.some(y => y.column === x.column)));
     else out.push({ ...rc, cells: [...rc.cells] });
   }

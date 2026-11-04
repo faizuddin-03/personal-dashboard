@@ -192,6 +192,13 @@ whats happening" `[Faizuddin, session chat, 2026-11-04]`
    - Fields: `key`, `title`, `column` (e.g. "Claude uat1 04-11"), and
      `cases[{ sheet, section, ts, objective, cells:[{ column, status }] }]`.
    - Status is one of Pass / Fail / Blocked / Not Started / In Progress / N/A.
+   - EAINT-12406: `node scripts/claude-run/build-results-12406.mjs` reads `lib/eauto12406.ts`
+     (`TS_12406[].azfar` = Azfar's 30.10 result, `CLAUDE_12406` = the 04.11 Claude run) and writes
+     two columns, "Azfar sim 30-10" and "Claude real-API 04-11". KIV maps to Blocked, RE-RUN to In
+     Progress; an Azfar RE-RUN that a Claude run settled is dropped so the newer result shows.
+     `[Faizuddin, session chat, 2026-11-04: "update this repo and the dashboard the progress for 12406, including azfar's progress"]`
+   - TS ids match the official sheet after dropping the ticket-number prefix (`12028_TS01` = `TS01`);
+     a last-segment match was removed 04.11 because it paired `12406_QT_TS10` with `RC_TS10`.
 2. **Route:** `/api/ts-tracker/official` (`lib/claudeRunResults.ts`) serves those files
    alongside the official TS sheets.
    - If the ticket has an official sheet on this laptop, the run is an extra result column.

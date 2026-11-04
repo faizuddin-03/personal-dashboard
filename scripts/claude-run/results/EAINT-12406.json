@@ -1,0 +1,565 @@
+{
+  "key": "EAINT-12406",
+  "title": "[Secarang-Allianz] To Allow and Display Allianz in Secarang Including Logo and Wording",
+  "column": "Claude real-API 04-11",
+  "environment": "Secarang staging /ia/ + CIBO",
+  "ranAt": "2026-11-04",
+  "details": "_reference/tickets/EAINT-12406/claude-run-2026-11-04/RESULTS.md; Azfar's 30.10 results: _reference/tickets/EAINT-12406/EAINT-12406-azfar-STATUS-20261103.md",
+  "cases": [
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS1",
+      "objective": "Home page insurer logos show Allianz between Lonpac and Tokio Marine",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS2",
+      "objective": "About Us > Our partnership shows the new Allianz wording",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS3",
+      "objective": "FAQs > 'Which insurers can I get instant quotation from?' lists Lonpac, Allianz, Tokio Marine and no other insurer",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS4",
+      "objective": "Support > Need to contact insurance company? shows an Allianz section between Lonpac and Tokio Marine, in the same format, and no other insurer",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS5",
+      "objective": "Support: expand the Allianz section (one helpline line and the towing sentence), then collapse it",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS6",
+      "objective": "Look of the changed blocks against the Secarang mockup 20261015: font, colour, bullets, icons, spacing, alignment; no mockup review marks on the site",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS7",
+      "objective": "Production after go-live, look only (no payment): Allianz logo, Allianz quotation card, About Us, FAQs and Support on secarang.com. The same quotation goes on to the payment page in 12406_E2E_TS8",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS8",
+      "objective": "BEFORE the deploy: capture Home logos, All Quotations, About Us, every FAQ and Support on staging. AFTER: the same pages differ only by the Allianz changes",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "A. Secarang pages",
+      "ts": "12406_CP_TS9",
+      "objective": "[ON HOLD: no source for Terms of Use (Q22)] Terms of Use (and Privacy / Refund Policy): do they list insurers, and is Allianz there?",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS1",
+      "objective": "All three insurers quote: Allianz quotation shown with its logo, in the order Lonpac, Allianz, Tokio Marine; no other insurer",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS2",
+      "objective": "Allianz gives no quotation, Lonpac and Tokio Marine do: 'Allianz – Quotation unavailable' card after Tokio Marine",
+      "cells": [
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS3",
+      "objective": "[ON HOLD: needs Azfar's real company number (Q40)] Company vehicle (Company tab, company SSM): what Secarang shows before and after the deploy. SRD REQ-003 says 'Allianz shown as unavailable'; today no Secarang insurer supports company owners",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS4",
+      "objective": "Individual owner, non-renewal: Allianz shown as unavailable; the customer still buys Lonpac to the end (normal flow, non-renewal)",
+      "cells": [
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS5",
+      "objective": "Lonpac gives no quotation: Allianz then Tokio Marine",
+      "cells": [
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS6",
+      "objective": "Tokio Marine gives no quotation: Lonpac then Allianz",
+      "cells": [
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS7",
+      "objective": "Allianz product documents open: policy wording, product disclosure sheet, privacy notice, claim guide; Plan Details (from the quotation card and from Confirmation) and Excess info, with the links inside them",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Blocked"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS8",
+      "objective": "[ON HOLD: /ia/motorcycle-insurance does not exist (Q19)] Motorcycle tab: individual-owner renewal of a motorcycle; which insurers quote, does Allianz appear",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS9",
+      "objective": "[ON HOLD: needs Dev's simulator set-up (Q35)] Allianz quotation service gives an error or no answer: Allianz unavailable card, the others as usual, the page does not hang",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "B. Quotation",
+      "ts": "12406_QT_TS10",
+      "objective": "[ON HOLD: needs Dev's simulator set-up (Q36)] Allianz refers the quotation (refer-risk): what the customer sees, CIBO 'Pending approval' / Referred Risk Log; also with Allianz the only insurer available",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS1",
+      "objective": "Secarang home form > All Quotations > Allianz > Add-ons > Confirmation > FPX Online banking > Success > CIBO Transaction Details, cover note, e-Certificate",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Blocked"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS2",
+      "objective": "Allianz purchase paid by Credit or Debit Card, discount code tried: All Quotations > Add-ons > Confirmation > card + 3D Secure > Success > CIBO",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Blocked"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS3",
+      "objective": "Allianz purchase paid by PayLater by Grab: All Quotations > Add-ons > Confirmation > GrabPay sandbox > Success > CIBO",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Blocked"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS4",
+      "objective": "Allianz purchase paid by SPayLater (ShopeePay simulator): All Quotations > Add-ons > Confirmation > SPayLater QR > Success > CIBO",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS5",
+      "objective": "Allianz payment fails (FPX simulator status not 00), then is cancelled (SPayLater), then the customer pays by FPX: messages on the payment page, CIBO status, final purchase",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS6",
+      "objective": "[ON HOLD: cover note failure cannot be set up: today Allianz gives no cover note at all on staging (Q44, Dev)] Allianz paid, then cover note submission fails (vehicle prefix VB) or JPJ rejects (prefix VF)",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS7",
+      "objective": "[ON HOLD: MacroKiosk: BoldPay on /ia/ may be production, and the reminder cron cannot be triggered (Q7)] MacroKiosk renewal flow: WhatsApp reminder > [Renew Now] / [Pay Now] link > Secarang Step 4 Confirmation > BoldPay > CIBO (platform Secarang-MK): is Allianz offered? (the SA brief lists it in its tests)",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS8",
+      "objective": "Production after go-live: Allianz quotation > Add-ons > Confirmation > payment page, STOP (no payment); the CIBO record this creates shows the Allianz company number",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS9",
+      "objective": "Allianz add-ons and Confirmation: pick Tokio Marine first, go back to Allianz; tick / untick add-ons; Confirmation (gender, PIAM 'i' pop-up); pay; same add-ons on receipt and CIBO",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS10",
+      "objective": "Customer picks Allianz, goes back and buys Tokio Marine instead: receipt and CIBO show Tokio Marine with its own company number, nothing of Allianz. This is also the Tokio Marine purchase read by 12406_RG_TS1, RC_TS1, RC_TS3, RC_TS4",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS11",
+      "objective": "[ON HOLD: road tax (Q25)] Allianz purchase with road tax renewal, if the homepage flow offers road tax",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "C. Allianz purchase",
+      "ts": "12406_E2E_TS12",
+      "objective": "Allianz add-on options one by one, then a purchase with ALL add-ons ticked (Zurich's all-add-ons purchase failed)",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Blocked"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS1",
+      "objective": "Secarang receipt of an Allianz purchase shows the Allianz name with the new company number below it, laid out as Tokio Marine, and the Serba Sentral agent line",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Fail"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS2",
+      "objective": "CIBO user opens the receipt of an Allianz transaction: same Allianz name and company number",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Fail"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS3",
+      "objective": "CIBO Transaction Details of an Allianz transaction: company registration number below the insurer name; Allianz logo; agency Serba Sentral",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS4",
+      "objective": "CIBO Transaction Management: Allianz picked in the Insurance Company filter (Serba Sentral group); Allianz rows show Ins. Co. Allianz over the agency badge Serba Sentral, styled like other rows; the CSV export matches the screen",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "In Progress"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS5",
+      "objective": "CIBO Payment Report shows the Allianz sales under agency Serba Sentral; Payment Management shows them under their Fiuu channel",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS6",
+      "objective": "CIBO Commission Report shows the Allianz purchase made with a discount code under agency Serba Sentral, with its commission; purchases without a code are not listed (as before the deploy)",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS7",
+      "objective": "Every customer message after an Allianz purchase: payment-success / receipt WhatsApp, policy-created WhatsApp, e-Receipt email, insurer e-Certificate email; the attached receipt shows the new Allianz company number",
+      "cells": []
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS8",
+      "objective": "Allianz transactions created before the change (Secarang, before May 2025; non-final ones from 2023-2024): receipt and Transaction Details before and after the deploy",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Fail"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS9",
+      "objective": "Allianz transaction not paid (left at Payment methods): CIBO shows it Pending payment / Unpaid, without Receipt or e-Certificate; later Quotation expired",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS10",
+      "objective": "CIBO Transaction Management with Allianz rows: search by Ref. No. / plate / owner name / ID, Platform, Insurance Company combined with Transaction Status and Discount Code, Clear all, Print, no result",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "D. Receipt and CIBO",
+      "ts": "12406_RC_TS11",
+      "objective": "CIBO > CRM: the customer record of the Allianz buyer of E2E_TS1 (ID details and the vehicle card)",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "E. Regression",
+      "ts": "12406_RG_TS1",
+      "objective": "Tokio Marine receipt (Secarang and CIBO) and Transaction Details: same as captured on 28.10, before the deploy, and on a new purchase after it",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "E. Regression",
+      "ts": "12406_RG_TS2",
+      "objective": "Lonpac receipt (Secarang and CIBO) and Transaction Details: same as captured on 28.10, before the deploy, and on a new purchase after it",
+      "cells": [
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "E. Regression",
+      "ts": "12406_RG_TS3",
+      "objective": "CIBO Transaction Details and receipt of an RHB transaction: same as captured on 28.10",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "EAINT-12406 TS board",
+      "section": "E. Regression",
+      "ts": "12406_RG_TS4",
+      "objective": "eAuto UCD Insurance: the insurer order on the quotation step, captured before and after the Secarang deploy (observed)",
+      "cells": [
+        {
+          "column": "Azfar sim 30-10",
+          "status": "N/A"
+        }
+      ]
+    }
+  ]
+}
