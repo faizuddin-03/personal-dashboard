@@ -81,6 +81,10 @@ export async function expectNote(d: AplDetailsPage, ts: string, text: string): P
  * line 126 "You hold APPROVER for this module, but it is not your turn yet." and line 132
  * "Awaiting the next role in the approval sequence." The Drafter / Reviewer wording follows the
  * same pattern [unconfirmed: only the APPROVER line is captured].
+ * 2026-11-04: the live build no longer has #wf-not-your-turn or this note; it shows a per-role note in
+ * #ap-note instead (e.g. "Waiting for the Drafter. You can act once the Drafter has approved."). The TS
+ * workbook says something else again ("Waiting for the Drafter to approve first.", buttons "disabled").
+ * Which wording to expect is Faizuddin's call (FAILS-AND-BLOCKS F3/F4) — left unchanged until then.
  */
 export async function expectNotYourTurn(d: AplDetailsPage, ts: string, role: 'Drafter' | 'Reviewer' | 'Approver'): Promise<void> {
   await expectButtons(d, ts, { absent: role === 'Drafter' ? ['Approve', 'KIV'] : ['Approve', 'Reject'] });

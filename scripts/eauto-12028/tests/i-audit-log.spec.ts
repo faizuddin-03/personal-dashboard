@@ -9,7 +9,9 @@ import { AplDetailsPage } from '../pages/AplDetailsPage';
 import { parseWhen } from '../utils/format';
 
 // I. Audit log — 12028_TS47 to TS48. As the Drafter.
-// [unconfirmed] the Audit Log table is not captured live (mock-up #tbl-log).
+// Audit Log live on uat1 (Claude run 2026-11-04, 12028_TS48/02-audit-log.png): columns When | Actor | Role |
+// Action | Payment Date | Remarks, NEWEST row first, Action words "Approved (signed)", "KIV", "Undo KIV",
+// "Rejected (returned to Drafter|Reviewer)".
 
 test('12028_TS47: New month Audit Log shows No workflow actions recorded yet', tagOf('12028_TS47'), async ({ page }) => {
   const ts = '12028_TS47';

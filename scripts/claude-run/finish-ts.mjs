@@ -39,7 +39,9 @@ function findFfmpeg() {
 const notes = [];
 const problems = [];
 const main = path.join(dir, `video_${r.ts}.webm`);
-const wins = (r.windows || []).filter((w) => w.file && !String(w.file).startsWith('video-fail') && fs.existsSync(path.join(dir, w.file)));
+// A blink window (about:blank, open < 1 s, e.g. right after the Fiuu window closes) is noted, not laid in.
+const blink = (w) => w.url === 'about:blank' && w.closedAt != null && w.closedAt - w.at < 1;
+const wins = (r.windows || []).filter((w) => !blink(w) && w.file && !String(w.file).startsWith('video-fail') && fs.existsSync(path.join(dir, w.file)));
 const mmss = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${(s % 60).toFixed(1).padStart(4, '0')}`;
 for (const w of r.windows || []) notes.push(`payment window ${w.n} on the TS video ${mmss(w.at)}–${w.closedAt != null ? mmss(w.closedAt) : 'end'} (${w.url || '-'})`);
 if (wins.length) {

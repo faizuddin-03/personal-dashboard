@@ -293,7 +293,7 @@ TS36 (Faizuddin), then TS37, TS39–TS42, TS50–TS57 and TS66.
      "(PPM-…)" on the Address row).
 4. **SETUP-06:** `eautonurul` approved **March as Reviewer**, so Faizuddin has a Reviewer Approved
    month for **TS36 tomorrow** (log in as `kmcheah`, View March, Approve, sign, tomorrow's date).
-5. **Totals:** 33 pass · 15 fail · 18 blocked · 1 (TS36) for Faizuddin · 2 not in this run. The
+5. **Totals:** 32 pass · 16 fail (TS48 corrected from pass to fail in the evening, F14) · 18 blocked · 1 (TS36) for Faizuddin · 2 not in this run. The
    TS Tracker has been rebuilt.
 6. **Not committed yet** (since `c8b435c`): all of 4f / 4g, the recorder `approverApprove`
    helper and the knowledge updates.
@@ -410,3 +410,31 @@ TS36 (Faizuddin), then TS37, TS39–TS42, TS50–TS57 and TS66.
 - Step plan ready: `BRIEF-E2E_TS1-TS9.md` in the run folder.
 
 **Next:** once the browser is free, run E2E_TS1 (real API, FPX), then E2E_TS9 (gender re-pricing).
+
+## 4h. Evening: automation (`scripts/eauto-12028`) cross-checked against the live run
+
+Faizuddin: "cross check that with the automation, and if the automation codes are incorrect, fix those".
+
+**Fixed in code (typecheck passes, not run against staging):**
+1. `pages/AplDetailsPage.ts` `checkLogRowFormat`: the expected Reject action was
+   "Rejected — returned to Drafter" (mock-up form), which would fail a correct build. Changed it to
+   "Rejected (returned to Drafter|Reviewer)", the wording in TS30, SRD REQ-015 Examples 4/6, and the live log.
+2. `tests/m-session.spec.ts` TS64–66: the refusal in tab 2 is a message on the page ("Someone else
+   already actioned this month. Please refresh and try again."), not a browser alert. The run log
+   used to record "(none)"; it now records the page message as well.
+3. Comments updated with today's verified facts: `#wf-not-your-turn` is gone (AplDetailsPage,
+   checks.ts); the server refuses forced past or today dates (expected.ts); the live Audit Log
+   columns and newest-first order (i-audit-log.spec.ts).
+
+**Not changed: these need Faizuddin's decision.** The suite, the TS workbook and the live build
+each use different wording:
+
+| TS | TS workbook | Suite expects | Live build |
+|---|---|---|---|
+| TS28 / TS35 | Buttons "disabled"; "Waiting for the Drafter/Reviewer to approve first." | Buttons not rendered; "You hold <ROLE> … not your turn yet." + "Awaiting the next role …" (2 Nov capture) | Not rendered; per-role notes (F3/F4) |
+| TS37 blank date | "Please select a payment date." | "Please pick a future payment date." (2 Nov capture), so the suite PASSES where the TS fails | "Please pick a future payment date." |
+| TS47 | "No activity yet." | "No workflow actions recorded yet." (2 Nov capture) | not seen (no empty month) |
+| TS48 | Date/Time, Role, Action/Status, Remarks; time order | + Payment Date, Actor ignored; oldest first | When/Actor/Role/Action/Payment Date/Remarks; newest first |
+
+**Correction to this run:** TS48 was first marked pass. It is now **fail (F14)** for the column
+names and the newest-first order. Totals are now 32 pass · 16 fail · 18 blocked.

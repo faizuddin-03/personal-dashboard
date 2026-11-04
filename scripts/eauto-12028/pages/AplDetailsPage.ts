@@ -33,7 +33,10 @@ export class AplDetailsPage extends AplBase {
   // DETAILS2 lines 151-159 `<div class="ap-note …" id="ap-note" role="status"> … <span class="ap-note-text">Your turn as Drafter. …</span>`
   // (was DETAILS lines 128-133 `.wf-note`)
   note = () => this.page.locator('#ap-note .ap-note-text, #wf-bar .wf-note');
-  // DETAILS line 126 `#wf-not-your-turn`. [unconfirmed] not in DETAILS2 (a Drafter on its own turn); the new build may say it in #ap-note instead.
+  // DETAILS line 126 `#wf-not-your-turn`. GONE since the 2026-11-03 rebuild [verified: Claude run uat1 2026-11-04, TS25/28/35]:
+  // not-your-turn is now only a per-role note in #ap-note (knowledge/flow-association-payment-listing.md
+  // "Notes per role and state after the 2026-11-04 deploy"). Kept so the TS wording check fails with a plain reason
+  // until Faizuddin decides the expected wording (FAILS-AND-BLOCKS F3/F4).
   notYourTurn = () => this.page.locator('#wf-not-your-turn');
   // DETAILS2 lines 111-126 `<span class="ap-chip …" id="chip-drafter"> … <span class="ap-chip-status st-pending"><span>Pending · your turn</span>`
   // (was DETAILS lines 102-106 `#pill-drafter` "Pending")
@@ -409,7 +412,7 @@ export class AplDetailsPage extends AplBase {
 
   /**
    * The words and shapes of one Audit Log row, against the expected results (SA mock-up lines 329 and 548; TS 12028_TS20/TS21: "Drafter — Approved", "Drafter — KIV"):
-   * Role "Drafter" (not "DRAFTER"), Action "Approved (signed)" / "KIV" / "Rejected — returned to <role>" (not "APPROVE"),
+   * Role "Drafter" (not "DRAFTER"), Action "Approved (signed)" / "KIV" / "Rejected (returned to <role>)" (not "APPROVE"),
    * When "DD-MM-YYYY HH:mm" (not "02 Nov 2026 15:36"). Empty Remarks / Payment Date are not checked (dropped 2026-11-03).
    * The Actor column and the Pending / Approved status words are NOT held to the mock-up (Faizuddin, 2026-11-02: the mock-up is wrong for those only). Every mismatch is named in plain words.
    */
@@ -423,7 +426,10 @@ export class AplDetailsPage extends AplBase {
     const key = `log-${role}-${action}`.toLowerCase();
     await this.logMismatch(`${key}-role`, cell(C.role), `${who}, Role`, e.role, role, `"${role}"`);
     // Approved: "Approved (signed)" (SA mock-up lines 519-523; Faizuddin, dashboard chat 2026-11-02).
-    const wantAction = action === 'Rejected' ? `Rejected — returned to ${role === 'Reviewer' ? 'Drafter' : 'Reviewer'}` : action === 'Approved' ? 'Approved (signed)' : action;
+    // Rejected: "Rejected (returned to Drafter)" / "Rejected (returned to Reviewer)" — TS 12028_TS30 expected result 5,
+    // SRD v1.1 REQ-015 Examples 4 and 6. Was "Rejected — returned to …" (mock-up form), which failed a correct build:
+    // the live uat1 log shows the SRD form (Claude run 2026-11-04, 12028_TS30 / TS38 / TS48 evidence).
+    const wantAction = action === 'Rejected' ? `Rejected (returned to ${role === 'Reviewer' ? 'Drafter' : 'Reviewer'})` : action === 'Approved' ? 'Approved (signed)' : action;
     await this.logMismatch(`${key}-action`, cell(C.action), `${who}, Action`, e.action, wantAction, `"${wantAction}"`);
     await this.logMismatch(`${key}-when`, cell(C.when), `${who}, When`, e.time, /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}$/, '"DD-MM-YYYY HH:mm" (e.g. "02-11-2026 15:36")');
     // Empty Payment Date / Remarks cells are not checked for "-" (Faizuddin, dashboard chat 2026-11-03: "drop those for now").

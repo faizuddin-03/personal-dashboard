@@ -45,6 +45,7 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
 | F10 | TS39, TS25 / TS33 Full parts | TS out of date | One "Fully approved on … Finance pay date … PDFs are ready below." note for every role | open |
 | F11 | TS54 (+ TS69 message) | Fail as written, low risk | PDF address ignores the month in the path (serves by id); TS69 refusal message names the Reviewer | open |
 | F12 | TS37 | Wording + observation | Blank alert "Please pick a future payment date."; the page posts past dates and only the server refuses | open |
+| F14 | TS48 | TS out of date / decision | Audit Log column names (When, Action vs Date/Time, Action/Status) and row order (newest first vs oldest first); first marked pass by mistake | open |
 | F13 | TS56 / TS57 PDFs | Check | Header ".Bhd." typo copied from the mock-up; FMC "(PPM-…)" printed on the Address row | open |
 | B15 | TS42 | Blocked | No unsigned Approver left except `kmcheah` (kept for TS36) | open |
 | F9 | 12028_TS61 | Possible defect | Warning shows at 13 min, but still signed in after 16 min idle (page says 15 min) | open |
@@ -336,6 +337,21 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
 - **Evidence:** `12028_TS37/` (the first run stopped after the forced-today step),
   `12028_TS37-part2-dates/` (today / yesterday / typed / pasted, with the POST bodies),
   `12028_TS37-check-after/` (February untouched).
+
+## F14 · 12028_TS48: Audit Log column names and row order (corrected from pass)
+
+- **Classification:** TS out of date / decision. Found on 2026-11-04 evening while cross-checking the
+  automation (`scripts/eauto-12028/tests/i-audit-log.spec.ts`) against this run: the run had marked
+  TS48 pass by reading the columns and order loosely.
+- **TS expected:** "Audit Log columns Date/Time, Role, Action/Status, Remarks" and "keeps all rows in
+  time order". The suite adds Payment Date (SRD REQ-015 Example 5), leaves Actor out, and reads "time
+  order" as **oldest first** (SA mock-up adds rows at the bottom).
+- **Actual (September, `02-audit-log.png`):** columns **When | Actor | Role | Action | Payment Date |
+  Remarks**; rows listed **newest first** (04-11-2026 12:35 at the top, 02-11-2026 13:44 at the
+  bottom).
+- **Passed:** reject remarks shown; all 15 rows kept; the reject-loop sequence is all there; no
+  signature image.
+- **To decide:** accept "When" / "Action" and newest-first (update the TS and the suite), or raise.
 
 ## F13 · Payment Request PDFs: things to check (TS56 / TS57 still need the names)
 

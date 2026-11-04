@@ -120,7 +120,7 @@ test('12028_TS61: Session expiry returns to BO login without an error page', tag
 });
 
 /** Opens the same month in a second tab of the same login (same context = same session). */
-async function secondTab(page: Page, month: string): Promise<AplDetailsPage> {
+async function secondTab(page: Page, month: string): Promise<{ d2: AplDetailsPage; tab: Page }> {
   const p = await page.context().newPage();
   const home = new BoHomePage(p);
   await home.goto();
@@ -130,7 +130,7 @@ async function secondTab(page: Page, month: string): Promise<AplDetailsPage> {
   await sm.openMonth(data, month);
   const d = new AplDetailsPage(apl);
   await d.expectOpenFor(month, CONFIG.year);
-  return d;
+  return { d2: d, tab: apl };
 }
 
 for (const c of [
@@ -142,7 +142,7 @@ for (const c of [
   test(c.title, tagOf(ts), async ({ page }) => {
     const { s, d, month } = await openAs(page, ts, c.role, c.from);
     const before = await d.logCount(c.who, 'Approved');
-    const d2 = await test.step(`Open ${month} in a second tab`, async () => secondTab(page, month));
+    const { d2, tab } = await test.step(`Open ${month} in a second tab`, async () => secondTab(page, month));
     const date1 = addDays(today(), 1);
     const date2 = addDays(today(), 2);
     await test.step(`Tab 1: [Approve]${c.who === 'Approver' ? ` with ${ddmmyyyy(date1)}` : ''}`, async () => {
@@ -164,7 +164,12 @@ for (const c of [
         console.log(`   Tab 2 refused the action: ${e instanceof Error ? e.message.split('\n')[0] : e}`);
       }
       await d2.settleAfterLoad();
-      console.log(`DETAIL:${JSON.stringify({ label: 'Tab 2 message', value: d2.takeDialogs().join('; ') || '(none)' })}`);
+      // The refusal is a message ON the page (flash attribute after the POST), not a browser alert:
+      // "Someone else already actioned this month. Please refresh and try again."
+      // (Claude run uat1 2026-11-04, 12028_TS64 / TS65 / TS66 evidence). Both are logged.
+      const pageMsg = ((await tab.locator('body').innerText().catch(() => '')).split('\n')
+        .map(l => l.trim()).find(l => /already actioned|cannot act until|refresh and try again/i.test(l))) ?? '';
+      console.log(`DETAIL:${JSON.stringify({ label: 'Tab 2 message', value: [pageMsg, ...d2.takeDialogs()].filter(Boolean).join('; ') || '(none)' })}`);
       await d2.captureEvidence(`${ts}-tab2`);
     });
     await test.step('Refresh tab 1', async () => {

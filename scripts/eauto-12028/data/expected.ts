@@ -21,7 +21,10 @@ export const NOT_YOUR_TURN_NOTE = 'Awaiting the next role in the approval sequen
 /** Validation messages, from the live Details capture's script
  *  (_reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html).
  *  The Reject popup has NO remarks message: #rmk-submit stays disabled until remarks are typed (lines 328, 386-387).
- *  A past or today date has no message: the field's min is tomorrow (lines 395-399). */
+ *  A past or today date cannot be picked: the field's min is tomorrow (lines 395-399). Forced in, the page
+ *  still posts it and the SERVER refuses: "payment date must be a future date (got 2026-11-04)."
+ *  [verified: Claude run uat1 2026-11-04, 12028_TS37-part2-dates]. TS37's own wording differs for both
+ *  messages ("Please select a payment date.", "Payment date must be a future date.") — see FAILS-AND-BLOCKS F12. */
 export const MSG = {
   signature: 'Please provide your signature.', // DETAILS line 421
   noDate: 'Please pick a future payment date.', // DETAILS line 403 (Confirm with no date)

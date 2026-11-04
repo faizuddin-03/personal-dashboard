@@ -9,13 +9,13 @@ blocks in full detail, for Faizuddin to pick what to raise: `FAILS-AND-BLOCKS.md
 `scripts/claude-run/results/EAINT-12028.json`; screenshot `ts-tracker-12028.png`.
 
 ```
-69 TS   33 pass · 15 fail · 18 blocked · 1 left for Faizuddin (TS36) · 2 not in this run   (66 of 67 done)
+69 TS   32 pass · 16 fail · 18 blocked · 1 left for Faizuddin (TS36) · 2 not in this run   (66 of 67 done)
 ```
 
 | Status | Count | TS |
 |---|---|---|
-| ✅ Pass | 33 | 01–05, 08, 10, 14, 22, 23, 27, 30, 31, 32, 34, 38, 40, 41, 44, 45, 46, 48, 50, 51, 52, 53, 55, 64, 65, 66, 67, 68, 69 |
-| ❌ Fail | 15 | **Wording / TS out of date:** 07, 25, 26, 28, 33, 35, 37, 39, 49 (F3–F8, F10, F12) · **58** (header, EAINT-12752) · **59, 60, 63** (bare "Unauthorized" page, F1, **possible new bug**) · **61** (still signed in after 16 min idle, F9, **possible new bug**) · **54** (PDF address ignores the month, F11, low) |
+| ✅ Pass | 32 | 01–05, 08, 10, 14, 22, 23, 27, 30, 31, 32, 34, 38, 40, 41, 44, 45, 46, 50, 51, 52, 53, 55, 64, 65, 66, 67, 68, 69 |
+| ❌ Fail | 16 | **Wording / TS out of date:** 07, 25, 26, 28, 33, 35, 37, 39, 48, 49 (F3–F8, F10, F12, F14) · **58** (header, EAINT-12752) · **59, 60, 63** (bare "Unauthorized" page, F1, **possible new bug**) · **61** (still signed in after 16 min idle, F9, **possible new bug**) · **54** (PDF address ignores the month, F11, low) |
 | ⛔ Blocked | 18 | 09, 21, 47 (no fitting month) · 11, 12, 13 (month-close) · 15 (no Super Admin) · 16–19 (test transactions) · 24, 43 (BA rules) · 29, 42 (no unsigned Reviewer / Approver left) · 56, 57 (PDF names; PDFs saved, F13) · 62 (header, EAINT-12752) |
 | ⏳ Faizuddin | 1 | 36 (Approver `kmcheah` first signature, 2026-11-05) |
 | — Not in this run | 2 | 06, 20 (ran on the main laptop 2–3 Nov) |
@@ -152,7 +152,7 @@ YEAR TO DATE TOTAL: 4,707 car tx / RM 4,707.00; 257 motorcycle tx / RM 514.00.
 | 12028_TS40 | **pass** (as mfizni) | **February** (RA → **Full**) | No signature pad ✔; "Approve — Finance Payment Date" popup shown ✔; approved with 2026-11-05: `04-11-2026 12:34 · Nur Izni Binti Zurni · Approver · Approved (signed) · 05-11-2026` | `12028_TS40/` |
 | 12028_TS41 | **pass** (as mfizni) | **September** (RA after reject loop → **Full**) | Approve with tomorrow → Approver "Approved"; FMC + MMSDA buttons shown | `12028_TS41/` |
 | 12028_TS66 | **pass** (as mfizni) | **August** (RA → **Full**) | Two tabs: tab 1 approves with 2026-11-05; tab 2 (not refreshed) with 2026-11-06 → refused, "Someone else already actioned this month. Please refresh and try again."; Approver-Approved rows 0 → **1**; Summary Payment Date **05-11-2026** (tab 1's) | `12028_TS66/` (+ `-tab2.webm`) |
-| 12028_TS48 | **pass** | September (Full) | `mfared`: columns When / Actor / Role / Action / Payment Date / Remarks; every reject row has its remarks; all 15 rows kept, oldest first, containing Drafter Approved → Reviewer Approved → Approver Rejected → Reviewer Approved → Approver Approved; no image in the Audit Log | `12028_TS48/` |
+| 12028_TS48 | **fail (wording / order)**, corrected 2026-11-04 evening (first marked pass) | September (Full) | `mfared`. ✘ Columns read When / Actor / Role / Action / Payment Date / Remarks; the TS expects Date/Time, Role, Action/Status, Remarks (F14). ✘ The page lists the **newest row first**; the suite (SA mock-up) expects oldest first. *(The first write-up said "oldest first": that was wrong, see `02-audit-log.png`.)* ✔ Every reject row has its remarks; all 15 rows kept, in time order (newest first), containing Drafter Approved → Reviewer Approved → Approver Rejected → Reviewer Approved → Approver Approved; no image in the Audit Log | `12028_TS48/` |
 | 12028_TS42 | **blocked** | — | Needs an Approver who has never signed; `mfizni`'s first signature went in SETUP-05 and `kmcheah` is kept for TS36. Run it with `kmcheah` instead of TS36 if Faizuddin wants (it starts with the first signature too). | — |
 | 12028_TS56, TS57 | **blocked (input)**; PDFs saved | May (Full) | Need the names that should print on the PDFs. **Seen on the PDFs** (see F13): Requestor / Prepared by EAUTO ZARA 03-11-2026, Checked by EAUTO NURUL 03-11-2026, Approved by Nur Izni Binti Zurni 04-11-2026, with signature images; FMC MYR 238.00 "TWO HUNDRED THIRTY EIGHT ONLY", MMSDA MYR 38.00 "THIRTY EIGHT ONLY"; header "eAuto Sdn **.Bhd.**" | `12028_TS51/` PDFs + page images |
 | 12028_TS53, TS54, TS69 | (superseded: run above) | — | Each needs a fully approved month: TS53 / TS54 need its PDF download address, TS69 needs a Reject on it. Possible after Faizuddin's TS36 on 2026-11-05. | — |
