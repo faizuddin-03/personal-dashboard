@@ -630,6 +630,24 @@ names and the newest-first order. Totals are now 32 pass · 16 fail · 18 blocke
   - **Part 2 PASS:** QT_TS1, QT_TS2, QT_TS4, QT_TS5, QT_TS6, RG_TS2, E2E_TS4, E2E_TS9, E2E_TS10.
   - **Next:** E2E_TS5, RC_TS4 E5, RC_TS11 E2, RC_TS7. Then decide which observations to raise.
 
+### Run videos for EAINT-12406 and EAINT-12028 are NOT in git: restore them first
+
+`.gitignore` leaves out `_reference/tickets/*/claude-run-*/**/*.webm`. Everything else from both runs
+(screenshots, PDFs, checks/gate/proofs, notes) is in git. The 131 videos were zipped on the second
+laptop (2026-11-04, evening) with repo-relative paths and uploaded BY HAND through the browser to
+Faizuddin's work OneDrive (faizuddin@modefair.onmicrosoft.com). He does not sign that account in to the
+OneDrive app on the second laptop. [Faizuddin, session chat, 2026-11-04]
+
+| Zip | Videos | Size |
+|---|---|---|
+| `EAINT-12406-claude-run-videos-2026-11-04.zip` | 56 | 354 MB |
+| `EAINT-12028-claude-run-videos-2026-11-04.zip` | 75 | 618 MB |
+
+Restore on the main device: `git pull`, download both zips from OneDrive, then from the repo root:
+`tar -x -f "<path>\EAINT-12406-claude-run-videos-2026-11-04.zip"` (same for 12028). The Windows
+`tar.exe` reads zip; or "Extract All" into the repo root. Each video lands next to its screenshots.
+Local copy of the zips on the second laptop: `C:\Users\faizu\Downloads\eAuto-evidence-2026-11-04\`.
+
 ### EAINT-12406: HOW TO RESUME ON ANY LAPTOP (read this first)
 
 Faizuddin does not run the automation. **Claude runs every TS itself, recorded**, and Faizuddin guides.
