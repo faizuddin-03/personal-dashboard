@@ -1,0 +1,11 @@
+{
+  "ts": "12406_E2E_TS1_rerun-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E7: expected \"CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with \", page shows \"Status Insurance created; Cover Note No \"-\"; Policy No \"-\"; Payment Ref ID \"ALZ20261104SFX0005\"\" (16-E7-cover-note-policy-ref.png)",
+    "E8: expected \"e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate\", page shows \"Buttons [\"Receipt\"]; no e-Certificate button\" (17-E8-buttons.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 16:27:26",
+  "driver": "Claude (Playwright)"
+}

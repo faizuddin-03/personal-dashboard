@@ -1,0 +1,13 @@
+{
+  "ts": "12406_QT_TS7_rerun-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E2: expected \"Product disclosure sheet opens: an Allianz document dated 2022\", page shows \"card Plan Details \"Product Disclosure\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020 | Confirmation Plan Details \"Product Disclosure\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020 | Confirmation declaration \"Product Disclosure Sheet\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020\" (19-E2-Product-disclosure-sheet.png)",
+    "E3: expected \"Privacy notice opens: an Allianz document dated 2022\", page shows \"Confirmation declaration \"Privacy Notice\" → allianz-privacy-notice.pdf, Allianz true, dates: 3 March 2020\" (20-E3-Privacy-notice.png)",
+    "E4: expected \"Claim guide opens: an Allianz document dated 2022\", page shows \"card Plan Details \"Claim Guide\" → allianz-claim-guide-en.pdf, Allianz false, dates: none (image only) | Confirmation Plan Details \"Claim Guide\" → allianz-claim-guide-en.pdf, Allianz false, dates: none (image only)\" (21-E4-Claim-guide.png)",
+    "E6: expected \"Every link inside Plan Details (from the card and from Confirmation) and the Excess info opens an Allianz document, not another insurer's\", page shows \"Not Allianz: allianz-claim-guide-en.pdf, allianz-claim-guide-en.pdf\" (23-E6-plan-details-links.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 16:17:33",
+  "driver": "Claude (Playwright)"
+}

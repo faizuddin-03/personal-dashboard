@@ -1,0 +1,11 @@
+{
+  "ts": "12406_E2E_TS2_rerun-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"Card payment settles: Success page 'Thank you for your purchase!' with Payment Method 'Credit' (observed) and a [Receipt] download; Receipt Total Premium = the \", page shows \"Success; Payment Method \"credit\"; receipt 26110421300007; Receipt Total RM803.05 vs Confirmation RM751.65\" (14-E1-success-receipt.png)",
+    "E3: expected \"CIBO Transaction Details: Cover Note No filled (not \"-\")\", page shows \"Cover Note No \"-\"; Policy No \"-\"; Payment Ref ID \"ALZ20261104SCC0006\"\" (16-E3-cover-note.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 16:45:09",
+  "driver": "Claude (Playwright)"
+}

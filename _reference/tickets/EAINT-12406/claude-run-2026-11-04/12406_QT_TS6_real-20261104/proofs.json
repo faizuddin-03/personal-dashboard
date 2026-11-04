@@ -1,0 +1,52 @@
+{
+  "ts": "12406_QT_TS6_real-20261104",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Quotations shown in this order: Lonpac, Allianz",
+      "shows": "Quotations shown: Lonpac → Allianz; full order Lonpac → Allianz → Tokio Marine (unavailable)",
+      "match": true,
+      "shot": "04-E1-order.png",
+      "at": "04/11/2026, 17:14:47",
+      "url": "/ia/car-insurance/choose-your-insurance/3486be21-ab34-4af0-8566-20993c4774c0",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "Allianz quotation with the Allianz logo",
+      "shows": "Allianz card logo shown: true",
+      "match": true,
+      "shot": "05-E2-allianz-logo.png",
+      "at": "04/11/2026, 17:14:48",
+      "url": "/ia/car-insurance/choose-your-insurance/3486be21-ab34-4af0-8566-20993c4774c0",
+      "side": ""
+    },
+    {
+      "point": "E3",
+      "expected": "A \"Tokio Marine – Quotation unavailable\" card is shown (its position is recorded, Q13)",
+      "shows": "\"Quotation unavailable\" shown at position 3 of 3 (recorded, Q13)",
+      "match": true,
+      "shot": "06-E3-tokio-unavailable-card.png",
+      "at": "04/11/2026, 17:14:50",
+      "url": "/ia/car-insurance/choose-your-insurance/3486be21-ab34-4af0-8566-20993c4774c0",
+      "side": ""
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "Data: checker xlsx row 29 (real plate/IC) WA7788X, postcode 55000",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Get quotation"
+  ],
+  "dialogs": [],
+  "windows": []
+}

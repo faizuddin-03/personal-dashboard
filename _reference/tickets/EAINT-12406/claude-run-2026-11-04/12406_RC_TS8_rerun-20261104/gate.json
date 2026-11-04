@@ -1,0 +1,10 @@
+{
+  "ts": "12406_RC_TS8_rerun-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E3: expected \"AFTER: BR55004010 receipt \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"\", page shows \"Receipt Insurer: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (03-E3-br55004010-receipt-insurer.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 15:55:39",
+  "driver": "Claude (Playwright)"
+}

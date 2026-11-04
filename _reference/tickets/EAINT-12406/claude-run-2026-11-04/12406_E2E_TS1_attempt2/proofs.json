@@ -1,0 +1,153 @@
+{
+  "ts": "12406_E2E_TS1_attempt2",
+  "instance": "ia",
+  "driver": "Claude (Playwright MCP)",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "All Quotations: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz",
+      "shows": "Allianz card (RM901.91 NCD 25% RM696.43) selected with Buy; Add-ons opened (\"Allianz - Comprehensive\"); other insurer named: false",
+      "match": true,
+      "shot": "04-E1-addons-allianz.png",
+      "at": "04/11/2026, 15:07:40",
+      "url": "/ia/car-insurance/choose-addons/a659307e-c43e-4bed-bca7-11a50cc05a68",
+      "side": "Secarang"
+    },
+    {
+      "point": "E2",
+      "expected": "Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded)",
+      "shows": "Insurer \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\"; Gross Premium RM844.58 = Add-ons price bar RM844.58; Total Amount RM922.15",
+      "match": true,
+      "shot": "08-E2-confirmation-allianz.png",
+      "at": "04/11/2026, 15:08:17",
+      "url": "/ia/car-insurance/confirm-payment/a659307e-c43e-4bed-bca7-11a50cc05a68",
+      "side": "Secarang"
+    },
+    {
+      "point": "E3",
+      "expected": "Payment page shows the same four tiles as for a Lonpac purchase: Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab (observed)",
+      "shows": "Tiles: Credit or Debit Card | FPX Online banking | SPayLater | PayLater by Grab",
+      "match": true,
+      "shot": "09-E3-payment-tiles.png",
+      "at": "04/11/2026, 15:08:23",
+      "url": "/ia/car-insurance/payment-methods/a659307e-c43e-4bed-bca7-11a50cc05a68",
+      "side": "Secarang"
+    },
+    {
+      "point": "E4",
+      "expected": "FPX payment approved (00): Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' (observed) and a [Receipt] download",
+      "shows": "\"Thank you for your purchase!\"; Receipt No 26110421300002; Purchase Date 04 Nov 2026 - 3:06 PM; Payment Method \"Online Banking - Maybank\" (Maybank, by design of this attempt; the TS names RHB); [Receipt] shown: true",
+      "match": true,
+      "shot": "11-E4-success.png",
+      "at": "04/11/2026, 15:09:04",
+      "url": "/ia/car-insurance/payment-success/a659307e-c43e-4bed-bca7-11a50cc05a68",
+      "side": "Secarang"
+    },
+    {
+      "point": "E5",
+      "expected": "Receipt Total Premium = the total on the Confirmation page",
+      "shows": "Receipt PDF Total Premium RM 922.15 = Confirmation Total Amount RM922.15",
+      "match": true,
+      "shot": "13-E5-receipt-total.png",
+      "at": "04/11/2026, 15:09:25",
+      "url": "/ia/car-insurance/payment-success/a659307e-c43e-4bed-bca7-11a50cc05a68",
+      "side": "Secarang"
+    },
+    {
+      "point": "E6",
+      "expected": "CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode the same as a Lonpac FPX payment on /ia/ (today bare \"Fiuu\"; the SA format is QA-Issue EAINT-12566, On Hold: not a 12406 failure)",
+      "shows": "Row BR6N006389: Ins. Co. \"Allianz Serba Sentral\"; Payment \"RM922.15 Paid 04-11-2026 15:08\"; Payment Mode \"Fiuu | Online Banking – FPX-Maybank\"; Transaction Status \"Failed\"; Remark \"Invalid fullName\" — same as attempt 1 with the same name on a different car, IC and bank",
+      "match": false,
+      "shot": "14-E6-cibo-row.png",
+      "at": "04/11/2026, 15:10:00",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E7",
+      "expected": "CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment, with Allianz's own insurer code (code recorded, Q30)",
+      "shows": "Cover Note No \"-\", Policy No \"-\" (Failed, \"Invalid fullName\"); Payment Ref ID \"ALZ20261104SFX0002\"",
+      "match": false,
+      "shot": "15-E7-cibo-details.png",
+      "at": "04/11/2026, 15:10:07",
+      "url": "/cibo/transaction-management/transaction-details/a659307e-c43e-4bed-bca7-11a50cc05a68",
+      "side": "CIBO"
+    },
+    {
+      "point": "E8",
+      "expected": "e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate",
+      "shows": "Buttons: []; e-Certificate / Receipt not shown (Failed)",
+      "match": false,
+      "shot": "16-E8-cibo-buttons.png",
+      "at": "04/11/2026, 15:10:08",
+      "url": "/cibo/transaction-management/transaction-details/a659307e-c43e-4bed-bca7-11a50cc05a68",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Attempt 2 after BR6N006388 failed \"Invalid fullName\". Faizuddin: same name, another scenario. Dev BR6N006385 (BPX823, \"MONG TEST ALLIANZ 2\", Maybank) was Insurance created.",
+    "Data: checker xlsx 2026-11-02 row 6 (real plate/IC), postcode 55000; Full Name QA SECARANG TEST.",
+    "on the site: Secarang (https://staging.secarang.com/ia/car-insurance)",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Get quotation",
+    "click: Buy (Allianz)",
+    "click: Continue",
+    "OBSERVATION: All Quotations Allianz card showed RM901.91, NCD 25%, RM696.43; Add-ons price bar RM844.58; Confirmation Basic Premium RM1,099.44 (card basic RM901.91). Price rose RM148.15 between All Quotations and Add-ons/Confirmation (row 5 matched). Screenshots all-quotations + addons-default.",
+    "typed: Full Name (same made-up name as attempt 1)",
+    "typed: Email (QA own)",
+    "typed: Mobile, no leading 0",
+    "typed: Address 1 (made up)",
+    "typed: Address 2",
+    "typed: Address 3",
+    "click: Confirm and Pay",
+    "click: FPX Online banking",
+    "click: Maybank2u (as the Dev did)",
+    "window opened by the site and kept (payment window 1)",
+    "Fiuu window: Username",
+    "Fiuu window: Password",
+    "Fiuu window: Login",
+    "Fiuu window: Status 00 Approved",
+    "Fiuu window: Request TAC",
+    "Fiuu window: Enter TAC 994657",
+    "Fiuu window: Pay now",
+    "window opened by the site and kept (payment window 2)",
+    "click: Download [Receipt]",
+    "downloaded: receipt-26110421300002.pdf (server name R26110421300002JXP4235.pdf)",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: plate JXP4235",
+    "click: Search",
+    "click: Open Transaction Details BR6N006389",
+    "CIBO BR6N006389: Failed \"Invalid fullName\"; Cover Note -, Policy -, Ref ID ALZ20261104SFX0002, Premium After NCD RM864.58. Conclusion: the name \"QA SECARANG TEST\" is what the real API refuses (car, IC, gender and bank changed; the Dev's \"MONG TEST ALLIANZ 2\" was Insurance created).",
+    "payment window 1 on the TS video 02:24.6–02:48.4 (https://staging.secarang.com/ia/payment/landing/a659307e-c43e-4bed-bca7-11a50cc05a68/fpx_mb2u)",
+    "payment window 2 on the TS video 02:53.6–02:53.8 (about:blank)",
+    "payment window video laid into video_12406_E2E_TS1_attempt2.webm (1 window(s), picture-in-picture, bottom right)"
+  ],
+  "dialogs": [],
+  "windows": [
+    {
+      "n": 1,
+      "at": 144.596,
+      "closedAt": 168.436,
+      "url": "https://staging.secarang.com/ia/payment/landing/a659307e-c43e-4bed-bca7-11a50cc05a68/fpx_mb2u",
+      "file": "_raw/window1.webm"
+    },
+    {
+      "n": 2,
+      "at": 173.625,
+      "closedAt": 173.767,
+      "url": "about:blank",
+      "file": "_raw/window2.webm"
+    }
+  ]
+}

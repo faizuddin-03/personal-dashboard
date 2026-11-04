@@ -70,7 +70,7 @@ if (wins.length) {
 
 const lines = [...(r.log || []), ...notes.map((n) => `${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', hour12: false })} | note: ${n}`), ...problems.map((p) => `note: video: ${p}`)];
 fs.writeFileSync(path.join(dir, 'checks.txt'), lines.join('\n') + '\n');
-fs.writeFileSync(path.join(dir, 'proofs.json'), JSON.stringify({ ts: r.ts, instance: r.inst, driver: 'Claude (Playwright MCP)', proofs: r.proofs, notes: [...(r.notes || []), ...notes], dialogs: r.dialogs, windows: r.windows }, null, 2));
+fs.writeFileSync(path.join(dir, 'proofs.json'), JSON.stringify({ ts: r.ts, instance: r.inst, driver: 'Claude (Playwright)', proofs: r.proofs, notes: [...(r.notes || []), ...notes], dialogs: r.dialogs, windows: r.windows }, null, 2));
 
 const proofs = r.proofs || [];
 const reasons = [];
@@ -85,6 +85,6 @@ else {
   reasons.push(...problems);
   verdict = reasons.length ? 'EVIDENCE' : 'VALID';
 }
-const gate = { ts: r.ts, verdict, reasons, instance: r.inst, at: new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', hour12: false }), driver: 'Claude (Playwright MCP)' };
+const gate = { ts: r.ts, verdict, reasons, instance: r.inst, at: new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', hour12: false }), driver: 'Claude (Playwright)' };
 fs.writeFileSync(path.join(dir, 'gate.json'), JSON.stringify(gate, null, 2));
 console.log(JSON.stringify(gate, null, 2));

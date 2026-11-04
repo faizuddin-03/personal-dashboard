@@ -1,0 +1,14 @@
+{
+  "ts": "12406_RC_TS1_rerun-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"\", page shows \"Insurer line 1: \"Allianz General Insurance Company (Malaysia)\"\" (02-E1-insurer-line1.png)",
+    "E2: expected \"Insurer, next line: \"200601015674 (735426-V)\"\", page shows \"Insurer line 2: \"Berhad 200601015674 (735426-V)\"\" (03-E2-insurer-line2.png)",
+    "E10: expected \"Receipt Summary: 'Premium After NCD' equals Basic Premium − NCD + the add-on lines listed above it on the same receipt, and equals Confirmation's 'Premium After\", page shows \"Basic 551.12 - NCD 211.24 + All Drivers 20 = 359.88; receipt \"Premium after NCD\" 379.88; Confirmation (04.11) RM359.88\" (07-E10-premium-after-ncd.png)",
+    "E4: expected \"Laid out like the Tokio Marine Insurer block of 12406_RG_TS1 (name, then company number with the old number in brackets on the next line)\", page shows \"Allianz \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"; Tokio Marine \"Tokio Marine Insurans (Malaysia) Berhad\" / \"198601000381 (149520-U)\"\" (09-E4-allianz-vs-tokio-marine.png)",
+    "E7: expected \"The receipts of E2E_TS2, E2E_TS3 and E2E_TS4 show the same two Insurer lines\", page shows \"E2E_TS2 card BR60006350: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\" | E2E_TS3 PayLater by Grab BR60006351: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\" | E2E_TS4 SPayLater BR60006352: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (10-E7-other-channel-receipts.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 16:01:26",
+  "driver": "Claude (Playwright)"
+}

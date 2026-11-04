@@ -1,0 +1,40 @@
+# 12406_E2E_TS9_real-20261104 — Real API: Tokio Marine first, back to Allianz; add-ons tick/untick; gender re-pricing; PIAM pop-up; same add-ons on receipt and CIBO
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 17:25:04 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 17:25:06 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+04/11/2026, 17:25:06 | note: Data: checker xlsx row 22 (real plate/IC) JXH1451, postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ
+04/11/2026, 17:25:10 | note: typed: Site password
+04/11/2026, 17:25:11 | note: click: Login (site password page)
+04/11/2026, 17:25:19 | note: click: Close the promo pop-up
+04/11/2026, 17:25:21 | note: click: Private Car tab
+04/11/2026, 17:25:22 | note: typed: Car Plate No.
+04/11/2026, 17:25:22 | note: typed: Owner IC No.
+04/11/2026, 17:25:23 | note: typed: Postal Code
+04/11/2026, 17:25:25 | note: click: Get quotation
+04/11/2026, 17:26:23 | note: click: Variant: Select
+04/11/2026, 17:26:24 | note: click: Variant EZ 4D WAGON 1495 CC
+04/11/2026, 17:26:25 | note: click: Save variant
+04/11/2026, 17:26:27 | note: click: Get quotation
+04/11/2026, 17:26:49 | note: click: Buy (Tokio Marine)
+04/11/2026, 17:27:04 | note: click: Back to insurance selection
+04/11/2026, 17:27:07 | note: After back from Tokio Marine: (no pop-up)
+04/11/2026, 17:27:15 | E2 | expected: Recorded: the sum insured options offered (one value, RM20,200, for the made-up cars on 29.10); if more than one is offered, changing it re-prices | page shows: Allianz sum insured options: RM22,000 | matches | 05-E2-sum-insured.png
+04/11/2026, 17:27:15 | note: click: Buy (Allianz)
+04/11/2026, 17:27:29 | E1 | expected: After going back from Tokio Marine and selecting Allianz, the Add-ons and Confirmation pages are for Allianz (no Tokio Marine name or price) | page shows: Add-ons after going back: "Allianz - Comprehensive"; Tokio Marine named: false; price bar JXH1451 PERODUA ALZA RM589.97 | matches | 06-E1-addons-allianz-after-back.png
+04/11/2026, 17:27:29 | note: Add-ons offered: Allianz Road Rangers undefined (added) | Windscreen, Windows and Sunroof RM135.00 | Motor Enhanced Road Warrior RM99.00 | Legal Liability of Passengers for Negligent Acts RM7.50 | Strike, Riot and Civil Commotion (SRCC) RM66.00 | Private Hire Car (e-Hailing) RM1,139.94 | Inclusion of Special Perils RM44.00 | Compensation for Assessed Repair Time (CART) RM35.00 | Waiver of Betterment Contribution RM95.00 | Car Break-In/Robbery RM3.00 | Key Care RM7.00 | Driver and Passengers' Personal Accident undefined
+04/11/2026, 17:27:30 | note: click: ADD Car Break-In
+04/11/2026, 17:28:06 | note: click: ADD Key Care
+04/11/2026, 17:28:42 | note: click: REMOVE Key Care
+04/11/2026, 17:29:18 | E3 | expected: Ticking an add-on adds its shown price to the premium; unticking it takes the price off again | page shows: Bar 589.97 → +Break-In (RM3) 0 → +Key Care (RM7) 0 → −Key Care 0 | DOES NOT MATCH | 07-E3-tick-untick.png
+04/11/2026, 17:29:19 | note: click: Continue
+04/11/2026, 17:29:28 | note: typed: Full Name (made up)
+04/11/2026, 17:29:29 | note: typed: Email (QA own)
+04/11/2026, 17:29:30 | note: typed: Mobile, no leading 0
+04/11/2026, 17:29:31 | note: typed: Address 1 (made up)
+04/11/2026, 17:29:31 | note: typed: Address 2
+04/11/2026, 17:29:32 | note: typed: Address 3
+04/11/2026, 17:30:06 | note: Gender FEMALE → MALE
+04/11/2026, 17:30:15 | E4 | expected: Recorded: Total Premium before / after changing Gender MALE → FEMALE. The /ia/ simulator does not price by gender for any insurer (probe 30.10, run EAINT-12406-probe-gender-20261030-0914: Lonpac RM884.48 and Tokio Marine RM1,171.22 unchanged, change-gender answered 200 with the same premium; Allianz RM941.13 / RM944.37 unchanged on 29.10). Judged only on a real-API (SIT) pass | page shows: Gender FEMALE → MALE: Total Amount RM650.40 → RM650.40 (recorded; real API) | matches | 09-E4-gender-reprice.png
+04/11/2026, 17:30:51 | note: Gender set back to FEMALE: Total RM650.40
+04/11/2026, 17:30:51 | note: click: PIAM ID 'i'
+04/11/2026, 17:31:01 | note: stopped: locator.waitFor: Timeout 10000ms exceeded.

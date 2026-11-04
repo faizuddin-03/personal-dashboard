@@ -1,0 +1,11 @@
+{
+  "ts": "12406_RC_TS2_rerun-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"\", page shows \"Insurer line 1: \"Allianz General Insurance Company (Malaysia)\"\" (03-E1-receipt-insurer-line1.png)",
+    "E2: expected \"Insurer, next line: \"200601015674 (735426-V)\"\", page shows \"Insurer line 2: \"Berhad 200601015674 (735426-V)\"\" (04-E2-receipt-insurer-line2.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 15:58:49",
+  "driver": "Claude (Playwright)"
+}

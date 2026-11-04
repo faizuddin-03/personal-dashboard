@@ -1,0 +1,10 @@
+{
+  "ts": "12406_E2E_TS1_attempt3",
+  "verdict": "EVIDENCE",
+  "reasons": [
+    "no proof for E1, E2, E3, E4, E5, E6, E7, E8"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 15:15:54",
+  "driver": "Claude (Playwright MCP)"
+}

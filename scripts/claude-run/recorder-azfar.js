@@ -180,8 +180,16 @@ async (page) => {
       const f = `_raw/window${i + 1}.webm`;
       try { await winV[i].saveAs(`${R.dir}/${f}`); await winV[i].delete(); videos.windows.push(f); } catch (e) { videos.windows.push('video-fail: ' + e.message.split('\n')[0]); }
     }
-    return { ts: R.ts, inst: R.INST, points: R.points, log: R.log, proofs: R.proofs, notes: R.notes, dialogs: R.dialogs,
+    const out = { ts: R.ts, inst: R.INST, points: R.points, log: R.log, proofs: R.proofs, notes: R.notes, dialogs: R.dialogs,
       windows: R.windows.map((w, i) => ({ n: i + 1, at: w.at, closedAt: w.closedAt, url: w.url, file: videos.windows[i] })), videos };
+    // No node:fs here: write _raw/finish.json through a browser download (works, 2026-11-04 E2E_TS1).
+    try {
+      const c = await browser.newContext({ acceptDownloads: true }); const pg = await c.newPage();
+      await pg.setContent('<a id=d>d</a>'); const wait = pg.waitForEvent('download');
+      await pg.evaluate((txt) => { const a = document.getElementById('d'); a.href = URL.createObjectURL(new Blob([txt], { type: 'application/json' })); a.download = 'finish.json'; a.click(); }, JSON.stringify(out, null, 2));
+      await (await wait).saveAs(`${R.dir}/_raw/finish.json`); await c.close(); out.saved = `${R.dir}/_raw/finish.json`;
+    } catch (e) { out.saved = 'finish.json NOT saved: ' + e.message.split('\n')[0]; }
+    return out;
   };
   return 'recorder-azfar ready';
 }

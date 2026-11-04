@@ -1,0 +1,66 @@
+# 12406_E2E_TS3_rerun-20261104 — Rerun on the real API: Allianz purchase by PayLater by Grab
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 16:45:46 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 16:45:48 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+04/11/2026, 16:45:48 | note: Data: checker xlsx row 17 (real plate/IC), postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ
+04/11/2026, 16:45:52 | note: typed: Site password
+04/11/2026, 16:45:53 | note: click: Login (site password page)
+04/11/2026, 16:46:01 | note: click: Close the promo pop-up
+04/11/2026, 16:46:02 | note: click: Private Car tab
+04/11/2026, 16:46:03 | note: typed: Car Plate No.
+04/11/2026, 16:46:04 | note: typed: Owner IC No.
+04/11/2026, 16:46:05 | note: typed: Postal Code
+04/11/2026, 16:46:07 | note: click: Get quotation
+04/11/2026, 16:46:34 | note: click: Get quotation
+04/11/2026, 16:46:48 | note: click: Buy (Allianz)
+04/11/2026, 16:47:04 | note: click: Continue
+04/11/2026, 16:47:13 | note: typed: Full Name (made up)
+04/11/2026, 16:47:14 | note: typed: Email (QA own)
+04/11/2026, 16:47:15 | note: typed: Mobile, no leading 0
+04/11/2026, 16:47:16 | note: typed: Address 1 (made up)
+04/11/2026, 16:47:16 | note: typed: Address 2
+04/11/2026, 16:47:17 | note: typed: Address 3
+04/11/2026, 16:47:23 | note: click: Confirm and Pay
+04/11/2026, 16:47:28 | note: click: PayLater by Grab
+04/11/2026, 16:47:29 | note: window opened by the site and kept (payment window 1)
+04/11/2026, 16:47:34 | note: GrabPay: Pay
+04/11/2026, 16:48:18 | note: window opened by the site and kept (payment window 2)
+04/11/2026, 16:48:22 | note: payment: {"where":"success","amount":"MYR 1,375.20"}
+04/11/2026, 16:48:23 | note: click: Download [Receipt]
+04/11/2026, 16:48:23 | note: downloaded: receipt-26110421300008.pdf (server name R26110421300008PLX9927.pdf)
+04/11/2026, 16:48:33 | note: portal: CIBO (testadmin)
+04/11/2026, 16:48:36 | note: typed: Login ID
+04/11/2026, 16:48:37 | note: typed: Password
+04/11/2026, 16:48:37 | note: click: Login
+04/11/2026, 16:48:41 | note: click: Transaction Management
+04/11/2026, 16:48:44 | note: typed: Search: PLX9927
+04/11/2026, 16:48:45 | note: click: Search
+04/11/2026, 16:48:54 | note: typed: Search: PLX9927
+04/11/2026, 16:48:55 | note: click: Search
+04/11/2026, 16:49:02 | note: click: Open Transaction Details BR6N006397
+04/11/2026, 16:49:09 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:49:43 | note: typed: Search: PLX9927
+04/11/2026, 16:49:44 | note: click: Search
+04/11/2026, 16:49:51 | note: click: Open Transaction Details BR6N006397
+04/11/2026, 16:49:58 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:50:32 | note: typed: Search: PLX9927
+04/11/2026, 16:50:33 | note: click: Search
+04/11/2026, 16:50:40 | note: click: Open Transaction Details BR6N006397
+04/11/2026, 16:50:47 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:51:21 | note: typed: Search: PLX9927
+04/11/2026, 16:51:22 | note: click: Search
+04/11/2026, 16:51:29 | note: click: Open Transaction Details BR6N006397
+04/11/2026, 16:51:36 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:52:10 | note: typed: Search: PLX9927
+04/11/2026, 16:52:11 | note: click: Search
+04/11/2026, 16:52:18 | note: click: Open Transaction Details BR6N006397
+04/11/2026, 16:52:26 | E1 | expected: GrabPay sandbox payment settles: Success page 'Thank you for your purchase!' with Payment Method 'GrabPay' (observed) and a [Receipt] download; Receipt Total Premium = the Confirmation total | page shows: Success; Payment Method "GrabPay"; receipt 26110421300008; Receipt Total RM1,375.20 vs Confirmation Total Premium RM1,375.20 (paid RM1,375.20) | matches | 12-E1-success-receipt.png
+04/11/2026, 16:52:31 | note: typed: Search: PLX9927
+04/11/2026, 16:52:32 | note: click: Search
+04/11/2026, 16:52:39 | E2 | expected: CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status "Insurance created"; Payment Mode in the e-wallet format of a Lonpac PayLater by Grab payment (observed today: "Fiuu | eWallet – GrabPay – ..."; exact text recorded) | page shows: Row BR6N006397: Ins. Co. "Allianz Serba Sentral"; Payment "RM1,375.20Paid 04-11-2026 16:47"; Payment Mode "Fiuu | eWallet – GrabPay – Full Amount – Single Payment" (recorded); Status "Insurance created"; Remark "" | matches | 13-E2-cibo-row.png
+04/11/2026, 16:52:40 | note: click: Open Transaction Details BR6N006397
+04/11/2026, 16:52:45 | note: Transaction Details: status Insurance created; Insurer "Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)"; Cover -; Policy -; Ref ALZ20261104SEW0007; Premium After NCD RM1,284.06; buttons ["Receipt"]
+04/11/2026, 16:52:46 | E3 | expected: CIBO Transaction Details: Cover Note No filled (not "-"); Payment Ref ID with 'SEW' like a Lonpac e-wallet payment (e.g. LON<yyyymmdd>SEW<nnnn>), with Allianz's own insurer code (recorded, Q30) | page shows: Cover Note No "-"; Policy No "-"; Payment Ref ID "ALZ20261104SEW0007" | DOES NOT MATCH | 14-E3-cover-note.png
+04/11/2026, 16:53:57 | note: payment window 1 on the TS video 01:44.2–01:50.4 (https://staging.secarang.com/ia/payment/landing/68242eab-0004-47fb-a63b-a05e7b834295/GrabPay)
+04/11/2026, 16:53:57 | note: payment window 2 on the TS video 02:33.2–02:33.3 (about:blank)
+04/11/2026, 16:53:57 | note: payment window video laid into video_12406_E2E_TS3_rerun-20261104.webm (1 window(s), picture-in-picture, bottom right)

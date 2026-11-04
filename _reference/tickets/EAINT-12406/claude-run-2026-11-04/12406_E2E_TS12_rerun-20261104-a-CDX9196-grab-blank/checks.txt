@@ -1,0 +1,42 @@
+# 12406_E2E_TS12_rerun-20261104 — Rerun on the real API: Allianz purchase with every add-on ticked
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 16:54:36 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 16:54:38 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+04/11/2026, 16:54:38 | note: Data: checker xlsx row 18 (real plate/IC), postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ
+04/11/2026, 16:54:42 | note: typed: Site password
+04/11/2026, 16:54:43 | note: click: Login (site password page)
+04/11/2026, 16:54:51 | note: click: Close the promo pop-up
+04/11/2026, 16:54:52 | note: click: Private Car tab
+04/11/2026, 16:54:53 | note: typed: Car Plate No.
+04/11/2026, 16:54:54 | note: typed: Owner IC No.
+04/11/2026, 16:54:55 | note: typed: Postal Code
+04/11/2026, 16:54:57 | note: click: Get quotation
+04/11/2026, 16:55:30 | note: click: Get quotation
+04/11/2026, 16:55:44 | note: click: Buy (Allianz)
+04/11/2026, 16:55:55 | note: Add-ons offered: Allianz Road Rangers FREE REMOVE | Windscreen, Windows and Sunroof Sum Insured RM1,600.00 RM240.00 ADD | Motor Enhanced Road Warrior No. of Car Replacement Day Plan A - 5 days Plan B - 6 days Plan C - 7 days RM99.00 | Legal Liability of Passengers for Negligent Acts RM7.50 ADD | Strike, Riot and Civil Commotion (SRCC) RM204.00 ADD | Private Hire Car (e-Hailing) RM3,178.74 ADD | Inclusion of Special Perils RM136.00 ADD | Compensation for Assessed Repair Time (CART) Assessment Period 7 days 14 days 21 days Daily Compensation RM50  | Waiver of Betterment Contribution RM230.00 ADD | Car Break-In/Robbery RM3.00 ADD | Key Care RM7.00 ADD | Driver and Passengers' Personal Accident Plan Plan A ADD
+04/11/2026, 16:55:57 | note: click: ADD Windscreen, Windows and Sunroof
+04/11/2026, 16:56:02 | note: click: ADD Motor Enhanced Road Warrior
+04/11/2026, 16:56:07 | note: click: ADD Legal Liability of Passengers for Negligent Acts
+04/11/2026, 16:56:11 | note: click: ADD Strike, Riot and Civil Commotion (SRCC)
+04/11/2026, 16:56:16 | note: click: ADD Private Hire Car (e-Hailing)
+04/11/2026, 16:56:21 | note: click: ADD Inclusion of Special Perils
+04/11/2026, 16:56:26 | note: click: ADD Compensation for Assessed Repair Time (CART)
+04/11/2026, 16:56:31 | note: click: ADD Waiver of Betterment Contribution
+04/11/2026, 16:56:35 | note: click: ADD Car Break-In/Robbery
+04/11/2026, 16:56:40 | note: click: ADD Key Care
+04/11/2026, 16:56:45 | note: click: ADD Driver and Passengers' Personal Accident
+04/11/2026, 16:57:21 | note: click: Continue
+04/11/2026, 16:57:32 | note: typed: Full Name (made up)
+04/11/2026, 16:57:33 | note: typed: Email (QA own)
+04/11/2026, 16:57:34 | note: typed: Mobile, no leading 0
+04/11/2026, 16:57:35 | note: typed: Address 1 (made up)
+04/11/2026, 16:57:35 | note: typed: Address 2
+04/11/2026, 16:57:36 | note: typed: Address 3
+04/11/2026, 16:57:40 | note: click: Confirm and Pay
+04/11/2026, 16:57:44 | note: Total RM6219.6: paying by PayLater by Grab (over RM2,000; FPX/card refuse > MYR 2,000)
+04/11/2026, 16:57:44 | note: click: PayLater by Grab
+04/11/2026, 16:57:46 | note: window opened by the site and kept (payment window 1)
+04/11/2026, 16:58:48 | note: payment: {"where":"grab window without status picker: ● REC 16:58:46"}
+04/11/2026, 16:58:49 | E1 | expected: The purchase with every add-on ticked completes: Success page ('Thank you for your purchase!') with a [Receipt] download, and CIBO shows the transaction Paid, Ins. Co. Allianz, Transaction Status "Insurance created" | page shows: Total RM6219.6, grab: payment did not settle: {"where":"grab window without status picker: ● REC 16:58:46"} | DOES NOT MATCH | 08-E1-payment.png
+04/11/2026, 16:59:31 | note: payment window 1 on the TS video 03:10.7–04:15.7 (https://staging.secarang.com/ia/payment/landing/e6f3b58e-1def-4016-bc7e-90ea55e496e0/GrabPay)
+04/11/2026, 16:59:31 | note: payment window video laid into video_12406_E2E_TS12_rerun-20261104.webm (1 window(s), picture-in-picture, bottom right)

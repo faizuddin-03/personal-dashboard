@@ -1,0 +1,12 @@
+{
+  "ts": "12406_E2E_TS1_attempt2",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E6: expected \"CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode the same\", page shows \"Row BR6N006389: Ins. Co. \"Allianz Serba Sentral\"; Payment \"RM922.15 Paid 04-11-2026 15:08\"; Payment Mode \"Fiuu | Online Banking – FPX-Maybank\"; Transaction Status \"Failed\"; Remark \"Invalid fullName\" — same as attempt 1 with the same name on a different car, IC and bank\" (14-E6-cibo-row.png)",
+    "E7: expected \"CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment, with Allianz's own insurer code (co\", page shows \"Cover Note No \"-\", Policy No \"-\" (Failed, \"Invalid fullName\"); Payment Ref ID \"ALZ20261104SFX0002\"\" (15-E7-cibo-details.png)",
+    "E8: expected \"e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate\", page shows \"Buttons: []; e-Certificate / Receipt not shown (Failed)\" (16-E8-cibo-buttons.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 15:11:04",
+  "driver": "Claude (Playwright MCP)"
+}

@@ -1,0 +1,64 @@
+{
+  "ts": "12406_QT_TS1_real-20261104",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Quotations shown in this order: Lonpac, Allianz, Tokio Marine",
+      "shows": "Order: Lonpac → Allianz → Tokio Marine",
+      "match": true,
+      "shot": "04-E1-order.png",
+      "at": "04/11/2026, 17:13:14",
+      "url": "/ia/car-insurance/choose-your-insurance/64f37b90-b80e-4a08-a71d-ac0a3d99362c",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "The Allianz quotation shows the Allianz logo",
+      "shows": "Allianz card logo img alt \"Allianz logo\": true",
+      "match": true,
+      "shot": "05-E2-allianz-logo.png",
+      "at": "04/11/2026, 17:13:15",
+      "url": "/ia/car-insurance/choose-your-insurance/64f37b90-b80e-4a08-a71d-ac0a3d99362c",
+      "side": ""
+    },
+    {
+      "point": "E3",
+      "expected": "No other card: no \"– Quotation unavailable\" card and no card for any other insurer (e.g. RHB)",
+      "shows": "3 cards; unavailable cards: 0; insurers: Lonpac, Allianz, Tokio Marine",
+      "match": true,
+      "shot": "06-E3-no-other-card.png",
+      "at": "04/11/2026, 17:13:16",
+      "url": "/ia/car-insurance/choose-your-insurance/64f37b90-b80e-4a08-a71d-ac0a3d99362c",
+      "side": ""
+    },
+    {
+      "point": "E4",
+      "expected": "After [Edit] postcode: the cards are quoted again, the Allianz quotation is still shown with its logo, and the order is still Lonpac, Allianz, Tokio Marine (Allianz price before / after recorded)",
+      "shows": "After postcode 50450: order Lonpac → Allianz → Tokio Marine; Allianz price RM523.93 → RM565.95; logo shown true",
+      "match": true,
+      "shot": "07-E4-postcode-edit.png",
+      "at": "04/11/2026, 17:13:35",
+      "url": "/ia/car-insurance/choose-your-insurance/64f37b90-b80e-4a08-a71d-ac0a3d99362c",
+      "side": ""
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "Data: checker xlsx row 22 (real plate/IC) JXH1451, postcode 55000",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Get quotation",
+    "typed: postcode 50450",
+    "click: Edit postcode"
+  ],
+  "dialogs": [],
+  "windows": []
+}

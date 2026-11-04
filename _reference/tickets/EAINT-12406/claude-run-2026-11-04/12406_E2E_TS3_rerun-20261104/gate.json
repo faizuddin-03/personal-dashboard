@@ -1,0 +1,10 @@
+{
+  "ts": "12406_E2E_TS3_rerun-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E3: expected \"CIBO Transaction Details: Cover Note No filled (not \"-\"); Payment Ref ID with 'SEW' like a Lonpac e-wallet payment (e.g. LON<yyyymmdd>SEW<nnnn>), with Allianz's\", page shows \"Cover Note No \"-\"; Policy No \"-\"; Payment Ref ID \"ALZ20261104SEW0007\"\" (14-E3-cover-note.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 16:53:57",
+  "driver": "Claude (Playwright)"
+}

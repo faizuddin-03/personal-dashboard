@@ -1,0 +1,10 @@
+{
+  "ts": "12406_E2E_TS9_real-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E3: expected \"Ticking an add-on adds its shown price to the premium; unticking it takes the price off again\", page shows \"Bar 589.97 → +Break-In (RM3) 0 → +Key Care (RM7) 0 → −Key Care 0\" (07-E3-tick-untick.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 17:31:04",
+  "driver": "Claude (Playwright)"
+}

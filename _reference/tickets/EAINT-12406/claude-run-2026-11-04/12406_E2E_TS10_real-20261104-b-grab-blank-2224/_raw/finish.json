@@ -1,0 +1,119 @@
+{
+  "ts": "12406_E2E_TS10_real-20261104",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E1",
+      "text": "Confirmation and the Success page are for Tokio Marine (no Allianz name or price)"
+    },
+    {
+      "id": "E2",
+      "text": "Secarang receipt Insurer: \"Tokio Marine Insurans (Malaysia) Berhad\", next line \"198601000381 (149520-U)\" (no Allianz company number)"
+    },
+    {
+      "id": "E3",
+      "text": "CIBO row Ins. Co. Tokio Marine with agency badge Pemaju Eksklusif (observed); Transaction Details insurer \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\", laid out as captured on 28.10 (number on the same line as the name, wrapping)"
+    }
+  ],
+  "log": [
+    "# 12406_E2E_TS10_real-20261104 — Real API: customer picks Allianz, goes back and buys Tokio Marine: receipt and CIBO show Tokio Marine only",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 17:42:26 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "04/11/2026, 17:42:28 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "04/11/2026, 17:42:28 | note: Data: checker xlsx row 28 (real plate/IC) DDX7331, postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ",
+    "04/11/2026, 17:42:32 | note: typed: Site password",
+    "04/11/2026, 17:42:33 | note: click: Login (site password page)",
+    "04/11/2026, 17:42:41 | note: click: Close the promo pop-up",
+    "04/11/2026, 17:42:43 | note: click: Private Car tab",
+    "04/11/2026, 17:42:44 | note: typed: Car Plate No.",
+    "04/11/2026, 17:42:44 | note: typed: Owner IC No.",
+    "04/11/2026, 17:42:45 | note: typed: Postal Code",
+    "04/11/2026, 17:42:47 | note: click: Get quotation",
+    "04/11/2026, 17:43:27 | note: click: Variant: Select",
+    "04/11/2026, 17:43:27 | note: Variants offered: TYPE R FK8 4D HATCHBACK 1996 CC | TC-P MY16 FC FACELIFT 4D SEDAN 1498 CC | S MY16 FC FACELIFT 4D SEDAN 1799 CC | TC MY16 FC FACELIFT 4D SEDAN 1498 CC",
+    "04/11/2026, 17:43:28 | note: click: Variant TC-P MY16 FC FACELIFT 4D SEDAN 1498 CC",
+    "04/11/2026, 17:43:29 | note: click: Save variant",
+    "04/11/2026, 17:43:31 | note: click: Get quotation",
+    "04/11/2026, 17:43:50 | note: click: Buy (Allianz)",
+    "04/11/2026, 17:44:03 | note: click: Continue",
+    "04/11/2026, 17:44:15 | note: click: Edit (insurance plan)",
+    "04/11/2026, 17:44:17 | note: plan Edit pop-up: Change your insurance plan? You will lose current plan and all the keyed-in details if you decide to change to another plan. ChangeCancel",
+    "04/11/2026, 17:44:19 | note: click: Change",
+    "04/11/2026, 17:44:26 | note: click: Buy (Tokio Marine)",
+    "04/11/2026, 17:44:41 | note: click: Continue",
+    "04/11/2026, 17:44:52 | note: typed: Full Name (made up)",
+    "04/11/2026, 17:44:53 | note: typed: Email (QA own)",
+    "04/11/2026, 17:44:54 | note: typed: Mobile, no leading 0",
+    "04/11/2026, 17:44:54 | note: typed: Address 1 (made up)",
+    "04/11/2026, 17:44:55 | note: typed: Address 2",
+    "04/11/2026, 17:44:56 | note: typed: Address 3",
+    "04/11/2026, 17:44:58 | note: click: Confirm and Pay",
+    "04/11/2026, 17:45:12 | note: click: PayLater by Grab",
+    "04/11/2026, 17:45:13 | note: window opened by the site and kept (payment window 1)",
+    "04/11/2026, 17:46:15 | note: Total RM2224.06; payment: {\"where\":\"grab window without status picker: ● REC 17:46:13\"}",
+    "04/11/2026, 17:46:16 | E1 | expected: Confirmation and the Success page are for Tokio Marine (no Allianz name or price) | page shows: Total RM2224.06: payment did not settle: {\"where\":\"grab window without status picker: ● REC 17:46:13\"} | DOES NOT MATCH | 09-E1-payment.png"
+  ],
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Confirmation and the Success page are for Tokio Marine (no Allianz name or price)",
+      "shows": "Total RM2224.06: payment did not settle: {\"where\":\"grab window without status picker: ● REC 17:46:13\"}",
+      "match": false,
+      "shot": "09-E1-payment.png",
+      "at": "04/11/2026, 17:46:16",
+      "url": "/ia/car-insurance/payment-methods/74149984-5d5c-406b-83bd-e29a254c838d",
+      "side": ""
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "Data: checker xlsx row 28 (real plate/IC) DDX7331, postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Variant: Select",
+    "Variants offered: TYPE R FK8 4D HATCHBACK 1996 CC | TC-P MY16 FC FACELIFT 4D SEDAN 1498 CC | S MY16 FC FACELIFT 4D SEDAN 1799 CC | TC MY16 FC FACELIFT 4D SEDAN 1498 CC",
+    "click: Variant TC-P MY16 FC FACELIFT 4D SEDAN 1498 CC",
+    "click: Save variant",
+    "click: Get quotation",
+    "click: Buy (Allianz)",
+    "click: Continue",
+    "click: Edit (insurance plan)",
+    "plan Edit pop-up: Change your insurance plan? You will lose current plan and all the keyed-in details if you decide to change to another plan. ChangeCancel",
+    "click: Change",
+    "click: Buy (Tokio Marine)",
+    "click: Continue",
+    "typed: Full Name (made up)",
+    "typed: Email (QA own)",
+    "typed: Mobile, no leading 0",
+    "typed: Address 1 (made up)",
+    "typed: Address 2",
+    "typed: Address 3",
+    "click: Confirm and Pay",
+    "click: PayLater by Grab",
+    "window opened by the site and kept (payment window 1)",
+    "Total RM2224.06; payment: {\"where\":\"grab window without status picker: ● REC 17:46:13\"}"
+  ],
+  "dialogs": [],
+  "windows": [
+    {
+      "n": 1,
+      "at": 167.45,
+      "closedAt": 232.295,
+      "url": "https://staging.secarang.com/ia/payment/landing/74149984-5d5c-406b-83bd-e29a254c838d/GrabPay",
+      "file": "_raw/window1.webm"
+    }
+  ],
+  "videos": {
+    "main": "video_12406_E2E_TS10_real-20261104.webm",
+    "windows": [
+      "_raw/window1.webm"
+    ]
+  },
+  "saved": "C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS10_real-20261104/_raw/finish.json"
+}

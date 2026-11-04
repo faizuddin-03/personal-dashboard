@@ -1,0 +1,130 @@
+{
+  "ts": "12406_RC_TS1_rerun-20261104",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"",
+      "shows": "Insurer line 1: \"Allianz General Insurance Company (Malaysia)\"",
+      "match": false,
+      "shot": "02-E1-insurer-line1.png",
+      "at": "04/11/2026, 15:59:44",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS1/downloadable/receipt-26110421300001.pdf",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "Insurer, next line: \"200601015674 (735426-V)\"",
+      "shows": "Insurer line 2: \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "03-E2-insurer-line2.png",
+      "at": "04/11/2026, 15:59:45",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS1/downloadable/receipt-26110421300001.pdf",
+      "side": ""
+    },
+    {
+      "point": "E3",
+      "expected": "The old form \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\" on one line is not shown",
+      "shows": "Old one-line form \"…Berhad (735426-V)\" present: false",
+      "match": true,
+      "shot": "04-E3-old-form-gone.png",
+      "at": "04/11/2026, 15:59:46",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS1/downloadable/receipt-26110421300001.pdf",
+      "side": ""
+    },
+    {
+      "point": "E5",
+      "expected": "Vehicle Plate No., For (owner name) and Total Premium match the purchase of E2E_TS1",
+      "shows": "Plate JLX8382, For \"QA SECARANG TEST\", Total RM398.65; purchase E2E_TS1 04.11: JLX8382, QA SECARANG TEST, RM398.65",
+      "match": true,
+      "shot": "05-E5-plate-owner-total.png",
+      "at": "04/11/2026, 15:59:47",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS1/downloadable/receipt-26110421300001.pdf",
+      "side": ""
+    },
+    {
+      "point": "E6",
+      "expected": "Receipt Summary ends with \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)",
+      "shows": "Agent line: true; PIAM ID 195379-01",
+      "match": true,
+      "shot": "06-E6-agent-line.png",
+      "at": "04/11/2026, 15:59:49",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS1/downloadable/receipt-26110421300001.pdf",
+      "side": ""
+    },
+    {
+      "point": "E10",
+      "expected": "Receipt Summary: 'Premium After NCD' equals Basic Premium − NCD + the add-on lines listed above it on the same receipt, and equals Confirmation's 'Premium After NCD'",
+      "shows": "Basic 551.12 - NCD 211.24 + All Drivers 20 = 359.88; receipt \"Premium after NCD\" 379.88; Confirmation (04.11) RM359.88",
+      "match": false,
+      "shot": "07-E10-premium-after-ncd.png",
+      "at": "04/11/2026, 15:59:50",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS1/downloadable/receipt-26110421300001.pdf",
+      "side": ""
+    },
+    {
+      "point": "E4",
+      "expected": "Laid out like the Tokio Marine Insurer block of 12406_RG_TS1 (name, then company number with the old number in brackets on the next line)",
+      "shows": "Allianz \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"; Tokio Marine \"Tokio Marine Insurans (Malaysia) Berhad\" / \"198601000381 (149520-U)\"",
+      "match": false,
+      "shot": "09-E4-allianz-vs-tokio-marine.png",
+      "at": "04/11/2026, 16:01:22",
+      "url": "/cibo/transaction-management/transaction-details/5480206f-bafe-4628-8445-a990bb54b9eb",
+      "side": "CIBO"
+    },
+    {
+      "point": "E7",
+      "expected": "The receipts of E2E_TS2, E2E_TS3 and E2E_TS4 show the same two Insurer lines",
+      "shows": "E2E_TS2 card BR60006350: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\" | E2E_TS3 PayLater by Grab BR60006351: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\" | E2E_TS4 SPayLater BR60006352: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "10-E7-other-channel-receipts.png",
+      "at": "04/11/2026, 16:01:23",
+      "url": "/cibo/transaction-management/transaction-details/5480206f-bafe-4628-8445-a990bb54b9eb",
+      "side": "CIBO"
+    },
+    {
+      "point": "E8",
+      "expected": "Every label on the Allianz receipt is the same as on the Tokio Marine receipt of E2E_TS10 (e.g. 'Vehicle Plate No.', not 'Car Plate No.')",
+      "shows": "Labels on only one of the two receipts: none",
+      "match": true,
+      "shot": "11-E8-labels.png",
+      "at": "04/11/2026, 16:01:24",
+      "url": "/cibo/transaction-management/transaction-details/5480206f-bafe-4628-8445-a990bb54b9eb",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: BR69005852",
+    "click: Search",
+    "click: Open Transaction Details BR69005852",
+    "click: Receipt (CIBO, Tokio Marine)",
+    "downloaded: cibo-receipt-BR69005852-tokio-marine.pdf (server name R26091721300003WEEWE1.pdf)",
+    "typed: Search: BR60006350",
+    "click: Search",
+    "click: Open Transaction Details BR60006350",
+    "click: Receipt (CIBO, E2E_TS2 card)",
+    "downloaded: cibo-receipt-BR60006350.pdf (server name R26102921300028HXA0012A.pdf)",
+    "click: Transaction Management",
+    "typed: Search: BR60006351",
+    "click: Search",
+    "click: Open Transaction Details BR60006351",
+    "click: Receipt (CIBO, E2E_TS3 PayLater by Grab)",
+    "downloaded: cibo-receipt-BR60006351.pdf (server name R26102921300029HXA0013A.pdf)",
+    "click: Transaction Management",
+    "typed: Search: BR60006352",
+    "click: Search",
+    "click: Open Transaction Details BR60006352",
+    "click: Receipt (CIBO, E2E_TS4 SPayLater)",
+    "downloaded: cibo-receipt-BR60006352.pdf (server name R26102921300030HXA0014A.pdf)",
+    "E9 (Success page [Print] view) not repeated: it needs a new purchase; covered when E2E_TS1 is rerun."
+  ],
+  "dialogs": [],
+  "windows": []
+}

@@ -1,0 +1,324 @@
+{
+  "ts": "12406_QT_TS7_rerun-20261104",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E1",
+      "text": "Policy wording opens: an Allianz document dated 2022"
+    },
+    {
+      "id": "E2",
+      "text": "Product disclosure sheet opens: an Allianz document dated 2022"
+    },
+    {
+      "id": "E3",
+      "text": "Privacy notice opens: an Allianz document dated 2022"
+    },
+    {
+      "id": "E4",
+      "text": "Claim guide opens: an Allianz document dated 2022"
+    },
+    {
+      "id": "E5",
+      "text": "Each link opens the document it names, not another document or another insurer's"
+    },
+    {
+      "id": "E6",
+      "text": "Every link inside Plan Details (from the card and from Confirmation) and the Excess info opens an Allianz document, not another insurer's"
+    }
+  ],
+  "log": [
+    "# 12406_QT_TS7_rerun-20261104 — Rerun: Allianz product documents from the card Plan Details, Confirmation Plan Details, Excess info and declaration",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 16:14:04 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "04/11/2026, 16:14:06 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "04/11/2026, 16:14:10 | note: typed: Site password",
+    "04/11/2026, 16:14:10 | note: click: Login (site password page)",
+    "04/11/2026, 16:14:19 | note: click: Close the promo pop-up",
+    "04/11/2026, 16:14:20 | note: click: Private Car tab",
+    "04/11/2026, 16:14:21 | note: typed: Car Plate No.",
+    "04/11/2026, 16:14:22 | note: typed: Owner IC No.",
+    "04/11/2026, 16:14:23 | note: typed: Postal Code",
+    "04/11/2026, 16:14:25 | note: click: Get quotation",
+    "04/11/2026, 16:14:52 | note: click: Get quotation",
+    "04/11/2026, 16:15:04 | note: click: Allianz card: Plan Details",
+    "04/11/2026, 16:15:06 | note: click: card Plan Details: \"Product Disclosure\"",
+    "04/11/2026, 16:15:06 | note: window opened by the site and kept (payment window 1)",
+    "04/11/2026, 16:15:11 | note: document: {\"where\":\"card Plan Details\",\"label\":\"Product Disclosure\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf\",\"file\":\"allianz-product-disclosure-en.pdf\",\"dates\":[\"03/06/2020\"],\"allianz\":true,\"other\":[],\"text\":8938}",
+    "04/11/2026, 16:15:12 | note: click: card Plan Details: \"Claim Guide\"",
+    "04/11/2026, 16:15:12 | note: window opened by the site and kept (payment window 2)",
+    "04/11/2026, 16:15:17 | note: document: {\"where\":\"card Plan Details\",\"label\":\"Claim Guide\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-claim-guide-en.pdf\",\"file\":\"allianz-claim-guide-en.pdf\",\"dates\":[],\"allianz\":false,\"other\":[],\"text\":0}",
+    "04/11/2026, 16:15:18 | note: click: card Plan Details: \"Policy Wording\"",
+    "04/11/2026, 16:15:18 | note: window opened by the site and kept (payment window 3)",
+    "04/11/2026, 16:15:23 | note: document: {\"where\":\"card Plan Details\",\"label\":\"Policy Wording\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-policy-wording-en.pdf\",\"file\":\"allianz-policy-wording-en.pdf\",\"dates\":[\"03 March 2022\"],\"allianz\":true,\"other\":[],\"text\":186646}",
+    "04/11/2026, 16:15:23 | note: click: card Plan Details: \"Car Roadside Assistance Terms & Condition\"",
+    "04/11/2026, 16:15:23 | note: window opened by the site and kept (payment window 4)",
+    "04/11/2026, 16:15:28 | note: document: {\"where\":\"card Plan Details\",\"label\":\"Car Roadside Assistance Terms & Condition\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-car-roadside-assistance-en.pdf\",\"file\":\"allianz-car-roadside-assistance-en.pdf\",\"dates\":[],\"allianz\":true,\"other\":[],\"text\":4025}",
+    "04/11/2026, 16:15:29 | note: click: Close pop-up",
+    "04/11/2026, 16:15:31 | note: pop-ups still open after Close: 0",
+    "04/11/2026, 16:15:32 | note: click: Buy (Allianz)",
+    "04/11/2026, 16:15:43 | note: click: Continue",
+    "04/11/2026, 16:15:52 | note: click: Confirmation: Plan Details",
+    "04/11/2026, 16:15:55 | note: click: Confirmation Plan Details: \"Product Disclosure\"",
+    "04/11/2026, 16:15:55 | note: window opened by the site and kept (payment window 5)",
+    "04/11/2026, 16:15:59 | note: document: {\"where\":\"Confirmation Plan Details\",\"label\":\"Product Disclosure\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf\",\"file\":\"allianz-product-disclosure-en.pdf\",\"dates\":[\"03/06/2020\"],\"allianz\":true,\"other\":[],\"text\":8938}",
+    "04/11/2026, 16:16:00 | note: click: Confirmation Plan Details: \"Claim Guide\"",
+    "04/11/2026, 16:16:00 | note: window opened by the site and kept (payment window 6)",
+    "04/11/2026, 16:16:05 | note: document: {\"where\":\"Confirmation Plan Details\",\"label\":\"Claim Guide\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-claim-guide-en.pdf\",\"file\":\"allianz-claim-guide-en.pdf\",\"dates\":[],\"allianz\":false,\"other\":[],\"text\":0}",
+    "04/11/2026, 16:16:06 | note: click: Confirmation Plan Details: \"Policy Wording\"",
+    "04/11/2026, 16:16:06 | note: window opened by the site and kept (payment window 7)",
+    "04/11/2026, 16:16:11 | note: document: {\"where\":\"Confirmation Plan Details\",\"label\":\"Policy Wording\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-policy-wording-en.pdf\",\"file\":\"allianz-policy-wording-en.pdf\",\"dates\":[\"03 March 2022\"],\"allianz\":true,\"other\":[],\"text\":186646}",
+    "04/11/2026, 16:16:11 | note: click: Confirmation Plan Details: \"Car Roadside Assistance Terms & Condition\"",
+    "04/11/2026, 16:16:11 | note: window opened by the site and kept (payment window 8)",
+    "04/11/2026, 16:16:16 | note: document: {\"where\":\"Confirmation Plan Details\",\"label\":\"Car Roadside Assistance Terms & Condition\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-car-roadside-assistance-en.pdf\",\"file\":\"allianz-car-roadside-assistance-en.pdf\",\"dates\":[],\"allianz\":true,\"other\":[],\"text\":4025}",
+    "04/11/2026, 16:16:17 | note: click: Close pop-up",
+    "04/11/2026, 16:16:19 | note: pop-ups still open after Close: 0",
+    "04/11/2026, 16:16:19 | note: click: Excess 'i'",
+    "04/11/2026, 16:16:21 | note: Excess 'i' text: Compulsory Excess / Excess / Damage Claim This refers to an additional excess amount that you, as policy holder, would be required to bear, in the event of a claim. The relevance of this excess depends on specific circumstances of the authorised driver at the time of the accident. Here are some inst; links: 0",
+    "04/11/2026, 16:16:21 | note: click: Close Excess pop-up",
+    "04/11/2026, 16:16:24 | note: window opened by the site and kept (payment window 9)",
+    "04/11/2026, 16:16:24 | note: click: Confirmation declaration: \"Privacy Policy\"",
+    "04/11/2026, 16:16:29 | note: document: {\"where\":\"Confirmation declaration\",\"label\":\"Privacy Policy\",\"url\":\"https://staging.secarang.com/ia/\",\"file\":\"\",\"dates\":[],\"allianz\":false,\"other\":[]}",
+    "04/11/2026, 16:16:29 | note: click: Confirmation declaration: \"Terms of Use\"",
+    "04/11/2026, 16:16:29 | note: window opened by the site and kept (payment window 10)",
+    "04/11/2026, 16:16:34 | note: document: {\"where\":\"Confirmation declaration\",\"label\":\"Terms of Use\",\"url\":\"https://staging.secarang.com/ia/\",\"file\":\"\",\"dates\":[],\"allianz\":false,\"other\":[]}",
+    "04/11/2026, 16:16:35 | note: click: Confirmation declaration: \"Product Disclosure Sheet\"",
+    "04/11/2026, 16:16:35 | note: window opened by the site and kept (payment window 11)",
+    "04/11/2026, 16:16:40 | note: document: {\"where\":\"Confirmation declaration\",\"label\":\"Product Disclosure Sheet\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf\",\"file\":\"allianz-product-disclosure-en.pdf\",\"dates\":[\"03/06/2020\"],\"allianz\":true,\"other\":[],\"text\":8938}",
+    "04/11/2026, 16:16:41 | note: click: Confirmation declaration: \"Privacy Notice\"",
+    "04/11/2026, 16:16:41 | note: window opened by the site and kept (payment window 12)",
+    "04/11/2026, 16:16:46 | note: document: {\"where\":\"Confirmation declaration\",\"label\":\"Privacy Notice\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-privacy-notice.pdf\",\"file\":\"allianz-privacy-notice.pdf\",\"dates\":[\"3 March 2020\"],\"allianz\":true,\"other\":[],\"text\":16057}",
+    "04/11/2026, 16:16:49 | E1 | expected: Policy wording opens: an Allianz document dated 2022 | page shows: card Plan Details \"Policy Wording\" → allianz-policy-wording-en.pdf, Allianz true, dates: 03 March 2022 | Confirmation Plan Details \"Policy Wording\" → allianz-policy-wording-en.pdf, Allianz true, dates: 03 March 2022 | matches | 18-E1-Policy-wording.png",
+    "04/11/2026, 16:16:50 | E2 | expected: Product disclosure sheet opens: an Allianz document dated 2022 | page shows: card Plan Details \"Product Disclosure\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020 | Confirmation Plan Details \"Product Disclosure\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020 | Confirmation declaration \"Product Disclosure Sheet\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020 | DOES NOT MATCH | 19-E2-Product-disclosure-sheet.png",
+    "04/11/2026, 16:16:52 | E3 | expected: Privacy notice opens: an Allianz document dated 2022 | page shows: Confirmation declaration \"Privacy Notice\" → allianz-privacy-notice.pdf, Allianz true, dates: 3 March 2020 | DOES NOT MATCH | 20-E3-Privacy-notice.png",
+    "04/11/2026, 16:16:53 | E4 | expected: Claim guide opens: an Allianz document dated 2022 | page shows: card Plan Details \"Claim Guide\" → allianz-claim-guide-en.pdf, Allianz false, dates: none (image only) | Confirmation Plan Details \"Claim Guide\" → allianz-claim-guide-en.pdf, Allianz false, dates: none (image only) | DOES NOT MATCH | 21-E4-Claim-guide.png",
+    "04/11/2026, 16:16:54 | E5 | expected: Each link opens the document it names, not another document or another insurer's | page shows: Every link opened the document it names | matches | 22-E5-link-names.png",
+    "04/11/2026, 16:16:56 | E6 | expected: Every link inside Plan Details (from the card and from Confirmation) and the Excess info opens an Allianz document, not another insurer's | page shows: Not Allianz: allianz-claim-guide-en.pdf, allianz-claim-guide-en.pdf | DOES NOT MATCH | 23-E6-plan-details-links.png"
+  ],
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Policy wording opens: an Allianz document dated 2022",
+      "shows": "card Plan Details \"Policy Wording\" → allianz-policy-wording-en.pdf, Allianz true, dates: 03 March 2022 | Confirmation Plan Details \"Policy Wording\" → allianz-policy-wording-en.pdf, Allianz true, dates: 03 March 2022",
+      "match": true,
+      "shot": "18-E1-Policy-wording.png",
+      "at": "04/11/2026, 16:16:49",
+      "url": "/ia/car-insurance/confirm-payment/0e4c97ab-3460-4bbc-8510-e6bcdabb3e9d",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "Product disclosure sheet opens: an Allianz document dated 2022",
+      "shows": "card Plan Details \"Product Disclosure\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020 | Confirmation Plan Details \"Product Disclosure\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020 | Confirmation declaration \"Product Disclosure Sheet\" → allianz-product-disclosure-en.pdf, Allianz true, dates: 03/06/2020",
+      "match": false,
+      "shot": "19-E2-Product-disclosure-sheet.png",
+      "at": "04/11/2026, 16:16:50",
+      "url": "/ia/car-insurance/confirm-payment/0e4c97ab-3460-4bbc-8510-e6bcdabb3e9d",
+      "side": ""
+    },
+    {
+      "point": "E3",
+      "expected": "Privacy notice opens: an Allianz document dated 2022",
+      "shows": "Confirmation declaration \"Privacy Notice\" → allianz-privacy-notice.pdf, Allianz true, dates: 3 March 2020",
+      "match": false,
+      "shot": "20-E3-Privacy-notice.png",
+      "at": "04/11/2026, 16:16:52",
+      "url": "/ia/car-insurance/confirm-payment/0e4c97ab-3460-4bbc-8510-e6bcdabb3e9d",
+      "side": ""
+    },
+    {
+      "point": "E4",
+      "expected": "Claim guide opens: an Allianz document dated 2022",
+      "shows": "card Plan Details \"Claim Guide\" → allianz-claim-guide-en.pdf, Allianz false, dates: none (image only) | Confirmation Plan Details \"Claim Guide\" → allianz-claim-guide-en.pdf, Allianz false, dates: none (image only)",
+      "match": false,
+      "shot": "21-E4-Claim-guide.png",
+      "at": "04/11/2026, 16:16:53",
+      "url": "/ia/car-insurance/confirm-payment/0e4c97ab-3460-4bbc-8510-e6bcdabb3e9d",
+      "side": ""
+    },
+    {
+      "point": "E5",
+      "expected": "Each link opens the document it names, not another document or another insurer's",
+      "shows": "Every link opened the document it names",
+      "match": true,
+      "shot": "22-E5-link-names.png",
+      "at": "04/11/2026, 16:16:54",
+      "url": "/ia/car-insurance/confirm-payment/0e4c97ab-3460-4bbc-8510-e6bcdabb3e9d",
+      "side": ""
+    },
+    {
+      "point": "E6",
+      "expected": "Every link inside Plan Details (from the card and from Confirmation) and the Excess info opens an Allianz document, not another insurer's",
+      "shows": "Not Allianz: allianz-claim-guide-en.pdf, allianz-claim-guide-en.pdf",
+      "match": false,
+      "shot": "23-E6-plan-details-links.png",
+      "at": "04/11/2026, 16:16:56",
+      "url": "/ia/car-insurance/confirm-payment/0e4c97ab-3460-4bbc-8510-e6bcdabb3e9d",
+      "side": ""
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Get quotation",
+    "click: Allianz card: Plan Details",
+    "click: card Plan Details: \"Product Disclosure\"",
+    "window opened by the site and kept (payment window 1)",
+    "document: {\"where\":\"card Plan Details\",\"label\":\"Product Disclosure\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf\",\"file\":\"allianz-product-disclosure-en.pdf\",\"dates\":[\"03/06/2020\"],\"allianz\":true,\"other\":[],\"text\":8938}",
+    "click: card Plan Details: \"Claim Guide\"",
+    "window opened by the site and kept (payment window 2)",
+    "document: {\"where\":\"card Plan Details\",\"label\":\"Claim Guide\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-claim-guide-en.pdf\",\"file\":\"allianz-claim-guide-en.pdf\",\"dates\":[],\"allianz\":false,\"other\":[],\"text\":0}",
+    "click: card Plan Details: \"Policy Wording\"",
+    "window opened by the site and kept (payment window 3)",
+    "document: {\"where\":\"card Plan Details\",\"label\":\"Policy Wording\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-policy-wording-en.pdf\",\"file\":\"allianz-policy-wording-en.pdf\",\"dates\":[\"03 March 2022\"],\"allianz\":true,\"other\":[],\"text\":186646}",
+    "click: card Plan Details: \"Car Roadside Assistance Terms & Condition\"",
+    "window opened by the site and kept (payment window 4)",
+    "document: {\"where\":\"card Plan Details\",\"label\":\"Car Roadside Assistance Terms & Condition\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-car-roadside-assistance-en.pdf\",\"file\":\"allianz-car-roadside-assistance-en.pdf\",\"dates\":[],\"allianz\":true,\"other\":[],\"text\":4025}",
+    "click: Close pop-up",
+    "pop-ups still open after Close: 0",
+    "click: Buy (Allianz)",
+    "click: Continue",
+    "click: Confirmation: Plan Details",
+    "click: Confirmation Plan Details: \"Product Disclosure\"",
+    "window opened by the site and kept (payment window 5)",
+    "document: {\"where\":\"Confirmation Plan Details\",\"label\":\"Product Disclosure\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf\",\"file\":\"allianz-product-disclosure-en.pdf\",\"dates\":[\"03/06/2020\"],\"allianz\":true,\"other\":[],\"text\":8938}",
+    "click: Confirmation Plan Details: \"Claim Guide\"",
+    "window opened by the site and kept (payment window 6)",
+    "document: {\"where\":\"Confirmation Plan Details\",\"label\":\"Claim Guide\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-claim-guide-en.pdf\",\"file\":\"allianz-claim-guide-en.pdf\",\"dates\":[],\"allianz\":false,\"other\":[],\"text\":0}",
+    "click: Confirmation Plan Details: \"Policy Wording\"",
+    "window opened by the site and kept (payment window 7)",
+    "document: {\"where\":\"Confirmation Plan Details\",\"label\":\"Policy Wording\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-policy-wording-en.pdf\",\"file\":\"allianz-policy-wording-en.pdf\",\"dates\":[\"03 March 2022\"],\"allianz\":true,\"other\":[],\"text\":186646}",
+    "click: Confirmation Plan Details: \"Car Roadside Assistance Terms & Condition\"",
+    "window opened by the site and kept (payment window 8)",
+    "document: {\"where\":\"Confirmation Plan Details\",\"label\":\"Car Roadside Assistance Terms & Condition\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-car-roadside-assistance-en.pdf\",\"file\":\"allianz-car-roadside-assistance-en.pdf\",\"dates\":[],\"allianz\":true,\"other\":[],\"text\":4025}",
+    "click: Close pop-up",
+    "pop-ups still open after Close: 0",
+    "click: Excess 'i'",
+    "Excess 'i' text: Compulsory Excess / Excess / Damage Claim This refers to an additional excess amount that you, as policy holder, would be required to bear, in the event of a claim. The relevance of this excess depends on specific circumstances of the authorised driver at the time of the accident. Here are some inst; links: 0",
+    "click: Close Excess pop-up",
+    "window opened by the site and kept (payment window 9)",
+    "click: Confirmation declaration: \"Privacy Policy\"",
+    "document: {\"where\":\"Confirmation declaration\",\"label\":\"Privacy Policy\",\"url\":\"https://staging.secarang.com/ia/\",\"file\":\"\",\"dates\":[],\"allianz\":false,\"other\":[]}",
+    "click: Confirmation declaration: \"Terms of Use\"",
+    "window opened by the site and kept (payment window 10)",
+    "document: {\"where\":\"Confirmation declaration\",\"label\":\"Terms of Use\",\"url\":\"https://staging.secarang.com/ia/\",\"file\":\"\",\"dates\":[],\"allianz\":false,\"other\":[]}",
+    "click: Confirmation declaration: \"Product Disclosure Sheet\"",
+    "window opened by the site and kept (payment window 11)",
+    "document: {\"where\":\"Confirmation declaration\",\"label\":\"Product Disclosure Sheet\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf\",\"file\":\"allianz-product-disclosure-en.pdf\",\"dates\":[\"03/06/2020\"],\"allianz\":true,\"other\":[],\"text\":8938}",
+    "click: Confirmation declaration: \"Privacy Notice\"",
+    "window opened by the site and kept (payment window 12)",
+    "document: {\"where\":\"Confirmation declaration\",\"label\":\"Privacy Notice\",\"url\":\"https://staging.secarang.com/ia/assets/documents/allianz-privacy-notice.pdf\",\"file\":\"allianz-privacy-notice.pdf\",\"dates\":[\"3 March 2020\"],\"allianz\":true,\"other\":[],\"text\":16057}"
+  ],
+  "dialogs": [],
+  "windows": [
+    {
+      "n": 1,
+      "at": 63.479,
+      "closedAt": 68.373,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf",
+      "file": "_raw/window1.webm"
+    },
+    {
+      "n": 2,
+      "at": 69.19,
+      "closedAt": 74.037,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-claim-guide-en.pdf",
+      "file": "_raw/window2.webm"
+    },
+    {
+      "n": 3,
+      "at": 74.877,
+      "closedAt": 79.738,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-policy-wording-en.pdf",
+      "file": "_raw/window3.webm"
+    },
+    {
+      "n": 4,
+      "at": 80.536,
+      "closedAt": 85.601,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-car-roadside-assistance-en.pdf",
+      "file": "_raw/window4.webm"
+    },
+    {
+      "n": 5,
+      "at": 111.701,
+      "closedAt": 116.464,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf",
+      "file": "_raw/window5.webm"
+    },
+    {
+      "n": 6,
+      "at": 117.287,
+      "closedAt": 122.106,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-claim-guide-en.pdf",
+      "file": "_raw/window6.webm"
+    },
+    {
+      "n": 7,
+      "at": 122.934,
+      "closedAt": 127.653,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-policy-wording-en.pdf",
+      "file": "_raw/window7.webm"
+    },
+    {
+      "n": 8,
+      "at": 128.453,
+      "closedAt": 133.457,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-car-roadside-assistance-en.pdf",
+      "file": "_raw/window8.webm"
+    },
+    {
+      "n": 9,
+      "at": 140.637,
+      "closedAt": 145.674,
+      "url": "https://staging.secarang.com/ia/",
+      "file": "_raw/window9.webm"
+    },
+    {
+      "n": 10,
+      "at": 146.481,
+      "closedAt": 151.468,
+      "url": "https://staging.secarang.com/ia/",
+      "file": "_raw/window10.webm"
+    },
+    {
+      "n": 11,
+      "at": 152.287,
+      "closedAt": 157.006,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf",
+      "file": "_raw/window11.webm"
+    },
+    {
+      "n": 12,
+      "at": 157.827,
+      "closedAt": 162.897,
+      "url": "https://staging.secarang.com/ia/assets/documents/allianz-privacy-notice.pdf",
+      "file": "_raw/window12.webm"
+    }
+  ],
+  "videos": {
+    "main": "video_12406_QT_TS7_rerun-20261104.webm",
+    "windows": [
+      "_raw/window1.webm",
+      "_raw/window2.webm",
+      "_raw/window3.webm",
+      "_raw/window4.webm",
+      "_raw/window5.webm",
+      "_raw/window6.webm",
+      "_raw/window7.webm",
+      "_raw/window8.webm",
+      "_raw/window9.webm",
+      "_raw/window10.webm",
+      "_raw/window11.webm",
+      "_raw/window12.webm"
+    ]
+  },
+  "saved": "C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_QT_TS7_rerun-20261104/_raw/finish.json"
+}

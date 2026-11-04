@@ -1,0 +1,24 @@
+# 12406_RC_TS8_rerun-20261104 — Rerun: older Allianz transaction BR55004010 (paid 2025) receipt and Transaction Details after the deploy
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 15:54:20 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 15:54:22 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+04/11/2026, 15:54:24 | note: portal: CIBO (testadmin)
+04/11/2026, 15:54:27 | note: typed: Login ID
+04/11/2026, 15:54:28 | note: typed: Password
+04/11/2026, 15:54:28 | note: click: Login
+04/11/2026, 15:54:32 | note: click: Transaction Management
+04/11/2026, 15:54:35 | note: typed: Search: BR55004010
+04/11/2026, 15:54:36 | note: click: Search
+04/11/2026, 15:54:43 | note: click: Open Transaction Details BR55004010
+04/11/2026, 15:54:49 | E4 | expected: AFTER: BR55004010 Transaction Details shows "200601015674 (735426-V)" with the Allianz name (layout recorded, Q42) | page shows: Insurer "Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)" (2 line(s) on screen) | matches | 01-E4-br55004010-details-insurer.png
+04/11/2026, 15:54:50 | note: click: Receipt (CIBO)
+04/11/2026, 15:54:50 | note: downloaded: cibo-receipt-BR55004010.pdf (server name R25050421300004DAX0900.pdf)
+04/11/2026, 15:55:00 | E3 | expected: AFTER: BR55004010 receipt "Allianz General Insurance Company (Malaysia) Berhad", next line "200601015674 (735426-V)" | page shows: Receipt Insurer: "Allianz General Insurance Company (Malaysia)" / "Berhad 200601015674 (735426-V)" | DOES NOT MATCH | 03-E3-br55004010-receipt-insurer.png
+04/11/2026, 15:55:05 | note: typed: Search: BR44003678
+04/11/2026, 15:55:06 | note: click: Search
+04/11/2026, 15:55:13 | note: click: Open Transaction Details BR44003678
+04/11/2026, 15:55:20 | note: click: Transaction Management
+04/11/2026, 15:55:23 | note: typed: Search: BR3D003430
+04/11/2026, 15:55:24 | note: click: Search
+04/11/2026, 15:55:30 | note: click: Open Transaction Details BR3D003430
+04/11/2026, 15:55:37 | E5 | expected: AFTER: BR44003678 and BR3D003430 insurer box recorded (Q20) | page shows: BR44003678: Insurer "Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)", status Pending payment | BR3D003430: Insurer "Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)", status Pending payment | matches

@@ -1,0 +1,41 @@
+# 12406_RC_TS1_rerun-20261104 — Rerun: Allianz receipt, Insurer block and Receipt Summary, against Tokio Marine
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 15:59:32 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 15:59:34 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+04/11/2026, 15:59:44 | E1 | expected: Insurer, first line: "Allianz General Insurance Company (Malaysia) Berhad" | page shows: Insurer line 1: "Allianz General Insurance Company (Malaysia)" | DOES NOT MATCH | 02-E1-insurer-line1.png
+04/11/2026, 15:59:45 | E2 | expected: Insurer, next line: "200601015674 (735426-V)" | page shows: Insurer line 2: "Berhad 200601015674 (735426-V)" | DOES NOT MATCH | 03-E2-insurer-line2.png
+04/11/2026, 15:59:46 | E3 | expected: The old form "Allianz General Insurance Company (Malaysia) Berhad (735426-V)" on one line is not shown | page shows: Old one-line form "…Berhad (735426-V)" present: false | matches | 04-E3-old-form-gone.png
+04/11/2026, 15:59:47 | E5 | expected: Vehicle Plate No., For (owner name) and Total Premium match the purchase of E2E_TS1 | page shows: Plate JLX8382, For "QA SECARANG TEST", Total RM398.65; purchase E2E_TS1 04.11: JLX8382, QA SECARANG TEST, RM398.65 | matches | 05-E5-plate-owner-total.png
+04/11/2026, 15:59:49 | E6 | expected: Receipt Summary ends with "Exclusively by agent Serba Sentral Sdn Bhd" (PIAM ID recorded) | page shows: Agent line: true; PIAM ID 195379-01 | matches | 06-E6-agent-line.png
+04/11/2026, 15:59:50 | E10 | expected: Receipt Summary: 'Premium After NCD' equals Basic Premium − NCD + the add-on lines listed above it on the same receipt, and equals Confirmation's 'Premium After NCD' | page shows: Basic 551.12 - NCD 211.24 + All Drivers 20 = 359.88; receipt "Premium after NCD" 379.88; Confirmation (04.11) RM359.88 | DOES NOT MATCH | 07-E10-premium-after-ncd.png
+04/11/2026, 15:59:52 | note: portal: CIBO (testadmin)
+04/11/2026, 15:59:55 | note: typed: Login ID
+04/11/2026, 15:59:56 | note: typed: Password
+04/11/2026, 15:59:56 | note: click: Login
+04/11/2026, 16:00:00 | note: click: Transaction Management
+04/11/2026, 16:00:03 | note: typed: Search: BR69005852
+04/11/2026, 16:00:04 | note: click: Search
+04/11/2026, 16:00:11 | note: click: Open Transaction Details BR69005852
+04/11/2026, 16:00:17 | note: click: Receipt (CIBO, Tokio Marine)
+04/11/2026, 16:00:17 | note: downloaded: cibo-receipt-BR69005852-tokio-marine.pdf (server name R26091721300003WEEWE1.pdf)
+04/11/2026, 16:00:28 | note: typed: Search: BR60006350
+04/11/2026, 16:00:29 | note: click: Search
+04/11/2026, 16:00:36 | note: click: Open Transaction Details BR60006350
+04/11/2026, 16:00:42 | note: click: Receipt (CIBO, E2E_TS2 card)
+04/11/2026, 16:00:42 | note: downloaded: cibo-receipt-BR60006350.pdf (server name R26102921300028HXA0012A.pdf)
+04/11/2026, 16:00:43 | note: click: Transaction Management
+04/11/2026, 16:00:47 | note: typed: Search: BR60006351
+04/11/2026, 16:00:47 | note: click: Search
+04/11/2026, 16:00:54 | note: click: Open Transaction Details BR60006351
+04/11/2026, 16:01:00 | note: click: Receipt (CIBO, E2E_TS3 PayLater by Grab)
+04/11/2026, 16:01:00 | note: downloaded: cibo-receipt-BR60006351.pdf (server name R26102921300029HXA0013A.pdf)
+04/11/2026, 16:01:01 | note: click: Transaction Management
+04/11/2026, 16:01:05 | note: typed: Search: BR60006352
+04/11/2026, 16:01:05 | note: click: Search
+04/11/2026, 16:01:12 | note: click: Open Transaction Details BR60006352
+04/11/2026, 16:01:18 | note: click: Receipt (CIBO, E2E_TS4 SPayLater)
+04/11/2026, 16:01:18 | note: downloaded: cibo-receipt-BR60006352.pdf (server name R26102921300030HXA0014A.pdf)
+04/11/2026, 16:01:22 | E4 | expected: Laid out like the Tokio Marine Insurer block of 12406_RG_TS1 (name, then company number with the old number in brackets on the next line) | page shows: Allianz "Allianz General Insurance Company (Malaysia)" / "Berhad 200601015674 (735426-V)"; Tokio Marine "Tokio Marine Insurans (Malaysia) Berhad" / "198601000381 (149520-U)" | DOES NOT MATCH | 09-E4-allianz-vs-tokio-marine.png
+04/11/2026, 16:01:23 | E7 | expected: The receipts of E2E_TS2, E2E_TS3 and E2E_TS4 show the same two Insurer lines | page shows: E2E_TS2 card BR60006350: "Allianz General Insurance Company (Malaysia)" / "Berhad 200601015674 (735426-V)" | E2E_TS3 PayLater by Grab BR60006351: "Allianz General Insurance Company (Malaysia)" / "Berhad 200601015674 (735426-V)" | E2E_TS4 SPayLater BR60006352: "Allianz General Insurance Company (Malaysia)" / "Berhad 200601015674 (735426-V)" | DOES NOT MATCH | 10-E7-other-channel-receipts.png
+04/11/2026, 16:01:24 | E8 | expected: Every label on the Allianz receipt is the same as on the Tokio Marine receipt of E2E_TS10 (e.g. 'Vehicle Plate No.', not 'Car Plate No.') | page shows: Labels on only one of the two receipts: none | matches | 11-E8-labels.png
+04/11/2026, 16:01:24 | note: E9 (Success page [Print] view) not repeated: it needs a new purchase; covered when E2E_TS1 is rerun.

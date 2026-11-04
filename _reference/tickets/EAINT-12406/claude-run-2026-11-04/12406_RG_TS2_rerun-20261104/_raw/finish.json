@@ -1,0 +1,88 @@
+{
+  "ts": "12406_RG_TS2_rerun-20261104",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E2",
+      "text": "AFTER: BR60006309 insurer box and receipt Insurer block identical to the 28.10 capture (Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\")"
+    },
+    {
+      "id": "E3",
+      "text": "AFTER: QT_TS4 Lonpac transaction: Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\" (Bhd also accepted, EAINT-12422)"
+    }
+  ],
+  "log": [
+    "# 12406_RG_TS2_rerun-20261104 — Rerun: Lonpac receipt and Transaction Details unchanged (BR60006309) and on a new Lonpac purchase (QT_TS4)",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 17:22:54 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "04/11/2026, 17:22:56 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "04/11/2026, 17:22:58 | note: portal: CIBO (testadmin)",
+    "04/11/2026, 17:23:01 | note: typed: Login ID",
+    "04/11/2026, 17:23:02 | note: typed: Password",
+    "04/11/2026, 17:23:02 | note: click: Login",
+    "04/11/2026, 17:23:06 | note: click: Transaction Management",
+    "04/11/2026, 17:23:09 | note: typed: Search: BR60006309",
+    "04/11/2026, 17:23:10 | note: click: Search",
+    "04/11/2026, 17:23:17 | note: click: Open Transaction Details BR60006309",
+    "04/11/2026, 17:23:23 | note: click: Receipt (CIBO)",
+    "04/11/2026, 17:23:23 | note: downloaded: cibo-receipt-BR60006309-lonpac.pdf (server name R26102021300029TEST0101.pdf)",
+    "04/11/2026, 17:23:33 | E2 | expected: AFTER: BR60006309 insurer box and receipt Insurer block identical to the 28.10 capture (Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\") | page shows: BR60006309: Details \"Lonpac Insurance Berhad\"; receipt \"Lonpac Insurance Berhad (307414-T)\" | matches | 02-E2-BR60006309.png",
+    "04/11/2026, 17:23:38 | note: typed: Search: BR6N006399",
+    "04/11/2026, 17:23:38 | note: click: Search",
+    "04/11/2026, 17:23:48 | note: typed: Search: BR6N006399",
+    "04/11/2026, 17:23:48 | note: click: Search",
+    "04/11/2026, 17:23:55 | note: click: Open Transaction Details BR6N006399",
+    "04/11/2026, 17:24:01 | note: click: Receipt (CIBO)",
+    "04/11/2026, 17:24:01 | note: downloaded: cibo-receipt-BR6N006399-lonpac.pdf (server name R26110421300010BQX1858.pdf)",
+    "04/11/2026, 17:24:11 | E3 | expected: AFTER: QT_TS4 Lonpac transaction: Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\" (Bhd also accepted, EAINT-12422) | page shows: BR6N006399: Details \"Lonpac Insurance Berhad\"; receipt \"Lonpac Insurance Berhad (307414-T)\" | matches | 04-E3-BR6N006399.png"
+  ],
+  "proofs": [
+    {
+      "point": "E2",
+      "expected": "AFTER: BR60006309 insurer box and receipt Insurer block identical to the 28.10 capture (Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\")",
+      "shows": "BR60006309: Details \"Lonpac Insurance Berhad\"; receipt \"Lonpac Insurance Berhad (307414-T)\"",
+      "match": true,
+      "shot": "02-E2-BR60006309.png",
+      "at": "04/11/2026, 17:23:33",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RG_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006309-lonpac.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "AFTER: QT_TS4 Lonpac transaction: Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\" (Bhd also accepted, EAINT-12422)",
+      "shows": "BR6N006399: Details \"Lonpac Insurance Berhad\"; receipt \"Lonpac Insurance Berhad (307414-T)\"",
+      "match": true,
+      "shot": "04-E3-BR6N006399.png",
+      "at": "04/11/2026, 17:24:11",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RG_TS2_rerun-20261104/downloadable/cibo-receipt-BR6N006399-lonpac.pdf",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: BR60006309",
+    "click: Search",
+    "click: Open Transaction Details BR60006309",
+    "click: Receipt (CIBO)",
+    "downloaded: cibo-receipt-BR60006309-lonpac.pdf (server name R26102021300029TEST0101.pdf)",
+    "typed: Search: BR6N006399",
+    "click: Search",
+    "typed: Search: BR6N006399",
+    "click: Search",
+    "click: Open Transaction Details BR6N006399",
+    "click: Receipt (CIBO)",
+    "downloaded: cibo-receipt-BR6N006399-lonpac.pdf (server name R26110421300010BQX1858.pdf)"
+  ],
+  "dialogs": [],
+  "windows": [],
+  "videos": {
+    "main": "video_12406_RG_TS2_rerun-20261104.webm",
+    "windows": []
+  },
+  "saved": "C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RG_TS2_rerun-20261104/_raw/finish.json"
+}

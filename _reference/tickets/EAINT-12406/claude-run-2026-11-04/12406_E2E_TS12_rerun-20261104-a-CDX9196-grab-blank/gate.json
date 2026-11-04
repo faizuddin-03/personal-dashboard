@@ -1,0 +1,10 @@
+{
+  "ts": "12406_E2E_TS12_rerun-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"The purchase with every add-on ticked completes: Success page ('Thank you for your purchase!') with a [Receipt] download, and CIBO shows the transaction Paid, I\", page shows \"Total RM6219.6, grab: payment did not settle: {\"where\":\"grab window without status picker: ● REC 16:58:46\"}\" (08-E1-payment.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 16:59:31",
+  "driver": "Claude (Playwright)"
+}

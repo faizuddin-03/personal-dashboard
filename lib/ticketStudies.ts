@@ -172,8 +172,8 @@ export const TICKET_STUDIES: TicketStudy[] = [
       { topic: "Production", decision: "Quote to payment page only (CP_TS7, E2E_TS8), on hold until go-live.", note: "Team doc §2; Azfar 29.10." },
     ],
     openItems: [
-      { question: "D1 (Low): Allianz company number follows \"Berhad\" instead of its own line on Secarang receipt, CIBO receipt and e-receipt email. Raise To Do, or On Hold for the BA first (Q42).", why: "Drafted by Azfar, not raised. Data HXA0011A–14A, BR60006349–52, old BR55004010.", coveredBy: "12406_RC_TS1" },
-      { question: "D2 (Medium): Allianz \"Premium after NCD\" RM882.16, expected RM862.16 (All Drivers RM20 counted twice).", why: "Drafted, not raised. Console: \"TypeError … reading 'amount' at autoAddAddonIfAllianz\".", coveredBy: "12406_RC_TS2" },
+      { question: "D1 (Low): Allianz company number follows \"Berhad\" instead of its own line on Secarang receipt, CIBO receipt and e-receipt email. Raise To Do, or On Hold for the BA first (Q42).", why: "Raised 04.11.2026 as EAINT-12764 (Low, On Hold for the BA, Q42). Data HXA0011A–14A, BR60006349–52, old BR55004010; real API JLX8382 receipt 26110421300001.", coveredBy: "12406_RC_TS1" },
+      { question: "D2 (Medium): Allianz \"Premium after NCD\" RM882.16, expected RM862.16 (All Drivers RM20 counted twice).", why: "Raised 04.11.2026 as EAINT-12765 (High, On Hold for QA check). Reproduced on the real API 04.11 (RM379.88 vs RM359.88, JLX8382). Console 29.10: \"TypeError … reading 'amount' at autoAddAddonIfAllianz\".", coveredBy: "12406_RC_TS2" },
       { question: "Q44 (Dev): no cover note, policy number or e-Certificate on any paid Allianz purchase on /ia/ (EAINT-6345).", why: "Blocks E2E_TS1–3.", coveredBy: "12406_E2E_TS1" },
       { question: "Q46 (Dev): how to pay over RM2,000 on the Fiuu sandbox (FPX and card refused P15, GrabPay blank).", why: "Blocks E2E_TS12." },
       { question: "Simulator plates (Dev): Allianz / Lonpac / Tokio Marine unavailable, and an individual non-renewal.", why: "Blocks QT_TS2, QT_TS4, QT_TS5, QT_TS6, then RG_TS2, RC_TS4 E5, RC_TS11. Tell Azfar first." },

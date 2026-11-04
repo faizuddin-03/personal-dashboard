@@ -1,0 +1,74 @@
+{
+  "ts": "12406_E2E_TS1_attempt3",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E1",
+      "text": "All Quotations: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz"
+    },
+    {
+      "id": "E2",
+      "text": "Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded)"
+    },
+    {
+      "id": "E3",
+      "text": "Payment page shows the same four tiles as for a Lonpac purchase: Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab (observed)"
+    },
+    {
+      "id": "E4",
+      "text": "FPX payment approved (00): Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' (observed) and a [Receipt] download"
+    },
+    {
+      "id": "E5",
+      "text": "Receipt Total Premium = the total on the Confirmation page"
+    },
+    {
+      "id": "E6",
+      "text": "CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode the same as a Lonpac FPX payment on /ia/ (today bare \"Fiuu\"; the SA format is QA-Issue EAINT-12566, On Hold: not a 12406 failure)"
+    },
+    {
+      "id": "E7",
+      "text": "CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment, with Allianz's own insurer code (code recorded, Q30)"
+    },
+    {
+      "id": "E8",
+      "text": "e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate"
+    }
+  ],
+  "log": [
+    "# 12406_E2E_TS1_attempt3 — Real Allianz UAT API, attempt 3: Dev-style name \"FAIZUDDIN TEST ALLIANZ\", row 13, FPX RHB",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 15:14:36 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "04/11/2026, 15:14:38 | note: Attempt 3 (Faizuddin chose: Dev-style name). Attempts 1-2 with \"QA SECARANG TEST\" failed \"Invalid fullName\" (BR6N006388, BR6N006389). Data: checker xlsx row 13 (real plate/IC), postcode 55000.",
+    "04/11/2026, 15:14:40 | note: on the site: Secarang (https://staging.secarang.com/ia/car-insurance)",
+    "04/11/2026, 15:14:44 | note: typed: Site password",
+    "04/11/2026, 15:14:45 | note: click: Login (site password page)",
+    "04/11/2026, 15:14:53 | note: click: Close the promo pop-up",
+    "04/11/2026, 15:14:55 | note: click: Private Car tab",
+    "04/11/2026, 15:14:55 | note: typed: Car Plate No.",
+    "04/11/2026, 15:14:56 | note: typed: Owner IC No.",
+    "04/11/2026, 15:14:57 | note: typed: Postal Code",
+    "04/11/2026, 15:14:59 | note: click: Get quotation",
+    "04/11/2026, 15:15:52 | note: Stopped at Car Details (MERCEDES-BENZ CLA 2018, NCD 25%) on Faizuddin's instruction: Dev confirmed the \"Invalid fullName\" refusal is a bug; raise it first. Nothing quoted or paid in this attempt."
+  ],
+  "proofs": [],
+  "notes": [
+    "Attempt 3 (Faizuddin chose: Dev-style name). Attempts 1-2 with \"QA SECARANG TEST\" failed \"Invalid fullName\" (BR6N006388, BR6N006389). Data: checker xlsx row 13 (real plate/IC), postcode 55000.",
+    "on the site: Secarang (https://staging.secarang.com/ia/car-insurance)",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "Stopped at Car Details (MERCEDES-BENZ CLA 2018, NCD 25%) on Faizuddin's instruction: Dev confirmed the \"Invalid fullName\" refusal is a bug; raise it first. Nothing quoted or paid in this attempt."
+  ],
+  "dialogs": [],
+  "windows": [],
+  "videos": {
+    "main": "video_12406_E2E_TS1_attempt3.webm",
+    "windows": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "ts": "12406_E2E_TS12_rerun-20261104",
+  "verdict": "EVIDENCE",
+  "reasons": [
+    "no proof for E1, E2, E3"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 17:02:02",
+  "driver": "Claude (Playwright)"
+}

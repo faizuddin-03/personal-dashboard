@@ -1,0 +1,12 @@
+{
+  "ts": "12406_E2E_TS1",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E6: expected \"CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode the same\", page shows \"Row BR6N006388: Ins. Co. \"Allianz Serba Sentral\"; Payment \"RM398.65Paid 04-11-2026 14:25\"; Payment Mode \"Fiuu | Online Banking – FPX-RHB Bank\"; Transaction Status \"Failed\"; JPJ \"-\"; Remark \"Invalid fullName\" — status is not \"Insurance created\": the real Allianz API refused the made-up owner name typed on Confirmation (test data, not a 12406 defect: to confirm)\" (16-E6-cibo-row.png)",
+    "E7: expected \"CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment, with Allianz's own insurer code (co\", page shows \"Cover Note No \"-\", Policy No \"-\" (transaction Failed, Remark \"Invalid fullName\": no policy issued); Payment Ref ID \"ALZ20261104SFX0001\" has SFX, Allianz insurer code ALZ (Q30)\" (17-E7-cibo-details.png)",
+    "E8: expected \"e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate\", page shows \"Buttons on Transaction Details: [\"btn btn-link collapse-icon position-absolute\",\"btn btn-link ssm-info-icon p-0\"]; e-Certificate shown: false; Receipt shown: false (transaction Failed, no policy issued)\" (18-E8-cibo-buttons.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 14:30:06",
+  "driver": "Claude (Playwright MCP)"
+}

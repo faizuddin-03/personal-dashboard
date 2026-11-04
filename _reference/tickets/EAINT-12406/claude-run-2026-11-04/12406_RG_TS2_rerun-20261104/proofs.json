@@ -1,0 +1,49 @@
+{
+  "ts": "12406_RG_TS2_rerun-20261104",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E2",
+      "expected": "AFTER: BR60006309 insurer box and receipt Insurer block identical to the 28.10 capture (Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\")",
+      "shows": "BR60006309: Details \"Lonpac Insurance Berhad\"; receipt \"Lonpac Insurance Berhad (307414-T)\"",
+      "match": true,
+      "shot": "02-E2-BR60006309.png",
+      "at": "04/11/2026, 17:23:33",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RG_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006309-lonpac.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "AFTER: QT_TS4 Lonpac transaction: Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\" (Bhd also accepted, EAINT-12422)",
+      "shows": "BR6N006399: Details \"Lonpac Insurance Berhad\"; receipt \"Lonpac Insurance Berhad (307414-T)\"",
+      "match": true,
+      "shot": "04-E3-BR6N006399.png",
+      "at": "04/11/2026, 17:24:11",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RG_TS2_rerun-20261104/downloadable/cibo-receipt-BR6N006399-lonpac.pdf",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: BR60006309",
+    "click: Search",
+    "click: Open Transaction Details BR60006309",
+    "click: Receipt (CIBO)",
+    "downloaded: cibo-receipt-BR60006309-lonpac.pdf (server name R26102021300029TEST0101.pdf)",
+    "typed: Search: BR6N006399",
+    "click: Search",
+    "typed: Search: BR6N006399",
+    "click: Search",
+    "click: Open Transaction Details BR6N006399",
+    "click: Receipt (CIBO)",
+    "downloaded: cibo-receipt-BR6N006399-lonpac.pdf (server name R26110421300010BQX1858.pdf)"
+  ],
+  "dialogs": [],
+  "windows": []
+}

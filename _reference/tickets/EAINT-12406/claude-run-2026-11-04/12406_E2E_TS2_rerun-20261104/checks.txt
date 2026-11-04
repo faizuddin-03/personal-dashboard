@@ -1,0 +1,76 @@
+# 12406_E2E_TS2_rerun-20261104 — Rerun on the real API: Allianz purchase by Credit or Debit Card, discount code RJC7
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 16:36:20 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 16:36:23 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+04/11/2026, 16:36:23 | note: Data: checker xlsx row 15 (real plate/IC), postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ
+04/11/2026, 16:36:26 | note: typed: Site password
+04/11/2026, 16:36:27 | note: click: Login (site password page)
+04/11/2026, 16:36:35 | note: click: Close the promo pop-up
+04/11/2026, 16:36:37 | note: click: Private Car tab
+04/11/2026, 16:36:38 | note: typed: Car Plate No.
+04/11/2026, 16:36:38 | note: typed: Owner IC No.
+04/11/2026, 16:36:39 | note: typed: Postal Code
+04/11/2026, 16:36:41 | note: click: Get quotation
+04/11/2026, 16:37:09 | note: click: Variant: Select
+04/11/2026, 16:37:10 | note: click: Variant G MY06 ACV41R 4D SEDAN 1998 CC
+04/11/2026, 16:37:11 | note: click: Save variant
+04/11/2026, 16:37:13 | note: click: Get quotation
+04/11/2026, 16:37:33 | note: click: Buy (Allianz)
+04/11/2026, 16:37:48 | note: click: Continue
+04/11/2026, 16:37:56 | note: typed: Full Name (made up)
+04/11/2026, 16:37:57 | note: typed: Email (QA own)
+04/11/2026, 16:37:57 | note: typed: Mobile, no leading 0
+04/11/2026, 16:37:58 | note: typed: Address 1 (made up)
+04/11/2026, 16:37:59 | note: typed: Address 2
+04/11/2026, 16:38:00 | note: typed: Address 3
+04/11/2026, 16:38:02 | note: typed: Discount code RJC7
+04/11/2026, 16:38:03 | note: click: Apply discount code
+04/11/2026, 16:38:13 | note: click: Confirm and Pay
+04/11/2026, 16:38:17 | note: click: Credit or Debit Card
+04/11/2026, 16:38:19 | note: window opened by the site and kept (payment window 1)
+04/11/2026, 16:38:22 | note: Fiuu card window: Card number
+04/11/2026, 16:38:23 | note: Fiuu card window: Expiry
+04/11/2026, 16:38:24 | note: Fiuu card window: CVV
+04/11/2026, 16:38:28 | note: Fiuu card window: Pay
+04/11/2026, 16:38:30 | note: Fiuu 3D Secure: OTP 123456
+04/11/2026, 16:39:21 | note: window opened by the site and kept (payment window 2)
+04/11/2026, 16:39:24 | note: payment: {"where":"success","amount":"MYR 751.65"}
+04/11/2026, 16:39:25 | note: click: Download [Receipt]
+04/11/2026, 16:39:26 | note: downloaded: receipt-26110421300007.pdf (server name R26110421300007BJX6968.pdf)
+04/11/2026, 16:39:35 | note: portal: CIBO (testadmin)
+04/11/2026, 16:39:38 | note: typed: Login ID
+04/11/2026, 16:39:39 | note: typed: Password
+04/11/2026, 16:39:40 | note: click: Login
+04/11/2026, 16:39:44 | note: click: Transaction Management
+04/11/2026, 16:39:47 | note: typed: Search: BJX6968
+04/11/2026, 16:39:48 | note: click: Search
+04/11/2026, 16:39:57 | note: typed: Search: BJX6968
+04/11/2026, 16:39:58 | note: click: Search
+04/11/2026, 16:40:04 | note: click: Open Transaction Details BR6N006396
+04/11/2026, 16:40:11 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:40:46 | note: typed: Search: BJX6968
+04/11/2026, 16:40:47 | note: click: Search
+04/11/2026, 16:40:53 | note: click: Open Transaction Details BR6N006396
+04/11/2026, 16:41:00 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:41:35 | note: typed: Search: BJX6968
+04/11/2026, 16:41:36 | note: click: Search
+04/11/2026, 16:41:42 | note: click: Open Transaction Details BR6N006396
+04/11/2026, 16:41:49 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:42:24 | note: typed: Search: BJX6968
+04/11/2026, 16:42:25 | note: click: Search
+04/11/2026, 16:42:31 | note: click: Open Transaction Details BR6N006396
+04/11/2026, 16:42:38 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:43:13 | note: typed: Search: BJX6968
+04/11/2026, 16:43:14 | note: click: Search
+04/11/2026, 16:43:20 | note: click: Open Transaction Details BR6N006396
+04/11/2026, 16:43:29 | E1 | expected: Card payment settles: Success page 'Thank you for your purchase!' with Payment Method 'Credit' (observed) and a [Receipt] download; Receipt Total Premium = the Confirmation total | page shows: Success; Payment Method "credit"; receipt 26110421300007; Receipt Total RM803.05 vs Confirmation RM751.65 | DOES NOT MATCH | 14-E1-success-receipt.png
+04/11/2026, 16:43:33 | note: typed: Search: BJX6968
+04/11/2026, 16:43:34 | note: click: Search
+04/11/2026, 16:43:42 | E2 | expected: CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status "Insurance created"; Payment Mode bare "Fiuu" (observed for a Fiuu card payment) | page shows: Row BR6N006396: Ins. Co. "Allianz Serba Sentral"; Payment "RM751.65Paid 04-11-2026 16:38"; Payment Mode "Fiuu" (recorded); Status "Insurance created"; Remark "" | matches | 15-E2-cibo-row.png
+04/11/2026, 16:43:42 | note: click: Open Transaction Details BR6N006396
+04/11/2026, 16:43:47 | note: Transaction Details: status Insurance created; Insurer "Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)"; Cover -; Policy -; Ref ALZ20261104SCC0006; Premium After NCD RM754.29; buttons ["Receipt"]
+04/11/2026, 16:43:49 | E3 | expected: CIBO Transaction Details: Cover Note No filled (not "-") | page shows: Cover Note No "-"; Policy No "-"; Payment Ref ID "ALZ20261104SCC0006" | DOES NOT MATCH | 16-E3-cover-note.png
+04/11/2026, 16:43:52 | E4 | expected: Receipt discount line follows today's rule: shown only for codes MF / EAUTO / ER, not for other codes (observed) | page shows: RJC7: By continuing, you agree to our Privacy Policy and Terms of Use, you declare to have read, understood and accepted the selected insurer's Product Disclosure Sheet & Privacy Notice, and acknowledge your duty to exercise reasonable care in furnishing information, further declaring that you have provided the information fully and accurately. Furthermore, a standard commission associated with the product will be applied when you proceed with the purchase of this product on this platform. Alternatively, for commission-free purchase of similar product, you may visit our respective insurance partner’s website or any of their physical branches. | discount line: ; receipt discount line present: false (recorded; RJC7 is not MF / EAUTO / ER, so no line expected) | matches | 17-E4-discount-line.png
+04/11/2026, 16:45:09 | note: payment window 1 on the TS video 01:59.0–02:19.6 (https://staging.secarang.com/ia/payment/landing/e12e49ca-e9cb-4dcb-9199-c85dd51e8a61/creditAN)
+04/11/2026, 16:45:09 | note: payment window 2 on the TS video 03:01.5–03:01.6 (about:blank)
+04/11/2026, 16:45:09 | note: payment window video laid into video_12406_E2E_TS2_rerun-20261104.webm (1 window(s), picture-in-picture, bottom right)

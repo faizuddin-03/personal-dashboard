@@ -1,0 +1,65 @@
+# 12406_E2E_TS1 — Real Allianz UAT API: Secarang home > All Quotations > Allianz > Add-ons > Confirmation > FPX > Success > CIBO
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 14:20:36 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 14:20:38 | note: Driver: Claude (Playwright MCP), guided by Faizuddin. Data: checker xlsx 2026-11-02 row 5 (real plate/IC), postcode 55000.
+04/11/2026, 14:20:40 | note: on the site: Secarang (https://staging.secarang.com/ia/car-insurance)
+04/11/2026, 14:20:43 | note: typed: Site password
+04/11/2026, 14:20:44 | note: click: Login (site password page)
+04/11/2026, 14:21:36 | note: click: Close the promo pop-up (BNPL renewal)
+04/11/2026, 14:21:37 | note: click: Private Car tab
+04/11/2026, 14:21:38 | note: typed: Car Plate No.
+04/11/2026, 14:21:39 | note: typed: Owner IC No.
+04/11/2026, 14:21:40 | note: typed: Postal Code
+04/11/2026, 14:21:42 | note: click: Get quotation
+04/11/2026, 14:22:21 | note: click: Variant: Select
+04/11/2026, 14:22:22 | note: click: Variant SX 4D WAGON 1495 CC
+04/11/2026, 14:22:23 | note: click: Save variant
+04/11/2026, 14:22:26 | note: click: Get quotation
+04/11/2026, 14:22:57 | note: click: Buy (Allianz)
+04/11/2026, 14:23:21 | E1 | expected: All Quotations: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz | page shows: Allianz card (logo) selected with Buy; Add-ons opened at /ia/car-insurance/choose-addons; page names Allianz: true; other insurer named: false | matches | 05-E1-addons-allianz.png
+04/11/2026, 14:23:29 | note: Add-ons offered (real API): Allianz Road Rangers FREE REMOVE | Windscreen, Windows and Sunroof Sum Insured RM900.00 RM135.00 ADD | Motor Enhanced Road Warrior No. of Car Replacement Day Plan A - 5 days Plan B - 6 days Pla | Legal Liability of Passengers for Negligent Acts RM7.50 ADD | Strike, Riot and Civil Commotion (SRCC) RM39.00 ADD | Private Hire Car (e-Hailing) RM679.76 ADD | Inclusion of Special Perils RM26.00 ADD | Compensation for Assessed Repair Time (CART) Assessment Period 7 days 14 days 21 days Dail | Waiver of Betterment Contribution RM95.00 ADD | Car Break-In/Robbery RM3.00 ADD | Key Care RM7.00 ADD | Driver and Passengers' Personal Accident Plan Plan A ADD
+04/11/2026, 14:23:29 | note: Console errors so far: ["Failed to load resource: the server responded with a status of 400 ()","ERROR Error: [object Object]\n    at d.selector (https://staging.secarang.com/ia/main.ee1545c2550c018796c2.js:1:1567933)\n    at d.error (https://staging.secarang.com/ia/main.ee1545c2550c018796c2.js:1:1389894)\n    at d._error (https://staging.secarang.com/ia/main.ee1545c2550c018796c2.js:1:1376560)\n   "]
+04/11/2026, 14:23:31 | note: click: Continue
+04/11/2026, 14:24:37 | note: typed: Full Name (made up, Azfar convention)
+04/11/2026, 14:24:37 | note: typed: Email (QA own)
+04/11/2026, 14:24:38 | note: typed: Mobile, no leading 0
+04/11/2026, 14:24:39 | note: typed: Address 1 (made up)
+04/11/2026, 14:24:40 | note: typed: Address 2
+04/11/2026, 14:24:40 | note: typed: Address 3
+04/11/2026, 14:24:46 | E2 | expected: Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded) | page shows: Insurer "Allianz General Insurance Company (Malaysia) Berhad (735426-V)", Plan Comprehensive; Gross Premium RM359.88 = Add-ons price bar RM359.88; Total Amount RM398.65 | matches | 09-E2-confirmation-allianz.png
+04/11/2026, 14:24:47 | note: click: Confirm and Pay
+04/11/2026, 14:24:58 | E3 | expected: Payment page shows the same four tiles as for a Lonpac purchase: Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab (observed) | page shows: Tiles: Credit or Debit Card | FPX Online banking | SPayLater | PayLater by Grab | matches | 10-E3-payment-tiles.png
+04/11/2026, 14:24:59 | note: click: FPX Online banking
+04/11/2026, 14:25:15 | note: click: RHB Bank
+04/11/2026, 14:25:17 | note: window opened by the site and kept (payment window 1)
+04/11/2026, 14:25:31 | note: Fiuu window: Username
+04/11/2026, 14:25:32 | note: Fiuu window: Password
+04/11/2026, 14:25:33 | note: Fiuu window: Login
+04/11/2026, 14:25:34 | note: Fiuu window: Status 00 Approved
+04/11/2026, 14:25:35 | note: Fiuu window: Request TAC
+04/11/2026, 14:25:36 | note: Fiuu window: Enter TAC 237505
+04/11/2026, 14:25:38 | note: Fiuu window: Pay now
+04/11/2026, 14:25:46 | note: window opened by the site and kept (payment window 2)
+04/11/2026, 14:26:00 | E4 | expected: FPX payment approved (00): Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' (observed) and a [Receipt] download | page shows: "Thank you for your purchase!"; Receipt No 26110421300001; Purchase Date 04 Nov 2026 - 2:21 PM; Payment Method "Online Banking - RHB Bank"; [Receipt] shown: true | matches | 12-E4-success.png
+04/11/2026, 14:26:01 | note: click: Download [Receipt]
+04/11/2026, 14:26:02 | note: downloaded: receipt-26110421300001.pdf (server name R26110421300001JLX8382.pdf)
+04/11/2026, 14:26:14 | note: D2 reproduced on the real API: Success page "Premium After NCD" RM379.88 vs Confirmation RM359.88 (+RM20, All Drivers twice). Gross Premium RM359.88 and Total Premium RM398.65 are right. Screenshot 13-D2-success-premium-after-ncd.png
+04/11/2026, 14:26:31 | E5 | expected: Receipt Total Premium = the total on the Confirmation page | page shows: Receipt PDF Total Premium RM 398.65 = Confirmation Total Amount RM398.65 | matches | 14-E5-receipt-total.png
+04/11/2026, 14:26:32 | note: Receipt PDF: D1 (company number on the "Berhad" line) and D2 (Premium after NCD RM 379.88) both present on the real-API purchase.
+04/11/2026, 14:26:57 | note: portal: CIBO (testadmin)
+04/11/2026, 14:27:00 | note: typed: Login ID
+04/11/2026, 14:27:01 | note: typed: Password
+04/11/2026, 14:27:02 | note: click: Login
+04/11/2026, 14:27:06 | note: click: Transaction Management
+04/11/2026, 14:27:09 | note: typed: Search: plate JLX8382
+04/11/2026, 14:27:10 | note: click: Search
+04/11/2026, 14:27:32 | E6 | expected: CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status "Insurance created"; Payment Mode the same as a Lonpac FPX payment on /ia/ (today bare "Fiuu"; the SA format is QA-Issue EAINT-12566, On Hold: not a 12406 failure) | page shows: Row BR6N006388: Ins. Co. "Allianz Serba Sentral"; Payment "RM398.65Paid 04-11-2026 14:25"; Payment Mode "Fiuu | Online Banking – FPX-RHB Bank"; Transaction Status "Failed"; JPJ "-"; Remark "Invalid fullName" — status is not "Insurance created": the real Allianz API refused the made-up owner name typed on Confirmation (test data, not a 12406 defect: to confirm) | DOES NOT MATCH | 16-E6-cibo-row.png
+04/11/2026, 14:27:32 | note: CIBO row: Row BR6N006388: Ins. Co. "Allianz Serba Sentral"; Payment "RM398.65Paid 04-11-2026 14:25"; Payment Mode "Fiuu | Online Banking – FPX-RHB Bank"; Transaction Status "Failed"; JPJ "-"; Remark "Invalid fullName"
+04/11/2026, 14:27:32 | note: Payment Mode now shows the SA format "Fiuu | Online Banking – FPX-RHB Bank" (EAINT-12566 looks deployed on /ia/).
+04/11/2026, 14:27:32 | note: click: Open Transaction Details BR6N006388
+04/11/2026, 14:28:22 | E7 | expected: CIBO Transaction Details: Cover Note No and Policy No filled (not "-"); Payment Ref ID with 'SFX' like a Lonpac FPX payment, with Allianz's own insurer code (code recorded, Q30) | page shows: Cover Note No "-", Policy No "-" (transaction Failed, Remark "Invalid fullName": no policy issued); Payment Ref ID "ALZ20261104SFX0001" has SFX, Allianz insurer code ALZ (Q30) | DOES NOT MATCH | 17-E7-cibo-details.png + 20-E7-payment-ref-id.png
+04/11/2026, 14:28:23 | E8 | expected: e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate | page shows: Buttons on Transaction Details: ["btn btn-link collapse-icon position-absolute","btn btn-link ssm-info-icon p-0"]; e-Certificate shown: false; Receipt shown: false (transaction Failed, no policy issued) | DOES NOT MATCH | 18-E8-cibo-buttons.png
+04/11/2026, 14:28:34 | note: E7 corrected: the first read of Payment Ref ID returned "?" (selector), the page text and 20-E7-payment-ref-id.png show ALZ20261104SFX0001.
+04/11/2026, 14:30:06 | note: payment window 1 on the TS video 04:41.8–05:04.2 (https://staging.secarang.com/ia/payment/landing/0e3bd675-ecbf-4d69-8118-964af8b2b40e/fpx_rhb)
+04/11/2026, 14:30:06 | note: payment window 2 on the TS video 05:11.3–05:11.4 (about:blank)
+04/11/2026, 14:30:06 | note: payment window video laid into video_12406_E2E_TS1.webm (1 window(s), picture-in-picture, bottom right)

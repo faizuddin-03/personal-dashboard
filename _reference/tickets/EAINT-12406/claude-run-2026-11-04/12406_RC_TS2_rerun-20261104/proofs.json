@@ -1,0 +1,63 @@
+{
+  "ts": "12406_RC_TS2_rerun-20261104",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"",
+      "shows": "Insurer line 1: \"Allianz General Insurance Company (Malaysia)\"",
+      "match": false,
+      "shot": "03-E1-receipt-insurer-line1.png",
+      "at": "04/11/2026, 15:58:43",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006349.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "Insurer, next line: \"200601015674 (735426-V)\"",
+      "shows": "Insurer line 2: \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "04-E2-receipt-insurer-line2.png",
+      "at": "04/11/2026, 15:58:44",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006349.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1",
+      "shows": "Receipt No 26102921300027, plate HXA0011A, Total RM941.13; Secarang receipt of E2E_TS1 (29.10): 26102921300027, HXA0011A, RM941.13",
+      "match": true,
+      "shot": "05-E3-receipt-no-plate-total.png",
+      "at": "04/11/2026, 15:58:46",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006349.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E4",
+      "expected": "Agent line \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)",
+      "shows": "Agent line present: true; PIAM ID 195379-01",
+      "match": true,
+      "shot": "06-E4-agent-line.png",
+      "at": "04/11/2026, 15:58:47",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006349.pdf",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: BR60006349",
+    "click: Search",
+    "click: Open Transaction Details BR60006349",
+    "BR60006349 Transaction Details: status Insurance created; Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\"; Cover Note -; Policy -; Ref ID ALZ20261029SFX0025; Premium After NCD RM882.16; buttons [\"Receipt\"]",
+    "click: Receipt (CIBO)",
+    "downloaded: cibo-receipt-BR60006349.pdf (server name R26102921300027HXA0011A.pdf)"
+  ],
+  "dialogs": [],
+  "windows": []
+}

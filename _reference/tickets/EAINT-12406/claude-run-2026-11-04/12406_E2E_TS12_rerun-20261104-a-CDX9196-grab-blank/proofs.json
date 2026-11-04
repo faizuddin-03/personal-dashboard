@@ -1,0 +1,67 @@
+{
+  "ts": "12406_E2E_TS12_rerun-20261104",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "The purchase with every add-on ticked completes: Success page ('Thank you for your purchase!') with a [Receipt] download, and CIBO shows the transaction Paid, Ins. Co. Allianz, Transaction Status \"Insurance created\"",
+      "shows": "Total RM6219.6, grab: payment did not settle: {\"where\":\"grab window without status picker: ● REC 16:58:46\"}",
+      "match": false,
+      "shot": "08-E1-payment.png",
+      "at": "04/11/2026, 16:58:49",
+      "url": "/ia/car-insurance/payment-methods/e6f3b58e-1def-4016-bc7e-90ea55e496e0",
+      "side": ""
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "Data: checker xlsx row 18 (real plate/IC), postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Get quotation",
+    "click: Buy (Allianz)",
+    "Add-ons offered: Allianz Road Rangers FREE REMOVE | Windscreen, Windows and Sunroof Sum Insured RM1,600.00 RM240.00 ADD | Motor Enhanced Road Warrior No. of Car Replacement Day Plan A - 5 days Plan B - 6 days Plan C - 7 days RM99.00 | Legal Liability of Passengers for Negligent Acts RM7.50 ADD | Strike, Riot and Civil Commotion (SRCC) RM204.00 ADD | Private Hire Car (e-Hailing) RM3,178.74 ADD | Inclusion of Special Perils RM136.00 ADD | Compensation for Assessed Repair Time (CART) Assessment Period 7 days 14 days 21 days Daily Compensation RM50  | Waiver of Betterment Contribution RM230.00 ADD | Car Break-In/Robbery RM3.00 ADD | Key Care RM7.00 ADD | Driver and Passengers' Personal Accident Plan Plan A ADD",
+    "click: ADD Windscreen, Windows and Sunroof",
+    "click: ADD Motor Enhanced Road Warrior",
+    "click: ADD Legal Liability of Passengers for Negligent Acts",
+    "click: ADD Strike, Riot and Civil Commotion (SRCC)",
+    "click: ADD Private Hire Car (e-Hailing)",
+    "click: ADD Inclusion of Special Perils",
+    "click: ADD Compensation for Assessed Repair Time (CART)",
+    "click: ADD Waiver of Betterment Contribution",
+    "click: ADD Car Break-In/Robbery",
+    "click: ADD Key Care",
+    "click: ADD Driver and Passengers' Personal Accident",
+    "click: Continue",
+    "typed: Full Name (made up)",
+    "typed: Email (QA own)",
+    "typed: Mobile, no leading 0",
+    "typed: Address 1 (made up)",
+    "typed: Address 2",
+    "typed: Address 3",
+    "click: Confirm and Pay",
+    "Total RM6219.6: paying by PayLater by Grab (over RM2,000; FPX/card refuse > MYR 2,000)",
+    "click: PayLater by Grab",
+    "window opened by the site and kept (payment window 1)",
+    "payment: {\"where\":\"grab window without status picker: ● REC 16:58:46\"}",
+    "payment window 1 on the TS video 03:10.7–04:15.7 (https://staging.secarang.com/ia/payment/landing/e6f3b58e-1def-4016-bc7e-90ea55e496e0/GrabPay)",
+    "payment window video laid into video_12406_E2E_TS12_rerun-20261104.webm (1 window(s), picture-in-picture, bottom right)"
+  ],
+  "dialogs": [],
+  "windows": [
+    {
+      "n": 1,
+      "at": 190.682,
+      "closedAt": 255.683,
+      "url": "https://staging.secarang.com/ia/payment/landing/e6f3b58e-1def-4016-bc7e-90ea55e496e0/GrabPay",
+      "file": "_raw/window1.webm"
+    }
+  ]
+}

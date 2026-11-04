@@ -1,0 +1,13 @@
+Correction by Claude, 04-11-2026 16:46 MYT, after checking the evidence by hand. Nothing was re-run.
+
+E1: the gate says DOES NOT MATCH because the script compared the receipt's Total Premium with the Confirmation
+"Total Amount" (after the RJC7 discount) instead of the Confirmation "Total Premium".
+  Confirmation Total Premium RM803.05 (09-E2-confirmation-allianz.png) = receipt PDF Total Premium RM 803.05
+  (downloadable/receipt-26110421300007.pdf).
+  The amount paid after the RJC7 discount was RM751.65 (Fiuu, CIBO Payment). Payment Method "credit Card ****1096".
+  => E1 MATCHES.
+
+E4: the "shows" text picked up the declaration paragraph instead of the discount message (a parser fault).
+  The receipt PDF has no discount line, and RJC7 is not MF / EAUTO / ER. => E4 MATCHES, as the gate says.
+
+So the only real failure of this run is E3: Cover Note "-" (Q44).

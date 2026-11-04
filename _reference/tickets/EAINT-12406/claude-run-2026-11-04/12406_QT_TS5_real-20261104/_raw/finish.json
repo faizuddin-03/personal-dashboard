@@ -1,0 +1,89 @@
+{
+  "ts": "12406_QT_TS5_real-20261104",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E1",
+      "text": "Quotations shown in this order: Allianz, Tokio Marine"
+    },
+    {
+      "id": "E2",
+      "text": "Allianz quotation with the Allianz logo"
+    },
+    {
+      "id": "E3",
+      "text": "A \"Lonpac – Quotation unavailable\" card is shown (its position is recorded, Q13)"
+    }
+  ],
+  "log": [
+    "# 12406_QT_TS5_real-20261104 — Lonpac gives no quotation: Allianz then Tokio Marine (real API)",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 17:57:30 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "04/11/2026, 17:57:32 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "04/11/2026, 17:57:32 | note: Data: checker xlsx row 44 (real plate/IC) WXQ3008, postcode 55000",
+    "04/11/2026, 17:57:35 | note: typed: Site password",
+    "04/11/2026, 17:57:36 | note: click: Login (site password page)",
+    "04/11/2026, 17:57:45 | note: click: Close the promo pop-up",
+    "04/11/2026, 17:57:46 | note: click: Private Car tab",
+    "04/11/2026, 17:57:47 | note: typed: Car Plate No.",
+    "04/11/2026, 17:57:48 | note: typed: Owner IC No.",
+    "04/11/2026, 17:57:49 | note: typed: Postal Code",
+    "04/11/2026, 17:57:51 | note: click: Get quotation",
+    "04/11/2026, 17:58:30 | note: click: Get quotation",
+    "04/11/2026, 17:58:44 | E1 | expected: Quotations shown in this order: Allianz, Tokio Marine | page shows: Quotations shown: Allianz → Tokio Marine; full order Allianz → Tokio Marine → Lonpac (unavailable) | matches | 04-E1-order.png",
+    "04/11/2026, 17:58:45 | E2 | expected: Allianz quotation with the Allianz logo | page shows: Allianz card logo shown: true | matches | 05-E2-allianz-logo.png",
+    "04/11/2026, 17:58:47 | E3 | expected: A \"Lonpac – Quotation unavailable\" card is shown (its position is recorded, Q13) | page shows: Lonpac \"Quotation unavailable\" at position 3 of 3 (recorded, Q13) | matches | 06-E3-lonpac-unavailable-card.png"
+  ],
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Quotations shown in this order: Allianz, Tokio Marine",
+      "shows": "Quotations shown: Allianz → Tokio Marine; full order Allianz → Tokio Marine → Lonpac (unavailable)",
+      "match": true,
+      "shot": "04-E1-order.png",
+      "at": "04/11/2026, 17:58:44",
+      "url": "/ia/car-insurance/choose-your-insurance/ed98b906-69a1-4355-ad3d-e5f74a3acd09",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "Allianz quotation with the Allianz logo",
+      "shows": "Allianz card logo shown: true",
+      "match": true,
+      "shot": "05-E2-allianz-logo.png",
+      "at": "04/11/2026, 17:58:45",
+      "url": "/ia/car-insurance/choose-your-insurance/ed98b906-69a1-4355-ad3d-e5f74a3acd09",
+      "side": ""
+    },
+    {
+      "point": "E3",
+      "expected": "A \"Lonpac – Quotation unavailable\" card is shown (its position is recorded, Q13)",
+      "shows": "Lonpac \"Quotation unavailable\" at position 3 of 3 (recorded, Q13)",
+      "match": true,
+      "shot": "06-E3-lonpac-unavailable-card.png",
+      "at": "04/11/2026, 17:58:47",
+      "url": "/ia/car-insurance/choose-your-insurance/ed98b906-69a1-4355-ad3d-e5f74a3acd09",
+      "side": ""
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "Data: checker xlsx row 44 (real plate/IC) WXQ3008, postcode 55000",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Get quotation"
+  ],
+  "dialogs": [],
+  "windows": [],
+  "videos": {
+    "main": "video_12406_QT_TS5_real-20261104.webm",
+    "windows": []
+  },
+  "saved": "C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_QT_TS5_real-20261104/_raw/finish.json"
+}

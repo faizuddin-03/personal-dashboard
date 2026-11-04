@@ -1,0 +1,106 @@
+{
+  "ts": "12406_RC_TS2_rerun-20261104",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E1",
+      "text": "Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\""
+    },
+    {
+      "id": "E2",
+      "text": "Insurer, next line: \"200601015674 (735426-V)\""
+    },
+    {
+      "id": "E3",
+      "text": "Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1"
+    },
+    {
+      "id": "E4",
+      "text": "Agent line \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)"
+    }
+  ],
+  "log": [
+    "# 12406_RC_TS2_rerun-20261104 — Rerun: CIBO user opens the receipt of an Allianz transaction (BR60006349)",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 15:58:03 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "04/11/2026, 15:58:05 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "04/11/2026, 15:58:07 | note: portal: CIBO (testadmin)",
+    "04/11/2026, 15:58:10 | note: typed: Login ID",
+    "04/11/2026, 15:58:10 | note: typed: Password",
+    "04/11/2026, 15:58:11 | note: click: Login",
+    "04/11/2026, 15:58:15 | note: click: Transaction Management",
+    "04/11/2026, 15:58:18 | note: typed: Search: BR60006349",
+    "04/11/2026, 15:58:19 | note: click: Search",
+    "04/11/2026, 15:58:26 | note: click: Open Transaction Details BR60006349",
+    "04/11/2026, 15:58:31 | note: BR60006349 Transaction Details: status Insurance created; Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\"; Cover Note -; Policy -; Ref ID ALZ20261029SFX0025; Premium After NCD RM882.16; buttons [\"Receipt\"]",
+    "04/11/2026, 15:58:33 | note: click: Receipt (CIBO)",
+    "04/11/2026, 15:58:33 | note: downloaded: cibo-receipt-BR60006349.pdf (server name R26102921300027HXA0011A.pdf)",
+    "04/11/2026, 15:58:43 | E1 | expected: Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\" | page shows: Insurer line 1: \"Allianz General Insurance Company (Malaysia)\" | DOES NOT MATCH | 03-E1-receipt-insurer-line1.png",
+    "04/11/2026, 15:58:44 | E2 | expected: Insurer, next line: \"200601015674 (735426-V)\" | page shows: Insurer line 2: \"Berhad 200601015674 (735426-V)\" | DOES NOT MATCH | 04-E2-receipt-insurer-line2.png",
+    "04/11/2026, 15:58:46 | E3 | expected: Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1 | page shows: Receipt No 26102921300027, plate HXA0011A, Total RM941.13; Secarang receipt of E2E_TS1 (29.10): 26102921300027, HXA0011A, RM941.13 | matches | 05-E3-receipt-no-plate-total.png",
+    "04/11/2026, 15:58:47 | E4 | expected: Agent line \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded) | page shows: Agent line present: true; PIAM ID 195379-01 | matches | 06-E4-agent-line.png"
+  ],
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"",
+      "shows": "Insurer line 1: \"Allianz General Insurance Company (Malaysia)\"",
+      "match": false,
+      "shot": "03-E1-receipt-insurer-line1.png",
+      "at": "04/11/2026, 15:58:43",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006349.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "Insurer, next line: \"200601015674 (735426-V)\"",
+      "shows": "Insurer line 2: \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "04-E2-receipt-insurer-line2.png",
+      "at": "04/11/2026, 15:58:44",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006349.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1",
+      "shows": "Receipt No 26102921300027, plate HXA0011A, Total RM941.13; Secarang receipt of E2E_TS1 (29.10): 26102921300027, HXA0011A, RM941.13",
+      "match": true,
+      "shot": "05-E3-receipt-no-plate-total.png",
+      "at": "04/11/2026, 15:58:46",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006349.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E4",
+      "expected": "Agent line \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)",
+      "shows": "Agent line present: true; PIAM ID 195379-01",
+      "match": true,
+      "shot": "06-E4-agent-line.png",
+      "at": "04/11/2026, 15:58:47",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/downloadable/cibo-receipt-BR60006349.pdf",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: BR60006349",
+    "click: Search",
+    "click: Open Transaction Details BR60006349",
+    "BR60006349 Transaction Details: status Insurance created; Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\"; Cover Note -; Policy -; Ref ID ALZ20261029SFX0025; Premium After NCD RM882.16; buttons [\"Receipt\"]",
+    "click: Receipt (CIBO)",
+    "downloaded: cibo-receipt-BR60006349.pdf (server name R26102921300027HXA0011A.pdf)"
+  ],
+  "dialogs": [],
+  "windows": [],
+  "videos": {
+    "main": "video_12406_RC_TS2_rerun-20261104.webm",
+    "windows": []
+  },
+  "saved": "C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS2_rerun-20261104/_raw/finish.json"
+}

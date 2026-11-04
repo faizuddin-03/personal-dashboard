@@ -875,3 +875,28 @@ SRD text copy: `_reference/tickets/Studying/EAINT-12406/SRD_EAINT-12406_v1.1_202
 3. **Trap:** the popup is not an `app-info-modal`, so the plate checker's error-modal check never
    reports it as a Secarang error. A future campaign popup in the same `ngb-modal-window` is closed
    the same way; one without an `aria-label="Close"` button is `[unconfirmed]`.
+
+## Update 2026-11-04: Car Details on the real Allianz UAT API (/ia/, EAINT-12406)
+
+`[verified: Claude-driven run on staging /ia/, 2026-11-04, checker row 5 (JLX8382); _reference/tickets/EAINT-12406/claude-run-2026-11-04/SESSION-LOG.md]`
+
+1. **Route.**
+   - Car Details is at `/ia/car-insurance/confirm-car-details/<uuid>`.
+   - All Quotations is at `/ia/car-insurance/choose-your-insurance/<uuid>` (the same uuid).
+2. **Variant is a link, not a select.**
+   - Next to "Variant -" there is an `a.text-primary.pointer` "Select". It opens an
+     `ngb-modal-window` titled "Select your car variant".
+   - The modal holds one radio per variant, with `label.variant-font`, then a `[Save]` submit.
+   - Transmission is a plain `select.transmission-select`.
+   - If no variant is chosen, Get quotation shows "Kindly select variant and/or transmission" and the page stays.
+   - The old "first `select` on the page" rule (table above) therefore picks only the
+     transmission and leaves the variant empty.
+3. **What the real API gives.** For a real car it fills in:
+   - Model, Year, Seat and CC;
+   - Current Coverage dates with an "Active" badge;
+   - No Claim Discount (38.33% for that car).
+   Make and Variant show "-" until a variant is chosen.
+4. **All Quotations on the real API.**
+   - Insurers with no quote show "Quotation unavailable" on their card. For that car, Lonpac and Tokio Marine did.
+   - Every `.insurance-card` is in the DOM three times (responsive copies). Use the visible one.
+5. **Home form controls:** `formcontrolname` plateNo / idNo / postalCode.

@@ -1,0 +1,21 @@
+{
+  "ts": "12406_E2E_TS1_attempt3",
+  "instance": "ia",
+  "driver": "Claude (Playwright MCP)",
+  "proofs": [],
+  "notes": [
+    "Attempt 3 (Faizuddin chose: Dev-style name). Attempts 1-2 with \"QA SECARANG TEST\" failed \"Invalid fullName\" (BR6N006388, BR6N006389). Data: checker xlsx row 13 (real plate/IC), postcode 55000.",
+    "on the site: Secarang (https://staging.secarang.com/ia/car-insurance)",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "Stopped at Car Details (MERCEDES-BENZ CLA 2018, NCD 25%) on Faizuddin's instruction: Dev confirmed the \"Invalid fullName\" refusal is a bug; raise it first. Nothing quoted or paid in this attempt."
+  ],
+  "dialogs": [],
+  "windows": []
+}

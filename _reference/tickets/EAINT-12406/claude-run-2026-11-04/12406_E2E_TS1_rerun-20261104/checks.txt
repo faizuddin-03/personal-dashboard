@@ -1,0 +1,79 @@
+# 12406_E2E_TS1_rerun-20261104 — Rerun on the real API: Allianz purchase by FPX, Success, receipt, CIBO, cover note and e-Certificate
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 16:18:59 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 16:19:01 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+04/11/2026, 16:19:01 | note: Data: checker xlsx row 14 (real plate/IC), postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ
+04/11/2026, 16:19:05 | note: typed: Site password
+04/11/2026, 16:19:06 | note: click: Login (site password page)
+04/11/2026, 16:19:14 | note: click: Close the promo pop-up
+04/11/2026, 16:19:16 | note: click: Private Car tab
+04/11/2026, 16:19:16 | note: typed: Car Plate No.
+04/11/2026, 16:19:17 | note: typed: Owner IC No.
+04/11/2026, 16:19:18 | note: typed: Postal Code
+04/11/2026, 16:19:20 | note: click: Get quotation
+04/11/2026, 16:19:48 | note: click: Get quotation
+04/11/2026, 16:20:02 | note: click: Buy (Allianz)
+04/11/2026, 16:20:15 | E1 | expected: All Quotations: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz | page shows: Allianz card (RM1,177.15 NCD 25% RM902.86) selected; Add-ons "Allianz - Comprehensive"; other insurer named: false | matches | 04-E1-addons-allianz.png
+04/11/2026, 16:20:17 | note: click: Continue
+04/11/2026, 16:20:25 | note: typed: Full Name (made up)
+04/11/2026, 16:20:26 | note: typed: Email (QA own)
+04/11/2026, 16:20:27 | note: typed: Mobile, no leading 0
+04/11/2026, 16:20:27 | note: typed: Address 1 (made up)
+04/11/2026, 16:20:28 | note: typed: Address 2
+04/11/2026, 16:20:29 | note: typed: Address 3
+04/11/2026, 16:20:34 | E2 | expected: Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded) | page shows: Insurer Allianz; Gross Premium RM982.20 vs Add-ons bar RM982.20; Total Amount RM1,070.80 | matches | 08-E2-confirmation-allianz.png
+04/11/2026, 16:20:35 | note: click: Confirm and Pay
+04/11/2026, 16:20:40 | note: click: FPX Online banking
+04/11/2026, 16:20:43 | note: click: RHB bank
+04/11/2026, 16:20:44 | note: window opened by the site and kept (payment window 1)
+04/11/2026, 16:20:50 | note: Fiuu window: Username
+04/11/2026, 16:20:51 | note: Fiuu window: Password
+04/11/2026, 16:20:52 | note: Fiuu window: Login
+04/11/2026, 16:20:53 | note: Fiuu window: Status 00
+04/11/2026, 16:20:54 | note: Fiuu window: Request TAC
+04/11/2026, 16:20:54 | note: Fiuu window: Enter TAC 345569
+04/11/2026, 16:20:56 | note: Fiuu window: Pay now
+04/11/2026, 16:21:41 | note: window opened by the site and kept (payment window 2)
+04/11/2026, 16:21:45 | note: payment: {"where":"success","amount":"MYR 1070.80"}
+04/11/2026, 16:21:46 | note: click: Download [Receipt]
+04/11/2026, 16:21:46 | note: downloaded: receipt-26110421300005.pdf (server name R26110421300005JPX1030.pdf)
+04/11/2026, 16:21:56 | note: portal: CIBO (testadmin)
+04/11/2026, 16:21:59 | note: typed: Login ID
+04/11/2026, 16:21:59 | note: typed: Password
+04/11/2026, 16:22:00 | note: click: Login
+04/11/2026, 16:22:04 | note: click: Transaction Management
+04/11/2026, 16:22:07 | note: typed: Search: JPX1030
+04/11/2026, 16:22:08 | note: click: Search
+04/11/2026, 16:22:17 | note: typed: Search: JPX1030
+04/11/2026, 16:22:18 | note: click: Search
+04/11/2026, 16:22:25 | note: click: Open Transaction Details BR6N006394
+04/11/2026, 16:22:31 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:23:06 | note: typed: Search: JPX1030
+04/11/2026, 16:23:07 | note: click: Search
+04/11/2026, 16:23:14 | note: click: Open Transaction Details BR6N006394
+04/11/2026, 16:23:21 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:23:55 | note: typed: Search: JPX1030
+04/11/2026, 16:23:56 | note: click: Search
+04/11/2026, 16:24:03 | note: click: Open Transaction Details BR6N006394
+04/11/2026, 16:24:10 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:24:44 | note: typed: Search: JPX1030
+04/11/2026, 16:24:45 | note: click: Search
+04/11/2026, 16:24:52 | note: click: Open Transaction Details BR6N006394
+04/11/2026, 16:24:59 | note: off screen: Waiting for the cover note — reload Transaction Details in 30 s
+04/11/2026, 16:25:33 | note: typed: Search: JPX1030
+04/11/2026, 16:25:34 | note: click: Search
+04/11/2026, 16:25:41 | note: click: Open Transaction Details BR6N006394
+04/11/2026, 16:25:46 | note: E3 tiles: Credit or Debit Card | FPX Online banking | SPayLater | PayLater by Grab
+04/11/2026, 16:25:49 | E3 | expected: Payment page shows the same four tiles as for a Lonpac purchase: Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab (observed) | page shows: Tiles: Credit or Debit Card | FPX Online banking | SPayLater | PayLater by Grab | matches | 12-E3-payment-tiles.png
+04/11/2026, 16:25:50 | E4 | expected: FPX payment approved (00): Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' (observed) and a [Receipt] download | page shows: Thank you page; Receipt No 26110421300005; 04 Nov 2026 - 4:19 PM; Payment Method "Online Banking - RHB Bank"; [Receipt] downloaded | matches | 13-E4-success.png
+04/11/2026, 16:25:52 | E5 | expected: Receipt Total Premium = the total on the Confirmation page | page shows: Receipt Total Premium RM1,070.80 vs Confirmation RM1,070.80 | matches | 14-E5-receipt-total.png
+04/11/2026, 16:25:56 | note: typed: Search: JPX1030
+04/11/2026, 16:25:57 | note: click: Search
+04/11/2026, 16:26:04 | E6 | expected: CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status "Insurance created"; Payment Mode the same as a Lonpac FPX payment on /ia/ (today bare "Fiuu"; the SA format "Fiuu | Online Banking – FPX-<Bank Name>" is QA-Issue EAINT-12566, On Hold: not a 12406 failure) | page shows: Row BR6N006394: Ins. Co. "Allianz Serba Sentral"; Payment "RM1,070.80Paid 04-11-2026 16:20"; Payment Mode "Fiuu | Online Banking – FPX-RHB Bank"; Status "Insurance created"; Remark "" | matches | 15-E6-cibo-row.png
+04/11/2026, 16:26:05 | note: click: Open Transaction Details BR6N006394
+04/11/2026, 16:26:11 | E7 | expected: CIBO Transaction Details: Cover Note No and Policy No filled (not "-"); Payment Ref ID with 'SFX' like a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with Allianz's own insurer code (code recorded, Q30) | page shows: Status Insurance created; Cover Note No "-"; Policy No "-"; Payment Ref ID "ALZ20261104SFX0005" | DOES NOT MATCH | 16-E7-cover-note-policy-ref.png
+04/11/2026, 16:26:11 | note: Transaction Details: Insurer "Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)"; Premium After NCD RM1,002.20; buttons ["Receipt"]
+04/11/2026, 16:26:13 | E8 | expected: e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate | page shows: Buttons ["Receipt"]; no e-Certificate button | DOES NOT MATCH | 17-E8-buttons.png
+04/11/2026, 16:27:26 | note: payment window 1 on the TS video 01:46.1–01:59.4 (https://staging.secarang.com/ia/payment/landing/96c07e59-f353-438c-af8c-607b2575b090/fpx_rhb)
+04/11/2026, 16:27:26 | note: payment window 2 on the TS video 02:42.4–02:42.6 (about:blank)
+04/11/2026, 16:27:26 | note: payment window video laid into video_12406_E2E_TS1_rerun-20261104.webm (1 window(s), picture-in-picture, bottom right)

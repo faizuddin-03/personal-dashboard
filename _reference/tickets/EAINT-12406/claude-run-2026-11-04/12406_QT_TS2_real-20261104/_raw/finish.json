@@ -1,0 +1,124 @@
+{
+  "ts": "12406_QT_TS2_real-20261104",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E1",
+      "text": "Quotations shown: Lonpac, then Tokio Marine"
+    },
+    {
+      "id": "E2",
+      "text": "Card \"Allianz – Quotation unavailable\" shown after the Tokio Marine quotation"
+    },
+    {
+      "id": "E3",
+      "text": "The Allianz unavailable card looks the same as the Lonpac / Tokio Marine unavailable cards (compare with 12406_QT_TS5 and QT_TS6)"
+    },
+    {
+      "id": "E4",
+      "text": "Lonpac and Tokio Marine quotations can be selected as usual"
+    }
+  ],
+  "log": [
+    "# 12406_QT_TS2_real-20261104 — Allianz gives no quotation: Allianz unavailable card after Tokio Marine (real API)",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 17:14:53 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "04/11/2026, 17:14:55 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "04/11/2026, 17:14:55 | note: Data: checker xlsx row 33 (real plate/IC) BQX1858, postcode 55000",
+    "04/11/2026, 17:14:59 | note: typed: Site password",
+    "04/11/2026, 17:15:00 | note: click: Login (site password page)",
+    "04/11/2026, 17:15:08 | note: click: Close the promo pop-up",
+    "04/11/2026, 17:15:10 | note: click: Private Car tab",
+    "04/11/2026, 17:15:11 | note: typed: Car Plate No.",
+    "04/11/2026, 17:15:11 | note: typed: Owner IC No.",
+    "04/11/2026, 17:15:12 | note: typed: Postal Code",
+    "04/11/2026, 17:15:14 | note: click: Get quotation",
+    "04/11/2026, 17:15:48 | note: click: Get quotation",
+    "04/11/2026, 17:16:02 | E1 | expected: Quotations shown: Lonpac, then Tokio Marine | page shows: Quotations shown: Lonpac → Tokio Marine; full order Lonpac → Tokio Marine → Allianz (unavailable) | matches | 04-E1-order.png",
+    "04/11/2026, 17:16:03 | E2 | expected: Card \"Allianz – Quotation unavailable\" shown after the Tokio Marine quotation | page shows: \"Quotation unavailable\" at position 3 of 3; Tokio Marine at 2 | matches | 05-E2-allianz-unavailable-card.png",
+    "04/11/2026, 17:16:03 | note: Allianz unavailable card box {\"x\":1162.8125,\"y\":312,\"width\":375.625,\"height\":455}; compared with QT_TS6's Tokio Marine unavailable card (row 29) and row 5's Lonpac/Tokio Marine unavailable cards",
+    "04/11/2026, 17:16:04 | E3 | expected: The Allianz unavailable card looks the same as the Lonpac / Tokio Marine unavailable cards (compare with 12406_QT_TS5 and QT_TS6) | page shows: Allianz unavailable card: text \"Quotation unavailable\", width 376px, same component as the other insurers' unavailable cards (Tokio Marine card width 376px); see QT_TS6 for a Tokio Marine unavailable card | matches | 06-E3-unavailable-card-look.png",
+    "04/11/2026, 17:16:05 | note: click: Buy (Lonpac)",
+    "04/11/2026, 17:16:27 | note: click: Close the promo pop-up",
+    "04/11/2026, 17:16:29 | note: click: Private Car tab",
+    "04/11/2026, 17:16:29 | note: typed: Car Plate No.",
+    "04/11/2026, 17:16:30 | note: typed: Owner IC No.",
+    "04/11/2026, 17:16:31 | note: typed: Postal Code",
+    "04/11/2026, 17:16:33 | note: click: Get quotation",
+    "04/11/2026, 17:17:07 | note: click: Get quotation",
+    "04/11/2026, 17:17:18 | note: click: Buy (Tokio Marine)",
+    "04/11/2026, 17:17:35 | E4 | expected: Lonpac and Tokio Marine quotations can be selected as usual | page shows: Lonpac → Add-ons \"Lonpac - Private Car Secure Comprehensive\"; quoted again → Tokio Marine → Add-ons \"Tokio Marine - Private Comprehensive\" | matches | 10-E4-lonpac-tokio-selectable.png"
+  ],
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Quotations shown: Lonpac, then Tokio Marine",
+      "shows": "Quotations shown: Lonpac → Tokio Marine; full order Lonpac → Tokio Marine → Allianz (unavailable)",
+      "match": true,
+      "shot": "04-E1-order.png",
+      "at": "04/11/2026, 17:16:02",
+      "url": "/ia/car-insurance/choose-your-insurance/d71311ea-6867-45d0-a881-680cb64a74db",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "Card \"Allianz – Quotation unavailable\" shown after the Tokio Marine quotation",
+      "shows": "\"Quotation unavailable\" at position 3 of 3; Tokio Marine at 2",
+      "match": true,
+      "shot": "05-E2-allianz-unavailable-card.png",
+      "at": "04/11/2026, 17:16:03",
+      "url": "/ia/car-insurance/choose-your-insurance/d71311ea-6867-45d0-a881-680cb64a74db",
+      "side": ""
+    },
+    {
+      "point": "E3",
+      "expected": "The Allianz unavailable card looks the same as the Lonpac / Tokio Marine unavailable cards (compare with 12406_QT_TS5 and QT_TS6)",
+      "shows": "Allianz unavailable card: text \"Quotation unavailable\", width 376px, same component as the other insurers' unavailable cards (Tokio Marine card width 376px); see QT_TS6 for a Tokio Marine unavailable card",
+      "match": true,
+      "shot": "06-E3-unavailable-card-look.png",
+      "at": "04/11/2026, 17:16:04",
+      "url": "/ia/car-insurance/choose-your-insurance/d71311ea-6867-45d0-a881-680cb64a74db",
+      "side": ""
+    },
+    {
+      "point": "E4",
+      "expected": "Lonpac and Tokio Marine quotations can be selected as usual",
+      "shows": "Lonpac → Add-ons \"Lonpac - Private Car Secure Comprehensive\"; quoted again → Tokio Marine → Add-ons \"Tokio Marine - Private Comprehensive\"",
+      "match": true,
+      "shot": "10-E4-lonpac-tokio-selectable.png",
+      "at": "04/11/2026, 17:17:35",
+      "url": "/ia/car-insurance/choose-addons/a17c0e1f-3b49-4722-9b01-defd8bd925da",
+      "side": ""
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "Data: checker xlsx row 33 (real plate/IC) BQX1858, postcode 55000",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Get quotation",
+    "Allianz unavailable card box {\"x\":1162.8125,\"y\":312,\"width\":375.625,\"height\":455}; compared with QT_TS6's Tokio Marine unavailable card (row 29) and row 5's Lonpac/Tokio Marine unavailable cards",
+    "click: Buy (Lonpac)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "click: Get quotation",
+    "click: Buy (Tokio Marine)"
+  ],
+  "dialogs": [],
+  "windows": [],
+  "videos": {
+    "main": "video_12406_QT_TS2_real-20261104.webm",
+    "windows": []
+  },
+  "saved": "C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_QT_TS2_real-20261104/_raw/finish.json"
+}

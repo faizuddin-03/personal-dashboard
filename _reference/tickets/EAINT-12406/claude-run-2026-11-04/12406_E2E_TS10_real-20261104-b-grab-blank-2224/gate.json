@@ -1,0 +1,10 @@
+{
+  "ts": "12406_E2E_TS10_real-20261104",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"Confirmation and the Success page are for Tokio Marine (no Allianz name or price)\", page shows \"Total RM2224.06: payment did not settle: {\"where\":\"grab window without status picker: ● REC 17:46:13\"}\" (09-E1-payment.png)"
+  ],
+  "instance": "ia",
+  "at": "04/11/2026, 17:46:55",
+  "driver": "Claude (Playwright)"
+}

@@ -1,0 +1,71 @@
+# 12406_E2E_TS9_real-20261104 — Real API: Tokio Marine first, back to Allianz; add-ons tick/untick; gender re-pricing; PIAM pop-up; same add-ons on receipt and CIBO
+# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 17:31:33 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+04/11/2026, 17:31:35 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+04/11/2026, 17:31:35 | note: Data: checker xlsx row 22 (real plate/IC) JXH1451, postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ
+04/11/2026, 17:31:39 | note: typed: Site password
+04/11/2026, 17:31:40 | note: click: Login (site password page)
+04/11/2026, 17:31:48 | note: click: Close the promo pop-up
+04/11/2026, 17:31:50 | note: click: Private Car tab
+04/11/2026, 17:31:51 | note: typed: Car Plate No.
+04/11/2026, 17:31:51 | note: typed: Owner IC No.
+04/11/2026, 17:31:52 | note: typed: Postal Code
+04/11/2026, 17:31:54 | note: click: Get quotation
+04/11/2026, 17:32:34 | note: click: Variant: Select
+04/11/2026, 17:32:35 | note: click: Variant EZ 4D WAGON 1495 CC
+04/11/2026, 17:32:36 | note: click: Save variant
+04/11/2026, 17:32:38 | note: click: Get quotation
+04/11/2026, 17:33:00 | note: click: Buy (Tokio Marine)
+04/11/2026, 17:33:15 | note: click: Back to insurance selection
+04/11/2026, 17:33:18 | note: After back from Tokio Marine: (no pop-up)
+04/11/2026, 17:33:25 | E2 | expected: Recorded: the sum insured options offered (one value, RM20,200, for the made-up cars on 29.10); if more than one is offered, changing it re-prices | page shows: Allianz sum insured options: RM22,000 | matches | 05-E2-sum-insured.png
+04/11/2026, 17:33:26 | note: click: Buy (Allianz)
+04/11/2026, 17:33:39 | E1 | expected: After going back from Tokio Marine and selecting Allianz, the Add-ons and Confirmation pages are for Allianz (no Tokio Marine name or price) | page shows: Add-ons after going back: "Allianz - Comprehensive"; Tokio Marine named: false; price bar JXH1451 PERODUA ALZA RM589.97 | matches | 06-E1-addons-allianz-after-back.png
+04/11/2026, 17:33:39 | note: Add-ons offered: Allianz Road Rangers undefined (added) | Windscreen, Windows and Sunroof RM135.00 | Motor Enhanced Road Warrior RM99.00 | Legal Liability of Passengers for Negligent Acts RM7.50 | Strike, Riot and Civil Commotion (SRCC) RM66.00 | Private Hire Car (e-Hailing) RM1,139.94 | Inclusion of Special Perils RM44.00 | Compensation for Assessed Repair Time (CART) RM35.00 | Waiver of Betterment Contribution RM95.00 | Car Break-In/Robbery RM3.00 | Key Care RM7.00 | Driver and Passengers' Personal Accident undefined
+04/11/2026, 17:33:41 | note: click: ADD Car Break-In
+04/11/2026, 17:33:48 | note: click: ADD Key Care
+04/11/2026, 17:33:56 | note: click: REMOVE Key Care
+04/11/2026, 17:34:03 | E3 | expected: Ticking an add-on adds its shown price to the premium; unticking it takes the price off again | page shows: Bar 589.97 → +Break-In (RM3) 592.97 → +Key Care (RM7) 599.97 → −Key Care 592.97 | matches | 07-E3-tick-untick.png
+04/11/2026, 17:34:04 | note: click: Continue
+04/11/2026, 17:34:12 | note: typed: Full Name (made up)
+04/11/2026, 17:34:13 | note: typed: Email (QA own)
+04/11/2026, 17:34:14 | note: typed: Mobile, no leading 0
+04/11/2026, 17:34:15 | note: typed: Address 1 (made up)
+04/11/2026, 17:34:15 | note: typed: Address 2
+04/11/2026, 17:34:16 | note: typed: Address 3
+04/11/2026, 17:34:50 | note: Gender FEMALE → MALE
+04/11/2026, 17:34:59 | E4 | expected: Recorded: Total Premium before / after changing Gender MALE → FEMALE. The /ia/ simulator does not price by gender for any insurer (probe 30.10, run EAINT-12406-probe-gender-20261030-0914: Lonpac RM884.48 and Tokio Marine RM1,171.22 unchanged, change-gender answered 200 with the same premium; Allianz RM941.13 / RM944.37 unchanged on 29.10). Judged only on a real-API (SIT) pass | page shows: Gender FEMALE → MALE: Total Amount RM650.40 → RM650.40 (recorded; real API) | matches | 09-E4-gender-reprice.png
+04/11/2026, 17:35:35 | note: Gender set back to FEMALE: Total RM650.40
+04/11/2026, 17:35:35 | note: click: PIAM ID 'i'
+04/11/2026, 17:35:37 | E5 | expected: The PIAM ID 'i' pop-up names Serba Sentral Sdn Bhd as the agent, not Pemaju Eksklusif or another agency (wording and PIAM ID recorded, Q37) | page shows: PIAM pop-up: Serba Sentral Sdn Bhd is a licensed agent of the insurance company that is governed by Persatuan Insurans Am Malaysia (PIAM). Get in touch? +601327142714 Level 15, Sunway Tower, Jalan Ampang, 50450 Kuala Lumpur | matches | 10-E5-piam-popup.png
+04/11/2026, 17:35:39 | note: click: Confirm and Pay
+04/11/2026, 17:35:44 | note: click: FPX Online banking
+04/11/2026, 17:35:47 | note: click: RHB bank
+04/11/2026, 17:35:48 | note: window opened by the site and kept (payment window 1)
+04/11/2026, 17:35:51 | note: Fiuu window: Username
+04/11/2026, 17:35:52 | note: Fiuu window: Password
+04/11/2026, 17:35:53 | note: Fiuu window: Login
+04/11/2026, 17:35:54 | note: Fiuu window: Status 00
+04/11/2026, 17:35:55 | note: Fiuu window: Request TAC
+04/11/2026, 17:35:55 | note: Fiuu window: Enter TAC 369371
+04/11/2026, 17:35:58 | note: Fiuu window: Pay now
+04/11/2026, 17:36:41 | note: window opened by the site and kept (payment window 2)
+04/11/2026, 17:36:46 | note: payment: {"where":"success","amount":"MYR 650.40"}
+04/11/2026, 17:36:46 | note: click: Download [Receipt]
+04/11/2026, 17:36:47 | note: downloaded: receipt-26110421300011.pdf (server name R26110421300011JXH1451.pdf)
+04/11/2026, 17:36:55 | note: portal: CIBO (testadmin)
+04/11/2026, 17:36:58 | note: typed: Login ID
+04/11/2026, 17:36:59 | note: typed: Password
+04/11/2026, 17:37:00 | note: click: Login
+04/11/2026, 17:37:03 | note: click: Transaction Management
+04/11/2026, 17:37:06 | note: typed: Search: JXH1451
+04/11/2026, 17:37:07 | note: click: Search
+04/11/2026, 17:37:17 | note: typed: Search: JXH1451
+04/11/2026, 17:37:17 | note: click: Search
+04/11/2026, 17:37:24 | note: click: Open Transaction Details BR6N006401
+04/11/2026, 17:37:33 | E6 | expected: The add-on left ticked and its amount are the same on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons) | page shows: Confirmation: Allianz Road Rangers FREE Car Break-In/Robbery RM3.00; receipt Break-In RM3.00: true; CIBO: Allianz Road Rangers FREE Car Break-In/Robbery RM3.00 | matches | 13-E6-addons-everywhere.png
+04/11/2026, 17:37:34 | E7 | expected: Receipt and CIBO show Allianz as the insurer (no Tokio Marine) | page shows: Receipt "Allianz General Insurance Company (Malaysia) / Berhad 200601015674 (735426-V)"; CIBO "Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)" (BR6N006401, Insurance created); Tokio Marine named: receipt false, CIBO false | matches | 14-E7-allianz-not-tokio.png
+04/11/2026, 17:37:34 | note: Transaction Details BR6N006401: status Insurance created; Cover -; Policy -; Ref ALZ20261104SFX0009; Premium After NCD RM612.97; Gross per Confirmation RM592.97
+04/11/2026, 17:38:30 | note: payment window 1 on the TS video 04:15.9–04:26.0 (https://staging.secarang.com/ia/payment/landing/9db5b0b4-8138-43e7-bfe2-070d473ae685/fpx_rhb)
+04/11/2026, 17:38:30 | note: payment window 2 on the TS video 05:08.8–05:09.0 (about:blank)
+04/11/2026, 17:38:30 | note: payment window video laid into video_12406_E2E_TS9_real-20261104.webm (1 window(s), picture-in-picture, bottom right)

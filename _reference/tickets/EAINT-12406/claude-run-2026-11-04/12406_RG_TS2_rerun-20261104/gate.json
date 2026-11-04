@@ -1,0 +1,8 @@
+{
+  "ts": "12406_RG_TS2_rerun-20261104",
+  "verdict": "VALID",
+  "reasons": [],
+  "instance": "ia",
+  "at": "04/11/2026, 17:24:13",
+  "driver": "Claude (Playwright)"
+}

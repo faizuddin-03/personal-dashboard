@@ -1,0 +1,55 @@
+{
+  "ts": "12406_E2E_TS12_rerun-20261104",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E1",
+      "text": "The purchase with every add-on ticked completes: Success page ('Thank you for your purchase!') with a [Receipt] download, and CIBO shows the transaction Paid, Ins. Co. Allianz, Transaction Status \"Insurance created\""
+    },
+    {
+      "id": "E2",
+      "text": "The same add-ons and amounts are on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)"
+    },
+    {
+      "id": "E3",
+      "text": "Receipt Total Premium = the Confirmation total"
+    }
+  ],
+  "log": [
+    "# 12406_E2E_TS12_rerun-20261104 — Rerun on the real API: Allianz purchase with every add-on ticked",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 04/11/2026, 16:59:47 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "04/11/2026, 16:59:49 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "04/11/2026, 16:59:49 | note: Data: checker xlsx row 5 (real plate/IC) JLX8382, postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ",
+    "04/11/2026, 16:59:53 | note: typed: Site password",
+    "04/11/2026, 16:59:54 | note: click: Login (site password page)",
+    "04/11/2026, 17:00:02 | note: click: Close the promo pop-up",
+    "04/11/2026, 17:00:04 | note: click: Private Car tab",
+    "04/11/2026, 17:00:04 | note: typed: Car Plate No.",
+    "04/11/2026, 17:00:05 | note: typed: Owner IC No.",
+    "04/11/2026, 17:00:06 | note: typed: Postal Code",
+    "04/11/2026, 17:00:08 | note: click: Get quotation",
+    "04/11/2026, 17:01:59 | note: stopped: quote: timeout"
+  ],
+  "proofs": [],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "Data: checker xlsx row 5 (real plate/IC) JLX8382, postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "stopped: quote: timeout"
+  ],
+  "dialogs": [],
+  "windows": [],
+  "videos": {
+    "main": "video_12406_E2E_TS12_rerun-20261104.webm",
+    "windows": []
+  },
+  "saved": "C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS12_rerun-20261104/_raw/finish.json"
+}

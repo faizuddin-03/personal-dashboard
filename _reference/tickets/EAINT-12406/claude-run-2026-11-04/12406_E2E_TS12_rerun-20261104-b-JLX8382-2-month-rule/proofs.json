@@ -1,0 +1,21 @@
+{
+  "ts": "12406_E2E_TS12_rerun-20261104",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "Data: checker xlsx row 5 (real plate/IC) JLX8382, postcode 55000; Full Name FAIZUDDIN TEST ALLIANZ",
+    "typed: Site password",
+    "click: Login (site password page)",
+    "click: Close the promo pop-up",
+    "click: Private Car tab",
+    "typed: Car Plate No.",
+    "typed: Owner IC No.",
+    "typed: Postal Code",
+    "click: Get quotation",
+    "stopped: quote: timeout"
+  ],
+  "dialogs": [],
+  "windows": []
+}

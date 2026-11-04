@@ -1,0 +1,209 @@
+<title>12406 Real-API Questions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow reading column, a copy-ready message block, then evidence figures per question. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2433; --muted: #5b6577; --line: #dde2ea;
+  --navy: #172b4d; --red: #c8321a; --red-soft: #fbe9e5; --ok: #1f7a4a; --ok-soft: #e4f3ea;
+  --body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif; --mono: "IBM Plex Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161f; --surface: #19202c; --fg: #e3e8f0; --muted: #9aa5b6; --line: #2c3545;
+  --navy: #8fb0e8; --red: #ff8a73; --red-soft: #3a1f1a; --ok: #6fd09b; --ok-soft: #173225; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11161f; --surface: #19202c; --fg: #e3e8f0; --muted: #9aa5b6; --line: #2c3545;
+  --navy: #8fb0e8; --red: #ff8a73; --red-soft: #3a1f1a; --ok: #6fd09b; --ok-soft: #173225; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 0; font-size: 26px; line-height: 1.25; text-wrap: balance; color: var(--navy); }
+h2 { margin: 0; font-size: 19px; text-wrap: balance; }
+p { margin: 0; max-width: 68ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 18px; font: 13px var(--mono); color: var(--muted); }
+.facts b { color: var(--fg); font-weight: 500; }
+.msg { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.msg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.msg-head span { font-weight: 600; }
+button { font: 600 13px var(--body); color: #fff; background: var(--navy); border: 0; border-radius: 6px; padding: 8px 14px; cursor: pointer; }
+:root[data-theme="dark"] button { color: #11161f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) button { color: #11161f; } }
+button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+pre { margin: 0; padding: 14px; white-space: pre-wrap; word-break: break-word; font: 13.5px/1.6 var(--mono); }
+section { display: grid; gap: 14px; }
+.q { display: flex; gap: 10px; align-items: baseline; }
+.tag { font: 600 12px var(--mono); padding: 2px 8px; border-radius: 4px; background: var(--red-soft); color: var(--red); white-space: nowrap; }
+.tag.fyi { background: var(--ok-soft); color: var(--ok); }
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: grid; }
+figure img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--line); }
+figcaption { padding: 10px 12px; font-size: 13.5px; color: var(--muted); }
+figcaption b { color: var(--fg); font-weight: 600; }
+table { border-collapse: collapse; font-size: 14px; }
+.tbl { overflow-x: auto; }
+td, th { text-align: left; padding: 6px 14px 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 12.5px; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+td.bad { color: var(--red); font-weight: 600; }
+footer { font-size: 13px; color: var(--muted); }
+.img-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 0 12px 12px; }
+.img-actions button { padding: 6px 12px; font-size: 12.5px; }
+.img-actions a { font-size: 13px; color: var(--navy); }
+.img-actions .note { font-size: 12.5px; color: var(--muted); }
+.img-actions .view { background: transparent; color: var(--navy); border: 1px solid var(--line); }
+figure img { cursor: zoom-in; }
+#lightbox { position: fixed; inset: 0; z-index: 50; background: rgba(10, 14, 22, .92); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+#lightbox img { max-width: 100%; max-height: calc(100% - 44px); object-fit: contain; cursor: zoom-out; background: #fff; }
+#lightbox p { color: #e3e8f0; font-size: 13px; text-align: center; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">EAINT-12406 · Secarang staging /ia/ · Allianz real UAT API · 4 Nov 2026</div>
+    <h1>Allianz real-API purchase: payment taken, policy refused</h1>
+    <div class="facts">
+      <span>Receipt <b>26110421300001</b></span>
+      <span>CIBO <b>BR6N006388</b></span>
+      <span>Plate <b>JLX8382</b></span>
+      <span>Paid <b>RM398.65</b> FPX RHB</span>
+      <span>Ref ID <b>ALZ20261104SFX0001</b></span>
+    </div>
+  </header>
+
+  <div class="msg">
+    <div class="msg-head"><span>Message for Dev (copy and paste)</span><button id="copy" type="button">Copy text</button></div>
+<pre id="text">Hi, EAINT-12406 on staging /ia/ (Allianz real UAT API), 4 Nov 2026.
+
+Test purchase: plate JLX8382, receipt 26110421300001, CIBO BR6N006388.
+Quote, Add-ons, Confirmation and FPX payment (RHB, RM398.65) all went through, and Secarang showed "Payment successful!".
+In CIBO the transaction is Paid, but Transaction Status is "Failed" with Remark "Invalid fullName". Cover Note No and Policy No are "-", and there is no e-Certificate.
+
+The plate and IC are real, from our checker list. The Full Name on Confirmation was a made-up test name ("QA SECARANG TEST").
+
+Q1. For the Allianz real UAT API, which owner data should QA use so the policy is issued? Is there a test IC + full name + plate set from Allianz, or must the full name match the IC owner exactly?
+Q2. When the insurer refuses the policy after payment (as here), Secarang still says "Payment successful!" and gives no sign that the policy failed. Is that the intended behaviour, and what happens to the customer's payment?
+
+Screenshots attached. Thanks!</pre>
+  </div>
+
+  <section>
+    <div class="q"><span class="tag">Q1</span><h2>Which owner data does the real API accept?</h2></div>
+    <p>The real API returned real car details for the plate and IC (Perodua Alza 2009, NCD 38.33%) and quoted Allianz. The policy was refused only after payment, with "Invalid fullName".</p>
+    <div class="shots">
+      <figure>
+        <img src="12406_E2E_TS1/16-E6-cibo-row.png" alt="CIBO Transaction Management row BR6N006388: Paid, Allianz Serba Sentral, Transaction Status Failed, Remark Invalid fullName" loading="lazy">
+        <figcaption><b>CIBO, Transaction Management.</b> RM398.65 Paid, Allianz / Serba Sentral, status <b>Failed</b>, remark <b>Invalid fullName</b>.</figcaption>
+      </figure>
+      <figure>
+        <img src="12406_E2E_TS1/20-E7-payment-ref-id.png" alt="CIBO Transaction Details: Payment Ref ID ALZ20261104SFX0001, Cover Note No and Policy No are dashes" loading="lazy">
+        <figcaption><b>CIBO, Transaction Details.</b> Cover Note No and Policy No are "-". Payment Ref ID ALZ20261104SFX0001.</figcaption>
+      </figure>
+      <figure>
+        <img src="12406_E2E_TS1/02-car-details.png" alt="Secarang Car Details from the real API: Perodua Alza 2009, 7 seats, 1495 cc, current coverage active, NCD 38.33%" loading="lazy">
+        <figcaption><b>Secarang, Car Details.</b> Real vehicle data came back from the API for this plate and IC.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="q"><span class="tag">Q2</span><h2>"Payment successful!" while the policy failed</h2></div>
+    <p>The customer sees a normal success page and a receipt. Nothing tells them the insurer refused the policy.</p>
+    <div class="shots">
+      <figure>
+        <img src="12406_E2E_TS1/12-E4-success.png" alt="Secarang Payment successful page: Thank you for your purchase, receipt 26110421300001, Online Banking RHB Bank" loading="lazy">
+        <figcaption><b>Secarang, Success page.</b> "Payment successful! Thank you for your purchase", receipt 26110421300001.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="q"><span class="tag fyi">FYI</span><h2>D1 and D2 also show on the real API</h2></div>
+    <p>QA found both on the simulator on 29–30 Oct, and this real-API purchase on 4 Nov shows both are still there. Raised on 4 Nov as <b>EAINT-12764</b> (D1, company number line) and <b>EAINT-12765</b> (D2, Premium After NCD).</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Where</th><th>Premium After NCD</th><th>Insurer line</th></tr></thead>
+        <tbody>
+          <tr><td>Confirmation</td><td class="num">RM359.88</td><td>one line, no company no.</td></tr>
+          <tr><td>Success page</td><td class="num bad">RM379.88</td><td>–</td></tr>
+          <tr><td>Receipt PDF</td><td class="num bad">RM379.88</td><td class="bad">"…(Malaysia)" / "Berhad 200601015674 (735426-V)"</td></tr>
+          <tr><td>CIBO Transaction Details</td><td class="num bad">RM379.88</td><td>"…(Malaysia) Berhad" / "200601015674 (735426-V)": number on its own line (OK)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Basic RM551.12 − NCD RM211.24 + All Drivers RM20.00 = RM359.88. Gross Premium RM359.88 and Total RM398.65 are right everywhere.</p>
+    <div class="shots">
+      <figure>
+        <img src="12406_E2E_TS1/13-D2-success-premium-after-ncd.png" alt="Success page Premium After NCD RM379.88" loading="lazy">
+        <figcaption><b>D2, Success page.</b> Premium After NCD RM379.88.</figcaption>
+      </figure>
+      <figure>
+        <img src="12406_E2E_TS1/07-confirmation-breakdown.png" alt="Confirmation page Premium After NCD RM359.88" loading="lazy">
+        <figcaption><b>Confirmation.</b> Premium After NCD RM359.88.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="q"><span class="tag fyi">Update</span><h2>Retest of Azfar's fails and blockers, 4 Nov afternoon</h2></div>
+    <p>All runs on staging /ia/ with the real Allianz UAT API, recorded (video, screenshots, receipts). New purchases used the name "FAIZUDDIN TEST ALLIANZ", and Allianz accepted it.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>TS</th><th>Result</th><th>What we saw</th></tr></thead>
+        <tbody>
+          <tr><td>RC_TS8, RC_TS2, RC_TS1</td><td class="bad">Fail (same)</td><td>D1 (EAINT-12764) on every Allianz receipt PDF, new and old. D2 (EAINT-12765): 551.12 − 211.24 + 20.00 = 359.88, receipt 379.88. Labels match Tokio Marine.</td></tr>
+          <tr><td>E2E_TS1 (FPX)</td><td class="bad">KIV, Q44</td><td>BR6N006394 Paid, Insurance created. Cover Note / Policy "-", no e-Certificate after waiting.</td></tr>
+          <tr><td>E2E_TS2 (card + RJC7)</td><td class="bad">KIV, Q44</td><td>BR6N006396 Insurance created, paid RM751.65 after discount. Cover Note "-". Ref ID ALZ…SCC0006.</td></tr>
+          <tr><td>E2E_TS3 (PayLater by Grab)</td><td class="bad">KIV, Q44</td><td>BR6N006397 Insurance created. Cover Note "-". Ref ID ALZ…SEW0007.</td></tr>
+          <tr><td>E2E_TS12 (all add-ons)</td><td class="bad">Blocked, Q46</td><td>Total RM6,219.60. FPX / card limit is MYR 2,000. The Grab window opened blank (Grab worked at RM1,375).</td></tr>
+          <tr><td>QT_TS7 (documents)</td><td>KIV, BA</td><td>PDS dated 03/06/2020, Privacy Notice 3 March 2020, Policy Wording 03 March 2022. Claim Guide is image-only.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><b>Part 2, other TS on the real API (evening):</b> QT_TS1, QT_TS2, QT_TS4, QT_TS5, QT_TS6, RG_TS2, E2E_TS4 (SPayLater), E2E_TS9 and E2E_TS10 all <b>pass</b>. Notes: changing gender on Confirmation does not change the Allianz price (RM650.40 both ways). A Lonpac purchase (BR6N006399) got Cover Note A2984745 and a policy number at once, so the missing cover note is Allianz-only. PayLater by Grab also opens a blank window above about RM2,000 (blank at RM2,224 and RM6,219, fine at RM1,375).</p>
+    <p><b>For Dev:</b> even with Insurance created on the real API, no Allianz cover note, policy number or e-Certificate comes back (Q44). Also: on 2 of 3 cars, the Allianz price on All Quotations was lower than the price on Add-ons and Confirmation (RM696.43 → RM844.58, RM902.86 → RM982.20).</p>
+  </section>
+
+  <footer>Recorded by Claude (Playwright) for Faizuddin. Evidence and video: <code>_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS1/</code> in the QA dashboard repo.</footer>
+</div>
+
+<script>
+document.getElementById('copy').addEventListener('click', function () {
+  var b = this, t = document.getElementById('text').innerText;
+  var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy text'; }, 1600); };
+  var fallback = function () { var r = document.createRange(); r.selectNodeContents(document.getElementById('text')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected: press Ctrl+C'; };
+  try { navigator.clipboard.writeText(t).then(done, fallback); } catch (e) { fallback(); }
+});
+
+// Per-screenshot "Copy image" (PNG to the clipboard, ready to paste into Teams) and a full-size link as a fallback.
+document.querySelectorAll('figure').forEach(function (fig, i) {
+  var img = fig.querySelector('img');
+  var bar = document.createElement('div'); bar.className = 'img-actions';
+  var btn = document.createElement('button'); btn.type = 'button'; btn.id = 'copy-img-' + i; btn.textContent = 'Copy image';
+  var link = document.createElement('button'); link.type = 'button'; link.className = 'view'; link.id = 'view-img-' + i; link.textContent = 'View full size';
+  link.addEventListener('click', function () { openBox(img); });
+  img.addEventListener('click', function () { openBox(img); });
+  var note = document.createElement('span'); note.className = 'note';
+  bar.append(btn, link, note); fig.appendChild(bar);
+  btn.addEventListener('click', function () {
+    note.textContent = '';
+    try {
+      var item = new ClipboardItem({ 'image/png': fetch(img.src).then(function (r) { return r.blob(); }) });
+      navigator.clipboard.write([item]).then(function () {
+        btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy image'; }, 1600);
+      }, function () { note.textContent = 'Copy was blocked here: right-click the picture and choose Copy image (or View full size first).'; });
+    } catch (e) { note.textContent = 'Copy was blocked here: right-click the picture and choose Copy image (or View full size first).'; }
+  });
+});
+
+// Full-size view inside the page (a new tab to the image file is blocked by claude.ai).
+var box = document.createElement('div'); box.id = 'lightbox'; box.hidden = true;
+box.innerHTML = '<img alt=""><p>Right-click the picture and choose Copy image. Click or press Esc to close.</p>';
+document.body.appendChild(box);
+function openBox(img) { var b = box.querySelector('img'); b.src = img.src; b.alt = img.alt; box.hidden = false; }
+box.addEventListener('click', function (e) { if (e.target === box || e.target.tagName === 'IMG') box.hidden = true; });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') box.hidden = true; });
+</script>

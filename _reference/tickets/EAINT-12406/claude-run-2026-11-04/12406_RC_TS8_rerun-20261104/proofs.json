@@ -1,0 +1,58 @@
+{
+  "ts": "12406_RC_TS8_rerun-20261104",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E4",
+      "expected": "AFTER: BR55004010 Transaction Details shows \"200601015674 (735426-V)\" with the Allianz name (layout recorded, Q42)",
+      "shows": "Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\" (2 line(s) on screen)",
+      "match": true,
+      "shot": "01-E4-br55004010-details-insurer.png",
+      "at": "04/11/2026, 15:54:49",
+      "url": "/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "AFTER: BR55004010 receipt \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"",
+      "shows": "Receipt Insurer: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "03-E3-br55004010-receipt-insurer.png",
+      "at": "04/11/2026, 15:55:00",
+      "url": "/C:/Users/faizu/Documents/GitHub/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS8_rerun-20261104/downloadable/cibo-receipt-BR55004010.pdf",
+      "side": "CIBO"
+    },
+    {
+      "point": "E5",
+      "expected": "AFTER: BR44003678 and BR3D003430 insurer box recorded (Q20)",
+      "shows": "BR44003678: Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\", status Pending payment | BR3D003430: Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\", status Pending payment",
+      "match": true,
+      "at": "04/11/2026, 15:55:37",
+      "url": "/cibo/transaction-management/transaction-details/de85ed96-856b-4480-b346-f5bc5e319082",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: BR55004010",
+    "click: Search",
+    "click: Open Transaction Details BR55004010",
+    "click: Receipt (CIBO)",
+    "downloaded: cibo-receipt-BR55004010.pdf (server name R25050421300004DAX0900.pdf)",
+    "typed: Search: BR44003678",
+    "click: Search",
+    "click: Open Transaction Details BR44003678",
+    "click: Transaction Management",
+    "typed: Search: BR3D003430",
+    "click: Search",
+    "click: Open Transaction Details BR3D003430"
+  ],
+  "dialogs": [],
+  "windows": []
+}
