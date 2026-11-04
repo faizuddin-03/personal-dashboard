@@ -24,8 +24,17 @@ touching the browser.
 2. `claude plugin list`. If `playwright@claude-plugins-official` is missing, install it and restart
    Claude Code.
 3. Set `page.__ROOT` to that laptop's repo path. `recorder.js` defaults to the `faizu` path.
-4. `.webm` videos are git-ignored and stay on the second laptop (`faizu`). Screenshots, PDFs, the
-   MP4 clip and the results are in git.
+4. **Restore the run videos (both tickets).** `.webm` videos are git-ignored. Everything else
+   (610 PNG, 29 PDF, every result/note file) comes with `git pull`. The 131 videos are in two zips
+   Faizuddin uploaded through the browser to his work OneDrive (faizuddin@modefair.onmicrosoft.com):
+   `EAINT-12406-claude-run-videos-2026-11-04.zip` (56, 354 MB) and
+   `EAINT-12028-claude-run-videos-2026-11-04.zip` (75, 618 MB). Download both, then Extract All
+   **into the repo root** (paths inside start with `_reference/tickets/...`). Check: 12406 folder
+   = 444 files, 12028 folder = 468 files. Details: "Run videos … restore them first" below.
+5. The 12406 runner (`scripts/claude-run/run-ts.mjs`) finds the repo path itself and launches its
+   own Chrome, so it needs no plugin and no path change. One-time tools are in "EAINT-12406: HOW TO
+   RESUME" below (npm ci, playwright ffmpeg, Gyan.FFmpeg). The `playwright-iso` MCP added on the
+   second laptop is local config only; it is not needed.
 
 **EAINT-12028 (Association Payment Listing, staging uat1): state at end of day**
 - **Run:** 69 TS. **32 pass · 16 fail · 18 blocked**, 1 left for Faizuddin (TS36), 2 not in this
@@ -70,9 +79,28 @@ touching the browser.
    - EAINT-12752 item 1 retest comment.
    - EAINT-12752 item 2: the header dispute with Shane is still open.
 
-**EAINT-12406 (Secarang, Azfar's recording style)** is a separate session. Its state is in the
-"Session: EAINT-12406" section below and in
-`_reference/tickets/EAINT-12406/claude-run-2026-11-04/RESULTS.md` and `FOR-AZFAR-2026-11-04.md`.
+**EAINT-12406 (Secarang /ia/ + CIBO, real Allianz UAT API, Azfar's recording style): state at end of day**
+- **Progress (latest per TS, Azfar 30.10 + Claude 04.11), out of 46:** **24 pass · 3 fail · 7 KIV ·
+  1 blocked · 1 re-run · 9 not run · 1 deprioritised = 24/46 (52.17%) pass only.**
+  - New pass today: QT_TS2, QT_TS4, QT_TS5, QT_TS6, RG_TS2. Passed again on the real API: QT_TS1,
+    E2E_TS4, E2E_TS9, E2E_TS10.
+  - Still fail: RC_TS1, RC_TS2, RC_TS8 (D1/D2). KIV: E2E_TS1–3 (Q44 no Allianz cover note), QT_TS7
+    (BA), RC_TS11, CP_TS7, E2E_TS8. Blocked: E2E_TS12 (Q46, over RM2,000).
+  - Per TS with evidence: `_reference/tickets/EAINT-12406/claude-run-2026-11-04/RESULTS.md`
+    (end-of-day section at the bottom). For Azfar: `FOR-AZFAR-2026-11-04.md` (not shared yet).
+- **Raised today** (To Do, Dev Mong Guo Hao, QA Faizuddin + Azfar): EAINT-12764 D1 (Low),
+  EAINT-12765 D2 (High), EAINT-12766 "Invalid fullName" (High).
+- **Dashboard:** `/eauto/12406` shows Azfar's chip and a "Claude 04.11" chip per TS plus the overall
+  line; TS Tracker feed `scripts/claude-run/results/EAINT-12406.json` (rebuild with
+  `node scripts/claude-run/build-results-12406.mjs` after editing `CLAUDE_12406` in
+  `lib/eauto12406.ts`); `/jira/studies` updated. Azfar's own board (artifact 7xguCHVWNb2oXDKgpDyZWT)
+  was NOT written to.
+- **Test data traps (real API):** use Full Name "FAIZUDDIN TEST ALLIANZ" ("QA SECARANG TEST" is
+  refused, EAINT-12766). Every car bought today now shows the 2-month renewal form: pick a fresh
+  row from the checker xlsx (used rows are listed in SESSION-LOG.md); never fill that form.
+- **Next for 12406:** E2E_TS5, RC_TS4 E5, RC_TS11 E2 (can use Lonpac BR6N006399), RC_TS7; decide on the
+  3 observations; share the Azfar note; wait for Dev on Q44/Q46 and the 3 tickets. Full resume steps:
+  "EAINT-12406: HOW TO RESUME ON ANY LAPTOP" near the end of this file.
 
 ---
 
@@ -667,8 +695,8 @@ Faizuddin does not run the automation. **Claude runs every TS itself, recorded**
 4. To run a TS: `node scripts/claude-run/run-ts.mjs scripts/claude-run/12406/<file>.mjs`. Step files are in
    `scripts/claude-run/12406/`; the shared steps are `scripts/claude-run/secarang-steps.mjs`.
 5. Recording is in **Azfar's style** (Faizuddin's choice for 12406): `scripts/claude-run/recorder-azfar.js` + `finish-ts.mjs`.
-6. **Videos (`*.webm`) are git-ignored** and stay on the second laptop (`faizu`). Screenshots, checks.txt, proofs.json,
-   gate.json, receipts and PDFs are in git.
+6. **Videos (`*.webm`) are git-ignored.** Restore them from the OneDrive zip (see "Run videos … restore them
+   first" above). Screenshots, checks.txt, proofs.json, gate.json, receipts and PDFs are in git.
 
 **Open items for 12406:**
 - Run E2E_TS5, RC_TS4 E5, RC_TS11 E2 and RC_TS7 (the e-receipt email).
