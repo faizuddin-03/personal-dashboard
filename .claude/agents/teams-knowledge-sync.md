@@ -23,7 +23,9 @@ key you were given.
 unattended hourly scheduled run invokes you). Figure out which ticket(s) are
 currently being worked on, then run the named-ticket steps below for each:
 1. List `*.jsonl` files directly under
-   `C:\Users\Faizuddin\.claude\projects\C--Users-Faizuddin-Documents-GitHub-personal-dashboard\`
+   `%USERPROFILE%\.claude\projects\C--Users-<user>-Documents-GitHub-personal-dashboard\`
+   (`<user>` is this laptop's Windows user — `Faizuddin` on the main laptop,
+   `faizu` on the second one)
    (top level only, skip per-session subdirectories — those hold subagent
    transcripts) sorted by modification time, most recent first.
 2. Grep the 1-3 most recently modified transcripts for the ticket-key

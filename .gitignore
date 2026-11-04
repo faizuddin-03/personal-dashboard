@@ -108,3 +108,8 @@ data/browser-profile/
 _reference/codebases/eauto-qa-azfar/
 _reference/codebases/eauto-qa-charmain/
 share/esim-response-code-kit/node_modules/
+
+# Playwright MCP plugin working folder (recorder helper, snapshots)
+.playwright-mcp/
+# Claude-driven test run videos (large; screenshots + results stay tracked)
+_reference/tickets/*/claude-run-*/**/*.webm

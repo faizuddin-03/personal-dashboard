@@ -49,7 +49,7 @@ Per criterion:
    3. Dashboard pages and repo commits made in the month (`git log --since --until`).
    4. Teams only for the allowed chat exceptions.
 4. Draft 1–2 points per criterion → show him the draft (table: criterion | point | evidence file) and wait for approval.
-5. Screenshot each evidence into `C:\Users\Faizuddin\Documents\appraisal-<mon>-<yyyy>\`, named `C<n>-<point>-<source>-<what>.png`.
+5. Screenshot each evidence into `%USERPROFILE%\Documents\appraisal-<mon>-<yyyy>\`, named `C<n>-<point>-<source>-<what>.png`.
 6. Ask him to run `/add-dir <that folder>` — `file_upload` rejects any folder not shared with the session.
 7. Fill on the page:
    1. Rating: click the rating control; check it saved.

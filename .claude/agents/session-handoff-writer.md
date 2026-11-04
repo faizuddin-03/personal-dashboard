@@ -64,7 +64,9 @@ unattended end-of-day scheduled run invokes you). In this mode:
 ## Steps
 
 1. **Find today's session transcripts.** List `*.jsonl` files directly
-   under `C:\Users\Faizuddin\.claude\projects\C--Users-Faizuddin-Documents-GitHub-personal-dashboard\`
+   under `%USERPROFILE%\.claude\projects\C--Users-<user>-Documents-GitHub-personal-dashboard\`
+   (the folder is named after the repo path, so `<user>` is this laptop's
+   Windows user — `Faizuddin` on the main laptop, `faizu` on the second one)
    (top level only — skip the per-session subdirectories with the same
    UUID name; those hold subagent transcripts, not the main conversation)
    with today's modification date. There may be several — the user may have

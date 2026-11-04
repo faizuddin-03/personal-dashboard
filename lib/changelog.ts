@@ -141,6 +141,10 @@ export const RELEASED_VERSIONS: ChangelogVersion[] = [
 // Reset to [] after every prod-local push.
 export const CURRENT_CHANGES: ChangelogEntry[] = [
   {
+    title: "TS Tracker Shows Claude-Run Results",
+    description: "When Claude runs a ticket's TS itself in the browser, the result per TS is saved in the repo (scripts/claude-run/results/<ticket>.json) and the TS Tracker picks it up within 10 seconds on any laptop: the CR is created if missing and each TS shows Pass or Fail, with a \"Claude uat1 04-11: …\" note (Blocked and Not Started show as not started). If the ticket also has an official TS sheet, the Claude run is one more result column beside the sheet's device columns. First run: EAINT-12028 on uat1, 4 Nov (20 pass, 8 fail, 16 blocked).",
+  },
+  {
     title: "12406 Runner Page and Study",
     description: "New ticket page for EAINT-12406 (Secarang Allianz), listed on Tickets. It runs Azfar's own automation, copied in unchanged: tick TS, type the Secarang site password and the CIBO and Fiuu logins, then Run. His checker decides each TS and keeps the evidence, which opens from the TS row. Each row shows Azfar's result at hand-over next to the latest run on this PC. The run keeps going if you leave the page. EAINT-12406 is also in Ticket Studies, with the hand-over state, defects D1 and D2, and the open questions.",
   },

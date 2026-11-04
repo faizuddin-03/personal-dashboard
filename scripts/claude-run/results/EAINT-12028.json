@@ -1,0 +1,813 @@
+{
+  "key": "EAINT-12028",
+  "title": "[eAuto-BackOffice] New Module – Association Payment Listing",
+  "column": "Claude uat1 04-11",
+  "environment": "staging uat1",
+  "ranAt": "2026-11-04",
+  "details": "_reference/tickets/EAINT-12028/claude-run-2026-11-04/RESULTS.md and FAILS-AND-BLOCKS.md",
+  "cases": [
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "A. Reports menu and module access",
+      "ts": "12028_TS01",
+      "objective": "Drafter sees Association Payment Listing under Reports and opens Summary",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "A. Reports menu and module access",
+      "ts": "12028_TS02",
+      "objective": "Reviewer sees Association Payment Listing under Reports and opens Summary",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "A. Reports menu and module access",
+      "ts": "12028_TS03",
+      "objective": "Approver sees Association Payment Listing under Reports and opens Summary",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "A. Reports menu and module access",
+      "ts": "12028_TS04",
+      "objective": "Multi-role user sees Association Payment Listing under Reports and opens Summary",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "A. Reports menu and module access",
+      "ts": "12028_TS05",
+      "objective": "No-role BO user does not see Association Payment Listing under Reports",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "A. Reports menu and module access",
+      "ts": "12028_TS06",
+      "objective": "No-role BO user blocked on the Summary and Details page addresses",
+      "cells": []
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "B. Summary page",
+      "ts": "12028_TS07",
+      "objective": "Summary for Year 2026 shows the year filter, 12 months, columns, total label and Payment Date",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "B. Summary page",
+      "ts": "12028_TS08",
+      "objective": "Summary figures use the FMC and MMSDA rates and the total row sums the months",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "B. Summary page",
+      "ts": "12028_TS09",
+      "objective": "Closed month with zero transactions shows 0.00 and can be opened",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "B. Summary page",
+      "ts": "12028_TS10",
+      "objective": "View opens the month's Details matching the Summary row and Back to Summary returns",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "C. Month-close",
+      "ts": "12028_TS11",
+      "objective": "Month-close on a past month shows its figures with all statuses Pending",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "C. Month-close",
+      "ts": "12028_TS12",
+      "objective": "Running month-close twice keeps the same figures",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "C. Month-close",
+      "ts": "12028_TS13",
+      "objective": "Running month-close on an approved month keeps statuses and Payment Date",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "D. Details page figures",
+      "ts": "12028_TS14",
+      "objective": "Details shows 16 states, TOTAL and amounts at the FMC and MMSDA rates",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "D. Details page figures",
+      "ts": "12028_TS15",
+      "objective": "State counts match Transaction Summary Report (State)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "D. Details page figures",
+      "ts": "12028_TS16",
+      "objective": "Private and company vehicles both counted under Car and Motorcycle",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "D. Details page figures",
+      "ts": "12028_TS17",
+      "objective": "Transaction counted in the month of its JPJ Approved Date",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "D. Details page figures",
+      "ts": "12028_TS18",
+      "objective": "Approved transaction not yet paid is not counted",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "D. Details page figures",
+      "ts": "12028_TS19",
+      "objective": "Transaction counted under the dealer's registered state",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "E. Drafter actions",
+      "ts": "12028_TS20",
+      "objective": "Drafter first Approve with the signature pad sets Drafter Status Approved",
+      "cells": []
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "E. Drafter actions",
+      "ts": "12028_TS21",
+      "objective": "Drafter KIV on a Pending month sets Drafter Status KIV",
+      "cells": []
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "E. Drafter actions",
+      "ts": "12028_TS22",
+      "objective": "Drafter Approve on a Review Again month sets Drafter Status Approved",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "E. Drafter actions",
+      "ts": "12028_TS23",
+      "objective": "Drafter KIV on a Review Again month sets Drafter Status KIV",
+      "cells": []
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "E. Drafter actions",
+      "ts": "12028_TS24",
+      "objective": "Drafter action on a KIV month follows the final KIV rule",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "E. Drafter actions",
+      "ts": "12028_TS25",
+      "objective": "Drafter buttons hidden once the Drafter step is done",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "E. Drafter actions",
+      "ts": "12028_TS26",
+      "objective": "Second Drafter user approves a Pending month and is blocked after another Drafter approved",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "E. Drafter actions",
+      "ts": "12028_TS27",
+      "objective": "Drafter second approval reuses the signature without the pad",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "F. Reviewer actions",
+      "ts": "12028_TS28",
+      "objective": "Reviewer buttons hidden with not-your-turn note until the Drafter approves",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "F. Reviewer actions",
+      "ts": "12028_TS29",
+      "objective": "Reviewer first Approve with the signature pad sets Reviewer Status Approved",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "F. Reviewer actions",
+      "ts": "12028_TS30",
+      "objective": "Reviewer Reject needs remarks and returns the month to Drafter Review Again",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "F. Reviewer actions",
+      "ts": "12028_TS31",
+      "objective": "Reviewer re-approves a Reviewer Review Again month",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "F. Reviewer actions",
+      "ts": "12028_TS32",
+      "objective": "Reviewer Reject on a Review Again month sets Drafter Status Review Again",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "F. Reviewer actions",
+      "ts": "12028_TS33",
+      "objective": "Reviewer buttons hidden once the Reviewer step is done",
+      "cells": []
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "F. Reviewer actions",
+      "ts": "12028_TS34",
+      "objective": "Reviewer second approval reuses the signature without the pad",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "G. Approver actions and payment date",
+      "ts": "12028_TS35",
+      "objective": "Approver buttons hidden with not-your-turn note until the Reviewer approves",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "G. Approver actions and payment date",
+      "ts": "12028_TS36",
+      "objective": "Approver first Approve with signature and tomorrow's date completes the month",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "G. Approver actions and payment date",
+      "ts": "12028_TS37",
+      "objective": "Payment date popup blocks cancel, blank, today, past, typed and pasted dates",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "G. Approver actions and payment date",
+      "ts": "12028_TS38",
+      "objective": "Approver Reject needs remarks and returns the month to Reviewer Review Again",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "G. Approver actions and payment date",
+      "ts": "12028_TS39",
+      "objective": "Approver buttons hidden on a fully approved month",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "G. Approver actions and payment date",
+      "ts": "12028_TS40",
+      "objective": "Approver second approval reuses the signature and still asks payment date",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "G. Approver actions and payment date",
+      "ts": "12028_TS41",
+      "objective": "Approver approves a month after the Reviewer re-approves it",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "G. Approver actions and payment date",
+      "ts": "12028_TS42",
+      "objective": "Approver signature kept after the payment date popup is cancelled",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "H. Multi-role user",
+      "ts": "12028_TS43",
+      "objective": "Multi-role user completes a month alone",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "H. Multi-role user",
+      "ts": "12028_TS44",
+      "objective": "Multi-role user KIV sets Drafter Status KIV",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "H. Multi-role user",
+      "ts": "12028_TS45",
+      "objective": "Multi-role user Reviewer Reject then re-approves as Drafter",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "H. Multi-role user",
+      "ts": "12028_TS46",
+      "objective": "Multi-role user Approver Reject sets Reviewer Status Review Again",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "I. Audit log",
+      "ts": "12028_TS47",
+      "objective": "New month Audit Log shows No workflow actions recorded yet",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "I. Audit log",
+      "ts": "12028_TS48",
+      "objective": "Audit Log shows its columns, keeps every row after a reject loop and shows no signature image",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "J. Payment Request download",
+      "ts": "12028_TS49",
+      "objective": "Download buttons hidden with pending note until the month is fully approved",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "J. Payment Request download",
+      "ts": "12028_TS50",
+      "objective": "Approver sees both download buttons on a fully approved month",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "J. Payment Request download",
+      "ts": "12028_TS51",
+      "objective": "Drafter can download both PDFs on a fully approved month",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "J. Payment Request download",
+      "ts": "12028_TS52",
+      "objective": "Reviewer can download both PDFs on a fully approved month",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "J. Payment Request download",
+      "ts": "12028_TS53",
+      "objective": "No-role BO user blocked on the PDF download address (manual)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "J. Payment Request download",
+      "ts": "12028_TS54",
+      "objective": "Download address of a month not fully approved is blocked (manual)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "J. Payment Request download",
+      "ts": "12028_TS55",
+      "objective": "Second download gives the same file",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "K. FMC Payment Request PDF",
+      "ts": "12028_TS56",
+      "objective": "FMC Payment Request PDF shows the SRD fields and the month's car amount",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "L. MMSDA Payment Request PDF",
+      "ts": "12028_TS57",
+      "objective": "MMSDA Payment Request PDF shows the SRD fields and the month's motorcycle amount",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS58",
+      "objective": "BO login hand-off opens Association Payment Listing and module logout needs a fresh login",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS59",
+      "objective": "Used SSO hand-off address cannot log in again (manual)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS60",
+      "objective": "Core logout logs out the open Association Payment Listing tab",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS61",
+      "objective": "Session expiry returns to BO login without an error page",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS62",
+      "objective": "Logout redirect to an outside address stays on eAuto (manual)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS63",
+      "objective": "Session-expiry redirect to an outside address stays on eAuto (manual)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS64",
+      "objective": "Drafter Approve from two tabs makes one audit row",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS65",
+      "objective": "Reviewer Approve from two tabs makes one audit row",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS66",
+      "objective": "Approver Approve from two tabs makes one audit row and one payment date",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS67",
+      "objective": "Forced Reviewer approval on a Pending month is rejected (manual)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS68",
+      "objective": "Forced Approver approval before the Reviewer approves is rejected (manual)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    },
+    {
+      "sheet": "Claude run 2026-11-04",
+      "section": "M. BO login, SSO, session and double submit",
+      "ts": "12028_TS69",
+      "objective": "Forced action on a fully approved month is rejected (manual)",
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Not Started"
+        }
+      ]
+    }
+  ]
+}

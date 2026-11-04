@@ -19,7 +19,7 @@ The first real-build pages, pasted by Faizuddin. Raw HTML only so far; the secti
 ## No-role user and the menu link (2026-11-02)
 
 1. A BO user with no Drafter / Reviewer / Approver role **must not see** the "Association Payment Listing" link under Reports. `[Faizuddin: confirmed with BA in chat, 2026-11-02]` The SRD does not state this; REQ-003 only says such a user "cannot perform Drafter / Reviewer / Approver actions".
-2. Live uat1 (2026-11-02): the link **is shown** to such a user (Jason Seah). Raised as **EAINT-12716** (Medium, Developer/assignee Shane). Evidence: `_reference/tickets/EAINT-12028/EAINT-12716/EAINT-12716-actual-no-role-user-sees-link-uat1.png`.
+2. Live uat1 (2026-11-02): the link **is shown** to such a user (Jason Seah). Raised as **EAINT-12716** (Medium, Developer/assignee Shane). Evidence: `_reference/tickets/EAINT-12028/Bug - EAINT-12716/EAINT-12716-actual-no-role-user-sees-link-uat1.png`.
 3. Affects 12028_TS05 (expected = link hidden).
 
 ## Flow + roles artifact (browser reference)
@@ -280,6 +280,33 @@ also calls `askDate()` before finalising.
 15. **Workflow TS use up months on a shared test env (added 2026-11-02).** On staging uat1 the 12028_TS20 run left September at Drafter Approved and the 12028_TS21 run left October at Drafter KIV, so 12028_TS23 (needs a Drafter Review Again month) stopped at its precondition `[source: pipeline EAINT-12028, Elf findings, 2026-11-02]`. Pick or prepare a fresh month per TS (the 12028_PREP setup moves a month).
 16. **Empty Audit Log cells on the live build (added 2026-11-03).** A "Drafter — KIV" row (dated 03-11-2026) has empty **Remarks** and **Payment Date** cells; the script expected "-" for both `[source: pipeline EAINT-12028, Elf findings, 2026-11-03, job 20261103-173701-EAINT-12028-elf-findings-60f1]`. The mock-up Audit Log has 5 columns (No., When, Role, Action, Remarks) and renders an empty Remarks as "-": `(e.remarks||'-')` `[_reference/tickets/Studying/EAINT-12028/association-payment-listing-mockup_20260731.html line 548]`. The live build adds a Payment Date column the mock-up does not have, so "-" for Payment Date has no source `[unconfirmed]`. Faizuddin's earlier rule is that empty fields should show "-" (item 14). Whether this is a defect is open with the BA; EAINT-12738 and EAINT-12739 do not cover these two cells.
 
+## Notes per role and state after the 2026-11-04 deploy
+
+`[verified: Claude-driven run on uat1, 2026-11-04, evidence _reference/tickets/EAINT-12028/claude-run-2026-11-04/12028_TS25, TS28, TS35, TS49]`
+
+1. **`#wf-not-your-turn` is gone.** Neither "You hold <ROLE> for this module, but it is not your
+   turn yet." nor "Awaiting the next role in the approval sequence." appears any more. When it
+   is not the user's turn, `#action-panel` has no buttons and `#ap-note .ap-note-text` reads:
+
+   | Month state | Reviewer sees | Approver sees | Drafter sees |
+   |---|---|---|---|
+   | Pending / Drafter Review Again | "Waiting for the Drafter. You can act once the Drafter has approved." | "Waiting for the Drafter." | (Drafter's turn) |
+   | KIV | "On hold. The Drafter put this month in KIV on <dd-mm-yyyy>. Nothing to do until the Drafter resumes it." | same | — |
+   | Drafter Approved | (Reviewer's turn) | "Waiting for the Reviewer. You can act once the Reviewer has approved." | "Waiting for the Reviewer." |
+   | Reviewer Approved | — | (Approver's turn) | "Waiting for the Approver." (survey, `mfared` on Jan) |
+
+2. **Approver's turn (Reviewer Approved):** [Reject] [Approve], note "Your turn as Approver.
+   Approve and pick the Finance payment date, or Reject with remarks to return it to the
+   Reviewer."
+3. **`#pdf-bar` pending note** still reads "Payment Request documents become available for
+   download once the Drafter, Reviewer and Approver have all approved." The SRD says "will be
+   available"; this is still open with the SA.
+4. **Effect on the tests:** the TS expected results for TS25, TS28, TS33 (Reviewer),
+   TS35 and TS49 use the pre-2026-11-03 wording. Whether to update the TS or raise the build is
+   Faizuddin's call `[open]`.
+5. **Undo KIV returns a month to Pending,** and a different Drafter can undo another's KIV
+   (October 2026 Audit Log: Fared KIV → ZARA Undo KIV) `[verified: survey 2026-11-04]`.
+
 ## QA Test Guide (dev-authored, from MR !1's engineering review)
 
 `[source: dev/engineering-authored QA test guide, artifact shared 2026-09-04, saved verbatim at
@@ -479,7 +506,7 @@ fact.
 
 1. Association Payment Listing (`/backoffice/admin/association`) shows a globe tab icon, not the eAuto logo shown on the BO home (`/uat1/home/`).
 2. Its header shows only "Back to Backoffice". Other BO pages (e.g. `/uat1/view/stms/enquiry/`) show Home, Menu, user's name, My Account, Logout.
-3. Expected: same logo and header as other BO pages `[Faizuddin, session chat, 2026-11-03]`. Raised as EAINT-12752 (Low, dev Shane). Evidence: `_reference/tickets/EAINT-12028/EAINT-12752/`.
+3. Expected: same logo and header as other BO pages `[Faizuddin, session chat, 2026-11-03]`. Raised as EAINT-12752 (Low, dev Shane). Evidence: `_reference/tickets/EAINT-12028/Bug - EAINT-12752/`.
 
 ## Summary page rebuilt (staging uat1, 2026-11-03)
 
