@@ -4,8 +4,8 @@ import { openAs, expectNewLogRow, expectNoNewLogRow, expectStatus, expectSummary
 import { eachMonth } from '../utils/combined';
 import { tagOf } from '../data/priority';
 import { required } from '../data/config';
-import { WAIT_NOTE } from '../data/expected';
-import { expectButtons, expectNote, expectNoPad } from '../utils/checks';
+import { MSG } from '../data/expected';
+import { expectButtons, expectNoPad, expectNotYourTurn } from '../utils/checks';
 
 // E. Drafter actions — 12028_TS20 to TS27.
 // Each TS acts on the month(s) typed on its row; each month must already be in
@@ -35,6 +35,26 @@ test('12028_TS20: Drafter first Approve with the signature pad sets Drafter Stat
     await d.verify(`${ts}-not-cleared`, d.sigPad(), 'Strokes still on the pad after Clear', async () => {
       expect(drawn.equals(blank), 'drawing changed the pad').toBe(false);
       expect(cleared.equals(blank), 'pad after Clear equals the empty pad').toBe(true);
+    });
+  });
+  // The pad's own description already says "signature", so only text that is NEW after the click counts.
+  const padTextBefore = new Set((await d.sigModal().innerText()).split('\n').map(l => l.trim()).filter(Boolean));
+  await test.step('Click [Save & Approve] with the pad empty', async () => {
+    d.takeDialogs();
+    await d.demoHighlight(d.sigSave());
+    await d.sigSave().click();
+  });
+  await test.step(`Check the approval is not completed and "${MSG.signature}" is shown`, async () => {
+    const msgs = d.takeDialogs().map(m => m.trim());
+    const newPadLines = (await d.sigModal().isVisible())
+      ? (await d.sigModal().innerText()).split('\n').map(l => l.trim()).filter(l => l && !padTextBefore.has(l))
+      : [];
+    console.log(`DETAIL:${JSON.stringify({ label: 'Empty pad message', value: [...msgs, ...newPadLines].join('; ') || '(none)' })}`);
+    await d.captureEvidence(`${ts}-empty-pad`);
+    // [unconfirmed] wording from the mock-up (line 355); scenarios.json note "confirm on the real build".
+    await d.verify(`${ts}-empty-pad`, d.sigModal(), `Empty pad accepted, or "${MSG.signature}" not shown`, async () => {
+      await expect(d.sigModal(), 'pad still open').toBeVisible();
+      expect([...msgs, ...newPadLines], 'message shown').toContain(MSG.signature);
     });
   });
   await test.step('Click [Cancel] on the pad', async () => { await d.cancelSignature(); });
@@ -87,19 +107,18 @@ test('12028_TS24: Drafter action on a KIV month follows the final KIV rule', tag
   else await expectButtons(d, ts, { disabledOrAbsent: ['Approve', 'KIV'] });
 });
 
-test('12028_TS25: Drafter buttons disabled once the Drafter step is done', tagOf('12028_TS25'), async ({ page }) => {
+test('12028_TS25: Drafter buttons hidden once the Drafter step is done', tagOf('12028_TS25'), async ({ page }) => {
   const ts = '12028_TS25';
   const s = new Session(page, ts);
   await s.as('drafter');
   let fullMonth = '';
   await eachMonth(s, ['DA', 'RRA', 'Full'], async (d, state, month) => {
     if (state === 'DA') {
-      await expectButtons(d, `${ts}-DA`, { disabled: ['Approve', 'KIV'] });
-      await expectNote(d, `${ts}-DA`, WAIT_NOTE.drafterDone);
+      await expectNotYourTurn(d, `${ts}-DA`, 'Drafter');
     } else if (state === 'RRA') {
-      await expectButtons(d, `${ts}-RRA`, { disabled: ['Approve', 'KIV'] });
+      await expectNotYourTurn(d, `${ts}-RRA`, 'Drafter');
     } else {
-      await expectButtons(d, `${ts}-Full`, { disabledOrAbsent: ['Approve', 'KIV'] });
+      await expectButtons(d, `${ts}-Full`, { absent: ['Approve', 'KIV'] });
       fullMonth = month;
     }
   });
@@ -117,7 +136,7 @@ test('12028_TS26: Second Drafter user approves a Pending month and is blocked af
       await expectStatus(d, ts, 'Drafter', 'Approved');
       await expectNewLogRow(d, ts, 'Drafter', 'Approved', before);
     } else {
-      await expectButtons(d, `${ts}-DA`, { disabled: ['Approve', 'KIV'] });
+      await expectNotYourTurn(d, `${ts}-DA`, 'Drafter');
     }
   });
 });

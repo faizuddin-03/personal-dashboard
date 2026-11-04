@@ -1,0 +1,43 @@
+{
+  "expected": "Ensure:\n• Recorded only (SRD silent, Q43): the CRM record of the E2E_TS1 owner (ID details) and the vehicle card of the E2E_TS1 plate (latest policy purchase, coverage period, Last Updated By), cropped\n• Recorded only (Q43): the same for the Lonpac buyer of QT_TS4, for comparison",
+  "gate": {
+    "at": "30/10/2026, 09:14:13",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS11/2026-10-30T01-14-13_EVIDENCE",
+    "mismatch": [],
+    "proved": [
+      "E1"
+    ],
+    "reasons": [
+      "no proof for E2"
+    ],
+    "run": "eaint-12406-retest-sretest-20261030-0040-C-c2",
+    "verdict": "EVIDENCE",
+    "warnings": []
+  },
+  "id": "12406_RC_TS11",
+  "kiv": "Recorded-only TS (Q43). E1 recorded (CRM row + HXA0011A vehicle card). E2 waits for the QT_TS4 Lonpac purchase, which waits for Dev's simulator set-up (Q12).",
+  "labels": [],
+  "order": 37,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Recorded only (SRD silent, Q43): the CRM record of the E2E_TS1 owner (ID details) and the vehicle card of the E2E_TS1 plate (latest policy purchase, coverage period, Last Updated By), cropped"
+    },
+    {
+      "id": "E2",
+      "text": "Recorded only (Q43): the same for the Lonpac buyer of QT_TS4, for comparison"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "KIV",
+  "reviewed": false,
+  "section": "CIBO listing and reports",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• The Allianz transaction of 12406_E2E_TS1 (its owner and plate)\n• CIBO > CRM (/cibo/crm): one record per insured ID No with one card per vehicle (plate, make, model, latest policy purchase and coverage period, contact details, Last Updated By); it links to no insurer, transaction or payment. Filters: Ownership Type, Latest Coverage Expires From / Till (knowledge/portals/cibo/portal.md, live walk 28.10). READ ONLY: do not click Send quotation link, Edit, Save update or Duplicate. Personal data: crop to the vehicle card; the details page scrolls in its own box, so take viewport shots",
+  "sheet": "RC",
+  "situation": "CIBO > CRM: the customer record of the Allianz buyer of E2E_TS1 (ID details and the vehicle card)",
+  "source": "none: CRM is not in SRD v1.1 §2.2.3 Affected Pages (Q43). The team's Zurich board checked CRM in every Secarang E2E ('Verify the transaction details are captured accordingly for ... CRM'): scope only, not an expected result",
+  "steps": "1. CIBO > CRM: Ownership Type Private; Latest Coverage Expires From / Till around the end date of E2E_TS1's new cover; [Search]; find the E2E_TS1 owner; screenshot the row (cropped)\n2. Open Customer Details; screenshot the vehicle card of the E2E_TS1 plate (latest policy purchase, coverage period, Last Updated By), cropped\n3. For comparison, do the same for the Lonpac buyer of 12406_QT_TS4 (recorded)",
+  "updatedAt": "2026-10-30T10:30:00+08:00"
+}

@@ -1,0 +1,28 @@
+Insurance Transaction Listing							
+TS No.	Search & Filter	Data Type	Test Scenarios	Expected Result	QA	Test Result (P/F)	Remarks
+TS_UCDITL_1	Without search / filter		Click [Search] without applying any filter	Returns all records.	Faiz	Pass	
+TS_UCDITL_2	Insurance Company	Dropdown	Zurich General Takaful Malaysia Berhad	"Display insurance record for ""Zurich"" insurance"	Faiz	Pass	
+TS_UCDITL_3			RHB Insurance Berhad	"Display insurance record for ""RHB"" insurance"	Faiz	Pass	
+TS_UCDITL_4			Takaful Malaysia Berhad	"Display insurance record for ""Takaful"" insurance"	Faiz	Pass	
+TS_UCDITL_5			Chubb Insurance Malaysia Berhad	"Display insurance record for ""Chubb"" insurance"	Faiz	Pass	
+TS_UCDITL_6			Lonpac Insurance Berhad	"Display insurance record for ""Lonpac"" insurance"	Faiz	Pass	
+TS_UCDITL_7			Tokio Marine Malaysia Berhad	"Display insurance record for ""Tokio Marine"" insurance"	Faiz	Pass	
+TS_UCDITL_8	Multi Search & Filters		"Veh no. + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass	
+TS_UCDITL_9			"Transaction no. + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass	
+TS_UCDITL_10			"From & To (Date Record Created) +
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass	
+TS_UCDITL_11			"Status (Any) + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass	
+TS_UCDITL_12			"Veh no. + 
+From & To (Payment Date) + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass	
+TS_UCDITL_13			"Transaction no. + 
+Status + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass	
+TS_UCDITL_14			"Veh no. +
+Transacton no. +
+From & To (Date Record Created) +
+Status + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass	

@@ -1,0 +1,12 @@
+{
+  "ts": "12406_RG_TS1",
+  "verdict": "SCRIPT",
+  "reasons": [
+    "stopped before the end: TimeoutError: locator.fill: Timeout 90000ms exceeded."
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RG_TS1/2026-10-30T01-16-15_SCRIPT",
+  "run": "eaint-12406-retest-sretest-20261030-0040-C-c2",
+  "instance": "ia",
+  "at": "30/10/2026, 09:16:15",
+  "warnings": []
+}

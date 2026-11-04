@@ -1,0 +1,52 @@
+{
+  "expected": "Ensure:\n• After the failed FPX payment: back on the payment page with \"Unsuccessful payment You may try again.\", no receipt, and the other payment tiles can still be picked\n• CIBO Payment Management and Transaction Management each show one row for the transaction, final status Paid / Insurance created; the failed FPX attempt is not listed separately (recorded)\n• After cancelling SPayLater with [OK]: back on 'How would you like to pay?' with the same vehicle and premium\n• The final FPX payment completes: Success page with a [Receipt] download, and CIBO shows the transaction with Payment Paid, Ins. Co. Allianz",
+  "gate": {
+    "at": "29/10/2026, 20:01:45",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_E2E_TS5",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-retest-sretest-20261029-1950-B-c1",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_E2E_TS5",
+  "kiv": "",
+  "labels": [],
+  "order": 28,
+  "points": [
+    {
+      "id": "E1",
+      "text": "After the failed FPX payment: back on the payment page with \"Unsuccessful payment You may try again.\", no receipt, and the other payment tiles can still be picked"
+    },
+    {
+      "id": "E2",
+      "text": "CIBO Payment Management and Transaction Management each show one row for the transaction, final status Paid / Insurance created; the failed FPX attempt is not listed separately (recorded)"
+    },
+    {
+      "id": "E3",
+      "text": "After cancelling SPayLater with [OK]: back on 'How would you like to pay?' with the same vehicle and premium"
+    },
+    {
+      "id": "E4",
+      "text": "The final FPX payment completes: Success page with a [Receipt] download, and CIBO shows the transaction with Payment Paid, Ins. Co. Allianz"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "Allianz purchase: failure paths",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: an individual-owner renewal car that Allianz quotes (not used by another row)\n• Payment: FPX Online banking > RHB Bank > Bank Simulator Status other than 00 (e.g. 51) for the failure; SPayLater > [Cancel the transaction] > 'Are you sure?' > [OK] for the cancel (only [OK] cancels; before it the main window looks the same); then FPX Approved (00). Do not use 3D Secure [CANCEL] (it leaves the transaction Pending) (team doc §5)",
+  "sheet": "E2E",
+  "situation": "Allianz payment fails (FPX simulator status not 00), then is cancelled (SPayLater), then the customer pays by FPX: messages on the payment page, CIBO status, final purchase",
+  "source": "E2 recorded (decided 29.10 under Azfar's full permission, main session, v6b): Payment Management and Transaction Management keep one row per transaction with its final status (seen 29.10, BR60006353); a 'Failed' row exists only when the last payment failed (BR60006327). The team doc §5 'shows in CIBO (Paid / Failed)' refers to that final status. Observed / current behaviour (the Allianz flow is unchanged, SRD v1.1 §2.2.2 #2b): failed and cancelled handling from SRD EAINT-12107 REQ-007 / REQ-008, live 20.10.2026 (team doc §3, §5); CIBO 'Failed' record (doc §5) and no buttons unless Insurance created (mockup CIBO 20261006 row BR55009007). Final purchase: SRD v1.1 REQ-002 Example 1b",
+  "steps": "1. Secarang: Allianz quotation > Add-ons > Confirmation > Confirm and Pay\n2. FPX Online banking > RHB Bank > Bank Simulator Status 51 > [Pay now]; screenshot the payment page\n3. Still on the payment page: SPayLater > [Cancel the transaction] > [OK]; screenshot the main window after [OK]\n4. FPX Online banking > RHB Bank > Status Approved (00) > TAC > [Pay now]; screenshot the Success page\n5. After the final payment: CIBO > Payment Management: find the transaction's row and its Payment Status; screenshot. CIBO > Transaction Management: search the plate; screenshot the one row and its final status (recorded)\nDo not try to reopen or continue a pending payment: on Secarang a pending payment cannot be continued and nothing is resubmitted (Azfar 29.10)",
+  "updatedAt": "2026-10-29T11:24:08+00:00"
+}

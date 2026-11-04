@@ -1,0 +1,16 @@
+{
+  "_about": "Machine-readable lane roster (21.10.2026). One lane = one UCD user. company = which UCD company the user belongs to (UCD to UCD needs two DIFFERENT companies; main + sub tests need a main and a sub of the SAME company). role = main | sub. Read by scripts/lib/lane-broker.mjs, config/personas.ts (lanePersona), src/data/cards.ts (laneCard) and src/fixtures/lane-guard.ts. Human notes: lanes.md. Passwords: .staging.env-local only.",
+  "lanes": {
+    "1":  { "persona": "ucdE2E",    "card": "malaysianIndividual", "company": "AZFARAZO", "companyId": "1080458", "roc": "JM0570913-X", "role": "main", "prefix": "per ticket", "ready": true },
+    "2":  { "persona": "ucdE2E2",   "card": "ucdE2E2Rep",          "company": "FAIZUDDIN AUTO TEST 2", "companyId": "", "roc": "1576795-H", "role": "main", "prefix": "per ticket", "ready": true, "note": "used with its owner's permission; never touch S694494084. ROC 1576795-H on /eauto/ + /uat1/, 030312-A on /preprod1/" },
+    "3":  { "persona": "ucdE2E3",   "card": "ucdE2E3Rep",          "company": "AZFARAZO", "companyId": "1080458", "roc": "JM0570913-X", "role": "sub",  "prefix": "IA", "ready": true },
+    "4":  { "persona": "ucdE2E4",   "card": "ucdE2E4Rep",          "company": "AZFARAZO", "companyId": "1080458", "roc": "JM0570913-X", "role": "sub",  "prefix": "IB", "ready": true },
+    "5":  { "persona": "ucdCo1",    "card": "ucdCo1Rep",           "company": "QA AUTO MOTOR SATU SDN BHD", "companyId": "1019420", "roc": "1576859-H", "role": "main", "prefix": "IC", "ready": true },
+    "6":  { "persona": "ucdCo2",    "card": "ucdCo2Rep",           "company": "QA AUTO MOTOR DUA SDN BHD", "companyId": "1019421", "roc": "1644516-X", "role": "main", "prefix": "ID", "ready": true },
+    "7":  { "persona": "ucdCo3",    "card": "ucdCo3Rep",           "company": "QA AUTO MOTOR TIGA SDN BHD", "companyId": "1019422", "roc": "788079-P", "role": "main", "prefix": "IE", "ready": true, "note": "INVALID TIN on purpose" },
+    "8":  { "persona": "ucdCo4",    "card": "ucdCo4Rep",           "company": "QA AUTO MOTOR EMPAT ENTERPRISE", "companyId": "1019423", "roc": "003369080-P", "role": "main", "prefix": "IG", "ready": true, "note": "sole proprietor ROC" },
+    "9":  { "persona": "ucdCo5",    "card": "ucdCo5Rep",           "company": "QA AUTO MOTOR LIMA SDN BHD", "companyId": "2120546", "roc": "1433966-U", "role": "main", "prefix": "IH", "ready": true, "note": "Sabah mailing address" },
+    "10": { "persona": "ucdCo1Sub", "card": "ucdCo1SubRep",        "company": "QA AUTO MOTOR SATU SDN BHD", "companyId": "1019420", "roc": "1576859-H", "role": "sub",  "prefix": "II", "ready": true },
+    "11": { "persona": "ucdCo2Sub", "card": "ucdCo2SubRep",        "company": "QA AUTO MOTOR DUA SDN BHD", "companyId": "1019421", "roc": "1644516-X", "role": "sub",  "prefix": "IK", "ready": true }
+  }
+}

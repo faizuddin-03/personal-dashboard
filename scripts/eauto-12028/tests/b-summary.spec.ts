@@ -18,9 +18,10 @@ function closedMonths(summary: AplSummaryPage, data: TableData) {
 
 test('12028_TS07: Summary for Year 2026 shows the year filter, 12 months, columns, total label and Payment Date', tagOf('12028_TS07'), async ({ page }) => {
   const ts = '12028_TS07';
-  const month = monthInput('E12028_MONTH', 'Month with Approver Status Pending');
   const s = new Session(page, ts);
   await s.as('drafter');
+  // Typed on the row, or the first matching month on the Summary; none → TS skipped with a note (Faizuddin, 2026-11-03).
+  const { month } = await s.monthFor('E12028_MONTH', { label: 'closed with Approver Status Pending', test: st => st.approver === 'Pending' });
   const summary = await s.openListing();
   const c = new Checks(summary, ts);
   await test.step('Open the Year filter and check it starts at 2026 with no earlier year', async () => {
@@ -147,9 +148,10 @@ test('12028_TS09: Closed month with zero transactions shows 0.00 and can be open
 
 test("12028_TS10: View opens the month's Details matching the Summary row and Back to Summary returns", tagOf('12028_TS10'), async ({ page }) => {
   const ts = '12028_TS10';
-  const month = monthInput('E12028_MONTH', 'Closed month');
   const s = new Session(page, ts);
   await s.as('drafter');
+  // Typed on the row, or the first matching month on the Summary; none → TS skipped with a note (Faizuddin, 2026-11-03).
+  const { month } = await s.monthFor('E12028_MONTH', 'Closed');
   await s.openListing();
   const data = await s.search();
   const fig = await test.step(`Note ${month}'s four figures on the Summary`, async () => {

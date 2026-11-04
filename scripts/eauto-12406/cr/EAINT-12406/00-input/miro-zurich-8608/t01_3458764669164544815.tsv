@@ -1,0 +1,24 @@
+Insurance Transaction Listing									
+No.	Test Scenario	UCD						BackOffice	
+		Payment	JPJ	Status	E-Certificate No	Remarks	Action	Action	
+1	UCD lands on Insurance Step 3 - Payment	-	-	"Pending
+Payment"	-		View | Resubmit	View	
+2	"Insurance RHB Payment = Failed
+(Insurance Step 6 - Confirm)"	Failed	-	Failed	-	{rhb_error_code} - {rhb_error_description}	View | Resubmit	View	
+3	"Insurance JPJ Status = Accepted
+(Insurance Step 6 - Confirm)"	OK	Accepted	"Insurance
+Created"	{policy_no}		View	View	
+4	"Insurance JPJ Status = Rejected
+(Insurance Step 6 - Confirm)"	OK	Rejected	"Insurance
+Created"	{policy_no}		View	View	
+5	"Insurance JPJ Status = Pending
+(Insurance Step 6 - Confirm)"	OK	Pending	"Insurance
+Created"	{policy_no}		View	View	
+6	"UCD lands on Insurance Step 3 - Payment
+(Expired after 24 hours)"	-	-	"Quotation
+Expired"	-	"EXPIRED on
+{dd/mm/yyyy HH:mm}"	View	View	
+7	"Insurance RHB Payment = Failed
+(Expired after 24 hours)"	Failed	-	"Quotation
+Expired"	-	"EXPIRED on
+{dd/mm/yyyy HH:mm}"	View	View	

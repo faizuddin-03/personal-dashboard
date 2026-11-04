@@ -1,0 +1,6 @@
+12406_E2E_TS1 — FAIL — the page does not match the expected result (a defect until triage says otherwise)
+run eaint-12406-retest-sretest-20261029-1835-A-c1, staging /ia, 29/10/2026, 18:42:56 MYT
+
+- E7: expected "CIBO Transaction Details: Cover Note No and Policy No filled (not "-"); Payment Ref ID with 'SFX' like a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with ", page shows "Cover Note No "-", Policy No "-", Payment Ref ID "ALZ20261029SFX0035" (insurer code "ALZ")" (09-cibo-details-cover-note-policy-ref.png)
+- E8: expected "e-Certificate and Receipt buttons shown", page shows "document buttons: Receipt" (10-cibo-document-buttons.png)
+- and the run then stopped: TimeoutError: locator.click: Timeout 90000ms exceeded.

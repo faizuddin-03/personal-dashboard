@@ -1,0 +1,10 @@
+# 12406_RC_TS2 — CIBO user opens the receipt of an Allianz transaction: same Allianz name and company number
+# run eaint-12406-rerun-sRC-20261029-1545 on staging /ia (post-push), started 29/10/2026, 17:53:35 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 17:53:37 | note: hand-off "allianzPurchase": 12406_E2E_TS1 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:31:20.401Z — ref BR60006349, plate HXA0011A, receipt no 26102921300027, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf
+29/10/2026, 17:53:42 | note: signed in: CIBO (cibo)
+29/10/2026, 17:53:48 | note: downloaded: cibo-receipt-BR60006349-PERSONAL-DATA.pdf
+29/10/2026, 17:53:52 | E1 | expected: Insurer, first line: "Allianz General Insurance Company (Malaysia) Berhad" | page shows: Insurer block: "Allianz General Insurance Company (Malaysia)" / "Berhad 200601015674 (735426-V)" | matches | 02-cibo-receipt-insurer-name.png
+29/10/2026, 17:53:54 | E2 | expected: Insurer, next line: "200601015674 (735426-V)" | page shows: Insurer block: "Allianz General Insurance Company (Malaysia)" / "Berhad 200601015674 (735426-V)" | DOES NOT MATCH | 03-cibo-receipt-company-number.png
+29/10/2026, 17:53:57 | E3 | expected: Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1 | page shows: CIBO: Receipt No. "26102921300027", plate "HXA0011A", Total Premium "RM 941.13"; Secarang: "26102921300027", "HXA0011A", "RM 941.13" | matches | 04-cibo-vs-secarang-receipt.png
+29/10/2026, 17:54:01 | E4 | expected: Agent line "Exclusively by agent Serba Sentral Sdn Bhd" (PIAM ID recorded) | page shows: agent line "Exclusively by agent Serba Sentral Sdn Bhd" (PIAM ID recorded: "PIAM ID: 195379-01") | matches | 05-cibo-receipt-agent-line.png

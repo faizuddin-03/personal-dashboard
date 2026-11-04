@@ -65,7 +65,7 @@ function summaryFor(crKey: string): string {
   return pages.find(p => p.keys.length === 1)?.title ?? "";
 }
 
-const QUEUE_PAGES = ["12107", "12153", "12257", "12412", "jomcheck"];
+const QUEUE_PAGES = ["12028", "12107", "12153", "12257", "12412", "jomcheck"];
 
 /** Saved results the runner pages keep: [runKey, result][]. */
 function savedResults(): [string, unknown][] {
@@ -85,6 +85,22 @@ function savedResults(): [string, unknown][] {
     }
   } catch { /* skip */ }
   return out;
+}
+
+/**
+ * TS always in ascending order (Faizuddin, 2026-11-02: "the TS must always be ordered by ascending order";
+ * 2026-11-03: the EAINT-12028 tracker started at TS05, the order it was first added in when the runner listed
+ * P1 first — mergeImport only appends, so an old order stayed). Cases are sorted by their TS number inside each
+ * suite, and suites by their lowest TS number. A case with no number keeps its place after the numbered ones.
+ * Statuses, runs and logs travel with their case. Mutates `data`.
+ */
+export function sortByTsNumber(data: CREntry[]): void {
+  const num = (ts: string) => { const m = normTs(ts).match(/TS(\d+)$/); return m ? Number(m[1]) : Number.POSITIVE_INFINITY; };
+  for (const cr of data) {
+    for (const s of cr.suites) s.cases = s.cases.map((c, i) => ({ c, i })).sort((a, b) => num(a.c.tsNumber) - num(b.c.tsNumber) || a.i - b.i).map(x => x.c);
+    const low = (s: CREntry["suites"][number]) => s.cases.length ? num(s.cases[0].tsNumber) : Number.POSITIVE_INFINITY;
+    cr.suites = cr.suites.map((s, i) => ({ s, i })).sort((a, b) => low(a.s) - low(b.s) || a.i - b.i).map(x => x.s);
+  }
 }
 
 export interface TallySummary { crsAdded: number; casesAdded: number; statusesFilled: number }
@@ -134,6 +150,7 @@ export function tally(data: CREntry[], catalog: TicketTsCatalog, dismissed: Dism
       }
     }
   }
+  sortByTsNumber(merged);
   const crsAdded = merged.filter(c => !before.has(c.crKey.toUpperCase())).length;
   return { data: merged, summary: { crsAdded, casesAdded: ms.casesAdded, statusesFilled } };
 }

@@ -3,19 +3,17 @@ import { Session, remarksFor } from '../utils/session';
 import { openAs, expectNewLogRow, expectStatus, expectSummaryStatus } from '../utils/workflow';
 import { eachMonth, rejectNeedsRemarks } from '../utils/combined';
 import { tagOf } from '../data/priority';
-import { WAIT_NOTE } from '../data/expected';
-import { expectButtons, expectNote, expectNoPad } from '../utils/checks';
+import { expectButtons, expectNoPad, expectNotYourTurn } from '../utils/checks';
 
 // F. Reviewer actions — 12028_TS28 to TS34.
 // [unconfirmed] Details page not captured live.
 
-test('12028_TS28: Reviewer buttons disabled with waiting note until the Drafter approves', tagOf('12028_TS28'), async ({ page }) => {
+test('12028_TS28: Reviewer buttons hidden with not-your-turn note until the Drafter approves', tagOf('12028_TS28'), async ({ page }) => {
   const ts = '12028_TS28';
   const s = new Session(page, ts);
   await s.as('reviewer');
   await eachMonth(s, ['Pending', 'KIV', 'DRA'], async (d, state) => {
-    await expectButtons(d, `${ts}-${state}`, { disabled: ['Approve', 'Reject'] });
-    await expectNote(d, `${ts}-${state}`, WAIT_NOTE.forDrafter);
+    await expectNotYourTurn(d, `${ts}-${state}`, 'Reviewer');
   });
 });
 
@@ -74,17 +72,16 @@ test('12028_TS32: Reviewer Reject on a Review Again month sets Drafter Status Re
   await expectNewLogRow(d, ts, 'Reviewer', 'Rejected', before, remarks);
 });
 
-test('12028_TS33: Reviewer buttons disabled once the Reviewer step is done', tagOf('12028_TS33'), async ({ page }) => {
+test('12028_TS33: Reviewer buttons hidden once the Reviewer step is done', tagOf('12028_TS33'), async ({ page }) => {
   const ts = '12028_TS33';
   const s = new Session(page, ts);
   await s.as('reviewer');
   let fullMonth = '';
   await eachMonth(s, ['RA', 'Full'], async (d, state, month) => {
     if (state === 'RA') {
-      await expectButtons(d, `${ts}-RA`, { disabled: ['Approve', 'Reject'] });
-      await expectNote(d, `${ts}-RA`, WAIT_NOTE.reviewerDone);
+      await expectNotYourTurn(d, `${ts}-RA`, 'Reviewer');
     } else {
-      await expectButtons(d, `${ts}-Full`, { disabledOrAbsent: ['Approve', 'Reject'] });
+      await expectButtons(d, `${ts}-Full`, { absent: ['Approve', 'Reject'] });
       fullMonth = month;
     }
   });

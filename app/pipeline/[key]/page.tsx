@@ -22,6 +22,7 @@ import PipChat, { usePipChat, PopOutButton, PoppedNote, type PipCharacter } from
 import FindingCard from "@/components/pipeline/FindingCard";
 import CharacterSprite, { CHARACTER_INFO } from "@/components/pipeline/CharacterSprite";
 import AutomationPanel from "@/components/pipeline/AutomationPanel";
+import TsResultsPanel from "@/components/pipeline/TsResultsPanel";
 import { RUNNERS } from "@/lib/pipeline/runnerRegistry";
 import { ACTIVE_JOB, api, startPolling, when, type TicketDetail } from "@/components/pipeline/api";
 import type { Character, CharacterState, JobAction } from "@/lib/pipeline/types";
@@ -351,8 +352,8 @@ export default function PipelineWorkspacePage() {
   const openFolder = (action: "open-mine" | "open-qa") => {
     void act(action, () => api("/api/pipeline/folders", { method: "POST", json: { key, action } }));
   };
-  const sendChat = (character: "elf" | "dwarf" | "scout" | "scribe") => (text: string) =>
-    act(`chat:${character}`, () => api("/api/pipeline/chat", { method: "POST", json: { key, character, text } }));
+  const sendChat = (character: "elf" | "dwarf" | "scout" | "scribe") => (text: string, images: { name: string; dataUrl: string }[] = []) =>
+    act(`chat:${character}`, () => api("/api/pipeline/chat", { method: "POST", json: { key, character, text, images } }));
 
   if (!detail) {
     return (
@@ -445,7 +446,9 @@ export default function PipelineWorkspacePage() {
     };
   } else if (!t.files?.runnerPage) {
     next = {
-      text: "Scenarios are approved. Start Dwarf to build the automation.",
+      text: t.automationOnHold
+        ? "Scenarios are approved, workbook only. Automation is on hold: start Dwarf whenever you want it built."
+        : "Scenarios are approved. Start Dwarf to build the automation.",
       actions: <button type="button" className={btnPrimary} disabled={busy === "dwarf:build"} onClick={() => queue("dwarf:build")}><Hammer size={14} aria-hidden /> Start Dwarf</button>,
     };
   } else if (RUNNERS[t.key]) {
@@ -643,16 +646,36 @@ export default function PipelineWorkspacePage() {
               {confirmApprove && !approved && (
                 <div id="approve-box" className="rounded-lg border border-green-500/40 bg-green-500/5 p-3 space-y-2 text-sm">
                   <p className="text-slate-200">Give the green light? Elf then builds the TS workbook and Dwarf starts building the automation. Later changes to the scenarios are passed to Dwarf.</p>
+                  <p className="text-xs text-slate-400">&quot;Workbook only&quot; skips the automation for now. Press &quot;Start Dwarf&quot; in the Dwarf panel whenever you want it built.</p>
                   <div className="flex flex-wrap gap-2">
-                    <button type="button" className={btnGreen} disabled={busy === "approve"} onClick={async () => {
-                      const ok = await act("approve", () => api("/api/pipeline/approve", { method: "POST", json: { key } }));
-                      if (ok) setConfirmApprove(false);
-                    }}>
-                      {busy === "approve" ? <Loader2 size={14} className="animate-spin" aria-hidden /> : <CheckCircle2 size={14} aria-hidden />}
-                      Yes, approve
-                    </button>
+                    {([["approve", true, "Yes, approve"], ["approve-wb", false, "Workbook only"]] as const).map(([id, automation, label]) => (
+                      <button key={id} type="button" className={automation ? btnGreen : btnGhost} disabled={busy === "approve" || busy === "approve-wb"} onClick={async () => {
+                        const ok = await act(id, () => api("/api/pipeline/approve", { method: "POST", json: { key, automation } }));
+                        if (ok) setConfirmApprove(false);
+                      }}>
+                        {busy === id ? <Loader2 size={14} className="animate-spin" aria-hidden /> : automation ? <CheckCircle2 size={14} aria-hidden /> : <FileSpreadsheet size={14} aria-hidden />}
+                        {label}
+                      </button>
+                    ))}
                     <button type="button" className={btnGhost} onClick={() => setConfirmApprove(false)}>Cancel</button>
                   </div>
+                </div>
+              )}
+
+              {approved && (t.pendingWorkbookChanges ?? []).length > 0 && (
+                <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 space-y-2 text-sm">
+                  <p className="text-slate-200">
+                    {t.pendingWorkbookChanges!.length} scenario change(s) are not in the TS workbook yet. Keep asking Elf for changes; one new version carries all of them.
+                  </p>
+                  <ol className="list-decimal ml-5 text-xs text-slate-400 space-y-0.5">
+                    {t.pendingWorkbookChanges!.map((c, i) => <li key={i} className="break-words">{c}</li>)}
+                  </ol>
+                  <button type="button" className={btnPrimary} disabled={!!elfJob || busy === "elf:build"}
+                    onClick={() => void act("elf:build", () => api("/api/pipeline/jobs", { method: "POST", json: { key, action: "elf:build", input: { rebuild: true } } }))}>
+                    {busy === "elf:build" ? <Loader2 size={14} className="animate-spin" aria-hidden /> : <FileSpreadsheet size={14} aria-hidden />}
+                    Create new version now
+                  </button>
+                  {elfJob && <span className="ml-2 text-xs text-slate-500">Elf is working; wait for her to finish.</span>}
                 </div>
               )}
 
@@ -746,6 +769,13 @@ export default function PipelineWorkspacePage() {
               <AutomationPanel ticketKey={t.key} runnerPage={t.files?.runnerPage} runKey={t.runKey} runs={runs} openFindings={openFindings} approved={approved} />
             </Panel>
           </div>
+
+          {/* Live Pass / Fail count of the official sheet (Faizuddin, 2026-11-03). */}
+          {t.files?.officialTs && (
+            <Panel title="Official TS results (live)" icon={<FileSpreadsheet size={15} className="text-green-400" aria-hidden />}>
+              <TsResultsPanel ticketKey={t.key} />
+            </Panel>
+          )}
 
           {/* Runs + official sheet */}
           <Panel title="Runs and official TS status" icon={<FileSpreadsheet size={15} className="text-blue-400" aria-hidden />}>

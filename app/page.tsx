@@ -12,14 +12,16 @@ import { useApp } from "@/components/AppShell";
 import { fetchAssignedOpen, fetchCompletedToday, fetchRaisedOn } from "@/lib/todayActivity";
 import IssueCard from "@/components/IssueCard";
 import TokenExpiryBanner from "@/components/TokenExpiryBanner";
+import QaPortalTokenBanner from "@/components/QaPortalTokenBanner";
 import {
   getKanbanState, KanbanCard, PRIORITY_META,
-  isOverdue as isKanbanOverdue, isDueToday, accentBorderClass,
+  isOverdue as isKanbanOverdue, isDueToday, accentBorderClass, KANBAN_CHANGED,
 } from "@/lib/kanban";
 import { syncCrTickets, getChildBugs, ChildBugMap, bugStats } from "@/lib/crSync";
 import UpcomingDeployments, { ScopeIndicator } from "@/components/calendar/UpcomingDeployments";
 import { todayLocal } from "@/lib/date";
 import { getWidgetConfig, saveWidgetConfig, WidgetConfig } from "@/lib/dashboard-widgets";
+import DragonSky from "@/components/dragons/DragonSky";
 import clsx from "clsx";
 
 // ── Mini kanban card ─────────────────────────────────────────
@@ -199,6 +201,10 @@ export default function Dashboard() {
       const raw = localStorage.getItem("test_tracker_crs");
       setTsCRs(raw ? (JSON.parse(raw) as TSCR[]) : []);
     } catch { setTsCRs([]); }
+
+    // Tasks added from the dock's quick-add window show up without a reload.
+    window.addEventListener(KANBAN_CHANGED, refreshKanbanWidgets);
+    return () => window.removeEventListener(KANBAN_CHANGED, refreshKanbanWidgets);
   }, []);
 
   // Auto-sync CR tickets (QA field / assignee) so the board and widgets stay current
@@ -317,7 +323,12 @@ export default function Dashboard() {
 
       <div className="flex-1 px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5">
 
+        {/* Dragons style only: sky banner with Toothless and Light Fury (2026-10-29). */}
+        <DragonSky />
+
         {creds?.tokenExpiry && <TokenExpiryBanner expiry={creds.tokenExpiry} onSettingsClick={openSettings} />}
+
+        <QaPortalTokenBanner />
 
         {/* Overdue / due-today banner */}
         {dueSoonCards.length > 0 && (

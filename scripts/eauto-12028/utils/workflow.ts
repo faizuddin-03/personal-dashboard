@@ -3,33 +3,43 @@ import { Session, MonthState, sameStatus, showStatus } from './session';
 import { monthInput } from '../data/config';
 import { RoleKey } from '../data/users';
 import { AplDetailsPage, Role, Status } from '../pages/AplDetailsPage';
-import { ddmmyyyy, today } from './format';
+import { ddmmyyyy, today, whenDay } from './format';
 
 // Steps the workflow TS (sections E to J, M) share.
 
-/** Opens the month typed on the row as `role` and checks it is in status `want`. */
-export async function openAs(page: Page, ts: string, role: RoleKey, want: MonthState, monthKey = 'E12028_MONTH', field = 'Month') {
-  const month = monthInput(monthKey, field);
+/**
+ * Opens a month in status `want` as `role` and checks it is in that status.
+ * The month typed on the row is used when there is one; left blank, the first month in `want` on the
+ * Summary is picked (Session.findMonth) and, when there is none, the TS is skipped with a note.
+ * `typedOnly`: the TS needs one particular month a status cannot identify (e.g. "Month re-approved in
+ * 12028_TS31"), so the typed month is required.
+ */
+export async function openAs(page: Page, ts: string, role: RoleKey, want: MonthState, monthKey = 'E12028_MONTH', field = 'Month', opts: { typedOnly?: boolean } = {}) {
   const s = new Session(page, ts);
   await s.as(role);
-  const { details } = await s.openMonth(month);
+  const picked = opts.typedOnly ? { month: monthInput(monthKey, field) } : await s.monthFor(monthKey, want);
+  const month = picked.month;
+  const { details } = await s.openMonth(month, picked.data);
   await s.requireState(details, month, want);
   return { s, d: details, month };
 }
 
-/** One more "<role> — <action>" Audit Log row than before; the newest is dated today. */
+/** One more "<role> — <action>" Audit Log row than before; the newest is dated today.
+ *  Finding the row and counting it ignore letter case and tense; the words and the date shape are then checked against the expected results
+ *  and every mismatch is reported in plain words (checkLogRowFormat), without stopping the TS. */
 export async function expectNewLogRow(d: AplDetailsPage, ts: string, role: Role, action: 'Approved' | 'KIV' | 'Rejected', before: number, remarks?: string): Promise<void> {
   await test.step(`Check the Audit Log has one new "${role} — ${action}" row dated today${remarks ? ' with the remarks typed' : ''}`, async () => {
     const log = await d.readLog();
-    const re = AplDetailsPage.entryRe(role, action);
-    const rows = d.logEntries(log).filter(e => re.test(e.entry));
+    const rows = AplDetailsPage.matching(d.logEntries(log), role, action);
     const newest = rows[rows.length - 1];
     await d.verify(`${ts}-log`, newest ? d.logRowAt(newest.row) : d.logTable(), `Expected ${before + 1} "${role} — ${action}" rows, found ${rows.length}`, async () => {
-      expect(rows.length).toBe(before + 1);
-      expect(newest.time.slice(0, 10)).toBe(ddmmyyyy(today()));
-      if (remarks !== undefined) expect(newest.remarks).toBe(remarks);
+      expect(rows.length, `"${role} — ${action}" rows in the Audit Log`).toBe(before + 1);
+      expect(whenDay(newest.time), `When shows "${newest.time}", which is not a date`).not.toBeNull();
+      expect(whenDay(newest.time), `newest row's date (When shows "${newest.time}")`).toBe(ddmmyyyy(today()));
+      if (remarks !== undefined) expect(newest.remarks, 'Remarks of the new row').toBe(remarks);
     });
     await d.showValue(d.logRowAt(newest.row));
+    await d.checkLogRowFormat(log, newest, role, action, { remarksTyped: remarks !== undefined });
   });
 }
 

@@ -1,0 +1,68 @@
+Insurance Payment Report							
+TS No.	Element Name	Data Type	Test Scenarios	Expected Result	QA	Test Result (P/F)	Remarks
+TS_IPR_1	Generate Now	Button	Click [Generate Now] + Payment date within 1 month	Return all records of the current day	Faiz	Pass	
+TS_IPR_2	Export	Button	Click [Export] + Payment date within 1 month	Download excel file with all records of the current day	Faiz	Pass	
+TS_IPR_3	Insurance Company	Dropdown	All	Return all records	Faiz	Pass	
+TS_IPR_4			Zurich General Takaful Malaysia Berhad	Return records where the Insurance Company is Zurich Takaful only	"Faiz/ 
+Azfar"	"Retest pass
+6/5"	No dropdown option for Zurich General Takaful Malaysia Berhad
+TS_IPR_5			RHB Insurance Berhad	Return records where the Insurance Company is RHB Insurance Berhad only	Faiz	Pass	
+TS_IPR_6			Takaful Malaysia Berhad	Return records where the Insurance Company is Takaful Malaysia Berhad only	Faiz	Pass	
+TS_IPR_7			Chubb Insurance Malaysia Berhad	Return records where the Insurance Company is Chubb Insurance Malaysia Berhad only	Faiz	Pass	
+TS_IPR_8			Lonpac Insurance Berhad	Return records where the Insurance Company is Lonpac Insurance Berhad only	Faiz	Pass	
+TS_IPR_9			Tokio Marine Malaysia Berhad	Return records where the Insurance Company is Tokio Marine Malaysia Berhad only	Faiz	Pass	
+TS_IPR_10	Payment Status	Dropdown	All	Return all records	Faiz	Pass	
+TS_IPR_11			Approved	Return records with Payment Status is Approved only	Faiz	Pass	
+TS_IPR_12			Failed	Return records with Payment Status is Failed only	Faiz	Pass	
+TS_IPR_13			Pending	Return records with Payment Status is Pending only	Faiz	Pass	
+TS_IPR_14	Transaction Status	Dropdown	All	Return all records	Faiz	Pass	
+TS_IPR_15			Insurance Created	Return records with Transaction Status is Insurance Created only	Faiz	Pass	
+TS_IPR_16			Failed	Return records with Transaction Status is Failed only	Faiz	Pass	
+TS_IPR_17			Pending Approval	Return records with Transaction Status is Pending Approval only	Faiz		As discussed with KJ, can deprioritize this scenario as only RHB can get pending approval status, but RHB is disabled.
+TS_IPR_18	Multi Search & Filter		Insurane Company: Lonpac Insurance Berhad+ Payment Status: Pending + Payment date: Within 1 month	Return records for Lonpac Insurance Berhad with transaction status as Pending	Azfar	Pass	
+TS_IPR_19			Insurane Company: Zurich General Takaful Malaysia Berhad + Transaction Status: Insurance Created + Payment date: Within 1 month	Return records for Zurich General Takaful Malaysia Berhad with transaction status as Insurance Created	Azfar	Pass	
+TS_IPR_20			Insurane Company: Takaful Malaysia Berhad + Payment Status: Approved + Transaction Status: Insurance Created + Payment date: Within 1 month	Return records for Takaful Malaysia Berhad with payment status as Approved and transaction status as Insurance Created	Azfar	Pass	
+TS_IPR_21	Listing Column	Button - Generate Now	"Click [Generate Now] to generate an Insurance Payment Report
+Observe the columns for the report"	"Ensure the following columns are present in the report:
+#
+Payment Date
+Company Name
+Created By
+Transaction Ref ID
+Insured Name
+Insurance Company
+Vehicle No
+Transaction Status
+Vehicle Make
+Model
+Manufacturing Year
+Payment Status
+Payment Method
+Amount (RM)
+Total Service Tax Amount (RM)
+Stamp duty Amount (RM)
+Total Amount (RM)
+Handling Fee Amount (RM)
+Payment ID"	Faiz	Pass	
+TS_IPR_22		Button - Export	"Click [Export] to export an Insurance Payment Report in excel format
+Observe the columns for the report in the excel sheet"	"Ensure the following columns are present in the report:
+#
+Payment Date
+Company Name
+Created By
+Transaction Ref ID
+Insured Name
+Insurance Company
+Vehicle No
+Transaction Status
+Vehicle Make
+Model
+Manufacturing Year
+Payment Status
+Payment Method
+Amount (RM)
+Total Service Tax Amount (RM)
+Stamp duty Amount (RM)
+Total Amount (RM)
+Handling Fee Amount (RM)
+Payment ID"	Faiz	Pass	

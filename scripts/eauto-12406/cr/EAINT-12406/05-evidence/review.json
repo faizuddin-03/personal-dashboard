@@ -1,0 +1,95 @@
+{
+ "reviewed_on": "2026-10-30",
+ "run_ids": [
+  "eaint-12406-retest-sretest-20261030-1640-F",
+  "eaint-12406-retest-sretest-20261030-1700-G"
+ ],
+ "reference": "TS board https://claude.ai/artifact/7xguCHVWNb2oXDKgpDyZWT (the source; this file is a per-run review record)",
+ "notes": [
+  "eaint-12406-retest-sretest-20261030-1640-F: staging /ia/ + CIBO, gate.json instance 'ia' on all 3 TS; board steps/expected/points/test_data equal to 01-intake/ts.json (written 30.10 10:22) for RC_TS1/2/6, so no TS changed after the run. Purchases read via hand-offs of runs 20261029-1950-B-c1, 1835-A-c1, rerun-sE2E-1545, run-sE2E-1545-c2 (expected, old-laptop copies).",
+  "eaint-12406-retest-sretest-20261030-1700-G: staging /ia/ + CIBO, gate.json instance 'ia' on RC_TS10 and RG_TS1; board steps/expected/points/test_data equal to 01-intake/ts.json (written 30.10 10:22), board updatedAt 10:22 / 10:30 MYT, before the 18:00 run, so no TS changed after the run. Purchases via hand-offs of runs 20261029-1950-B-c1, 1835-A-c1, rerun-sE2E-1545, run-sRC-1545-c2, run-sE2E-1545-c2 (old-laptop copies). E2E_TS10 Secarang receipt in RG_TS1 is byte-identical to the one in post-push/12406_E2E_TS10 and differs from the CIBO one."
+ ],
+ "cases": {
+  "post-push:12406_RC_TS6": {
+   "priority": "P2",
+   "result": "PASS",
+   "verdict": "ok",
+   "run": "eaint-12406-retest-sretest-20261030-1640-F",
+   "folder": "05-evidence/post-push/12406_RC_TS6",
+   "remarks": "CIBO > Commission Report, Secarang / Allianz, 29.10-30.10.2026: 2 rows, both HXA0012A, Allianz Serba Sentral, code RJC7: BR60006358 (E2E_TS2) and BR60006350 (earlier E2E_TS2 purchase, 29.10 16:37). No-code purchases BR60006370 (E2E_TS1), BR60006359 (TS3), BR60006356 (TS4) not listed. Commission RM 0.00 (0.00% of Gross 862.16) recorded for Q16. Export: 2 data rows HXA0012A-ALLIANZ + totals line, same as screen.",
+   "checked": [
+    "checks.txt",
+    "01-commission-report-discount-code-only.png (50%)",
+    "downloadable (after)/Commission_Report_allianz_29.10.2026-PERSONAL-DATA.csv (text)",
+    "video 19.6 s, one portal (CIBO)"
+   ],
+   "gaps": [],
+   "wrong_or_mismatch": []
+  },
+  "post-push:12406_RC_TS1": {
+   "priority": "P1",
+   "result": "FAIL",
+   "verdict": "fail-confirmed",
+   "run": "eaint-12406-retest-sretest-20261030-1640-F",
+   "folder": "05-evidence/FAILED/12406_RC_TS1/2026-10-30T09-59-25_DEFECT",
+   "defects": [
+    "D1",
+    "D2"
+   ],
+   "remarks": "E1, E2, E4, E7 (D1): Secarang receipts of E2E_TS1-TS4 (BR60006370, 58, 59, 56) read 'Allianz General Insurance Company (Malaysia)' / 'Berhad 200601015674 (735426-V)'; Tokio Marine (E2E_TS10, HXA0004A) reads name / '198601000381 (149520-U)' (05). E10 (D2): receipt Premium after NCD RM 882.16 vs Basic 1,203.08 - NCD 360.92 + All Drivers 20.00 = 862.16; Confirmation 862.16 (13). E3, E5 (HXA0011A, QA SECARANG TEST, RM 941.13), E6 (Serba Sentral, PIAM ID 195379-01), E8 (20 labels same) ok; E9 recorded: Print view has no Insurer block (N1). Screens are PDF text dumps; D1's rendered-PDF view is in issues/D1 (wrap vs line break still the BA question).",
+   "checked": [
+    "checks.txt",
+    "05-insurer-block-allianz-vs-tokio-marine.png (50%)",
+    "13-e2e-ts1-receipt-premium-after-ncd.png (50%)",
+    "video 55.2 s, one portal (CIBO)"
+   ],
+   "gaps": [],
+   "wrong_or_mismatch": [
+    "E1",
+    "E2",
+    "E4",
+    "E7",
+    "E10"
+   ]
+  },
+  "post-push:12406_RC_TS2": {
+   "priority": "P1",
+   "result": "FAIL",
+   "verdict": "fail-confirmed",
+   "run": "eaint-12406-retest-sretest-20261030-1640-F",
+   "folder": "05-evidence/FAILED/12406_RC_TS2/2026-10-30T09-59-58_DEFECT",
+   "defects": [
+    "D1"
+   ],
+   "remarks": "CIBO > Transaction Details > Receipt of BR60006370 (HXA0011A, receipt 26102921300046): Insurer 'Allianz General Insurance Company (Malaysia)' / 'Berhad 200601015674 (735426-V)' (D1, 02). E3 (receipt no, plate, RM 941.13 same as Secarang) and E4 (Serba Sentral agent line, PIAM ID 195379-01) ok. Same PDF shows Premium after NCD RM 882.16 (D2), not a point of this TS.",
+   "checked": [
+    "checks.txt",
+    "02-cibo-receipt-insurer-name.png (50%)",
+    "video 28.8 s, one portal (CIBO)"
+   ],
+   "gaps": [],
+   "wrong_or_mismatch": [
+    "E1",
+    "E2"
+   ]
+  },
+  "post-push:12406_RC_TS10": {
+   "result": "PASS",
+   "verdict": "ok",
+   "run": "eaint-12406-retest-sretest-20261030-1700-G",
+   "instance": "ia",
+   "folder": "05-evidence/post-push/12406_RC_TS10",
+   "reviewed_at": "2026-10-30T18:05+08:00",
+   "remarks": "Run 30.10 ~18:00 on staging /ia/ + CIBO. E1 Ref. No. / plate / owner name / owner ID (dashed and digits) each return BR60006370 (E2E_TS1). E2 'Ops, no search result found' for plate ZQ60261Q (rule B). E3 Platform offers Secarang, Secarang only, Secarang-MK, eAuto; Secarang + Allianz lists BR60006370; eAuto + Allianz gives 'Ops, no search result found' (rule B). E4 Allianz + Insurance created lists BR60006370, + Pending payment lists BR60006355 (RC_TS9), no other insurer/status on screen. Discount Code 'Included' recorded: 2 rows, BR60006358 (E2E_TS2, RJC7). E5 Clear all resets every filter (Date Range Type 'Transaction Creation Date', search empty); Print on Allianz 29.10.2026 opens the print view, 48 rows incl. E2E_TS1-TS4 (rule B)."
+  },
+  "post-push:12406_RG_TS1": {
+   "result": "PASS",
+   "verdict": "ok",
+   "run": "eaint-12406-retest-sretest-20261030-1700-G",
+   "instance": "ia",
+   "folder": "05-evidence/post-push/12406_RG_TS1",
+   "reviewed_at": "2026-10-30T18:05+08:00",
+   "remarks": "Run 30.10 ~18:02 on CIBO staging. E1/E2 from the 28.10 before capture (BR69005852). E3 after the deploy: BR69005852 Transaction Details insurer on one line and receipt Insurer block on two lines, same as 28.10. E4 E2E_TS10 (BR60006354) Secarang and CIBO receipts: 'Tokio Marine Insurans (Malaysia) Berhad' / '198601000381 (149520-U)'. E5 BR60006354 Transaction Details name and number on one line."
+  }
+ }
+}

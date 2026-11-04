@@ -1,0 +1,69 @@
+{
+ "payment-management selectedPlatform": [
+  "Secarang",
+  "Secarang only",
+  "Secarang-MK",
+  "eAuto"
+ ],
+ "payment-management selectedBank": [
+  "Master",
+  "Visa",
+  "Affin Bank",
+  "Ambank",
+  "Bank Rakyat",
+  "Bank Simpanan Nasional",
+  "CIMB Bank",
+  "Hong Leong Bank",
+  "HSBC Bank",
+  "Maybank",
+  "Public Bank",
+  "RHB Bank",
+  "Affin Bank B2B",
+  "Bank Rakyat B2B",
+  "CIMB Bank B2B",
+  "Hong Leong Bank B2B",
+  "HSBC Bank B2B",
+  "Maybank B2B",
+  "Public Bank B2B",
+  "RHB Bank B2B",
+  "BoldPay",
+  "RHB Direct Debit",
+  "TouchNGo",
+  "GrabPay",
+  "MCash",
+  "Boost",
+  "GrabPay",
+  "GrabPay - PayLater by Grab",
+  "ShopeePay"
+ ],
+ "payment-report platform": [
+  "Secarang",
+  "Secarang only",
+  "Secarang-MK",
+  "eAuto"
+ ],
+ "payment-report insuranceComp": [
+  "Chubb",
+  "RHB",
+  "Takaful Malaysia",
+  "Lonpac",
+  "TokioMarine",
+  "Zurich Takaful",
+  "Allianz",
+  "eTiqa"
+ ],
+ "commission-report platform": [
+  "eAuto",
+  "Secarang"
+ ],
+ "commission-report insuranceComp": [
+  "Chubb",
+  "RHB",
+  "Takaful Malaysia",
+  "Lonpac",
+  "TokioMarine",
+  "Zurich Takaful",
+  "Allianz",
+  "eTiqa"
+ ]
+}

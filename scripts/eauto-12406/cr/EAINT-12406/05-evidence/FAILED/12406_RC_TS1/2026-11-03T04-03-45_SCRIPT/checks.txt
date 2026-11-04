@@ -1,0 +1,4 @@
+# 12406_RC_TS1 — Secarang receipt of an Allianz purchase shows the Allianz name with the new company number below it, laid out as Tokio Marine, and the Serba Sentral agent line
+# run EAINT-12406-dash-20261103-120229 on staging /ia, started 03/11/2026, 12:03:41 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+03/11/2026, 12:03:43 | note: hand-off "allianzPurchase": none in any run of EAINT-12406

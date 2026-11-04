@@ -1,0 +1,748 @@
+{
+ "type": "doc",
+ "version": 1,
+ "content": [
+  {
+   "type": "panel",
+   "attrs": {
+    "panelType": "note"
+   },
+   "content": [
+    {
+     "type": "paragraph",
+     "content": [
+      {
+       "type": "text",
+       "text": "Testing Environment: ",
+       "marks": [
+        {
+         "type": "strong"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "text": "staging/ia (Secarang)"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "content": [
+      {
+       "type": "text",
+       "text": "Browser: ",
+       "marks": [
+        {
+         "type": "strong"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "text": "Google Chrome"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "content": [
+      {
+       "type": "text",
+       "text": "Module: ",
+       "marks": [
+        {
+         "type": "strong"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "text": "Secarang > Success page > Receipt; Secarang > CIBO > Transaction Management > Transaction Details > Receipt"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Staging Test: ",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "(Ref. No = BR60006349, Vehicle No = HXA0011A, Receipt No = 26102921300027, bought 29-10-2026; also BR60006350 / HXA0012A, BR60006351 / HXA0013A, BR60006352 / HXA0014A; older Ref. No = BR55004010, Vehicle No = DAX0900, bought 04-05-2025) ",
+     "marks": [
+      {
+       "type": "textColor",
+       "attrs": {
+        "color": "#ff991f"
+       }
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "New Allianz purchases on Secarang (FPX, card, PayLater by Grab, SPayLater) and one Allianz transaction made before this change all show the same layout."
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "attrs": {
+    "isNumberColumnEnabled": false,
+    "layout": "default"
+   },
+   "content": [
+    {
+     "type": "tableRow",
+     "content": [
+      {
+       "type": "tableHeader",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "Item / Step to Simulate",
+           "marks": [
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableHeader",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "Actual Result",
+           "marks": [
+            {
+             "type": "textColor",
+             "attrs": {
+              "color": "#bf2600"
+             }
+            },
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableHeader",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "Expected Result",
+           "marks": [
+            {
+             "type": "textColor",
+             "attrs": {
+              "color": "#006644"
+             }
+            },
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "tableRow",
+     "content": [
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "1. New purchase: Secarang receipt > Insurer",
+           "marks": [
+            {
+             "type": "textColor",
+             "attrs": {
+              "color": "#0747A6"
+             }
+            },
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "orderedList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "On Secarang Home, get quotations for a car and choose Allianz."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Pay (any method) and reach the Success page."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Click [Receipt] and open the PDF."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Look at the Insurer block."
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "bulletList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Line 1: \"Allianz General Insurance Company (Malaysia)\"."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Line 2: \"Berhad 200601015674 (735426-V)\". The number "
+              },
+              {
+               "type": "text",
+               "text": "is on the same line as \"Berhad\"",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": "."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Same on all 4 receipts (FPX, card, PayLater by Grab, SPayLater). See screenshot 1 below.",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "bulletList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "\"Allianz General Insurance Company (Malaysia) Berhad\", then "
+              },
+              {
+               "type": "text",
+               "text": "\"200601015674 (735426-V)\" on its own line",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#006644"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": ", same as Tokio Marine. Per SRD v1.1, Section 2.2.9, EAINT-12406-REQ-010."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "See screenshots 3 and 4 below.",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#006644"
+                 }
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "tableRow",
+     "content": [
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "2. Older transaction: CIBO receipt > Insurer",
+           "marks": [
+            {
+             "type": "textColor",
+             "attrs": {
+              "color": "#0747A6"
+             }
+            },
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "orderedList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "In CIBO, go to Transaction Management."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Search Ref. No BR55004010 and open Transaction Details."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Click [Receipt] and open the PDF."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Look at the Insurer block."
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "bulletList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Line 2: \"Berhad 200601015674 (735426-V)\". The number "
+              },
+              {
+               "type": "text",
+               "text": "is on the same line as \"Berhad\"",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": "."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Same on the CIBO receipt of a new purchase (Ref. No BR60006349, HXA0011A, 29-10-2026)."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "See screenshot 2 below.",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "bulletList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "\"Allianz General Insurance Company (Malaysia) Berhad\", then "
+              },
+              {
+               "type": "text",
+               "text": "\"200601015674 (735426-V)\" on its own line",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#006644"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": ", same as Tokio Marine. Per SRD v1.1, Section 2.2.9, EAINT-12406-REQ-010."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "See screenshots 3 and 4 below.",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#006644"
+                 }
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Note: ",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "the e-receipt email shows the same: \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\" on a single line. A question to the BA is still open: is a long name that wraps acceptable, or must the number start on its own line?"
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 1 - New purchase HXA0011A: Secarang receipt, Insurer block",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 2 - Older transaction BR55004010: CIBO receipt, Insurer block",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 3 - SRD v1.1, Section 2.2.9 Receipt (REQ-010)",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 4 - Tokio Marine receipt BR69005852: the number is on its own line",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 5 - Before the deploy (28-10-2026): BR55004010 receipt, for comparison",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

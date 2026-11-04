@@ -4,19 +4,26 @@ import { CONFIG, MONTHS } from '../data/config';
 import { readTable, colOf, cellText, cellLocator, rowLocator, TableData, TableRow } from '../utils/table';
 
 // Association Payment Listing — Summary page.
-// [unconfirmed] NOT captured live: every handle is the 31.07 mock-up's
-// (_reference/tickets/Studying/EAINT-12028/association-payment-listing-mockup_20260731.html):
-// heading line 184, `#sel-year` line 188, Search button line 190,
-// `#tbl-summary` line 195 (columns built at line 585), View link line 458,
-// total row line 601. Capture the live Summary (blank and after Search) to confirm.
+// Live capture (staging uat1, 2026-11-03, new build):
+//   SUMMARY = _reference/html/eauto/bo-association-payment-listing-summary-2026-11-03.html
+// (the 2026-11-02 capture, bo-association-payment-listing-summary.html, had an <h1>, a header name
+// and a module Logout; the 2026-11-03 build has none of them and loads Search results without a reload).
+// The module is its own app under /backoffice (form action /backoffice/admin/association, line 80).
 export class AplSummaryPage extends AplBase {
-  // mock-up line 184 `<h1 class="report-title">Association Payment Listing</h1>`
-  heading = () => this.page.getByRole('heading', { name: 'Association Payment Listing', exact: true });
-  // mock-up line 188
+  // from SUMMARY lines 73-75 `<div class="page-title"><span class="app-title">Association Payment Listing</span></div>`
+  // — a span, not a heading. The old `<h1 class="report-title">` is kept as a fallback.
+  heading = () => this.page.locator('.page-title .app-title, h1.report-title').filter({ hasText: /^\s*Association Payment Listing\s*$/ });
+  // from SUMMARY line 82 `<select id="sel-year" name="year" …>`
   yearSelect = () => this.page.locator('#sel-year');
-  // mock-up line 190 `<button class="btn" onclick="applySearch()">Search</button>`
+  // from SUMMARY line 85 `<button class="btn" id="btn-search" type="submit">Search</button>`
   searchBtn = () => this.page.getByRole('button', { name: 'Search', exact: true });
-  // mock-up line 195
+  // from SUMMARY line 86 `<span id="search-error" class="search-error" role="alert" hidden="">`
+  searchError = () => this.page.locator('#search-error');
+  // from SUMMARY lines 89-91 `<div class="header-text"><span>Association Payment Listing — 2026 Monthly Summary</span>`
+  caption = () => this.page.locator('.header-text span');
+  // from SUMMARY lines 92-94 `<span id="listing-count">12</span> record(s) in total`
+  recordCount = () => this.page.locator('#listing-count');
+  // from SUMMARY line 97
   table = () => this.page.locator('#tbl-summary');
 
   constructor(page: Page) { super(page); }
@@ -28,6 +35,7 @@ export class AplSummaryPage extends AplBase {
   async expectShown(): Promise<void> {
     const shown = await this.heading().waitFor({ state: 'visible', timeout: CONFIG.maxWaitForResult }).then(() => true, () => false);
     if (!shown) {
+      await this.captureIssue('summary-not-shown', this.page.locator('main, body').first(), 'No "Association Payment Listing" title on this page');
       throw new Error(`The Association Payment Listing Summary did not open (no "Association Payment Listing" heading) at ${this.page.url()}.`);
     }
   }
@@ -43,18 +51,55 @@ export class AplSummaryPage extends AplBase {
     const sel = this.yearSelect();
     if (!(await sel.count())) throw new Error('No Year filter (#sel-year) on the Summary page.');
     await this.demoHighlight(sel);
-    await sel.selectOption({ label: String(year) });
+    // SUMMARY line 82: #sel-year onchange calls form.requestSubmit(); the page script (line 480)
+    // catches the submit and loads the year from /backoffice/admin/association/api/summary, redrawing
+    // only the table, caption and count — no page reload. selectOption fires change even for the year
+    // already shown, so only pick a different year, then wait for that load before pressing [Search].
+    const shown = (await sel.locator('option:checked').innerText()).trim();
+    if (shown !== String(year)) {
+      const loaded = this.summaryLoad();
+      await sel.selectOption({ label: String(year) });
+      await loaded;
+      await this.waitForYearShown(year);
+    }
     const btn = this.searchBtn();
     if (!(await btn.count())) throw new Error('No [Search] button on the Summary page.');
     await this.demoHighlight(btn);
+    const loaded = this.summaryLoad();
     await btn.click();
-    await this.waitForWorkingDone();
+    await loaded;
+    await this.waitForYearShown(year);
     const ok = await this.waitForCondition(async () => {
       const t = this.table();
       return (await t.count()) > 0 && (await t.locator('tr').count()) > 1;
     });
     if (!ok) throw new Error(`The Summary table (#tbl-summary) shows no rows after Search for ${year}.`);
     return this.read();
+  }
+
+  /** The Search data call (SUMMARY line 395 `API = "/backoffice/admin/association/api/summary"`). Never rejects. */
+  private summaryLoad(): Promise<unknown> {
+    return this.page
+      .waitForResponse(r => r.url().includes('/backoffice/admin/association/api/summary'), { timeout: CONFIG.navigationTimeout })
+      .catch(() => null);
+  }
+
+  /**
+   * The load is done when [Search] is enabled again (the script disables it while loading, lines 459/477)
+   * and the caption names `year` (line 450). A shown #search-error ("Could not load …") fails the step.
+   */
+  private async waitForYearShown(year: number | string): Promise<void> {
+    const ok = await this.waitForCondition(async () => {
+      if (await this.searchBtn().isDisabled().catch(() => true)) return false;
+      return (await this.caption().innerText().catch(() => '')).includes(String(year));
+    });
+    const err = this.searchError();
+    if (await err.isVisible().catch(() => false)) {
+      const text = (await err.innerText().catch(() => '')).trim();
+      await this.captureIssue(`search-error-${year}`, err, text);
+      throw new Error(`Search for ${year} showed "${text}".`);
+    }
+    if (!ok) throw new Error(`The Summary caption did not change to ${year} after Search (caption: "${(await this.caption().innerText().catch(() => '')).trim()}").`);
   }
 
   async read(): Promise<TableData> {
@@ -77,7 +122,7 @@ export class AplSummaryPage extends AplBase {
     return r.row;
   }
 
-  /** The year-to-date / full-year total row (mock-up line 601: label cell "YEAR TO DATE (Jan–Jun)" / "FULL YEAR TOTAL"). */
+  /** The year-to-date / full-year total row — SUMMARY line 377 label "YEAR TO DATE TOTAL" (mock-up line 601 had "YEAR TO DATE (Jan–Jun)"). */
   totalRow(data: TableData): TableRow {
     const row = data.rows.find(r => /^(YEAR TO DATE|FULL YEAR TOTAL|TOTAL)\b/i.test(r.text));
     if (!row) throw new Error('No total row (YEAR TO DATE / FULL YEAR TOTAL) in the Summary table.');
@@ -92,7 +137,7 @@ export class AplSummaryPage extends AplBase {
   cellAt(data: TableData, row: TableRow, header: string | RegExp): Locator { return cellLocator(this.table(), data, row, header); }
   rowAt(row: TableRow): Locator { return rowLocator(this.table(), row); }
 
-  /** mock-up line 458 `<a class='view' onclick='showDetails(m)'>View »</a>` */
+  /** from SUMMARY line 311 `<a class="view" href="/backoffice/admin/association/2026/9">View</a>` */
   viewLink(row: TableRow): Locator {
     return this.rowAt(row).locator('a, button', { hasText: /^\s*View\b/ });
   }

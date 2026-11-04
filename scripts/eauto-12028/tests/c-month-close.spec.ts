@@ -62,11 +62,12 @@ test('12028_TS11: Month-close on a past month shows its figures with all statuse
 
 test('12028_TS12: Running month-close twice keeps the same figures', tagOf('12028_TS12'), async ({ page }) => {
   const ts = '12028_TS12';
-  const month = monthInput('E12028_MONTH', 'Closed month');
   const wait = countInput('E12028_WAIT_MIN', 'Month-close wait (minutes)');
   test.setTimeout((wait + 15) * 60_000);
   const s = new Session(page, ts);
   await s.as('drafter');
+  // Typed on the row, or the first matching month on the Summary; none → TS skipped with a note (Faizuddin, 2026-11-03).
+  const { month } = await s.monthFor('E12028_MONTH', 'Closed');
   await s.openListing();
   let data = await s.search();
   const before = await test.step(`Note ${month}'s four figures`, async () => {
@@ -91,11 +92,12 @@ test('12028_TS12: Running month-close twice keeps the same figures', tagOf('1202
 
 test('12028_TS13: Running month-close on an approved month keeps statuses and Payment Date', tagOf('12028_TS13'), async ({ page }) => {
   const ts = '12028_TS13';
-  const month = monthInput('E12028_MONTH', 'Fully approved month');
   const wait = countInput('E12028_WAIT_MIN', 'Month-close wait (minutes)');
   test.setTimeout((wait + 15) * 60_000);
   const s = new Session(page, ts);
   await s.as('drafter');
+  // Typed on the row, or the first matching month on the Summary; none → TS skipped with a note (Faizuddin, 2026-11-03).
+  const { month } = await s.monthFor('E12028_MONTH', 'Full');
   await s.openListing();
   let data = await s.search();
   const before = await test.step(`Note ${month}'s statuses and Payment Date`, async () => {

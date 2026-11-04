@@ -1,4 +1,4 @@
-import { Locator } from '@playwright/test';
+import { Locator, test } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 // BasePage (copied unchanged from scripts/eauto-jomcheck) plus the failure
@@ -13,6 +13,13 @@ export class AplBase extends BasePage {
    * issue"). Never throws.
    */
   async captureIssue(label: string, targets: Locator | Locator[], note: string): Promise<void> {
+    // The runner attaches a file to a TS row only when its name carries "TSnn" (run route publishEvidence
+    // tsOf()). Labels like "log-drafter-kiv-remarks" landed in the run but on no TS row (12028_TS21,
+    // 2026-11-03), so the TS id of the running test is put in front when the label lacks one.
+    if (!/TS\d+/.test(label)) {
+      const id = (() => { try { return test.info().title.split(':')[0].trim(); } catch { return ''; } })();
+      if (id) label = `${id}-${label}`;
+    }
     const list = Array.isArray(targets) ? targets : [targets];
     const handles = [];
     for (const t of list) {
@@ -66,6 +73,23 @@ export class AplBase extends BasePage {
       await this.captureIssue(label, target, note);
       throw e;
     }
+  }
+
+  // ── Module header (the module is its own app under /backoffice) ──
+  // from _reference/html/eauto/bo-association-payment-listing-summary.html lines 24-27:
+  // `<form id="logout-form" … action="/backoffice/logout" method="post"> <span class="who-name">Chia Ket Ming</span>
+  //  <button id="btn-logout" …>Logout</button>` — "invalidates THIS session only" (line 23).
+  whoName = () => this.page.locator('#logout-form span.who-name');
+  moduleLogoutBtn = () => this.page.locator('#logout-form #btn-logout');
+
+  /** Clicks the module's own Logout (ends the /backoffice session only). Throws when the button is not on this page. */
+  async moduleLogout(): Promise<void> {
+    const btn = this.moduleLogoutBtn();
+    if (!(await btn.count())) throw new Error(`No module Logout button (#btn-logout) on ${this.page.url()}.`);
+    await this.demoHighlight(btn);
+    await btn.click();
+    await this.page.waitForLoadState('load', { timeout: 60_000 });
+    await this.settleAfterLoad();
   }
 
   /** Green highlight on a value about to be read and asserted (demo mode only). */

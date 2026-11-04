@@ -14,17 +14,30 @@ import { readFileSync } from 'fs';
 
 const TITLE_FILL = 'FF1F4E78';
 const SECTION_FILL = 'FF0070C0';
-const PASS_FILL = 'FFC6EFCE';
-const PASS_FONT = 'FF006100';
-const FAIL_FILL = 'FFFFC7CE';
-const FAIL_FONT = 'FF9C0006';
-// Untested rows read "Not Started", bold dark blue on light blue (Faizuddin,
-// 2026-10-29: "the N/A should be 'Not Started' and its bolded dark blue with
-// light blue cells"). Conditional, so the colour goes once a result is picked.
+// Test Result statuses (Faizuddin, 2026-10-30: "PASS - GREEN FAIL - RED IN
+// PROGRESS - YELLOW NOT STARTED - BLUE"). Untested rows read "Not Started"
+// (2026-10-29). Conditional, so the colour follows the value picked from the
+// dropdown, and each result column gets its own rule so a pick colours only
+// the cell it is in ("it should only affect the cell it is on").
 const NOT_STARTED = 'Not Started';
-const NOT_STARTED_FILL = 'FFDDEBF7';
-const NOT_STARTED_FONT = 'FF1F3864';
-const NUM_COLS = 7; // TS No. | Test Objective | Test Steps | Expected Result | QA | Test Result | Remarks
+const RESULT_STYLE = {
+  Pass: { fill: 'FFC6EFCE', font: 'FF006100' },
+  Fail: { fill: 'FFFFC7CE', font: 'FF9C0006' },
+  'In Progress': { fill: 'FFFFEB9C', font: 'FF9C5700' },
+  [NOT_STARTED]: { fill: 'FFDDEBF7', font: 'FF1F3864' },
+};
+const RESULT_LIST = `"${Object.keys(RESULT_STYLE).join(',')}"`;
+// A platform a TS does not run on: grey, empty, no dropdown.
+const NOT_APPLICABLE_FILL = 'FFD9D9D9';
+// Optional Priority column, right of TS No., only when a row has "priority"
+// (Faizuddin, 2026-10-30: "do not put it in remarks. need to make a new
+// column to the right of the TS No. column"). P1 red, P2 yellow, P3 green.
+// Conditional, so the colour follows a value picked from the dropdown.
+const PRIORITY_STYLE = {
+  P1: { fill: 'FFFFC7CE', font: 'FF9C0006' },
+  P2: { fill: 'FFFFEB9C', font: 'FF9C5700' },
+  P3: { fill: 'FFC6EFCE', font: 'FF006100' },
+};
 
 const THIN = { style: 'thin', color: { argb: 'FF000000' } };
 const ALL_BORDERS = { top: THIN, left: THIN, bottom: THIN, right: THIN };
@@ -84,39 +97,75 @@ function styleCell(cell, { bold = false, fill = null, fontColor = 'FF000000', al
   cell.border = ALL_BORDERS;
 }
 
-async function build(spec) {
-  const wb = new ExcelJS.Workbook();
-  const ws = wb.addWorksheet('Test Scenarios');
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-  const colWidths = [14, 34, 40, 46, 12, 12, 30];
-  ws.columns = colWidths.map((w) => ({ width: w }));
+// Tab name for one section: section.sheet if given, else "<letter>. <title>"
+// without a leading "BO — ". Excel: max 31 chars, none of \ / ? * [ ] :
+function sheetName(section, letter) {
+  const raw = section.sheet || `${letter}. ${String(section.title).replace(/^BO\s*[—–-]\s*/, '')}`;
+  return cleanTabName(raw);
+}
+const cleanTabName = (raw) => String(raw).replace(/[\\/?*[\]:]/g, '-').slice(0, 31).trim();
+
+// Platforms used by these sections' rows; a row without "platforms" runs on all.
+function usedResultColumns(resultColumns, sections) {
+  const used = new Set();
+  sections.forEach((s) => s.rows.forEach((r) => {
+    (Array.isArray(r.platforms) ? r.platforms : resultColumns.map((c) => c.header)).forEach((p) => used.add(p));
+  }));
+  return resultColumns.filter((c) => used.has(c.header));
+}
+
+// Fills one TS sheet: title, header, section banners + rows, formatting,
+// Test Result dropdown, frozen panes. letterIdx[i] is section i's index in
+// the whole spec, so letters keep running A., B., C. ... across tabs.
+// letters = false: banners show the title only (spec.sectionLetters false).
+function fillSheet(ws, title, sections, letterIdx, withPriority = false, resultColumns = null, letters = true) {
+  // TS No. | [Priority] | Test Objective | Test Steps | Expected Result | QA | Test Result | Remarks
+  // With spec.resultColumns, one result column per platform takes the place
+  // of Test Result, after Remarks: ... | QA | Remarks | Android 15 | iOS 27 ...
+  const results = resultColumns ?? [{ header: 'Test Result' }];
+  const resultCols = results.map((r, i) => ({ header: r.header, width: resultColumns ? 13 : 12, align: 'center', valign: 'middle', key: `result${i}`, headerFill: r.fill }));
+  const cols = [
+    { header: 'TS No.', width: 14, align: 'center', valign: 'middle', bold: true },
+    ...(withPriority ? [{ header: 'Priority', width: 10, align: 'center', valign: 'middle', key: 'priority' }] : []),
+    { header: 'Test Objective', width: 34, rich: true },
+    { header: 'Test Steps', width: 40, rich: true },
+    { header: 'Expected Result', width: 46, rich: true },
+    { header: 'QA', width: 12, align: 'center' },
+    ...(resultColumns ? [] : resultCols),
+    { header: 'Remarks', width: 30, rich: true, key: 'remarks' },
+    ...(resultColumns ? resultCols : []),
+  ];
+  const NUM_COLS = cols.length;
+  const colLetter = (key) => LETTERS[cols.findIndex((c) => c.key === key)];
+  ws.columns = cols.map((c) => ({ width: c.width }));
 
   // Row 1: title, merged across the table width
   ws.mergeCells(1, 1, 1, NUM_COLS);
   const titleCell = ws.getCell(1, 1);
-  titleCell.value = spec.title;
+  titleCell.value = title;
   styleCell(titleCell, { bold: true, fill: TITLE_FILL, fontColor: 'FFFFFFFF', align: 'center', valign: 'middle', wrap: false });
   ws.getRow(1).height = 20;
 
   // Row 2: column headers
-  const headers = ['TS No.', 'Test Objective', 'Test Steps', 'Expected Result', 'QA', 'Test Result', 'Remarks'];
-  headers.forEach((h, i) => {
+  cols.forEach((c, i) => {
     const cell = ws.getCell(2, i + 1);
-    cell.value = h;
-    styleCell(cell, { bold: true, fill: TITLE_FILL, fontColor: 'FFFFFFFF', align: 'center', valign: 'middle', wrap: true });
+    cell.value = c.header;
+    const light = c.headerFill && c.headerFill.length === 8;
+    styleCell(cell, { bold: true, fill: light ? c.headerFill : TITLE_FILL, fontColor: light ? 'FF000000' : 'FFFFFFFF', align: 'center', valign: 'middle', wrap: true });
   });
   // Row 2 is not merged, so it auto-fits like the data rows (no height set).
 
   const bannerRowIndices = [];
   const dataRowIndices = [];
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-  spec.sections.forEach((section, sIdx) => {
+  sections.forEach((section, sIdx) => {
     const bannerRowIndex = ws.rowCount + 1;
     bannerRowIndices.push(bannerRowIndex);
     ws.mergeCells(bannerRowIndex, 1, bannerRowIndex, NUM_COLS);
     const bannerCell = ws.getCell(bannerRowIndex, 1);
-    bannerCell.value = `${letters[sIdx]}. ${section.title}`;
+    bannerCell.value = letters ? `${LETTERS[letterIdx[sIdx]]}. ${section.title}` : section.title;
     styleCell(bannerCell, { bold: true, fill: SECTION_FILL, fontColor: 'FFFFFFFF', align: 'left', valign: 'middle', wrap: false });
     ws.getRow(bannerRowIndex).height = 18;
 
@@ -129,12 +178,18 @@ async function build(spec) {
       const expectedText = 'Ensure:\n' + renderItems(r.expected);
       const remarksText = r.remarks || '';
 
-      const values = [r.no, objectiveText, stepsText, expectedText, '', NOT_STARTED, remarksText];
-      values.forEach((v, i) => {
+      const byKey = { remarks: remarksText };
+      // r.platforms (with resultColumns): the headers this TS runs on; the rest are grey. Omitted = all.
+      results.forEach((res, k) => {
+        byKey[`result${k}`] = !resultColumns || !Array.isArray(r.platforms) || r.platforms.includes(res.header) ? NOT_STARTED : null;
+      });
+      const fixed = [r.no, ...(withPriority ? [r.priority || ''] : []), objectiveText, stepsText, expectedText, ''];
+      cols.forEach((c, i) => {
+        const v = i < fixed.length ? fixed[i] : byKey[c.key];
         const cell = ws.getCell(rowIndex, i + 1);
-        const bold = i === 0;
-        styleCell(cell, { bold, align: i === 0 || i === 4 || i === 5 ? 'center' : 'left', valign: 'top', wrap: true });
-        cell.value = i >= 1 && i <= 3 || i === 6 ? toRichText(v) : v;
+        const na = c.key?.startsWith('result') && v === null;
+        styleCell(cell, { bold: !!c.bold, fill: na ? NOT_APPLICABLE_FILL : null, align: c.align || 'left', valign: c.valign || 'top', wrap: true });
+        if (v !== null) cell.value = c.rich ? toRichText(v) : v;
       });
 
       // No row height: Excel auto-fits a wrapped row only when the file
@@ -145,24 +200,100 @@ async function build(spec) {
     });
   });
 
-  // Pass/Fail dropdown + conditional formatting on Test Result (column F)
+  // Status dropdown + colour on each result column. One rule set per column,
+  // anchored on that column's own first row, so a pick never colours the
+  // cell next to it. Dropdowns go only on cells that hold a status.
   const lastRow = ws.rowCount;
-  ws.addConditionalFormatting({
-    ref: `F3:F${lastRow}`,
-    rules: [
-      { type: 'containsText', operator: 'containsText', text: 'PASS', priority: 1,
-        style: { font: { bold: true, color: { argb: PASS_FONT } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: PASS_FILL } } } },
-      { type: 'containsText', operator: 'containsText', text: 'FAIL', priority: 2,
-        style: { font: { bold: true, color: { argb: FAIL_FONT } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: FAIL_FILL } } } },
-      { type: 'containsText', operator: 'containsText', text: NOT_STARTED, priority: 3,
-        style: { font: { bold: true, color: { argb: NOT_STARTED_FONT } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: NOT_STARTED_FILL } } } },
-    ],
-  });
-  dataRowIndices.forEach((i) => {
-    ws.getCell(`F${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: [`"Pass,Fail,Blocked,${NOT_STARTED}"`] };
+  let cfPriority = 1;
+  results.forEach((_, k) => {
+    const rc = colLetter(`result${k}`);
+    ws.addConditionalFormatting({
+      ref: `${rc}3:${rc}${lastRow}`,
+      rules: Object.entries(RESULT_STYLE).map(([status, st]) => ({
+        type: 'expression', formulae: [`${rc}3="${status}"`], priority: cfPriority++,
+        style: { font: { bold: true, color: { argb: st.font } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: st.fill } } },
+      })),
+    });
+    dataRowIndices.forEach((i) => {
+      const cell = ws.getCell(`${rc}${i}`);
+      if (cell.value !== null && cell.value !== undefined) cell.dataValidation = { type: 'list', allowBlank: true, formulae: [RESULT_LIST] };
+    });
   });
 
+  // P1/P2/P3 dropdown + red/yellow/green on Priority
+  if (withPriority) {
+    const pc = colLetter('priority');
+    ws.addConditionalFormatting({
+      ref: `${pc}3:${pc}${lastRow}`,
+      rules: Object.entries(PRIORITY_STYLE).map(([p, st], i) => ({
+        type: 'containsText', operator: 'containsText', text: p, priority: cfPriority + i,
+        style: { font: { color: { argb: st.font } }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: st.fill } } },
+      })),
+    });
+    dataRowIndices.forEach((i) => {
+      ws.getCell(`${pc}${i}`).dataValidation = { type: 'list', allowBlank: true, formulae: ['"P1,P2,P3"'] };
+    });
+  }
+
   ws.views = [{ state: 'frozen', ySplit: 2 }];
+}
+
+async function build(spec) {
+  const wb = new ExcelJS.Workbook();
+  // One Priority column on every tab when any row in the workbook has one.
+  const withPriority = spec.sections.some((s) => s.rows.some((r) => r.priority));
+  // Optional platform result columns (e.g. Android 15, iOS 27), same on every tab.
+  // fill: "android" = light green, "apple" = light blue (Faizuddin, 2026-10-30), or an ARGB hex.
+  const PLATFORM_FILL = { android: 'FFE2EFDA', apple: 'FFDDEBF7' };
+  const resultColumns = Array.isArray(spec.resultColumns) && spec.resultColumns.length
+    ? spec.resultColumns.map((c) => (typeof c === 'string' ? { header: c } : { header: c.header, fill: PLATFORM_FILL[c.fill] ?? c.fill }))
+    : null;
+  if (resultColumns && resultColumns.length > 12) throw new Error('resultColumns: at most 12 platform columns');
+  spec.sections.forEach((s) => s.rows.forEach((r) => {
+    if (r.priority && !PRIORITY_STYLE[r.priority]) throw new Error(`${r.no}: priority must be "P1", "P2" or "P3"`);
+  }));
+  // sectionLetters false: banners without "A. " (Faizuddin, 2026-10-30: "dont include those. just the names").
+  const letters = spec.sectionLetters !== false;
+  // resultColumnsPerTab: a tab shows only the platforms its rows use (Faizuddin,
+  // 2026-10-30: "if the tab doesnt have at least 1 scenario for it, then remove that column in that tab").
+  const perTab = !!spec.resultColumnsPerTab && !!resultColumns;
+  const colsFor = (sections) => (perTab ? usedResultColumns(resultColumns, sections) : resultColumns);
+  if (spec.sheetPerSection) {
+    // tabs: several sections on one tab, in the order listed; each section named by its "sheet".
+    let groups;
+    if (Array.isArray(spec.tabs) && spec.tabs.length) {
+      const byName = new Map();
+      spec.sections.forEach((s, i) => {
+        if (!s.sheet) throw new Error(`tabs: section ${i + 1} ("${s.title}") has no "sheet" value to name it by`);
+        if (byName.has(s.sheet)) throw new Error(`tabs: two sections share the "sheet" value "${s.sheet}"`);
+        byName.set(s.sheet, i);
+      });
+      const placed = new Set();
+      groups = spec.tabs.map((tab, t) => {
+        if (!tab?.name || !Array.isArray(tab.sections) || !tab.sections.length) throw new Error(`tabs[${t}]: needs a "name" and a non-empty "sections" list`);
+        const idx = tab.sections.map((n) => {
+          if (!byName.has(n)) throw new Error(`tabs: "${tab.name}" lists "${n}", which is not any section's "sheet" value`);
+          if (placed.has(n)) throw new Error(`tabs: section "${n}" is in more than one tab`);
+          placed.add(n);
+          return byName.get(n);
+        });
+        return { name: cleanTabName(tab.name), idx };
+      });
+      const missing = [...byName.keys()].filter((n) => !placed.has(n));
+      if (missing.length) throw new Error(`tabs: section(s) in no tab: ${missing.join(', ')}`);
+    } else {
+      groups = spec.sections.map((section, sIdx) => ({ name: sheetName(section, LETTERS[sIdx]), idx: [sIdx] }));
+    }
+    const used = new Set();
+    groups.forEach(({ name, idx }) => {
+      if (used.has(name.toLowerCase())) throw new Error(`Duplicate tab name "${name}" — give the section a "sheet" value, or name the tab differently`);
+      used.add(name.toLowerCase());
+      const sections = idx.map((i) => spec.sections[i]);
+      fillSheet(wb.addWorksheet(name), spec.title, sections, idx, withPriority, colsFor(sections), letters);
+    });
+  } else {
+    fillSheet(wb.addWorksheet('Test Scenarios'), spec.title, spec.sections, spec.sections.map((_, i) => i), withPriority, colsFor(spec.sections), letters);
+  }
 
   // Optional Field Reference sheet
   if (spec.fieldReference && spec.fieldReference.length) {

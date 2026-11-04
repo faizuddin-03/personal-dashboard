@@ -1,0 +1,63 @@
+{
+  "expected": "Ensure:\n• Policy wording opens: an Allianz document dated 2022\n• Product disclosure sheet opens: an Allianz document dated 2022\n• Privacy notice opens: an Allianz document dated 2022\n• Claim guide opens: an Allianz document dated 2022\n• Each link opens the document it names, not another document or another insurer's\n• Every link inside Plan Details (from the card and from Confirmation) and the Excess info opens an Allianz document, not another insurer's",
+  "gate": {
+    "at": "29/10/2026, 18:54:15",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_QT_TS7/2026-10-29T10-54-15_DEFECT",
+    "mismatch": [
+      "E2",
+      "E3"
+    ],
+    "proved": [
+      "E1"
+    ],
+    "reasons": [
+      "E2: expected \"Product disclosure sheet opens: an Allianz document dated 2022\", page shows \"card Plan Details \"Product Disclosure\": new tab allianz-product-disclosure-en.pdf, names Allianz: yes; dates in it: 03/06/2020; other insurers named: none | Confirmation Plan Details \"Product Disclosure\": new tab allianz-product-disclosure-en.pdf, names Allianz: yes; dates in it: 03/06/2020; other insurers named: none | Confirmation declaration \"Product Disclosure Sheet\": new tab allianz-product-disclosure-en.pdf, names Allianz: yes; dates in it: 03/06/2020; other insurers named: none\" (08-product-disclosure-sheet.png)",
+      "E3: expected \"Privacy notice opens: an Allianz document dated 2022\", page shows \"Confirmation declaration \"Privacy Notice\": new tab allianz-privacy-notice.pdf, names Allianz: yes; dates in it: 3 March 2020; other insurers named: none\" (10-privacy-notice.png)"
+    ],
+    "run": "eaint-12406-retest-sretest-20261029-1835-A-c2",
+    "verdict": "DEFECT",
+    "warnings": []
+  },
+  "id": "12406_QT_TS7",
+  "kiv": "Waiting for Azfar / BA: SRD REQ-006 says the documents are 'dated 2022' but its pass condition is 'existing Allianz documents displayed'. PDS 'valid as at 03/06/2020', Privacy Notice 'Last updated 3 March 2020', Policy Wording 03 March 2022; Claim Guide image-only (judge by eye). Latest run's Privacy Notice reading was a script fault.",
+  "labels": [],
+  "order": 16,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Policy wording opens: an Allianz document dated 2022"
+    },
+    {
+      "id": "E2",
+      "text": "Product disclosure sheet opens: an Allianz document dated 2022"
+    },
+    {
+      "id": "E3",
+      "text": "Privacy notice opens: an Allianz document dated 2022"
+    },
+    {
+      "id": "E4",
+      "text": "Claim guide opens: an Allianz document dated 2022"
+    },
+    {
+      "id": "E5",
+      "text": "Each link opens the document it names, not another document or another insurer's"
+    },
+    {
+      "id": "E6",
+      "text": "Every link inside Plan Details (from the card and from Confirmation) and the Excess info opens an Allianz document, not another insurer's"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "KIV",
+  "reviewed": false,
+  "section": "Insurer order and Allianz quotation",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on /ia/. Made-up plates HXA0001A–HXA0020A / ZZZ1A quote Lonpac (doc §13); whether Allianz quotes them is unconfirmed, and Tokio Marine showed 'Quotation unavailable' for a private car on /ia/ on 20.10: ask Dev for a simulator plate that all three quote (Q12)",
+  "sheet": "QT",
+  "situation": "Allianz product documents open: policy wording, product disclosure sheet, privacy notice, claim guide; Plan Details (from the quotation card and from Confirmation) and Excess info, with the links inside them",
+  "source": "SRD v1.1 §2.2.5 REQ-006 ('policy wording, product disclosure sheet, privacy notice, claim guide) are dated 2022 ... use existing documents', Example 1a 'Existing Allianz documents in system are displayed'). Plan Details and Excess content: recorded (SRD silent, Q15)",
+  "steps": "1. Get an Allianz quotation (as in 12406_QT_TS1)\n2. Open each Allianz document link where Secarang offers it (quotation card / plan details / Add-ons / Confirmation: Q15); screenshot each document's first page and keep the files\n3. On the Allianz card: [Plan Details]; screenshot the content (recorded, Q15); click each link inside (new tab); screenshot\n4. Continue to Confirmation (Add-ons default): [Plan Details] again and the 'i' on the Excess row; screenshot each (recorded); click each link inside; screenshot",
+  "updatedAt": "2026-10-29T18:30:00+08:00"
+}

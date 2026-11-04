@@ -1,0 +1,13 @@
+node_modules/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+explore-output/
+
+# The only place a credential lives. Never committed.
+env/.*.env-local
+
+# Reuse counters are machine-local: committing them would let one person's run
+# exhaust another person's mobile/email budget.
+state/usage.json

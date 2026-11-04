@@ -1,0 +1,11 @@
+# 12406_RC_TS3 — CIBO Transaction Details of an Allianz transaction: company registration number below the insurer name; Allianz logo; agency Serba Sentral
+# run eaint-12406-rerun-sRC-20261029-1545 on staging /ia (post-push), started 29/10/2026, 17:54:09 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 17:54:11 | note: hand-off "allianzPurchase": 12406_E2E_TS1 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:31:20.401Z — ref BR60006349, plate HXA0011A, receipt no 26102921300027, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf
+29/10/2026, 17:54:16 | note: signed in: CIBO (cibo)
+29/10/2026, 17:54:21 | E1 | expected: Insurer: "Allianz General Insurance Company (Malaysia) Berhad", with "200601015674 (735426-V)" below it (SRD wording; if it comes on the same line as the name, like Tokio Marine today, record it for Q42) | page shows: Insurer "Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)"; the number is after the name in the same text, drawn on the line below (wrapped) (layout recorded for Q42) | matches | 01-transaction-details-insurer.png
+29/10/2026, 17:54:23 | E2 | expected: The insurer box shows the Allianz logo | page shows: insurer box logo: src "./assets/images/bank-logo/allianz.png", alt "Allianz logo" | matches | 02-transaction-details-allianz-logo.png
+29/10/2026, 17:54:25 | E3 | expected: More Info: Platform "Secarang", Agency "Serba Sentral" (Agency No. and Agency PIAM ID recorded; today's old Allianz rows show SC12562 / 195379-01) | page shows: More Info: Platform "Secarang", Agency "Serba Sentral" (recorded: Agency No. "SC12562", Agency PIAM ID "195379-01") | matches | 03-transaction-details-more-info.png
+29/10/2026, 17:54:25 | note: recorded: "Check JPJ Status" is not shown; document buttons: Receipt
+29/10/2026, 17:54:26 | note: hand-off "tokioMarinePurchase": 12406_E2E_TS10 in run eaint-12406-run-sE2E-20261029-1545-c2 at 2026-10-29T08:56:05.766Z — ref BR60006354, plate HXA0004A, receipt no 26102921300034, receipt file secarang-receipt-HXA0004A-tokio-marine-PERSONAL-DATA.pdf
+29/10/2026, 17:54:31 | note: recorded for Q42: Allianz BR60006349 number after the name in the same text, drawn on the line below (wrapped); Tokio Marine BR60006354 "Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)" number on the same line

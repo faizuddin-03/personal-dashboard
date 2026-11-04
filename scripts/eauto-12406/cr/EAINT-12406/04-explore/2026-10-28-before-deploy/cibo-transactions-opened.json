@@ -1,0 +1,61 @@
+{
+ "BR69005852": {
+  "ins": "TokioMarine",
+  "label": "tokio-marine",
+  "url": "https://staging.secarang.com/cibo/transaction-management/transaction-details/ac5d1f7b-4136-422e-b863-c9182516b1ca",
+  "insurerLine": "Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)",
+  "buttons": [
+   "e-Certificate",
+   "Receipt"
+  ],
+  "receipt": "cibo-11d-tokio-marine-BR69005852-receipt-PERSONAL-DATA.pdf"
+ },
+ "BR60006309": {
+  "ins": "Lonpac",
+  "label": "lonpac",
+  "url": "https://staging.secarang.com/cibo/transaction-management/transaction-details/feddf9db-fc7a-4b0b-b1a0-892d38e309b5",
+  "insurerLine": "Lonpac Insurance Berhad",
+  "buttons": [
+   "Certificate of Insurance",
+   "Policy Schedule",
+   "Receipt"
+  ],
+  "receipt": "cibo-12d-lonpac-BR60006309-receipt-PERSONAL-DATA.pdf"
+ },
+ "BR55004008": {
+  "ins": "RHB",
+  "label": "rhb",
+  "url": "https://staging.secarang.com/cibo/transaction-management/transaction-details/6ea86fef-acde-4c4f-ad0a-a118b5841abb",
+  "insurerLine": "RHB Insurance Berhad",
+  "buttons": [
+   "e-Certificate",
+   "Receipt"
+  ],
+  "receipt": "cibo-13d-rhb-BR55004008-receipt-PERSONAL-DATA.pdf"
+ },
+ "BR55004010": {
+  "ins": "Allianz",
+  "label": "allianz-old-insurance-created",
+  "url": "https://staging.secarang.com/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b",
+  "insurerLine": "Allianz General Insurance Company (Malaysia) Berhad",
+  "buttons": [
+   "e-Certificate",
+   "Receipt"
+  ],
+  "receipt": "cibo-14d-allianz-old-insurance-created-BR55004010-receipt-PERSONAL-DATA.pdf"
+ },
+ "BR44003678": {
+  "ins": "Allianz",
+  "label": "allianz-pending-payment",
+  "url": "https://staging.secarang.com/cibo/transaction-management/transaction-details/910dcd05-c1cf-4474-9489-125042a36955",
+  "insurerLine": "Allianz General Insurance Company (Malaysia) Berhad",
+  "buttons": []
+ },
+ "BR3D003430": {
+  "ins": "Allianz",
+  "label": "allianz-pending-payment-with-cover-note",
+  "url": "https://staging.secarang.com/cibo/transaction-management/transaction-details/de85ed96-856b-4480-b346-f5bc5e319082",
+  "insurerLine": "Allianz General Insurance Company (Malaysia) Berhad",
+  "buttons": []
+ }
+}

@@ -169,6 +169,27 @@ Then, in every page object:
 This is not decoration — it's what makes the recording reviewable step by
 step instead of an unreadable fast-forward blur.
 
+**Red box on every failure (Faizuddin, 2026-10-20, repeated 2026-11-03):**
+"for all of the failed screenshots, you did not include the red box to tell
+specifically where in the screenshot is the issue" / "i thought its already in
+the skill for recording test evidence to put red box at the part where it
+specifically failed". Playwright's own `test-failed-1.png` (published as
+`<TS>-failed.png`) never has a box, so it does not count. Rules:
+1. Copy `captureIssue(label, locator(s), note)` + `verify(label, target, note, check)`
+   from `scripts/eauto-12028/pages/AplBase.ts` into the project's base page.
+   Every assertion runs inside `verify()` (or a soft-check helper that calls
+   `captureIssue()`), boxing the exact cell / button / row at fault.
+2. **Every `throw` in a page object or util calls `captureIssue()` first**
+   on the nearest element: login refused → the username field; page did not
+   open → `main`/`body` with the missing element named in the caption;
+   precondition not met → the status area; search error → the error text.
+3. **The red-box file name must carry the TS id** (`12028_TS21-…-ISSUE.png`):
+   the run route attaches evidence to a TS row only when the file name
+   matches `TSnn`. `captureIssue()` prefixes `test.info().title`'s id when the
+   label has none — copy that part too. (12028_TS21, 2026-11-03: boxed
+   Audit Log shots were saved as `log-drafter-kiv-…-ISSUE.png` and showed on
+   no TS row, so only the plain failed shot was seen.)
+
 **Evidence capture (Faizuddin, 2026-10-02)**: `BasePage` also carries two
 evidence helpers, ported from `scripts/eauto-jomcheck/pages/BasePage.ts`:
 - `captureEvidence(label, target?)` — a plain screenshot (full page, or one
@@ -555,6 +576,11 @@ through 2026-10-02), non-negotiable for any new page — not just this one**:
    → `order: 5`) and render `SCENARIOS.filter(s => s.kind === "ts").sort((a,
    b) => a.order - b.order)`, never hand-ordered array position alone
    (easy to get wrong once entries get added out of order later).
+   **Never order by priority (P1/P2/P3), group or anything else — standing
+   rule, 2026-11-02.** Faizuddin, on the 12028 runner listing TS05 and TS06
+   (P1) above TS01: "the TS must always be ordered by ascending order".
+   Inside every section the rows run TS01, TS02, TS03 ...; priority is a tag
+   on the row only. The queue runs in the same order.
 3. **Test-data-setup utilities get their OWN section, never mixed into the
    TS checklist, and that section is rendered ABOVE the TS section** — a
    `kind: "ts" | "setup"` field splits `SCENARIOS` into two arrays, each
@@ -910,6 +936,24 @@ choose from to run it again."
     empty while editing, and min / max / fallback apply only on blur or
     Enter. First used on the 12412 setup "How many" field.
 
+17. **After a run, colour each TS row by its result and untick the passed
+    ones — standing rule, 2026-11-02.** Faizuddin (EAINT-12028 runner, built
+    by Dwarf without it): "after every successful run, the row of the passed
+    run will be green, and failed run will be red" and "for passed run, the
+    TS selection will be unticked while the failed TS will still be ticked,
+    so i can immediately rerun the failed TS only".
+    1. Each checklist row shows its latest result: green background +
+       border for passed, red for failed. A row not run yet stays plain.
+    2. When a TS finishes as passed, remove it from `selected`; a failed (or
+       timed-out / errored) TS stays ticked. Clicking Run straight after
+       therefore re-runs only the failures.
+    3. Keep the last result per TS id in the persisted UI state (rule 5), so
+       the colours survive navigating away. Starting a new run clears the
+       colour of the rows in that run only, then sets it again as each TS
+       ends. A stopped run leaves unfinished rows plain and ticked.
+    4. Applies to setup rows too (rule 3), and to the embedded runner on the
+       pipeline ticket page — same component.
+
 Also, always:
 - Uses `useApp()`'s `runs`/`startRun`/`stopRun` (survives navigating away —
   see `hooks/useBackgroundRuns.ts`), never a page-owned `fetch`.
@@ -965,6 +1009,16 @@ Also, always:
   are kept in sync manually, there's no shared import across the app/scripts
   boundary. Confirmed 2026-10-01 (`eauto-jomcheck`'s `ucdUsername`/
   `ucdPassword` defaults).
+- **Every NEW page opens with its run configuration already filled** from
+  details already on the dashboard: site passwords, CIBO / BO / UCD logins,
+  Fiuu bank simulator username + password, card, email, phone, IC. Take another
+  page's saved localStorage value first, else that page's `DEFAULT_CREDS`. Fill
+  only blank fields, keep what was typed, repair browser-autofill junk (a
+  password in an email box), and add a "Reset to dashboard details" button.
+  Faizuddin, 2026-11-03: "you should already do that for all new pages".
+  Reference: `app/eauto/12406/page.tsx` `dashboardDetails()` /
+  `withDashboardDetails()`. Test DATA (refs, vehicle nos., SSM) still starts
+  blank.
 
 ## 6. Sidebar
 

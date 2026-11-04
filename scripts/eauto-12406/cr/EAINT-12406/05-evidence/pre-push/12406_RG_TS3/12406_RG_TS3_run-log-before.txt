@@ -1,0 +1,10 @@
+# 12406_RG_TS3 — BEFORE half, 2026-10-28 15:15:50 MYT
+Staging: Secarang /ia/ (https://staging.secarang.com/ia) and CIBO (https://staging.secarang.com/cibo). EAINT-12406 not deployed (Azfar, 28.10.2026). Video: video_12406_RG_TS3.webm (one tab, one continuous recording).
+
+- BR55004008: found in the listing (one row); Transaction Details at https://staging.secarang.com/cibo/transaction-management/transaction-details/6ea86fef-acde-4c4f-ad0a-a118b5841abb; status "Insurance created"; buttons ["e-Certificate","Receipt"]
+  - Transaction Details Insurer: "RHB Insurance Berhad"
+E1 BR55004008 Transaction Details Insurer: "RHB Insurance Berhad"
+  - Receipt BR55004008_receipt_PERSONAL-DATA.pdf (downloaded, shown on screen in this tab). Insurer block lines (pdftotext): ["Insurer","RHB Insurance Berhad (38000-U)","Coverage Type"]
+E1 BR55004008 receipt Insurer block: ["Insurer","RHB Insurance Berhad (38000-U)","Coverage Type"]
+
+Screenshots: 12406_RG_TS3_E1_01-listing-BR55004008.png, 12406_RG_TS3_E1_02-transaction-details-BR55004008-blurred.png, 12406_RG_TS3_E1_03-insurer-box-BR55004008.png, 12406_RG_TS3_E1_04-receipt-BR55004008-full_PERSONAL-DATA.png, 12406_RG_TS3_E1_05-receipt-BR55004008-insurer-block.png

@@ -1,0 +1,44 @@
+Additional Functions						
+TS No.	To test	Test Scenario	Expected Result	QA	Result	Remark
+TS_SAF_1	Windscreen - Valid Sum Insured	"Go to the Choose Add-Ons page
+At the Windscreen Add-ons, click the Sum Insured value
+Enter a valid Sum Insured which is within the limit mentioned by the system and click [Apply]"	The price of the add-on will change. The higher the Sum Insured value, the higher the price of the add-on. Ensure the calculation is correct	Faiz	Pass	No min max value for sum insured
+TS_SAF_2	Windscreen - Sum Insured below minimum	"Go to the Choose Add-Ons page
+At the Windscreen Add-ons, click the Sum Insured value
+Enter Sum Insured which is below the minimum value mentioned by the system"	"The Sum Insured (RM) field will have a red outline
+The range for the valid amount will be in red font
+The [Apply] button will be disabled"	Faiz	Pass	No min max value for sum insured
+TS_SAF_3	Windscreen - Sum Insured above maximum	"Go to the Choose Add-Ons page
+At the Windscreen Add-ons, click the Sum Insured value
+Enter Sum Insured which is above the maximum value mentioned by the system"	"The Sum Insured (RM) field will have a red outline
+The range for the valid amount will be in red font
+The [Apply] button will be disabled"	Faiz	Pass	No min max value for sum insured
+TS_SAF_4	CART - Assessment Period	"Go to the Choose Add-Ons page
+At the CART Add-ons, click the Assessment Period value
+Select different Assessment Period value"	The price of the add-ons will change depending on the Assessment Period selected. Ensure the calculation is correct	Faiz	Pass	
+TS_SAF_5	CART - Daily Compensation	"Go to the Choose Add-Ons page
+At the CART Add-ons, click the Daily Compensation value
+Select different Daily Compensation value"	The price of the add-ons will change depending on the Daily Compensation selected. Ensure the calculation is correct	Faiz	Pass	
+TS_SAF_6	Valid Discount Code	"Go to the confirmation page
+At the pricing section, enter a valid discount code (YEAY7) and click [Apply discount code]"	"The discount amount will be displayed under the [Apply discount code] button
+The Total Amount will decrease based on the amount of discount. Ensure the calculation is correct
+The discount code field and button is disabled as only one discount code can be used at a time"	Faiz	Pass	
+TS_SAF_7	Invalid Discount Code	"Go to the confirmation page
+At the pricing section, enter an invalid discount code and click [Apply discount code]"	"The field for the discount code will have a red outline
+An error message with red font will appear: ""Ops, invalid discount code. Try again"""	Faiz	Pass	
+TS_SAF_8	Info Message at PIAM ID	"Go to the confirmation page
+At the pricing section, go to the PIAM ID line and click the [info] button ('i' symbol)"	"Ensure the following message is displayed:
+
+Pemaju Eksklusif Sdn Bhd is a licensed agent of the insurance company that is governed by Persatuan Insurans Am Malaysia (PIAM).
+
+Get in touch?
+
++601327142714
+Level 15, Sunway Tower,
+Jalan Ampang, 50450 Kuala Lumpur"	Faiz	Pass	
+TS_SAF_9	Driver Product Disclosure Sheet	"Go to the confirmation page using car VN
+At the Confirm and Pay section, click the insurer's [Product Disclosure Sheet] hyperlink"	Ensure that a new tab is opened and it displays Zurich Takaful's Driver's Product Disclosure Sheet	Faiz	Pass	
+TS_SAF_10	Rider Product Disclosure Sheet	"Go to the confirmation page using motorbike VN
+At the Confirm and Pay section, click the insurer's [Product Disclosure Sheet] hyperlink"	Ensure that a new tab is opened and it displays Zurich Takaful's Rider's Product Disclosure Sheet	Faiz	Pass	
+TS_SAF_11	Insurer's Privacy Policy	"Go to the confirmation page
+At the Confirm and Pay section, click the insurer's [Privacy Policy] hyperlink"	Ensure that a new tab is opened and it displays Zurich Takaful's Privacy Policy	Faiz	Pass	

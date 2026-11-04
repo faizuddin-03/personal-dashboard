@@ -1,0 +1,35 @@
+{
+  "ts": "12406_RC_TS9",
+  "run": "eaint-12406-run-sRC-20261029-1545-c2",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "CIBO row (created at Step 4 / 5 without payment): Ins. Co. Allianz, Payment badge not 'Paid' (text recorded: 'Pending' on staging per team doc §8, 'Unpaid' in the mockup), Transaction Status \"Pending payment\"",
+      "shows": "CIBO row BR60006355: Ins. Co. \"Allianz Serba Sentral\", Payment cell \"RM941.13\", Payment badge \"(none)\" (recorded), Transaction Status \"Pending payment\"",
+      "match": true,
+      "shot": "02-cibo-row-pending-payment.png",
+      "at": "29/10/2026, 17:13:40",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "Transaction Details: status badge \"Pending payment\" (amber, no tick); no e-Certificate and no Receipt button; Cover Note No and Policy No \"-\"",
+      "shows": "status badge \"Pending payment\" (class badge fs-14 mr-2 px-2 py-1 pending-badge, background rgb(251, 255, 194), icon none); document buttons: none; Cover Note No \"-\", Policy No \"-\"",
+      "match": true,
+      "shot": "03-transaction-details-pending-payment.png",
+      "at": "29/10/2026, 17:13:43",
+      "url": "/cibo/transaction-management/transaction-details/7fee4dd3-2c3d-4797-bdb8-26911032864f",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "on the site: Secarang (https://staging.secarang.com/ia/)",
+    "Secarang: home > car-details > quotations; payment tiles Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab",
+    "signed in: CIBO (cibo)",
+    "handed on for later TS: allianzUnpaid = {\"ref\":\"BR60006355\",\"plate\":\"HXA0019A\",\"since\":\"2026-10-29T09:12:51.227Z\"}",
+    "step 3 (recorded, Q39): open this row again once the quotation has expired; not run here"
+  ],
+  "opened": []
+}

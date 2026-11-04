@@ -1,0 +1,77 @@
+{
+  "expected": "Ensure:\n• All Quotations: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz\n• Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded)\n• Payment page shows the same four tiles as for a Lonpac purchase: Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab (observed)\n• FPX payment approved (00): Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' (observed) and a [Receipt] download\n• Receipt Total Premium = the total on the Confirmation page\n• CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode the same as a Lonpac FPX payment on /ia/ (today bare \"Fiuu\"; the SA format \"Fiuu | Online Banking – FPX-<Bank Name>\" is QA-Issue EAINT-12566, On Hold: not a 12406 failure)\n• CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with Allianz's own insurer code (code recorded, Q30)\n• e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate",
+  "gate": {
+    "at": "29/10/2026, 19:56:45",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS1/2026-10-29T11-56-45_DEFECT",
+    "mismatch": [
+      "E7",
+      "E8"
+    ],
+    "proved": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+    ],
+    "reasons": [
+      "E7: expected \"CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with \", page shows \"Cover Note No \"-\", Policy No \"-\", Payment Ref ID \"ALZ20261029SFX0046\" (insurer code \"ALZ\")\" (09-cibo-details-cover-note-policy-ref.png)",
+      "E8: expected \"e-Certificate and Receipt buttons shown\", page shows \"document buttons: Receipt\" (10-cibo-document-buttons.png)",
+      "and the run then stopped: TimeoutError: locator.click: Timeout 90000ms exceeded."
+    ],
+    "run": "eaint-12406-retest-sretest-20261029-1950-B-c1",
+    "verdict": "DEFECT",
+    "warnings": []
+  },
+  "id": "12406_E2E_TS1",
+  "kiv": "Waiting for Dev (Q44): every step passes (quote, add-ons, confirmation, FPX, Success, receipt total RM941.13, CIBO row) except Cover Note / Policy No '-' and no e-Certificate. Staging /ia/ has never returned these for Allianz (old BR55004010 May 2025 the same; EAINT-6345 'Allianz ecert staging callback url not working'); Tokio Marine gets its cover note. Not a 12406 change; re-run E7/E8 once Dev confirms.",
+  "labels": [],
+  "order": 20,
+  "points": [
+    {
+      "id": "E1",
+      "text": "All Quotations: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz"
+    },
+    {
+      "id": "E2",
+      "text": "Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded)"
+    },
+    {
+      "id": "E3",
+      "text": "Payment page shows the same four tiles as for a Lonpac purchase: Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab (observed)"
+    },
+    {
+      "id": "E4",
+      "text": "FPX payment approved (00): Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' (observed) and a [Receipt] download"
+    },
+    {
+      "id": "E5",
+      "text": "Receipt Total Premium = the total on the Confirmation page"
+    },
+    {
+      "id": "E6",
+      "text": "CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode the same as a Lonpac FPX payment on /ia/ (today bare \"Fiuu\"; the SA format \"Fiuu | Online Banking – FPX-<Bank Name>\" is QA-Issue EAINT-12566, On Hold: not a 12406 failure)"
+    },
+    {
+      "id": "E7",
+      "text": "CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with Allianz's own insurer code (code recorded, Q30)"
+    },
+    {
+      "id": "E8",
+      "text": "e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "KIV",
+  "reviewed": false,
+  "section": "Allianz purchase, Fiuu payment channels",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: the individual-owner renewal car of 12406_QT_TS1 (all three quote)\n• Payment: tile 'FPX Online banking' > RHB Bank > Fiuu Bank Simulator popup (its own username + password) > Status 'Approved' (00) > copy the TAC shown into 'Enter TAC' > [Pay now]. The popup closes itself after Pay (doc §5; proven on /ia/ 19.10, receipt Payment Method 'Online Banking - RHB Bank')",
+  "sheet": "E2E",
+  "situation": "Secarang home form > All Quotations > Allianz > Add-ons > Confirmation > FPX Online banking > Success > CIBO Transaction Details, cover note, e-Certificate",
+  "source": "SRD v1.1 REQ-002 Example 1a-b ('Customer can complete purchase using existing Allianz flow'); §2.1.3a (quote, add-ons, payment, cover note, callbacks, receipt); agency Serba Sentral: §2.1.3b. Observed / current behaviour: payment tiles and receipt Payment Method (team doc §5, live 19.10.2026), Success page text (doc §3), Payment Mode bare 'Fiuu' and EAINT-12566 (doc §6, §9), Ref ID 'SFX' (doc §9; [REQ] 12107 REQ-014). CIBO row / status 'Insurance created' / buttons: mockup CIBO 20261006 + doc §8. JPJ status, Check JPJ Status, agent line: recorded",
+  "steps": "1. Secarang > Car tab > Private > plate, IC, postcode 55000 > [Get quotation] > Step 1 Car Details (if shown) > All Quotations\n2. Select the Allianz quotation\n3. Add-ons: keep the default; wait for the page to load before [Continue]; screenshot the amounts\n4. Confirmation: fill the owner details (phone without the leading 0); screenshot the premium breakdown and the agent line (recorded); Confirm and Pay\n5. Payment page 'How would you like to pay?': screenshot the tiles; FPX Online banking > RHB Bank > Fiuu Bank Simulator: Status Approved (00), copy the TAC into 'Enter TAC', [Pay now] (site password again if asked)\n6. Screenshot the Success page; download the [Receipt] (kept for 12406_RC_TS1); if the Success page offers [Print receipt], open it and screenshot the print view (judged in RC_TS1)\n7. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot; click e-Certificate and keep the file\n8. By hand, the next day, after the JPJ status job has run (recorded, not an expected point; 29.10): reopen Transaction Details; record the JPJ column and 'Submission status to JPJ'; record whether 'Check JPJ Status' is shown",
+  "updatedAt": "2026-10-30T00:30:00+08:00"
+}

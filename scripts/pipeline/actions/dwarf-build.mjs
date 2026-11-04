@@ -144,6 +144,7 @@ Your final message: files created, checks run and their result, TS automated vs 
       t.files = { ...t.files, suiteDir: p.suiteDir, ...(pageBuilt ? { runnerPage: p.runnerPage } : {}) };
       if (pageBuilt) t.runKey = p.runKey;
       if (state.hash) t.dwarfScenarioHash = state.hash;
+      t.automationOnHold = undefined;
       const covered = new Set(state.pendingAtStart ?? []);
       if (t.pendingDwarfChanges) t.pendingDwarfChanges = t.pendingDwarfChanges.filter(n => !covered.has(n));
       store.raiseStage(t, "automation");

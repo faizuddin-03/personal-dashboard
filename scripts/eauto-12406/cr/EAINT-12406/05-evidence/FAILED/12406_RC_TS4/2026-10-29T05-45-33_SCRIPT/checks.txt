@@ -1,0 +1,13 @@
+# 12406_RC_TS4 — CIBO Transaction Management: Allianz picked in the Insurance Company filter (Serba Sentral group); Allianz rows show Ins. Co. Allianz over the agency badge Serba Sentral, styled like other rows; the CSV export matches the screen
+# run eaint-12406-run-sRC-20261029-1330-c1 on staging /ia (post-push), started 29/10/2026, 13:41:34 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 13:41:42 | note: signed in: CIBO (cibo)
+29/10/2026, 13:41:42 | note: hand-off "allianzPurchase": none in any run of EAINT-12406
+29/10/2026, 13:41:42 | note: hand-off "allianzPurchase:card": none in any run of EAINT-12406
+29/10/2026, 13:41:42 | note: hand-off "allianzPurchase:grabpay": none in any run of EAINT-12406
+29/10/2026, 13:41:42 | note: hand-off "allianzPurchase:shopeepay": none in any run of EAINT-12406
+29/10/2026, 13:41:44 | E1 | expected: Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the Insurance Company filter lists Allianz under the Serba Sentral group | page shows: Insurance Company filter: Bintang Prospek (Chubb, RHB, Takaful Malaysia) · Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful) · Serba Sentral (Allianz, eTiqa) | matches | 01-insurance-company-filter-groups.png
+29/10/2026, 13:41:50 | note: E2 / E3 NOT proved: the four Allianz purchases are needed, missing 12406_E2E_TS1 (FPX Online banking), 12406_E2E_TS2 (Credit or Debit Card), 12406_E2E_TS3 (PayLater by Grab), 12406_E2E_TS4 (SPayLater)
+29/10/2026, 13:41:50 | note: hand-off "tokioMarinePurchase": none in any run of EAINT-12406
+29/10/2026, 13:41:51 | note: Tokio Marine style reference BR69005852 (12406_RG_TS1's existing Tokio Marine transaction: E2E_TS10 handed on none): {}; row found: false
+29/10/2026, 13:41:56 | note: Allianz + TokioMarine ticked: 1 row(s):  

@@ -1,0 +1,163 @@
+<!-- Read-only capture of the 2 mindmaps + 1 table on board https://miro.com/app/board/uXjVHrYDgq8=/
+     Captured: 2026-10-29 (re-read after the 11:55 am board edit) by a one-off script (window.miro.board.experimental mindmap_node walk, getById per child).
+     The standard reader (scripts/pipeline/tools/miro.mjs) skips mindmaps; this file fills that gap.
+     155 nodes. Text is the node HTML stripped to plain text; line breaks shown as " / "; ASCII-art signature box lines collapsed.
+     [leaf] = node with no children. Mindmap 1 (top) = signature box mock; mindmap 2 = the flow.
+     Table (id 3458764683371577880, 6 columns x 18 rows) under heading "Vehicle Breakdown by State June 2026 / X record(s) in total": ALL CELLS EMPTY (screenshot checked 2026-10-29). Nothing trimmed. -->
+# EAINT-12028 Miro — mindmaps (2026-10-29)
+
+- Sign to Approve — Drafter / First-time approval for this role. Please sign below — your signature will be saved and reused for all future approvals. / [Clear] [Cancel] [Save & Approve] / [leaf]
+- New Module – Association Payment Listing /
+  - Login > Report > Association Payment Listing / Role: Any BackOffice user with module access /
+    - Association Payment Listing / Columns shown: / #Month ([year])Example: Month (2026)Car TransactionsCars (RM)Motorcycle TransactionsMotorcycles (RM) / The available statuses/display for each column: / Drafter Status Approved KIV Review Again Pending No DataReviewer Status Approved Pending -Approver Status Approved Pending -Payment Date[dd-mm-yyyy]-ActionView >>
+      - Cronjob /
+        - Day/Date: First day of each month / Time: 12:05am / Event:- / System creates a new row in Association Payment Listing for the previous month / [leaf]
+      - Click View >> / Different Roles and Status have different expected results / Note - First time approve will encounter signature box: / Sign to Approve — Drafter / First-time approval for this role. Please sign below — your signature will be saved and reused for all future approvals. / [Clear] [Cancel] [Save & Approve] /
+        - Role: Approver /
+          - Status for each columns: /
+            - Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Approved /
+              - Association Payment Listing — [Month] [Year] /
+                - Click MMSDA Payment Request /
+                  - System downloads the MMSDA Payment Request document / [leaf]
+                - Click FMC Payment Request /
+                  - System downloads the FMC Payment Request document / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - Click [Reject] /
+                  - Approver — Reject Remarks / Please state the reason for rejection. This will be recorded in the audit log. / | Enter remarks (required) / [Cancel] [Submit Reject] /
+                    - Click [Cancel] /
+                      - Redirect to Association Payment Listing — [Month] [Year] / [leaf]
+                    - Click [Submit Reject] /
+                      - Status change to: / Drafter Status : Approved / Reviewer Status : Review Again / Approver Status : Pending / [leaf]
+                - Click [Approve] /
+                  - Status change to: / Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Approved / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Approved / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : KIV / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Review Again / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Pending / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+        - Role: Review /
+          - Status for each columns: /
+            - Drafter Status : Approved / Reviewer Status : Review Again / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - Click [Reject] /
+                  - Reviewer — Reject Remarks / Please state the reason for rejection. This will be recorded in the audit log. / | Enter remarks (required) / [Cancel] [Submit Reject] /
+                    - Click [Cancel] /
+                      - Redirect to Association Payment Listing — [Month] [Year] / [leaf]
+                    - Click [Submit Reject] /
+                      - Status change to: / Drafter Status : Review Again / Reviewer Status : Pending / Approver Status : Pending / [leaf]
+                - Click [Approve] /
+                  - Status change to: / Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Pending / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Approved /
+              - Association Payment Listing — [Month] [Year] /
+                - Click MMSDA Payment Request /
+                  - System downloads the MMSDA Payment Request document / [leaf]
+                - Click FMC Payment Request /
+                  - System downloads the FMC Payment Request document / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Approved / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - Click [Reject] /
+                  - Reviewer — Reject Remarks / Please state the reason for rejection. This will be recorded in the audit log. / | Enter remarks (required) / [Cancel] [Submit Reject] /
+                    - Click [Cancel] /
+                      - Redirect to Association Payment Listing — [Month] [Year] / [leaf]
+                    - Click [Submit Reject] /
+                      - Status change to: / Drafter Status : Review Again / Reviewer Status : Pending / Approver Status : Pending / [leaf]
+                - Click [Approve] /
+                  - Status change to: / Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Pending / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : KIV / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Review Again / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Pending / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+        - Role: Drafter /
+          - Status for each columns: /
+            - Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Approved /
+              - Association Payment Listing — [Month] [Year] /
+                - Click MMSDA Payment Request /
+                  - System downloads the MMSDA Payment Request document / [leaf]
+                - Click FMC Payment Request /
+                  - System downloads the FMC Payment Request document / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Approved / Reviewer Status : Approved / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Approved / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - [KIV] button disabled / [leaf]
+                - [Approve] button disabled / [leaf]
+                - Click [Back to summary] button /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : KIV / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - Click [KIV] /
+                  - Status remain: / Drafter Status : KIV / Reviewer Status : Pending / Approver Status : Pending / [leaf]
+                - Click [Approve] /
+                  - Status change to: / Drafter Status : Approved / Reviewer Status : Pending / Approver Status : Pending / [leaf]
+                - Click [Back to summary] /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Review Again / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - Click [KIV] /
+                  - Status change to: / Drafter Status : KIV / Reviewer Status : Pending / Approver Status : Pending / [leaf]
+                - Click [Approve] /
+                  - Status change to: / Drafter Status : Approved / Reviewer Status : Pending / Approver Status : Pending / [leaf]
+                - Click [Back to summary] /
+                  - Redirect back to Association Payment Listing / [leaf]
+            - Drafter Status : Pending / Reviewer Status : Pending / Approver Status : Pending /
+              - Association Payment Listing — [Month] [Year] /
+                - Click [KIV] /
+                  - Status change to: / Drafter Status : KIV / Reviewer Status : Pending / Approver Status : Pending / [leaf]
+                - Click [Approve] /
+                  - Status change to: / Drafter Status : Approved / Reviewer Status : Pending / Approver Status : Pending / [leaf]
+                - Click [Back to summary] /
+                  - Redirect back to Association Payment Listing / [leaf]

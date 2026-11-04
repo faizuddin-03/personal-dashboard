@@ -1,0 +1,12 @@
+{
+  "ts": "12406_E2E_TS3",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E3: expected \"CIBO Transaction Details: Cover Note No filled (not \"-\"); Payment Ref ID with 'SEW' like a Lonpac e-wallet payment (e.g. LON<yyyymmdd>SEW<nnnn>), with Allianz's\", page shows \"Cover Note No \"-\", Payment Ref ID \"ALZ20261029SEW0037\" (insurer code \"ALZ\")\" (04-cibo-details-cover-note-ref.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS3/2026-10-29T10-49-55_DEFECT",
+  "run": "eaint-12406-retest-sretest-20261029-1835-A-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 18:49:55",
+  "warnings": []
+}

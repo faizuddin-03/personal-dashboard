@@ -4,10 +4,10 @@
 
 /* ── Sidebar: plum cottage wall, honey sign ─────────────────────── */
 [data-style="medieval"] aside > div:first-child { border-bottom-color: var(--m-crust); }
-[data-style="medieval"] aside > div:first-child > span.font-semibold,
-[data-style="medieval"] div.lg\:hidden.h-14 > span.font-semibold {
+[data-style="medieval"] aside > div:first-child > span.font-bold,
+[data-style="medieval"] div.lg\:hidden.h-14 > span.font-bold {
   font-family: var(--font-pixel-title), var(--font-pixel-body), sans-serif;
-  font-weight: 400;
+  font-weight: 700; /* "Udin's Board" bold (Faizuddin, 2026-10-29) */
   font-size: 1.3rem;
   line-height: 1;
   color: var(--m-honey);

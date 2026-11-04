@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secarang: Reliable Car Insurance Provider</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,"Segoe UI",Helvetica,Arial,sans-serif;color:#333;background:#fff}
+a{color:#1a73e8;text-decoration:none}a:hover{color:#0b57d0}
+header{position:sticky;top:0;z-index:10;height:72px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;gap:52px;padding:0 12%}
+.logo{display:flex;align-items:center;gap:8px}
+.logo .w{display:flex;flex-direction:column}
+.logo .n{font-size:15px;font-weight:700;letter-spacing:4px;color:#1d1d1f}
+.logo .t{font-size:6px;font-weight:700;color:#2f7de1;letter-spacing:.5px}
+.car{color:#2f7de1}
+nav{display:flex;gap:40px}
+nav a{cursor:pointer;font-size:16px;color:#1c3163;padding:6px 0;border-bottom:2px solid transparent}
+nav a.active{border-bottom-color:#2f7de1}
+.page{display:none}.page.show{display:block}
+main{max-width:1126px;margin:0 auto;padding:88px 24px 90px;text-align:center}
+h1{margin:0 0 56px;font-size:50px;font-weight:500;color:#2d2d2d}
+h2{margin:0 0 18px;font-weight:500;color:#2d2d2d}
+p{margin:0;line-height:1.65}
+hr{border:none;border-top:1px solid #e6e6e6;margin:72px auto}
+.about p{font-size:20px}
+.row{display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px}
+.acc{max-width:870px;margin:0 auto;text-align:left;border-top:1px solid #e6e6e6}
+.item{border-bottom:1px solid #e6e6e6}
+.item button{width:100%;display:flex;justify-content:space-between;align-items:center;min-height:100px;padding:0;border:none;background:none;cursor:pointer;font:inherit;font-size:30px;color:#2d2d2d;text-align:left}
+.item .sign{font-size:30px;font-weight:300}
+.lines{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 24px;padding:10px 0 60px}
+.item.open .lines{display:grid}
+.ln{display:flex;gap:22px}
+.ln .b{font-size:20px;line-height:34px}
+.ln .l{display:block;font-size:26px;line-height:34px;color:#2d2d2d;margin-bottom:14px}
+.ln .v{font-size:23px}
+.faqw{max-width:1000px;margin:0 auto;text-align:left}
+.faqw h3{font-size:26px;font-weight:500;color:#2d2d2d;margin:56px 0 24px}
+.faq{border-top:1px solid #e6e6e6}
+.faq button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;min-height:72px;padding:14px 0;border:none;background:none;cursor:pointer;font:inherit;font-size:19px;color:#2d2d2d;text-align:left}
+.faq .sign{font-size:20px;font-weight:300}
+.faq .ans{display:none;padding:0 0 26px;font-size:18px;line-height:1.7;color:#333}
+.faq.open .ans{display:block}
+.faq .ans p{margin:0 0 12px}.faq .ans ul{margin:0 0 12px;padding-left:22px}.faq .ans li{margin-bottom:14px}
+mark.chg{background:#fff3a3;color:inherit;padding:1px 3px;border-radius:2px}
+.lbl{display:inline-block;background:#e8590c;color:#fff;font-size:12px;font-weight:600;letter-spacing:.3px;padding:3px 10px;border-radius:12px;vertical-align:middle;margin-bottom:10px;text-transform:none}
+.ln-note{grid-column:1/-1;font-size:20px;line-height:1.6;color:#2d2d2d;padding-left:29px}
+.chgbox{background:#fffbe6;outline:2px dashed #e8590c;outline-offset:0;padding:0 14px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#e8590c;margin-left:5px;vertical-align:top}
+footer{background:#f8f8f8;padding:36px 5% 28px}
+.ft{display:flex;gap:44px;align-items:flex-start}
+.ft .desc{flex:1;max-width:830px;font-size:15px;line-height:2}
+.ft .col{display:flex;flex-direction:column;gap:20px;font-size:15px}
+.ft .col b{font-weight:500}
+.copy{padding:48px 0 0 154px;font-size:13px}
+@media (max-width:800px){header{padding:0 16px;gap:20px}nav{gap:18px}h1{font-size:34px}.ft{flex-wrap:wrap}.copy{padding-left:0}.lines{grid-template-columns:1fr}.item button{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+<a class="logo" href="#" data-page="about-us" aria-label="Secarang home">
+<svg width="38" height="44" viewBox="0 0 38 44" fill="none" stroke="#1d1d1f" stroke-width="2"><path d="M19 2 L35 8 V22 C35 32 28 39 19 42 C10 39 3 32 3 22 V8 Z"/><path d="M9 25 L12 19 H26 L29 25 Z" stroke="#2f7de1"/><circle cx="13" cy="27" r="2.5" stroke="#2f7de1"/><circle cx="25" cy="27" r="2.5" stroke="#2f7de1"/></svg>
+<span class="w"><span class="n">SE<span class="car">CAR</span>ANG</span><span class="t">Insure Your Vehicle Now</span></span>
+</a>
+<nav>
+<a href="#" data-page="about-us">About Us<span class="dot"></span></a>
+<a href="#" data-page="faqs">FAQs<span class="dot"></span></a>
+<a href="#" data-page="support">Support<span class="dot"></span></a>
+</nav>
+</header>
+
+<section class="page" id="about-us">
+<main class="about">
+<h1>Get to know us better</h1>
+<h2 style="font-size:26px;line-height:1.3;margin-bottom:14px">We are building a space where unbiased advice and best in-value solution are easily accessible.</h2>
+<p style="font-size:18px">Designed as an online insurance solution provider platform, seCarang.com is a platform which focuses on offering multiple insurance products via a request for quotes online flexibly and reliably. At the moment, we extend the convenience of renewing car insurance affordably &amp; at great transparency from our portal, all in just a few clicks!</p>
+<hr>
+<h2 style="font-size:28px">seCarang.com (seCarang) and its services....</h2>
+<p>....are owned and operated by Serba Sentral Sdn Bhd (Company No: 1341454A), a registered and licensed insurance agent. All insurance products on this platform are represented by their respective authorised and licensed agents of respective insurers in accordance with Malaysia Insurance Act 2006, Malaysia Financial Services Act 2013 and Malaysia Islamic Financial Services Act 2013, and regulated by Bank Negara Malaysia. Our respective insurers are members of PIDM. The benefit(s) payable under eligible product is protected by PIDM up to limits. Please refer to <a href="#" onclick="return false">PIDM's TIPS Brochure</a> or contact our respective insurers or <a href="#" onclick="return false">PIDM</a>.</p>
+<hr>
+<div><span class="lbl">Changed: Allianz wording updated</span></div>
+<h2 style="font-size:32px">Our partnership</h2>
+<p>At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, <mark class="chg">Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from</mark> Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.</p>
+<hr>
+<h2 style="font-size:32px">Our vision</h2>
+<p>To offer unbiased advice and finding the best in-value insurance solution for our valued customers. You may refer to Terms of Use section on this platform to obtain full list of agents and principal insurers that we represent.</p>
+</main>
+</section>
+
+<section class="page" id="faqs">
+<main>
+<h1 style="margin-bottom:0">Frequently Asked Questions (FAQs)</h1>
+<div class="faqw">
+<h3>Topic 1: General Info</h3>
+<div style="border-bottom:1px solid #e6e6e6">
+<div class="item faq"><button type="button" aria-expanded="false"><span>Who can use the service provided by Insurance?</span><span class="sign">+</span></button><div class="ans"><p>Both private &amp; company JPJ-registered vehicles.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>What are the services offered on the platform?</span><span class="sign">+</span></button><div class="ans"><p>Following are some of the services offered:</p><ul><li>Instant quotes from our insurance partners</li><li>Insurance plans and benefits comparison</li><li>Thorough product information via Product Disclosure Sheet or Policy Wordings</li><li>Secured online payment via multiple payment options</li></ul></div></div>
+<div class="item faq open"><button type="button" aria-expanded="true"><span>Which insurers can I get instant quotation from? <span class="lbl" style="margin:0 0 0 8px">Changed: Allianz added</span></span><span class="sign">−</span></button><div class="ans"><ul><li>Lonpac Insurance Bhd</li><li><mark class="chg">Allianz General Insurance Company (Malaysia) Berhad</mark> <span class="lbl" style="margin:0 0 0 8px">New</span></li><li>Tokio Marine Insurans (Malaysia) Berhad</li></ul></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>Is this service available all the time?</span><span class="sign">+</span></button><div class="ans"><p>Yes, this Internet-based service is available 24 hours daily.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>What factors to take into consideration in choosing policy that is suitable for me?</span><span class="sign">+</span></button><div class="ans"><p>In choosing a policy that well-suits your need, there are many aspects to take into consideration. Among all, you may want to look for the following:</p><p><b>Coverage Type</b></p><p>For motor insurance, there are three main coverage types. Each and every coverage type provides different forms of compensations to you. The three coverage types are:</p><ul><li><b>Third Party cover</b><br>This policy insures you against claims for bodily injuries or deaths caused to other persons (known as the third party), as well as loss or damage to third party property caused by your car.</li><li><b>Third Party, Fire and Theft cover</b><br>This policy insures you against claims for third party bodily injury and death, third party property loss or damage, and loss or damage to your own car due to accidental fire or theft.</li><li><b>Comprehensive cover</b><br>This policy provides the widest coverage among these three. i.e. third party bodily injury and death, third party property loss or damage and loss or damage to your own car due to accidental fire, theft or an accident.</li></ul><p><b>Premium Amount</b></p><p>Your premium is the amount of money you pay to an insurance company to provide insurance on your car. Policy with low premium undeniably lead to cost-saving, yet that option may compromise some protection that you may need for your car. On the other hand, opting for policy with high premium too may not neccessarily be a wise move for you. Always consider your financial circumstances and the type of protection that your car truly needs when making choices related to your car insurance as what may work for some may not be ideal for others.</p><p><b>Insurer's Credibility</b></p><p>Another important factor is to check insurers' credibility before proceeding with plan purchase. This research will assist you in understanding the reliability of the company, which is paramount, particularly if the needs to make claim settlement arises.</p><p><b>Exclusions</b></p><p>Exclusions are specific factors/situations that are not covered under insurance plan. It is important to go through the policy documents well in advance before buying one, to avoid any unpleasant surprise during the claim process.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>What is the policy coverage type that you offer?</span><span class="sign">+</span></button><div class="ans"><p>Currently, we offer comprehensive cover.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>What is the major exclusions for insurance policy with comprehensive coverage?</span><span class="sign">+</span></button><div class="ans"><p>Comprehensive coverage provides the most elaborated protection among all coverages. However, policy with this coverage does not cover certain losses such as:</p><ul><li>Policyholder's death or bodily injury due to a motor accident;</li><li>Policyholder's liability against claims from passengers in your car; and</li><li>Loss, damage or liability arising from an act of nature i.e. flood, storm or landslide.</li></ul><p>(Note: This list is non-exhaustive. Please refer to the policy contract for the full list of exclusions under this policy.).</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>What is the importance of insuring my car at the appropriate market value?</span><span class="sign">+</span></button><div class="ans"><p>The importance of insuring the car at the correct market value cannot be overstated. If your car is under-insured, you run the risk of getting penalised. The insurer will only bear part of the loss in proportion to the difference between the market value and the sum insured. Kindly refer to the following illustration:</p><p>Car market value is RM60,000. Sum Insured is RM50,000.</p><p>Assuming your car involved in an accident which resulted in losses worth RM20,000, what is highest amount of compensation that you may attain?</p><p><b>Loss payable by insurer</b><br>Sum insured / Car market value x loss<br>RM50,000/RM60,000 x RM20,000<br>RM16,666.67</p><p>The balance of RM3,333.33 (RM20,000 - RM16,666.67) will need to be borne by you.</p><p>*Do keep in mind that the above illustration is a general illustration only.</p><p>On the contrary, over-insuring your car would be a waste of money as the insurer will compensate you up till the market value of your car only.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>What is No Claim Discount (NCD)?</span><span class="sign">+</span></button><div class="ans"><p>No Claim Discount (NCD) is a discount for drivers who have not made any insurance claims during the preceding years of the insured period. If you didn’t file any claims over the years, your NCD discount will increase. However, once you make a claim, your NCD will go to 0% again and after 1 year of paying your premium to full, you start building your NCD again.</p><p>The amount of NCD you may receive depends on the type of vehicle, coverage and the number of years you have not filed a claim. Normally private cars can go up to 55% of NCD.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>What are market value and agreed value coverages?</span><span class="sign">+</span></button><div class="ans"><p><b>Market value</b> refers to the current calculated worth of your car.</p><p>If you choose the market value coverage, your car would be covered for what it is currently worth in the market, and you will be compensated for your car theft or loss based on the market value of your car at the time of theft or loss, rather than market value at the time of your insurance renewal.</p><p><b>Agreed value</b> refers to the value agreed by both the insurer and policyholder at the time of insurance renewal.</p><p>Insurers determine the agreed value based on a few underwriting factors and risk assessment. Say that you choose the agreed value as the sum insured for your car, your insurer will compensate you exactly as the agreed value.</p><p>Refer to our example below:</p><p>You have insured your car at RM60,000 in January this year. In September, you would need to make claim on a total loss or theft of your car. In the instance where your car is valued at RM58,000 in September, if you chose:</p><ul><li>market value coverage, your compensation pay-out would be based on RM58,000 rather than RM60,000.</li><li>agreed value coverage, your compensation pay-out would be based on RM60,000.</li></ul></div></div>
+</div>
+<h3>Topic 2: Transaction, Payment &amp; Refund</h3>
+<div style="border-bottom:1px solid #e6e6e6">
+<div class="item faq"><button type="button" aria-expanded="false"><span>What are the types of payment options available?</span><span class="sign">+</span></button><div class="ans"><p>Debit Card / Credit Card &amp; Online banking.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>My transaction was successful. What should I expect next?</span><span class="sign">+</span></button><div class="ans"><p>Upon successful transaction, you can expect to receive 2 emails within 24hours following your transaction. We will send an email entailing successful transaction with an attachment of e-Receipt. The respective insurer will send e-Certificate to your email.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>It has been more than 24 hours since my purchase. However, I yet to receive the above-mentioned emails. What should I do?</span><span class="sign">+</span></button><div class="ans"><p>Apology for the inconvenience that you might have faced. We advise you to reach out to our Customer Support team at</p><p>+60 18 288 4889</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>My transaction is unsuccessful. Why is that so &amp; what should I do?</span><span class="sign">+</span></button><div class="ans"><p>There are a few possibilities if your payment is declined. Depending on the exact situation, the problem may, but not necessarily occur as a result of the following:</p><ul><li>If you use credit or debit card, you may need to refer to your respective bank to ensure that it is valid.</li><li>System, be it on ours or the banking system may experience intermittent disruption occassionally or may be under scheduled maintenance. We would advise you to avoid midnight transaction as most system maintenance work is likely to take place around that hour.</li></ul><p>Alternatively, you may reach out to our Customer Support team via:</p><p>+60 18 288 4889</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>Can I cancel and get a refund?</span><span class="sign">+</span></button><div class="ans"><p>We endeavour to deliver your e-Policy to you soonest possible. If we yet to deliver e-Policy to you, you may reach out to our Customer Support team via:</p><p>+60 18 288 4889</p><p>Otherwise, you will need to request the refund directly with the respective insurance company.</p></div></div>
+</div>
+<h3>Topic 3: Claim &amp; Support</h3>
+<div style="border-bottom:1px solid #e6e6e6">
+<div class="item faq"><button type="button" aria-expanded="false"><span>How do I contact your Customer Support team?</span><span class="sign">+</span></button><div class="ans"><p>You may reach out to our Customer Support team via:</p><p>+60 18 288 4889</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>How do I change my policy information?</span><span class="sign">+</span></button><div class="ans"><p>You may reach out to our Customer Support team via:</p><p>+60 18 288 4889</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>If my vehicle is stolen, do I get my full sum insured?</span><span class="sign">+</span></button><div class="ans"><p>Claims will be based on the present market value of the vehicle. Therefore, we recommend that your car is insured based on the current fair market value or agreed value proposed by the respective company.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>How fast can my motor claim be settled?</span><span class="sign">+</span></button><div class="ans"><p>Your claim will be processed once the adjuster’s report and other relevant documents are received by Insurer. Therefore, it is important for you to notify us or insurer and give complete documents as soon as possible so they can process your claim without any delay.</p></div></div>
+<div class="item faq"><button type="button" aria-expanded="false"><span>What should I do, in the event of a car accident?</span><span class="sign">+</span></button><div class="ans"><p>In the event of an accident, ensure that your vehicle is sent to your own Panel of Workshops or an authorized franchise repairer/dealer (car manufacturer service centre). A police report should be lodged within 24 hours. You are also required to notify us of the accident immediately; where upon we shall advise you of the procedures &amp; furnish you with a claim form to be duly completed &amp; returned to us together with all the other relevant documents requested.</p><p>If your vehicle is involved in a minor accident whereby you may not want to make a claim on your own policy but the accident involved third party property damage or third party bodily injury, please call your selected insurance company to make the notification.</p></div></div>
+</div>
+</div>
+</main>
+</section>
+
+<section class="page" id="support">
+<main>
+<h1 style="margin-bottom:18px">Need to reach out to us?</h1>
+<p style="font-size:17px;margin-bottom:58px">We are here to help and answer any question and/ or complaint that you may have. We look forward to hearing from you.</p>
+<h2 style="font-size:30px;margin-bottom:14px">Our contact details</h2>
+<p style="font-size:17px;margin-bottom:20px">Available 9AM - 6PM, Monday - Friday except for Kuala Lumpur &amp; national public holiday</p>
+<div class="row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2f7de1" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>+60 18-288 4889</span></div>
+<hr style="max-width:790px">
+<h2 style="font-size:30px;margin-bottom:14px">We are located here</h2>
+<div class="row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2f7de1" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Serba Sentral Sdn Bhd <span style="font-size:16px">(1341454A)</span></span></div>
+<p style="font-size:18px;margin-top:8px">Level 15, Sunway Tower, Jalan Ampang, 50450 Kuala Lumpur</p>
+<hr style="max-width:790px">
+<div><span class="lbl">Changed: Allianz section added</span></div>
+<h2 style="font-size:36px;margin-bottom:16px">Need to contact insurance company?</h2>
+<p style="font-size:18px;margin-bottom:70px">Following are the contact details to address any claim matters that you may have with our respective insurers:</p>
+<div class="acc">
+<div class="item"><button type="button" aria-expanded="false"><span>Lonpac Insurance Bhd</span><span class="sign">+</span></button>
+<div class="lines">
+<div class="ln"><span class="b">•</span><div><span class="l">Road Assistance Hotline (24 Hours)</span><span class="v">1300 88 1138</span></div></div>
+<div class="ln"><span class="b">•</span><div><span class="l">Customer Service</span><span class="v">03 2262 8666</span></div></div>
+<div class="ln"><span class="b">•</span><div><span class="l">General Line</span><span class="v">03 2262 8688 / 03 2723 7888</span></div></div>
+</div></div>
+<div class="item open chgbox"><button type="button" aria-expanded="true"><span>Allianz General Insurance Company (Malaysia) Berhad <span class="lbl" style="margin:0 0 0 10px">New section</span></span><span class="sign">−</span></button>
+<div class="lines">
+<div class="ln"><span class="b">•</span><div><span class="l">24-Hours Helpline</span><span class="v">1800 22 5542</span></div></div>
+<div class="ln-note"><span class="lbl" style="margin:0 0 8px">New sentence</span><br><mark class="chg">You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542</mark></div>
+</div></div>
+<div class="item"><button type="button" aria-expanded="false"><span>Tokio Marine Insurans (Malaysia) Berhad</span><span class="sign">+</span></button>
+<div class="lines">
+<div class="ln"><span class="b">•</span><div><span class="l">Road Assist Hotline (24 Hours)</span><span class="v">1800 88 1301 / 03 2053 5800</span></div></div>
+<div class="ln"><span class="b">•</span><div><span class="l">Customer Service Hotline</span><span class="v">1800 88 0812</span></div></div>
+</div></div>
+</div>
+</main>
+</section>
+
+<footer>
+<div class="ft">
+<div style="width:110px;display:flex;flex-direction:column;align-items:center;gap:6px">
+<svg width="60" height="66" viewBox="0 0 38 44" fill="none" stroke="#1d1d1f" stroke-width="1.6"><path d="M19 2 L35 8 V22 C35 32 28 39 19 42 C10 39 3 32 3 22 V8 Z"/><path d="M9 25 L12 19 H26 L29 25 Z" stroke="#2f7de1"/><circle cx="13" cy="27" r="2.5" stroke="#2f7de1"/><circle cx="25" cy="27" r="2.5" stroke="#2f7de1"/></svg>
+<span style="font-size:13px;font-weight:700;letter-spacing:3px;color:#1d1d1f">SE<span class="car">CAR</span>ANG</span>
+</div>
+<div class="desc">
+<p style="line-height:2">Discover Malaysia's best car insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs.</p>
+<p style="line-height:2">Secarang.com website and its services are owned and operated by Serba Sentral Sdn. Bhd. (Company No: 201901032124 (1341454-A)), a registered and licensed insurance agent. All insurance products on Secarang.com are represented by their respective authorized and licensed agents of respective insurers in accordance with the Malaysia Insurance Act 1996, Malaysia Financial Services Act 2013 and Malaysia Islamic Financial Services Act 2013.</p>
+</div>
+<div class="col" style="width:180px;margin-left:auto"><b>Quick Links</b><a href="#" onclick="return false">PRIVACY POLICY</a><a href="#" onclick="return false">TERMS OF USE</a><a href="#" onclick="return false">REFUND POLICY</a></div>
+<div class="col" style="width:140px"><b>Secured Payment</b>
+<span style="font-size:18px;font-weight:800;font-style:italic;color:#1a1f71">VISA</span>
+<span style="display:flex"><span style="width:18px;height:18px;border-radius:9px;background:#eb001b"></span><span style="width:18px;height:18px;border-radius:9px;background:#f79e1b;margin-left:-7px"></span></span>
+<span style="font-weight:800;color:#1c3163">FPX</span></div>
+</div>
+<div class="copy">Copyright © 2026 Serba Sentral Sdn Bhd (Company No : 201901032124 (1341454A)). All Rights Reserved.</div>
+</footer>
+
+<script>
+function show(id){
+  if (!document.getElementById(id)) id = 'about-us';
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.toggle('show', p.id === id); });
+  document.querySelectorAll('[data-page]').forEach(function(a){ if (a.tagName === 'A' && a.closest('nav')) a.classList.toggle('active', a.dataset.page === id); });
+  window.scrollTo(0, 0);
+}
+document.addEventListener('click', function(e){
+  var a = e.target.closest('[data-page]');
+  if (a) { e.preventDefault(); show(a.dataset.page); }
+});
+show('about-us');
+document.querySelectorAll('.item button').forEach(function(b){
+  b.addEventListener('click', function(){
+    var it = b.parentElement, open = it.classList.toggle('open');
+    b.setAttribute('aria-expanded', open);
+    b.querySelector('.sign').textContent = open ? '\u2212' : '+';
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "expected": "Ensure:\n• Confirmation and the Success page are for Tokio Marine (no Allianz name or price)\n• Secarang receipt Insurer: \"Tokio Marine Insurans (Malaysia) Berhad\", next line \"198601000381 (149520-U)\" (no Allianz company number)\n• CIBO row Ins. Co. Tokio Marine with agency badge Pemaju Eksklusif (observed); Transaction Details insurer \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\", laid out as captured on 28.10 (number on the same line as the name, wrapping)",
+  "gate": {
+    "at": "29/10/2026, 16:57:12",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_E2E_TS10",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sE2E-20261029-1545-c2",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_E2E_TS10",
+  "labels": [],
+  "order": 24,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Confirmation and the Success page are for Tokio Marine (no Allianz name or price)"
+    },
+    {
+      "id": "E2",
+      "text": "Secarang receipt Insurer: \"Tokio Marine Insurans (Malaysia) Berhad\", next line \"198601000381 (149520-U)\" (no Allianz company number)"
+    },
+    {
+      "id": "E3",
+      "text": "CIBO row Ins. Co. Tokio Marine with agency badge Pemaju Eksklusif (observed); Transaction Details insurer \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\", laid out as captured on 28.10 (number on the same line as the name, wrapping)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "Allianz purchase: add-ons, Confirmation, switching insurer",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: an individual-owner renewal car that all three insurers quote (not used by another row). Tokio Marine showed 'Quotation unavailable' for a private car on /ia/ on 20.10 (team doc §4): a plate Tokio Marine quotes is needed (Q12)\n• Payment: tile 'FPX Online banking' > RHB Bank > Fiuu Bank Simulator popup (its own username + password) > Status 'Approved' (00) > copy the TAC shown into 'Enter TAC' > [Pay now]. The popup closes itself after Pay (doc §5; proven on /ia/ 19.10, receipt Payment Method 'Online Banking - RHB Bank')\n• Record the plate and the CIBO Transaction Ref. No. in Remarks (read again by RG_TS1)",
+  "sheet": "E2E",
+  "situation": "Customer picks Allianz, goes back and buys Tokio Marine instead: receipt and CIBO show Tokio Marine with its own company number, nothing of Allianz. This is also the Tokio Marine purchase read by 12406_RG_TS1, RC_TS1, RC_TS3, RC_TS4",
+  "source": "SRD v1.1 REQ-010 ('Tokio Marine (current)', Example 2a), REQ-011 ('Tokio Marine (current)'); the insurer finally paid is the transaction's own value. Tokio Marine receipt text today confirmed by the team doc §4 and the walk 28.10; Transaction Details layout as captured 28.10 (BR69005852, number on the same line: Q29); agency Pemaju Eksklusif observed (team doc §4, walk 28.10)",
+  "steps": "1. Secarang: the car + owner > All Quotations > select Allianz > Add-ons (screenshot) > Continue > Confirmation for Allianz\n2. On Confirmation: [Edit] on the add-ons; screenshot where it lands (recorded); Continue back to Confirmation\n3. On Confirmation: [Edit] on the insurance plan; screenshot the pop-up (recorded); choose Change; on All Quotations select Tokio Marine (record any 'Kindly confirm your navigation' popup)\n4. Tokio Marine > Add-ons > Confirmation > Confirm and Pay > FPX Online banking > RHB Bank > Status Approved (00) > TAC > [Pay now]\n5. Screenshot the Success page; download the [Receipt] (its labels are compared with the Allianz receipt in RC_TS1)\n6. CIBO > Transaction Management: search the plate; open Transaction Details and Receipt; screenshot",
+  "updatedAt": "2026-10-28T07:56:11+00:00"
+}

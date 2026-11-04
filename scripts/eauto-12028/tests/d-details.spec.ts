@@ -54,12 +54,10 @@ test('12028_TS14: Details shows 16 states, TOTAL and amounts at the FMC and MMSD
     await d.showValue(d.stateTable());
     await c.run('16 states', d.stateTable(), () => {
       expect(rows.map(r => r.code).sort()).toEqual(STATES.map(x => x.code));
-      const badNames = rows.filter(r => {
-        const st = STATES.find(x => x.code === r.code);
-        const name = r.name.replace(/\s*\(\d{2}\)\s*$/, '').toLowerCase();
-        return !st || !st.names.some(n => n.toLowerCase() === name);
-      });
-      expect(badNames.map(r => r.name), 'names not as SRD v1.1 REQ-008').toEqual([]);
+      // Exact live text, upper case with the code, e.g. "JOHOR (01)", "WILAYAH PERSEKUTUAN KUALA LUMPUR (14)"
+      // (live Details capture lines 156-276). The order is not checked.
+      const badNames = rows.filter(r => r.name !== STATES.find(x => x.code === r.code)?.label);
+      expect(badNames.map(r => r.name), 'state names not as the live page shows them').toEqual([]);
       d.totalRow(data);
     });
   });

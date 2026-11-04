@@ -55,6 +55,11 @@ _reference/html/<system>/<page>.html
 | [esim/dereg-precheck-enquiry-list.html](esim/dereg-precheck-enquiry-list.html) | `/esim/dereg-precheck-enquiry-resp` list, full 19 records — **the entity that steers eDereg Pre-Checking's JPJ result**, confirmed by field-shape match + an explicit "eDereg PreChecking" remark | 2026-08-21 |
 | [esim/dereg-precheck-enquiry-edit.html](esim/dereg-precheck-enquiry-edit.html) | `/esim/dereg-precheck-enquiry-resp/<id>/edit` — **complete form** | 2026-08-21 |
 | [esim/dereg-precheck-enquiry-view-after-save.html](esim/dereg-precheck-enquiry-view-after-save.html) | Same record's view page right after Save | 2026-08-21 |
+| [secarang/car-insurance-home-bnpl-popup.html](secarang/car-insurance-home-bnpl-popup.html) | Secarang `/ia/car-insurance` home — **complete form** + BNPL renewal popup (`ngb-modal-window`) open over it | 2026-10-30 |
+| [eauto/bo-association-payment-listing-summary.html](eauto/bo-association-payment-listing-summary.html) | EAINT-12028 `/backoffice/admin/association` Summary, 2026, uat1 — **complete form** (year filter); Sep + Oct closed, rest "-" | 2026-11-02 |
+| [eauto/bo-association-payment-listing-summary-2026-11-03.html](eauto/bo-association-payment-listing-summary-2026-11-03.html) | EAINT-12028 Summary, **new build** uat1 — no `<h1>` (title is `span.app-title`), no header name/logout, JS Search; Jan–Oct closed | 2026-11-03 |
+| [eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html](eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html) | EAINT-12028 Details `/backoffice/admin/association/2026/9`, all Pending, Approver login (not its turn) — **complete**: workflow form, Reject / payment date / signature / idle popups, script | 2026-11-02 |
+| [eauto/bo-association-payment-listing-details-jan-2026-drafter-turn-2026-11-03.html](eauto/bo-association-payment-listing-details-jan-2026-drafter-turn-2026-11-03.html) | EAINT-12028 Details `/backoffice/admin/association/2026/1`, **new build**, Drafter login, its turn — `#action-panel`, `#chip-*`, `#btn-drafter-kiv/-approve`, `#ap-note`, `#ap-summary`; modals unchanged | 2026-11-03 |
 
 **Not yet captured** — the eAuto UCD pages that `knowledge/flow-*.md` cite as
 verified (Get Free Quote, insurance steps 1–3, insurance listing/details, eSTM

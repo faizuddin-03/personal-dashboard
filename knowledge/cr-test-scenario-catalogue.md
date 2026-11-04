@@ -39,6 +39,12 @@ new one, and to see which rules a past CR already tested.
 7. Credentials, account passwords and personal test data found in some workbooks
    (Configuration sheets, CIBO role sheets, RHB statement sample) are deliberately
    not reproduced here.
+8. **Only the eAuto library syncs to this PC.** Faizuddin's OneDrive syncs **QA Team -
+   eAuto - CR Test Scenarios** only. The **Secarang & CIBO** library exists here only as the
+   2026-10-16 copy above, so a Secarang/CIBO TS added later cannot be read until it is
+   synced or shared. `[source: pipeline EAINT-12406, Elf chat, 2026-11-02]` `[unconfirmed]`
+   A TS kept only on another QA's laptop is out of reach of every toolbox path.
+   `[source: pipeline EAINT-12406, Elf chat, 2026-11-02]`
 
 ## Counts
 

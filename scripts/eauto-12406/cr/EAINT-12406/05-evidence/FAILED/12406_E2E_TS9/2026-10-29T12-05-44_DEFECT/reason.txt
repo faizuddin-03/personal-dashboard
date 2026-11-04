@@ -1,0 +1,4 @@
+12406_E2E_TS9 — FAIL — the page does not match the expected result (a defect until triage says otherwise)
+run eaint-12406-retest-sretest-20261029-1950-B-c1, staging /ia, 29/10/2026, 20:05:44 MYT
+
+- E4: expected "Changing the gender on Confirmation re-prices the Allianz premium (observed rule)", page shows "Gender MALE -> FEMALE: Total Premium RM944.37 -> RM944.37" (10-confirmation-gender-reprice.png)

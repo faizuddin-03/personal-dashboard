@@ -16,6 +16,7 @@ import {
 import { THEMES, DEFAULT_THEME, getTheme, applyTheme, getUiStyle, setUiStyle, type UiStyle } from "@/lib/themes";
 import { GEMINI_KEY_STORE } from "@/components/SettingsModal";
 import { AiProvider, AI_PROVIDER_META, MODEL_OPTIONS, DEFAULT_MODELS, getAiSettings, saveAiSettings } from "@/lib/aiSettings";
+import { getQaPortalTokenExpiry, setQaPortalTokenExpiry } from "@/lib/qaPortalToken";
 
 export default function SettingsPage() {
   const { creds, setCreds } = useApp();
@@ -41,6 +42,10 @@ export default function SettingsPage() {
   const [orModels, setOrModels] = useState<string[]>([]);
   const [orModelsStatus, setOrModelsStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
 
+  // QA Portal token expiry
+  const [qaPortalExpiry, setQaPortalExpiry] = useState("");
+  const [qaPortalSaved, setQaPortalSaved] = useState(false);
+
   // Theme
   const [themeId, setThemeId] = useState(DEFAULT_THEME);
   const [uiStyle, setUiStyleState] = useState<UiStyle>("normal");
@@ -54,6 +59,7 @@ export default function SettingsPage() {
     setBackup(getBackupSettings());
     setThemeId(localStorage.getItem("qa-theme") ?? DEFAULT_THEME);
     setUiStyleState(getUiStyle());
+    setQaPortalExpiry(getQaPortalTokenExpiry());
     const ai = getAiSettings();
     setAiProvider(ai.provider);
     setAiKeys(ai.keys);
@@ -84,7 +90,8 @@ export default function SettingsPage() {
 
   function handleThemeChange(id: string) {
     const theme = getTheme(id);
-    if (uiStyle === "normal") applyTheme(theme);
+    // Dragons only restyles the Dashboard page; the colour theme still applies everywhere else.
+    if (uiStyle !== "medieval") applyTheme(theme);
     localStorage.setItem("qa-theme", id);
     setThemeId(id);
   }
@@ -262,6 +269,33 @@ export default function SettingsPage() {
             >
               {jiraSaved ? <CheckCircle size={13} /> : <Save size={13} />}
               {jiraSaved ? "Saved!" : "Save"}
+            </button>
+          </div>
+        </Section>
+
+        {/* ── QA Portal ── */}
+        <Section title="QA Portal API Token" description="The token Claude Code uses for the QA Portal. A notice shows on the Dashboard 1 day before it expires.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Token Expiry Date" hint="Copy the date from QA Portal → Settings → Integrations → API tokens.">
+              <input
+                type="date"
+                value={qaPortalExpiry}
+                onChange={e => setQaPortalExpiry(e.target.value)}
+                className={input + " [color-scheme:dark]"}
+              />
+            </Field>
+          </div>
+          <div className="flex gap-3 mt-4">
+            <button
+              onClick={() => {
+                setQaPortalTokenExpiry(qaPortalExpiry);
+                setQaPortalSaved(true);
+                setTimeout(() => setQaPortalSaved(false), 2500);
+              }}
+              className={primaryBtn}
+            >
+              {qaPortalSaved ? <CheckCircle size={13} /> : <Save size={13} />}
+              {qaPortalSaved ? "Saved!" : "Save"}
             </button>
           </div>
         </Section>
@@ -449,10 +483,12 @@ export default function SettingsPage() {
         <Section title="Appearance" description="Choose a style and a colour theme for the dashboard.">
           <div className="mb-5">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Style</p>
-            <div className="grid grid-cols-2 gap-2 max-w-md">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-2xl">
               {([
                 { id: "normal", label: "Normal", hint: "The colour themes below" },
-                { id: "medieval", label: "Medieval", hint: "Cozy cottage, minimalist" },
+                // Shown as "Cozy" (Faizuddin, 2026-10-29); the id stays "medieval" so saved choices and CSS keep working.
+                { id: "medieval", label: "Cozy", hint: "Cozy cottage, minimalist" },
+                { id: "dragons", label: "Dragons", hint: "Berk at night, Toothless and Light Fury (Dashboard page only)" },
               ] as const).map(o => (
                 <button
                   key={o.id}

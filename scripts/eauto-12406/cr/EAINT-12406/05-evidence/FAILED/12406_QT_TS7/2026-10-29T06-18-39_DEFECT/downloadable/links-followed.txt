@@ -1,0 +1,24 @@
+Links followed in 12406_QT_TS7 (staging /ia/, car HXA0017A)
+
+card Plan Details > "Product Disclosure" -> https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf [new tab]: names Allianz: yes; dates in it: 03/06/2020; other insurers named: none
+card Plan Details > "Claim Guide" -> https://staging.secarang.com/ia/assets/documents/allianz-claim-guide-en.pdf [new tab]: a PDF with NO readable text (Title 13015_BNM 2019_Brochure 2_ENG_FA_OL; CreationDate D:20191121104706Z; ModDate D:20210811090321Z)
+card Plan Details > "Policy Wording" -> https://staging.secarang.com/ia/assets/documents/allianz-policy-wording-en.pdf [new tab]: names Allianz: yes; dates in it: 03 March 2022; other insurers named: none
+card Plan Details > "Car Roadside Assistance Terms & Condition" -> https://staging.secarang.com/ia/assets/documents/allianz-car-roadside-assistance-en.pdf [new tab]: names Allianz: yes; dates in it: none; other insurers named: none
+Confirmation Plan Details > "Product Disclosure" -> https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf [new tab]: names Allianz: yes; dates in it: 03/06/2020; other insurers named: none
+Confirmation Plan Details > "Claim Guide" -> https://staging.secarang.com/ia/assets/documents/allianz-claim-guide-en.pdf [new tab]: a PDF with NO readable text (Title 13015_BNM 2019_Brochure 2_ENG_FA_OL; CreationDate D:20191121104706Z; ModDate D:20210811090321Z)
+Confirmation Plan Details > "Policy Wording" -> https://staging.secarang.com/ia/assets/documents/allianz-policy-wording-en.pdf [new tab]: names Allianz: yes; dates in it: 03 March 2022; other insurers named: none
+Confirmation Plan Details > "Car Roadside Assistance Terms & Condition" -> https://staging.secarang.com/ia/assets/documents/allianz-car-roadside-assistance-en.pdf [new tab]: names Allianz: yes; dates in it: none; other insurers named: none
+Confirmation declaration > "Product Disclosure Sheet" -> https://staging.secarang.com/ia/assets/documents/allianz-product-disclosure-en.pdf [new tab]: names Allianz: yes; dates in it: 03/06/2020; other insurers named: none
+Confirmation declaration > "Privacy Notice" -> https://staging.secarang.com/ia/assets/documents/allianz-privacy-notice.pdf [new tab]: names Allianz: yes; dates in it: 3 March 2020; other insurers named: none
+
+E5 per link:
+card Plan Details "Product Disclosure": OK (is the Product disclosure sheet, Allianz's)
+card Plan Details "Claim Guide": UNKNOWN (no readable text)
+card Plan Details "Policy Wording": OK (is the Policy wording, Allianz's)
+card Plan Details "Car Roadside Assistance Terms & Condition": OK (is the Car Roadside Assistance Terms & Condition, Allianz's)
+Confirmation Plan Details "Product Disclosure": OK (is the Product disclosure sheet, Allianz's)
+Confirmation Plan Details "Claim Guide": UNKNOWN (no readable text)
+Confirmation Plan Details "Policy Wording": OK (is the Policy wording, Allianz's)
+Confirmation Plan Details "Car Roadside Assistance Terms & Condition": OK (is the Car Roadside Assistance Terms & Condition, Allianz's)
+Confirmation declaration "Product Disclosure Sheet": OK (is the Product disclosure sheet, Allianz's)
+Confirmation declaration "Privacy Notice": OK (is the Privacy notice, Allianz's)

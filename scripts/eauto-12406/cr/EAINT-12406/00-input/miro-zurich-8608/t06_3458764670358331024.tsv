@@ -1,0 +1,33 @@
+Transaction Management Listing page				
+TS No	Test Scenario	Expected Results	QA	Test Result
+CIB_TS1	Without search / filter	Returns all records.	Azfar	Pass
+CIB_TS2	"Filter ""Platform (eAuto) + Zurich Takaful""
+Click ""Search""
+Click ""Print & Export"""	"Results displayed matching the search criteria
+Ensure all contents column showing the correct value in system generated in exported csv, print page and listing"	Azfar	Pass
+CIB_TS3	"Filter ""Platform (eAuto) + Zurich Takaful + Date (From & Till)
+Click ""Search""
+Click ""Print & Export"""	"Results displayed matching the search criteria
+Ensure all contents column showing the correct value in system generated in exported csv, print page and listing"	Azfar	Pass
+CIB_TS4	"Filter ""Platform (Secarang) + Zurich Takaful + Date (From & Till)
+Click ""Search""
+Click ""Print & Export"""	"Results displayed matching the search criteria
+Ensure all contents column showing the correct value in system generated in exported csv, print page and listing"	Azfar	Pass
+CIB_TS5	"Fill vehicle no. in ""Search"" box + Transaction Status (Failed)
+Click ""Search""
+Click ""Print & Export""
+Click the Transaction Ref. No. and go to transaction details"	"Results displayed matching the search criteria
+Ensure all contents column showing the correct value in system generated in exported csv, print page and listing
+Ensure all the contents in transaction details display correctly"	Azfar	Pass
+CIB_TS6	"Fill vehicle no. in ""Search"" box +Platform (eAuto) + Transaction Status (Insurance Created)
+Click ""Search""
+Click ""Print & Export""
+Click the Transaction Ref. No. and go to transaction details"	"Results displayed matching the search criteria
+Ensure all contents column showing the correct value in system generated in exported csv, print page and listing
+Ensure all the contents in transaction details display correctly"	Azfar	Pass
+CIB_TS7	"Fill vehicle no. in ""Search"" box +Platform (Secarang) + Transaction Status (Insurance Created)
+Click ""Search""
+Click ""Print & Export""
+Click the Transaction Ref. No. and go to transaction details"	"Results displayed matching the search criteria
+Ensure all contents column showing the correct value in system generated in exported csv, print page and listing
+Ensure all the contents in transaction details display correctly"	Azfar	Pass

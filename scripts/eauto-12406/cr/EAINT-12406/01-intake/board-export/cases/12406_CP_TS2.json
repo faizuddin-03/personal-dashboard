@@ -1,0 +1,46 @@
+{
+  "expected": "Ensure:\n• Our partnership contains the sentence \"Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"\n• Our partnership reads as in the mockup: \"At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"\n• The old ending \"...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\" is no longer shown",
+  "gate": {
+    "at": "29/10/2026, 15:50:23",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_CP_TS2",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sCP-20261029-1545-c1",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_CP_TS2",
+  "labels": [],
+  "order": 3,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Our partnership contains the sentence \"Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\""
+    },
+    {
+      "id": "E2",
+      "text": "Our partnership reads as in the mockup: \"At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\""
+    },
+    {
+      "id": "E3",
+      "text": "The old ending \"...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\" is no longer shown"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "About Us, FAQs, Support",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/",
+  "sheet": "CP",
+  "situation": "About Us > Our partnership shows the new Allianz wording",
+  "source": "SRD v1.1 §2.2.6 REQ-007 (new and existing wording; Example 1a); full paragraph from mockup Secarang 20261015 (SRD §1.5 #4). 'Rest of the page unchanged' (Example 1b): 12406_CP_TS8",
+  "steps": "1. Open Secarang > About Us; screenshot Our partnership",
+  "updatedAt": "2026-10-28T04:49:41+00:00"
+}

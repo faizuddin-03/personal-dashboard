@@ -1,0 +1,101 @@
+TS No.	eAuto Service Portal > Hire Purchase Record					Expected Result		QA	Test Result (P/F)
+	Trigger Point	Refer Risk Code	Prefix	Insurer	Test Scenario	Record Status	Hire Purchase Record		
+B/T_HP_TS4	"eSTM Step 4 to 5 JPJ Enquiry =
+Failed (due to VEL000069E)"	"Beyond Economic Repair
+(BER)"	ZU	"Zurich
+(Error Code = R26)"	"Use vehicle prefix = ZU
+Create New Hire Purchase Record, Record Status = Active
+Create eSTM + eLKM + eVOC Transaction (MyKad)
+Proceed to Step 4 - JPJ Check
+Step 4 to 5 JPJ Enquiry = Failed (due to eLKM VEL000069E)
+Zurich insurance API return Refer Risk Code = BER"	"In UCD > eSTM Step 4 - JPJ Check page, ensure:
+System prompt popup with details below,
+Title: ""Unable to Proceed""
+Content: ""You are unable to proceed with the eSerahan transaction for this vehicle. Please contact X Star Technology Malaysia S/B at +6012-3930725 for further info.""
+[OK] button
+Clicking [OK] redirects user back to eSTM Module Dashboard.
+User cannot proceed with eSTM and Insurance Trx.
+
+UCD & BO > eSTM Transaction Listing and Details Page
+The trx appears with the following details:
+JPJ Check = OK
+eLKM JPJ Check = VEL000069E
+Tx Status = Failed
+Action column shows View and Resubmit
+
+UCD & BO > Insurance Transaction Listing and Details Page
+The trx should not appear, as it was not successfully created.
+
+CIBO > Transaction Management Listing and Details Page
+The trx should not appear, as it was not successfully created.
+
+Note: BO JPJ XML Log (ESTM) should show Y~12~Y."	"In Hire Purchase Record Creation Listing page, ensure:
+Record listing remain unchanged:
+Record Status = B
+eSTM Trx Status = -
+eSTM Approved Date = -
+Insurance Purchase (eAuto) = -
+Insurance Approved At = -
+eLKM = -
+eVOC = -
+Last Updated On = {dd-mm-yyyy HH:mm}
+Action = Edit
+Click Edit hyperlink, Hire Purchase Record details showing correctly
+ALL details showing correctly
+
+Note: XStar users should be ABLE to edit / update the record status."	Azfar	PASS
+B/T_HP_TS5	"eSTM Listing Resubmit JPJ Enquiry =
+Failed (due to VEL000069E)"	Total Loss (TL)	ZV	"Zurich
+(Error Code = 090)"	"Create New Hire Purchase Record, Record Status = Active
+Create eSTM + eLKM + eVOC Transaction (MyKad)
+Proceed to Step 4 - JPJ Check
+Quit step page, resubmit transaction from listing page
+Resubmit JPJ Enquiry = Failed (due to eLKM VEL000069E)
+Zurich insurance API return Refer Risk Code ."		"In Hire Purchase Record Creation Listing page, ensure:
+Record listing remain unchanged:
+Record Status = T
+eSTM Trx Status = -
+eSTM Approved Date = -
+Insurance Purchase (eAuto) = -
+Insurance Approved At = -
+eLKM = -
+eVOC = -
+Last Updated On = {dd-mm-yyyy HH:mm}
+Action = Edit
+Click Edit hyperlink, Hire Purchase Record details showing correctly
+ALL details showing correctly
+
+Note: XStar users should be ABLE to edit / update the record status."	Azfar	PASS
+B/T_HP_TS6		Other than BER / TL	ZX	Zurich		"Redirect to UCD > Insurance Step 1 - Quotes page, ensure:
+User can proceed with Insurance Trx (show all available insurance) and continue eSTM until Approved.
+
+Ensure the following:
+UCD > Insurance Transaction Step Page
+Step 1 - Cannot skip insurance and return to eSTM.
+Step 3 - Hire Purchase Loan = XStar; Payment amount shows no 10% rebate
+
+UCD > eSTM Transaction Step Page
+Step 5 - Add-on Services checkboxes are checked and disabled, Radio buttons hidden; users cannot opt out of eLKM / eVOC (eLKM fixed at 12 months).
+
+UCD & BO > eSTM Transaction Listing and Details Page
+Insurance - Payment amount shows no 10% rebate
+
+UCD & BO > Insurance Transaction Listing and Details Page
+Payment amount shows no 10% rebate
+Hire Purchase fields display correctly
+
+CIBO > Transaction Management Listing and Details Page
+Payment amount shows no 10% rebate
+Hire Purchase fields display correctly"	"In Hire Purchase Record Creation Listing page, ensure:
+Record listing updated correctly:
+Record Status = Complete
+eSTM Trx Status = Approved
+eSTM Approved Date = {dd-mm-yyyy HH:mm}
+Insurance Purchase (eAuto) = Complete
+Insurance Approved At = {dd-mm-yyyy HH:mm}
+eLKM = Yes
+eVOC = Yes
+Last Updated On = {dd-mm-yyyy HH:mm}
+Action = -
+
+Note: Ensure the Edit hyperlink is NO longer shown under Action column, and XStar user unable to edit / update the record."	Azfar	PASS

@@ -1,0 +1,1963 @@
+# EAINT-12406 [Secarang-Allianz] To Allow and Display Allianz in Secarang Including Logo and Wording
+#
+# Drafted 28.10.2026 by cr-draft ("proceed", Azfar 28.10.2026). REVISED 28.10.2026 (v2): coverage review
+# 01-intake/review/2026-10-28-coverage.md applied + SA Impact Brief (00-input/sa-impact-brief-2026-09-29.md).
+# First draft kept at 01-intake/_backup/scenarios-2026-10-28-v1.yaml. Existing TS keep their numbers; new TS take
+# the next free number on their sheet.
+#
+# Expected results: SRD v1.1 (26.10.2026, re-checked on Jira 28.10: still the latest), the ticket, and the two
+# mockups the SRD lists in §1.5 (#4 Secarang 20261015, #5 CIBO Transaction Management 20261006) for layout only.
+# The SA Impact Brief (SRD §1.5 #6, dated 29.09, OLDER than the SRD) is used for scope and test ideas only; where
+# it disagrees with the SRD, the SRD wins. Regression: current behaviour from the shared Secarang study, marked
+# "observed", never a row of its Superseded table.
+# Where the SRD is silent the case has expected "" (or only the sourced points) and an open question, and the
+# row is highlighted orange for the QA (highlight: <question id>). Nothing is deprioritised by this draft.
+
+meta:
+  ticket: EAINT-12406
+  title: "[Secarang-Allianz] To Allow and Display Allianz in Secarang Including Logo and Wording"
+  origin: drafted
+  revision: "v2, 28.10.2026: coverage review (20 gaps, 12 questions, duplicates, 9 unsourced, 24 mockup points) + SA Impact Brief applied. What was applied / not applied: 01-intake/review/2026-10-28-coverage.md, section 9"
+  drafted_from:
+    srd: "SRD_EAINT-12406_v1.1_20261026.pdf (latest, re-checked on Jira 28.10.2026)"
+    ticket_read_on: 2026-10-27
+    study: cr/EAINT-12406/01-research/secarang-study.md
+    also:
+      - "00-input/Mock Up_EAINT-12406_Secarang_20261015.html (SRD §1.5 #4: About Us, FAQs, Support)"
+      - "00-input/Mock Up_EAINT-12406_CIBO Transaction Management_20261006.html (SRD §1.5 #5: CIBO listing, Transaction Details, Receipt)"
+      - "00-input/sa-impact-brief-2026-09-29.md (SRD §1.5 #6, 29.09.2026, older than the SRD: scope and test ideas only)"
+      - "00-input/teams-chat-2026-10-28.md (Dev: '28/10 will be ready for testing', 26.10)"
+      - "01-intake/review/2026-10-28-coverage.md (coverage review, applied in v2)"
+  unread_inputs:
+    - "Teams briefing with Dev 22.10.2026 (recap + transcript in the EAINT-12406 Teams chat): not read yet. Not a blocker"
+    - "ESI-361 (SRD §1.5 #3, source ticket): not visible to us in Jira"
+    - "CCB-992 (SRD §1.5 #2): no description. EAINT-8799 '[Secarang] To remove RHB and Allianz' (Done, Sept 2025): description has only a version table, no comments; which screens it touched is not written down"
+  column_mapping: null
+  approved_by: ""            # GATE 0: the human fills this in
+  approved_on: ""
+
+  ticket_vs_srd:            # the SRD v1.1 (26.10) is later than the ticket text and the SA brief (29.09); the SRD wins in every row
+    - "About Us wording: ticket '...including Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad and Tokio Marine...'; SRD REQ-007 'Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.' -> SRD used"
+    - "Support contact fields: ticket 'same format as existing insurers (Road Assistance Hotline, Customer Service)'; SRD REQ-009 c-d '24-Hours Helpline, 1800 22 5542' + the towing sentence -> SRD used. (SA brief: the old Allianz Support page had only '24-Hours Helpline 1800 22 5542': history, not an expected result)"
+    - "Ticket 'Display only available Allianz quotations'; SRD REQ-003 (v0.5 change log: 'Confirmed Option A (unavailable card)') shows an 'Allianz – Quotation unavailable' card -> SRD used"
+    - "SA brief 29.09 'CIBO already shows Allianz in transaction details ... no code change'; SRD v1.1 REQ-010 / REQ-011 (added later) change the receipt and Transaction Details text -> SRD used"
+    - "CIBO mockup 20261006 shows NO company number line under the insurer name on Transaction Details; REQ-011 was added in SRD v1.1 on 26.10 -> SRD used (12406_RC_TS3)"
+
+  common:
+    when: &when "When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)"
+    site: &site "Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser"
+    cibo: &cibo "CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names"
+    owner: &owner "Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address"
+    indrenew: &indrenew "Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on staging (Q3, Q12)"
+    fpx: &fpx "Payment: Fiuu sandbox, Online Banking (FPX) > RHB (an FPX RHB payment settled on Secarang staging on 20.10.2026, EAINT-12566)"
+    before: &before "When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done"
+    oneinsurer: &oneinsurer "Data needs one insurer to decline one specific car: only possible if staging answers that insurer from eSim or Dev can switch it (Q3, Q12). If the data cannot be made, tell the QA (REQ-003 Ex.3 is still hit by 12406_QT_TS3 and QT_TS4)"
+
+  workbook:
+    environment: "Secarang staging + CIBO staging (which staging: Q1). Production in 12406_CP_TS7 (look only, after go-live) and in the highlighted row 12406_E2E_TS8"
+    objective: "Allianz back on Secarang: Allianz logo on Home and Quotation; insurer order Lonpac > Allianz > Tokio Marine, no other insurer; 'Allianz – Quotation unavailable' card for company vehicles and non-renewals; Allianz name on About Us, FAQs and Support; full Allianz purchase (quote, add-ons, Fiuu payment, cover note, e-Certificate, receipt); Allianz company number 200601015674 (735426-V) on the receipt (Secarang and CIBO) and on CIBO Transaction Details; Allianz sales under agency Serba Sentral in the CIBO Payment and Commission reports"
+    source: "EAINT-12406 / CCB-992 / ESI-361. Mockups: Secarang 20261015, CIBO Transaction Management 20261006. SA Impact Brief 29.09.2026 (scope only)"
+    target: "Release 02.11.2026 (Jira fixVersion; no date in the SRD). Dev: ready for testing 28.10.2026. Yellow rows: capture BEFORE the deploy"
+    qa: "Azfar"
+    pre_deploy_text: "Capture MUST be done BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (Secarang pages, existing CIBO transactions, eAuto UCD Insurance)"
+    highlight_color: "FCE4D6"
+    legend:
+      - {label: "Row highlighted orange", color: "FCE4D6", meaning: "For the QA to decide at gate 0: open scope, or the SRD gives no expected result (see Open Questions). Not approved TS until decided"}
+    note: "Names used on every sheet: Lonpac (Lonpac Insurance Bhd), Allianz (Allianz General Insurance Company (Malaysia) Berhad), Tokio Marine (Tokio Marine Insurans (Malaysia) Berhad); Secarang = customer site; CIBO = Secarang back office. 'Recorded' = screenshot kept, not judged (no SRD value). 'Observed' = today's behaviour from another live CR, checked as regression"
+    reference:
+      title: "Reference (SRD v1.1)"
+      text: |-
+        Insurer order (Home logos, Quotation, FAQs, Support): Lonpac > Allianz > Tokio Marine, and no other insurer (RHB stays hidden). An insurer with no quotation is skipped, the rest keep the order (REQ-004)
+        No Allianz quotation (company vehicle, or individual non-renewal): card "Allianz – Quotation unavailable", after Tokio Marine (REQ-003). Allianz quotes only individual owners renewing (REQ-002)
+        Receipt (Secarang + CIBO) and CIBO Transaction Details, Allianz: "Allianz General Insurance Company (Malaysia) Berhad", next line "200601015674 (735426-V)" (REQ-010, REQ-011). Before: "... Berhad (735426-V)" on one line
+        Tokio Marine (unchanged): "Tokio Marine Insurans (Malaysia) Berhad", next line "198601000381 (149520-U)"
+        Support > Allianz: only "24-Hours Helpline 1800 22 5542" + "You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542" (REQ-009)
+        Allianz sales and commission under agency Serba Sentral in CIBO Payment and Commission reports (SRD 2.1.3b)
+        Lonpac receipt may still read "Lonpac Insurance Berhad" (EAINT-12422 To Do): not a 12406 failure
+        CIBO mockup 06.10 shows no company number line on Transaction Details: the SRD (26.10) wins
+    columns:   # default (each sheet below brings its own)
+      - {header: "TS No", field: id, width: 18}
+      - {header: "Test Scenario", field: situation, width: 34}
+      - {header: "Pre-condition / Test data", field: preconditions, width: 36}
+      - {header: "Test Steps", field: steps, width: 50}
+      - {header: "Expected Result", field: expected, width: 56}
+      - {header: "QA", field: qa, width: 8}
+      - {header: "Test Result", field: _result, width: 11}
+      - {header: "Remarks", field: _remarks, width: 24}
+      - {header: "Review", field: _review, width: 8}
+    sheets:
+      - key: CP
+        name: "1 Secarang Pages"
+        prefix: "12406_CP_TS"
+        type: ui
+        title: "Secarang customer pages: Home insurer logos, About Us > Our partnership, FAQs, Support > Need to contact insurance company? (REQ-001, 007, 008, 009), against the Secarang mockup 20261015; BEFORE / AFTER capture; production look after go-live"
+        setup:
+          - "Set-up for every row unless it says otherwise: after Dev deploys; Secarang staging (Q1), no login, desktop browser"
+          - "'Rest of the page unchanged' (SRD REQ-007 / REQ-008 Example b) is proved once, in 12406_CP_TS8, against the BEFORE capture on the same staging (not deployed yet, Azfar 28.10.2026; fallback only if the deploy comes first: production secarang.com, look only)"
+        columns:
+          - {header: "TS No", field: id, width: 16}
+          - {header: "Page", field: page, width: 18}
+          - {header: "Test Scenario", field: situation, width: 32}
+          - {header: "Pre-condition / Test data", field: preconditions, width: 32}
+          - {header: "Test Steps", field: steps, width: 46}
+          - {header: "Expected Result", field: expected, width: 60}
+          - {header: "QA", field: qa, width: 8}
+          - {header: "Test Result", field: _result, width: 11}
+          - {header: "Remarks", field: _remarks, width: 22}
+          - {header: "Review", field: _review, width: 8}
+      - key: QT
+        name: "2 Quotation"
+        prefix: "12406_QT_TS"
+        type: matrix
+        title: "Quotation page (Choose your insurance): which insurers quote, their order, no other insurer, the Allianz unavailable card, the Allianz logo and product documents (REQ-002 to REQ-006)"
+        setup:
+          - "Set-up for every row: after Dev deploys; Secarang staging (Q1), no login; one vehicle + owner per row chosen so that exactly the insurers in 'Insurers quoting' quote it (how to get each case on staging: Q3, Q12). Which insurers are switched on for Secarang staging: Q31"
+          - "Get to the quotation: Secarang > Home > Car tab > enter the vehicle plate number and the owner's ID (and any other field the page asks) > continue to Choose your insurance"
+        columns:
+          - {header: "TS No", field: id, width: 16}
+          - {header: "Owner", field: owner_type, width: 12, group: "Test Scenarios"}
+          - {header: "Policy", field: policy, width: 12, group: "Test Scenarios"}
+          - {header: "Insurers quoting", field: quoting, width: 18, group: "Test Scenarios"}
+          - {header: "Test Scenario", field: situation, width: 30}
+          - {header: "Pre-condition / Test data", field: preconditions, width: 32}
+          - {header: "Test Steps", field: steps, width: 44}
+          - {header: "Expected Result", field: expected, width: 56}
+          - {header: "QA", field: qa, width: 8}
+          - {header: "Test Result", field: _result, width: 11}
+          - {header: "Remarks", field: _remarks, width: 22}
+          - {header: "Review", field: _review, width: 8}
+      - key: E2E
+        name: "3 Allianz Purchase"
+        prefix: "12406_E2E_TS"
+        type: e2e
+        title: "Full Allianz purchase on Secarang: quote > add-ons > confirmation > Fiuu payment > Payment successful > CIBO status, cover note, e-Certificate (REQ-002, SRD 2.1.3a), per payment channel; add-ons, switching insurer, failure paths and open-scope rows"
+        setup:
+          - "Set-up for every row unless it says otherwise: after Dev deploys; Secarang staging (Q1) as a member of the public; CIBO staging with the QA team's login (Q2); an individual-owner renewal car that Allianz quotes (Q3, Q12); a test owner identity (never the QA's own)"
+          - "Record in Remarks: vehicle plate and the CIBO Transaction Ref. No. The receipts and CIBO screens of these transactions are checked on sheet 4"
+        columns:
+          - {header: "TS No", field: id, width: 16}
+          - {header: "Insurer", field: insurer, width: 10, group: "Test Scenarios"}
+          - {header: "Payment channel", field: channel, width: 16, group: "Test Scenarios"}
+          - {header: "Platform", field: platform, width: 12, group: "Test Scenarios"}
+          - {header: "Flow (A > B > C)", field: situation, width: 30}
+          - {header: "Pre-condition / Test data", field: preconditions, width: 32}
+          - {header: "Test Steps", field: steps, width: 48}
+          - {header: "Expected Result (each checkpoint)", field: expected, width: 58}
+          - {header: "QA", field: qa, width: 8}
+          - {header: "Test Result", field: _result, width: 11}
+          - {header: "Remarks", field: _remarks, width: 22}
+          - {header: "Review", field: _review, width: 8}
+      - key: RC
+        name: "4 Receipt and CIBO"
+        prefix: "12406_RC_TS"
+        type: document
+        title: "Allianz company number on the receipt (Secarang and CIBO) and on CIBO Transaction Details (REQ-010, REQ-011); CIBO Transaction listing (search, filters, export), unpaid transactions, Payment Report and Commission Report under Serba Sentral (SRD 2.1.3b)"
+        setup:
+          - "Set-up for every row unless it says otherwise: after Dev deploys; the Allianz transactions paid in 12406_E2E_TS1 (FPX), TS2 (card) and TS3 (GrabPay); CIBO staging with the QA team's login (Q2)"
+          - "Mockup CIBO 20261006 sample data (pre-filled filters, dates, 'Serba Sentral' as agency on Lonpac / Tokio Marine rows) is demo content: no TS expects it"
+        columns:
+          - {header: "TS No", field: id, width: 16}
+          - {header: "Document / screen", field: doc, width: 20}
+          - {header: "Portal", field: portal, width: 10}
+          - {header: "Test Scenario", field: situation, width: 30}
+          - {header: "Pre-condition / Test data", field: preconditions, width: 30}
+          - {header: "Test Steps", field: steps, width: 44}
+          - {header: "Expected Result", field: expected, width: 58}
+          - {header: "QA", field: qa, width: 8}
+          - {header: "Test Result", field: _result, width: 11}
+          - {header: "Remarks", field: _remarks, width: 22}
+          - {header: "Review", field: _review, width: 8}
+      - key: RG
+        name: "5 Regression"
+        prefix: "12406_RG_TS"
+        type: regression
+        title: "Lonpac, Tokio Marine and other insurers unchanged on the receipt and CIBO Transaction Details (REQ-010 Ex.2, REQ-011 Ex.2); eAuto UCD Insurance quotation order unchanged"
+        setup:
+          - "Yellow rows: the BEFORE half is captured on staging before Dev deploys EAINT-12406 (not deployed yet, Azfar 28.10.2026, Q11); the AFTER half once it is deployed"
+        columns:
+          - {header: "TS No", field: id, width: 16}
+          - {header: "Module / page", field: area, width: 20}
+          - {header: "Portal", field: portal, width: 10}
+          - {header: "Test Scenario", field: situation, width: 30}
+          - {header: "Pre-condition / Test data", field: preconditions, width: 32}
+          - {header: "Test Steps", field: steps, width: 44}
+          - {header: "Expected Result", field: expected, width: 56}
+          - {header: "QA", field: qa, width: 8}
+          - {header: "Test Result", field: _result, width: 11}
+          - {header: "Remarks", field: _remarks, width: 22}
+          - {header: "Review", field: _review, width: 8}
+
+  open_questions:
+    - id: Q1
+      question: "Which Secarang staging (path: /preprod, /ia, root ...) and which CIBO staging does EAINT-12406 go to?"
+      sources: "secarang-study Q1; STATUS S1"
+      who: "Dev Mong Guo Hao; BA Lim Yi Link"
+      blocks: "every run"
+      decision: ""
+    - id: Q2
+      question: "The QA team's Secarang and CIBO staging logins (EAINT-7986 / 7987)"
+      sources: "secarang-study Q2; STATUS S1"
+      who: "Charmain / Faizuddin"
+      blocks: "every CIBO row"
+      decision: ""
+    - id: Q3
+      question: "On Secarang staging, does Allianz answer quotations (Allianz UAT API or eSim)? Its quoting was switched off in May 2025; the BA asked on 29.09 whether it is off in production only (not answered). SRD REQ-002 says 'Allianz is available in Secarang but disabled in production'. SA brief risk: Allianz API keys / callback URLs may have expired; 'confirm with Allianz + DevOps before UAT'. Same for Lonpac and Tokio Marine (UAT API or eSim)"
+      sources: "secarang-study Q3; Teams 29.09.2026; SRD v1.1 §2.2.2 #1a, REQ-002 'Existing'; SA brief 29.09 Risks (callbacks and credentials) and open checks; STATUS S2"
+      who: "Dev Mong Guo Hao"
+      blocks: "every Quotation and purchase row"
+      decision: ""
+    - id: Q4
+      question: "Do vehicle prefixes VB (cover note submission failed) and VF (JPJ enquiry rejected) still work on Secarang staging in 2026, and for Allianz?"
+      sources: "secarang-study Q4 ([WB] 8536, Oct 2025)"
+      who: "Dev / Faizuddin"
+      blocks: "12406_E2E_TS6"
+      decision: ""
+    - id: Q6
+      question: "SRD 2.1.3a: 'full end-to-end test is required as it has not run in production since May 2025'. Is a real paid Allianz purchase on PRODUCTION expected after go-live, and who pays / cancels / refunds it? (row 12406_E2E_TS8 is highlighted until decided; the look-only production row 12406_CP_TS7 does not wait for it)"
+      sources: "SRD v1.1 §2.1.3a; secarang-study Q6; STATUS S4"
+      who: "BA Lim Yi Link, Shamini"
+      blocks: "12406_E2E_TS8 (scope)"
+      decision: ""
+    - id: Q7
+      question: "Is Allianz also offered in the MacroKiosk renewal flow (WhatsApp reminder > Renew Now link > quotation > BoldPay; CIBO platform Secarang-MK)? SRD v1.1 is silent. The SA Impact Brief (SRD §1.5 #6) lists it in its own tests ('Pay by RMS (Fiuu) and by BoldPay', 'Quotation-link flow and MacroKiosk renewal Pay Now / Pay Later') and names 'MacroKiosk Pay Now / Pay Later ... changed since May 2025; Allianz never part of those changes' as a risk; the CIBO mockup lists Allianz rows on platform Secarang-MK. So the SA treats it as in scope. If yes: which page shows it, and same order / unavailable card rules? (+4-6 TS)"
+      sources: "SRD v1.1 (silent); SA Impact Brief 29.09 test scenarios 5 and 7, Risks row 1; mockup CIBO 20261006 rows BR55009002 / BR55009005 (Secarang-MK, Allianz); secarang-study Q7; STATUS S3"
+      who: "BA Lim Yi Link"
+      blocks: "12406_E2E_TS7 (scope)"
+      decision: ""
+    - id: Q11
+      question: "PRE-DEPLOY, URGENT: has Dev already deployed EAINT-12406 to the Secarang / CIBO staging (Dev said 26.10: '28/10 will be ready for testing')? If not, please hold the deploy until the yellow rows' BEFORE captures are done (12406_CP_TS8, RC_TS8, RG_TS1, RG_TS2, RG_TS3, RG_TS4). If it is already deployed, those rows keep only their AFTER half: pages are compared with production instead, and Lonpac / RHB have no baseline"
+      sources: "Teams 26.10.2026 (Mong Guo Hao); Jira status Ready For Development 28.10.2026"
+      who: "Dev Mong Guo Hao"
+      blocks: "12406_CP_TS8, RC_TS8, RG_TS1, RG_TS2, RG_TS3, RG_TS4 (BEFORE halves)"
+      decision: "ANSWERED 28.10.2026 (Azfar): EAINT-12406 is NOT deployed to the Secarang / CIBO staging yet. The yellow BEFORE captures can still be done; do them before Dev deploys"
+    - id: Q12
+      question: "Test data on staging: which vehicle + owner gives (a) all three insurers quoting an individual renewal; (b) Allianz alone not quoting an individual renewal while Lonpac and Tokio Marine quote; (c) Lonpac not quoting; (d) Tokio Marine not quoting; (e) an individual NON-renewal: what does Secarang treat as non-renewal (new vehicle, expired policy, change of owner ...)?"
+      sources: "SRD v1.1 REQ-002 ('Allianz only returns a quotation for individual owners renewing'), REQ-003 Ex.2, REQ-004 Ex.2-4"
+      who: "Dev Mong Guo Hao / BA Lim Yi Link"
+      blocks: "12406_QT_TS1 to QT_TS6 data"
+      decision: ""
+    - id: Q13
+      question: "Where does the Lonpac or Tokio Marine 'Quotation unavailable' card go, and in which order are the cards when two insurers have no quotation? SRD REQ-003 places only Allianz's card ('after Tokio Marine'); REQ-004 lists only the available quotations"
+      sources: "SRD v1.1 REQ-003, REQ-004 Ex.2 / Ex.4"
+      who: "BA Lim Yi Link"
+      blocks: "12406_QT_TS5, 12406_QT_TS6 (card position recorded only)"
+      decision: ""
+    - id: Q15
+      question: "REQ-006: where does the customer open the four Allianz product documents (policy wording, product disclosure sheet, privacy notice, claim guide): quotation card, plan details, Add-ons or Confirmation? Any name / language variant (BM / EN)? (SA brief question 5: are the 2022 documents still current? SRD REQ-006 answers: no update, use existing)"
+      sources: "SRD v1.1 REQ-006; SA brief 29.09 question 5"
+      who: "BA Lim Yi Link"
+      blocks: "12406_QT_TS7 steps"
+      decision: ""
+    - id: Q16
+      question: "CIBO Commission Report and Payment Report for Allianz under Serba Sentral: (a) what commission rate / amount should show (SA brief open check: 'active Allianz commission rate for Secarang at release'); (b) which amount the Payment Report shows per transaction (gross premium, after discount, with road tax)? SRD 2.1.3b says only that Finance signs off sales and commission under agency Serba Sentral"
+      sources: "SRD v1.1 §2.1.3b; SA brief 29.09 open checks; coverage review U7"
+      who: "BA Lim Yi Link / Finance"
+      blocks: "12406_RC_TS5 (amount recorded), RC_TS6 (commission recorded)"
+      decision: ""
+    - id: Q17
+      question: "Allianz payment failed or cancelled at Fiuu: what should the customer see on Secarang? SRD says only 'existing Allianz flow remains unchanged'; the current failed-payment page is not written down in the repo. (The CIBO side follows the mockup row BR55009007: Failed, Unpaid, no Receipt)"
+      sources: "SRD v1.1 §2.2.2 #2b, REQ-002; mockup CIBO 20261006 row BR55009007"
+      who: "BA Lim Yi Link / Dev"
+      blocks: "12406_E2E_TS5 (Secarang failure page)"
+      decision: ""
+    - id: Q18
+      question: "Allianz cover note submission failed / JPJ rejected after payment: what should happen (internal WhatsApp alert as for Lonpac / Tokio Marine, EAINT-8536 / 12347; CIBO status)? SRD 2.1.3a names cover note and callbacks but gives no expected result; the SA brief names callbacks as a risk"
+      sources: "SRD v1.1 §2.1.3a; SA brief 29.09 Risks row 2; secarang-study §2 (8536, 12347)"
+      who: "BA Lim Yi Link / Dev"
+      blocks: "12406_E2E_TS6"
+      decision: ""
+    - id: Q19
+      question: "Does Secarang sell motorcycle insurance today (Motorcycle tab), and does Allianz quote motorcycles there? SRD v1.1 does not mention vehicle type; the CIBO mockup shows Car only; the SA brief says 'Individual renewal car'"
+      sources: "SRD v1.1 (silent); SA brief 29.09 test scenario 1; secarang-study §1 (Car / Motorcycle tabs, EAINT-11541)"
+      who: "BA Lim Yi Link"
+      blocks: "12406_QT_TS8 (scope)"
+      decision: ""
+    - id: Q20
+      question: "Do REQ-010 / REQ-011 (new Allianz BRN on the receipt and CIBO Transaction Details) also apply to (a) Allianz transactions created on Secarang before May 2025 and (b) Allianz transactions from the eAuto platform shown in CIBO (the mockup listing has one, BR55009010)? The SRD says 'Allianz transaction' without limits. SA brief open check: 'Allianz transactions since May 2025 and any stuck in a non-final status' (and 'Existing transactions not changed', older than REQ-010/011)"
+      sources: "SRD v1.1 REQ-010, REQ-011; mockup CIBO 20261006 row BR55009010; SA brief 29.09 'What stays the same' and open checks"
+      who: "BA Lim Yi Link / Dev"
+      blocks: "12406_RC_TS8 (eAuto part, stuck transactions)"
+      decision: ""
+    - id: Q21
+      question: "Customer messages after an Allianz purchase: payment-success / receipt WhatsApp, policy-created WhatsApp, e-Receipt email (FAQ: 'an email ... with an attachment of e-Receipt'), insurer e-Certificate email. Does staging send them (to which address / phone), are they in scope (SA brief test scenario 6: 'WhatsApp and email after payment; receipt PDF'), and should the attached receipt carry the new Allianz company number (REQ-010)? Templates changed after May 2025 (9117, 12218)"
+      sources: "SRD v1.1 REQ-010, §2.1.3a; SA brief 29.09 test scenario 6, Risks row 1; Secarang mockup 20261015 FAQ Topic 2 (current text); secarang-study §1"
+      who: "BA Lim Yi Link / Dev"
+      blocks: "12406_RC_TS7"
+      decision: ""
+    - id: Q22
+      question: "About Us says 'refer to Terms of Use section on this platform to obtain full list of agents and principal insurers'. Should Terms of Use (and Privacy / Refund Policy) also list Allianz? It is not in the SRD's Affected Pages (2.2.3)"
+      sources: "Secarang mockup 20261015 (Our vision text); SRD v1.1 §2.2.3"
+      who: "BA Lim Yi Link"
+      blocks: "12406_CP_TS9"
+      decision: ""
+    - id: Q23
+      question: "Is the insurer order (control sequence) shared between eAuto and Secarang today (EAINT-12150 'separate control sequence for eAuto vs Secarang' is To Do)? The SA brief (Dev analysis, 29.09) says no: 'the Allianz switch is per tenant ... the insurer order table is in the Secarang DB'. Please confirm; until then 12406_RG_TS4 only captures the order before and after"
+      sources: "secarang-study §1 timeline (EAINT-12150, To Do); SA brief 29.09 'What stays the same'; SRD v1.1 §2.2.1 (Portal: Secarang)"
+      who: "Dev Mong Guo Hao"
+      blocks: "12406_RG_TS4"
+      decision: ""
+    - id: Q24
+      question: "FOR AZFAR: Fiuu ShopeePay (Full Amount / SPayLater) and PayLater by Grab cannot be paid in the Fiuu sandbox ('its simulator in sandbox doesn't work', EAINT-12107). Coverage review suggests folding 'Payment methods lists the same channels as for Lonpac / Tokio Marine' into 12406_E2E_TS1 (done) and deprioritising 12406_E2E_TS4. Keep, deprioritise, or try once? (QA decides)"
+      sources: "[REQ] 12107 v1.2 §2.2.8; Jira 12107 comment 07.09.2026 (secarang-study §2); coverage review §4"
+      who: "Azfar (QA)"
+      blocks: "12406_E2E_TS4"
+      decision: ""
+    - id: Q25
+      question: "Which options does the Secarang homepage flow offer today besides add-ons (discount code, road tax, sum insured / agreed value), do discount codes apply to Allianz, and what road tax amounts / CIBO Road Tax value should an Allianz purchase with road tax show? The ticket says 'Allow Allianz in Secarang with all options available in Secarang'"
+      sources: "Ticket item 5; mockup CIBO 20261006 (Discount Code, Road Tax columns); Secarang footer 'motor insurance renewal and road tax'"
+      who: "BA Lim Yi Link"
+      blocks: "12406_E2E_TS2 (discount recorded), E2E_TS11 (road tax)"
+      decision: ""
+    - id: Q26
+      question: "Mockup Secarang 20261015 shows review marks beside the Allianz items: orange pills ('Changed: ...', 'New', 'New section', 'New sentence'), yellow text highlight, a dashed orange frame with pale yellow background on the Allianz Support section, orange dots in the menu. Draft reads them as review notes that do NOT appear on the site. Confirm"
+      sources: "Mockup Secarang 20261015 (coverage review MD-1)"
+      who: "BA Lim Yi Link"
+      blocks: "12406_CP_TS6"
+      decision: ""
+    - id: Q27
+      question: "FAQ 'Which insurers can I get instant quotation from?': numbered 1. 2. 3. (SRD REQ-008, also its 'Existing') or bulleted (mockup 20261015)? Draft expects the same list style as today"
+      sources: "SRD v1.1 REQ-008; mockup Secarang 20261015 (coverage review MD-4, Q-A)"
+      who: "BA Lim Yi Link"
+      blocks: "12406_CP_TS3 (list style)"
+      decision: ""
+    - id: Q28
+      question: "Support: is the Allianz section closed on page load like Lonpac / Tokio Marine? The mockup shows it open on load (recorded)"
+      sources: "Mockup Secarang 20261015 (coverage review MD-7, Q-B)"
+      who: "BA Lim Yi Link"
+      blocks: "12406_CP_TS4 (state on load recorded)"
+      decision: ""
+    - id: Q29
+      question: "CIBO Transaction Details for Tokio Marine TODAY: does it show '198601000381 (149520-U)' under the name (SRD REQ-011 'Tokio Marine (current)') or not (mockup 20261006)? Answered by the BEFORE capture of 12406_RG_TS1; ask the BA only if it does not"
+      sources: "SRD v1.1 REQ-011; mockup CIBO 20261006 (coverage review MD-13, Q-C)"
+      who: "QA (look), then BA Lim Yi Link"
+      blocks: "12406_RC_TS3, RG_TS1"
+      decision: ""
+    - id: Q30
+      question: "CIBO Payment Ref ID: which insurer code does an Allianz Secarang payment get (Lonpac is 'LON', shape <insurer><yyyymmdd>S<channel><nnnn>, EAINT-12107 REQ-014 went live 21.10.2026 while Allianz was off, so no Allianz Ref ID was ever produced)?"
+      sources: "[REQ] 12107 v1.2 REQ-014; [Jira] 12566 (secarang-study §2); coverage review M8, Q-D"
+      who: "Dev / BA Lim Yi Link"
+      blocks: "12406_E2E_TS1, E2E_TS3 (insurer code recorded)"
+      decision: ""
+    - id: Q31
+      question: "Which insurers are switched on for quoting on the Secarang staging (RHB, Chubb, Zurich Takaful 8608 in 1st env, Takaful Malaysia)? SA brief risk: 'Only 3 quotations shown: if Chubb or another insurer is on for Secarang, Lonpac + Allianz + Tokio Marine fill all slots and others drop silently' (mitigation: DB check of enabled insurers). Another insurer on staging would break the order rows for reasons outside 12406"
+      sources: "SA brief 29.09 Risks row 3 and open checks; coverage review M2, Q-E"
+      who: "Dev Mong Guo Hao"
+      blocks: "12406_QT_TS1 to QT_TS6"
+      decision: ""
+    - id: Q32
+      question: "Allianz add-ons on Secarang: which ones are offered (SA brief: all-driver, CART, Road Rangers, PAB-ERW, MPA A/B, agreed value), and is 'Allianz Road Rangers' a free add-on (CIBO mockup shows 'Allianz Road Rangers FREE')?"
+      sources: "SA brief 29.09 test scenario 4; mockup CIBO 20261006 Add-ons; coverage review M6, Q-F"
+      who: "BA Lim Yi Link"
+      blocks: "12406_E2E_TS9 (add-on list recorded)"
+      decision: ""
+    - id: Q33
+      question: "FOR AZFAR: does the 'no mobile' rule (22.10.2026, UCD app) also cover Secarang in a phone browser? The Secarang mockup has a phone layout and MacroKiosk customers open Secarang from WhatsApp on their phones. No row added until decided"
+      sources: "Mockup Secarang 20261015 phone layout; QA rule 22.10.2026; coverage review M19, Q-G"
+      who: "Azfar (QA)"
+      blocks: "none yet (a phone-browser row would be added if yes)"
+      decision: ""
+    - id: Q34
+      question: "Is the receipt / insurer-name code shared with eAuto UCD Insurance, so that the eAuto Allianz receipt could change too? (SA brief says eAuto is unaffected by the switch, but REQ-010 is newer than the brief.) A yellow before / after row is added only if yes"
+      sources: "Coverage review M20, Q-H; SA brief 29.09 'What stays the same'"
+      who: "Dev Mong Guo Hao"
+      blocks: "none yet"
+      decision: ""
+    - id: Q35
+      question: "Allianz quotation service gives an error / no answer: does REQ-003 ('Applies when Allianz has no quotation, e.g. company vehicle or non-renewal') mean the 'Allianz – Quotation unavailable' card shows then too? Can Dev make Allianz fail or time out on staging?"
+      sources: "SRD v1.1 REQ-003; coverage review M5, Q-I"
+      who: "BA Lim Yi Link / Dev"
+      blocks: "12406_QT_TS9"
+      decision: ""
+    - id: Q36
+      question: "Does Allianz ever refer a quotation on Secarang (CIBO status 'Pending approval', Referred Risk Log)? The SA brief lists 'Allianz refer-risk, including Allianz as the only insurer available' in its tests. What should the customer and CIBO see?"
+      sources: "SA brief 29.09 test scenario 3; mockup CIBO 20261006 status list ('Pending approval'); coverage review M18, Q-J"
+      who: "BA Lim Yi Link / Dev"
+      blocks: "12406_QT_TS10"
+      decision: ""
+    - id: Q37
+      question: "Allianz Confirmation page: which agent line ('Exclusively by agent Serba Sentral Sdn Bhd' + PIAM ID, as on the receipt mockup?) and which commission % should show?"
+      sources: "Mockup CIBO 20261006 receipt; SRD v1.1 §2.1.3b (reports only); coverage review M7, Q-K"
+      who: "BA Lim Yi Link / Finance"
+      blocks: "12406_E2E_TS9 (recorded)"
+      decision: ""
+    - id: Q38
+      question: "Is there a picture of the Allianz logo / quotation card as it was before May 2025 ('same as before it was disabled', REQ-005)?"
+      sources: "SRD v1.1 REQ-005; coverage review Q-L"
+      who: "BA Lim Yi Link / Dev"
+      blocks: "12406_QT_TS1 (logo compared only if a picture exists)"
+      decision: ""
+    - id: Q39
+      question: "When does an unpaid Secarang quotation become 'Quotation expired' in CIBO (how long)? Needed to see the expired state of an unpaid Allianz transaction"
+      sources: "Mockup CIBO 20261006 row BR55009005 (Quotation expired); coverage review M4"
+      who: "BA Lim Yi Link / Dev"
+      blocks: "12406_RC_TS9 (expired state recorded)"
+      decision: ""
+
+cases:
+# =========================================================================== 1 Secarang Pages
+- id: "12406_CP_TS8"
+  sheet: CP
+  origin: drafted
+  type: regression
+  requirement: "REQ-001, REQ-002, REQ-004, REQ-007, REQ-008, REQ-009 ('Existing'); REQ-007 / REQ-008 Example b"
+  phase: pre-deploy
+  section: "Before and after the deploy"
+  page: "Home, Choose your insurance, About Us, FAQs, Support"
+  situation: "BEFORE the deploy: capture Home logos, Choose your insurance, About Us, every FAQ and Support on staging. AFTER: the same pages differ only by the Allianz changes"
+  preconditions:
+    - *before
+    - *site
+    - *owner
+    - "Vehicle for the quotation: the individual-owner renewal car of 12406_QT_TS1 (quotation only, do not pay)"
+    - "Not deployed yet (Azfar, 28.10.2026, Q11), so the BEFORE can be taken. Only if the deploy happens before the capture: no BEFORE; the AFTER compares with production secarang.com (look only) while 12406 is not live there, and differences from other Secarang changes on staging (e.g. EAINT-10444, same 02.11 release) are noted, not failed"
+  steps: |-
+    1. Before the deploy: Secarang > Home: screenshot the insurer logos
+    2. Car tab > the QT_TS1 car + owner > Choose your insurance: screenshot all cards (do not pay)
+    3. About Us: save the page text and screenshot Our partnership
+    4. FAQs: expand every question of Topics 1, 2, 3; save the page text
+    5. Support > Need to contact insurance company?: expand every section; save the page text
+  expected: |-
+    Ensure:
+    • Home logos: Lonpac, Tokio Marine (no Allianz)
+  after:
+    steps: |-
+      6. After Dev deploys: repeat steps 1-5 on the same staging; compare the saved texts before / after; screenshot only where the text differs
+    expected: |-
+      Ensure:
+      • Home, About Us, FAQs (all topics) and Support differ from BEFORE only by the Allianz changes of 12406_CP_TS1 to CP_TS5
+  points:   # both halves, so the before and the after are each proved (the tools read only `expected`)
+    - {id: E1, text: "BEFORE: Home logos Lonpac, Tokio Marine (no Allianz)"}
+    - {id: E2, text: "BEFORE: Choose your insurance captured (whether Allianz shows on staging is recorded: REQ-002 says it is 'available in Secarang but disabled in production', Q3)"}
+    - {id: E3, text: "BEFORE: About Us > Our partnership ends '...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.'"}
+    - {id: E4, text: "BEFORE: FAQ 'Which insurers can I get instant quotation from?' lists Lonpac Insurance Bhd, Tokio Marine Insurans (Malaysia) Berhad"}
+    - {id: E5, text: "BEFORE: Support > Need to contact insurance company? has sections for Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad only"}
+    - {id: E6, text: "AFTER: Home, About Us, FAQs (all topics) and Support differ from BEFORE only by the Allianz changes of 12406_CP_TS1 to CP_TS5"}
+  expected_source: "BEFORE: SRD v1.1 §2.2.2 #1b (only Lonpac and Tokio Marine at Home, About Us, FAQs, Support), REQ-001 / REQ-007 / REQ-008 / REQ-009 'Existing', REQ-002 'Existing'. AFTER: REQ-007 Example 1b and REQ-008 Example 1b ('rest unchanged'), REQ-001, REQ-009"
+  why_this_case: "Coverage review M11: a cleaner 'rest unchanged' baseline than production (staging may carry other undeployed Secarang CRs), and the only proof of the SRD's 'Existing' state. Pre-deploy: the BEFORE needs the old build; Dev said ready 28.10. Also replaces the 19-question two-site comparison of CP_TS3 (review §4)"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.2.2 #1b, §2.2.4-2.2.8 'Existing'; coverage review M11"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_CP_TS1"
+  sheet: CP
+  origin: drafted
+  type: functional
+  requirement: "REQ-001"
+  section: "Home page"
+  page: "Home"
+  situation: "Home page insurer logos show Allianz between Lonpac and Tokio Marine"
+  preconditions:
+    - *when
+    - *site
+  steps: |-
+    1. Open Secarang > Home
+    2. Scroll to the insurer logos; screenshot them left to right
+  expected: |-
+    Ensure:
+    • Home page insurer logos, in this order: Lonpac, Allianz, Tokio Marine (no other insurer logo, e.g. no RHB)
+    • The Allianz logo is the Allianz logo image (not a broken image, blank box or text)
+  expected_source: "SRD v1.1 §2.2.4 REQ-001 Example 1a (exactly these three); §2.2.2 #2e"
+  why_this_case: "The change itself: Home page is affected page #1 (SRD 2.2.3). RHB was hidden together with Allianz (7957, 8799): it must stay hidden (review M2)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.4 REQ-001; §2.2.3 #1"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_CP_TS2"
+  sheet: CP
+  origin: drafted
+  type: functional
+  requirement: "REQ-007"
+  section: "About Us, FAQs, Support"
+  page: "About Us > Our partnership"
+  situation: "About Us > Our partnership shows the new Allianz wording"
+  preconditions:
+    - *when
+    - *site
+  steps: |-
+    1. Open Secarang > About Us; screenshot Our partnership
+  expected: |-
+    Ensure:
+    • Our partnership contains the sentence "Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad."
+    • Our partnership reads as in the mockup: "At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad."
+    • The old ending "...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad." is no longer shown
+  expected_source: "SRD v1.1 §2.2.6 REQ-007 (new and existing wording; Example 1a); full paragraph from mockup Secarang 20261015 (SRD §1.5 #4). 'Rest of the page unchanged' (Example 1b): 12406_CP_TS8"
+  why_this_case: "The change itself (affected page #3). Ticket wording differs; SRD v1.1 wins (meta.ticket_vs_srd)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.6 REQ-007; mockup Secarang 20261015"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_CP_TS3"
+  sheet: CP
+  origin: drafted
+  type: functional
+  requirement: "REQ-008"
+  section: "About Us, FAQs, Support"
+  page: "FAQs"
+  situation: "FAQs > 'Which insurers can I get instant quotation from?' lists Lonpac, Allianz, Tokio Marine and no other insurer"
+  preconditions:
+    - *when
+    - *site
+  steps: |-
+    1. Open Secarang > FAQs > Topic 1: General Info
+    2. Expand "Which insurers can I get instant quotation from?"; screenshot the answer
+    (Other FAQs: compared once in 12406_CP_TS8. Do not judge other answers against the mockup: its Topic 2 payment answer is older than the e-wallets of EAINT-12107)
+  expected: |-
+    Ensure:
+    • The answer lists exactly three insurers, in this order:
+        Lonpac Insurance Bhd
+        Allianz General Insurance Company (Malaysia) Berhad
+        Tokio Marine Insurans (Malaysia) Berhad
+    • The list has the same style as before the deploy (numbered or bulleted, as in 12406_CP_TS8 BEFORE; Q27)
+  expected_source: "SRD v1.1 §2.2.7 REQ-008 (New Expected list; Example 1a); list style: SRD (numbered) and mockup Secarang 20261015 (bulleted) differ, Q27. 'Other FAQs unchanged' (Example 1b): 12406_CP_TS8"
+  why_this_case: "The change itself (affected page #4). Review M2 (no other insurer), MD-4 (list style), MD-6 (mockup Topic 2 not a reference)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.7 REQ-008"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q27: numbered or bulleted list"
+
+- id: "12406_CP_TS4"
+  sheet: CP
+  origin: drafted
+  type: functional
+  requirement: "REQ-009"
+  section: "About Us, FAQs, Support"
+  page: "Support > Need to contact insurance company?"
+  situation: "Support > Need to contact insurance company? shows an Allianz section between Lonpac and Tokio Marine, in the same format, and no other insurer"
+  preconditions:
+    - *when
+    - *site
+  steps: |-
+    1. Open Secarang > Support > Need to contact insurance company?; screenshot as the page loads (record which sections are open, Q28)
+    2. Expand Lonpac, then Tokio Marine; screenshot each (their content is compared in 12406_CP_TS8)
+  expected: |-
+    Ensure:
+    • Sections in this order: Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, and no section for any other insurer (e.g. RHB)
+    • The Allianz section has an insurer name header with the same expand / collapse control as the Lonpac and Tokio Marine headers
+  expected_source: "SRD v1.1 §2.2.8 REQ-009 a-b, Example 1a (three sections); Allianz header text from mockup Secarang 20261015 (SRD names it 'insurer name header' only). State on load: mockup shows Allianz open, others closed: recorded (Q28)"
+  why_this_case: "The change itself (affected page #5). Review M2 (no other insurer), MD-7 (state on load)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.8 REQ-009; mockup Secarang 20261015"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q28: Allianz section open or closed on page load (recorded)"
+
+- id: "12406_CP_TS5"
+  sheet: CP
+  origin: drafted
+  type: functional
+  requirement: "REQ-009"
+  section: "About Us, FAQs, Support"
+  page: "Support > Need to contact insurance company?"
+  situation: "Support: expand the Allianz section (one helpline line and the towing sentence), then collapse it"
+  preconditions:
+    - *when
+    - *site
+  steps: |-
+    1. Secarang > Support > Need to contact insurance company?: expand Allianz; screenshot
+    2. Collapse Allianz; screenshot
+  expected: |-
+    Ensure:
+    • Allianz expanded: one contact line only, "24-Hours Helpline" with "1800 22 5542", in the same format as the Lonpac / Tokio Marine contact lines (no "Road Assistance Hotline" or "Customer Service" line)
+    • Below the Allianz contact details: "You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542"
+    • Allianz collapsed: its contact details and sentence are hidden, as for the other insurers
+  expected_source: "SRD v1.1 §2.2.8 REQ-009 b-d (c lists one contact detail), Examples 2 and 3; mockup Secarang 20261015 (one line). The ticket's 'Road Assistance Hotline, Customer Service' is superseded by the SRD"
+  why_this_case: "The change itself: REQ-009 Examples 2-3. Review MD-8 (one line only). Lonpac / Tokio Marine expand-collapse kept in CP_TS4 only (review §4 duplicate)"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.2.8 REQ-009"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_CP_TS6"
+  sheet: CP
+  origin: drafted
+  type: functional
+  requirement: "REQ-001, REQ-007, REQ-008, REQ-009"
+  section: "About Us, FAQs, Support"
+  page: "About Us, FAQs, Support (look)"
+  situation: "Look of the changed blocks against the Secarang mockup 20261015: font, colour, bullets, icons, spacing, alignment; no mockup review marks on the site"
+  preconditions:
+    - *when
+    - *site
+    - "Mockup: Mock Up_EAINT-12406_Secarang_20261015 (from the Jira ticket), opened beside the page"
+  steps: |-
+    1. Put About Us > Our partnership beside the mockup's Our partnership; screenshot both
+    2. Same for FAQs > 'Which insurers can I get instant quotation from?' (expanded) and Support > Allianz section (expanded)
+    3. Look at the top menu and the three pages for any mockup review mark (pill, yellow highlight, dashed frame, coloured dot)
+    4. Home: compare the Allianz logo with the Lonpac and Tokio Marine logos (size, alignment): recorded (no Home mockup; earlier look: Q38)
+  expected: |-
+    Ensure:
+    • Our partnership paragraph: same font, size and colour as the rest of About Us and as the mockup (centred)
+    • FAQ answer list: Allianz line in the same style as the Lonpac and Tokio Marine lines; the question shows "−" when open and "+" when closed, as the other questions
+    • Support > Allianz section: header, expand / collapse icon, bullet, label and number laid out as the Lonpac and Tokio Marine sections and the mockup (label "24-Hours Helpline", number below / beside it as in the mockup)
+    • Towing sentence: full width under the contact line, plain text with no bullet, number written "1800-22-5542" with hyphens
+    • No mockup review mark on the site: no "Changed: ...", "New", "New section", "New sentence" pills, no yellow text highlight, no orange dots in the menu; the Allianz Support section has the same background and no frame, like Lonpac / Tokio Marine
+  expected_source: "Mockup Secarang 20261015 (SRD §1.5 #4), looked at in a browser (coverage review MD-1, MD-2, MD-5, MD-8, MD-9, MD-10); SRD v1.1 REQ-009b ('same format as existing insurers'), REQ-009d (sentence text with hyphens); REQ-008. Review marks read as review notes: Q26"
+  why_this_case: "QA rule: compare a page with its mockup visually (EAINT-12022, 07.10.2026). Review MD-1 / MD-9"
+  priority: P2
+  environment: staging
+  source: "Mockup Secarang 20261015; SRD v1.1 §2.2.6-2.2.8"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q26: are the mockup's review marks notes only?"
+
+- id: "12406_CP_TS7"
+  sheet: CP
+  origin: drafted
+  type: functional
+  requirement: "SRD 2.2.2 #2a; REQ-001, REQ-002, REQ-005, REQ-007, REQ-008, REQ-009"
+  section: "Production after go-live (look only)"
+  page: "Home, Quotation, About Us, FAQs, Support (production)"
+  situation: "Production after go-live, look only (no payment): Allianz logo, Allianz quotation card, About Us, FAQs and Support on secarang.com"
+  preconditions:
+    - "When: after EAINT-12406 goes live on production (release 02.11.2026 or later)"
+    - "Production secarang.com, no login, desktop browser. Look only: no purchase (a paid purchase is the separate orange row 12406_E2E_TS8)"
+    - "For the quotation: a real individual-owner renewal car whose owner agrees (agreed with Azfar); the owner's details are kept out of evidence names and covered in screenshots"
+  steps: |-
+    1. secarang.com > Home: screenshot the insurer logos
+    2. Car tab > the agreed car + owner > Choose your insurance: screenshot all cards; stop there (do not select, do not pay)
+    3. About Us > Our partnership; FAQs > 'Which insurers can I get instant quotation from?' (expanded); Support > Allianz (expanded): screenshot each
+  expected: |-
+    Ensure:
+    • Home logos in this order: Lonpac, Allianz, Tokio Marine
+    • Choose your insurance shows the Allianz quotation with the Allianz logo, between Lonpac and Tokio Marine (if all three quote this car)
+    • About Us > Our partnership contains "Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad."
+    • FAQ answer lists Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, in this order
+    • Support > Allianz: "24-Hours Helpline" "1800 22 5542" and the towing sentence below it
+  expected_source: "SRD v1.1 §2.2.2 #2a ('Enable Allianz back in Secarang production'), §2.1.1; REQ-001 Ex.1a, REQ-002 Ex.1a, REQ-004 Ex.1a, REQ-005 Ex.1a, REQ-007, REQ-008, REQ-009 (same texts as 12406_CP_TS1 to CP_TS5, QT_TS1)"
+  why_this_case: "Coverage review M1: the SRD asks for Allianz in PRODUCTION; without this row nothing looks at production unless a paid purchase (Q6) is approved"
+  priority: P1
+  environment: production
+  source: "SRD v1.1 §2.1.1, §2.2.2 #2a; coverage review M1"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_CP_TS9"
+  sheet: CP
+  origin: drafted
+  type: functional
+  requirement: null
+  highlight: Q22
+  section: "Open scope (for the QA to decide)"
+  page: "Terms of Use, Privacy Policy, Refund Policy"
+  situation: "[For the QA, Q22] Terms of Use (and Privacy / Refund Policy): do they list insurers, and is Allianz there?"
+  preconditions:
+    - *when
+    - *site
+  steps: |-
+    1. Secarang footer > TERMS OF USE: screenshot any list of agents / principal insurers
+    2. Same for PRIVACY POLICY and REFUND POLICY
+  expected: ""
+  expected_source: "none: not in SRD v1.1 §2.2.3 Affected Pages; About Us 'Our vision' sends customers to Terms of Use for 'full list of agents and principal insurers' (mockup 20261015). Recorded until Q22"
+  why_this_case: "Coverage review M17 / MD-3: a missing principal insurer there would be a compliance finding. Recorded row, orange until Q22"
+  priority: P3
+  environment: staging
+  source: "Mockup Secarang 20261015 (Our vision); coverage review M17"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q22: should Terms of Use list Allianz?"
+
+# =========================================================================== 2 Quotation
+- id: "12406_QT_TS1"
+  sheet: QT
+  origin: drafted
+  type: functional
+  requirement: "REQ-002, REQ-004, REQ-005"
+  section: "Insurer order and Allianz quotation"
+  owner_type: "Individual"
+  policy: "Renewal"
+  quoting: "Lonpac, Allianz, Tokio Marine"
+  situation: "All three insurers quote: Allianz quotation shown with its logo, in the order Lonpac, Allianz, Tokio Marine; no other insurer"
+  preconditions:
+    - *when
+    - *site
+    - *owner
+    - *indrenew
+    - "The same car is used by 12406_E2E_TS1 (which selects Allianz and pays)"
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle plate number and the owner's ID; continue to Choose your insurance
+    2. Screenshot all quotation cards
+  expected: |-
+    Ensure:
+    • Quotations shown in this order: Lonpac, Allianz, Tokio Marine
+    • The Allianz quotation shows the Allianz logo
+    • No other card: no "– Quotation unavailable" card and no card for any other insurer (e.g. RHB)
+  expected_source: "SRD v1.1 REQ-004 Example 1a ('Displayed as Lonpac, Allianz, Tokio Marine'); REQ-005 Example 1a; REQ-002 Example 1a; REQ-003 (card only when no quotation). SA brief risk 'Only 3 quotations shown' (Q31)"
+  why_this_case: "The change itself on the main path: scope cell Individual x Renewal x all three insurers. Review M2 (RHB stays hidden). 'Selecting Allianz opens Add-ons' moved to E2E_TS1 (review §4 duplicate, U4)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.5 REQ-002, REQ-004, REQ-005"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q12: test data (all three quoting an individual renewal)"
+    - "Q31: which insurers are switched on for Secarang staging"
+    - "Q38: earlier picture of the Allianz logo / card (only then compared)"
+
+- id: "12406_QT_TS2"
+  sheet: QT
+  origin: drafted
+  type: negative
+  requirement: "REQ-003, REQ-004"
+  section: "No Allianz quotation"
+  owner_type: "Individual"
+  policy: "Renewal"
+  quoting: "Lonpac, Tokio Marine (Allianz none)"
+  situation: "Allianz gives no quotation, Lonpac and Tokio Marine do: 'Allianz – Quotation unavailable' card after Tokio Marine"
+  preconditions:
+    - *when
+    - *site
+    - *owner
+    - "Vehicle: a private car, individual owner, renewal, that Lonpac and Tokio Marine quote and Allianz does not (Q12 b)"
+    - *oneinsurer
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance
+    2. Screenshot all cards
+    3. Select the Lonpac quotation and go back; select the Tokio Marine quotation and go back
+  expected: |-
+    Ensure:
+    • Quotations shown: Lonpac, then Tokio Marine
+    • Card "Allianz – Quotation unavailable" shown after the Tokio Marine quotation
+    • The Allianz unavailable card looks the same as the Lonpac / Tokio Marine unavailable cards (compare with 12406_QT_TS5 and QT_TS6)
+    • Lonpac and Tokio Marine quotations can be selected as usual
+  expected_source: "SRD v1.1 REQ-003 (card text, 'same as Lonpac and Tokio Marine today', 'Card appears after Tokio Marine', Example 3a); REQ-004 Example 3a"
+  why_this_case: "REQ-003 Example 3 / REQ-004 Example 3. Negative: Allianz alone missing"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.5 REQ-003, REQ-004"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q12: test data (Allianz alone not quoting an individual renewal)"
+
+- id: "12406_QT_TS3"
+  sheet: QT
+  origin: drafted
+  type: negative
+  requirement: "REQ-003"
+  section: "No Allianz quotation"
+  owner_type: "Company"
+  policy: "Renewal"
+  quoting: "Lonpac / Tokio Marine as usual (Allianz none)"
+  situation: "Company vehicle: Allianz shown as unavailable; the customer still buys Tokio Marine to the end (normal flow, company)"
+  preconditions:
+    - *when
+    - *site
+    - "Vehicle: a company-owned car due for renewal; owner = a test company (Q12)"
+    - *fpx
+    - "This transaction is read again by 12406_RG_TS1: record the plate and the CIBO Transaction Ref. No."
+  steps: |-
+    1. Secarang > Home > Car tab: enter the company vehicle and company owner details; continue to Choose your insurance
+    2. Screenshot all cards
+    3. Select Tokio Marine > Add-ons (keep the default) > Confirmation (fill the company details) > Confirm and Pay
+    4. Pay by FPX > RHB in the Fiuu sandbox; screenshot the Payment successful page; download the receipt
+  expected: |-
+    Ensure:
+    • Card "Allianz – Quotation unavailable" shown, after the Tokio Marine quotation
+    • The Lonpac and Tokio Marine quotations that are available are shown as usual, in the order Lonpac, Tokio Marine; no card for any other insurer (e.g. RHB)
+    • The Tokio Marine purchase completes: Payment successful page with a Receipt (observed, current flow)
+  expected_source: "SRD v1.1 REQ-003 Example 1a and 3a ('after Tokio Marine'); REQ-004; payment path observed (secarang-study §1-2, EAINT-12566 FPX RHB 20.10.2026)"
+  why_this_case: "REQ-003 Example 1. Scope grid: Company x normal flow (create > pay > done), and the Tokio Marine purchase for the regression receipt (RG_TS1). Review M2"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.5 REQ-003"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q12: company test data on staging"
+
+- id: "12406_QT_TS4"
+  sheet: QT
+  origin: drafted
+  type: negative
+  requirement: "REQ-003"
+  section: "No Allianz quotation"
+  owner_type: "Individual"
+  policy: "Non-renewal"
+  quoting: "Lonpac / Tokio Marine as usual (Allianz none)"
+  situation: "Individual owner, non-renewal: Allianz shown as unavailable; the customer still buys Lonpac to the end (normal flow, non-renewal)"
+  preconditions:
+    - *when
+    - *site
+    - *owner
+    - "Vehicle: a private car, individual owner, NOT a renewal (what counts as non-renewal on Secarang: Q12 e)"
+    - *fpx
+    - "This transaction is read again by 12406_RG_TS2: record the plate and the CIBO Transaction Ref. No."
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance
+    2. Screenshot all cards
+    3. Select Lonpac > Add-ons (keep the default) > Confirmation > Confirm and Pay
+    4. Pay by FPX > RHB in the Fiuu sandbox; screenshot the Payment successful page; download the receipt
+  expected: |-
+    Ensure:
+    • Card "Allianz – Quotation unavailable" shown, after the Tokio Marine quotation
+    • The Lonpac and Tokio Marine quotations that are available are shown as usual, in the order Lonpac, Tokio Marine
+    • The Lonpac purchase completes: Payment successful page with a Receipt (observed, current flow)
+  expected_source: "SRD v1.1 REQ-003 Example 2a ('Same as Example 1'), Example 3a; REQ-004; payment path observed (secarang-study §1-2)"
+  why_this_case: "REQ-003 Example 2. Scope grid: Non-renewal x normal flow, and the Lonpac purchase for the regression receipt (RG_TS2)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.5 REQ-003"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q12: what is a non-renewal on Secarang, and the test data for it"
+
+- id: "12406_QT_TS5"
+  sheet: QT
+  origin: drafted
+  type: functional
+  requirement: "REQ-004"
+  section: "Insurer order and Allianz quotation"
+  owner_type: "Individual"
+  policy: "Renewal"
+  quoting: "Allianz, Tokio Marine (Lonpac none)"
+  situation: "Lonpac gives no quotation: Allianz then Tokio Marine"
+  preconditions:
+    - *when
+    - *site
+    - *owner
+    - "Vehicle: individual-owner renewal that Allianz and Tokio Marine quote and Lonpac does not (Q12 c)"
+    - *oneinsurer
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance
+    2. Screenshot all cards; note where the Lonpac unavailable card is (Q13)
+  expected: |-
+    Ensure:
+    • Quotations shown in this order: Allianz, Tokio Marine
+    • Allianz quotation with the Allianz logo
+    • A "Lonpac – Quotation unavailable" card is shown (its position is recorded, Q13)
+  expected_source: "SRD v1.1 REQ-004 Example 2a; REQ-005; REQ-003 ('same as Lonpac and Tokio Marine today': existing unavailable cards); card position not in the SRD (Q13)"
+  why_this_case: "REQ-004 Example 2"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.2.5 REQ-004"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q12: test data (Lonpac not quoting)"
+    - "Q13: position of the Lonpac unavailable card"
+
+- id: "12406_QT_TS6"
+  sheet: QT
+  origin: drafted
+  type: functional
+  requirement: "REQ-004"
+  section: "Insurer order and Allianz quotation"
+  owner_type: "Individual"
+  policy: "Renewal"
+  quoting: "Lonpac, Allianz (Tokio Marine none)"
+  situation: "Tokio Marine gives no quotation: Lonpac then Allianz"
+  preconditions:
+    - *when
+    - *site
+    - *owner
+    - "Vehicle: individual-owner renewal that Lonpac and Allianz quote and Tokio Marine does not (Q12 d)"
+    - *oneinsurer
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance
+    2. Screenshot all cards; note where the Tokio Marine unavailable card is (Q13)
+  expected: |-
+    Ensure:
+    • Quotations shown in this order: Lonpac, Allianz
+    • Allianz quotation with the Allianz logo
+    • A "Tokio Marine – Quotation unavailable" card is shown (its position is recorded, Q13)
+  expected_source: "SRD v1.1 REQ-004 Example 4a; REQ-005; REQ-003 (existing unavailable cards); card position not in the SRD (Q13)"
+  why_this_case: "REQ-004 Example 4"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.2.5 REQ-004"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q12: test data (Tokio Marine not quoting)"
+    - "Q13: position of the Tokio Marine unavailable card"
+
+- id: "12406_QT_TS7"
+  sheet: QT
+  origin: drafted
+  type: functional
+  requirement: "REQ-006"
+  section: "Insurer order and Allianz quotation"
+  owner_type: "Individual"
+  policy: "Renewal"
+  quoting: "Allianz"
+  situation: "Allianz product documents open: policy wording, product disclosure sheet, privacy notice, claim guide"
+  preconditions:
+    - *when
+    - *site
+    - *owner
+    - *indrenew
+  steps: |-
+    1. Get an Allianz quotation (as in 12406_QT_TS1)
+    2. Open each Allianz document link where Secarang offers it (quotation card / plan details / Add-ons / Confirmation: Q15); screenshot each document's first page and keep the files
+  expected: |-
+    Ensure:
+    • Policy wording opens: an Allianz document dated 2022
+    • Product disclosure sheet opens: an Allianz document dated 2022
+    • Privacy notice opens: an Allianz document dated 2022
+    • Claim guide opens: an Allianz document dated 2022
+    • Each link opens the document it names, not another document or another insurer's
+  expected_source: "SRD v1.1 §2.2.5 REQ-006 ('policy wording, product disclosure sheet, privacy notice, claim guide) are dated 2022 ... use existing documents', Example 1a)"
+  why_this_case: "REQ-006. Watch-out from past Secarang insurer defects: links opening the wrong document (EAINT-11064, Zurich, secarang-study §4)"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.2.5 REQ-006"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q15: where the four documents are opened"
+
+- id: "12406_QT_TS9"
+  sheet: QT
+  origin: drafted
+  type: negative
+  requirement: "REQ-003, REQ-004 Example 3"
+  highlight: Q35
+  section: "No Allianz quotation"
+  owner_type: "Individual"
+  policy: "Renewal"
+  quoting: "Lonpac, Tokio Marine (Allianz error / no answer)"
+  situation: "[For the QA, Q35] Allianz quotation service gives an error or no answer: Allianz unavailable card, the others as usual, the page does not hang"
+  preconditions:
+    - *when
+    - *site
+    - *owner
+    - *indrenew
+    - "Set-up by Dev: Allianz quotation made to fail or time out on staging for this car (eSim error answer or a switch), only if Dev can (Q35)"
+  steps: |-
+    1. Ask Dev to make the Allianz quotation fail / time out; note the time
+    2. Secarang > Home > Car tab: the car + owner > Choose your insurance; screenshot all cards and how long the page took (recorded)
+    3. Select Lonpac and go back; Dev restores Allianz
+  expected: |-
+    Ensure:
+    • Card "Allianz – Quotation unavailable" shown after the Tokio Marine quotation
+    • Lonpac and Tokio Marine quotations shown as usual, in the order Lonpac, Tokio Marine, and can be selected
+  expected_source: "SRD v1.1 REQ-003 ('Applies when Allianz has no quotation, e.g. ...'; 'Card appears after Tokio Marine'; Example 3a), REQ-004 Example 3a. Whether an error counts as 'no quotation': Q35"
+  why_this_case: "Coverage review M5: REQ-003 says 'e.g.', so an Allianz error is a likely case of 'no quotation', and the Allianz API has been dormant since May 2025 (SA brief risk: credentials may have expired). Orange: interpretation and feasibility wait for Q35"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 REQ-003, REQ-004; coverage review M5; SA brief 29.09 Risks row 2"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q35: does an error count as 'no quotation', and can Dev simulate it"
+
+- id: "12406_QT_TS10"
+  sheet: QT
+  origin: drafted
+  type: functional
+  requirement: null
+  highlight: Q36
+  section: "Open scope (for the QA to decide)"
+  owner_type: "Individual"
+  policy: "Renewal"
+  quoting: "Allianz refers (also Allianz alone)"
+  situation: "[For the QA, Q36] Allianz refers the quotation (refer-risk): what the customer sees, CIBO 'Pending approval' / Referred Risk Log; also with Allianz the only insurer available"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: an individual-owner renewal car that Allianz refers (and one where Allianz is the only insurer that quotes), only if Dev can provide it (Q36)"
+  steps: |-
+    1. Secarang: the car + owner > Choose your insurance > Allianz; continue as far as the page allows; screenshot each page (recorded)
+    2. CIBO > Transaction Management and Referred Risk Log: search the plate; screenshot (recorded)
+  expected: ""
+  expected_source: "none: SRD v1.1 is silent on refer-risk. SA brief 29.09 test scenario 3 lists it (scope only). Recorded until Q36"
+  why_this_case: "Coverage review M18; SA brief test scenario 3. Orange until Q36"
+  priority: P3
+  environment: staging
+  source: "SA brief 29.09 test scenario 3; mockup CIBO 20261006 status 'Pending approval'; coverage review M18"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q36: does Allianz refer, and what should show"
+
+- id: "12406_QT_TS8"
+  sheet: QT
+  origin: drafted
+  type: functional
+  requirement: null
+  highlight: Q19
+  section: "Open scope (for the QA to decide)"
+  owner_type: "Individual"
+  policy: "Renewal"
+  quoting: "Motorcycle: unknown"
+  situation: "[For the QA, Q19] Motorcycle tab: individual-owner renewal of a motorcycle; which insurers quote, does Allianz appear"
+  preconditions:
+    - *when
+    - *site
+    - *owner
+    - "Vehicle: a motorcycle, individual owner, renewal (only if Secarang sells motorcycle insurance: Q19)"
+  steps: |-
+    1. Secarang > Home > Motorcycle tab: enter the motorcycle and owner; continue to the quotations
+    2. Record the cards shown and their order
+  expected: ""
+  expected_source: "none: SRD v1.1 does not mention vehicle type (Q19)"
+  why_this_case: "Scope dimension the SRD does not treat: Secarang has Car / Motorcycle tabs (secarang-study §1, EAINT-11541). Kept as a highlighted row until Q19 is answered"
+  priority: P3
+  environment: staging
+  source: "secarang-study §1 (Car / Motorcycle tabs); SRD v1.1 REQ-002 (silent on vehicle type)"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q19: does Allianz (or Secarang) quote motorcycles?"
+
+# =========================================================================== 3 Allianz Purchase
+- id: "12406_E2E_TS1"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: "REQ-002, REQ-005; SRD 2.1.3a"
+  section: "Allianz purchase, Fiuu payment channels"
+  insurer: "Allianz"
+  channel: "FPX (RHB)"
+  platform: "Secarang"
+  situation: "Secarang Home > quotation > Allianz > Add-ons > Confirmation > Fiuu FPX > Payment successful > CIBO Transaction Details, cover note, e-Certificate"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: the individual-owner renewal car of 12406_QT_TS1 (all three quote)"
+    - *fpx
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance
+    2. Select the Allianz quotation
+    3. Add-ons: keep the default; screenshot the amounts
+    4. Confirmation: fill the owner details; screenshot the premium breakdown and the agent line (recorded); Confirm and Pay
+    5. Payment methods: screenshot the channels offered; Online Banking (FPX) > RHB; approve in the Fiuu sandbox
+    6. Screenshot the Payment successful page; open and download the Receipt (kept for 12406_RC_TS1)
+    7. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot; click e-Certificate and keep the file
+    8. After the JPJ status job has run (next day if needed): reopen Transaction Details; record the JPJ column and 'Submission status to JPJ'; record whether 'Check JPJ Status' is shown
+  expected: |-
+    Ensure:
+    • Choose your insurance: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz
+    • Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded)
+    • Payment methods offers the same channels as for a Lonpac / Tokio Marine purchase (Credit / Debit Card, Online Banking FPX, e-wallets)
+    • Fiuu FPX payment settles: Secarang shows the Payment successful page with a Receipt
+    • Receipt Total Premium = the total on the Confirmation page
+    • CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status "Insurance created"; Payment Mode in the same format as a Lonpac FPX payment (observed today: "Fiuu | Online Banking – FPX-" + the bank)
+    • CIBO Transaction Details: Cover Note No and Policy No filled (not "-"); Payment Ref ID in the same shape as a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with Allianz's own insurer code (code recorded, Q30)
+    • e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate
+  expected_source: "SRD v1.1 REQ-002 Example 1a-b ('Customer can complete purchase using existing Allianz flow'); §2.1.3a (quote, add-ons, payment, cover note, callbacks, receipt); ticket item 5 ('all options available'); CIBO row, status 'Insurance created', Cover Note No / Policy No, e-Certificate / Receipt buttons: mockup CIBO 20261006 (SRD §1.5 #5); Payment Mode and Payment Ref ID shape: observed, current rule ([Jira] 12327 / 12566, [REQ] 12107 REQ-014, live 21.10.2026). JPJ status, Check JPJ Status, agent line: recorded"
+  why_this_case: "The change itself on the main path: 'full end-to-end test is required' (2.1.3a). Scope cell Allianz x Individual renewal x FPX. Review M3 (Policy No, e-Certificate, JPJ callback), M8 (Ref ID), M14 (Check JPJ Status), U1, §4 (channels folded from E2E_TS4)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.1.3a, §2.2.5 REQ-002"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q3: does Allianz quote on staging"
+    - "Q30: Allianz insurer code in the Payment Ref ID"
+
+- id: "12406_E2E_TS2"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: "REQ-002; SRD 2.1.3a; ticket item 5"
+  section: "Allianz purchase, Fiuu payment channels"
+  insurer: "Allianz"
+  channel: "Credit / Debit Card (+ discount code)"
+  platform: "Secarang"
+  situation: "Allianz purchase paid by card, discount code tried: quotation > Add-ons > Confirmation > Fiuu card > Payment successful > CIBO"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: another individual-owner renewal car that Allianz quotes (not the one of E2E_TS1)"
+    - "Discount code: a code valid on this staging (CIBO > Discount Code Management), its value noted before the run (whether codes apply to Allianz: Q25)"
+    - "Payment: Fiuu sandbox, Credit / Debit Card (test card for the sandbox, from the team / Dev)"
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle and owner; Choose your insurance > Allianz
+    2. Add-ons: keep the default; Confirmation: fill the owner details, enter the discount code; screenshot the breakdown (accepted or refused: recorded, Q25)
+    3. Confirm and Pay > Credit / Debit Card; pay with the sandbox test card
+    4. Screenshot the Payment successful page; download the Receipt
+    5. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot
+  expected: |-
+    Ensure:
+    • Card payment settles: Payment successful page with a Receipt; Receipt Total Premium = the Confirmation total
+    • CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status "Insurance created"
+    • CIBO Transaction Details: Cover Note No filled (not "-")
+  expected_source: "Ticket item 5 ('Allow Allianz in Secarang with all options available in Secarang'); SRD v1.1 REQ-002 Example 1b, §2.1.3a (cover note); CIBO columns and status from mockup CIBO 20261006; card channel 'working fine' on staging ([Jira] 12107, 07.09.2026). Discount: recorded (Q25)"
+  why_this_case: "Dimension: payment channel Card; option: discount code (ticket 'all options'). Review U3: the discount point became recorded until Q25; M3 (cover note checked once more)"
+  priority: P2
+  environment: staging
+  source: "Ticket item 5; SRD v1.1 §2.1.3a, REQ-002"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q25: do discount codes apply to Allianz"
+
+- id: "12406_E2E_TS3"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: "REQ-002; SRD 2.1.3a"
+  section: "Allianz purchase, Fiuu payment channels"
+  insurer: "Allianz"
+  channel: "GrabPay Full Amount"
+  platform: "Secarang"
+  situation: "Allianz purchase paid by GrabPay (Full Amount): quotation > Add-ons > Confirmation > Fiuu GrabPay > Payment successful > CIBO"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: a third individual-owner renewal car that Allianz quotes"
+    - "Payment: Fiuu sandbox, eWallet > GrabPay > Full Amount (the only e-wallet the Fiuu sandbox can pay, EAINT-12107 §2.2.8)"
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle and owner; Choose your insurance > Allianz
+    2. Add-ons: keep the default; Confirmation: fill the owner details; Confirm and Pay
+    3. Payment methods: GrabPay > Full Amount; approve in the Fiuu sandbox
+    4. Screenshot the Payment successful page; download the Receipt
+    5. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot
+  expected: |-
+    Ensure:
+    • GrabPay payment settles: Payment successful page with a Receipt; Receipt Total Premium = the Confirmation total
+    • CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status "Insurance created"; Payment Mode in the same format as a Lonpac GrabPay payment (observed today: "Fiuu | eWallet – GrabPay – Full Amount – Single Payment")
+    • CIBO Transaction Details: Cover Note No filled (not "-"); Payment Ref ID in the e-wallet shape (e.g. LON<yyyymmdd>SEW<nnnn> for Lonpac) with Allianz's own insurer code (recorded, Q30)
+  expected_source: "SRD v1.1 REQ-002 Example 1b, §2.1.3a; Payment Mode text and Ref ID shape observed, current rule ([Jira] 12327 description, 12566; [REQ] 12107 REQ-014, live 21.10.2026); CIBO columns and status from mockup CIBO 20261006"
+  why_this_case: "Dimension: payment channel e-wallet (ticket 'all options'); GrabPay Full Amount is the only sandbox e-wallet. Review U2, M3, M8. Road tax moved to E2E_TS11"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.1.3a, REQ-002; ticket item 5"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q30: Allianz insurer code in the Payment Ref ID"
+
+- id: "12406_E2E_TS9"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: "REQ-002; SRD 2.1.3a (add-ons); ticket item 5"
+  section: "Allianz purchase: add-ons, Confirmation, switching insurer"
+  insurer: "Allianz"
+  channel: "FPX (RHB)"
+  platform: "Secarang"
+  situation: "Allianz add-ons and Confirmation with e-Invoice details: pick Tokio Marine first, go back to Allianz; tick / untick add-ons; Confirmation with TIN; pay; same add-ons on receipt and CIBO"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Owner e-Invoice details: a test TIN (Tax Identification Number) for the test identity"
+    - "Vehicle: an individual-owner renewal car that all three insurers quote (not used by another row)"
+    - *fpx
+    - "For comparison: the Confirmation pages of the Lonpac (12406_QT_TS4) and Tokio Marine (QT_TS3) purchases"
+  steps: |-
+    1. Secarang: the car + owner > Choose your insurance > select Tokio Marine > on Add-ons go back > select Allianz
+    2. Add-ons: screenshot every add-on offered with its price (recorded against the SA brief list: all-driver, CART, Road Rangers, PAB-ERW, MPA A/B, agreed value; Q32); tick two add-ons and note the premium; untick one and note the premium
+    3. Confirmation: fill the owner details including the e-Invoice fields (TIN); screenshot which fields carry "*" and its colour, the agent line and commission % (recorded, compared with the Lonpac / Tokio Marine Confirmation; Q37); Confirm and Pay
+    4. FPX > RHB approve; screenshot the Payment successful page; download the Receipt
+    5. CIBO > Transaction Details: screenshot the Car Owner Details (TIN) and the premium breakdown with Add-ons
+  expected: |-
+    Ensure:
+    • After going back from Tokio Marine and selecting Allianz, the Add-ons and Confirmation pages are for Allianz (no Tokio Marine name or price)
+    • Ticking an add-on adds its shown price to the premium; unticking it takes the price off again
+    • The add-on left ticked and its amount are the same on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)
+    • The purchase with the e-Invoice details (TIN) filled completes: Payment successful page with a Receipt; CIBO Transaction Details shows the same TIN
+    • Receipt and CIBO show Allianz as the insurer (no Tokio Marine)
+  expected_source: "SRD v1.1 REQ-002 Example 1b and 'Existing Allianz flow and options remain unchanged', §2.1.3a (add-ons); ticket item 5; values compared within the one transaction. Add-ons line and Car Owner Details (TIN) on CIBO: mockup CIBO 20261006. Add-on list, Road Rangers price, '*' marks, agent line, commission %: recorded (Q32, Q37)"
+  why_this_case: "Coverage review M6 (add-ons; past add-on defects 11067, 11654), M7 (Confirmation, e-Invoice / TIN: EAINT-7981 went live 30.06.2025, after Allianz quoting was switched off, so an Allianz purchase with TIN never ran), M9 reverse direction (Tokio Marine > back > Allianz). SA brief test scenario 4. Folded into one purchase (playbook: fold a dimension into an existing path)"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.1.3a, REQ-002; coverage review M6, M7, M9; SA brief test scenario 4"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q32: which Allianz add-ons; is Road Rangers free"
+    - "Q37: Confirmation agent line and commission %"
+
+- id: "12406_E2E_TS10"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: "REQ-002, REQ-010"
+  section: "Allianz purchase: add-ons, Confirmation, switching insurer"
+  insurer: "Allianz > Tokio Marine"
+  channel: "FPX (RHB)"
+  platform: "Secarang"
+  situation: "Customer picks Allianz, goes back and buys Tokio Marine instead: receipt and CIBO show Tokio Marine with its own company number, nothing of Allianz"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: an individual-owner renewal car that all three insurers quote (not used by another row)"
+    - *fpx
+  steps: |-
+    1. Secarang: the car + owner > Choose your insurance > select Allianz > Add-ons (screenshot) > go back
+    2. Select Tokio Marine > Add-ons > Confirmation > Confirm and Pay > FPX > RHB approve
+    3. Screenshot the Payment successful page; download the Receipt
+    4. CIBO > Transaction Management: search the plate; open Transaction Details and Receipt; screenshot
+  expected: |-
+    Ensure:
+    • Confirmation and Payment successful are for Tokio Marine (no Allianz name or price)
+    • Secarang receipt Insurer: "Tokio Marine Insurans (Malaysia) Berhad", next line "198601000381 (149520-U)" (no Allianz company number)
+    • CIBO row Ins. Co. Tokio Marine; Transaction Details insurer "Tokio Marine Insurans (Malaysia) Berhad" with "198601000381 (149520-U)" below it
+  expected_source: "SRD v1.1 REQ-010 ('Tokio Marine (current)', Example 2a), REQ-011 ('Tokio Marine (current)'); the insurer finally paid is the transaction's own value"
+  why_this_case: "Coverage review M9 (forward direction): a stale Allianz choice must not leak into the receipt of another insurer"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 REQ-010, REQ-011; coverage review M9"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_E2E_TS4"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: "REQ-002; ticket item 5"
+  highlight: Q24
+  section: "Allianz purchase, Fiuu payment channels"
+  insurer: "Allianz"
+  channel: "ShopeePay / SPayLater / PayLater by Grab"
+  platform: "Secarang"
+  situation: "[For Azfar, Q24] Allianz purchase paid by ShopeePay (Full Amount), SPayLater or PayLater by Grab: the Fiuu sandbox cannot pay them"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: an individual-owner renewal car that Allianz quotes"
+    - "Payment: Fiuu sandbox ShopeePay / SPayLater / PayLater by Grab: not payable in the sandbox (EAINT-12107 §2.2.8). Azfar decides at gate 0 (Q24)"
+  steps: |-
+    1. Secarang > Home > Car tab: enter the vehicle and owner; Choose your insurance > Allianz > Add-ons > Confirmation > Confirm and Pay
+    2. Payment methods: ShopeePay > Full Amount; try to pay in the Fiuu sandbox
+    3. CIBO > Transaction Management: search the plate; screenshot the row
+  expected: |-
+    Ensure:
+    • ShopeePay is offered on Payment methods for the Allianz purchase
+    • If the sandbox completes it: CIBO row Payment Mode in the same format as a Lonpac ShopeePay payment (observed today: "Fiuu | eWallet – ShopeePay – Full Amount – Single Payment"), Payment Paid
+  expected_source: "Ticket item 5 ('all options available'); ShopeePay channel live 21.10.2026 ([Jira] 12107); Payment Mode observed ([Jira] 12327)"
+  why_this_case: "Scope: every payment option on Secarang (ticket). The channel list is also checked in E2E_TS1. Coverage review §4 / §6: orange for Azfar's decision (Q24); not removed"
+  priority: P3
+  environment: staging
+  source: "Ticket item 5; [REQ] 12107 v1.2 §2.2.8"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q24: keep, deprioritise, or try once?"
+
+- id: "12406_E2E_TS11"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: "Ticket item 5"
+  highlight: Q25
+  section: "Allianz purchase: add-ons, Confirmation, switching insurer"
+  insurer: "Allianz"
+  channel: "FPX (RHB) + road tax"
+  platform: "Secarang"
+  situation: "[For the QA, Q25] Allianz purchase with road tax renewal, if the homepage flow offers road tax"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: an individual-owner renewal car that Allianz quotes and whose road tax can be renewed with the insurance (Q25)"
+    - *fpx
+  steps: |-
+    1. Secarang: the car + owner > Choose your insurance > Allianz > Add-ons: add road tax renewal if offered; screenshot the amount
+    2. Confirmation > Confirm and Pay > FPX > RHB approve; screenshot the Payment successful page; download the Receipt
+    3. CIBO > Transaction Management: search the plate; screenshot the row (Road Tax column)
+  expected: |-
+    Ensure:
+    • CIBO > Transaction Management row: Road Tax "Included"
+  expected_source: "Ticket item 5 ('all options available'); Road Tax column values Included / Exempted: mockup CIBO 20261006. Road tax amounts, receipt lines: no source (Q25), recorded"
+  why_this_case: "Coverage review M13: the site sells 'motor insurance renewal and road tax' (footer); CIBO has a Road Tax column and filter. Orange until Q25"
+  priority: P2
+  environment: staging
+  source: "Ticket item 5; mockup CIBO 20261006; coverage review M13"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q25: is road tax offered with Allianz, and which amounts"
+
+- id: "12406_E2E_TS5"
+  sheet: E2E
+  origin: drafted
+  type: negative
+  requirement: "REQ-002"
+  highlight: Q17
+  section: "Allianz purchase: failure paths"
+  insurer: "Allianz"
+  channel: "FPX failed, then FPX"
+  platform: "Secarang"
+  situation: "[For the QA, Q17] Allianz payment fails / is cancelled at Fiuu, then the customer pays again"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: an individual-owner renewal car that Allianz quotes"
+    - "Payment: Fiuu sandbox FPX; the bank page's fail / cancel choice (or close the page) for the first try, RHB approve for the second"
+  steps: |-
+    1. Secarang: Allianz quotation > Add-ons > Confirmation > Confirm and Pay > FPX > RHB
+    2. In the Fiuu sandbox fail or cancel the payment; screenshot what Secarang shows (recorded, Q17)
+    3. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot
+    4. On Secarang pay again (retry from the page shown, or quote again), FPX > RHB approve
+    5. Screenshot the Payment successful page; CIBO row again
+  expected: |-
+    Ensure:
+    • CIBO after the failed payment: Transaction Status "Failed" (red), Payment "Unpaid"; Transaction Details shows no Receipt and no e-Certificate button
+    • The second payment completes: Payment successful page with a Receipt, and CIBO shows the paid transaction with Payment Paid, Ins. Co. Allianz
+  expected_source: "CIBO side: mockup CIBO 20261006 row BR55009007 (Failed, Unpaid, red badge, buttons only when Insurance created; coverage review MD-12). Retry: SRD v1.1 REQ-002 Example 1b. Secarang failure page: no source (Q17), recorded"
+  why_this_case: "Failure path of the payment step of a journey that has not run since May 2025 (SRD 2.1.3a). Review §6: P2, CIBO side sourced from the mockup. Orange: the Secarang failure page has no expected result"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.1.3a, REQ-002; mockup CIBO 20261006"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q17: what the customer should see after a failed / cancelled Allianz payment"
+
+- id: "12406_E2E_TS6"
+  sheet: E2E
+  origin: drafted
+  type: negative
+  requirement: null
+  highlight: Q18
+  section: "Allianz purchase: failure paths"
+  insurer: "Allianz"
+  channel: "FPX (RHB)"
+  platform: "Secarang"
+  situation: "[For the QA, Q18] Allianz paid, then cover note submission fails (vehicle prefix VB) or JPJ rejects (prefix VF)"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: individual-owner renewal car with prefix VB (cover note failed) or VF (JPJ rejected), if these still work on Secarang staging for Allianz (Q4)"
+    - *fpx
+  steps: |-
+    1. Secarang: Allianz quotation > Add-ons > Confirmation > Confirm and Pay > FPX > RHB approve
+    2. Screenshot the Payment successful page
+    3. CIBO > Transaction Details: record the Transaction Status, Cover Note No and Submission status to JPJ
+    4. Record any internal WhatsApp alert received (Q18)
+  expected: ""
+  expected_source: "none: SRD v1.1 §2.1.3a names cover note and callbacks but gives no expected result for a failure (Q18)"
+  why_this_case: "Failure path of the re-enabled Allianz journey (cover note, callbacks: SRD 2.1.3a; SA brief risk on callbacks); prior art 8536 / 12347 alerts for Lonpac / Tokio Marine. Highlighted until Q18 / Q4 are answered"
+  priority: P3
+  environment: staging
+  source: "SRD v1.1 §2.1.3a; secarang-study §2 (prefixes VB / VF, [WB] 8536)"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q18: expected handling of a failed Allianz cover note / JPJ rejection"
+    - "Q4: do VB / VF still work"
+
+- id: "12406_E2E_TS7"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: null
+  highlight: Q7
+  section: "Open scope (for the QA to decide)"
+  insurer: "Allianz?"
+  channel: "BoldPay"
+  platform: "Secarang-MK"
+  situation: "[For the QA, Q7] MacroKiosk renewal flow: WhatsApp reminder > Renew Now link > quotation > BoldPay > CIBO (platform Secarang-MK): is Allianz offered? (the SA brief lists it in its tests)"
+  preconditions:
+    - *when
+    - *cibo
+    - "A MacroKiosk renewal reminder for an individual-owner renewal car that Allianz quotes, sent to the QA's own WhatsApp (renewal cronjob run by Dev, as in EAINT-12079)"
+    - "BoldPay on staging is answered by eSim: eAuto-VPN connected (EAINT-12079, 03.08.2026)"
+  steps: |-
+    1. Open the Renew Now link from the WhatsApp reminder; pass the Identity Verification (last 6 digits of the IC)
+    2. Record the quotations / insurer shown and their order (Q7)
+    3. If Allianz is offered: select it and pay by BoldPay (eSim); also try Review Later on another reminder and come back by the link
+    4. CIBO > Transaction Management, Platform Secarang-MK: screenshot the row
+  expected: ""
+  expected_source: "none: SRD v1.1 is silent on the MacroKiosk flow (Q7). The SA Impact Brief (SRD §1.5 #6, 29.09) lists 'BoldPay' and 'Quotation-link flow and MacroKiosk renewal Pay Now / Pay Later' in its tests: scope evidence, not an expected result"
+  why_this_case: "Platform Secarang-MK: the CIBO mockup shows Allianz rows there and the SA brief tests it (scenarios 5, 7) and names it a risk. Highlighted, not an approved TS, until Q7 is answered (+4-6 TS if yes)"
+  priority: P2
+  environment: staging
+  source: "SA brief 29.09 test scenarios 5 and 7; mockup CIBO 20261006 (Secarang-MK Allianz rows); secarang-study §1 and Q7"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q7: is Allianz in the MacroKiosk renewal flow"
+
+- id: "12406_E2E_TS8"
+  sheet: E2E
+  origin: drafted
+  type: e2e
+  requirement: "REQ-001 to REQ-011; SRD 2.1.3a"
+  highlight: Q6
+  section: "Open scope (for the QA to decide)"
+  insurer: "Allianz"
+  channel: "FPX or card (real)"
+  platform: "Secarang (production)"
+  situation: "[For the QA, Q6] Production after go-live: a real Allianz purchase end to end, receipt and CIBO (the look-only production check is 12406_CP_TS7)"
+  preconditions:
+    - "When: after EAINT-12406 goes live on production (release 02.11.2026 or later), only if Q6 says a paid production purchase is expected, and who pays / cancels / refunds it"
+    - "Production secarang.com and production CIBO (login: Q2)"
+    - "Vehicle and owner: a real individual-owner renewal agreed with the BA / requestor (Q6)"
+  steps: |-
+    1. secarang.com > Car tab > the agreed vehicle > Choose your insurance > Allianz
+    2. Add-ons > Confirmation > Confirm and Pay > the agreed payment method
+    3. Screenshot the Payment successful page; download the Receipt
+    4. Production CIBO > Transaction Management > Transaction Details and Receipt of the transaction; screenshot
+  expected: |-
+    Ensure:
+    • The Allianz purchase completes: Payment successful page with a Receipt
+    • Receipt Insurer: "Allianz General Insurance Company (Malaysia) Berhad", next line "200601015674 (735426-V)"
+    • CIBO Transaction Details: Insurer "Allianz General Insurance Company (Malaysia) Berhad" with "200601015674 (735426-V)" below it; Cover Note No filled
+  expected_source: "SRD v1.1 §2.1.3a ('full end-to-end test is required as it has not run in production since May 2025'), REQ-002 Example 1b, REQ-010 Example 1a, REQ-011 Example 1a; Cover Note No: mockup CIBO 20261006"
+  why_this_case: "SRD 2.1.3a asks for a production E2E; whether a paid one is expected is open (Q6). Highlighted until decided. Home logos moved to the look-only row CP_TS7 (review M1)"
+  priority: P2
+  environment: production
+  source: "SRD v1.1 §2.1.3a"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q6: is a real paid production purchase expected, and who pays / refunds"
+
+# =========================================================================== 4 Receipt and CIBO
+- id: "12406_RC_TS1"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "REQ-010"
+  section: "Receipt"
+  doc: "Receipt (Secarang)"
+  portal: "Secarang"
+  situation: "Secarang receipt of an Allianz purchase shows the Allianz name with the new company number below it, laid out as Tokio Marine, and the Serba Sentral agent line"
+  preconditions:
+    - *when
+    - "Receipts downloaded on the Payment successful page in 12406_E2E_TS1 (FPX), E2E_TS2 (card), E2E_TS3 (GrabPay); the Tokio Marine receipt of 12406_RG_TS1 (from QT_TS3) for one side-by-side comparison"
+  steps: |-
+    1. Open the receipt of E2E_TS1; screenshot the Purchase Details block and the Receipt Summary
+    2. Put the Tokio Marine receipt of RG_TS1 beside it; one screenshot of both Insurer blocks
+    3. Open the receipts of E2E_TS2 and E2E_TS3; screenshot their Insurer block
+  expected: |-
+    Ensure:
+    • Insurer, first line: "Allianz General Insurance Company (Malaysia) Berhad"
+    • Insurer, next line: "200601015674 (735426-V)"
+    • The old form "Allianz General Insurance Company (Malaysia) Berhad (735426-V)" on one line is not shown
+    • Laid out like the Tokio Marine Insurer block of 12406_RG_TS1 (name, then company number with the old number in brackets on the next line)
+    • Vehicle Plate No., For (owner name) and Total Premium match the purchase of E2E_TS1
+    • Receipt Summary ends with "Exclusively by agent Serba Sentral Sdn Bhd" (PIAM ID recorded)
+    • The receipts of E2E_TS2 and E2E_TS3 show the same two Insurer lines
+  expected_source: "SRD v1.1 §2.2.9 REQ-010 (Existing / New Expected, Example 1a 'same layout as Tokio Marine'); receipt fields and agent line from mockup CIBO 20261006 receipt (SRD §1.5 #5; coverage review MD-23); agency Serba Sentral: SRD 2.1.3b"
+  why_this_case: "The change itself: receipt is affected page #6 (Secarang side), all three payment channels. Tokio Marine text kept in RG_TS1 only (review §4 duplicate)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.9 REQ-010"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_RC_TS2"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "REQ-010"
+  section: "Receipt"
+  doc: "Receipt (CIBO)"
+  portal: "CIBO"
+  situation: "CIBO user opens the receipt of an Allianz transaction: same Allianz name and company number"
+  preconditions:
+    - *when
+    - *cibo
+    - "The Allianz transaction of 12406_E2E_TS1"
+  steps: |-
+    1. CIBO > Transaction Management: search the plate of E2E_TS1; open Transaction Details
+    2. Click Receipt; screenshot the receipt; Print to PDF and keep it
+  expected: |-
+    Ensure:
+    • Insurer, first line: "Allianz General Insurance Company (Malaysia) Berhad"
+    • Insurer, next line: "200601015674 (735426-V)"
+    • Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1
+    • Agent line "Exclusively by agent Serba Sentral Sdn Bhd" (PIAM ID recorded)
+  expected_source: "SRD v1.1 REQ-010 Example 1a ('Customer or CIBO user opens receipt'); receipt layout and agent line: mockup CIBO 20261006 receipt (SRD §1.5 #5); agency Serba Sentral: SRD 2.1.3b"
+  why_this_case: "The change itself: receipt is affected page #6 (CIBO side)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.9 REQ-010; mockup CIBO 20261006"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_RC_TS3"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "REQ-011"
+  section: "CIBO Transaction Details"
+  doc: "Transaction Details"
+  portal: "CIBO"
+  situation: "CIBO Transaction Details of an Allianz transaction: company registration number below the insurer name; Allianz logo; agency Serba Sentral"
+  preconditions:
+    - *when
+    - *cibo
+    - "The Allianz transaction of 12406_E2E_TS1; the Tokio Marine Transaction Details of 12406_RG_TS1 for one side-by-side comparison"
+    - "NOTE: the CIBO mockup (06.10.2026) shows NO company number line under the insurer name; REQ-011 was added in SRD v1.1 on 26.10.2026. The SRD wins: the line IS expected although the mockup does not show it"
+  steps: |-
+    1. CIBO > Transaction Management: open Transaction Details of E2E_TS1; screenshot the insurer box and More Info
+    2. Put the Tokio Marine Transaction Details of RG_TS1 beside it; one screenshot of both insurer boxes
+    3. Compare the rest of the page with the mockup CIBO Transaction Management 20261006 (Transaction Details); record whether 'Check JPJ Status' is shown and what it does
+  expected: |-
+    Ensure:
+    • Insurer: "Allianz General Insurance Company (Malaysia) Berhad", with "200601015674 (735426-V)" below it
+    • Laid out like the Tokio Marine insurer box of 12406_RG_TS1 (company number below the name)
+    • The insurer box shows the Allianz logo
+    • More Info: Platform "Secarang", Agency "Serba Sentral" (Agency No. and Agency PIAM ID recorded)
+  expected_source: "SRD v1.1 §2.2.10 REQ-011 (New Expected, Example 1a; 'same as Tokio Marine'); SRD wins over the 06.10 mockup for the company number line (coverage review MD-13); logo and More Info layout: mockup CIBO 20261006 (SRD §1.5 #5); agency Serba Sentral: SRD 2.1.3b. Check JPJ Status: recorded (review M14)"
+  why_this_case: "The change itself: affected page #7 (added in SRD v1.1). Tokio Marine text kept in RG_TS1 only (review §4 duplicate)"
+  priority: P1
+  environment: staging
+  source: "SRD v1.1 §2.2.10 REQ-011; mockup CIBO 20261006"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q29: does Tokio Marine show its company number on Transaction Details today (answered by RG_TS1 BEFORE)"
+
+- id: "12406_RC_TS4"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "REQ-002; SRD 2.1.3b"
+  section: "CIBO listing and reports"
+  doc: "Transaction listing, Insurance Company filter, export"
+  portal: "CIBO"
+  situation: "CIBO Transaction Management: the Insurance Company filter has Allianz; Allianz rows show Ins. Co. Allianz under Serba Sentral, styled like other rows; export matches the screen"
+  preconditions:
+    - *when
+    - *cibo
+    - "The Allianz transactions of 12406_E2E_TS1, TS2, TS3; the Lonpac and Tokio Marine transactions of 12406_QT_TS4 and QT_TS3"
+    - "Use the filter names and values CIBO shows (mockup: filter 'Insurance Company', values incl. 'Allianz', 'Lonpac', 'TokioMarine'). The mockup's agency 'Serba Sentral' on Lonpac / Tokio Marine rows is sample data: not judged"
+  steps: |-
+    1. CIBO > Transaction Management: open the Insurance Company filter; screenshot its options
+    2. Filter Insurance Company = Allianz, Platform = Secarang only, date = today; Search; screenshot
+    3. Clear the insurer filter; one screenshot with an Allianz row next to a Tokio Marine row
+    4. Allianz filter again; Export; open the file; screenshot the Allianz rows
+    5. Filter Lonpac, then Tokio Marine (same date); Search; screenshot each
+    6. CIBO > Dashboard: record whether it counts sales per insurer and whether Allianz is in it
+  expected: |-
+    Ensure:
+    • The Insurance Company filter offers Allianz
+    • Filter Allianz: the list holds the E2E_TS1, TS2 and TS3 transactions and no other insurer's
+    • Each Allianz row: Ins. Co. "Allianz" with "Serba Sentral" under it; Ref. No. link, platform tag and Paid tag styled like the Tokio Marine row
+    • The export has the same Allianz rows as the screen, Ins. Co. Allianz (observed, export = screen)
+    • Filters Lonpac and Tokio Marine still return the QT_TS4 and QT_TS3 transactions (observed)
+  expected_source: "Mockup CIBO 20261006 (filter 'Insurance Company' and its values, Ins. Co. column with agency, pills, Export; coverage review MD-18, MD-20); agency Serba Sentral: SRD 2.1.3b; export = screen and Lonpac / Tokio Marine filters: observed (team checklist, U8). Dashboard: recorded (M16)"
+  why_this_case: "Every place the change shows: CIBO listing. Watch-out from past Secarang insurer defects: CIBO listing / filter missing a new insurer (EAINT-10968, 10969, secarang-study §4)"
+  priority: P2
+  environment: staging
+  source: "Mockup CIBO 20261006; SRD v1.1 §2.1.3b"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_RC_TS10"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "REQ-002"
+  section: "CIBO listing and reports"
+  doc: "Transaction listing: search, filters, Clear all, Print"
+  portal: "CIBO"
+  situation: "CIBO Transaction Management with Allianz rows: search by Ref. No. / plate / owner name / ID, Platform values, Insurance Company combined with other filters, Clear all, Print, no record found"
+  preconditions:
+    - *when
+    - *cibo
+    - "The Allianz transactions of 12406_E2E_TS1 (Insurance created), TS2 (discount code tried), the unpaid one of 12406_RC_TS9 and, if Q7 allows, a Secarang-MK one"
+  steps: |-
+    1. Search box: the Ref. No. of E2E_TS1; then its plate; then the owner name; then the owner ID; Search each time; screenshot
+    2. Search a plate that does not exist; screenshot
+    3. Insurance Company = Allianz with Platform "Secarang", then "Secarang only"; screenshot each
+    4. Insurance Company = Allianz + Transaction Status "Insurance created"; then + Transaction Status of RC_TS9; then + Discount Code of E2E_TS2 (if it was accepted); screenshot each
+    5. Clear all; screenshot. Print; screenshot the print view
+  expected: |-
+    Ensure:
+    • Each search (Ref. No., plate, owner name, owner ID) returns the E2E_TS1 transaction
+    • A plate that does not exist: "No record found"
+    • Platform "Secarang" lists Secarang and Secarang-MK rows; "Secarang only" lists no Secarang-MK row
+    • Insurance Company Allianz + Transaction Status: only Allianz rows with that status (E2E_TS1 under "Insurance created", RC_TS9 under its own status)
+    • Clear all empties every filter and the search box; Print opens a print view of the listing
+  expected_source: "Mockup CIBO 20261006 (search box, Platform values 'Secarang' = Secarang + Secarang-MK and 'Secarang only', filters, Clear all, Print, 'No record found'; coverage review MD-19, M12). Results: our own transactions"
+  why_this_case: "Coverage review M12: CIBO is a BO page with its own functional rows (playbook: each filter, combined filters, Search, Clear, Print / Export)"
+  priority: P2
+  environment: staging
+  source: "Mockup CIBO 20261006; coverage review M12"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_RC_TS9"
+  sheet: RC
+  origin: drafted
+  type: negative
+  requirement: "REQ-002"
+  section: "CIBO listing and reports"
+  doc: "Transaction listing + Details (unpaid)"
+  portal: "CIBO"
+  situation: "Allianz transaction not paid (left at Payment methods): CIBO shows it Pending payment / Unpaid, without Receipt or e-Certificate; later Quotation expired"
+  preconditions:
+    - *when
+    - *site
+    - *cibo
+    - *owner
+    - "Vehicle: an individual-owner renewal car that Allianz quotes (not used by another row)"
+  steps: |-
+    1. Secarang: the car + owner > Choose your insurance > Allianz > Add-ons > Confirmation > Confirm and Pay; on Payment methods close the page without paying
+    2. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot
+    3. When the quotation has expired (how long: Q39), open the row again; screenshot (recorded)
+  expected: |-
+    Ensure:
+    • CIBO row: Ins. Co. Allianz, Payment "Unpaid" (amber tag), Transaction Status "Pending payment"
+    • Transaction Details: status badge "Pending payment" (amber, no tick); no e-Certificate and no Receipt button; Cover Note No and Policy No "-"
+  expected_source: "Mockup CIBO 20261006 row BR55009003 (Pending payment, Unpaid, amber) and its Transaction Details (buttons only when Insurance created; Cover Note / Policy No '-' when not created) (coverage review M4, MD-12). Expired state: mockup row BR55009005, timing Q39, recorded"
+  why_this_case: "Coverage review M4: an unfinished Allianz transaction in CIBO; the status chain other than 'Insurance created'"
+  priority: P2
+  environment: staging
+  source: "Mockup CIBO 20261006; coverage review M4"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q39: when an unpaid quotation becomes 'Quotation expired' (recorded)"
+
+- id: "12406_RC_TS5"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "SRD 2.1.3b"
+  section: "CIBO listing and reports"
+  doc: "Payment Report, Payment Management"
+  portal: "CIBO"
+  situation: "CIBO Payment Report shows the Allianz sales under agency Serba Sentral; Payment Management shows them under their Fiuu channel"
+  preconditions:
+    - *when
+    - *cibo
+    - "The Allianz transactions of 12406_E2E_TS1, TS2, TS3 (amounts from their receipts)"
+    - "Report date: today's transactions must be in the report (if the report covers up to yesterday only, run the next day and say so)"
+  steps: |-
+    1. CIBO > Payment Report: filter today (and Allianz / Serba Sentral if the report has such filters); screenshot
+    2. Export; open the file; screenshot the Allianz rows; record each amount beside the Total Premium of its receipt (Q16)
+    3. CIBO > Payment Management: Payment Channels filter Fiuu FPX, then card, then Fiuu - eWallet > GrabPay; screenshot each
+  expected: |-
+    Ensure:
+    • The three Allianz payments (E2E_TS1, TS2, TS3) are listed under agency Serba Sentral
+    • The export holds the same rows as the screen (observed)
+    • Payment Management: E2E_TS1 under FPX, E2E_TS2 under card, E2E_TS3 under Fiuu - eWallet > GrabPay (observed)
+  expected_source: "SRD v1.1 §2.1.3b ('Allianz sales and commission shown under agency Serba Sentral in CIBO payment and commission reports'); export = screen: observed (12079 Payment Report export, secarang-study §3); Payment Management filters: observed, current rule ([REQ] 12107 REQ-011..013, live 21.10.2026). Amount per row: recorded (Q16, coverage review U7)"
+  why_this_case: "SRD 2.1.3b, Finance sign-off. Every place the change shows: reports. Review U7 (amount recorded), M15 (Payment Management folded in)"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.1.3b"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q16: which amount the Payment Report shows (recorded)"
+
+- id: "12406_RC_TS6"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "SRD 2.1.3b"
+  section: "CIBO listing and reports"
+  doc: "Commission Report"
+  portal: "CIBO"
+  situation: "CIBO Commission Report shows the Allianz commission under agency Serba Sentral"
+  preconditions:
+    - *when
+    - *cibo
+    - "The Allianz transactions of 12406_E2E_TS1, TS2, TS3"
+    - "Report date: as in 12406_RC_TS5"
+  steps: |-
+    1. CIBO > Commission Report: filter today (agency Serba Sentral / insurer Allianz if offered); screenshot
+    2. Export; open the file; screenshot the Allianz rows; record the commission amount and % per row (Q16)
+  expected: |-
+    Ensure:
+    • The three Allianz transactions (E2E_TS1, TS2, TS3) are listed under agency Serba Sentral
+    • The export holds the same rows as the screen (observed)
+  expected_source: "SRD v1.1 §2.1.3b; export = screen: observed; commission amount not in the SRD (Q16; SA brief open check 'active Allianz commission rate for Secarang at release'), recorded only"
+  why_this_case: "SRD 2.1.3b, Finance sign-off"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.1.3b"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q16: expected commission rate / amount for Allianz (recorded)"
+
+- id: "12406_RC_TS7"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "REQ-010; SRD 2.1.3a"
+  highlight: Q21
+  section: "Receipt"
+  doc: "Customer messages: WhatsApp, e-Receipt email, e-Certificate email"
+  portal: "Email / WhatsApp"
+  situation: "[For the QA, Q21] Every customer message after an Allianz purchase: payment-success / receipt WhatsApp, policy-created WhatsApp, e-Receipt email, insurer e-Certificate email; the attached receipt shows the new Allianz company number"
+  preconditions:
+    - *when
+    - "The Allianz transaction of 12406_E2E_TS1, its owner email / phone set to an inbox / WhatsApp the QA can read (only if staging sends them: Q21; MessageBird enabled for WhatsApp, [WB] 8536)"
+  steps: |-
+    1. Screenshot every WhatsApp message received for E2E_TS1 (payment successful / receipt, policy created)
+    2. Open the e-Receipt email; open the attached receipt; screenshot the Insurer block
+    3. Open the insurer's e-Certificate email, if any; screenshot (recorded)
+  expected: |-
+    Ensure:
+    • Receipt attached to the e-Receipt email / WhatsApp, Insurer first line: "Allianz General Insurance Company (Malaysia) Berhad"
+    • Same receipt, next line: "200601015674 (735426-V)"
+  expected_source: "SRD v1.1 REQ-010 (receipt). Whether the messages are sent on staging and in scope: Q21 (SA brief test scenario 6 lists 'WhatsApp and email after payment; receipt PDF'). Message texts: recorded"
+  why_this_case: "Every place the change shows: the receipt also reaches the customer by email (FAQ text, mockup 20261015) / WhatsApp (secarang-study §1). Coverage review M10 widened the row to every message (templates changed after May 2025: 9117, 12218). Orange until Q21"
+  priority: P3
+  environment: staging
+  source: "SRD v1.1 REQ-010, §2.1.3a; SA brief test scenario 6; coverage review M10"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q21: are the customer messages sent on staging, and in scope"
+
+- id: "12406_RC_TS8"
+  sheet: RC
+  origin: drafted
+  type: functional
+  requirement: "REQ-010, REQ-011"
+  phase: pre-deploy
+  section: "Existing Allianz transactions"
+  doc: "Receipt + Transaction Details (existing)"
+  portal: "CIBO"
+  situation: "Allianz transactions created before the change (Secarang, before May 2025; any left in a non-final status since; eAuto platform, if any): receipt and Transaction Details before and after the deploy"
+  preconditions:
+    - *before
+    - *cibo
+    - "Data: an Allianz transaction already in CIBO staging on platform Secarang (e.g. from EAINT-7981, June 2025), any Allianz transaction left in a non-final status (Pending payment / Pending approval, SA brief open check) and, if any, one on platform eAuto. If staging has none, tell the QA: the row then runs on the new E2E_TS1 transaction only"
+  steps: |-
+    1. CIBO > Transaction Management: Insurance Company = Allianz, Platform = Secarang; pick a transaction from before May 2025; record its Ref. No.
+    2. Open Transaction Details; screenshot the insurer box; open Receipt; screenshot the Insurer block
+    3. Repeat 1-2 for an Allianz transaction in a non-final status and for one on platform eAuto, if they exist
+  expected: |-
+    Ensure:
+    • Receipt (Secarang platform): Insurer "Allianz General Insurance Company (Malaysia) Berhad (735426-V)" (today's form)
+  after:
+    steps: |-
+      4. After Dev deploys: open the same transactions' Transaction Details and Receipt again; screenshot
+    expected: |-
+      Ensure:
+      • Receipt (Secarang platform): "Allianz General Insurance Company (Malaysia) Berhad", next line "200601015674 (735426-V)"
+      • Transaction Details (Secarang platform): "200601015674 (735426-V)" below the Allianz name
+      • Non-final and eAuto platform transactions: recorded (whether REQ-010 / 011 apply to them is Q20)
+  points:   # both halves, so the before and the after are each proved (the tools read only `expected`)
+    - {id: E1, text: "BEFORE: Receipt (Secarang platform) Insurer \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\""}
+    - {id: E2, text: "BEFORE: Transaction Details insurer box captured (recorded, the SRD gives no 'Existing' text for it)"}
+    - {id: E3, text: "AFTER: Receipt (Secarang platform) \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\""}
+    - {id: E4, text: "AFTER: Transaction Details (Secarang platform) \"200601015674 (735426-V)\" below the Allianz name"}
+    - {id: E5, text: "AFTER: non-final and eAuto platform transactions recorded (Q20)"}
+  expected_source: "Before: SRD v1.1 REQ-010 'Existing' text. After: REQ-010 Example 1a, REQ-011 Example 1a (the SRD says 'Allianz transaction' without limiting it to new ones). Non-final / eAuto platform: Q20 (SA brief open check on transactions stuck since May 2025)"
+  why_this_case: "Pre-deploy: the 'before' must be captured on the old build; existing data the change acts on. Scope: Allianz transactions from before the switch-off, stuck ones (SA brief), and from the eAuto platform (mockup listing row BR55009010). Review §6: recorded BEFORE point for Transaction Details added"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 REQ-010, REQ-011; mockup CIBO 20261006 (eAuto Allianz row); SA brief 29.09 open checks"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q20: do REQ-010 / 011 apply to old, stuck and eAuto-platform Allianz transactions"
+
+# =========================================================================== 5 Regression
+- id: "12406_RG_TS1"
+  sheet: RG
+  origin: drafted
+  type: regression
+  requirement: "REQ-010 Example 2, REQ-011"
+  phase: pre-deploy
+  section: "Other insurers unchanged"
+  area: "Receipt + Transaction Details, Tokio Marine"
+  portal: "Secarang, CIBO"
+  situation: "Tokio Marine receipt (Secarang and CIBO) and Transaction Details: today's form captured before the deploy, unchanged after it and on a new purchase"
+  preconditions:
+    - *before
+    - *cibo
+    - "Before: an existing Tokio Marine Secarang transaction in CIBO staging. After: the same one, plus the Tokio Marine transaction of 12406_QT_TS3 (receipt downloaded there)"
+  steps: |-
+    1. Before the deploy: CIBO > Transaction Management: Insurance Company = Tokio Marine; open an existing transaction; record its Ref. No.; screenshot the Transaction Details insurer box; open Receipt; screenshot the Insurer block
+  expected: |-
+    Ensure:
+    • CIBO Transaction Details: "Tokio Marine Insurans (Malaysia) Berhad" with "198601000381 (149520-U)" below it (if not, tell the QA: Q29)
+  after:
+    steps: |-
+      2. After Dev deploys: open the same transaction again; screenshot the same two blocks
+      3. Open the Secarang receipt of QT_TS3; screenshot the Insurer block
+      4. CIBO: open Transaction Details and Receipt of QT_TS3; screenshot both blocks
+    expected: |-
+      Ensure:
+      • Same transaction: both blocks identical to BEFORE
+      • QT_TS3 Secarang receipt, CIBO receipt and Transaction Details: "Tokio Marine Insurans (Malaysia) Berhad", next line / below it "198601000381 (149520-U)"
+  points:   # both halves, so the before and the after are each proved (the tools read only `expected`)
+    - {id: E1, text: "BEFORE: existing Tokio Marine transaction, CIBO Transaction Details \"Tokio Marine Insurans (Malaysia) Berhad\" with \"198601000381 (149520-U)\" below it (if not: Q29)"}
+    - {id: E2, text: "BEFORE: its CIBO receipt Insurer block: the same two lines"}
+    - {id: E3, text: "AFTER: same transaction, insurer box and receipt Insurer block identical to BEFORE"}
+    - {id: E4, text: "AFTER: QT_TS3 Secarang receipt Insurer \"Tokio Marine Insurans (Malaysia) Berhad\", next line \"198601000381 (149520-U)\""}
+    - {id: E5, text: "AFTER: QT_TS3 CIBO receipt and Transaction Details show the same two lines"}
+  expected_source: "SRD v1.1 REQ-010 ('Tokio Marine (current)' text; Example 2a 'No change'); REQ-011 ('Tokio Marine (current)'). The CIBO mockup 06.10 shows no company number on Tokio Marine Transaction Details: the BEFORE capture settles it (Q29, coverage review MD-13)"
+  why_this_case: "Regression: REQ-010 Example 2 / REQ-011 'other insurers remain unchanged'. Pre-deploy (coverage review M11): today's Tokio Marine screen must be seen on the old build. The one place the Tokio Marine text is checked (review §4 duplicate with RC_TS1 / RC_TS3)"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 §2.2.9 REQ-010, §2.2.10 REQ-011"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q29: does Tokio Marine show its company number on Transaction Details today"
+
+- id: "12406_RG_TS2"
+  sheet: RG
+  origin: drafted
+  type: regression
+  requirement: "REQ-010 Example 2, REQ-011 Example 2"
+  phase: pre-deploy
+  section: "Other insurers unchanged"
+  area: "Receipt + Transaction Details, Lonpac"
+  portal: "Secarang, CIBO"
+  situation: "Lonpac receipt (Secarang and CIBO) and Transaction Details: same before and after the deploy"
+  preconditions:
+    - *before
+    - *cibo
+    - "Before: an existing Lonpac Secarang transaction in CIBO staging. After: the same one, plus the new Lonpac transaction of 12406_QT_TS4"
+    - "The Lonpac name may read 'Lonpac Insurance Berhad' on the receipt until EAINT-12422 (To Do) is deployed: not judged here. Lonpac's agency is not taken from the CIBO mockup (sample data)"
+  steps: |-
+    1. CIBO > Transaction Management: Insurance Company = Lonpac, Platform = Secarang; open an existing transaction; record its Ref. No.
+    2. Screenshot the Transaction Details insurer box; open Receipt; screenshot the Insurer block
+  expected: |-
+    Ensure:
+    • Lonpac insurer box and receipt Insurer block captured (today's text, recorded as the baseline)
+  after:
+    steps: |-
+      3. After Dev deploys: open the same transaction again; screenshot the same two blocks
+      4. Open the Secarang receipt and the CIBO Transaction Details / Receipt of QT_TS4's Lonpac transaction; screenshot
+    expected: |-
+      Ensure:
+      • Same transaction: insurer box and receipt Insurer block identical to the BEFORE screenshots
+      • QT_TS4's Lonpac transaction: insurer box and receipt Insurer block in the same form as the baseline (name "Lonpac Insurance Bhd" or "Lonpac Insurance Berhad" both accepted: EAINT-12422)
+  points:   # both halves, so the before and the after are each proved (the tools read only `expected`)
+    - {id: E1, text: "BEFORE: Lonpac insurer box and receipt Insurer block captured (baseline)"}
+    - {id: E2, text: "AFTER: same transaction, insurer box and receipt Insurer block identical to BEFORE"}
+    - {id: E3, text: "AFTER: QT_TS4 Lonpac transaction, insurer box and receipt Insurer block in the same form as the baseline (Bhd or Berhad accepted, EAINT-12422)"}
+  expected_source: "SRD v1.1 REQ-010 Example 2a ('Receipt for Tokio Marine or Lonpac transaction: No change'); REQ-011 Example 2a (Lonpac: No change). Baseline = the screen before the deploy (current). Lonpac name: EAINT-12422 To Do (secarang-study §4)"
+  why_this_case: "Regression named by the SRD. Pre-deploy: the SRD gives no Lonpac text, so 'no change' needs a BEFORE capture on the old build"
+  priority: P2
+  environment: staging
+  source: "SRD v1.1 REQ-010 Example 2, REQ-011 Example 2"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_RG_TS3"
+  sheet: RG
+  origin: drafted
+  type: regression
+  requirement: "REQ-011 Example 2"
+  phase: pre-deploy
+  section: "Other insurers unchanged"
+  area: "Transaction Details, RHB / other insurer"
+  portal: "CIBO"
+  situation: "CIBO Transaction Details of an RHB transaction (or another insurer's, e.g. Chubb on eAuto): same before and after the deploy"
+  preconditions:
+    - *before
+    - *cibo
+    - "Data: an existing RHB transaction in CIBO staging (any platform); if none, another insurer that is neither Allianz, Lonpac nor Tokio Marine"
+  steps: |-
+    1. CIBO > Transaction Management: Insurance Company = RHB; open Transaction Details; record its Ref. No.; screenshot the insurer box
+  expected: |-
+    Ensure:
+    • RHB insurer box captured (today's text, recorded as the baseline)
+  after:
+    steps: |-
+      2. After Dev deploys: open the same Transaction Details; screenshot the insurer box
+    expected: |-
+      Ensure:
+      • RHB insurer box identical to the BEFORE screenshot (no company number line added)
+  points:   # both halves, so the before and the after are each proved (the tools read only `expected`)
+    - {id: E1, text: "BEFORE: RHB insurer box captured (baseline)"}
+    - {id: E2, text: "AFTER: RHB insurer box identical to BEFORE (no company number line added)"}
+  expected_source: "SRD v1.1 REQ-011 ('Other insurers (e.g.: RHB, Lonpac, etc.) remain unchanged', Example 2a). Baseline = the screen before the deploy"
+  why_this_case: "Regression named by the SRD (RHB). Pre-deploy: the SRD gives no RHB text"
+  priority: P3
+  environment: staging
+  source: "SRD v1.1 §2.2.10 REQ-011 Example 2"
+  existing_spec: null
+  deprioritised: null
+  open_questions: []
+
+- id: "12406_RG_TS4"
+  sheet: RG
+  origin: drafted
+  type: regression
+  requirement: null
+  phase: pre-deploy
+  section: "eAuto unchanged"
+  area: "eAuto UCD Insurance quotation order"
+  portal: "UCD"
+  situation: "eAuto UCD Insurance: the insurer order on the quotation step, captured before and after the Secarang deploy (observed)"
+  preconditions:
+    - *before
+    - "eAuto staging paired with the Secarang staging (Q1); a UCD user on the QA's own lane"
+    - "Vehicle: an eSim car the eAuto insurers quote (QA's own prefix); the same vehicle before and after"
+  steps: |-
+    1. UCD > Insurance: start a quotation for the vehicle; screenshot the insurer cards and their order (do not pay)
+  expected: |-
+    Ensure:
+    • Insurer order on UCD > Insurance captured (today's order, recorded as the baseline)
+  after:
+    steps: |-
+      2. After Dev deploys EAINT-12406: same UCD user, same vehicle, UCD > Insurance quotation again; screenshot
+    expected: |-
+      Ensure:
+      • Insurer order on UCD > Insurance captured after the deploy and compared with BEFORE (observed; any difference reported to Dev with Q23)
+  points:   # both halves, so the before and the after are each proved (the tools read only `expected`)
+    - {id: E1, text: "BEFORE: UCD > Insurance insurer order captured (baseline)"}
+    - {id: E2, text: "AFTER: UCD > Insurance insurer order captured and compared with BEFORE (observed; a difference goes to Dev with Q23)"}
+  expected_source: "Observed / captured before the deploy (no SRD text). SRD v1.1 §2.2.1 scope is Portal Secarang only; SA brief 29.09 (Dev analysis, not SRD): 'eAuto (UCD) insurance unaffected: the Allianz switch is per tenant ... the insurer order table is in the Secarang DB'; EAINT-12150 (separate eAuto / Secarang control sequence) is To Do: Q23"
+  why_this_case: "Regression around the change (SA brief test scenario 9 'eAuto quotes unchanged'): the insurer order may be shared with eAuto until EAINT-12150. Pre-deploy: the baseline must be taken on the old build. Review U9: kept yellow and observed"
+  priority: P2
+  environment: staging
+  source: "secarang-study §1 (EAINT-12150, To Do); SRD v1.1 §2.2.1; SA brief 29.09 'What stays the same', test scenario 9"
+  existing_spec: null
+  deprioritised: null
+  open_questions:
+    - "Q23: is the insurer order shared between eAuto and Secarang"
+
+excluded:
+  - id: "all three insurers unavailable"
+    reason: "No SRD example; the only rule it would test (Allianz card after Tokio Marine) is covered by 12406_QT_TS2 to TS4 and QT_TS9. Card order for several unavailable insurers is asked in Q13"
+  - id: "UCD mobile app"
+    reason: "No mobile app rows (QA rule 22.10.2026). Secarang in a phone browser is a separate question for Azfar (Q33): no row until decided"
+  - id: "Zurich, Syarikat Takaful Malaysia on Secarang"
+    reason: "Not live on Secarang (secarang-study Conflicts; STM is EAINT-12078). No Zurich expected result is written; only 'no card / section for any other insurer' is checked (QT_TS1, QT_TS3, CP_TS3, CP_TS4)"
+  - id: "Lonpac receipt name 'Lonpac Insurance Bhd'"
+    reason: "EAINT-12422 (To Do), not this CR. 12406_RG_TS2 accepts either name"
+  - id: "WhatsApp renewal reminder templates and quotation image"
+    reason: "Not changed by this CR (EAINT-12168 / 10444 / 12529). The MacroKiosk Allianz question is the orange row 12406_E2E_TS7"
+  - id: "eAuto UCD Allianz insurance purchase / UCD receipt"
+    reason: "SRD scope is Secarang + CIBO only; SA brief: eAuto unaffected (per tenant). The eAuto side is covered only by the order regression 12406_RG_TS4. A receipt before / after row is added only if Dev says the code is shared (Q34)"
+  - id: "Bahasa Malaysia version of the changed texts"
+    reason: "SRD v1.1 gives English text only and the study saw no language switch on Secarang; ask if Secarang has one"
+  - id: "a second purchase per payment channel; CIBO listing paging"
+    reason: "Coverage review §2 'not added': one purchase per Fiuu channel is enough; paging is unchanged with no new data volume"

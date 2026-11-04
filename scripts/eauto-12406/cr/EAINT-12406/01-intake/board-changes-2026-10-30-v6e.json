@@ -1,0 +1,41 @@
+[
+ {
+  "collection": "cases",
+  "doc_id": "12406_RC_TS10",
+  "data": {
+   "id": "12406_RC_TS10",
+   "sheet": "RC",
+   "order": 36,
+   "section": "CIBO listing and reports",
+   "priority": "P2",
+   "situation": "CIBO Transaction Management with Allianz rows: search by Ref. No. / plate / owner name / ID, Platform, Insurance Company combined with Transaction Status and Discount Code, Clear all, Print, no result",
+   "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• The Allianz transactions of 12406_E2E_TS1 (Insurance created), TS2 (discount code tried), the unpaid one of 12406_RC_TS9 and, if Q7 allows, a Secarang-MK one",
+   "steps": "1. Search box: the Ref. No. of E2E_TS1; then its plate; then the owner name; then the owner ID (as CIBO shows it, 999999-99-9999, and as plain digits); [Search] each time; screenshot\n2. Search a plate that does not exist; screenshot\n3. Platform Secarang, then Secarang only, then eAuto (with Allianz ticked); screenshot each\n4. Allianz ticked + Transaction Status \"Insurance created\"; then + the Transaction Status of RC_TS9; then + Discount Code filter 'Included' (the filter offers only Included / Exempted, not the code itself: run 0040-C, decided 30.10 under Azfar's full permission, main session); screenshot each\n5. Clear all; screenshot. Then filter again (Allianz, the date range of the E2E_TS1–TS4 purchases; decided 30.10 under Azfar's full permission, main session), [Search], Print; screenshot the print view. Do not print the whole unfiltered listing: on 29.10 that got HTTP 404 after 124 s (not a 12406 change; noted for Dev)",
+   "expected": "Ensure:\n• Each search (Ref. No., plate, owner name, owner ID) returns the E2E_TS1 transaction\n• Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page): a plate that does not exist gives \"Ops, no search result found\"\n• Same as before the deploy (SRD v1.1 §2.2.3; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): Platform offers Secarang, Secarang only, Secarang-MK, eAuto; Secarang lists the new Allianz transactions; Allianz + eAuto gives \"Ops, no search result found\" (no Allianz on eAuto on 28.10)\n• Allianz + Transaction Status: only Allianz rows with that status (E2E_TS1 under \"Insurance created\", RC_TS9 under its own status)\n• Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page; the SRD says nothing about Clear all): Clear all sets every filter back to its default (Date Range Type 'Transaction Creation Date', as on 28.10) and empties the search box; Print on the filtered listing (Allianz, the date range of the E2E_TS1–TS4 purchases; decided 30.10 under Azfar's full permission, main session) opens a print view of that listing",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Each search (Ref. No., plate, owner name, owner ID) returns the E2E_TS1 transaction"
+    },
+    {
+     "id": "E2",
+     "text": "Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page): a plate that does not exist gives \"Ops, no search result found\""
+    },
+    {
+     "id": "E3",
+     "text": "Same as before the deploy (SRD v1.1 §2.2.3; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): Platform offers Secarang, Secarang only, Secarang-MK, eAuto; Secarang lists the new Allianz transactions; Allianz + eAuto gives \"Ops, no search result found\" (no Allianz on eAuto on 28.10)"
+    },
+    {
+     "id": "E4",
+     "text": "Allianz + Transaction Status: only Allianz rows with that status (E2E_TS1 under \"Insurance created\", RC_TS9 under its own status)"
+    },
+    {
+     "id": "E5",
+     "text": "Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page; the SRD says nothing about Clear all): Clear all sets every filter back to its default (Date Range Type 'Transaction Creation Date', as on 28.10) and empties the search box; Print on the filtered listing (Allianz, the date range of the E2E_TS1–TS4 purchases; decided 30.10 under Azfar's full permission, main session) opens a print view of that listing"
+    }
+   ],
+   "source": "E5 Print on the filtered listing (decided 29.10 under Azfar's full permission, main session). Rule B (Azfar 29.10) for the 'Same as before the deploy' points: a page or behaviour 12406 does not change passes when it is the same after the deploy as before it, with a source saying it stays unchanged; a change is a defect. Filters, values, empty-result text 'Ops, no search result found', no Allianz on platform eAuto: observed (walk 28.10.2026, cibo-03, cibo-04, cibo-07); Search / Clear all / Print: team doc §8 and mockup CIBO 20261006 (coverage review MD-19, M12; the mockup's 'No record found' differs from the live text). Results: our own transactions",
+   "updatedAt": "2026-10-30T02:22:11+00:00"
+  }
+ }
+]

@@ -1,0 +1,4 @@
+12406_RC_TS2 — FAIL — the page does not match the expected result (a defect until triage says otherwise)
+run eaint-12406-rerun-sRC-20261029-1545, staging /ia, 29/10/2026, 17:54:04 MYT
+
+- E2: expected "Insurer, next line: "200601015674 (735426-V)"", page shows "Insurer block: "Allianz General Insurance Company (Malaysia)" / "Berhad 200601015674 (735426-V)"" (03-cibo-receipt-company-number.png)

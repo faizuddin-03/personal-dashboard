@@ -12,6 +12,8 @@ import "./styles/medieval/jira.css";
 import "./styles/medieval/eauto-runners.css";
 import "./styles/medieval/eauto-tools.css";
 import "./styles/medieval/ambient.css";
+// Dragons style (Dashboard page only), scoped to [data-style="dragons"][data-page="home"].
+import "./styles/dragons/home.css";
 import AppShell from "@/components/AppShell";
 
 const geistSans = Geist({

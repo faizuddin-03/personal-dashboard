@@ -1,0 +1,10 @@
+{
+  "ts": "12406_RG_TS1",
+  "verdict": "VALID",
+  "reasons": [],
+  "folder": "cr/EAINT-12406/05-evidence/post-push/12406_RG_TS1",
+  "run": "eaint-12406-retest-sretest-20261030-1700-G",
+  "instance": "ia",
+  "at": "30/10/2026, 18:02:43",
+  "warnings": []
+}

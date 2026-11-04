@@ -1,0 +1,88 @@
+"8
+
+ Optional Coverage"						
+TS No.	Vehicle Type	Field	Test Scenario	Expected Result	QA	Test Result (P/F)
+TS_OC_1	"Motor Vehicle:
+(Fuel Car/EV)"	All Drivers	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Ensure the ""All Drivers"" checkbox is ticked by default
+Proceed to the next step without unticked the tickbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description ""This will allow any driver with your consent to drive your vehicle and have the same takaful protection extended to them.  ""
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly
+The checkbox for All Drivers is ticked by default
+After proceeding, a popup will appear with the message: ""Please be advised that if a customer does not wish to include All Drivers in their policy, it is essential to untick the All Drivers."""	Azfar	Pass
+			"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Ensure the checkbox is ticked by default
+Unticked the checkbox and proceed to next step
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"The checkbox for All Drivers is ticked by default
+Ensure there are NO pop up when proceed with unticked All Drivers
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"	Azfar	Pass
+TS_OC_2		Legal Liability to Passengers	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Tick ""Legal Liability to Passengers "" checkbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description ""We'll protect you against any legal liability brought against you by your passengers. ""
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"	Azfar	Pass
+		Cart (Compensation for Assessed Repair Time)	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Tick ""Cart (Compensation for Assessed Repair Time)"" checkbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description "" We'll compensate you based on the estimated time it takes for your vehicle to be repaired. ""
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"		
+TS_OC_3		Inclusion of Special Perils	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Tick ""Inclusion of Special Perils "" checkbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description "" We'll cover your vehicle in the event of floods, storms and other natural disasters.""
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"	Azfar	Pass
+TS_OC_4		Legal Liability of Passengers for Negligent Acts	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Tick ""Legal Liability of Passengers for Negligent Acts "" checkbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description "" We'll protect you against any liability due to negligence that was caused by your passengers. ""
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"	Azfar	Pass
+TS_OC_5		Breakage of Glass in Windscreen, Window, or Sunroof	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Tick ""Breakage of Glass in Windscreen, Window, or Sunroof"" checkbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description "" Covers the breakage of glass in windscreens, windows and sunroofs. Includes one free reinstatement for repairs of damaged glass. Your No Claim Discount (NCD) entitlement will not be affected if this additional coverage is extended. ""
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"	Azfar	Pass
+TS_OC_6	Motorbike	All riders	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Tick ""All riders"" checkbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description ""This will allow any rider with your consent to ride your motorcycle and have the same takaful protection extended to them.""
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"	Azfar	Pass
+TS_OC_7		Inclusion of Special Perils	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Tick ""Inclusion of Special Perils "" checkbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description We'll cover your motorcycle in the event of floods, storms and other natural disasters. 
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"	Azfar	Pass
+TS_OC_8		Legal Liability to Pillion	"Create eSTM till Tx Status = Approved 
+Redirect to Step 1: Quotes page 
+Proceed until Step 2: Optional Coverage
+Tick ""Legal Liability to Pillion "" checkbox
+Click [+ More Info]
+Proceed to purchase insurance, Payment = OK, Status = Insurance Created"	"Add on displayed under optional coverage and price updated
+Display More Info description "" We'll protect you against any legal liability brought against you by your pillion.""
+Ensure eSTM details (UCD & BO) & all insurance details page showing the optional coverage details correctly"	Azfar	Pass

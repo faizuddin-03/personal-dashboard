@@ -1,0 +1,13 @@
+{
+  "ts": "12406_E2E_TS3",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"Receipt Total Premium = the total on the Confirmation page\", page shows \"Receipt Total Premium (not found in the PDF); Confirmation Total Premium RM 941.13\" (02-receipt-total-premium.png)",
+    "E3: expected \"CIBO Transaction Details: Cover Note No filled (not \"-\"); Payment Ref ID with 'SEW' like a Lonpac e-wallet payment (e.g. LON<yyyymmdd>SEW<nnnn>), with Allianz's\", page shows \"Cover Note No \"-\", Payment Ref ID \"ALZ20261029SEW0027\" (insurer code \"ALZ\")\" (04-cibo-details-cover-note-ref.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS3/2026-10-29T08-43-38_DEFECT",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 16:43:38",
+  "warnings": []
+}

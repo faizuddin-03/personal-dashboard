@@ -1,0 +1,87 @@
+## secarang 2026-10-28T04:36:36.820Z
+secarang-ia-car-insurance-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fcar-insurance
+secarang-ia-home-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login
+secarang-ia-about-us-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fabout-us
+secarang-ia-faqs-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login
+secarang-ia-support-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fsupport
+video-secarang.webm
+
+## listing 2026-10-28T04:37:17.228Z
+cibo-01-login-page-empty.png  <- https://staging.secarang.com/cibo/auth/login
+cibo-02-dashboard-and-menu.png  <- https://staging.secarang.com/cibo/dashboard
+cibo-03-transaction-management-filters.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-04-transaction-management-platform-filter-values.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-04-transaction-management-insurance-company-filter-values.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-05-transaction-listing-unfiltered-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-06-transaction-listing-allianz-all-platforms-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-07-transaction-listing-allianz-eauto-platform-no-rows.png  <- https://staging.secarang.com/cibo/transaction-management
+video-listing.webm
+
+## transactions 2026-10-28T04:39:03.796Z
+cibo-11a-tokio-marine-BR69005852-listing-row-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-11b-tokio-marine-BR69005852-transaction-details-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/ac5d1f7b-4136-422e-b863-c9182516b1ca
+cibo-11c-tokio-marine-BR69005852-insurer-box.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/ac5d1f7b-4136-422e-b863-c9182516b1ca
+cibo-11d-tokio-marine-BR69005852-receipt-PERSONAL-DATA.pdf  <- Receipt button, https://staging.secarang.com/cibo/transaction-management/transaction-details/ac5d1f7b-4136-422e-b863-c9182516b1ca
+cibo-12a-lonpac-BR60006309-listing-row-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-12b-lonpac-BR60006309-transaction-details-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/feddf9db-fc7a-4b0b-b1a0-892d38e309b5
+cibo-12c-lonpac-BR60006309-insurer-box.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/feddf9db-fc7a-4b0b-b1a0-892d38e309b5
+cibo-12d-lonpac-BR60006309-receipt-PERSONAL-DATA.pdf  <- Receipt button, https://staging.secarang.com/cibo/transaction-management/transaction-details/feddf9db-fc7a-4b0b-b1a0-892d38e309b5
+cibo-13a-rhb-BR55004008-listing-row-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-13b-rhb-BR55004008-transaction-details-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/6ea86fef-acde-4c4f-ad0a-a118b5841abb
+cibo-13c-rhb-BR55004008-insurer-box.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/6ea86fef-acde-4c4f-ad0a-a118b5841abb
+cibo-13d-rhb-BR55004008-receipt-PERSONAL-DATA.pdf  <- Receipt button, https://staging.secarang.com/cibo/transaction-management/transaction-details/6ea86fef-acde-4c4f-ad0a-a118b5841abb
+cibo-14a-allianz-old-insurance-created-BR55004010-listing-row-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-14b-allianz-old-insurance-created-BR55004010-transaction-details-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b
+cibo-14c-allianz-old-insurance-created-BR55004010-insurer-box.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b
+cibo-14d-allianz-old-insurance-created-BR55004010-receipt-PERSONAL-DATA.pdf  <- Receipt button, https://staging.secarang.com/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b
+cibo-15a-allianz-pending-payment-BR44003678-listing-row-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-15b-allianz-pending-payment-BR44003678-transaction-details-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/910dcd05-c1cf-4474-9489-125042a36955
+cibo-15c-allianz-pending-payment-BR44003678-insurer-box.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/910dcd05-c1cf-4474-9489-125042a36955
+cibo-16a-allianz-pending-payment-with-cover-note-BR3D003430-listing-row-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+cibo-16b-allianz-pending-payment-with-cover-note-BR3D003430-transaction-details-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/de85ed96-856b-4480-b346-f5bc5e319082
+cibo-16c-allianz-pending-payment-with-cover-note-BR3D003430-insurer-box.png  <- https://staging.secarang.com/cibo/transaction-management/transaction-details/de85ed96-856b-4480-b346-f5bc5e319082
+video-transactions.webm
+
+## reports 2026-10-28T04:40:10.823Z
+cibo-21-payment-management-page.png  <- https://staging.secarang.com/cibo/payment-management
+cibo-22-payment-management-platform-filter-values.png  <- https://staging.secarang.com/cibo/payment-management
+cibo-22-payment-management-payment-channel-filter-values.png  <- https://staging.secarang.com/cibo/payment-management
+cibo-23-payment-report-page.png  <- https://staging.secarang.com/cibo/payment-report
+cibo-24-payment-report-platform-filter-values.png  <- https://staging.secarang.com/cibo/payment-report
+cibo-24-payment-report-insurance-company-filter-values.png  <- https://staging.secarang.com/cibo/payment-report
+cibo-25-commission-report-page.png  <- https://staging.secarang.com/cibo/commission-report
+cibo-26-commission-report-platform-filter-values.png  <- https://staging.secarang.com/cibo/commission-report
+cibo-26-commission-report-insurance-company-filter-values.png  <- https://staging.secarang.com/cibo/commission-report
+video-reports.webm
+
+## secarang 2026-10-28T04:43:01.142Z
+secarang-ia-car-insurance-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fcar-insurance
+secarang-ia-home-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login
+secarang-ia-about-us-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fabout-us
+secarang-ia-faq-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Ffaq
+secarang-ia-support-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fsupport
+secarang-ia-terms-of-use-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fterms-of-use
+secarang-ia-privacy-policy-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fprivacy-policy
+secarang-ia-refund-policy-redirects-to-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Frefund-policy
+video-secarang.webm
+
+## secarang 2026-10-28T04:53:46.851Z
+secarang-00-site-password-page.png  <- https://staging.secarang.com/ia/auth/login?returnUrl=%2Fcar-insurance
+secarang-01-home-on-arrival-with-popup.png  <- https://staging.secarang.com/ia/car-insurance
+secarang-02-home-form-private-car.png  <- https://staging.secarang.com/ia/car-insurance
+secarang-03-home-form-company-car-tab.png  <- https://staging.secarang.com/ia/car-insurance
+secarang-04-home-insurer-logos.png  <- https://staging.secarang.com/ia/car-insurance
+secarang-05-home-full-page.png  <- https://staging.secarang.com/ia/car-insurance
+secarang-06-motorcycle-insurance-address.png  <- https://staging.secarang.com/ia/auth/login
+secarang-07-about-us-full-page.png  <- https://staging.secarang.com/ia/about-us
+secarang-08-about-us-our-partnership.png  <- https://staging.secarang.com/ia/about-us
+secarang-09-faq-all-questions-open-full-page.png  <- https://staging.secarang.com/ia/faq
+secarang-10-faq-which-insurers-instant-quotation.png  <- https://staging.secarang.com/ia/faq
+secarang-11-support-sections-closed.png  <- https://staging.secarang.com/ia/support
+secarang-12-support-need-to-contact-insurance-company-all-open.png  <- https://staging.secarang.com/ia/support
+secarang-13-support-full-page-all-open.png  <- https://staging.secarang.com/ia/support
+secarang-14-terms-of-use-full-page.png  <- https://staging.secarang.com/ia/terms-of-use
+secarang-15-privacy-policy-full-page.png  <- https://staging.secarang.com/ia/privacy-policy
+secarang-16-refund-policy-full-page.png  <- https://staging.secarang.com/ia/refund-policy
+video-secarang.webm
+

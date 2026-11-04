@@ -1,0 +1,38 @@
+{
+  "ts": "12406_RC_TS6",
+  "run": "eaint-12406-retest-sretest-20261030-0040-C-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "the E2E_TS2 purchase (RJC7) under Serba Sentral with its commission; E2E_TS1, TS3, TS4 (no code) not listed; commission % recorded",
+      "shows": "Commission Report 29.10.2026 - 30.10.2026: 2 row(s); 12406_E2E_TS2 BR60006358 (code RJC7): \"Allianz Serba Sentral\", Commission \"0.00\" (0.00%, recorded); without a code: 12406_E2E_TS1 BR60006370 not listed, 12406_E2E_TS3 BR60006359 not listed, 12406_E2E_TS4 BR60006356 not listed",
+      "match": true,
+      "shot": "01-commission-report-discount-code-only.png",
+      "at": "30/10/2026, 09:07:42",
+      "url": "/cibo/commission-report",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "Same as before the deploy (SRD v1.1 §2.2.3: Commission Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the export holds the same rows as the screen",
+      "shows": "screen 2 row(s), export 3; screen rows (as \"<plate>-ALLIANZ\") not in the export's Recipient Reference: none",
+      "match": false,
+      "shot": "02-commission-report-export.png",
+      "at": "30/10/2026, 09:07:47",
+      "url": "/cibo/commission-report",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "signed in: CIBO (cibo)",
+    "hand-off \"allianzPurchase\": 12406_E2E_TS1 in run eaint-12406-retest-sretest-20261029-1950-B-c1 at 2026-10-29T11:51:57.193Z — ref BR60006370, plate HXA0011A, receipt no 26102921300046, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:card\": 12406_E2E_TS2 in run eaint-12406-retest-sretest-20261029-1835-A-c1 at 2026-10-29T10:45:22.853Z — ref BR60006358, plate HXA0012A, receipt no 26102921300037, receipt file secarang-receipt-HXA0012A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:grabpay\": 12406_E2E_TS3 in run eaint-12406-retest-sretest-20261029-1835-A-c1 at 2026-10-29T10:48:43.587Z — ref BR60006359, plate HXA0013A, receipt no 26102921300038, receipt file secarang-receipt-HXA0013A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:shopeepay\": 12406_E2E_TS4 in run eaint-12406-rerun-sE2E-20261029-1545 at 2026-10-29T09:21:54.812Z — ref BR60006356, plate HXA0014A, receipt no 26102921300035, receipt file secarang-receipt-HXA0014A-PERSONAL-DATA.pdf",
+    "commission (recorded, Q16) BR60006358: Commission 0.00 (0.00% of Gross, worked out), Discount 60.35 RJC7, Gross 862.16",
+    "commission (recorded, Q16) BR60006350: Commission 0.00 (0.00% of Gross, worked out), Discount 60.35 RJC7, Gross 862.16",
+    "downloaded: Commission_Report_allianz_29.10.2026-PERSONAL-DATA.csv"
+  ],
+  "opened": []
+}

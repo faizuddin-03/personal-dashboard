@@ -1,0 +1,12 @@
+{
+  "ts": "12406_RG_TS1",
+  "verdict": "EVIDENCE",
+  "reasons": [
+    "no proof for E4, E5"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RG_TS1/2026-10-29T05-34-01_EVIDENCE",
+  "run": "eaint-12406-run-sRG-20261029-1330-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 13:34:01",
+  "warnings": []
+}

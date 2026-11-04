@@ -1,0 +1,53 @@
+{
+  "ts": "12406_RG_TS3",
+  "run": "eaint-12406-run-sRG-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "BEFORE (28.10): BR55004008 Transaction Details \"RHB Insurance Berhad\" (no number); receipt \"RHB Insurance Berhad (38000-U)\"",
+      "shows": "FROM THE BEFORE CAPTURE (2026-10-28 15:15:50 MYT, old build, before Dev deployed EAINT-12406; not redone): BR55004008 Transaction Details Insurer \"RHB Insurance Berhad\" (no number) | screenshot 12406_RG_TS3_E1_03-insurer-box-BR55004008.png",
+      "match": true,
+      "shot": "01-E1-from-before-capture-12406_RG_TS3_E1_03-insurer-box-BR55004008.png",
+      "at": "29/10/2026, 16:21:35",
+      "url": "",
+      "side": ""
+    },
+    {
+      "point": "E1",
+      "expected": "BEFORE (28.10): BR55004008 Transaction Details \"RHB Insurance Berhad\" (no number); receipt \"RHB Insurance Berhad (38000-U)\"",
+      "shows": "FROM THE BEFORE CAPTURE (2026-10-28 15:15:50 MYT, old build, before Dev deployed EAINT-12406; not redone): BR55004008 receipt Insurer block \"Insurer\" / \"RHB Insurance Berhad (38000-U)\" | screenshot 12406_RG_TS3_E1_05-receipt-BR55004008-insurer-block.png",
+      "match": true,
+      "shot": "02-E1-from-before-capture-12406_RG_TS3_E1_05-receipt-BR55004008-insurer-b.png",
+      "at": "29/10/2026, 16:21:35",
+      "url": "",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "BR55004008 Transaction Details \"RHB Insurance Berhad\", identical to the 28.10 capture, no company number line added",
+      "shows": "BR55004008 CIBO Transaction Details Insurer \"RHB Insurance Berhad\" on 1 line(s) | 28.10 capture \"RHB Insurance Berhad\" on 1 line",
+      "match": true,
+      "shot": "03-E2-BR55004008-transaction-details-insurer.png",
+      "at": "29/10/2026, 16:21:45",
+      "url": "/cibo/transaction-management/transaction-details/6ea86fef-acde-4c4f-ad0a-a118b5841abb",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "BR55004008 receipt \"RHB Insurance Berhad (38000-U)\", identical to the 28.10 capture (no company number line added)",
+      "shows": "BR55004008 CIBO receipt Insurer block \"Insurer\" / \"RHB Insurance Berhad (38000-U)\" | 28.10 capture \"Insurer\" / \"RHB Insurance Berhad (38000-U)\"",
+      "match": true,
+      "shot": "04-E2-BR55004008-receipt-insurer-block.png",
+      "at": "29/10/2026, 16:21:51",
+      "url": "/cibo/transaction-management/transaction-details/6ea86fef-acde-4c4f-ad0a-a118b5841abb",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "signed in: CIBO (cibo)",
+    "downloaded: BR55004008_receipt_PERSONAL-DATA.pdf",
+    "BR55004008: CIBO row Ins. Co. \"RHB Bintang Prospek\", status \"Insurance created CV0013888\"; Transaction Details Insurer \"RHB Insurance Berhad\" (1 line(s)); buttons [\"e-Certificate\",\"Receipt\"]"
+  ],
+  "opened": []
+}

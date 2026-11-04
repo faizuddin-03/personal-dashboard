@@ -1,0 +1,12 @@
+{
+  "ts": "12406_RC_TS9",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"CIBO row (created at Step 4 / 5 without payment): Ins. Co. Allianz, Payment badge not 'Paid' (text recorded: 'Pending' on staging per team doc §8, 'Unpaid' in t\", page shows \"CIBO row BR60006334: Ins. Co. \"Allianz Serba Sentral\", Payment badge \"(none)\" (recorded), Transaction Status \"Pending payment\"\" (02-cibo-row-pending-payment.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS9/2026-10-29T05-50-00_DEFECT",
+  "run": "eaint-12406-run-sRC-20261029-1330-c2",
+  "instance": "ia",
+  "at": "29/10/2026, 13:50:00",
+  "warnings": []
+}

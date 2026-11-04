@@ -7,7 +7,7 @@ import {
   Settings, Kanban, Sparkles,
   CheckSquare, FileText, Search, X, CalendarDays, Ticket, ClipboardList,
   Briefcase, Send, Filter, Music2,
-  Tickets, Workflow, Bot, Route, GraduationCap,
+  Tickets, Workflow, Bot, Route, GraduationCap, ClipboardCheck, Scissors,
 } from "lucide-react";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
@@ -30,8 +30,10 @@ const nav = [
     ],
   },
   { label: "Kanban",     href: "/kanban",   icon: Kanban },
-  { label: "QA Flow",    href: "/qa-flow",  icon: Sparkles },
+  // QA Flow (/qa-flow) hidden from the sidebar, page kept (Faizuddin, 2026-10-29).
   { label: "Calendar",   href: "/calendar", icon: CalendarDays },
+  // QA Portal (http://10.30.10.214): my tasks, reminders, deployment windows. Read only (Faizuddin, 2026-10-29).
+  { label: "QA Portal",  href: "/qa-portal", icon: ClipboardCheck },
   {
     label: "Productivity",
     icon: Briefcase,
@@ -39,6 +41,7 @@ const nav = [
       { label: "To-Do List",    href: "/todo",           icon: CheckSquare },
       { label: "Notes",         href: "/notes",          icon: FileText },
       { label: "Daily Update",  href: "/daily-update",   icon: Send },
+      { label: "Snip Editor",   href: "/snip",           icon: Scissors },
       // { label: "Music",         href: "/music",          icon: Music2 },
     ],
   },
@@ -85,7 +88,7 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
         <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
           <span className="text-white text-xs font-bold">UB</span>
         </div>
-        <span className="text-slate-100 font-semibold text-sm flex-1">Udin&apos;s Board</span>
+        <span className="text-slate-100 font-bold text-sm flex-1">Udin&apos;s Board</span>
         {onClose && (
           <button onClick={onClose} className="text-slate-500 hover:text-slate-300 lg:hidden p-1">
             <X size={16} />
@@ -113,8 +116,12 @@ export default function Sidebar({ onClose, onSearch }: { onClose?: () => void; o
       <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
         {nav.map(item => {
           if (!("children" in item)) {
+            // A prefix match yields to another item whose own link is a closer
+            // match: /pipeline/learnings lit both Pipeline and Learnings (2026-10-29).
+            const closer = (m: string) => nav.some(o => o !== item && "href" in o && !!o.href && o.href.length > m.length
+              && (pathname === o.href || pathname.startsWith(o.href + "/")));
             const isActive = pathname === item.href
-              || ("matches" in item && (item.matches ?? []).some(m => pathname === m || pathname.startsWith(m + "/")));
+              || ("matches" in item && (item.matches ?? []).some(m => (pathname === m || pathname.startsWith(m + "/")) && !closer(m)));
             return (
               <Link
                 key={item.href}

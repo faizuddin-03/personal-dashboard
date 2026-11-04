@@ -1,0 +1,10 @@
+# 12406_RG_TS2 — BEFORE half, 2026-10-28 15:15:16 MYT
+Staging: Secarang /ia/ (https://staging.secarang.com/ia) and CIBO (https://staging.secarang.com/cibo). EAINT-12406 not deployed (Azfar, 28.10.2026). Video: video_12406_RG_TS2.webm (one tab, one continuous recording).
+
+- BR60006309: found in the listing (one row); Transaction Details at https://staging.secarang.com/cibo/transaction-management/transaction-details/feddf9db-fc7a-4b0b-b1a0-892d38e309b5; status "Insurance created"; buttons ["Certificate of Insurance","Policy Schedule","Receipt"]
+  - Transaction Details Insurer: "Lonpac Insurance Berhad"
+E1 BR60006309 Transaction Details Insurer: "Lonpac Insurance Berhad"
+  - Receipt BR60006309_receipt_PERSONAL-DATA.pdf (downloaded, shown on screen in this tab). Insurer block lines (pdftotext): ["Insurer","Lonpac Insurance Berhad (307414-T)","Coverage Type"]
+E1 BR60006309 receipt Insurer block: ["Insurer","Lonpac Insurance Berhad (307414-T)","Coverage Type"]
+
+Screenshots: 12406_RG_TS2_E1_01-listing-BR60006309.png, 12406_RG_TS2_E1_02-transaction-details-BR60006309-blurred.png, 12406_RG_TS2_E1_03-insurer-box-BR60006309.png, 12406_RG_TS2_E1_04-receipt-BR60006309-full_PERSONAL-DATA.png, 12406_RG_TS2_E1_05-receipt-BR60006309-insurer-block.png

@@ -1,0 +1,100 @@
+{
+ "homeLogos": [
+  {
+   "file": "tokiomarine.png",
+   "src": "./assets/img/insurance-logo/tokiomarine.png",
+   "alt": "Insurance logo",
+   "loaded": true,
+   "natural": "502x185",
+   "width": 163,
+   "height": 60,
+   "x": 1164,
+   "y": 1300,
+   "colours": 185
+  },
+  {
+   "file": "allianz.png",
+   "src": "./assets/img/insurance-logo/allianz.png",
+   "alt": "Insurance logo",
+   "loaded": true,
+   "natural": "502x185",
+   "width": 163,
+   "height": 60,
+   "x": 879,
+   "y": 1397,
+   "colours": 60
+  },
+  {
+   "file": "lonpac-logo.png",
+   "src": "./assets/img/insurance-logo/lonpac-logo.png",
+   "alt": "Insurance logo",
+   "loaded": true,
+   "natural": "839x297",
+   "width": 169,
+   "height": 60,
+   "x": 590,
+   "y": 1400,
+   "colours": 31
+  }
+ ],
+ "home": "About Us\nFAQs\nSupport\nAbout Us\nFAQs\nSupport\nBuy your car insurance here\nPrivate Car\nCompany Car\nCar Plate No.\nOwner IC No.\nPostal Code (Car Location)\nGet quotation\nBy continuing, you agree to our Privacy Policy and Terms of Use.\nGreat teamwork makes the dream work\nWe team up with some of the best insurance players to bring the best protection for your vehicle.\nDiscover Malaysia's best car insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs.\nSecarang.com website and its services are owned and operated by Serba Sentral Sdn. Bhd. (Company No: 201901032124 (1341454-A)), a registered and licensed insurance agent. All insurance products on Secarang.com are represented by their respective authorized and licensed agents of respective insurers in accordance with the Malaysia Insurance Act 1996, Malaysia Financial Services Act 2013 and Malaysia Islamic Financial Services Act 2013.\nCopyright © 2026 Serba Sentral Sdn Bhd (Company No : 201901032124 (1341454A)). All Rights Reserved.\nQuick Links\nPRIVACY POLICY\nTERMS OF USE\nREFUND POLICY\nSecured Payment",
+ "quotation": [
+  {
+   "insurer": "Lonpac",
+   "available": true,
+   "unavailableReason": "",
+   "prices": [
+    "RM49,000",
+    "RM65,000",
+    "RM50,000",
+    "RM51,000",
+    "RM52,000",
+    "RM53,000",
+    "RM54,000",
+    "RM55,000",
+    "RM56,000",
+    "RM57,000",
+    "RM58,000",
+    "RM59,000",
+    "RM60,000",
+    "RM61,000",
+    "RM62,000",
+    "RM63,000",
+    "RM64,000",
+    "RM400",
+    "RM75",
+    "RM819.07"
+   ],
+   "text": "Agreed Value Coverage: RM49,000 - RM65,000 Your coverage RM49,000 RM50,000 RM51,000 RM52,000 RM53,000 RM54,000 RM55,000 RM56,000 RM57,000 RM58,000 RM59,000 RM60,000 RM61,000 RM62,000 RM63,000 RM64,000 RM65,000 Free towing & emergency roadside assistance 24/7 towing service up to RM400 (round trip) per event Transportation allowance RM75 per accident claim, excluding windscreen claims Impact damage cover caused by falling objects due to convulsion of nature Limited to 25% of your vehicle coverage amount RM819.07 NCD 0% RM819.07 Plan Details Buy"
+  },
+  {
+   "insurer": "Allianz",
+   "available": true,
+   "unavailableReason": "",
+   "prices": [
+    "RM20,200",
+    "RM20",
+    "RM1,203.08",
+    "RM862.16"
+   ],
+   "text": "Market Value Coverage: RM20,200 Your coverage RM20,200 Free towing 24-hour breakdown towing of up to 150KM (round trip) Cover all drivers Only at RM20 Road assistance Ready to help RM1,203.08 NCD 30% RM862.16 Plan Details Buy"
+  },
+  {
+   "insurer": "Tokio Marine",
+   "available": true,
+   "unavailableReason": "",
+   "prices": [
+    "RM123,900",
+    "RM200",
+    "RM250",
+    "RM15",
+    "RM2,977.96",
+    "RM1,355.08"
+   ],
+   "text": "Agreed Value Coverage: RM123,900 Your coverage RM123,900 Free towing Up to RM200 per accident Up to RM250 per breakdown Cover all drivers Only at RM15 Road assistance 24-hours roadside assistance RM2,977.96 NCD 55% RM1,355.08 Plan Details Buy"
+  }
+ ],
+ "aboutUs": "About Us\nFAQs\nSupport\nAbout Us\nFAQs\nSupport\nGet to know us better\nWe are building a space where unbiased advice and best in-value solution are easily accessible.\nDesigned as an online insurance solution provider platform, seCarang.com is a platform which focuses on offering multiple insurance products via a request for quotes online flexibly and reliably. At the moment, we extend the convenience of renewing car insurance affordably & at great transparency from our portal, all in just a few clicks!\nseCarang.com (seCarang) and its services....\n….are owned and operated by Serba Sentral Sdn Bhd (Company No: 1341454A), a registered and licensed insurance agent. All insurance products on this platform are represented by their respective authorised and licensed agents of respective insurers in accordance with Malaysia Insurance Act 2006, Malaysia Financial Services Act 2013 and Malaysia Islamic Financial Services Act 2013, and regulated by Bank Negara Malaysia. Our respective insurers are members of PIDM. The benefit(s) payable under eligible product is protected by PIDM up to limits. Please refer to PIDM's TIPS Brochure or contact our respective insurers or PIDM.\nOur partnership\nAt SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\nOur vision\nTo offer unbiased advice and finding the best in-value insurance solution for our valued customers. You may refer to Terms of Use section on this platform to obtain full list of agents and principal insurers that we represent.\nDiscover Malaysia's best car insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs.\nSecarang.com website and its services are owned and operated by Serba Sentral Sdn. Bhd. (Company No: 201901032124 (1341454-A)), a registered and licensed insurance agent. All insurance products on Secarang.com are represented by their respective authorized and licensed agents of respective insurers in accordance with the Malaysia Insurance Act 1996, Malaysia Financial Services Act 2013 and Malaysia Islamic Financial Services Act 2013.\nCopyright © 2026 Serba Sentral Sdn Bhd (Company No : 201901032124 (1341454A)). All Rights Reserved.\nQuick Links\nPRIVACY POLICY\nTERMS OF USE\nREFUND POLICY\nSecured Payment",
+ "faq": "About Us\nFAQs\nSupport\nAbout Us\nFAQs\nSupport\nFrequently Asked Questions (FAQs)\nTopic 1: General Info\nWho can use the service provided by Insurance?\nBoth private & company JPJ-registered vehicles.\nWhat are the services offered on the platform?\nFollowing are some of the services offered:\nInstant quotes from our insurance partners\nInsurance plans and benefits comparison\nThorough product information via Product Disclosure Sheet or Policy Wordings\nSecured online payment via multiple payment options\nWhich insurers can I get instant quotation from?\nLonpac Insurance Bhd\nAllianz General Insurance Company (Malaysia) Berhad\nTokio Marine Insurans (Malaysia) Berhad\nIs this service available all the time?\nYes, this Internet-based service is available 24 hours daily.\nWhat factors to take into consideration in choosing policy that is suitable for me?\nIn choosing a policy that well-suits your need, there are many aspects to take into consideration. Among all, you may want to look for the following:\nCoverage Type\nFor motor insurance, there are three main coverage types. Each and every coverage type provides different forms of compensations to you. The three coverage types are:\nThird Party cover\nThis policy insures you against claims for bodily injuries or deaths caused to other persons (known as the third party), as well as loss or damage to third party property caused by your car.\nThird Party, Fire and Theft cover\nThis policy insures you against claims for third party bodily injury and death, third party property loss or damage, and loss or damage to your own car due to accidental fire or theft.\nComprehensive cover\nThis policy provides the widest coverage among these three. i.e. third party bodily injury and death, third party property loss or damage and loss or damage to your own car due to accidental fire, theft or an accident.\nPremium Amount\nYour premium is the amount of money you pay to an insurance company to provide insurance on your car. Policy with low premium undeniably lead to cost-saving, yet that option may compromise some protection that you may need for your car. On the other hand, opting for policy with high premium too may not neccessarily be a wise move for you. Always consider your financial circumstances and the type of protection that your car truly needs when making choices related to your car insurance as what may work for some may not be ideal for others.\nInsurer's Credibility\nAnother important factor is to check insurers' credibility before proceeding with plan purchase. This research will assist you in understanding the reliability of the company, which is paramount, particularly if the needs to make claim settlement arises.\nExclusions\nExclusions are specific factors/situations that are not covered under insurance plan. It is important to go through the policy documents well in advance before buying one, to avoid any unpleasant surprise during the claim process.\nWhat is the policy coverage type that you offer?\nCurrently, we offer comprehensive cover.\nWhat is the major exclusions for insurance policy with comprehensive coverage?\nComprehensive coverage provides the most elaborated protection among all coverages. However, policy with this coverage does not cover certain losses such as:\nPolicyholder's death or bodily injury due to a motor accident;\nPolicyholder's liability against claims from passengers in your car; and\nLoss, damage or liability arising from an act of nature i.e. flood, storm or landslide.\n(Note: This list is non-exhaustive. Please refer to the policy contract for the full list of exclusions under this policy.).\nWhat is the importance of insuring my car at the appropriate market value?\nThe importance of insuring the car at the correct market value cannot be overstated. If your car is under-insured, you run the risk of getting penalised. The insurer will only bear part of the loss in proportion to the difference between the market value and the sum insured. Kindly refer to the following illustration:\nCar market value is RM60,000. Sum Insured is RM50,000.\nAssuming your car involved in an accident which resulted in losses worth RM20,000, what is highest amount of compensation that you may attain?\nLoss payable by insurer\nSum insured / Car market value x loss\nRM50,000/RM60,000 x RM20,000\nRM16,666.67\nThe balance of RM3,333.33 (RM20,000 - RM16,666.67) will need to be borne by you.\n*Do keep in mind that the above illustration is a general illustration only.\nOn the contrary, over-insuring your car would be a waste of money as the insurer will compensate you up till the market value of your car only.\nWhat is No Claim Discount (NCD)?\nNo Claim Discount (NCD) is a discount for drivers who have not made any insurance claims during the preceding years of the insured period. If you didn’t file any claims over the years, your NCD discount will increase. However, once you make a claim, your NCD will go to 0% again and after 1 year of paying your premium to full, you start building your NCD again.\nThe amount of NCD you may receive depends on the type of vehicle, coverage and the number of years you have not filed a claim. Normally private cars can go up to 55% of NCD.\nWhat are market value and agreed value coverages?\nMarket value refers to the current calculated worth of your car.\nIf you choose the market value coverage, your car would be covered for what it is currently worth in the market, and you will be compensated for your car theft or loss based on the market value of your car at the time of theft or loss, rather than market value at the time of your insurance renewal.\nAgreed value refers to the value agreed by both the insurer and policyholder at the time of insurance renewal.\nInsurers determine the agreed value based on a few underwriting factors and risk assessment. Say that you choose the agreed value as the sum insured for your car, your insurer will compensate you exactly as the agreed value.\nRefer to our example below:\nYou have insured your car at RM60,000 in January this year. In September, you would need to make claim on a total loss or theft of your car. In the instance where your car is valued at RM58,000 in September, if you chose:\nmarket value coverage, your compensation pay-out would be based on RM58,000 rather than RM60,000.\nagreed value coverage, your compensation pay-out would be based on RM60,000.\nTopic 2: Transaction, Payment & Refund\nWhat are the types of payment options available?\nDebit Card / Credit Card & Online banking.\nMy transaction was successful. What should I expect next?\nUpon successful transaction, you can expect to receive 2 emails within 24hours following your transaction. We will send an email entailing successful transaction with an attachment of e-Receipt. The respective insurer will send e-Certificate to your email.\nIt has been more than 24 hours since my purchase. However, I yet to receive the above-mentioned emails. What should I do?\nApology for the inconvenience that you might have faced. We advise you to reach out to our Customer Support team at\n+60 18 288 4889\nMy transaction is unsuccessful. Why is that so & what should I do?\nThere are a few possibilities if your payment is declined. Depending on the exact situation, the problem may, but not necessarily occur as a result of the following:\nIf you use credit or debit card, you may need to refer to your respective bank to ensure that it is valid.\nSystem, be it on ours or the banking system may experience intermittent disruption occassionally or may be under scheduled maintenance. We would advise you to avoid midnight transaction as most system maintenance work is likely to take place around that hour.\nAlternatively, you may reach out to our Customer Support team via:\n+60 18 288 4889\nCan I cancel and get a refund?\nWe endeavour to deliver your e-Policy to you soonest possible. If we yet to deliver e-Policy to you, you may reach out to our Customer Support team via:\n+60 18 288 4889\nOtherwise, you will need to request the refund directly with the respective insurance company.\nTopic 3: Claim & Support\nHow do I contact your Customer Support team?\nYou may reach out to our Customer Support team via:\n+60 18 288 4889\nHow do I change my policy information?\nYou may reach out to our Customer Support team via:\n+60 18 288 4889\nIf my vehicle is stolen, do I get my full sum insured?\nClaims will be based on the present market value of the vehicle. Therefore, we recommend that your car is insured based on the current fair market value or agreed value proposed by the respective company.\nHow fast can my motor claim be settled?\nYour claim will be processed once the adjuster’s report and other relevant documents are received by Insurer. Therefore, it is important for you to notify us or insurer and give complete documents as soon as possible so they can process your claim without any delay.\nWhat should I do, in the event of a car accident?\nIn the event of an accident, ensure that your vehicle is sent to your own Panel of Workshops or an authorized franchise repairer/dealer (car manufacturer service centre). A police report should be lodged within 24 hours. You are also required to notify us of the accident immediately; where upon we shall advise you of the procedures & furnish you with a claim form to be duly completed & returned to us together with all the other relevant documents requested.\nIf your vehicle is involved in a minor accident whereby you may not want to make a claim on your own policy but the accident involved third party property damage or third party bodily injury, please call your selected insurance company to make the notification.\nDiscover Malaysia's best car insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs.\nSecarang.com website and its services are owned and operated by Serba Sentral Sdn. Bhd. (Company No: 201901032124 (1341454-A)), a registered and licensed insurance agent. All insurance products on Secarang.com are represented by their respective authorized and licensed agents of respective insurers in accordance with the Malaysia Insurance Act 1996, Malaysia Financial Services Act 2013 and Malaysia Islamic Financial Services Act 2013.\nCopyright © 2026 Serba Sentral Sdn Bhd (Company No : 201901032124 (1341454A)). All Rights Reserved.\nQuick Links\nPRIVACY POLICY\nTERMS OF USE\nREFUND POLICY\nSecured Payment",
+ "support": "About Us\nFAQs\nSupport\nAbout Us\nFAQs\nSupport\nNeed to reach out to us?\nWe are here to help and answer any question and/ or complaint that you may have. We look forward to hearing from you.\nOur contact details\nAvailable 9AM - 6PM, Monday - Friday except for Kuala Lumpur & national public holiday\n+60 18-288 4889\nWe are located here\nSerba Sentral Sdn Bhd\n(1341454A)\nLevel 15, Sunway Tower, Jalan Ampang, 50450 Kuala Lumpur\nNeed to contact insurance company?\nFollowing are the contact details to address any claim matters that you may have with our respective insurers:\nLonpac Insurance Bhd\nRoad Assistance Hotline (24 Hours)\n1300 88 1138\nCustomer Service\n03 2262 8666\nGeneral Line\n03 2262 8688 / 03 2723 7888\nAllianz General Insurance Company (Malaysia) Berhad\n24-Hours Helpline\n1800 22 5542\nYou can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542\nTokio Marine Insurans (Malaysia) Berhad\nRoad Assist Hotline (24 Hours)\n1800 88 1301 / 03 2053 5800\nCustomer Service Hotline\n1800 88 0812\nDiscover Malaysia's best car insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs.\nSecarang.com website and its services are owned and operated by Serba Sentral Sdn. Bhd. (Company No: 201901032124 (1341454-A)), a registered and licensed insurance agent. All insurance products on Secarang.com are represented by their respective authorized and licensed agents of respective insurers in accordance with the Malaysia Insurance Act 1996, Malaysia Financial Services Act 2013 and Malaysia Islamic Financial Services Act 2013.\nCopyright © 2026 Serba Sentral Sdn Bhd (Company No : 201901032124 (1341454A)). All Rights Reserved.\nQuick Links\nPRIVACY POLICY\nTERMS OF USE\nREFUND POLICY\nSecured Payment"
+}

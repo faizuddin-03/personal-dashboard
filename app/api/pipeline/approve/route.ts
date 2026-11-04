@@ -1,6 +1,8 @@
-// POST /api/pipeline/approve { key, dryRun? } — Faizuddin's green light on
-// Elf's scenarios: records the approval and the scenarios.json hash, then
-// queues Elf's workbook build and Dwarf's automation build.
+// POST /api/pipeline/approve { key, automation?, dryRun? } — Faizuddin's green
+// light on Elf's scenarios: records the approval and the scenarios.json hash,
+// then queues Elf's workbook build and Dwarf's automation build.
+// automation: false (2026-10-30, "workbook only"): Elf's build alone; the
+// ticket is marked automationOnHold and Dwarf waits for "Start Dwarf".
 // Refuses (409) while the ticket brief (data/pipeline/work/<KEY>/brief.json:
 // scope, man-days, modules/pages) is missing or incomplete (2026-10-27).
 // dryRun (tests only, 2026-10-27): records the approval the same way, but both
@@ -13,7 +15,9 @@ import { execFile } from "node:child_process";
 import { ROOT, KEY_RE, readTicket, updateTicket, queueJob, createJob, listJobs, hashFile, repoPath, raiseStage, nowIso, noteForSage } from "@/scripts/pipeline/store.mjs";
 import { readBrief } from "@/scripts/pipeline/lib/brief.mjs";
 
-const TS_ID = /^\d+_TS\d{2,}$/;
+// Same id shapes as validateScenarios (scripts/pipeline/actions/_elf-common.mjs):
+// <digits>_TS<NN>, or <digits>_<XX>_TS<NN> with a sub-section prefix (EAINT-9805, 2026-10-29).
+const TS_ID = /^\d+(?:_[A-Z]{2,4})?_TS\d{2,}$/;
 
 /** Runs one job with --dry and returns what the runner printed (command + prompt, or SKIP). */
 function dryRunJob(id: string): Promise<string> {
@@ -25,7 +29,7 @@ function dryRunJob(id: string): Promise<string> {
 }
 
 export async function POST(request: Request) {
-  let body: { key?: unknown; dryRun?: unknown };
+  let body: { key?: unknown; automation?: unknown; dryRun?: unknown };
   try { body = await request.json(); }
   catch { return Response.json({ error: "Body must be JSON: { key }" }, { status: 400 }); }
   const key = String(body?.key ?? "").trim().toUpperCase();
@@ -33,6 +37,7 @@ export async function POST(request: Request) {
   const ticket = readTicket(key);
   if (!ticket) return Response.json({ error: `${key} is not in the pipeline` }, { status: 404 });
   const dryRun = body.dryRun === true;
+  const withAutomation = body.automation !== false;
 
   const jsonRel = ticket.files?.scenariosJson ?? `data/pipeline/work/${key}/scenarios.json`;
   let list: unknown;
@@ -62,16 +67,18 @@ export async function POST(request: Request) {
     t.files = { ...t.files, scenariosJson: jsonRel };
     raiseStage(t, "approved");
     t.characters.elf = { ...t.characters.elf, state: "idle", note: undefined };
-    t.events = [{ at: nowIso(), text: `Faizuddin ${again ? "approved the scenarios again" : "gave the green light"} (${list.length} TS)${dryRun ? " [dry run]" : ""}` }, ...(t.events ?? [])].slice(0, 100);
+    // A built suite is never put back on hold; otherwise the choice made here stands.
+    t.automationOnHold = !withAutomation && !t.files?.suiteDir ? true : undefined;
+    t.events = [{ at: nowIso(), text: `Faizuddin ${again ? "approved the scenarios again" : "gave the green light"} (${list.length} TS)${withAutomation ? "" : ", workbook only"}${dryRun ? " [dry run]" : ""}` }, ...(t.events ?? [])].slice(0, 100);
   });
   if (dryRun) {
-    const planned = [createJob({ key, action: "elf:build" }), createJob({ key, action: "dwarf:build" })];
+    const planned = [createJob({ key, action: "elf:build" }), ...(withAutomation ? [createJob({ key, action: "dwarf:build" })] : [])];
     const jobs = await Promise.all(planned.map(async j => ({ id: j.id, action: j.action, output: await dryRunJob(j.id) })));
     return Response.json({ ticket: readTicket(key) ?? updated, dryRun: true, jobs });
   }
   // Sage (2026-10-27): the approved scenario list is something to learn from.
   noteForSage(key, { type: "approve", by: "faizuddin", text: `Faizuddin ${again ? "approved the scenarios again" : "gave the green light"} (${list.length} TS)`, file: jsonRel });
-  const jobs = [queueJob({ key, action: "elf:build" }), queueJob({ key, action: "dwarf:build" })]
+  const jobs = [queueJob({ key, action: "elf:build" }), ...(withAutomation ? [queueJob({ key, action: "dwarf:build" })] : [])]
     .map(j => { const { input, ...rest } = j; void input; return rest; });
   return Response.json({ ticket: updated, jobs });
 }

@@ -1,0 +1,41 @@
+{
+ "transaction-management": [
+  "GROUP: Bintang Prospek",
+  "  Chubb",
+  "  RHB",
+  "  Takaful Malaysia",
+  "GROUP: Pemaju Eksklusif",
+  "  Lonpac",
+  "  TokioMarine",
+  "  Zurich Takaful",
+  "GROUP: Serba Sentral",
+  "  Allianz",
+  "  eTiqa"
+ ],
+ "payment-report": [
+  "GROUP: Bintang Prospek",
+  "  Chubb",
+  "  RHB",
+  "  Takaful Malaysia",
+  "GROUP: Pemaju Eksklusif",
+  "  Lonpac",
+  "  TokioMarine",
+  "  Zurich Takaful",
+  "GROUP: Serba Sentral",
+  "  Allianz",
+  "  eTiqa"
+ ],
+ "commission-report": [
+  "GROUP: Bintang Prospek",
+  "  Chubb",
+  "  RHB",
+  "  Takaful Malaysia",
+  "GROUP: Pemaju Eksklusif",
+  "  Lonpac",
+  "  TokioMarine",
+  "  Zurich Takaful",
+  "GROUP: Serba Sentral",
+  "  Allianz",
+  "  eTiqa"
+ ]
+}

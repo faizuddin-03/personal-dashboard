@@ -1,0 +1,4 @@
+# 12406_E2E_TS1 — Secarang home form > All Quotations > Allianz > Add-ons > Confirmation > FPX Online banking > Success > CIBO Transaction Details, cover note, e-Certificate
+# run EAINT-12406-dash-20261103-120229 on staging /ia, started 03/11/2026, 12:02:31 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+03/11/2026, 12:02:35 | note: on the site: Secarang (https://staging.secarang.com/ia/)

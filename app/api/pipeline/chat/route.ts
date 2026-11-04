@@ -1,4 +1,4 @@
-// POST /api/pipeline/chat { key, character: "elf" | "dwarf" | "scout" | "scribe" | "sage", text } — saves
+// POST /api/pipeline/chat { key, character: "elf" | "dwarf" | "scout" | "scribe" | "sage", text, images? } — saves
 // Faizuddin's message in the character's chat and queues "<character>:chat".
 // Design: scripts/pipeline/README.md §3.4.
 //
@@ -6,6 +6,11 @@
 // refused as "too long"): HTML, or any message over MAX_INLINE characters, is
 // saved to a file under _reference/tickets/<KEY>/ first — AGENTS.md "SAVE
 // EVERY PAGE OF HTML THE USER GIVES YOU" — and the character gets the path.
+//
+// Pictures (2026-10-30: "make the chats with the characters able to paste
+// pictures"): images: [{ name?, dataUrl }] are saved to
+// _reference/tickets/<KEY>/chat-images/ and the message tells the character
+// to open each one with Read (prompts-common incomingMessage).
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { KEY_RE, readTicket, appendChat, readChat, queueJob, repoPath, noteForSage } from "@/scripts/pipeline/store.mjs";
@@ -16,6 +21,28 @@ const CHAT_CHARACTERS = ["scout", "scribe", "elf", "dwarf", "sage"];
 
 const MAX_INLINE = 8000;              // longer messages are saved as a file
 const MAX_TOTAL = 5 * 1024 * 1024;    // 5 MB hard limit for one paste
+
+const MAX_IMAGES = 8;
+const MAX_IMAGE = 10 * 1024 * 1024;  // 10 MB per picture
+const IMAGE_EXT: Record<string, string> = { "image/png": "png", "image/jpeg": "jpg", "image/gif": "gif", "image/webp": "webp" };
+
+/** Saves pasted pictures; returns their repo-relative paths. Throws on a bad picture. */
+function saveImages(key: string, character: string, images: unknown[]): string[] {
+  const dirRel = `_reference/tickets/${key}/chat-images`;
+  fs.mkdirSync(repoPath(dirRel), { recursive: true });
+  const at = stamp();
+  return images.map((img, i) => {
+    const dataUrl = typeof (img as { dataUrl?: unknown })?.dataUrl === "string" ? (img as { dataUrl: string }).dataUrl : "";
+    const m = dataUrl.match(/^data:(image\/[a-z+]+);base64,([A-Za-z0-9+/=\s]+)$/);
+    const ext = m ? IMAGE_EXT[m[1]] : undefined;
+    if (!m || !ext) throw new Error(`Picture ${i + 1} is not a PNG, JPG, GIF or WebP image`);
+    const buf = Buffer.from(m[2], "base64");
+    if (buf.length > MAX_IMAGE) throw new Error(`Picture ${i + 1} is over 10 MB`);
+    const rel = `${dirRel}/${key}-${character}-${at}-${String(i + 1).padStart(2, "0")}.${ext}`;
+    fs.writeFileSync(repoPath(rel), buf);
+    return rel;
+  });
+}
 
 const HTML_START = /<!doctype html|<html[\s>]|<head[\s>]|<body[\s>]|<(?:div|table|form|section|main|nav|ul|select|input)[\s>]/i;
 
@@ -68,7 +95,7 @@ function savePaste(key: string, character: string, text: string): { message: str
 }
 
 export async function POST(request: Request) {
-  let body: { key?: unknown; character?: unknown; text?: unknown };
+  let body: { key?: unknown; character?: unknown; text?: unknown; images?: unknown };
   try { body = await request.json(); }
   catch { return Response.json({ error: "Body must be JSON: { key, character, text }" }, { status: 400 }); }
   const key = String(body?.key ?? "").trim().toUpperCase();
@@ -76,7 +103,9 @@ export async function POST(request: Request) {
   let text = typeof body?.text === "string" ? body.text.trim() : "";
   if (!KEY_RE.test(key)) return Response.json({ error: "Not a ticket key" }, { status: 400 });
   if (typeof character !== "string" || !CHAT_CHARACTERS.includes(character)) return Response.json({ error: "character must be scout, scribe, elf, dwarf or sage" }, { status: 400 });
-  if (!text) return Response.json({ error: "Type a message first" }, { status: 400 });
+  const rawImages = Array.isArray(body?.images) ? body.images : [];
+  if (!text && !rawImages.length) return Response.json({ error: "Type a message or paste a picture first" }, { status: 400 });
+  if (rawImages.length > MAX_IMAGES) return Response.json({ error: `At most ${MAX_IMAGES} pictures in one message` }, { status: 400 });
   if (text.length > MAX_TOTAL) return Response.json({ error: "That paste is over 5 MB. Save it as a file in the ticket folder and tell the character the path." }, { status: 400 });
   if (!readTicket(key)) return Response.json({ error: `${key} is not in the pipeline` }, { status: 404 });
 
@@ -85,17 +114,24 @@ export async function POST(request: Request) {
     try { ({ message: text, file } = savePaste(key, character, text)); }
     catch (e) { return Response.json({ error: `Could not save the pasted page: ${(e as Error).message}` }, { status: 500 }); }
   }
+  let images: string[] = [];
+  if (rawImages.length) {
+    try { images = saveImages(key, character, rawImages); }
+    catch (e) { return Response.json({ error: (e as Error).message }, { status: 400 }); }
+    // The paths ride in the text too, so history.md and the other characters see them.
+    text = `${text ? `${text}\n\n` : ""}[Faizuddin pasted ${images.length} picture(s): ${images.join(", ")}]`;
+  }
 
   // The questions this message may answer: the character's last reply, if it asked him something (answer registry).
   const lastReply = [...readChat(key, character as Character)].reverse().find(e => e.from === character);
   const answering = lastReply ? extractQuestions(lastReply.text) : [];
-  const entry = appendChat(key, character as Character, { from: "faizuddin", text });
+  const entry = appendChat(key, character as Character, { from: "faizuddin", text, ...(images.length ? { images } : {}) });
   // Sage (2026-10-27): his chat messages are durable facts to learn from. A message to the Sage is handled by sage:chat itself.
   if (character !== "sage") {
-    noteForSage(key, { type: "chat", character: character as Character, by: "faizuddin", text, ...(answering.length ? { answering } : {}), ...(file ? { file } : {}) });
+    noteForSage(key, { type: "chat", character: character as Character, by: "faizuddin", text, ...(answering.length ? { answering } : {}), ...(file ? { file } : {}), ...(images.length ? { images } : {}) });
   }
   try {
-    const job = queueJob({ key, action: `${character}:chat` as JobAction, input: { text, ...(file ? { file } : {}) } });
+    const job = queueJob({ key, action: `${character}:chat` as JobAction, input: { text, ...(file ? { file } : {}), ...(images.length ? { images } : {}) } });
     const { input, ...rest } = job; void input;
     return Response.json({ entry, job: rest, ...(file ? { savedTo: file } : {}) });
   } catch (e) {

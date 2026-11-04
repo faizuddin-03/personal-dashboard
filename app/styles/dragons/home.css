@@ -1,0 +1,118 @@
+﻿/* Dragons style (Faizuddin, 2026-10-29: "a theme of how to train your dragon,
+   make it for the dashboard page only ... with actual toothless and
+   lightfury"). Scoped to the Dashboard page: every other page keeps the
+   Normal colour theme. Art: public/dragons/ (scripts/dragon-scenes/), all
+   original pixel art. Flying sprites: components/dragons/DragonSky.tsx. */
+
+/* Night-sea palette. !important beats the colour theme, which lib/themes.ts
+   writes as inline styles on <html>. */
+:root[data-style="dragons"][data-page="home"] {
+  --bg-page: #070c18 !important;
+  --bg-panel: #0d1526 !important;
+  --bg-elevated: #142036 !important;
+  --bg-hover: #1b2a46 !important;
+  --border-subtle: #1e2c48 !important;
+  --border-main: #2c4068 !important;
+  --text-brightest: #f2f7ff !important;
+  --text-primary: #e1e9f7 !important;
+  --text-secondary: #c3d0e6 !important;
+  --text-label: #9fb2d0 !important;
+  --text-muted: #8ea2c2 !important;
+  --text-faint: #7d91b0 !important;
+  --accent: #4fd18b !important;       /* Toothless's eye green */
+  --accent-hover: #3cb877 !important;
+}
+
+/* Berk at night behind the page, same 50% black layer as the Cozy scenes. */
+[data-style="dragons"][data-page="home"] main,
+[data-style="dragons"][data-page="home"] main.bg-slate-950 {
+  background-image:
+    linear-gradient(to bottom, rgb(7 12 24 / .85) 0, rgb(7 12 24 / .4) 140px, rgb(7 12 24 / 0) 40%),
+    linear-gradient(rgb(0 0 0 / .50), rgb(0 0 0 / .50)),
+    url("/dragons/berk-night.png");
+  background-size: auto, auto, cover;
+  background-position: 0 0, 0 0, center bottom;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+/* Cards: night-blue with a faint aurora edge so they stand out of the sky. */
+[data-style="dragons"][data-page="home"] main .bg-slate-900.border {
+  box-shadow: 0 0 0 1px rgb(79 209 139 / .10), 0 8px 24px rgb(0 0 0 / .45);
+}
+
+/* â”€â”€ Sky banner with the flying dragons (DragonSky.tsx) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* The aurora-and-moon part of the scene, lighter than the page background so
+   the dragons read; Toothless gets a moonlit rim so black-on-night shows. */
+.dragon-sky {
+  position: relative;
+  height: 188px;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 12px;
+  border: 1px solid var(--border-main);
+  background:
+    linear-gradient(rgb(0 0 0 / .15), rgb(0 0 0 / .15)),
+    url("/dragons/berk-night.png") center 30% / cover no-repeat;
+  image-rendering: pixelated;
+}
+.dragon {
+  position: absolute;
+  width: 192px;            /* 64x32 frame at 3x */
+  height: 96px;
+  background-size: 384px 96px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  animation: dragon-flap .5s steps(2) infinite;
+  filter: drop-shadow(0 0 6px rgb(0 0 0 / .5));
+}
+.dragon--toothless {
+  background-image: url("/dragons/toothless.png");
+  filter: drop-shadow(0 0 1px rgb(170 200 255 / .9)) drop-shadow(0 0 6px rgb(120 160 255 / .35));
+}
+.dragon--lightfury {
+  background-image: url("/dragons/lightfury.png");
+  animation-duration: .56s;  /* out of step with Toothless, like two real fliers */
+  filter: drop-shadow(0 0 8px rgb(150 200 255 / .35));
+}
+@keyframes dragon-flap { to { background-position: -384px 0; } }
+
+/* Each flier crosses the sky, then rests off screen before the next pass. */
+/* Each flier crosses the banner, then rests off screen before the next pass.
+   Light Fury follows a beat behind on her own, wavier line. */
+.dragon-path {
+  position: absolute;
+  left: -220px;
+  top: 14px;
+  animation: dragon-pass 22s linear infinite;
+}
+.dragon-path--lightfury { animation-name: dragon-pass-2; animation-delay: 2s; top: 78px; }
+@keyframes dragon-pass {
+  0%   { left: -220px; transform: translateY(0); }
+  15%  { transform: translateY(-4px); }
+  30%  { transform: translateY(14px); }
+  45%  { transform: translateY(2px); }
+  60%  { left: calc(100% + 40px); transform: translateY(8px); }
+  100% { left: calc(100% + 40px); transform: translateY(8px); }
+}
+@keyframes dragon-pass-2 {
+  0%   { left: -220px; transform: translateY(6px); }
+  12%  { transform: translateY(-12px); }
+  27%  { transform: translateY(4px); }
+  42%  { transform: translateY(-14px); }
+  60%  { left: calc(100% + 40px); transform: translateY(0); }
+  100% { left: calc(100% + 40px); transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dragon { animation: none; }
+  .dragon-path { animation: none; }
+  .dragon-path--toothless { left: auto; right: 240px; }
+  .dragon-path--lightfury { left: auto; right: 40px; }
+}
+@media (max-width: 640px) {
+  .dragon-sky { height: 128px; }
+  .dragon { width: 128px; height: 64px; background-size: 256px 64px; animation-name: dragon-flap-sm; }
+  .dragon-path--lightfury { top: 56px; }
+}
+@keyframes dragon-flap-sm { to { background-position: -256px 0; } }

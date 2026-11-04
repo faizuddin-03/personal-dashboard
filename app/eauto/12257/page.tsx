@@ -262,6 +262,9 @@ export default function Ticket12257Page() {
   const isTsSectionCollapsed = (id: string) => collapsed[id] !== false;
 
   const [creds, setCreds] = useState<Creds>(typeof window !== "undefined" ? loadCreds() : DEFAULT_CREDS);
+  // Run configuration is saved as it is typed, not only on Run (Faizuddin, 2026-11-02:
+  // survive a refresh or restart). Run still saves its own changes (counters, companies).
+  useEffect(() => { try { localStorage.setItem(CREDS_KEY, JSON.stringify(creds)); } catch { /* full */ } }, [creds]);
   const set = <K extends keyof Creds>(k: K, v: Creds[K]) => setCreds(p => ({ ...p, [k]: v }));
   const [counters, setCounters] = useState<Record<string, number>>(() => (typeof window !== "undefined" ? loadCounters() : { SDN: 2 }));
   const companyOf = (s: Scenario): Company => {

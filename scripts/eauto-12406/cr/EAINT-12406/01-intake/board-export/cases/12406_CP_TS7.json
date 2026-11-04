@@ -1,0 +1,41 @@
+{
+  "expected": "Ensure:\n• Home logos in this order: Lonpac, Allianz, Tokio Marine\n• All Quotations shows the Allianz quotation with the Allianz logo, between Lonpac and Tokio Marine (if all three quote this car)\n• About Us > Our partnership contains \"Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"\n• FAQ answer lists Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, in this order\n• Support > Allianz: \"24-Hours Helpline\" \"1800 22 5542\" and the towing sentence below it",
+  "id": "12406_CP_TS7",
+  "kiv": "ON HOLD: production check after go-live (Azfar 29.10.2026: 'the production one put on hold first')",
+  "labels": [],
+  "order": 8,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Home logos in this order: Lonpac, Allianz, Tokio Marine"
+    },
+    {
+      "id": "E2",
+      "text": "All Quotations shows the Allianz quotation with the Allianz logo, between Lonpac and Tokio Marine (if all three quote this car)"
+    },
+    {
+      "id": "E3",
+      "text": "About Us > Our partnership contains \"Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\""
+    },
+    {
+      "id": "E4",
+      "text": "FAQ answer lists Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, in this order"
+    },
+    {
+      "id": "E5",
+      "text": "Support > Allianz: \"24-Hours Helpline\" \"1800 22 5542\" and the towing sentence below it"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "KIV",
+  "reviewed": false,
+  "section": "Production after go-live (look only)",
+  "setup": "• When: after EAINT-12406 goes live on production (release 02.11.2026 or later); needs a real car + owner IC and Azfar's OK on the day (29.10)\n• Production secarang.com, no login, desktop browser. Look only: QA cannot make a paid Secarang transaction in production; production regression is quote only, stopping at the payment page (team doc §2, Deployment Checklist 20261020 AM R43). The quotation is continued to the payment page in 12406_E2E_TS8\n• For the quotation: a real individual-owner renewal car whose owner agrees (agreed with Azfar); the owner's details are kept out of evidence names and covered in screenshots",
+  "sheet": "CP",
+  "situation": "Production after go-live, look only (no payment): Allianz logo, Allianz quotation card, About Us, FAQs and Support on secarang.com. The same quotation goes on to the payment page in 12406_E2E_TS8",
+  "source": "SRD v1.1 §2.2.2 #2a ('Enable Allianz back in Secarang production'), §2.1.1; REQ-001 Ex.1a, REQ-002 Ex.1a, REQ-004 Ex.1a, REQ-005 Ex.1a, REQ-007, REQ-008, REQ-009 (same texts as 12406_CP_TS1 to CP_TS5, QT_TS1)",
+  "steps": "1. secarang.com > Home: screenshot the insurer logos\n2. Car tab > the agreed car + owner > All Quotations: screenshot all cards; stop there (do not select, do not pay)\n3. About Us > Our partnership; FAQs > 'Which insurers can I get instant quotation from?' (expanded); Support > Allianz (expanded): screenshot each",
+  "updatedAt": "2026-10-29T16:50:00+08:00"
+}

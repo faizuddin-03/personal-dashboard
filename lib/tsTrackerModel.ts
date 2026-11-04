@@ -53,6 +53,12 @@ export interface TestCase {
   objective?: string;
   log?: TsLogEntry[];
   runs?: TsRun[];
+  /** Overall result last read from the official TS sheet (lib/tsTrackerOfficialSync.ts). */
+  sheetStatus?: string;
+  /** Result per device column from that sheet, e.g. [{ column: "Android 15", status: "Pass" }]. */
+  sheetCells?: { column: string; status: string }[];
+  /** ISO time the official sheet was last read for this case. */
+  sheetSyncedAt?: string;
 }
 
 export interface TestSuite {

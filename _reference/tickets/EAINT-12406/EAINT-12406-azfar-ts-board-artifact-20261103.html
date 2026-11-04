@@ -1,0 +1,1056 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>EAINT-12406 Test Scenarios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: an execution console. Summary line and sheet chips on top, one filter bar, then a split:
+   the test scenario list on the left, the open test scenario on the right with a result dock pinned
+   to its bottom so the steps, the expected result and the result buttons are always on screen together. */
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --raise:#f6f8fb; --ink:#141a24; --muted:#5b6678; --faint:#8a94a6; --line:#dbe0e8; --line2:#c9d0dc;
+  --accent:#3445c2; --accent-ink:#ffffff; --sel:#e9ecff; --focus:#5a6cf0; --track:#e1e6ee;
+  --pass:#1b7a42; --pass-bg:#e1f3e8; --fail:#b8261b; --fail-bg:#fde6e3; --rerun:#975a00; --rerun-bg:#fcefd6;
+  --kiv:#5a47a6; --kiv-bg:#ece8fa; --blocked:#7a5c12; --blocked-bg:#f5eed8; --miss:#8c3b6a; --miss-bg:#f8e5ef;
+  --na:#5b6678; --na-bg:#e8ecf1; --dep:#ffffff; --dep-bg:#15181d; --none:#5b6678; --none-bg:#eef1f5;
+  --mark:#c48a00; --mark-bg:#fff3c8; --warn:#975a00; --warn-bg:#fcefd6; --info:#1d4f9a; --info-bg:#e3edfc;
+  --shadow:0 10px 30px rgba(18,26,40,.16);
+  --font:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e121a; --panel:#151b25; --raise:#1a2130; --ink:#e5e9f0; --muted:#97a2b5; --faint:#6f7a8d; --line:#253041; --line2:#33405a;
+  --accent:#8c9cff; --accent-ink:#0d1220; --sel:#1f2846; --focus:#9fadff; --track:#243044;
+  --pass:#6fd394; --pass-bg:#16331f; --fail:#ff8b7e; --fail-bg:#3b1b18; --rerun:#f1b85b; --rerun-bg:#3a2b12;
+  --kiv:#b6a7f3; --kiv-bg:#2a2445; --blocked:#e2c477; --blocked-bg:#342c16; --miss:#eaa5ca; --miss-bg:#3a1e2e;
+  --na:#97a2b5; --na-bg:#212b3a; --dep:#ffffff; --dep-bg:#000000; --none:#97a2b5; --none-bg:#1d2533;
+  --mark:#f0c24a; --mark-bg:#3c3213; --warn:#f1b85b; --warn-bg:#3a2b12; --info:#90b8ff; --info-bg:#1a2a45;
+  --shadow:0 10px 30px rgba(0,0,0,.55); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e121a; --panel:#151b25; --raise:#1a2130; --ink:#e5e9f0; --muted:#97a2b5; --faint:#6f7a8d; --line:#253041; --line2:#33405a;
+  --accent:#8c9cff; --accent-ink:#0d1220; --sel:#1f2846; --focus:#9fadff; --track:#243044;
+  --pass:#6fd394; --pass-bg:#16331f; --fail:#ff8b7e; --fail-bg:#3b1b18; --rerun:#f1b85b; --rerun-bg:#3a2b12;
+  --kiv:#b6a7f3; --kiv-bg:#2a2445; --blocked:#e2c477; --blocked-bg:#342c16; --miss:#eaa5ca; --miss-bg:#3a1e2e;
+  --na:#97a2b5; --na-bg:#212b3a; --dep:#ffffff; --dep-bg:#000000; --none:#97a2b5; --none-bg:#1d2533;
+  --mark:#f0c24a; --mark-bg:#3c3213; --warn:#f1b85b; --warn-bg:#3a2b12; --info:#90b8ff; --info-bg:#1a2a45;
+  --shadow:0 10px 30px rgba(0,0,0,.55); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--font);padding-inline:16px;padding-block:0;display:flex;flex-direction:column;overflow:hidden}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:6px;padding:5px 8px}
+textarea{width:100%;resize:vertical;line-height:1.45;min-height:56px}
+.btn{border:1px solid var(--line2);background:var(--panel);border-radius:6px;padding:5px 10px;font-weight:700;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{border-color:transparent;background:none;color:var(--muted);font-weight:400}
+.btn.ghost:hover{color:var(--ink);border-color:var(--line)}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}
+[hidden]{display:none!important}
+
+/* ---- top ---- */
+/* header: row 1 = which ticket (title cut to fit, full on hover) + page controls; row 2 = progress */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;padding-block:12px 8px}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0;flex:1 1 360px}
+.brand .sub{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
+.stg{flex:none;font-size:11.5px;font-weight:700;color:var(--info);background:var(--info-bg);border-radius:4px;padding:0 7px;white-space:nowrap}
+.brand h1{font-size:18px;font-weight:700;white-space:nowrap}
+.brand .tk{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent)}
+.trial{font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);background:var(--warn-bg);border-radius:4px;padding:1px 7px}
+.summary{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;flex:1 1 100%;min-width:0}
+.summary .big{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;letter-spacing:-.02em}
+.summary .big small{font-size:14px;color:var(--muted);font-weight:400;margin-left:6px;letter-spacing:0}
+.summary .sbar{width:180px;height:10px;border-radius:5px}
+/* history: the reason under a non-pass result, and a pass that follows a fail */
+.hist .rwhy{font-size:13px;line-height:1.45;white-space:pre-wrap;border-left:3px solid var(--line2);background:var(--raise);padding:4px 9px;border-radius:0 6px 6px 0;margin-top:3px;max-width:78ch}
+.hist .rwhy b{font-weight:700}
+.hist .rwhy.k-FAIL,.hist .rwhy.k-EVIDENCE-MISSING{border-color:var(--fail);background:var(--fail-bg)}
+.hist .rwhy.k-KIV{border-color:var(--kiv);background:var(--kiv-bg)}
+.hist .rwhy.k-BLOCKED{border-color:var(--blocked);background:var(--blocked-bg)}
+.hist .rwhy.k-RE-RUN{border-color:var(--rerun);background:var(--rerun-bg)}
+.hist .rwhy.k-DEPRIORITIZED{border-color:var(--dep-bg);background:var(--raise)}
+.depwhy{border-left:3px solid var(--dep-bg)!important;background:var(--raise)!important;border-radius:0 6px 6px 0!important;margin-left:0!important}
+.hist .rwhy.none{font-style:italic;color:var(--muted)}
+.hist .h2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;max-width:78ch}
+.hist .h2.open{display:block}
+.fixchip{display:inline-block;background:var(--pass-bg);color:var(--pass);font-size:11.5px;font-weight:700;border-radius:4px;padding:0 7px}
+.reason{display:grid;gap:6px;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;background:var(--panel)}
+.reason label{font-size:12.5px;font-weight:700}
+.reason textarea{min-height:58px;font-size:13px}
+.reason .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.summary .txt{font-size:13px;color:var(--muted);min-width:0}
+.summary .txt b{color:var(--ink)}
+.summary .txt .w{color:var(--warn);font-weight:700}
+.sbar{width:140px;height:8px;border-radius:4px;background:var(--track);display:flex;gap:1px;overflow:hidden;flex:none}
+.sbar i{display:block;height:100%}
+.meta{display:flex;align-items:center;gap:10px;margin-left:auto}
+.build{display:inline-flex;align-items:center;gap:6px;border:1px dashed var(--line2);border-radius:6px;padding:3px 9px;font-size:12.5px;background:none}
+.build b{font-family:var(--mono);font-weight:600;font-size:12px}
+.build.unset{color:var(--muted)}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.dot.on{background:var(--pass)}
+
+/* ---- sheet chips (the one way to pick a sheet) ---- */
+.rail{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.chip{flex:none;display:grid;gap:3px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:5px 10px 6px;text-align:left;min-width:96px}
+.chip .nm{font-size:12.5px;font-weight:700;white-space:nowrap;display:flex;gap:6px;align-items:baseline}
+.chip .nm span{color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+.chip .mini{height:4px;border-radius:2px;background:var(--track);display:flex;overflow:hidden}
+.chip .mini i{display:block;height:100%}
+.chip[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip[aria-selected="true"] .nm{color:var(--accent)}
+
+/* ---- filter bar (the one way to filter) / bulk bar ---- */
+.fbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding-block:6px 10px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.fbar input[type=search]{flex:1 1 220px;min-width:0;padding:6px 10px}
+.fbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);background:var(--panel);border-radius:999px;padding:4px 11px;font-size:13px}
+.fbtn.on{border-color:var(--accent);background:var(--sel);color:var(--accent);font-weight:700}
+.fbtn .x{border:0;background:none;padding:0 0 0 2px;font-size:14px;line-height:1;color:inherit}
+.fbtn::after{content:"";border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid currentColor;opacity:.6}
+.fbtn.noarrow::after{display:none}
+.shown{font-size:12.5px;color:var(--muted);margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bulk{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--sel);border:1px solid var(--accent);border-radius:8px;padding:5px 10px;width:100%}
+.bulk b{color:var(--accent)}
+
+/* ---- split ---- */
+body > .top,body > .rail,body > .fbar,body > .banner{flex:none}
+/* list | drag handle | open TS; --listw is the list's share, set by dragging the handle and kept per viewer */
+.split{--listw:46%;flex:1 1 0;min-height:0;display:grid;grid-template-columns:minmax(260px,var(--listw)) 14px minmax(360px,1fr);gap:0;padding-bottom:12px}
+.split.full{grid-template-columns:minmax(0,1fr)}
+.split.full .gutter{display:none}
+.gutter{cursor:col-resize;display:grid;place-items:center;touch-action:none;border-radius:6px}
+.gutter::before{content:"";width:4px;height:44px;border-radius:2px;background:var(--line2);transition:background .15s}
+.gutter:hover::before,.gutter:focus-visible::before,.gutter.drag::before{background:var(--accent)}
+.split.dragging{cursor:col-resize;user-select:none}
+.split.dragging iframe,.split.dragging video{pointer-events:none}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:0;min-height:0}
+.listpane{overflow:auto}
+table{width:100%;border-collapse:separate;border-spacing:0}
+th{position:sticky;top:0;z-index:2;background:var(--raise);text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+thead tr.grp th{top:0;text-align:center;border-bottom:1px dashed var(--line2);color:var(--faint);font-size:10.5px}
+thead tr.grp + tr th{top:27px}
+td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--raise)}
+tr.row.sel td{background:var(--sel)}
+tr.row.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+tr.gh td{background:var(--bg);font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:6px 9px}
+tr.gh td span{font-weight:400;text-transform:none;letter-spacing:0;margin-left:8px;font-variant-numeric:tabular-nums}
+td.ck,th.ck{width:30px;padding-right:0}
+td.ck input,th.ck input{width:15px;height:15px;margin:2px 0 0;accent-color:var(--accent)}
+td.id{font-family:var(--mono);font-size:12px;white-space:nowrap}
+.clip{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+td.short{white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+td.empty-cell{color:var(--faint)}
+.lbl{display:inline-block;margin-left:5px;padding:0 5px;border-radius:4px;font:700 10px/16px var(--font);letter-spacing:.04em;vertical-align:1px;background:var(--track);color:var(--ink)}
+.lbl.SIT{background:#c8261b;color:#fff}
+.res{display:inline-flex;align-items:center;gap:5px;border-radius:5px;padding:1px 8px;font-size:12px;font-weight:700;white-space:nowrap;border:1px solid transparent}
+.r-PASS{background:var(--pass-bg);color:var(--pass)} .r-FAIL{background:var(--fail-bg);color:var(--fail)}
+.r-RE-RUN{background:var(--rerun-bg);color:var(--rerun)} .r-KIV{background:var(--kiv-bg);color:var(--kiv)}
+.r-BLOCKED{background:var(--blocked-bg);color:var(--blocked)} .r-EVIDENCE-MISSING{background:var(--miss-bg);color:var(--miss)}
+.r-N-A{background:var(--na-bg);color:var(--na)} .r-DEPRIORITIZED{background:var(--dep-bg);color:var(--dep)} .r-none{background:var(--none-bg);color:var(--none);border:1px dashed var(--line2)}
+.c-PASS{background:var(--pass)} .c-FAIL{background:var(--fail)} .c-RE-RUN{background:var(--rerun)} .c-KIV{background:var(--kiv)}
+.c-BLOCKED{background:var(--blocked)} .c-EVIDENCE-MISSING{background:var(--miss)} .c-N-A{background:var(--na)}
+.flag{display:inline-block;margin-left:5px;font-size:11px;color:var(--warn);font-weight:700;white-space:nowrap}
+.tick{color:var(--pass);font-weight:700;margin-left:4px}
+.prio{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line2);border-radius:4px;padding:0 6px;background:none}
+.prio.P1{color:var(--fail);border-color:var(--fail)}
+.emptybox{padding:48px 20px;text-align:center;color:var(--muted)}
+
+/* ---- detail pane ---- */
+.detail{display:flex;flex-direction:column;overflow:hidden}
+.dhead{padding:12px 16px 10px;border-bottom:1px solid var(--line);display:grid;gap:4px}
+.dhead{min-width:0}
+.dhead .r1{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0}
+.dhead .r1 .id{font-family:var(--mono);font-weight:600;font-size:14px}
+.dhead .nav{margin-left:auto;display:flex;gap:4px}
+.dhead .crumb{font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.dhead h2{font-size:16.5px;line-height:1.35}
+/* where the open TS stands, one line: result, who and when, evidence, review, defect */
+.dhead .ttl{overflow-wrap:anywhere;font-size:15.5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;max-width:80ch}
+.dhead .ttl.open{display:block}
+.btn.mini{font-size:12px;padding:1px 7px}
+.strip{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:12.5px}
+.res.big{font-size:13px;padding:2px 10px}
+.schip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line2);background:var(--panel);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
+button.schip:hover{border-color:var(--accent)}
+.schip.ok{border-color:transparent;background:var(--pass-bg);color:var(--pass)}
+.schip.warn{border-color:transparent;background:var(--warn-bg);color:var(--warn)}
+.schip.none{border-style:dashed;color:var(--muted);font-weight:400}
+.tabs{display:flex;gap:2px;margin:4px -16px -10px;padding:0 12px;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.tab{border:0;background:none;padding:8px 10px 7px;font-size:13px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tab span{font-weight:400;font-size:11.5px;font-variant-numeric:tabular-nums;background:var(--track);color:var(--ink);border-radius:999px;padding:0 6px}
+.revbox{border:1px solid var(--line);border-radius:8px;background:var(--raise);padding:8px 10px;gap:2px}
+.revbox .muted{font-size:12px}
+.rbtn.more{background:var(--panel);color:var(--ink)}
+.help{display:grid;gap:8px;padding:2px 8px 8px;font-size:13px;line-height:1.5}
+.help p{margin:0}
+.revact{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ptblock{display:grid;gap:6px;padding-top:10px;border-top:1px solid var(--line)}
+.sec > .ptblock:first-of-type{border-top:0;padding-top:0}
+.pthead{display:grid;grid-template-columns:2.6em minmax(0,1fr) auto;gap:4px 8px;align-items:baseline;font-size:13px;line-height:1.45;max-width:90ch}
+.pthead.other{display:flex;flex-wrap:wrap}
+.pthead .pid{flex:none;font-size:12px;font-weight:600;color:var(--accent);min-width:2.4em}
+.noshot{font-size:12.5px}
+.back{display:none}
+.dbody{flex:1;overflow:auto;padding:12px 16px 18px;display:grid;gap:16px;align-content:start}
+.sec{display:grid;gap:6px;min-width:0}
+.sec > h3{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:10px}
+.sec > h3 .key{display:inline-flex;gap:10px;text-transform:none;letter-spacing:0;font-weight:400;font-size:11px}
+.sec > h3 .key i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin-right:4px}
+.sec > h3 .act{margin-left:auto;text-transform:none;letter-spacing:0}
+/* label | value rows: a fixed label column and top alignment, so every label sits level with the first line of its value */
+.kv{display:grid;grid-template-columns:minmax(120px,30%) minmax(0,1fr);gap:8px 16px;align-items:start}
+.kv .k{font-size:12.5px;color:var(--muted);line-height:1.45;padding-top:1px}
+.kv .v{min-width:0}
+.kv .v.txt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
+.txtview{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45;background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+.sec > h3 .act + .act{margin-left:0}
+@media (max-width:520px){.kv{grid-template-columns:minmax(0,1fr);gap:2px}.kv .v{margin-bottom:6px}}
+.kv .g{grid-column:1/-1;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-top:4px}
+.fld{width:100%;border:1px solid transparent;background:none;border-radius:5px;padding:2px 6px;margin-left:-6px;text-align:left;white-space:pre-wrap;min-height:24px}
+.fld:hover,.fld:focus{border-color:var(--line2);background:var(--panel)}
+textarea.fld{min-height:28px;resize:vertical}
+.fld::placeholder{color:var(--faint);font-style:italic}
+.stepview{background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:6px 8px;display:grid;gap:1px;line-height:1.45}
+.stepview .sl{white-space:pre-wrap;border-radius:4px;padding:1px 5px}
+.stepview .sl.common{color:var(--muted)}
+.stepview .sl.trig{background:var(--mark-bg);box-shadow:inset 3px 0 0 var(--mark);font-weight:700}
+.stepview.exp .sl.trig{background:var(--pass-bg);box-shadow:inset 3px 0 0 var(--pass)}
+.dfct{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.dchip{display:inline-flex;align-items:center;gap:5px;border-radius:5px;padding:1px 8px;font-size:12px;font-weight:700;text-decoration:none;font-family:var(--mono);white-space:nowrap}
+.d-done{background:var(--pass-bg);color:var(--pass)} .d-prog{background:var(--info-bg);color:var(--info)} .d-todo{background:var(--none-bg);color:var(--none)}
+.d-reopen{background:var(--fail-bg);color:var(--fail)} .d-neutral{background:var(--track);color:var(--ink)} .d-warn{background:var(--warn-bg);color:var(--warn);font-family:var(--font)}
+.why{white-space:pre-wrap;font-size:13px;max-width:80ch}
+.hist{list-style:none;margin:0;padding:0;display:grid;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.hist li{position:relative;padding:4px 0 10px 16px;display:grid;gap:2px}
+.hist li::before{content:"";position:absolute;left:-6px;top:9px;width:10px;height:10px;border-radius:50%;background:var(--panel);border:2px solid var(--line2)}
+.hist li.latest::before{border-color:var(--accent);background:var(--accent)}
+.hist .h1{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:13px}
+.hist .h1 time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+.hist .h2{font-size:12.5px;color:var(--muted)}
+.hist a{color:var(--accent)}
+.rev{display:flex;align-items:center;gap:10px;font-size:13px}
+.rev input{width:16px;height:16px;accent-color:var(--accent)}
+.foot{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px}
+.pts{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.pts li{display:flex;gap:8px;align-items:baseline;white-space:pre-wrap;line-height:1.45}
+.pts .pid{flex:none;font-size:12px;font-weight:600;color:var(--accent);min-width:2.4em}
+/* evidence on the board: the screenshots and small copies of the videos are published next to this page
+   (ev/<TS>/…, automation/scripts/board-evidence-pack.py) and listed in cases/<TS>.evidenceSet */
+.evgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.evth{display:grid;gap:3px;border:1px solid var(--line);border-radius:8px;background:var(--raise);padding:4px;text-align:left;min-width:0}
+.evth:hover{border-color:var(--accent)}
+.evth img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;border-radius:5px;background:var(--track)}
+.evth .cap{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;gap:4px;align-items:center;min-width:0}
+.evth .cap span:last-child{overflow:hidden;text-overflow:ellipsis}
+.evpt{flex:none;font-family:var(--mono);font-size:10.5px;font-weight:600;border-radius:4px;padding:0 4px;background:var(--pass-bg);color:var(--pass)}
+.evpt.bad{background:var(--fail-bg);color:var(--fail)}
+.evvids{display:grid;gap:6px}
+.evvids details{border:1px solid var(--line);border-radius:8px;background:var(--raise);padding:5px 9px}
+.evvids summary{cursor:pointer;font-size:13px;font-weight:700}
+.evvids summary span{font-weight:400;color:var(--muted);font-size:12px;margin-left:6px}
+.evvids video{display:block;width:100%;margin-top:6px;border-radius:6px;background:#000}
+.evpath{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:baseline;font-size:12px;color:var(--muted)}
+.evpath .mono{font-size:11.5px;word-break:break-all}
+.ptshot{border:0;background:none;padding:0 2px;color:var(--accent);font-size:12px;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+/* screenshot viewer: dark in both themes, like any photo viewer */
+.lb{position:fixed;inset:0;z-index:60;background:#0b0e14;display:grid;grid-template-rows:auto minmax(0,1fr) auto;color:#e5e9f0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.lb .lbtop{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:10px 16px;font-size:13px}
+.lb .lbtop b{font-family:var(--mono);font-weight:600;word-break:break-all}
+.lb .lbtop .sp{margin-left:auto;display:flex;gap:6px}
+.lb button{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;border-radius:6px;padding:4px 10px;font-size:13px}
+.lb button:disabled{opacity:.35;cursor:default}
+.lb .stage{min-height:0;overflow:auto;display:grid;place-items:center;padding:0 16px}
+.lb .stage img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;background:#fff}
+.lb .stage.zoom{place-items:start center}
+.lb .stage.zoom img{max-width:none;max-height:none;cursor:zoom-out}
+.lb .lbcap{padding:10px 16px 14px;font-size:13px;display:grid;gap:8px;max-height:32vh;overflow:auto}
+.lb .lbcap .pr{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;max-width:120ch}
+.lb .lbcap .k{color:#97a2b5}
+.lb .lbcap .evpt{background:#16331f;color:#6fd394;justify-self:start}
+.lb .lbcap .evpt.bad{background:#3b1b18;color:#ff8b7e}
+
+/* result dock, pinned to the bottom of the detail pane */
+.dock{border-top:1px solid var(--line);background:var(--raise);padding:10px 16px 12px;display:grid;gap:8px}
+.dock .now{font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rbtns{display:flex;flex-wrap:wrap;gap:5px}
+.rbtn{border:1px solid var(--line2);border-radius:6px;padding:4px 9px;font-size:12.5px;font-weight:700}
+.rbtn:hover{filter:brightness(.97)}
+.rbtn[aria-pressed="true"]{outline:2px solid currentColor;outline-offset:-1px}
+.rbtn.r-PASS,.rbtn.r-FAIL,.rbtn.r-RE-RUN,.rbtn.r-KIV,.rbtn.r-BLOCKED,.rbtn.r-EVIDENCE-MISSING,.rbtn.r-N-A,.rbtn.r-DEPRIORITIZED{border-color:transparent}
+.dock .row2{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px}
+.dock .row2 label{display:inline-flex;align-items:center;gap:5px;color:var(--muted)}
+.dock .row2 input,.dock .row2 select{padding:3px 7px;font-size:12.5px}
+.dock .row2 input.bld{width:170px}
+.dock .extra{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.dock .extra input{width:100%;font-size:12.5px;padding:4px 7px}
+
+/* popover, toast */
+.pop{position:absolute;z-index:40;background:var(--panel);border:1px solid var(--line2);border-radius:10px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px;min-width:200px;max-width:min(92vw,420px);max-height:70vh;overflow:auto}
+.pop .hd{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:4px 8px 2px}
+.pop .opt{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;border-radius:6px;padding:6px 8px;text-align:left;font-size:13px}
+.pop .opt:hover,.pop .opt:focus-visible{background:var(--raise)}
+.pop label.opt{cursor:pointer}
+.pop .sw{display:inline-block;width:11px;height:11px;border-radius:3px;flex:none}
+.pop .frm{display:grid;gap:6px;padding:6px 8px;border-top:1px solid var(--line);margin-top:4px}
+.pop .frm .r{display:flex;gap:6px;align-items:center}
+.pop .frm input,.pop .frm textarea{width:100%;font-size:13px;padding:4px 7px;min-height:0}
+.colrow{display:grid;grid-template-columns:auto 1fr auto auto auto;gap:6px;align-items:center;padding:3px 8px}
+.colrow input[type=text]{font-size:12.5px;padding:3px 6px;min-width:0}
+.colrow .g{font-size:11px;color:var(--faint);grid-column:2/-1;margin-top:-4px}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:var(--ink);color:var(--bg);border-radius:999px;padding:7px 14px;font-size:13px;box-shadow:var(--shadow);opacity:0;transition:opacity .2s;pointer-events:none;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1}
+.toast.err{background:var(--fail);color:#fff}
+.banner{padding:7px 12px;border-radius:8px;background:var(--warn-bg);color:var(--warn);font-size:13px;margin-bottom:8px}
+
+/* questions + defects views */
+.tview{padding:14px 16px;display:grid;gap:12px;align-content:start}
+.tview h2{font-size:16px}
+.tview p{margin:0;color:var(--muted);font-size:13px;max-width:80ch}
+.tview .tbox{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.tview table{min-width:720px}
+.queue{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.queue li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;padding:6px 10px;border:1px solid var(--line);border-radius:8px}
+.link{border:0;background:none;padding:0;color:var(--accent);font-family:var(--mono);font-size:12.5px;text-decoration:underline;text-underline-offset:2px}
+
+@media (max-width:920px){
+  body{overflow:auto;height:auto;display:block}
+  html{height:auto}
+  .split{display:block}
+  .gutter{display:none}
+  .listpane{overflow:visible}
+  .detail{position:fixed;inset:0;z-index:30;border-radius:0;border:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .back{display:inline-flex}
+  /* on a phone the open TS covers the list only after a tap; ‹ List closes it again */
+  .detail:not(.mopen){display:none}
+  .summary{flex-basis:100%}
+  .meta{margin-left:0}
+  .dock .extra{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---- compact header (27.10, Azfar: the video and the steps need the room) ---- */
+.top{padding-block:8px 4px;gap:4px 14px}
+.brand{flex:1 1 300px}.brand h1{font-size:16px}.brand .tk{white-space:nowrap}.brand .sub{max-width:56ch}
+.summary{flex:1 1 auto;gap:4px 12px}.summary .big{font-size:20px}.summary .big small{font-size:12.5px}.summary .sbar{width:120px;height:8px}.summary .txt{font-size:12.5px}
+.rail{padding-bottom:4px;gap:5px}.chip{padding:3px 9px 4px;min-width:84px;gap:2px}.chip .nm{font-size:12px}.chip .mini{height:3px}
+.fbar{padding-block:4px 6px;margin-bottom:6px}.fbar input[type=search]{padding:4px 9px}.fbtn{padding:3px 9px;font-size:12.5px}
+.dhead{padding:8px 14px 6px;gap:2px}.dhead .r1 .id{font-size:13px}.dhead .crumb{font-size:12px}
+.dhead .ttl{font-size:13.5px;line-height:1.35;font-weight:600}
+.strip{font-size:12px;gap:4px 6px}.res.big{font-size:12px;padding:1px 9px}.schip{font-size:11.5px;padding:0 8px}
+.tabs{margin:2px -14px -6px;padding:0 10px}.tab{padding:6px 9px 5px;font-size:12.5px}
+.dock{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;padding:6px 14px 7px}
+.dock .now span{display:none}.dock .now b{font-size:12.5px}.dock .extra{flex:1 1 100%}.dock .row2 input.bld{width:140px}.rbtn{padding:3px 8px;font-size:12px}
+</style>
+
+<header class="top">
+  <div class="brand"><h1>Test Scenarios</h1><span class="tk" id="tkId"></span><span class="stg" id="tkStg" hidden></span><span class="muted sub" id="tkSub"></span></div>
+  <div class="meta">
+    <button class="build" id="buildBtn" type="button" title="The build being tested. Every result you record is stamped with it.">Build <b id="buildVal">not set</b></button>
+    <button class="btn ghost" id="helpBtn" type="button">How this page works</button>
+    <span class="live"><span class="dot" id="dot"></span><span id="liveText">Connecting</span></span>
+  </div>
+  <div class="summary" id="summary" aria-live="polite"></div>
+</header>
+<nav class="rail" id="rail" role="tablist" aria-label="Sheets"></nav>
+<div class="banner" id="banner" hidden></div>
+<div class="fbar" id="fbar">
+  <input type="search" id="q" placeholder="Search TS No, scenario, test data, steps, expected, remarks, ticket" aria-label="Search">
+  <span id="fbtns" style="display:contents"></span>
+  <button class="btn ghost" id="clearAll" type="button" hidden>Clear filters</button>
+  <button class="btn" id="colsBtn" type="button" hidden>Columns</button>
+  <button class="btn primary" id="addRow" type="button" hidden>Add test scenario</button>
+  <span class="shown" id="shown"></span>
+</div>
+<div class="fbar" id="bulkbar" hidden><div class="bulk"><b id="bulkN"></b>
+  <button class="fbtn" type="button" data-bulk="result">Set result</button>
+  <button class="fbtn" type="button" data-bulk="qa">Set QA</button>
+  <button class="fbtn" type="button" data-bulk="prio">Set priority</button>
+  <button class="fbtn" type="button" data-bulk="labels">Label (e.g. SIT)</button>
+  <button class="btn ghost" type="button" id="bulkClear">Clear selection</button>
+  <span class="shown">Each result set here is added to that test scenario's history</span></div></div>
+<main class="split" id="split">
+  <section class="pane listpane" id="list" aria-label="Test scenarios"><div class="emptybox">Loading the test scenarios…</div></section>
+  <div class="gutter" id="gutter" role="separator" aria-orientation="vertical" aria-valuemin="25" aria-valuemax="75" aria-label="Drag to make the list or the open test scenario wider. Double-click to reset." title="Drag to resize · double-click to reset" tabindex="0"></div>
+  <section class="pane detail" id="detail" aria-label="Open test scenario">
+    <div class="emptybox" id="dEmpty">Pick a test scenario on the left. Its steps, expected result and history open here, with the result buttons at the bottom.<br><br><span class="muted">Keys: J / K or ↓ / ↑ move through the list.</span></div>
+    <div class="dhead" id="dhead" hidden></div>
+    <div class="dbody" id="dbody" hidden></div>
+    <div class="dock" id="dock" hidden></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------------- constants ---------------- */
+const RESULTS=["PASS","FAIL","RE-RUN","KIV","BLOCKED","EVIDENCE MISSING","N/A","DEPRIORITIZED",""];
+const BAR=["PASS","FAIL","RE-RUN","KIV","BLOCKED","EVIDENCE MISSING","N/A"];
+const CORE=new Set(["situation","setup","steps","expected"]);
+/* ticket, title, instance, QA names, labels: settings/board (written by Claude when the board is created) */
+let QA_LIST=[];
+const JIRA="https://mfservices.atlassian.net/browse/";
+const FAILISH=new Set(["FAIL","EVIDENCE MISSING"]);
+const SETTLED=new Set(["fixed, retest","question","not a defect"]);
+const DSTATES=[["raised","Ticket raised"],["not raised","Not yet raised"],["fixed, retest","Fixed, retest"],["question","Question to SA/BA"],["not a defect","Not a defect"]];
+
+/* ---------------- state ---------------- */
+const st={cases:new Map(),sheets:new Map(),oqs:new Map(),tickets:new Map(),settings:{},td:new Map(),
+  view:"ALL",sel:null,checked:new Set(),f:{result:[],qa:"",prio:"",defect:"",reviewed:""},
+  runs:[],runsFor:null,runsUnsub:null,db:null,user:null,uid:null,canWrite:true,live:false,names:{},
+  editText:new Set(),dockExtra:false,dockQa:"",mobileOpen:false,evOpen:new Set(),lb:null,tab:"test",ttlOpen:false,bodyKey:""};
+const store={get(k,d){try{const v=localStorage.getItem("tc."+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem("tc."+k,JSON.stringify(v))}catch(e){}}};
+st.view=store.get("view","ALL");st.tab=store.get("tab","test");st.f=Object.assign(st.f,store.get("f",{}));st.sel=store.get("sel",null);
+try{const h=decodeURIComponent((location.hash||"").slice(1));if(/^[A-Za-z0-9._~-]+$/.test(h))st.sel=h}catch(e){}
+
+/* ---------------- helpers ---------------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rk=r=>r?r.replace(/[^A-Z]+/gi,"-").replace(/-$/,""):"none";
+const rl=r=>r||"Not run";
+const num=id=>{const m=/(\d+)$/.exec(id||"");return m?+m[1]:0};
+const fmt=t=>{if(!t)return"";const d=new Date(t);return isNaN(d)?"":d.toLocaleString([],{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})};
+const sheetList=()=>[...st.sheets.values()].sort((a,b)=>(a.order??99)-(b.order??99));
+const sheetOf=k=>st.sheets.get(k);
+const defOf=c=>(c.defect&&typeof c.defect==="object")?c.defect:null;
+const tix=c=>{const d=defOf(c);return Array.isArray(d&&d.tickets)?d.tickets.filter(t=>t&&t.key):[]};
+const needsTicket=c=>FAILISH.has(c.result)&&!tix(c).length&&!(defOf(c)&&SETTLED.has(defOf(c).state));
+const labels=c=>Array.isArray(c.labels)?c.labels.filter(Boolean).map(String):[];
+const lblHtml=c=>labels(c).map(l=>`<span class="lbl ${esc(l.replace(/[^A-Za-z0-9]/g,""))}" title="${l==="SIT"?esc(((st.settings.labelHints||{})[l])||l):esc(((st.settings.labelHints||{})[l])||l)}">${esc(l)}</span>`).join("");
+const who=id=>id?(st.names[id]||"Someone"):"";
+const stCls=s=>{s=String(s||"").toLowerCase();if(/done|closed|resolved|complete/.test(s))return"d-done";if(/reopen/.test(s))return"d-reopen";if(/progress|review|testing|dev|ready/.test(s))return"d-prog";if(/to do|open|backlog|new/.test(s))return"d-todo";return"d-neutral"};
+const qaNames=()=>[...new Set([...QA_LIST,...[...st.cases.values()].map(c=>c.qa).filter(Boolean)])];
+
+function tally(list){const n={};list.forEach(c=>{const k=c.result||"none";n[k]=(n[k]||0)+1});
+  const dep=n.DEPRIORITIZED||0,total=list.length-dep,passed=n.PASS||0;
+  return{n,dep,total,passed,pct:total?Math.round(passed/total*100):0,noTicket:list.filter(needsTicket).length}}
+const barHtml=t=>BAR.filter(k=>t.n[k]).map(k=>`<i class="c-${rk(k)}" style="width:${t.n[k]/Math.max(1,t.total)*100}%" title="${esc(k)}: ${t.n[k]}"></i>`).join("");
+
+/* ---------------- filtering (one place) ---------------- */
+function visible(){
+  const q=$("#q").value.trim().toLowerCase(),f=st.f;
+  const inSheet=st.view==="ALL"||st.view==="OQ"||st.view==="DEF"?null:st.view;
+  return [...st.cases.values()].filter(c=>
+    (!inSheet||c.sheet===inSheet)&&
+    (!f.result.length||f.result.includes(c.result||""))&&
+    (!f.qa||(f.qa==="-"?!c.qa:c.qa===f.qa))&&(!f.prio||c.priority===f.prio)&&
+    (!f.reviewed||(f.reviewed==="1")===!!c.reviewed)&&
+    (!f.defect||(f.defect==="needs"?needsTicket(c):f.defect==="raised"?tix(c).length>0:(defOf(c)||{}).state===f.defect))&&
+    (!q||searchText(c).includes(q))
+  ).sort((a,b)=>((sheetOf(a.sheet)||{}).order??99)-((sheetOf(b.sheet)||{}).order??99)||(a.order??1e9)-(b.order??1e9)||num(a.id)-num(b.id));
+}
+function searchText(c){
+  const sh=sheetOf(c.sheet),extra=sh?(sh.columns||[]).map(col=>fv(c,col.field)).join(" "):"";
+  return [c.id,labels(c).join(" "),c.situation,c.setup,c.steps,c.expected,c.remarks,c.deprio,c.section,extra,tix(c).map(t=>t.key).join(" "),(defOf(c)||{}).why].join(" ").toLowerCase();
+}
+
+/* ---------------- top ---------------- */
+function renderTop(){
+  const S=st.settings;QA_LIST=Array.isArray(S.qa)?S.qa:[];
+  $("#tkId").textContent=S.ticket||"";$("#tkSub").textContent=S.title||"";$("#tkSub").title=S.title||"";
+  $("#tkStg").textContent=S.instance?`staging /${S.instance}/`:"";$("#tkStg").hidden=!S.instance;
+  document.title=S.ticket?`${S.ticket} Test Scenarios`:"Test Scenarios";
+  const scope=st.view==="ALL"||st.view==="OQ"||st.view==="DEF"?[...st.cases.values()]:[...st.cases.values()].filter(c=>c.sheet===st.view);
+  const t=tally(scope),sh=sheetOf(st.view);
+  const parts=[];
+  const rvAll=scope.filter(reviewable),rvDone=rvAll.filter(c=>c.reviewed).length;
+  if(rvAll.length)parts.push(`<b>${rvDone}</b> of ${rvAll.length} reviewed`);
+  if(t.n.FAIL)parts.push(`<b>${t.n.FAIL}</b> failed`);
+  ["RE-RUN","KIV","BLOCKED","EVIDENCE MISSING"].forEach(k=>{if(t.n[k])parts.push(`<b>${t.n[k]}</b> ${k==="EVIDENCE MISSING"?"evidence missing":k}`)});
+  if(t.n.none)parts.push(`<b>${t.n.none}</b> not run`);
+  if(t.noTicket)parts.push(`<span class="w">${t.noTicket} failed with no ticket</span>`);
+  if(t.dep)parts.push(`${t.dep} deprioritised (left out)`);
+  $("#summary").innerHTML=st.cases.size?`<span class="big">${t.pct}%<small>${t.passed} / ${t.total} passed</small></span><span class="sbar" aria-hidden="true">${barHtml(t)}</span><span class="txt">${sh?esc(sh.name)+": ":""}${parts.join(" · ")||"nothing failed or open"}</span>`:"";
+  const b=st.settings.build||"";$("#buildVal").textContent=b||"not set";$("#buildBtn").classList.toggle("unset",!b);
+  const all=[...st.cases.values()],chips=[{key:"ALL",name:"All",n:all.length,t:tally(all)}];
+  sheetList().forEach(s=>{const l=all.filter(c=>c.sheet===s.key);chips.push({key:s.key,name:s.name,n:l.length,t:tally(l),title:s.title})});
+  const oqOpen=[...st.oqs.values()].filter(o=>!String(o.decision||"").trim()).length;
+  chips.push({key:"OQ",name:"Open questions",n:`${oqOpen} open`},{key:"DEF",name:"Defects",n:`${st.tickets.size} tickets`});
+  $("#rail").innerHTML=chips.map(c=>`<button class="chip" role="tab" type="button" data-view="${esc(c.key)}" aria-selected="${st.view===c.key}" ${c.title?`title="${esc(c.title)}"`:""}><span class="nm">${esc(c.name)}<span>${esc(c.n)}</span></span><span class="mini" aria-hidden="true">${c.t?barHtml(c.t):""}</span></button>`).join("");
+}
+
+function renderFilters(){
+  const f=st.f;
+  const btn=(k,label,val)=>`<button class="fbtn${val?" on":""}" type="button" data-filter="${k}">${esc(val?label+": "+val:label)}${val?`<span class="x" data-clear="${k}" role="button" aria-label="Clear ${esc(label)}">×</span>`:""}</button>`;
+  const dlabel={needs:"Needs ticket",raised:"Ticket raised","fixed, retest":"Fixed, retest",question:"Question to SA/BA","not a defect":"Not a defect"};
+  $("#fbtns").innerHTML=btn("result","Result",f.result.map(rl).join(", "))+btn("qa","QA",f.qa==="-"?"No QA":f.qa)+btn("prio","Priority",f.prio)+btn("defect","Defect",dlabel[f.defect]||"")+btn("reviewed","Reviewed",f.reviewed==="1"?"Yes":f.reviewed==="0"?"No":"");
+  const any=f.result.length||f.qa||f.prio||f.defect||f.reviewed||$("#q").value;
+  $("#clearAll").hidden=!any;
+  const sh=sheetOf(st.view);$("#colsBtn").hidden=!sh||!st.canWrite;$("#addRow").hidden=!sh||!st.canWrite;
+  const listView=st.view!=="OQ"&&st.view!=="DEF";
+  $("#bulkbar").hidden=!(listView&&st.checked.size&&st.canWrite);$("#fbar").hidden=listView&&st.checked.size>0&&st.canWrite;
+  $("#bulkN").textContent=`${st.checked.size} selected`;
+}
+
+/* ---------------- list ---------------- */
+function listColumns(){
+  const sh=sheetOf(st.view);
+  if(!sh)return[{field:"situation",label:"Test scenario",width:60}];
+  return (sh.columns||[]).filter(c=>c.list);
+}
+/* each sheet's own fields (seller, vehicle, insurer, signature boxes…) live in "testdata/<TS No>",
+   apart from the test scenario document, so the results and remarks there are never rewritten by them */
+const CASE_F=new Set(["situation","setup","steps","expected","remarks","deprio"]);
+const fv=(c,f)=>{const t=st.td.get(c.id);return t&&Object.prototype.hasOwnProperty.call(t,f)?t[f]:c[f]};
+function cell(c,col){
+  const v=fv(c,col.field);
+  if(v==null||String(v).trim()===""||v==="-")return`<td class="empty-cell">–</td>`;
+  if(col.kind==="short")return`<td class="short" title="${esc(v)}">${esc(v)}</td>`;
+  return`<td><div class="clip">${esc(v)}</div></td>`;
+}
+function renderList(){
+  const box=$("#list");
+  if(st.view==="OQ")return renderOq();
+  if(st.view==="DEF")return renderDef();
+  $("#split").classList.remove("full");$("#detail").hidden=false;
+  if(!st.cases.size){box.innerHTML=`<div class="emptybox">${st.live?"No test scenarios in this copy yet. Ask Claude to load them.":"Loading the test scenarios…"}</div>`;$("#shown").textContent="";return}
+  const list=visible(),cols=listColumns(),sh=sheetOf(st.view);
+  $("#shown").textContent=`Showing ${list.length} of ${sh?[...st.cases.values()].filter(c=>c.sheet===sh.key).length:st.cases.size}`;
+  if(!list.length){box.innerHTML=`<div class="emptybox">No test scenario matches these filters.</div>`;return}
+  const groups=cols.some(c=>c.group);
+  const allChecked=list.every(c=>st.checked.has(c.id));
+  let head="";
+  if(groups){const spans=[];cols.forEach(c=>{const g=c.group||"";if(spans.length&&spans[spans.length-1].g===g)spans[spans.length-1].n++;else spans.push({g,n:1})});
+    head+=`<tr class="grp">${st.canWrite?"<th class=ck></th>":""}<th></th>${spans.map(s=>`<th colspan="${s.n}">${esc(s.g)}</th>`).join("")}<th></th><th></th></tr>`}
+  head+=`<tr>${st.canWrite?`<th class="ck"><input type="checkbox" id="chkAll" ${allChecked?"checked":""} aria-label="Select every row shown"></th>`:""}<th>TS No</th>${cols.map(c=>`<th style="min-width:${Math.max(56,Math.min(360,(c.width||12)*7))}px">${esc(c.label)}</th>`).join("")}<th>Result</th><th>QA</th></tr>`;
+  let body="",last=null;const ncol=cols.length+4-(st.canWrite?0:1);
+  for(const c of list){
+    if(!sh&&c.sheet!==last){const s=sheetOf(c.sheet),g=list.filter(x=>x.sheet===c.sheet),t=tally(g);body+=`<tr class="gh"><td colspan="${ncol}">${esc(s?s.name:c.sheet)}<span>${t.passed}/${t.total} passed · ${g.length} shown</span></td></tr>`;last=c.sheet}
+    const d=defOf(c);
+    body+=`<tr class="row${st.sel===c.id?" sel":""}" data-id="${esc(c.id)}">${st.canWrite?`<td class="ck"><input type="checkbox" data-chk="${esc(c.id)}" ${st.checked.has(c.id)?"checked":""} aria-label="Select ${esc(c.id)}"></td>`:""}<td class="id">${esc(c.id)}${lblHtml(c)}</td>${cols.map(col=>cell(c,col)).join("")}<td style="white-space:nowrap"><span class="res r-${rk(c.result)}"${c.result==="DEPRIORITIZED"&&c.deprio?` title="Why: ${esc(c.deprio)}"`:""}>${esc(rl(c.result))}</span>${c.result==="DEPRIORITIZED"&&!String(c.deprio||"").trim()?`<span class="flag" title="Deprioritised with no reason written">▲ no reason</span>`:""}${needsTicket(c)?`<span class="flag" title="Failed, no Jira ticket yet">▲ no ticket</span>`:tix(c).length?`<span class="flag" style="color:var(--info)" title="${esc(tix(c).map(t=>t.key).join(", "))}">${tix(c).length===1?esc(tix(c)[0].key.replace("EAINT-","")):tix(c).length+" tickets"}</span>`:""}${!gateOk(c)?`<span class="flag" title="Automatic run check: ${esc((GATE[c.gate.verdict]||[0,c.gate.verdict])[1])}">⚑ run check</span>`:""}${c.reviewed?`<span class="tick" title="Reviewed">✓</span>`:""}${c.uploaded?`<span class="tick" style="color:var(--info)" title="On SharePoint">⇪</span>`:""}</td><td>${esc(c.qa||"")}</td></tr>`;
+  }
+  const scroll=box.scrollTop;
+  box.innerHTML=`<table><thead>${head}</thead><tbody>${body}</tbody></table>`;
+  box.scrollTop=scroll;
+}
+
+/* ---------------- detail ---------------- */
+const stepNorm=l=>String(l).replace(/^\s*(\d+\s*[.)]|[•\-*])\s*/,"").replace(/\s+/g," ").trim().toLowerCase();
+const freq={};
+const rowsFor=(v,w)=>Math.min(18,Math.max(1,String(v||"").split("\n").reduce((a,l)=>a+Math.max(1,Math.ceil(l.length/w)),0)));
+function lineCounts(f){
+  const k=st.cases.size+"|"+[...st.cases.values()].reduce((a,c)=>a+String(c[f]||"").length,0);
+  if(freq[f]&&freq[f].k===k)return freq[f].m;
+  const m=new Map();for(const c of st.cases.values())new Set(String(c[f]||"").split("\n").map(stepNorm).filter(Boolean)).forEach(l=>m.set(l,(m.get(l)||0)+1));
+  freq[f]={k,m};return m;
+}
+function stepView(c,f){
+  const exp=f==="expected",lines=String(c[f]||"").split("\n").filter(l=>l.trim()),m=lineCounts(f);
+  if(!lines.length)return`<div class="stepview${exp?" exp":""}"><span class="sl common">(none yet)</span></div>`;
+  const common=lines.map(l=>(m.get(stepNorm(l))||0)>=3),mixed=common.some(Boolean)&&!common.every(Boolean);
+  return`<div class="stepview${exp?" exp":""}">${lines.map((l,i)=>`<span class="sl${mixed?(common[i]?" common":" trig"):""}">${esc(l)}</span>`).join("")}</div>`;
+}
+function textSec(c,f,title,key){
+  const editing=st.editText.has(c.id+"|"+f),ro=!st.canWrite;
+  const keyHtml=key==="steps"?`<span class="key"><span><i style="background:var(--mark-bg);box-shadow:inset 2px 0 0 var(--mark)"></i>what this one does</span><span><i style="background:var(--track)"></i>shared set-up</span></span>`:key==="expected"?`<span class="key"><span><i style="background:var(--pass-bg);box-shadow:inset 2px 0 0 var(--pass)"></i>what this one checks</span><span><i style="background:var(--track)"></i>shared check</span></span>`:"";
+  /* read as text; a text box only while editing */
+  const body=editing?`<textarea class="fld" id="t-${f}" data-f="${f}" rows="${Math.max(2,rowsFor(c[f],76))}" ${ro?"readonly":""} placeholder="(empty)">${esc(c[f])}</textarea>`:key?stepView(c,f):`<div class="txtview">${String(c[f]||"").trim()?esc(c[f]):'<span class="muted">(empty)</span>'}</div>`;
+  return`<div class="sec"><h3>${esc(title)}${keyHtml}${st.canWrite?`<button class="btn ghost act" type="button" data-edittext="${f}">${editing?"Done":"Edit"}</button>`:""}</h3>${body}</div>`;
+}
+function dataSec(c,sh){
+  const cols=(sh&&sh.columns||[]).filter(col=>!CORE.has(col.field));
+  if(!cols.length)return"";
+  /* empty fields stay one click away instead of filling the tab with dashes */
+  const filled=col=>{const v=fv(c,col.field);return v!=null&&String(v).trim()!==""&&v!=="-"};
+  const ed=st.editText.has(c.id+"|data");
+  const shown=st.showEmpty||ed?cols:cols.filter(filled),nEmpty=cols.length-cols.filter(filled).length;
+  const groups=new Set(shown.map(col=>col.group||"")).size>1;
+  let html="",lastG=null;
+  for(const col of shown){
+    if(groups&&(col.group||"")!==lastG){lastG=col.group||"";if(lastG)html+=`<div class="g">${esc(lastG)}</div>`}
+    const v=fv(c,col.field)??"",long=col.kind!=="short"||String(v).includes("\n");
+    if(!ed){html+=`<div class="k">${esc(col.label)}</div><div class="v txt">${filled(col)?esc(v):'<span class="muted">–</span>'}</div>`;continue}
+    html+=`<div class="k">${esc(col.label)}</div><div class="v">${long?`<textarea class="fld" id="x-${esc(col.field)}" data-f="${esc(col.field)}" rows="${rowsFor(v,56)}" ${st.canWrite?"":"readonly"} placeholder="–">${esc(v)}</textarea>`:`<input class="fld" id="x-${esc(col.field)}" data-f="${esc(col.field)}" value="${esc(v)}" ${st.canWrite?"":"readonly"} placeholder="–">`}</div>`;
+  }
+  const tog=(nEmpty&&!ed?`<button class="btn ghost act" type="button" data-act="empties">${st.showEmpty?"Hide empty fields":`Show ${nEmpty} empty field${nEmpty===1?"":"s"}`}</button>`:"")+(st.canWrite?`<button class="btn ghost act" type="button" data-edittext="data">${ed?"Done":"Edit"}</button>`:"");
+  return`<div class="sec"><h3>Test data${tog}</h3>${html?`<div class="kv">${html}</div>`:`<span class="muted">Nothing filled in for this test scenario.</span>`}</div>`;
+}
+/* expected points E1, E2 … : the runner proves each one with its own screenshot (automation/src/fixtures/ts-run.ts) */
+function pointsSec(c){
+  const pts=Array.isArray(c.points)?c.points:[],g=c.gate||null;
+  if(!pts.length&&!g)return"";
+  const proved=new Set((g&&g.proved)||[]),bad=new Set(((g&&g.mismatch)||[]).map(String)),shots=evShots(c);
+  const shotFor=id=>shots.findIndex(s=>(s.proofs||[]).some(p=>p.point===id));
+  return`<div class="sec"><h3>Expected points<span class="key">each point is proved by its own screenshot</span></h3>${pts.length?`<ol class="pts">${pts.map(p=>{const k=shotFor(p.id);return`<li><span class="mono pid">${esc(p.id)}</span><span>${esc(p.text)}</span>${bad.has(p.id)&&!gateOk(c)?`<span class="res r-FAIL">does not match</span>`:proved.has(p.id)?`<span class="res r-PASS">proved</span>`:""}${k>=0?`<button class="ptshot" type="button" data-shot="${k}">screenshot</button>`:""}</li>`}).join("")}</ol>`:`<span class="muted">Not split yet: the runner splits the expected result into points before it runs.</span>`}</div>`;
+}
+/* the evidence that verifies the row, shown on the page: cases/<TS>.evidenceSet {folder, shots[{src,name,proofs[]}], videos[{src,name,label}]} */
+const evSet=c=>(c&&c.evidenceSet&&typeof c.evidenceSet==="object")?c.evidenceSet:null;
+const evShots=c=>{const e=evSet(c);return e&&Array.isArray(e.shots)?e.shots:[]};
+/* the automatic run check needs a look only while it still stands: not when it passed, was replaced by a
+   re-judged result (gate.superseded), or the row is deprioritised / not applicable */
+const gateOk=c=>!c.gate||["VALID","PASS"].includes(c.gate.verdict)||!!c.gate.superseded||["DEPRIORITIZED","N/A"].includes(c.result);
+const isUrl=s=>/^https?:\/\//i.test(String(s||""));
+const shotName=n=>String(n||"").replace(/\.(png|jpe?g)$/i,"").replace(/^\d+_[A-Za-z]+_TS\d+[-_]/,"").replace(/[-_]+/g," ");
+const ptChips=(s,c)=>(s.proofs||[]).filter(p=>p.point).map(p=>`<span class="evpt${p.match===false&&!gateOk(c)?" bad":""}">${esc(p.point)}</span>`).join("");
+const pathHtml=(p,label)=>`<div class="evpath"><span>${esc(label)}:</span><span class="mono">${esc(p)}</span><button class="ptshot" type="button" data-copy="${esc(p)}">Copy</button></div>`;
+function evidenceSec(c){
+  const e=evSet(c);if(!e)return"";
+  const shots=evShots(c),vids=Array.isArray(e.videos)?e.videos:[];
+  if(!shots.length&&!vids.length)return"";
+  const pts=Array.isArray(c.points)?c.points:[],trust=!gateOk(c);
+  const thumb=(s,i)=>`<button class="evth" type="button" data-shot="${i}" title="${esc(s.name)}"><img src="${esc(s.src)}" alt="${esc(shotName(s.name))}" loading="lazy"><span class="cap">${ptChips(s,c)}<span>${esc(shotName(s.name))}</span></span></button>`;
+  const all=shots.map((s,i)=>[s,i]);
+  let body="";
+  /* each expected point with the screenshot that proves it, so a reviewer reads the claim and sees the proof together */
+  if(pts.length&&shots.some(s=>(s.proofs||[]).some(q=>q.point))){
+    const used=new Set();
+    body=pts.map(p=>{
+      const mine=all.filter(([s])=>(s.proofs||[]).some(q=>q.point===p.id));mine.forEach(([,i])=>used.add(i));
+      const bad=trust&&mine.some(([s])=>(s.proofs||[]).some(q=>q.point===p.id&&q.match===false));
+      return`<div class="ptblock"><div class="pthead"><span class="mono pid">${esc(p.id)}</span><span>${esc(p.text)}</span>${bad?`<span class="res r-FAIL">does not match</span>`:""}</div>${mine.length?`<div class="evgrid">${mine.map(([s,i])=>thumb(s,i)).join("")}</div>`:`<span class="muted noshot">No screenshot is tied to this point. Check the other screenshots or the video.</span>`}</div>`}).join("");
+    const rest=all.filter(([,i])=>!used.has(i));
+    if(rest.length)body+=`<div class="ptblock"><div class="pthead other"><b>Other screenshots</b><span class="muted">log-in, set-up and the steps in between</span></div><div class="evgrid">${rest.map(([s,i])=>thumb(s,i)).join("")}</div></div>`;
+  }else if(shots.length)body=`<div class="evgrid">${all.map(([s,i])=>thumb(s,i)).join("")}</div>`;
+  return`<div class="sec" id="evSec"><h3>Evidence<span class="key">${shots.length} screenshot${shots.length===1?"":"s"}${vids.length?` · ${vids.length} video${vids.length===1?"":"s"}`:""}${shots.length?" · click one to open it":""}</span></h3>`+body+
+    (vids.length?`<div class="evvids">${vids.map(v=>`<details data-vid="${esc(v.src)}" ${st.evOpen.has(v.src)?"open":""}><summary>▶ ${esc(v.label||"Video")}<span>${esc(v.name||"")}</span></summary><video controls preload="none" src="${esc(v.src)}"></video></details>`).join("")}</div>`:"")+
+    (e.folder?pathHtml(e.folder,"Full folder in the repo"):"")+`</div>`;
+}
+/* review: a row counts once it has a result that is not deprioritised or N/A */
+const reviewable=c=>!!c.result&&!["DEPRIORITIZED","N/A"].includes(c.result);
+function setReviewed(c,on){
+  const now=new Date().toISOString(),data=on?{reviewed:true,reviewedBy:st.uid||null,reviewedAt:now}:{reviewed:false,reviewedBy:null,reviewedAt:null};
+  write("cases/"+c.id,stampCase(c,data),`${c.id}: ${on?"reviewed":"not reviewed"}`);
+}
+function goNextToReview(){
+  const list=visible(),i=list.findIndex(x=>x.id===st.sel),n=[...list.slice(i+1),...list.slice(0,Math.max(0,i))].find(x=>reviewable(x)&&!x.reviewed);
+  if(!n){toast("Every test scenario shown here is reviewed");renderAll();return}
+  st.tab="ev";store.set("tab","ev");renderAll();select(n.id,{scroll:true});
+}
+/* screenshot viewer: ← / → move, Esc closes, click the picture to see it at full size */
+function openLb(i,from){st.lb={i,from:from||document.activeElement};drawLb()}
+function closeLb(){const el=$("#lb");el&&el.remove();const f=st.lb&&st.lb.from;st.lb=null;if(f&&document.contains(f))f.focus()}
+function drawLb(){
+  const c=st.sel&&st.cases.get(st.sel),shots=evShots(c);if(!st.lb||!shots.length){closeLb();return}
+  const i=Math.max(0,Math.min(shots.length-1,st.lb.i)),s=shots[i];st.lb.i=i;
+  let el=$("#lb");if(!el){el=document.createElement("div");el.id="lb";el.className="lb";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el)}
+  el.setAttribute("aria-label",`${c.id} screenshot ${i+1} of ${shots.length}`);
+  const pr=(s.proofs||[]).map(p=>`<div class="pr">${p.point?`<span class="evpt${p.match===false?" bad":""}">${esc(p.point)}</span><span>${p.match===false?(gateOk(c)?"the automatic check said it does not match; the result above replaces that check":"does not match"):p.match===true?"matches the expected result":""}</span>`:""}${p.expected?`<span class="k">Expected</span><span>${esc(p.expected)}</span>`:""}${p.shows?`<span class="k">Page shows</span><span>${esc(p.shows)}</span>`:""}</div>`).join("");
+  el.innerHTML=`<div class="lbtop"><span>${esc(c.id)} · ${i+1} / ${shots.length}</span><b>${esc(s.name)}</b><span class="sp"><button type="button" data-lb="-1" ${i?"":"disabled"} aria-label="Previous screenshot">← Prev</button><button type="button" data-lb="1" ${i<shots.length-1?"":"disabled"} aria-label="Next screenshot">Next →</button><button type="button" data-lb="x" aria-label="Close">✕ Close</button></span></div>
+    <div class="stage"><img src="${esc(s.src)}" alt="${esc(shotName(s.name))}" title="Click to zoom"></div>${pr?`<div class="lbcap">${pr}</div>`:""}`;
+  el.querySelector('[data-lb="x"]').focus();
+}
+/* the per-TS check made the moment the TS ended: valid evidence, or which FAILED folder it went to and why */
+const GATE={VALID:["PASS","Valid evidence"],PASS:["PASS","Passed"],DEFECT:["FAIL","Does not match the expected result"],EVIDENCE:["EVIDENCE-MISSING","Evidence not complete"],SCRIPT:["RE-RUN","Script stopped before the end"],ENV:["BLOCKED","Environment (VPN, network)"],CHANGED:["RE-RUN","TS changed during the run"],NO_TS:["N-A","No expected points"]};
+function gateSec(c){
+  const g=c.gate;if(!g&&!c.uploaded)return"";
+  const note=g&&g.superseded?`<div class="dfct"><span class="fixchip">Replaced by the result</span><span style="font-size:12.5px">${esc(g.superseded)}</span></div>`:!gateOk(c)&&c.result?`<span class="muted" style="font-size:12px">Made by the script when the run ended. The result <b>${esc(rl(c.result))}</b> above is the one that counts.</span>`:"";
+  const [k,l]=g?(GATE[g.verdict]||["none",g.verdict]):["none",""];
+  return`<div class="sec"><h3>Automatic run check</h3>${note}${g?`<div class="dfct"><span class="res r-${k}">${esc(l)}</span><span class="muted" style="font-size:12.5px">${esc(g.run||"")}${g.at?" · "+esc(g.at):""}</span></div>${(g.reasons||[]).length?`<div class="why">${(g.reasons||[]).map(esc).join("\n")}</div>`:""}${g.folder?`<div class="foot"><span><b>Evidence:</b> <span class="mono">${esc(g.folder)}</span></span></div>`:""}${(g.warnings||[]).length?`<div class="why" style="color:var(--warn)">${(g.warnings||[]).map(esc).join("\n")}</div>`:""}`:""}${c.uploaded?`<div class="foot"><span class="fixchip">On SharePoint</span><span class="mono">${esc(c.uploaded.dest||"")}</span><span>${esc(fmt(c.uploaded.at)||c.uploaded.at||"")}</span></div>`:""}</div>`;
+}
+function defectSec(c){
+  const d=defOf(c),ts=tix(c);
+  if(!d&&!FAILISH.has(c.result))return"";
+  const chips=ts.map(t=>`<a class="dchip ${stCls(t.status)}" href="${esc(t.url||JIRA+t.key)}" target="_blank" rel="noopener" title="${esc([t.status,t.summary].filter(Boolean).join(" · "))}">${esc(t.key)}</a>`).join("")+(needsTicket(c)?`<span class="dchip d-warn">▲ Not yet raised</span>`:"")+(d&&SETTLED.has(d.state)?`<span class="dchip d-neutral" style="font-family:var(--font)">${esc(d.state)}</span>`:"");
+  return`<div class="sec"><h3>Defect${st.canWrite?`<button class="btn ghost act" type="button" data-act="defect">Edit</button>`:""}</h3><div class="dfct">${chips||'<span class="muted">No ticket</span>'}</div>${d&&d.why?`<div class="why">${esc(d.why)}</div>`:""}${d&&d.checked_on?`<div class="foot">Checked ${esc(d.checked_on)}</div>`:""}</div>`;
+}
+/* the open TS: a header that says where it stands (result, evidence, review, defect), then three tabs
+   so the page never becomes one long scroll: Test (what to do), Evidence (what the run shows), Result & history */
+const TABS=[["test","Test"],["ev","Evidence"],["hist","Result & history"]];
+function stripHtml(c){
+  const e=evSet(c),shots=evShots(c).length,vids=e&&Array.isArray(e.videos)?e.videos.length:0,last=st.runsFor===c.id?st.runs[0]:null,g=c.gate;
+  const out=[`<span class="res big r-${rk(c.result)}">${esc(rl(c.result))}</span>`];
+  const by=[last&&last.qa||c.qa,last&&last.at?fmt(last.at):""].filter(Boolean).join(" · ");
+  if(by)out.push(`<span class="muted">${esc(by)}</span>`);
+  out.push(shots||vids?`<button class="schip" type="button" data-tab="ev">${[shots?`${shots} screenshot${shots===1?"":"s"}`:"",vids?`${vids} video${vids===1?"":"s"}`:""].filter(Boolean).join(" · ")}</button>`:`<span class="schip none">No evidence on this page</span>`);
+  out.push(c.reviewed?`<button class="schip ok" type="button" data-tab="ev">✓ Reviewed</button>`:`<button class="schip" type="button" data-tab="ev">Not reviewed yet</button>`);
+  if(!gateOk(c))out.push(`<button class="schip warn" type="button" data-tab="ev" title="The automatic check made when the run ended; the result above is the one that counts">⚑ Automatic check: ${esc((GATE[g.verdict]||[0,g.verdict])[1]).toLowerCase()}</button>`);
+  tix(c).forEach(t=>out.push(`<a class="dchip ${stCls(t.status)}" href="${esc(t.url||JIRA+t.key)}" target="_blank" rel="noopener" title="${esc([t.status,t.summary].filter(Boolean).join(" · "))}">${esc(t.key)}</a>`));
+  if(needsTicket(c))out.push(`<button class="schip warn" type="button" data-tab="hist">▲ Failed, no Jira ticket yet</button>`);
+  if(c.result==="DEPRIORITIZED"&&!String(c.deprio||"").trim())out.push(`<button class="schip warn" type="button" data-tab="hist">▲ No reason written</button>`);
+  return`<div class="strip">${out.join("")}</div>`;
+}
+function renderDetail(force){
+  const c=st.sel&&st.cases.get(st.sel);
+  const on=!!c;$("#dEmpty").hidden=on;["#dhead","#dbody","#dock"].forEach(s=>$(s).hidden=!on);
+  $("#detail").classList.toggle("mopen",st.mobileOpen);
+  if(!on)return;
+  if(!TABS.some(t=>t[0]===st.tab))st.tab="test";
+  const sh=sheetOf(c.sheet),list=visible(),i=list.findIndex(x=>x.id===c.id),lab=(f,d)=>((sh&&sh.columns||[]).find(x=>x.field===f)||{}).label||d;
+  const nEv=evShots(c).length,nRuns=st.runsFor===c.id?st.runs.length:null;
+  const count={ev:nEv||"",hist:nRuns||""};
+  $("#dhead").innerHTML=`<div class="r1"><button class="btn back" type="button" data-act="back">‹ List</button><span class="id">${esc(c.id)}</span>${lblHtml(c)}${st.canWrite?`<button class="btn ghost mini" type="button" data-act="labels" title="Add or remove a label such as SIT">+ label</button><button class="btn ghost mini" type="button" data-edittext="situation">${st.editText.has(c.id+"|situation")?"Done":"Edit title"}</button>`:""}<span class="nav"><button class="btn ghost" type="button" data-act="prev" ${i<=0?"disabled":""} aria-label="Previous test scenario">↑ Prev</button><button class="btn ghost" type="button" data-act="next" ${i<0||i>=list.length-1?"disabled":""} aria-label="Next test scenario">↓ Next</button></span></div>
+    <div class="crumb">${esc(sh?sh.name:c.sheet)}${c.section?` <span>›</span> ${esc(c.section)}`:""} ${st.canWrite?`<button class="prio ${esc(c.priority)}" type="button" data-act="prio" title="Change priority">${esc(c.priority||"–")}</button>`:`<span class="prio ${esc(c.priority)}">${esc(c.priority||"–")}</span>`}${i>=0?`<span>${i+1} of ${list.length} shown</span>`:`<span>hidden by the filters</span>`}</div>
+    <h2 class="ttl${st.ttlOpen?" open":""}" data-act="ttl" title="${st.ttlOpen?"Click to shorten":"Click to read it all"}">${esc(c.situation||"(no scenario text yet)")}</h2>
+    ${stripHtml(c)}
+    <div class="tabs" role="tablist" aria-label="Parts of this test scenario">${TABS.map(([k,l])=>`<button class="tab" role="tab" type="button" data-tab="${k}" aria-selected="${st.tab===k}">${esc(l)}${count[k]?`<span>${count[k]}</span>`:""}</button>`).join("")}</div>`;
+  /* a live update never redraws under the cursor or under a video that is playing */
+  const a=document.activeElement,typing=!force&&((a&&$("#dbody").contains(a)&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT"))||[...$("#dbody").querySelectorAll("video")].some(v=>!v.paused));
+  if(!typing){
+    const key=c.id+"|"+st.tab,scroll=st.bodyKey===key?$("#dbody").scrollTop:0;st.bodyKey=key;
+    let html="";
+    if(st.tab==="test"){
+      html=(st.editText.has(c.id+"|situation")?textSec(c,"situation",lab("situation","Test scenario"),null):"")+dataSec(c,sh)+textSec(c,"setup",lab("setup","Set-up / pre-condition"),null)+textSec(c,"steps",lab("steps","Test steps"),"steps")+textSec(c,"expected",lab("expected","Expected result"),"expected")+pointsSec(c);
+    }else if(st.tab==="ev"){
+      html=`<div class="sec revbox"><label class="rev"><input type="checkbox" id="revChk" ${c.reviewed?"checked":""} ${st.canWrite?"":"disabled"}> Reviewed${c.reviewed&&(c.reviewedBy||c.reviewedAt)?` <span class="muted">by ${esc(who(c.reviewedBy)||"someone")}${c.reviewedAt?", "+esc(fmt(c.reviewedAt)):""}</span>`:c.reviewed?` <span class="muted">(ticked before reviewer names were kept)</span>`:""}</label><span class="muted">Tick once the screenshots and videos below have been checked against the expected result.</span><div class="revact">${st.canWrite&&!c.reviewed&&reviewable(c)?`<button class="btn primary" type="button" data-act="revNext">Reviewed, next ›</button>`:""}<button class="btn ghost" type="button" data-act="nextRev">Next not reviewed ›</button></div></div>`+
+        (evidenceSec(c)||`<div class="sec"><h3>Evidence</h3><p class="muted" style="margin:0">No screenshots or videos on this page for this test scenario yet.</p>${c.gate&&c.gate.folder?pathHtml(c.gate.folder,"Folder in the repo"):""}</div>`)+gateSec(c);
+    }else{
+      html=`<div class="sec"><h3>Remarks<span class="key">vehicle, transaction</span></h3><input class="fld" id="t-remarks" data-f="remarks" value="${esc(c.remarks||"")}" placeholder="e.g. OUP0192 · J600008603" ${st.canWrite?"":"readonly"}></div>`+
+        (c.result==="DEPRIORITIZED"||c.deprio?`<div class="sec"><h3>Why deprioritised${c.result==="DEPRIORITIZED"&&!String(c.deprio||"").trim()?' <span class="flag" style="text-transform:none;letter-spacing:0">▲ not written yet</span>':""}</h3><textarea class="fld depwhy" id="t-deprio" data-f="deprio" rows="${Math.max(2,rowsFor(c.deprio,76))}" ${st.canWrite?"":"readonly"} placeholder="Who decided, when and why">${esc(c.deprio||"")}</textarea></div>`:"")+
+        defectSec(c)+
+        `<div class="sec"><h3>Result history<span class="key">newest first</span></h3><div id="hist"></div></div>`+
+        `<div class="sec"><div class="foot">${c.source?`<span><b>Source:</b> ${esc(c.source)}</span>`:""}${c.kiv?`<span><b>On hold because:</b> ${esc(c.kiv)}</span>`:""}<span>${c.updatedAt?`Last edited ${c.updatedBy?"by "+esc(who(c.updatedBy))+", ":""}${esc(fmt(c.updatedAt))}`:""}</span></div></div>`;
+    }
+    $("#dbody").innerHTML=html;$("#dbody").scrollTop=scroll;
+    renderHistory();
+  }
+  renderDock(c);
+}
+function renderHistory(){
+  const box=$("#hist");if(!box)return;const c=st.sel&&st.cases.get(st.sel);if(!c)return;
+  if(st.runsFor!==c.id){box.innerHTML=`<span class="muted">Loading…</span>`;return}
+  if(!st.runs.length){box.innerHTML=`<span class="muted">No result recorded yet. Use the result buttons at the bottom and it starts here.</span>`;return}
+  box.innerHTML=`<ol class="hist">${st.runs.map((r,i)=>{
+    const older=st.runs[i+1],fixed=r.result==="PASS"&&older&&FAILISH.has(older.result);
+    const label=REASON_FOR[r.result];
+    const why=label?(r.reason?`<div class="rwhy k-${rk(r.result)}"><b>${esc(label)}:</b> ${esc(r.reason)}${(r.tickets||[]).length?` · ${r.tickets.map(k=>`<a href="${JIRA+esc(k)}" target="_blank" rel="noopener">${esc(k)}</a>`).join(", ")}`:""}</div>`:`<div class="rwhy none">${esc(label)}: not written</div>`):"";
+    const evLink=r.evidence&&isUrl(r.evidence)?`<a href="${esc(r.evidence)}" target="_blank" rel="noopener">evidence ↗</a>`:r.evidence&&i===0&&evSet(c)?`<button class="ptshot" type="button" data-tab="ev">see the evidence</button>`:"";
+    return`<li class="${i===0?"latest":""}"><div class="h1"><span class="res r-${rk(r.result)}">${esc(rl(r.result))}</span>${fixed?`<span class="fixchip">fixed · passed after the ${esc(rl(older.result).toLowerCase())}${older.at?" on "+esc(fmt(older.at).slice(0,5)):""}</span>`:""}<time>${r.at?esc(fmt(r.at)):"date unknown"}</time>${r.qa?`<span>${esc(r.qa)}</span>`:""}${r.build?`<span class="mono" style="font-size:12px" title="Build">${esc(r.build)}</span>`:""}${evLink}</div>${why}${r.evidence&&!isUrl(r.evidence)&&!(i===0&&evSet(c))?pathHtml(r.evidence,"Evidence folder (repo)"):""}${r.note||r.imported||r.by?`<div class="h2" title="Click to read it all">${r.imported?"Imported from an earlier copy, before history was kept. ":""}${esc(r.note||"")}${r.by&&!r.imported?` · recorded by ${esc(who(r.by))}`:""}</div>`:""}</li>`}).join("")}</ol>`;
+}
+/* a non-pass result asks why before it is saved; FAIL needs an answer */
+const REASON_FOR={"FAIL":"Why it failed","EVIDENCE MISSING":"What evidence is missing","BLOCKED":"What blocks it","KIV":"Why it is on hold","RE-RUN":"Why it needs a re-run","DEPRIORITIZED":"Why it is deprioritised"};
+const REASON_NEEDED=new Set(["FAIL","DEPRIORITIZED"]);
+function reasonPanel(c){
+  const r=st.pendRec,need=REASON_NEEDED.has(r),pre=FAILISH.has(r)?((defOf(c)||{}).why||""):r==="KIV"?(c.kiv||""):r==="DEPRIORITIZED"?(c.deprio||""):"";
+  return`<div class="reason"><label for="dockWhy">${esc(REASON_FOR[r])} <span class="res r-${rk(r)}" style="margin-left:4px">${esc(rl(r))}</span>${need?' <span class="muted" style="font-weight:400">(needed)</span>':' <span class="muted" style="font-weight:400">(optional)</span>'}</label>
+    <textarea id="dockWhy" placeholder="${r==="FAIL"?"What you saw versus what was expected, in plain words, e.g. Step 5 Total shows RM40.00, the TS expects RM37.00":r==="DEPRIORITIZED"?"Who decided, when and why, e.g. QA lead 12.10: not needed in this phase":"A short reason"}">${esc(pre)}</textarea>
+    <div class="r"><button class="btn primary" type="button" data-act="saveRec">Save ${esc(rl(r))}</button><button class="btn ghost" type="button" data-act="cancelRec">Cancel</button>${tix(c).length&&FAILISH.has(r)?`<span class="muted" style="font-size:12px">Linked to ${esc(tix(c).map(t=>t.key).join(", "))}</span>`:""}</div></div>`;
+}
+/* the four results used most are one click; the rest sit under "More" */
+const MAIN_RES=["PASS","FAIL","RE-RUN","BLOCKED"];
+const MORE_RES=RESULTS.filter(r=>!MAIN_RES.includes(r));
+function renderDock(c){
+  if(!st.canWrite){$("#dock").innerHTML=`<div class="now">Result: <span class="res r-${rk(c.result)}">${esc(rl(c.result))}</span> · you can view this page but not record results</div>`;return}
+  const a=document.activeElement;if(a&&$("#dock").contains(a)&&(a.tagName==="INPUT"||a.tagName==="TEXTAREA"))return;
+  const qa=st.dockQa||c.qa||"",cur=c.result||"",inMore=MORE_RES.includes(cur);
+  if(st.pendRec!=null&&st.pendFor===c.id){$("#dock").innerHTML=reasonPanel(c);const w=$("#dockWhy");if(w){w.focus();w.setSelectionRange(w.value.length,w.value.length)}return}
+  $("#dock").innerHTML=`<div class="now"><b>Record a result</b><span>added to the history with the QA and build below</span></div>
+    <div class="rbtns" role="group" aria-label="Record a result">${MAIN_RES.map(r=>`<button class="rbtn r-${rk(r)}" type="button" data-rec="${esc(r)}" aria-pressed="${cur===r}">${esc(rl(r))}</button>`).join("")}<button class="rbtn more${inMore?" r-"+rk(cur):""}" type="button" data-act="moreRes" aria-pressed="${inMore}" title="KIV, Evidence missing, N/A, Deprioritised, Not run">${inMore?esc(rl(cur)):"More"} ▾</button></div>
+    <div class="row2"><label>QA <select id="dockQa">${qaNames().map(n=>`<option ${n===qa?"selected":""}>${esc(n)}</option>`).join("")}<option value="" ${qa?"":"selected"}>No QA</option></select></label>
+      <label>Build <input class="bld" id="dockBuild" value="${esc(st.settings.build||"")}" placeholder="e.g. preprod1 · Dev deploy 11.10"></label>
+      <button class="btn ghost" type="button" data-act="extra">${st.dockExtra?"− Hide link and note":"+ Evidence link or note"}</button></div>
+    <div class="extra" ${st.dockExtra?"":"hidden"}><input id="dockEv" placeholder="Evidence link (screenshot, video, folder)" aria-label="Evidence link"><input id="dockNote" placeholder="Note, e.g. vehicle and transaction" aria-label="Note"></div>`;
+}
+/* how the page works, for anyone opening it for the first time (a reviewer, another QA) */
+const HELP=`<div class="hd">How this page works</div><div class="help">
+<p><b>1. Pick what to look at.</b> The tabs along the top are the sheets; <i>All</i> shows every test scenario. Search and the Result, QA, Priority, Defect and Reviewed buttons narrow the list.</p>
+<p><b>2. Open a test scenario</b> on the left. The right side shows where it stands: its result, who ran it and when, the evidence, whether it is reviewed and any Jira ticket.</p>
+<p><b>3. Three tabs:</b> <i>Test</i> is what to do and what to expect (each expected point E1, E2 … has a screenshot link). <i>Evidence</i> has the screenshots and videos from the run: click one to open it, ← / → to move, Esc to close; each expected point sits with the screenshot that proves it. Tick <i>Reviewed</i> once they are checked, or press <i>Reviewed, next</i> to tick it and open the next one still to review. <i>Result &amp; history</i> has every result recorded, why it failed, the defect and the remarks.</p>
+<p><b>4. Record a result</b> with the buttons at the bottom; <i>More</i> has KIV, Evidence missing, N/A, Deprioritised and Not run. FAIL and Deprioritised ask why before they save.</p>
+<p><b>Marks in the list:</b> ✓ reviewed · ⇪ on SharePoint · ⚑ the automatic run check needs a look · ▲ something is missing (a Jira ticket or a reason).</p>
+<p class="muted">Keys: J / K or ↓ / ↑ move through the list. Everything you change is saved at once and seen by everyone with access.</p></div>`;
+
+/* ---------------- runs (history) subscription: only the open TS ---------------- */
+function watchRuns(){
+  const id=st.sel;if(!st.db||!id||st.runsWatch===id)return;
+  if(st.runsUnsub){try{st.runsUnsub()}catch(e){}st.runsUnsub=null}
+  st.runsWatch=id;st.runs=[];st.runsFor=null;renderHistory();
+  st.runsUnsub=st.db.collection("cases/"+id+"/runs").limit(500).onSnapshot(snap=>{
+    if(st.runsWatch!==id)return;
+    st.runs=snap.docs.map(d=>({...d.data(),_id:d.id})).sort((a,b)=>String(b.at||"").localeCompare(String(a.at||"")));
+    st.runsFor=id;renderDetail();resolveNames(st.runs.map(r=>r.by));
+  },()=>{st.runsFor=id;st.runs=[];renderHistory()});
+}
+
+/* ---------------- writes ---------------- */
+const chains=new Map(),timers=new Map(),pending=new Map();
+let toastT;function toast(t,err){const el=$("#toast");el.textContent=t;el.className="toast show"+(err?" err":"");clearTimeout(toastT);toastT=setTimeout(()=>el.className="toast",err?4200:1800)}
+function banner(t){const b=$("#banner");b.textContent=t;b.hidden=!t}
+function write(path,data,label,retried){
+  if(!st.db){toast("Not saved: not connected",true);return Promise.resolve()}
+  const prev=chains.get(path)||Promise.resolve();
+  const next=prev.then(()=>st.db.doc(path).update(data)).then(()=>{label&&toast("Saved · "+label)}).catch(e=>{
+    const code=e&&e.code;
+    if(code==="unavailable"&&!retried){return new Promise(r=>setTimeout(r,1200+Math.random()*900)).then(()=>write(path,data,label,true))}
+    if(code==="not_granted"||code==="revoked"){st.canWrite=false;banner("You can view this page but not change it.");renderAll();return}
+    toast("Not saved · "+(label||path)+" · "+(e&&e.message||"try again"),true);
+  });
+  chains.set(path,next);return next;
+}
+function stampCase(c,data){const now=new Date().toISOString();Object.assign(c,data,{updatedAt:now});if(st.uid)c.updatedBy=st.uid;return Object.assign({},data,{updatedAt:now},st.uid?{updatedBy:st.uid}:{})}
+function setField(id,f,v,label){const c=st.cases.get(id);if(!c||(c[f]??"")===v)return;write("cases/"+id,stampCase(c,{[f]:v}),label||`${id} ${f}`)}
+function queueField(id,f,v){const k=id+"|"+f;pending.set(k,v);clearTimeout(timers.get(k));timers.set(k,setTimeout(()=>flushField(k),800))}
+function flushField(k){if(!pending.has(k))return;const v=pending.get(k);pending.delete(k);clearTimeout(timers.get(k));const [id,f]=k.split("|");if(CASE_F.has(f))setField(id,f,v);else setTD(id,f,v)}
+function setTD(id,f,v){
+  const had=st.td.has(id),cur=st.td.get(id)||{};if((cur[f]??"")===v||!st.db)return;
+  const stamp={[f]:v,updatedAt:new Date().toISOString()};if(st.uid)stamp.updatedBy=st.uid;
+  const next={...cur,...stamp};st.td.set(id,next);
+  const path="testdata/"+id,prev=chains.get(path)||Promise.resolve();
+  const p=prev.then(()=>had?st.db.doc(path).update(stamp):st.db.doc(path).set(next)).then(()=>toast(`Saved · ${id} ${f}`)).catch(e=>toast(`Not saved · ${id} ${f} · ${e&&e.message||"try again"}`,true));
+  chains.set(path,p);
+}
+function flushAll(){[...pending.keys()].forEach(flushField)}
+/* record a result: update the TS and append a run to its history */
+function record(id,result,opt){
+  const c=st.cases.get(id);if(!c||!st.db)return;opt=opt||{};
+  const at=new Date().toISOString(),qa=opt.qa!=null?opt.qa:(c.qa||"");
+  const run={result,qa,build:st.settings.build||"",at,prev:c.result||""};
+  if(opt.evidence)run.evidence=opt.evidence;if(opt.note)run.note=opt.note;if(st.uid)run.by=st.uid;
+  if(opt.reason)run.reason=opt.reason;
+  if(FAILISH.has(result)&&tix(c).length)run.tickets=tix(c).map(t=>t.key);
+  const data={result};if(qa!==(c.qa||""))data.qa=qa;
+  /* the first written reason for a failure also fills the defect's "why it failed" */
+  if(opt.reason&&FAILISH.has(result)&&!((defOf(c)||{}).why)){const d=defOf(c)||{};data.defect={...d,why:opt.reason,state:d.state||(tix(c).length?"raised":"not raised"),checked_on:at.slice(0,10)}}
+  if(opt.reason&&result==="KIV"&&!c.kiv)data.kiv=opt.reason;
+  if(opt.reason&&result==="DEPRIORITIZED")data.deprio=opt.reason;
+  write("cases/"+id,stampCase(c,data),opt.quiet?"":`${id}: ${rl(result)} · added to history`);
+  const rid=at.replace(/[^0-9]/g,"")+"-"+Math.random().toString(36).slice(2,7);
+  st.db.collection("cases/"+id+"/runs").doc(rid).set(run).catch(e=>toast("History not saved for "+id+" · "+(e&&e.message||"try again"),true));
+}
+
+/* ---------------- popovers ---------------- */
+let pop=null;
+function closePop(){if(pop){pop.remove();pop=null}}
+function openPop(anchor,html,onPick){
+  closePop();pop=document.createElement("div");pop.className="pop";pop.innerHTML=html;document.body.appendChild(pop);
+  const r=anchor.getBoundingClientRect(),w=pop.offsetWidth,h=pop.offsetHeight,vw=document.documentElement.clientWidth;
+  let x=Math.min(r.left,vw-w-8),y=r.bottom+4;if(y+h>window.innerHeight-8&&r.top-h-4>0)y=r.top-h-4;
+  pop.style.left=Math.max(8,x)+window.scrollX+"px";pop.style.top=y+window.scrollY+"px";
+  pop.addEventListener("click",e=>{const b=e.target.closest("button.opt[data-v]");if(b&&onPick){if(onPick(b.dataset.v)!==false)closePop()}});
+  const first=pop.querySelector("button.opt,input");first&&first.focus();
+}
+function optList(head,opts,cur){return`<div class="hd">${esc(head)}</div>`+opts.map(([v,l,sw])=>`<button class="opt" type="button" data-v="${esc(v)}" aria-pressed="${cur===v}">${sw?`<span class="sw ${sw}"></span>`:""}${esc(l)}${cur===v?" ✓":""}</button>`).join("")}
+function filterPop(btn,k){
+  const f=st.f;
+  if(k==="result"){
+    const counts={};[...st.cases.values()].filter(c=>st.view==="ALL"||c.sheet===st.view).forEach(c=>{const r=c.result||"";counts[r]=(counts[r]||0)+1});
+    openPop(btn,`<div class="hd">Result (pick one or more)</div>`+RESULTS.map(r=>`<label class="opt"><input type="checkbox" data-r="${esc(r)}" ${f.result.includes(r)?"checked":""}> <span class="res r-${rk(r)}">${esc(rl(r))}</span><span class="muted" style="margin-left:auto">${counts[r]||0}</span></label>`).join(""));
+    pop.addEventListener("change",e=>{const cb=e.target.closest("[data-r]");if(!cb)return;const r=cb.dataset.r;f.result=cb.checked?[...new Set([...f.result,r])]:f.result.filter(x=>x!==r);saveF();renderMainOnly()});
+    return;
+  }
+  const lists={qa:[["","Every QA"],...qaNames().map(n=>[n,n]),["-","No QA"]],prio:[["","Every priority"],["P1","P1 · must test"],["P2","P2 · should test"],["P3","P3 · nice to have"]],
+    defect:[["","Any"],["needs","Failed, no ticket yet"],["raised","Ticket raised"],["fixed, retest","Fixed, retest"],["question","Question to SA/BA"],["not a defect","Not a defect"]],reviewed:[["","Reviewed or not"],["1","Reviewed"],["0","Not reviewed"]]};
+  openPop(btn,optList({qa:"QA",prio:"Priority",defect:"Defect",reviewed:"Reviewed"}[k],lists[k],f[k]),v=>{f[k]=v;saveF();renderAll()});
+}
+function saveF(){store.set("f",st.f)}
+function bulkPop(btn,k){
+  const ids=[...st.checked].filter(id=>st.cases.has(id));
+  if(k==="result"){openPop(btn,`<div class="frm" style="border:0;margin:0;padding-top:4px"><input id="bulkWhy" placeholder="Reason, saved with each (needed for FAIL and DEPRIORITIZED)" aria-label="Reason for the selected test scenarios"></div>`+optList(`Result for ${ids.length} test scenarios`,RESULTS.map(r=>[r,rl(r),"r-"+rk(r)]),null),v=>{
+    const why=String((pop&&pop.querySelector("#bulkWhy")||{}).value||"").trim();
+    if(REASON_NEEDED.has(v)&&!why){toast(v==="FAIL"?"Write why they failed first":"Write why they are deprioritised first",true);pop.querySelector("#bulkWhy").focus();return false}
+    ids.forEach(id=>record(id,v,{quiet:true,reason:REASON_FOR[v]?why:""}));toast(`${ids.length} set to ${rl(v)} · added to each history`);renderAll()});return}
+  if(k==="qa")openPop(btn,optList(`QA for ${ids.length} test scenarios`,[...qaNames().map(n=>[n,n]),["","No QA"]],null),v=>{ids.forEach(id=>setField(id,"qa",v,""));toast(`QA set on ${ids.length}`);renderAll()});
+  if(k==="prio")openPop(btn,optList(`Priority for ${ids.length} test scenarios`,[["P1","P1"],["P2","P2"],["P3","P3"]],null),v=>{ids.forEach(id=>setField(id,"priority",v,""));toast(`Priority set on ${ids.length}`);renderAll()});
+  if(k==="labels")labelsPop(btn,ids);
+}
+/* labels beside the TS No (e.g. SIT): their hints come from settings/board labelHints; any other short label can be added */
+const LABEL_HINT=new Proxy({},{get:(_,k)=>((st.settings.labelHints||{})[k])||""});
+function labelsPop(btn,ids){
+  ids=ids.filter(id=>st.cases.has(id));if(!ids.length)return;
+  const known=[...new Set([...(st.settings.labels||[]),...[...st.cases.values()].flatMap(labels)])];
+  const html=()=>`<div class="hd">Labels · ${ids.length>1?ids.length+" test scenarios":esc(ids[0])}</div>`+known.map(l=>{const n=ids.filter(id=>labels(st.cases.get(id)).includes(l)).length;
+      return`<label class="opt"><input type="checkbox" data-lbl="${esc(l)}" ${n===ids.length?"checked":""} ${n&&n<ids.length?'data-mixed="1"':""}> <span class="lbl ${esc(l.replace(/[^A-Za-z0-9]/g,""))}" style="margin-left:0">${esc(l)}</span><span class="muted" style="font-size:12px">${esc(LABEL_HINT[l]||"")}${n&&n<ids.length?` (on ${n} of ${ids.length})`:""}</span></label>`}).join("")+
+    `<div class="frm"><div class="r"><input id="newLbl" placeholder="New label, e.g. UAT" maxlength="16" aria-label="New label"><button class="btn" type="button" data-addlbl="1">Add</button></div><span class="muted" style="font-size:12px">Tick to add, untick to remove. Saved at once and shown to everyone.</span></div>`;
+  const draw=()=>{pop.innerHTML=html();pop.querySelectorAll("[data-mixed]").forEach(i=>i.indeterminate=true)};
+  openPop(btn,html());pop.querySelectorAll("[data-mixed]").forEach(i=>i.indeterminate=true);
+  pop.addEventListener("change",e=>{const cb=e.target.closest("[data-lbl]");if(!cb)return;applyLabel(ids,cb.dataset.lbl,cb.checked);draw()});
+  const add=()=>{const v=String(pop.querySelector("#newLbl").value||"").trim().toUpperCase().replace(/[^A-Z0-9 _-]/g,"").slice(0,16);if(!v)return;if(!known.includes(v))known.push(v);applyLabel(ids,v,true);draw()};
+  pop.addEventListener("click",e=>{if(e.target.closest("[data-addlbl]")){e.stopPropagation();add()}});
+  pop.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="newLbl"){e.preventDefault();add()}});
+}
+function applyLabel(ids,l,on){
+  let n=0;
+  ids.forEach(id=>{const c=st.cases.get(id);if(!c)return;const cur=labels(c),has=cur.includes(l);if(on===has)return;
+    setField(id,"labels",on?[...cur,l]:cur.filter(x=>x!==l),ids.length>1?"":`${id}: ${on?"marked":"unmarked"} ${l}`);n++});
+  if(ids.length>1&&n)toast(`${on?"Added":"Removed"} ${l} on ${n} test scenario${n===1?"":"s"}`);
+  renderAll();
+}
+function defectPop(btn,c){
+  const d=defOf(c)||{},ts=tix(c),cur=d.state||(ts.length?"raised":"not raised");
+  openPop(btn,optList(`Defect · ${c.id}`,DSTATES.map(([v,l])=>[v,l]),cur)+
+    `<div class="frm"><div class="hd" style="padding-left:0">Jira ticket</div><div class="r"><input id="dtk" placeholder="EAINT-12480" autocomplete="off" aria-label="Jira ticket key"><button class="btn" type="button" data-d="add">Add</button></div>`+
+    (ts.length?`<div class="dfct">${ts.map(t=>`<span class="dchip ${stCls(t.status)}">${esc(t.key)} <button class="btn ghost" style="padding:0 3px" type="button" data-d="rm" data-k="${esc(t.key)}" aria-label="Remove ${esc(t.key)}">×</button></span>`).join("")}</div>`:"")+
+    `<div class="hd" style="padding-left:0">Why it failed</div><textarea id="dwhy" rows="3">${esc(d.why||"")}</textarea><div class="r"><button class="btn primary" type="button" data-d="why">Save</button><span class="muted" style="font-size:12px">Plain words, as you would tell Dev</span></div></div>`,
+    v=>saveDefect(c,{...(defOf(c)||{}),state:v}));
+  pop.addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;e.stopPropagation();
+    if(b.dataset.d==="add"){const k=String(pop.querySelector("#dtk").value||"").trim().toUpperCase().replace(/\s+/g,"");if(!/^EAINT-\d+$/.test(k)){toast("Type a ticket key like EAINT-12480",true);return}if(!tix(c).some(t=>t.key===k))saveDefect(c,{...(defOf(c)||{}),state:"raised",tickets:[...tix(c),{key:k,url:JIRA+k,status:"",summary:""}]});closePop()}
+    if(b.dataset.d==="rm"){saveDefect(c,{...(defOf(c)||{}),tickets:tix(c).filter(t=>t.key!==b.dataset.k)});closePop()}
+    if(b.dataset.d==="why"){saveDefect(c,{...(defOf(c)||{}),why:pop.querySelector("#dwhy").value.trim()});closePop()}});
+}
+function saveDefect(c,d){d.checked_on=new Date().toISOString().slice(0,10);write("cases/"+c.id,stampCase(c,{defect:d}),`${c.id}: defect`);renderAll()}
+function colsPop(btn){
+  const sh=sheetOf(st.view);if(!sh)return;let draft=(sh.columns||[]).map(c=>({...c}));
+  const draw=()=>{pop.innerHTML=`<div class="hd">Columns on ${esc(sh.name)} · shared with everyone</div>`+draft.map((c,i)=>`<div class="colrow"><input type="checkbox" data-i="${i}" data-k="list" ${c.list?"checked":""} title="Show in the list" aria-label="Show ${esc(c.label)} in the list"><input type="text" data-i="${i}" data-k="label" value="${esc(c.label)}" aria-label="Column name"><button class="btn ghost" type="button" data-i="${i}" data-m="-1" ${i?"":"disabled"} aria-label="Move up">↑</button><button class="btn ghost" type="button" data-i="${i}" data-m="1" ${i<draft.length-1?"":"disabled"} aria-label="Move down">↓</button><button class="btn ghost" type="button" data-i="${i}" data-del="1" ${c.custom?"":"disabled"} title="${c.custom?"Remove this column":"Built-in column: hide it instead"}">×</button>${c.group?`<span class="g">${esc(c.group)}</span>`:""}</div>`).join("")+
+    `<div class="frm"><div class="r"><input id="newCol" placeholder="New column, e.g. Insurer" aria-label="New column name"><label class="muted" style="white-space:nowrap;font-size:12px"><input type="checkbox" id="newLong"> long text</label><button class="btn" type="button" data-add="1">Add</button></div><div class="r"><button class="btn primary" type="button" data-save="1">Save columns</button><button class="btn ghost" type="button" data-cancel="1">Cancel</button><span class="muted" style="font-size:12px">Ticked = shown in the list. Every column shows on the right.</span></div></div>`};
+  openPop(btn,"");draw();
+  pop.addEventListener("input",e=>{const el=e.target;if(el.dataset.k==="label")draft[+el.dataset.i].label=el.value});
+  pop.addEventListener("change",e=>{const el=e.target;if(el.dataset.k==="list")draft[+el.dataset.i].list=el.checked});
+  pop.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+    if(b.dataset.m){const i=+b.dataset.i,j=i+ +b.dataset.m;[draft[i],draft[j]]=[draft[j],draft[i]];draw()}
+    else if(b.dataset.del){draft.splice(+b.dataset.i,1);draw()}
+    else if(b.dataset.add){const l=pop.querySelector("#newCol").value.trim();if(!l)return;const slug="c_"+l.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,30);if(draft.some(c=>c.field===slug)){toast("That column is already here",true);return}draft.push({field:slug,label:l,list:true,kind:pop.querySelector("#newLong").checked?"long":"short",width:16,custom:true});draw()}
+    else if(b.dataset.save){sh.columns=draft;write("sheets/"+sh.key,{columns:draft},`${sh.name} columns`);closePop();renderAll()}
+    else if(b.dataset.cancel)closePop()});
+}
+function buildPop(btn){
+  openPop(btn,`<div class="hd">Build being tested</div><div class="frm" style="border:0;margin:0"><input id="bIn" value="${esc(st.settings.build||"")}" placeholder="e.g. preprod1 · Dev deploy 11.10"><div class="r"><button class="btn primary" type="button" id="bSave">Save</button><span class="muted" style="font-size:12px">Shared. Every result recorded after this is stamped with it.</span></div></div>`);
+  const save=()=>{const v=pop.querySelector("#bIn").value.trim();st.settings.build=v;write("settings/board",{build:v},"build: "+(v||"not set"));closePop();renderAll()};
+  pop.querySelector("#bSave").addEventListener("click",save);pop.querySelector("#bIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();save()}});
+}
+
+/* ---------------- questions + defects views ---------------- */
+function renderOq(){
+  $("#split").classList.add("full");$("#detail").hidden=true;
+  const q=$("#q").value.trim().toLowerCase(),list=[...st.oqs.values()].filter(o=>!q||[o.id,o.question,o.decision,o.who].join(" ").toLowerCase().includes(q)).sort((a,b)=>num(a.id)-num(b.id));
+  const open=list.filter(o=>!String(o.decision||"").trim()).length;$("#shown").textContent=`${open} open · ${list.length-open} answered`;
+  $("#list").innerHTML=`<div class="tview"><h2>Open questions</h2><p>Questions for BA, Dev or SA. A question counts as answered once Decision has text.</p><div class="tbox"><table><thead><tr><th>No</th><th>Question</th><th>Who</th><th style="min-width:280px">Decision / answer</th></tr></thead><tbody>${list.map(o=>`<tr><td class="id">${esc(o.id)}<br><span class="res ${String(o.decision||"").trim()?"r-PASS":"r-KIV"}">${String(o.decision||"").trim()?"Answered":"Open"}</span></td><td>${esc(o.question)}${o.sources?`<div class="muted" style="font-size:12px;margin-top:4px">${esc(o.sources)}</div>`:""}</td><td class="muted">${esc(o.who||"")}</td><td><textarea data-oq="${esc(o.id)}" id="oq-${esc(o.id)}" rows="2" ${st.canWrite?"":"readonly"} aria-label="Decision for ${esc(o.id)}">${esc(o.decision||"")}</textarea></td></tr>`).join("")}</tbody></table></div></div>`;
+}
+function renderDef(){
+  $("#split").classList.add("full");$("#detail").hidden=true;
+  const all=[...st.tickets.values()].sort((a,b)=>String(b.created||"").localeCompare(String(a.created||""))||num(b.key)-num(a.key));
+  const queue=[...st.cases.values()].filter(needsTicket).sort((a,b)=>((sheetOf(a.sheet)||{}).order??99)-((sheetOf(b.sheet)||{}).order??99)||num(a.id)-num(b.id));
+  $("#shown").textContent=`${all.length} tickets · ${queue.length} failed with no ticket`;
+  $("#list").innerHTML=`<div class="tview"><h2>Defects</h2><p>Jira tickets raised under ${esc(st.settings.ticket||"this ticket")}, newest first, with the test scenarios each covers. Below, the failed test scenarios that still have no ticket.</p>
+    <div class="tbox"><table><thead><tr><th>Ticket</th><th>Summary</th><th>Status</th><th>Raised by</th><th>Created</th><th>Test scenarios</th></tr></thead><tbody>${all.map(t=>`<tr><td><a class="dchip ${stCls(t.status)}" href="${esc(t.url||JIRA+t.key)}" target="_blank" rel="noopener">${esc(t.key)}</a></td><td style="min-width:32ch">${esc(t.summary||"")}</td><td><span class="dchip ${stCls(t.status)}" style="font-family:var(--font)">${esc(t.status||"–")}</span></td><td class="muted">${esc(t.reporter||"")}</td><td class="muted" style="white-space:nowrap">${esc(t.created||"")}</td><td>${(t.cases||[]).map(id=>`<button class="link" type="button" data-jump="${esc(id)}">${esc(id)}</button>`).join(" ")||'<span class="muted">–</span>'}</td></tr>`).join("")}</tbody></table></div>
+    <h2 style="font-size:14px"><span class="dchip d-warn">▲ Not yet raised</span> ${queue.length} failed with no ticket</h2>
+    <ul class="queue">${queue.map(c=>{const w=String((defOf(c)||{}).why||c.remarks||"").trim();return`<li><button class="link" type="button" data-jump="${esc(c.id)}">${esc(c.id)}</button><span class="muted">${esc(w.length>110?w.slice(0,110)+"…":w||"(why it failed not written yet)")}</span></li>`}).join("")||'<li class="muted">Every failed test scenario has a ticket, a question out, or is marked not a defect.</li>'}</ul></div>`;
+}
+
+/* ---------------- render ---------------- */
+function renderAll(){renderTop();renderFilters();renderList();if(st.view!=="OQ"&&st.view!=="DEF")renderDetail();resolveNames()}
+function renderMainOnly(){renderTop();renderFilters();renderList();renderDetail()}
+async function resolveNames(extra){
+  if(!st.user)return;const ids=new Set(extra||[]);for(const c of st.cases.values()){if(c.updatedBy)ids.add(c.updatedBy);if(c.reviewedBy)ids.add(c.reviewedBy)}
+  const need=[...ids].filter(i=>i&&!(i in st.names));if(!need.length)return;
+  for(let i=0;i<need.length;i+=60){let ps;try{ps=await st.user.profiles(need.slice(i,i+60))}catch(e){return}need.slice(i,i+60).forEach(id=>st.names[id]=(ps&&ps[id]&&ps[id].name)||"")}
+  renderDetail();
+}
+function select(id,opts){
+  flushAll();st.sel=id;store.set("sel",id);st.dockQa="";if(st.pendFor!==id){st.pendRec=null;st.pendFor=null;st.pendOpt=null}
+  try{history.replaceState(null,"","#"+id)}catch(e){}
+  if(opts&&opts.mobile)st.mobileOpen=true;
+  renderList();renderDetail(true);watchRuns();
+  const row=document.querySelector(`tr.row[data-id="${CSS.escape(id)}"]`);if(row&&opts&&opts.scroll)row.scrollIntoView({block:"nearest"});
+}
+function move(d){const list=visible();if(!list.length)return;let i=list.findIndex(c=>c.id===st.sel);i=i<0?0:Math.max(0,Math.min(list.length-1,i+d));select(list[i].id,{scroll:true})}
+
+/* ---------------- events ---------------- */
+document.addEventListener("click",e=>{
+  const t=e.target;
+  if(pop&&!pop.contains(t)&&!t.closest("[data-filter],[data-bulk],[data-act=prio],[data-act=defect],[data-act=labels],[data-act=moreRes],#colsBtn,#buildBtn,#helpBtn"))closePop();
+  const clr=t.closest("[data-clear]");if(clr){e.stopPropagation();const k=clr.dataset.clear;st.f[k]=k==="result"?[]:"";saveF();closePop();renderAll();return}
+  const chip=t.closest("[data-view]");if(chip){st.view=chip.dataset.view;store.set("view",st.view);st.checked.clear();closePop();renderAll();return}
+  const fb=t.closest("[data-filter]");if(fb){filterPop(fb,fb.dataset.filter);return}
+  const bb=t.closest("[data-bulk]");if(bb){bulkPop(bb,bb.dataset.bulk);return}
+  if(t.id==="bulkClear"){st.checked.clear();renderAll();return}
+  if(t.id==="clearAll"){st.f={result:[],qa:"",prio:"",defect:"",reviewed:""};$("#q").value="";saveF();renderAll();return}
+  if(t.closest("#colsBtn")){colsPop($("#colsBtn"));return}
+  if(t.closest("#helpBtn")){openPop($("#helpBtn"),HELP);return}
+  const tb=t.closest("[data-tab]");if(tb&&st.sel){st.tab=tb.dataset.tab;store.set("tab",st.tab);renderDetail(true);return}
+  if(t.closest("#buildBtn")){if(st.canWrite)buildPop($("#buildBtn"));return}
+  if(t.id==="addRow"){addRow();return}
+  const jump=t.closest("[data-jump]");if(jump){const c=st.cases.get(jump.dataset.jump);if(c){st.view=c.sheet;store.set("view",st.view);renderAll();select(c.id,{scroll:true,mobile:true})}return}
+  if(t.closest("[data-chk]")||t.id==="chkAll")return;
+  if(st.lb&&t.closest("#lb")){const b=t.closest("[data-lb]");
+    if(b){if(b.dataset.lb==="x")closeLb();else{st.lb.i+=+b.dataset.lb;drawLb()}}
+    else if(t.tagName==="IMG")t.parentElement.classList.toggle("zoom");
+    else if(t.classList.contains("stage"))closeLb();
+    return}
+  const shot=t.closest("[data-shot]");if(shot&&st.sel){openLb(+shot.dataset.shot,shot);return}
+  const cp=t.closest("[data-copy]");if(cp){copyText(cp.dataset.copy);return}
+  const note=t.closest(".hist .h2");if(note){note.classList.toggle("open");return}
+  const row=t.closest("tr.row");if(row){select(row.dataset.id,{mobile:true});return}
+  const rec=t.closest("[data-rec]");if(rec&&st.sel){closePop();const ev=($("#dockEv")||{}).value||"",note=($("#dockNote")||{}).value||"",qa=($("#dockQa")||{}).value;
+    const b=($("#dockBuild")||{}).value;if(b!=null&&b.trim()!==(st.settings.build||"")){st.settings.build=b.trim();write("settings/board",{build:b.trim()},"")}
+    const r=rec.dataset.rec;
+    if(REASON_FOR[r]){st.pendRec=r;st.pendFor=st.sel;st.pendOpt={qa,evidence:ev.trim(),note:note.trim()};renderDock(st.cases.get(st.sel));return}
+    record(st.sel,r,{qa,evidence:ev.trim(),note:note.trim()});st.dockQa="";renderAll();return}
+  const et=t.closest("[data-edittext]");if(et&&st.sel){if(et.dataset.edittext==="situation")st.tab="test";const k=st.sel+"|"+et.dataset.edittext;if(st.editText.has(k)){flushAll();st.editText.delete(k)}else st.editText.add(k);renderDetail(true);const ta=$("#t-"+et.dataset.edittext);ta&&ta.focus();return}
+  const act=t.closest("[data-act]");if(!act)return;const c=st.sel&&st.cases.get(st.sel);
+  switch(act.dataset.act){
+    case "prev":move(-1);break;case "next":move(1);break;
+    case "ttl":st.ttlOpen=!st.ttlOpen;renderDetail();break;
+    case "revNext":if(c){setReviewed(c,true);goNextToReview()}break;
+    case "nextRev":goNextToReview();break;
+    case "empties":st.showEmpty=!st.showEmpty;renderDetail(true);break;
+    case "moreRes":if(c)openPop(act,`<div class="hd">More results</div>`+MORE_RES.map(r=>`<button class="opt" type="button" data-rec="${esc(r)}" aria-pressed="${(c.result||"")===r}"><span class="res r-${rk(r)}">${esc(rl(r))}</span>${(c.result||"")===r?" ✓":""}</button>`).join(""));break;
+    case "back":st.mobileOpen=false;renderDetail();break;
+    case "extra":st.dockExtra=!st.dockExtra;renderDock(c);break;
+    case "saveRec":{if(!c||st.pendRec==null)break;const why=String(($("#dockWhy")||{}).value||"").trim();
+      if(REASON_NEEDED.has(st.pendRec)&&!why){toast(`Write ${REASON_FOR[st.pendRec].toLowerCase()} first`,true);$("#dockWhy")&&$("#dockWhy").focus();break}
+      const r=st.pendRec,o=st.pendOpt||{};st.pendRec=null;st.pendFor=null;st.pendOpt=null;st.dockQa="";
+      record(c.id,r,{...o,reason:why});renderAll();break}
+    case "labels":if(c)labelsPop(act,[c.id]);break;
+    case "cancelRec":st.pendRec=null;st.pendFor=null;st.pendOpt=null;renderDock(c);break;
+    case "prio":if(c)openPop(act,optList(`Priority · ${c.id}`,[["P1","P1 · must test"],["P2","P2 · should test"],["P3","P3 · nice to have"]],c.priority),v=>{setField(c.id,"priority",v,`${c.id}: ${v}`);renderAll()});break;
+    case "defect":if(c)defectPop(act,c);break;
+  }
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.chk){t.checked?st.checked.add(t.dataset.chk):st.checked.delete(t.dataset.chk);renderFilters();return}
+  if(t.id==="chkAll"){visible().forEach(c=>t.checked?st.checked.add(c.id):st.checked.delete(c.id));renderAll();return}
+  if(t.id==="revChk"&&st.sel){setReviewed(st.cases.get(st.sel),t.checked);renderAll();return}
+  if(t.id==="dockQa"){st.dockQa=t.value;return}
+});
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.id==="q"){renderMainOnly();return}
+  if(t.dataset.oq){const id=t.dataset.oq,k="oq|"+id;clearTimeout(timers.get(k));timers.set(k,setTimeout(()=>{const o=st.oqs.get(id);if(o){o.decision=t.value;write("questions/"+id,{decision:t.value,updatedAt:new Date().toISOString()},id+" decision")}},900));return}
+  if(t.dataset.f&&st.sel&&$("#dbody").contains(t))queueField(st.sel,t.dataset.f,t.value);
+});
+document.addEventListener("focusout",e=>{const t=e.target;if(t.dataset&&t.dataset.f&&st.sel){const k=st.sel+"|"+t.dataset.f;if(pending.has(k))flushField(k);setTimeout(()=>{if(!$("#dbody").contains(document.activeElement)){renderList();renderDetail()}},0)}});
+/* the drag handle between the list and the open TS: drag, ← / →, double-click resets; the width is kept per viewer */
+(()=>{
+  const split=$("#split"),gut=$("#gutter"),DEF=46,set=v=>{v=Math.max(25,Math.min(75,v));split.style.setProperty("--listw",v+"%");gut.setAttribute("aria-valuenow",Math.round(v));return v};
+  let w=set(+store.get("listw",DEF)||DEF);
+  gut.addEventListener("pointerdown",e=>{if(e.button!==0)return;e.preventDefault();gut.setPointerCapture(e.pointerId);gut.classList.add("drag");split.classList.add("dragging")});
+  gut.addEventListener("pointermove",e=>{if(!gut.classList.contains("drag"))return;const r=split.getBoundingClientRect();w=set((e.clientX-r.left)/r.width*100)});
+  const end=()=>{if(!gut.classList.contains("drag"))return;gut.classList.remove("drag");split.classList.remove("dragging");store.set("listw",w)};
+  gut.addEventListener("pointerup",end);gut.addEventListener("pointercancel",end);
+  gut.addEventListener("dblclick",()=>{w=set(DEF);store.set("listw",w)});
+  gut.addEventListener("keydown",e=>{if(e.key==="ArrowLeft"||e.key==="ArrowRight"){e.preventDefault();e.stopPropagation();w=set(w+(e.key==="ArrowRight"?3:-3));store.set("listw",w)}});
+})();
+/* an open video stays open when a live update redraws the TS (toggle does not bubble, so listen while capturing) */
+document.addEventListener("toggle",e=>{const d=e.target;if(d&&d.dataset&&d.dataset.vid){d.open?st.evOpen.add(d.dataset.vid):st.evOpen.delete(d.dataset.vid)}},true);
+function copyText(s){
+  const done=()=>toast("Copied: "+s),old=()=>{const ta=document.createElement("textarea");ta.value=s;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}ta.remove();ok?done():toast("Could not copy here: select the path and copy it",true)};
+  try{navigator.clipboard.writeText(s).then(done,old)}catch(e){old()}
+}
+document.addEventListener("keydown",e=>{
+  if(st.lb){if(e.key==="Escape")closeLb();else if(e.key==="ArrowRight"||e.key==="ArrowLeft"){st.lb.i+=e.key==="ArrowRight"?1:-1;drawLb()}else return;e.preventDefault();return}
+  if(e.key==="Escape"){if(pop){closePop();return}if(st.mobileOpen){st.mobileOpen=false;renderDetail();return}}
+  const tag=(e.target.tagName||"").toLowerCase();if(tag==="input"||tag==="textarea"||tag==="select"||pop||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(st.view==="OQ"||st.view==="DEF")return;
+  if(e.key==="j"||e.key==="ArrowDown"){e.preventDefault();move(1)}
+  else if(e.key==="k"||e.key==="ArrowUp"){e.preventDefault();move(-1)}
+});
+async function addRow(){
+  const sh=sheetOf(st.view);if(!sh||!st.db)return;
+  const mine=[...st.cases.values()].filter(c=>c.sheet===sh.key),n=Math.max(0,...mine.map(c=>num(c.id)))+1,id=(sh.prefix||sh.key+"_TS")+n;
+  const body={id,sheet:sh.key,order:Math.max(0,...mine.map(c=>c.order||0))+1,section:"Added on this page",priority:"P2",situation:"",setup:"",steps:"",expected:"",qa:"",result:"",remarks:"",reviewed:false,source:"",updatedAt:new Date().toISOString()};
+  if(st.uid)body.updatedBy=st.uid;
+  try{await st.db.doc("cases/"+id).set(body);st.cases.set(id,body);renderAll();select(id,{mobile:true});toast("Added "+id);setTimeout(()=>{st.editText.add(id+"|steps");renderDetail(true)},50)}
+  catch(e){toast("Could not add the row: "+(e&&e.message||"try again"),true)}
+}
+
+/* ---------------- live data ---------------- */
+const use=n=>(window.claude&&typeof window.claude.use==="function")?window.claude.use(n):Promise.resolve(null);
+(async()=>{
+  renderAll();
+  const db=await use("db");
+  if(!db){$("#liveText").textContent="Not connected";$("#list").innerHTML=`<div class="emptybox">Open this page on claude.ai, signed in with access to it, to load the test scenarios.</div>`;return}
+  st.db=db;st.user=await use("user");
+  if(st.user){try{st.uid=await st.user.id()}catch(e){}try{const w=await st.user.can("data.write");if(w===false){st.canWrite=false;banner("You can view this page but not change it.")}}catch(e){}}
+  const dead=()=>{$("#dot").className="dot";$("#liveText").textContent="Connection lost · reload"};
+  let raf=0;const later=()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;renderAll()})};
+  db.collection("sheets").limit(100).onSnapshot(s=>{s.docChanges().forEach(ch=>{if(ch.type==="removed")st.sheets.delete(ch.doc.id);else st.sheets.set(ch.doc.id,{...ch.doc.data(),key:ch.doc.id})});later()},dead);
+  db.collection("cases").limit(1000).onSnapshot(s=>{
+    st.live=true;$("#dot").className="dot on";$("#liveText").textContent=s.metadata&&s.metadata.fromCache?"Syncing":"Live";
+    /* an older "NOT RUN" value reads as Not run on screen; the stored value is left as it is */
+    s.docChanges().forEach(ch=>{if(ch.type==="removed")st.cases.delete(ch.doc.id);else{const d={...ch.doc.data(),id:ch.doc.id};if(d.result==="NOT RUN")d.result="";st.cases.set(ch.doc.id,d)}});
+    if(st.sel&&!st.cases.has(st.sel)&&s.docChanges().length>50)st.sel=null;
+    later();if(st.sel)watchRuns();
+  },dead);
+  db.collection("questions").limit(500).onSnapshot(s=>{s.docChanges().forEach(ch=>{if(ch.type==="removed")st.oqs.delete(ch.doc.id);else st.oqs.set(ch.doc.id,{...ch.doc.data(),id:ch.doc.id})});later()},()=>{});
+  db.collection("tickets").limit(500).onSnapshot(s=>{s.docChanges().forEach(ch=>{if(ch.type==="removed")st.tickets.delete(ch.doc.id);else{const d=ch.doc.data()||{};st.tickets.set(ch.doc.id,{...d,key:d.key||ch.doc.id})}});later()},()=>{});
+  db.doc("settings/board").onSnapshot(s=>{st.settings=(s.exists&&s.data())||{};later()},()=>{});
+  db.collection("testdata").limit(1000).onSnapshot(s=>{s.docChanges().forEach(ch=>{if(ch.type==="removed")st.td.delete(ch.doc.id);else st.td.set(ch.doc.id,ch.doc.data()||{})});later()},()=>{});
+})();
+</script>
+
+</body></html>

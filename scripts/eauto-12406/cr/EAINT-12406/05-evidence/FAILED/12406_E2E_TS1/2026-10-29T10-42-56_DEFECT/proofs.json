@@ -1,0 +1,115 @@
+{
+  "ts": "12406_E2E_TS1",
+  "run": "eaint-12406-retest-sretest-20261029-1835-A-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Allianz quotation with the Allianz logo, selectable",
+      "shows": "All Quotations: Allianz card, logo \"Allianz logo\", premium RM20,200 / RM20 / RM1,203.08 / RM862.16, Buy offered (cards: Lonpac > Allianz > Tokio Marine)",
+      "match": true,
+      "shot": "01-all-quotations-allianz-card.png",
+      "at": "29/10/2026, 18:35:43",
+      "url": "/ia/car-insurance/choose-your-insurance/4b22046e-13eb-422b-bc31-d4b19676ac14",
+      "side": "Secarang"
+    },
+    {
+      "point": "E1",
+      "expected": "Add-ons opens for Allianz",
+      "shows": "Add-ons after Buy on Allianz: 13 add-on card(s) [Allianz Road Rangers (in plan); Windscreen, Windows and Sunroof; Motor Enhanced Road Warrior; Legal Liability of Passengers for Negligent Acts; Strike, Riot and Civil Commotion (SRCC); Legal Liability to Passengers; Private Hire Car (e-Hailing); Inclusion of Special Perils; Compensation for Assessed Repair Time (CART); Waiver of Betterment Contribution; Car Break-In/Robbery; Key Care; Motorist Personal Accident (MPA)]; page names Allianz: yes",
+      "match": true,
+      "shot": "02-add-ons-allianz.png",
+      "at": "29/10/2026, 18:35:49",
+      "url": "/ia/car-insurance/choose-addons/4b22046e-13eb-422b-bc31-d4b19676ac14",
+      "side": "Secarang"
+    },
+    {
+      "point": "E2",
+      "expected": "Confirmation for Allianz, with its premium",
+      "shows": "Confirmation names Allianz: yes; other insurer named: none; Total Premium RM941.13",
+      "match": true,
+      "shot": "03-confirmation-allianz.png",
+      "at": "29/10/2026, 18:35:55",
+      "url": "/ia/car-insurance/confirm-payment/4b22046e-13eb-422b-bc31-d4b19676ac14",
+      "side": "Secarang"
+    },
+    {
+      "point": "E3",
+      "expected": "Payment page shows the same four tiles as for a Lonpac purchase: Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab (observed)",
+      "shows": "Payment page tiles: \"Credit or Debit Card\", \"FPX Online banking\", \"SPayLater\", \"PayLater by Grab\"",
+      "match": true,
+      "shot": "04-payment-tiles.png",
+      "at": "29/10/2026, 18:35:57",
+      "url": "/ia/car-insurance/payment-methods/4b22046e-13eb-422b-bc31-d4b19676ac14",
+      "side": "Secarang"
+    },
+    {
+      "point": "E4",
+      "expected": "Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' and a [Receipt] download",
+      "shows": "Success: \"Thank you for your purchase!\" shown; Receipt No. \"26102921300036\"; Purchase Date \"29 Oct 2026 - 6:35 PM\"; Payment Method \"Online Banking - RHB Bank\"; [Receipt] shown",
+      "match": true,
+      "shot": "05-success-page.png",
+      "at": "29/10/2026, 18:36:59",
+      "url": "/ia/car-insurance/payment-success/4b22046e-13eb-422b-bc31-d4b19676ac14",
+      "side": "Secarang"
+    },
+    {
+      "point": "E5",
+      "expected": "Receipt Total Premium = the total on the Confirmation page",
+      "shows": "Receipt Total Premium RM 941.13; Confirmation Total Premium RM 941.13",
+      "match": true,
+      "shot": "07-receipt-total-premium.png",
+      "at": "29/10/2026, 18:37:12",
+      "url": "/ia/car-insurance/payment-success/4b22046e-13eb-422b-bc31-d4b19676ac14",
+      "side": "Secarang"
+    },
+    {
+      "point": "E6",
+      "expected": "CIBO > Transaction Management row: Ins. Co. Allianz with agency badge Serba Sentral, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode the same as a Lonpac FPX payment on /ia/ (today bare \"Fiuu\"; the SA format \"Fiuu | Online Banking – FPX-<Bank Name>\" is QA-Issue EAINT-12566, On Hold: not a 12406 failure)",
+      "shows": "Ref BR60006357: Ins. Co. \"Allianz Serba Sentral\", Payment \"RM…Paid 29-10-2026 18:36\", Payment Mode \"Fiuu | Online Banking – FPX-RHB Bank\", Transaction Status \"Insurance created\"",
+      "match": true,
+      "shot": "08-cibo-listing-row.png",
+      "at": "29/10/2026, 18:37:22",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E7",
+      "expected": "CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with Allianz's own insurer code (code recorded, Q30)",
+      "shows": "Cover Note No \"-\", Policy No \"-\", Payment Ref ID \"ALZ20261029SFX0035\" (insurer code \"ALZ\")",
+      "match": false,
+      "shot": "09-cibo-details-cover-note-policy-ref.png",
+      "at": "29/10/2026, 18:37:26",
+      "url": "/cibo/transaction-management/transaction-details/4b22046e-13eb-422b-bc31-d4b19676ac14",
+      "side": "CIBO"
+    },
+    {
+      "point": "E8",
+      "expected": "e-Certificate and Receipt buttons shown",
+      "shows": "document buttons: Receipt",
+      "match": false,
+      "shot": "10-cibo-document-buttons.png",
+      "at": "29/10/2026, 18:37:28",
+      "url": "/cibo/transaction-management/transaction-details/4b22046e-13eb-422b-bc31-d4b19676ac14",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "on the site: Secarang (https://staging.secarang.com/ia/)",
+    "Add-ons amounts (recorded): Allianz Road Rangers FREE REMOVE | Windscreen, Windows and Sunroof Sum Insured RM1,400.00 RM210.00 ADD | Motor Enhanced Road Warrior No. of Car Replacement Day Plan A - 5 days Plan B - 6 days Plan C - 7 days RM0.00 ADD | Legal Liability of Passengers for Negligent Acts RM7.50 ADD | Strike, Riot and Civil Commotion (SRCC) RM0.00 ADD | Legal Liability to Passengers RM30.15 ADD | Private Hire Car (e-Hailing) RM766.81 ADD | Inclusion of Special Perils RM40.40 ADD | Compensation for Assessed Repair Time (CART) Assessment Period 7 days 14 days 21 days Daily Compensation RM50 RM100 RM200 RM0.00 ADD | Waiver of Betterment Contribution RM120.00 ADD | Car Break-In/Robbery RM3.00 ADD | Key Care RM7.00 ADD | Motorist Personal Accident (MPA) Plan Plan A RM30.00 ADD",
+    "Confirmation summary (recorded): {\"Insurer\":\"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\",\"Plan\":\"Comprehensive\",\"MV Coverage\":\"RM20,200\",\"Coverage Period\":\"11 Nov 2026 - 10 Nov 2027\",\"Excess\":\"RM240.00\",\"Total Price\":\"RM941.13\",\"Plate No\":\"HXA0011A\",\"Model\":\"HONDA HR-V\",\"Year\":\"2024\",\"Seat\":\"5\",\"cc\":\"1298\",\"Variant\":\"V MY14 FACELIFT\",\"Transmission\":\"1 SP AUTOMATIC CONSTANTLY VARIABLE (\",\"Current Coverage\":\"11 Nov 2025 - 10 Nov 2026 Active\",\"Basic Premium\":\"RM1,203.08\",\"NCD 30%\":\"- RM360.92\",\"All Drivers\":\"RM20.00\",\"Premium After NCD\":\"RM862.16\",\"Allianz Road Rangers\":\"FREE\",\"Gross Premium\":\"RM862.16\",\"Service Tax 8%\":\"RM68.97\",\"Stamp Duty\":\"RM10.00\",\"Total Premium\":\"RM941.13\"}",
+    "payment window allowed: fpx success",
+    "window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/4b22046e-13eb-422b-bc31-d4b19676ac14/fpx_rhb",
+    "downloaded: secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "purchase: FPX fpx_rhb, TAC typed, window closed: true; Receipt No 26102921300036",
+    "signed in: CIBO (cibo)",
+    "handed on for later TS: allianzPurchase = {\"ref\":\"BR60006357\",\"plate\":\"HXA0011A\",\"receiptNo\":\"26102921300036\",\"since\":\"2026-10-29T10:35:18.154Z\",\"secarangReceipt\":\"C:\\\\Users\\\\Azfar\\\\Documents\\\\Github Pro\\\\eauto-qa-azfar\\\\cr\\\\EAINT-12406\\\\04-runs\\\\eaint-12406-retest-sretest-20261029-1835-A-c1\\\\ts\\\\12406_E2E_TS1\\\\downloadable (after)\\\\secarang-receipt-HXA0011A-PERSONAL-DATA.pdf\",\"printView\":{\"offered\":true,\"text\":\"HXA0011A\\nnull HONDA HR-V\\nReceipt No 26102921300036\\nPurchase Details\\nReceipt No\\n26102921300036\\nPurchase Date\\n29 Oct 2026 - 6:35 PM\\nTotal Price\\nRM941.13\\nPayment Method\\nOnline Banking - RHB Bank\\nExcess\\nRM240.00\\nCar Owner Details\\nFull Name\\nQA SECARANG TEST\\nIC No\\n900101-14-5671\\nEmail\\namirul.azfar@modefair.com\\nMobile Phone No.\\n+60100000001\\nGender\\nMALE\\nCorrespondence Address\\nNO 1 JALAN UJIAN QA TAMAN UJIAN KUALA LUMPUR, 55000 KUALA LUMPUR, WILAYAH PERSEKUTUAN\\nCar Details\\nPlate No\\nHXA0011A\\nMake\\n-\\nModel\\nHONDA HR-V\\nYear\\n2024\\nSeat\\n5\\ncc\\n1298\\nVariant\\nV MY14 FACELIFT\\nTransmission\\n1 SP AUTOMATIC CONSTANTLY VARIABLE (\\nAllianz Insurance - Comprehensive\\n\\nMarket Value Coverage: RM20,200\\n\\nBasic Premium\\nRM1,203.08\\nNCD 30%\\n- RM360.92\\nAll Drivers\\nRM20.00\\nPremium After NCD\\nRM882.16\\nAdd-Ons\\nAllianz Road Rangers\\nFREE\\nGross Premium\\nRM862.16\\nService Tax 8%\\nRM68.97\\nStamp Duty\\nRM10.00\\nTotal Premium\\nRM941.13\\nExclusively by agent Serba Sentral Sdn Bhd\\nPIAM ID: 195379-01\\n● REC 18:37:06\",\"shot\":\"C:\\\\Users\\\\Azfar\\\\Documents\\\\Github Pro\\\\eauto-qa-azfar\\\\cr\\\\EAINT-12406\\\\04-runs\\\\eaint-12406-retest-sretest-20261029-1835-A-c1\\\\ts\\\\12406_E2E_TS1\\\\06-success-print-receipt-view-PERSONAL-DATA.png\"}}",
+    "Allianz insurer code in the Payment Ref ID (recorded, Q30): \"ALZ\"",
+    "More Info (recorded): Submission status to JPJ \"-\"; step 8 (JPJ status after the job, Check JPJ Status) is a later manual look",
+    "payment window 1 on the TS video 00:47.7–00:55.8",
+    "payment window video laid into video_12406_E2E_TS1.webm (1 window(s), picture-in-picture, bottom right)"
+  ],
+  "opened": [
+    "about:blank"
+  ]
+}

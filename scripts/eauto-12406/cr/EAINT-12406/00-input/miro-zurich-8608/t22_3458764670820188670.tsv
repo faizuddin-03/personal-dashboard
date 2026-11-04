@@ -1,0 +1,70 @@
+"8/8
+
+ Home Page"							
+TS No.	Vehicle Type	Area To Test	Test Scenario	Expected Result	QA	Result	Date
+TS_SHP_1	Car	Mismatching Vehicle Number and Owner IC	Enter valid VN with wrong IC or vice versa	"Display popup:
+
+Owner's ID no. & car plate no. do not match
+
+Try again
+
+Do reach out to us via email or chat if you find this particular to be inaccurate."	Faiz	Pass	
+TS_SHP_2		Vehicle with active insurance with more than 2 months validity	Enter VN that still has active insurance with more than 2 months of validity	"Display popup;
+
+Text:
+You may renew as early as 2 months.
+This policy will expire on [date]
+Leave your contact details if you wish to be reminded when the time comes
+Input Fields:
+Name
+Email
+Mobile Phone No"	Azfar	Pass	Need to find vehicle with valid insurance
+TS_SHP_3		Invalid Postal Code	"Enter invalid postcode:
+e.g.= 00000"	"Display popup:
+
+Invalid postal code
+
+Try again
+
+Do reach out to us via email or chat if you find this particular to be inaccurate."	"Faiz
+Azfar"	Pass	Able to use all the invalid postcode and proceed to the next page
+TS_SHP_4		Invalid Vehicle Number	Enter a random motorcycle vehicle number	"Display Popup:
+
+Sorry, we're unable to retrieve your vehicle information.
+
+Try again
+
+Do reach out to us via email or chat if you find this particular to be inaccurate."	"Faiz
+Azfar"	Pass	Able to proceed even when using Motorcycle VN
+TS_SHP_5	Motorcycle	Mismatching Vehicle Number and Owner IC	Enter valid VN with wrong IC or vice versa	"Display popup:
+
+Owner's ID no. & car plate no. do not match
+
+Try again
+
+Do reach out to us via email or chat if you find this particular to be inaccurate."	Faiz	Pass	
+TS_SHP_6		Vehicle with active insurance with more than 2 months validity	Enter VN that still has active insurance with more than 2 months of validity	"Display popup;
+
+Text:
+You may renew as early as 2 months.
+This policy will expire on [date]
+Leave your contact details if you wish to be reminded when the time comes
+Input Fields:
+Name
+Email
+Mobile Phone No"	Azfar	Pass	Need to find vehicle with valid insurance
+TS_SHP_7		Invalid Postal Code	"Enter invalid postcode:
+e. g. = 00000"	"Display popup:
+
+Invalid postal code
+
+Try again
+
+Do reach out to us via email or chat if you find this particular to be inaccurate."	Azfar	Pass	Able to use all the invalid postcode and proceed to the next page
+TS_SHP_8		Invalid Vehicle Number	Enter a random car vehicle number	"Display Popup:
+
+Sorry, we're unable to retrieve your vehicle information.
+
+Try again
+
+Do reach out to us via email or chat if you find this particular to be inaccurate."	Azfar	Pass	Able to proceed even when using Car VN

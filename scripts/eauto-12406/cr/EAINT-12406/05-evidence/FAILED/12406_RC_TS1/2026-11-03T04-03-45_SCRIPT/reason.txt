@@ -1,0 +1,4 @@
+12406_RC_TS1 — the script stopped before the end (spec problem — fix and re-run)
+run EAINT-12406-dash-20261103-120229, staging /ia, 03/11/2026, 12:03:45 MYT
+
+- stopped before the end: Error: 12406_RC_TS1 needs the purchase that 12406_E2E_TS1 hands on as "allianzPurchase" (RC_TS1 reads its Secarang receipt). Run 12406_E2E_TS1 first (sheet E2E); see 02-plan/coverage.md.

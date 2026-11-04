@@ -1,0 +1,393 @@
+
+# Secarang & CIBO QA Knowledge
+ · 
+Secarang is the public (B2C) car and motorcycle insurance site. It has no user login, pays through the Fiuu gateway, and records every transaction in CIBO. CIBO is the separate back office that records Secarang and eAuto insurance transactions. This doc collects what the eAuto QA knowledge base knows about both, with a source for each fact. Items marked [unconfirmed] are leads, not facts. Logins, passwords and real IC numbers are left out on purpose.
+## 1. What Secarang is
+Secarang is a separate public insurance site, not an eAuto portal. A member of the public types a plate number, an IC or SSM number and a postcode, picks an insurer, pays, and gets a receipt.
+- No user login. The only gate on staging is a site password. [source: secarang-insurance automation, sessionFixture.ts]
+- Three systems, shared data. eAuto, Secarang and CIBO are separate systems. CIBO is the back office that holds transactions from both eAuto and Secarang. [QA team, 2026-08-13; SRD EAINT-12151 §2.1.1 assumption 1: "CIBO covers both eAuto and Secarang insurance transactions"]
+- Every Secarang test is a two-system test: Secarang for the purchase, CIBO for the record. Secarang has no transaction listing of its own [unconfirmed].
+- Built as an Angular single-page app. Fields use formcontrolname, components use app-* tags. Screen URLs after /car-insurance are not recorded.
+- Shares insurers with eAuto, and all insurers share one payment gateway. So one insurer is enough for a payment-channel test. [QA team via Teams, 2026-09-11]
+ |  | eAuto UCD insurance
+ | Secarang
+ | Who buys
+ | A dealer (UCD) logged into the portal
+ | The public, no login
+ | Test IDs
+ | Fake IC/SSM in a real format
+ | Real IC and SSM numbers [QA team, 2026-08-12]
+ | Payment
+ | PAY NOW button + popups, no gateway
+ | Fiuu hosted gateway in a popup
+ | Record afterwards
+ | UCD listing, BO listing, CIBO
+ | CIBO only
+ | Page technology
+ | Legacy jQuery pages, duplicate ids
+ | Angular single-page app
+## 2. Environments and access
+Secarang staging runs at https://staging.secarang.com/<site>; the two sites in use are /ia and /preprod. Ask the dev which site holds a CR before the first run.
+- Entry link: https://staging.secarang.com/ia/car-insurance (car) and <base>/motorcycle-insurance (motorcycle). Every later screen is reached by clicking.
+- Site password: a password-only page, no username. The same password works on /ia and /preprod. [QA team, 2026-10-19] Ask the QA team for it; it is not in this doc.
+- The gate can come back on the Fiuu popup and again on the success page.
+- Host per CR: EAINT-12406 (Allianz) is tested on staging/ia. [QA team, 2026-10-27] The EAINT-8608 Zurich branch was on /preprod.
+- /ia vs /preprod data: /ia quotes made-up plates (e.g. HXA0001A–HXA0020A); /preprod refuses them with "Sorry, we're unable to retrieve your vehicle information." [live run, 2026-10-19]
+- Payment mode per site: mock payment was enabled on /ia only on 2026-08-14 (Fiuu sandbox IP issue); /preprod needs the dev to enable it. On 2026-05-20 /ia was linked to production BoldPay; the QA lead said not to pay for Macrokiosk insurance transactions then. Check before paying. [Teams, 2026-05-20 and 2026-08-14]
+- Backend hosts: secarang-backend at staging/ins, CIBO frontend at staging/cibo (https://staging.secarang.com/cibo).
+- Production regression: quote only, then stop at the payment page (Step 4 or 5). QA cannot make a paid Secarang transaction in production. [Deployment Checklist, 20261020 AM R43]
+## 3. Purchase flow
+The purchase runs in six steps after the home form: Car Details → All Quotations → Add-ons → Confirmation → Payment → Success. [Miro board EAINT-8608; secarang-insurance automation]
+- Home form. Tab Car or Motorcycle, then Private or Company. Three fields: Vehicle Plate No., Owner IC / Company SSM, Postal Code. Click [Get quotation]; a "Bear with us" loader shows.
+- The three inputs have no id or name; automation finds them by position.
+- Car and motorcycle plates can go through either tab. [BA via Miro EAINT-8608]
+- Step 1 — Car Details ("Are these your vehicle details?"). Not always shown. Shows Plate, Make, Model, Year, Seat, CC, Variant, Transmission, Current Coverage, NCD. Tick the declarations; pick a variant if a dropdown shows (most cars have none). [Get quotation] starts disabled while details validate.
+- Step 2 — All Quotations. One card per insurer. A card can be available, or say "Quotation unavailable". Cards can take 10–20 s, sometimes a minute.
+- Sum insured dropdown on a card changes the price.
+- The postcode can be edited here with the [Edit] button.
+- Step 3 — Add-ons. Add-on cards with ADD / REMOVE. Zurich pre-ticks "All Drivers" with a popup. For motorbikes, "All Riders" is mandatory. A reminder popup may show after Continue.
+- Step 4 — Confirmation ("Confirm and Pay"). Owner name, email, phone, address 1–3, optional discount code. Changing gender must re-price. The page shows IC with dashes and phone with +60.
+- Step 5 — Payment ("How would you like to pay?"). Pick a channel; Fiuu opens in a popup window. See section 5.
+- Step 6 — Success. Main window shows "Thank you for your purchase!" with Receipt No, Purchase Date, Payment Method, and a [Receipt] PDF download. A WhatsApp and an email receipt follow.
+Branches to test:
+- Error after the home form: popup "Sorry, we're unable to retrieve your vehicle information." (e.g. fake company SSM).
+- No insurer quotes: popup "Ops, there is no instant quotation available from our insurers for your car at the moment."
+- "Kindly confirm your navigation" popup ("By leaving this page, you would need to restart your purchasing process") on the car-details page. Not a vehicle answer.
+- Payment failed → back on payment page with "Unsuccessful payment You may try again."; no receipt.
+- Payment cancelled → back on payment page, quotation kept. [SRD EAINT-12107 REQ-008]
+- Company owner: "there are no insurance in secarang that supports company" [QA team, 2026-10-20]. Allianz quotes only individual owners on renewal. [SRD EAINT-12406 REQ-002]
+- Lonpac 14-day grace: "Policy expired and is still within 14-day renewal period | Able to purchase Lonpac insurance"; after 14 days, not possible. [TS EAINT-9062 rows 2-3]
+- Discount line on receipt / email / WhatsApp shows only for codes MF / EAUTO / ER; hidden for other codes and when no code. [TS EAINT-8331/8334/7199 rows 14, 17]
+## 4. Insurers
+The insurer list and order change often; always take the order from the current ticket. After EAINT-12406 the expected order is Lonpac > Allianz > Tokio Marine. [SRD EAINT-12406 v1.1 REQ-004]
+ | Insurer
+ | Agency in CIBO
+ | Notes
+ | Source
+ | Lonpac
+ | Pemaju Eksklusif
+ | Default insurer in the 12107 tests. Hidden from Secarang 14.07.2025, back later. Name shortened to "Lonpac Insurance Bhd" (EAINT-12175, live 2026-08-11)
+ | SRD EAINT-8608 v1.2; SRD EAINT-12175
+ | Tokio Marine
+ | Pemaju Eksklusif
+ | Showed "quotation unavailable" for a private car on /ia (2026-10-20). Receipt BRN "198601000381 (149520-U)"
+ | live run 2026-10-20; SRD EAINT-12406 REQ-010
+ | Allianz
+ | Serba Sentral
+ | Switched off May 2025, removed from screens Sept 2025, back via EAINT-12406. Individual owners on renewal only. New receipt BRN "200601015674 (735426-V)"
+ | SRD EAINT-12406 v1.1 §2.2.2, REQ-002, REQ-010
+ | Takaful Malaysia
+ | Bintang Prospek
+ | Often not quotable on staging. Documents cover Private Car only
+ | TS EAINT-8331 remarks; EAINT-12078
+ | Zurich / Zurich Takaful
+ | Pemaju Eksklusif (per EAINT-8608 notes)
+ | EAINT-8608 onboarding, 15 QA man-days. PIAM ID to check: MTA-J55282
+ | Miro EAINT-8608
+ | RHB
+ | Bintang Prospek
+ | Hidden from Secarang since 19.05.2025
+ | SRD EAINT-8608 v1.2
+ | eTiqa
+ | Serba Sentral
+ | Listed in agency pre-req only
+ | TS EAINT-8331 rows 23-25
+Agency pre-req, verbatim: "Bintang Prospek (RHB / Takaful) - Pemaju Eksklusif (Lonpac / Tokio Marine) - Serba Sentral (Allianz / eTiqa)". [TS EAINT-8331/8334/7199 rows 23-25]
+- No-quote card (after 12406): "Show "Allianz – Quotation unavailable" card, same as Lonpac and Tokio Marine today. Card appears after Tokio Marine." [REQ-003] The older EAINT-9024 rule "Display ONLY the top insurance" should not be reused.
+- Static pages that list insurers and follow the same order: Home page logos, About Us > Our partnership, FAQs > "Which insurers can I get instant quotation from?", Support > "Need to contact insurance company?". [SRD EAINT-12406 §2.2.2]
+- Zurich add-ons: All Drivers, All Rider, Legal Liability to Passengers, Passenger Liability Cover, CART, Inclusion of Special Perils, Legal Liability of Passengers for Negligent Acts, Breakage of Glass. [Miro EAINT-8608]
+## 5. Payment (Fiuu)
+Secarang pays through the Fiuu gateway. On staging/ia the page shows four tiles: "Credit or Debit Card | FPX Online banking | SPayLater | PayLater by Grab". [live run, 2026-10-19] Secarang and eAuto use different Fiuu merchant accounts.
+ | Channel (tile)
+ | What opens
+ | How to set the outcome
+ | Proven on /ia
+ | FPX Online banking
+ | Bank grid, then the Fiuu Bank Simulator popup (own username + password)
+ | Status dropdown (Approved = 00), TAC shown on page, copy into "Enter TAC", [Pay now]
+ | Yes — receipt 26101921300015, "Online Banking - RHB Bank"
+ | Credit or Debit Card
+ | Fiuu card form popup (Card Number, Expiry, CVV); no status control
+ | Use a Fiuu sandbox test card, then 3D Secure page "For testing: use OTP 123456"
+ | Yes — receipt 26102021300019, Payment Method "Credit"
+ | PayLater by Grab (logo alt "GrabPay")
+ | Fiuu GrabPay sandbox popup
+ | select#status_code Success / Failed, [Pay]
+ | Yes — receipt 26101921300018, "GrabPay"
+ | SPayLater (logo alt "ShopeePay")
+ | Popup with a QR: "Kindly scan the QR code below to proceed with payment."
+ | Open the QR link (bank-simulator.fiuu.com/shopeepay/spsimulator), pick "✓ Success" or "✗ Failed", [PROCEED TO PAY]
+ | Yes — receipt 26102021300005, "ShopeePay"
+- No "Full Amount" choice on Secarang, although SRD EAINT-12107 v1.1 REQ-001/002 names "ShopeePay" / "GrabPay" with Full Amount + BNPL options. Tile names on staging differ from the SRD. [live run, 2026-10-19]
+- Test cards that work: VISA 4456 5300 0000 1096 and Master 5200 0000 0000 1096 (expiry 12/26, CVV 111) → 3D Secure OTP 123456. Visa 4111 1111 1111 1111 and Master 5105 1051 0510 5100 are rejected: "P10: Sorry, Your Credit Card Number or CVV or expiration date is not valid". [live runs, 2026-10-19/20]
+- 3D Secure [CANCEL] leaves the transaction Pending ("for requery testing").
+- FPX bank codes used: fpx_mb2u (Maybank2u, default), fpx_cimbclicks, fpx_amb, fpx_pbb, fpx_rhb, fpx_hlb, fpx_hsbc, fpx_abb, fpx_bkrm, fpx_bsn. Whether Secarang shows exactly these ten is [unconfirmed].
+- FPX status codes: 00 = approved; any other code (51, 80, BC, 22, 99, OE, OF, OA …) is a negative case.
+- Failed (any channel) → back on payment page: "Unsuccessful payment You may try again.", no receipt. Another channel can be picked. [REQ-007; live 2026-10-20]
+- Cancel ShopeePay: on the QR page click [Cancel the transaction] → "Are you sure?" / "Cancel this payment." → only [OK] cancels. Main window stays on "How would you like to pay?" with the same vehicle and premium. Before [OK] the main window looks the same, so being back on the payment page alone does not prove a cancel. [live 12107_TS10, 2026-10-20]
+- After ShopeePay [Pay] the simulator tab lands on an /ia/auth/login?returnUrl=/payment/check/<receipt> page; ignore it. The result shows in the main window.
+- Real-device legs the sandbox cannot replace: ShopeePay completes in the Shopee app (REQ-009); GrabPay asks the customer to approve the login in the Grab app (REQ-010).
+- Sandbox money, real record: a sandbox payment still creates a real Secarang record on that host, and it shows in CIBO (Paid / Failed).
+- No amount limit on the e-wallet rails (REQ-004); BNPL tenure is Shopee's / Grab's business, not stored by Secarang (§2.1.1 assumption 3).
+## 6. CIBO — where Secarang transactions are recorded
+CIBO is the only place a Secarang purchase can be checked after payment. Every Secarang payment test needs a CIBO check. Staging CIBO for Secarang is https://staging.secarang.com/cibo.
+- Modules that hold Secarang rows: Transaction Management (Transaction Listing → Transaction Details), Payment Management, Payment Report, Commission Report, CRM. [Miro EAINT-8608; flow-cibo notes]
+- Platform filter / badge: Secarang or eAuto; Macrokiosk renewals show Secarang-MK. [Jira EAINT-8669, EAINT-12218]
+- UCD columns show a literal "-" on Secarang rows (UCD, UCD Name, Discount Code, Road Tax, Remark). This is a rule, not missing data. Any CR adding a UCD column needs a Secarang row to prove the "-" case. [BA testing plan, EAINT-12058, 2026-08-13]
+- Payment Mode history: "RMS" = Secarang before the Fiuu cutoff; "Fiuu" = Secarang after it; "Bold Pay" = Macrokiosk transactions; "RHB" = eAuto. So BoldPay is the Macrokiosk gateway, not a Secarang one. [SharePoint TS EAINT-11541 rows 3-10]
+- Payment Mode format after EAINT-12327: <gateway> | <method> – <details>. ShopeePay Full Amount and SPayLater both show as Fiuu | eWallet – ShopeePay; the "ShopeePay - SPayLater" filter was dropped. [Teams, EAINT-12107 CR chat, 2026-10-20]
+- FPX format (SA, 2026-10-20): "Fiuu | Online Banking – FPX-Bank Name". Staging still showed "Fiuu" alone → raised as QA-Issue EAINT-12566 (On Hold).
+- "EW" in Payment Reference ID applies to new data only. [2026-10-20]
+- Payment Report lists insured transactions only, and is slow: about 2 minutes per reference search.
+- Commission: Secarang commission follows Discount Code Management; eAuto gets 10% automatically. [SharePoint TS #140 row 10]
+- Agency in reports: Allianz sales appear "under agency Serba Sentral in CIBO payment and commission reports". [SRD EAINT-12406 v1.1 §2.1.3 b]
+- A Secarang transaction taken to Step 4 or 5 creates a CIBO record even without payment. [Deployment Checklist, 20250630 R53]
+## 7. CIBO overview
+CIBO is its own portal, not part of eAuto and not part of Secarang. It has its own Jira component (CIBO) in EAINT. [QA team, 2026-08-13]
+- One listing, two sources. The Transaction Listing holds eAuto and Secarang insurance transactions in one table.
+- Third place to verify eAuto insurance. An eAuto insurance transaction is checked in the UCD portal, the BO portal, and CIBO. The EAINT-11864 TS says: "Cross check the details in the relevant pages: a. UCD Insurance Transaction and Details page · b. BO Insurance Transaction and Details page · c. CIBO". A change in eAuto can surface as a CIBO defect, and the other way round.
+- Environment is per ticket. Examples: EAINT-12058 used eAuto at staging/uat4 with Secarang at staging/cibo; EAINT-12151 used cibo/staging. Read the environment from the ticket. [QA team, 2026-08-14]
+- Login form: Login ID + password; the Login button stays disabled until both are filled. Ask the QA team for a staging admin login.
+- Sidebar routes: /cibo/dashboard, user-account-management, crm, transaction-management, payment-management, referred-risk-log, payment-report, commission-report, visitor-management, agent-management, discount-management, macrokiosk-template-management. [live staging, 2026-10-16]
+Roles after EAINT-9840 [SharePoint TS #138 EAINT-9840, rows 2, 24, 34, 52, 54]:
+ | Role
+ | Modules
+ | Admin
+ | All: Dashboard, User Account Management, CRM, Transaction Management, Payment Management, Referred Risk Log, Payment Report, Commission Report, Visitor Management, Agent Management, Discount Code Management
+ | Admin Insurance
+ | Dashboard, Transaction Management, Payment Report, Commission Report, Discount Code Management
+ | Temporary Insurance Staff
+ | Dashboard, Transaction Management, Payment Report, Commission Report
+ | Ops Support
+ | Dashboard, Transaction Management. "The Print & Export button will be hidden; user is unable to download the Transaction Listing"
+## 8. CIBO pages
+Three pages carry most CR testing: Transaction Management, Payment Management and Payment Report. "Transaction Management" is the page; "Transaction Listing" is the table on it; "Transaction Management Listing" names the same table. [SRD EAINT-12327 §2.2.3; SRD EAINT-12151 §2.2.1]
+### Transaction Management
+- Filters: Platform, Date Range Type, date range, Insurance Company, Transaction Status, Submission to JPJ Status, Road Tax, Discount Code, free-text Search. [Search] and "Clear all". 20 rows per page.
+- Example filter values: Platform Secarang / eAuto; Insurance Company Pemaju Ekslusif (an agency label); Transaction Status Insurance Created; JPJ Accepted; Road Tax Exempted; Discount Code Included. [TS EAINT-12151 TS04/TS05]
+- Listing columns, in order: # · Transaction Ref. No. · Transaction Created Date · Insurance Created Date · UCD · UCD Name · Vehicle No · Vehicle Type · Insured · Payment · Payment Mode · Discount Code · Road Tax · Ins. Co. · Transaction Status · JPJ · Remark. [EAINT-12151 mockup; SRD EAINT-12327 REQ-003]
+- Cell shapes: Ref No. with a platform badge; Insured = name over IC; Payment = amount, Paid/Pending badge, then DD-MM-YYYY HH:mm; Ins. Co. = insurer over agency badge.
+- Print and Export buttons. Transaction Details opens per row.
+### Transaction Management export (CSV)
+- File name Transaction_Management_<yyyyMMddHHmm>.csv, UTF-8 BOM. Line 1 = title, line 2 blank, line 3 = header. [SharePoint TS #140 EAINT-9979 row 2; live staging, 2026-10-16]
+- 40 columns, including Platform, Company Name, Company Registration No., UCD Name, Insured Name / ID, Gross Premium, Service Tax, Stamp Duty, Total Premium, Discount, Payment Amount, Insurance Commission Amount, Payment Status / At / Month / Year, Insurance Company, Agency, E-Certificate No. / Policy No., Coverage Type, JPJ, Remark, Special Remark.
+- Column order differs from the screen: in the CSV, Payment Mode sits between Discount Code and Payment Amount (RM). [live staging, 2026-10-16]
+- Export is a second read path. A new listing column must be checked on screen and in the export. [QA team, 2026-08-13]
+### Payment Management
+- Payment Channel filter: a checkbox tree. Group "Fiuu - eWallet" holds GrabPay, GrabPay - PayLater by Grab, ShopeePay (no SPayLater option; correct per BA, 2026-10-20).
+- Ticking the group ticks all options. Unticking one option clears the group tick; clicking the group again re-ticks all. [live, 2026-10-16]
+- Listing shows Payment Reference ID, Payment Channel (e.g. Fiuu eWallet GrabPay). Export names the column Payment Reference ID (page: Payment Ref ID) and writes Fiuu eWallet | GrabPay.
+- An empty listing downloads no file on Export.
+### Payment Report
+- Lists insured transactions only. Carries UCD Name (since EAINT-11934, live 2026-07-24), User ID, Payment Mode, Payment Ref ID.
+- Always narrow by "Insurance Created From / Till" to one week. Unfiltered or one-month searches take about 2 minutes per reference. [QA team, 2026-10-19]
+- The date fields are read-only date pickers; pick dates in the calendar. The two calendars limit each other, so when moving the window later set "Till" first.
+### Referred Risk Log and Macrokiosk Template Management
+- Referred Risk Log has an export. Macrokiosk Template Management lists the WhatsApp reminder templates (see section 11). [Jira EAINT-12218]
+## 9. CIBO business rules
+### Money columns and discount codes
+[SharePoint TS #140 EAINT-9979 rows 4-10; TS #128 EAINT-10052 rows 10-13]
+- "Gross Premium (RM) refers to total premium amount after NCD (No Claim Discount) plus any add-ons."
+- "Service Tax = Gross Premium (RM) x 8%"; stamp duty is always RM10.
+- Total Premium = total payable before discount.
+- Discount codes: "EAUTOOFF10 - Discount 10% of Gross Premium (automatically applied to eAuto transaction) 2. RJC7 - Discount 7% of Gross Premium 3. COTEAM - Discount 5% of Gross Premium 4. SCW5 - Discount 5% of Gross Premium". No code → " 0.00 ".
+- Insurance commission is "10% applied automatically to transaction made in eAuto"; Secarang commission follows Discount Code Management. Commission to sub-agent: RJC7 3%.
+- "Total Direct Cost = Discount to Customers + Commission to Sub Agent"; "Gross Profit = Insurance Commission Amount − Total Direct Cost".
+### Dates (EAINT-12151, deployed 2026-09-30)
+- New Date Range Type filter: Transaction Creation Date (renamed) or Insurance Creation Date (new). [SRD REQ-001/002]
+- Listing: "Created Date" → Transaction Created Date; new Insurance Created Date next to it, DD-MM-YYYY HH:mm when approved, - otherwise. [REQ-003/004/005]
+- Insurance Created Date = payment date-time. SRD change log: "Clarified Insurance Creation Date refers to Payment Date Time". [SRD v1.0 §1.3]
+- The Insurance Creation Date filter excludes rows with no such date. [REQ-006]
+- Export: "Created At" → Transaction Created At, new Insurance Created At right after it; Print carries the new column. [REQ-007/008/009]
+### UCD columns (EAINT-11934, EAINT-12058)
+- UCD Name sits between UCD and Vehicle No, on the listing and in the export. Secarang rows show -.
+- Records before 2025 show no UCD Name because of an earlier data migration. Known and accepted, not a defect.
+- EAINT-11934 delivered UCD Name on the Payment Report only (live 2026-07-24). The Transaction Listing half was cut and moved to EAINT-12058.
+- EAINT-12058 adds Full Name (created / paid / last update) and Login ID (paid). Only Full Name shows in CIBO; the rest are checked through dev DB screenshots. [dev, 2026-08-13]
+- An insurance row has only two actor events, create and pay. So "last update" always equals the payer; expect at most two different names.
+### Payment Mode strings (EAINT-12327)
+Format: <gateway> | <method> – <details>. Strings in force after the BA update of 2026-10-20 and SRD 12327 v1.1:
+ | Payment
+ | Payment Mode shown
+ | Source
+ | ShopeePay (Full Amount or SPayLater)
+ | Fiuu | eWallet – ShopeePay
+ | BA, Teams 2026-10-20; SRD v1.1
+ | GrabPay full amount, and GrabPay PayLater (full amount next month)
+ | Fiuu | eWallet – GrabPay – Full Amount – Single Payment
+ | BA, Teams 2026-10-20; SRD v1.1 REQ-008
+ | GrabPay instalment
+ | Fiuu | eWallet – GrabPay – BNPL – Installment
+ | same
+ | Fiuu FPX (Secarang)
+ | Fiuu | Online Banking – FPX-Bank Name (staging still showed bare Fiuu; QA-Issue EAINT-12566, On Hold)
+ | SA, 2026-10-20
+ | Fiuu card
+ | bare Fiuu
+ | QA team, 2026-10-19
+ | BoldPay (Macrokiosk) FPX / card / TouchNGo
+ | SRD: BoldPay | Online Banking – FPX-Bank Name, card – MBBMGATE_MS; staging showed no bank name and – Mastercard
+ | SRD 12327 v1.1; live 2026-10-19
+ | No payment
+ | -
+ | live 2026-10-16
+ | Old Secarang (before Fiuu)
+ | RMS
+ | TS EAINT-11541
+ | eAuto
+ | RHB (Payment Report export shows RHB – eAuto)
+ | live 2026-10-19
+- Fiuu does not return whether a ShopeePay payment was instalment or full. [SRD 12107 v1.2 note]
+- Payment Reference ID for Fiuu e-wallet payments contains EW (e.g. LON20261007SEW0001); FPX/card refs contain SFX. EW applies to new data only. [live, 2026-10-16/20]
+## 10. CIBO testing tips and traps
+- Wait for the first load before searching. Opening a listing starts a slow unfiltered load (Payment Management: 222 pages). If you click [Search] before it finishes, the unfiltered answer can land last and replace your filtered rows. The export still uses the filter, so page and file disagree. [live probe, 2026-10-20]
+- Export a narrow range. A Transaction Management export with no filters (~7,900 rows) gave no file after 3+ minutes. [live, 2026-10-16]
+- Payment Report: one-week window (section 8). Each reference search otherwise takes about 2 minutes.
+- Verify in all three places for eAuto insurance: UCD, BO, CIBO. CIBO is a separate read path and can disagree.
+- New column = backfill question. Decide up front whether old rows should fill or stay blank, and get it stated.
+- Live join or snapshot? Rename a user after a transaction and re-read the listing to prove whether a name is captured at transaction time or joined live. [unconfirmed which]
+- Dev data patching is accepted to create rows the sandbox cannot make (e.g. ShopeePay, PayLater by Grab). Patched rows prove display rules only. A patch may change Payment Mode but not Payment Channel (BR60006259, 2026-10-20). [Jira EAINT-12107, 2026-09-09]
+- Payment cell text has no space before the badge (RM884.48Paid 07-10-2026 10:20), so a word-boundary match on "Paid" fails.
+- Sidebar collapses to icons after a wide listing; menu text is then hidden.
+- Oldest rows are eAuto from 2022 (Payment Mode RHB, or - when unpaid). Oldest Secarang rows show RMS.
+- Filters are ng-select dropdowns; date inputs are read-only date pickers. Automation must click, not type.
+- Automation exists for EAINT-12107/12327 CIBO checks (12107_TS06, 12327_TS10–TS18). It can find a matching reference on its own by reading the newest and oldest pages of Transaction Management.
+## 11. Macrokiosk WhatsApp renewal reminders
+A cron job sends WhatsApp renewal reminders through Macrokiosk at 30, 14 and 7 days before policy expiry. The customer taps [Pay Now] and lands on Secarang Step 4 to pay. [Miro eAuto - Macrokiosk; Jira EAINT-12218]
+- Three fixed sources: "Customer records are drawn from 3 sources: eSTM with insurance, eSTM without insurance, and Secarang." [SRD EAINT-12218 v1.1 REQ-003]
+- Nine templates: "9 Macrokiosk renewal reminder templates are used in total, grouped into 3 sets of 3. Each template is used by 1 source at 1 reminder point." [REQ-001]
+- Exact-day pickup: "A customer is included in a run only where the policy expiry date falls exactly on the reminder point for that run." [REQ-003]
+- One source per customer: "no customer is sent more than 1 message on the same date." [§2.1.1 assumption 4] A record with no policy expiry date never gets a reminder.
+- No more reminders after payment: "Transaction Payment = Failed / OK on 30 days, wont pickup on 14 / 7 days". Opt-out numbers are skipped; no message when there is no quote. [Miro, 2026-10-28]
+- No WhatsApp when the cron cannot quote: vehicle details not matched, all insurers hit refer-risk, or all insurer APIs down → "Should NOT trigger MKWA API" (SECPN_TS16, TS18, TS20). The same set exists for eAuto insurance (eAIPN_) and eSTM (eSTMPN_) records.
+- eSIM levers for cron negatives: "XG for vehicle details not found / - MD for TokioMarine refer risk / - XF for Lonpac refer risk / - XH for both refer risk". [Miro]
+- Trigger limit: "MacroKiosk Trigger Limit: Max. 3 times" (what it counts is not stated).
+- Payment link expires 24 hours after the WhatsApp message; the message ends "Reply OPT-OUT to stop updates." [Miro Macro Kiosk - Workflow; Jira EAINT-10444]
+- The cron cannot be triggered on demand. On staging it is set to run every 30 minutes from the hour. Each staging run can stand for the next day's run.
+- Meta approval: new templates need about 3 extra days for Meta approval before QA can test; templates were reworded after Meta paused one for promotional words. [Miro EAINT-12217; Jira EAINT-12168]
+- Macrokiosk staging access is time-boxed; share the QA effort with the BA so they can tell Macrokiosk how long access is needed.
+- Past bugs to re-check: EAINT-11715 cron picked up transactions older than 1 year; EAINT-11504 reminder sent for motorcycles (car only); EAINT-12390 eSTM expiry date in the past; EAINT-12392 date format and opt-out line differ from SRD; EAINT-12410 template rows in wrong order in CIBO Macrokiosk Template Management; EAINT-12413 template-paused email misses SRD recipients.
+- Internal alerts (cover note failed, JPJ rejected) go to one internal recipient only. [Teams EAINT-11759, 2026-09-14; Jira EAINT-12342]
+## 12. Social media tickets
+Two tickets carry the "[Secarang-Social Media]" prefix; neither has an SRD yet.
+- EAINT-12528 — video auto-posting. "To post Secarang video on Secarang social media (Facebook, Instagram and TikTok) to promote the branding." "A cron job auto posts Secarang caption and video on Secarang Facebook, Instagram and TikTok." "Posting runs every 2 - 3 days." [Jira Description rows 3, 5]
+- Check all three platforms in the same run. One failing platform should not stop the other two [unconfirmed].
+- Proof may come from dev logs only, as for the past WhatsApp video cron (EAINT-11867: "(Request log from dev)").
+- Staging interval, caption/video source and test accounts are not known. Posting to real public pages from staging is a risk.
+- EAINT-12429 — lead capture, on hold. "To capture leads from public social media posts that show a vehicle purchase, so Secarang can collect more leads and increase renewal cover notes." Row 6: "On hold - to discuss further with Shamini."
+- Expected behaviour, verbatim: "Use official APIs from platforms such as Facebook, Instagram, TikTok, or X, where permitted."; "Detect posts that indicate vehicle purchase by keywords, e.g. "just bought my car", "new vehicle", "my new ride"."; "Detect posts with images containing vehicles using AI image recognition."; "Capture public posts only."
+- Not stated: where leads land, lead fields, trigger, keyword list, image threshold.
+- A lead reaches the Macrokiosk reminder only if saved as a Secarang customer record with a policy expiry date [unconfirmed], since the reminder takes only 3 fixed sources.
+- EAINT-12526 ("Create visual (image and video) for Secarang Macrokiosk flow") is WhatsApp visuals, not social media.
+## 13. Secarang traps and test-data tips
+- Test data on /ia: made-up plates HXA0001A–HXA0020A and ZZZ1A with a real IC and postcode 55000 quote Lonpac (e.g. HONDA HR-V, RM884.48). Made-up plate QAT9100A gets "no instant quotation". A fake company SSM gets "unable to retrieve your vehicle information". [live runs, 2026-10-19/20] Ask the QA team for the IC used.
+- Phone field keeps "+60". Typing "0189812839" gives "+600189812839" and the error "At least 12 digits including +60". Type the number without the leading 0.
+- Responsive duplicates. The page renders a hidden second copy of the bank grid and the quotation cards. Only act on visible elements.
+- Positional home-form inputs (no ids). A layout change can fill the wrong field; read each value back.
+- [Get quotation] starts disabled on Car Details; clicking early does nothing.
+- Add-ons [Continue] can be clicked before the page loads, leaving you on Add-ons. Wait for the page.
+- The Fiuu popup closes itself after Pay. Register for the popup before clicking the payment tile.
+- The site gate reappears on the Fiuu popup and on the success page. The Fiuu Bank Simulator has its own username + password; do not type the site password there.
+- No "stop before payment" switch in the Secarang automation. A dry run must stop at the quote.
+- Takaful Malaysia is often not quotable on staging; find a vehicle that quotes it before test day.
+- eSIM may not show TPFT for Takaful; use live API data for TPFT cases [unconfirmed for Zurich].
+- Do not set a VN prefix for insurance scenarios by default; different prefixes drive different eSIM outcomes. [QA team, 2026-10-27]
+- Allianz test data is unknown. Check which plates Allianz quotes before buying.
+- Do not raise ShopeePay as broken on old staging notes; it works end to end on /ia since 2026-10-20.
+- Zurich card wording must name Pemaju Eksklusif, not reuse the Takaful Malaysia distributor text (same mix-up as bug EAINT-10971).
+## 14. Ticket history
+Secarang and CIBO CRs known to the knowledge base, newest first. Man-days are Jira "[QA] Est Man-day" or the QA Portal figure (base + buffer) where noted. [releases log; production regression scope; Jira]
+ | Date
+ | Ticket
+ | What
+ | QA man-days
+ | Upcoming
+ | EAINT-12406
+ | Allianz back on Secarang (quotes, order, static pages, receipt BRN)
+ | 4+1 (QA Portal)
+ | Upcoming
+ | EAINT-12078
+ | Takaful Malaysia NDDPs on Secarang
+ | 4+1.5 (QA Portal)
+ | Upcoming
+ | EAINT-12528
+ | Social media video auto-posting
+ | 1.5+0.5 (QA Portal)
+ | On hold
+ | EAINT-12429
+ | Social media lead capture
+ | —
+ | Paused
+ | EAINT-8608
+ | Zurich Takaful onboarding on Secarang
+ | 15
+ | 2026-10-21 AM
+ | EAINT-12107 + EAINT-12327
+ | Secarang ShopeePay / GrabPay via Fiuu; CIBO Payment Mode column
+ | 12107: 2
+ | 2026-10-02 AM
+ | EAINT-12175
+ | Lonpac name "Lonpac Insurance Bhd" + SDPA wording link (Secarang part live 2026-08-11)
+ | 3
+ | 2026-10-01 AM
+ | EAINT-11759, 12217, 12218
+ | MessageBird / Macrokiosk split; opt-out button; 9-template split
+ | 12217: 3; 12218: 6
+ | 2026-09-30
+ | EAINT-12151
+ | CIBO date fields (Transaction / Insurance Created Date)
+ | —
+ | 2026-08-17 night
+ | EAINT-12058
+ | CIBO UCD Full Name + Login ID columns
+ | 1
+ | 2026-08-07
+ | EAINT-11878
+ | eAuto & Secarang JPJ Rejected WhatsApp notification
+ | —
+ | 2026-07-24
+ | EAINT-11934
+ | CIBO Payment Report UCD Name
+ | —
+ | 2026-06-30
+ | EAINT-8669, EAINT-9064
+ | Macrokiosk business messaging (Pay Now / Pay Later renewal); successful-payment message
+ | —
+ | 2026-04-29
+ | EAINT-11043
+ | Secarang discount code
+ | —
+ | 2025-07-31
+ | EAINT-7199, 8331, 8334
+ | Secarang receipt templates, remove discount line
+ | —
+ | 2025-07-14
+ | EAINT-8540
+ | Secarang hide Lonpac
+ | —
+ | 2025-06-30
+ | EAINT-7981
+ | Secarang e-Invoice fields
+ | —
+ | 2025-04-16
+ | EAINT-6771, 7031, 7345
+ | RHB API resume; renewal reminder template; reminder recipients
+ | —
+ | 2025-03-03
+ | EAINT-6501, 6598, 6608, 6610, 6611
+ | Quote control; support contact; hide road tax; WhatsApp recipients; hide chatbot
+ | —
+Other Secarang CRs with official TS but no date on record: EAINT-8536 (WhatsApp alert for failed cover notes), EAINT-8786 (Takaful Malaysia PDS), EAINT-9024 (insurer control sequence, Lonpac Q4 campaign), EAINT-9062 (Lonpac 14-day renewal grace).
+Official TS and evidence live on SharePoint under 2. Secarang & CIBO Project/Enhancement CR Test Scenario/ and Test Evidence/.
+## 15. Open questions and known gaps
+- Screen URLs after /car-insurance are not recorded.
+- Secarang renewal path entry (other than the Macrokiosk [Pay Now] link to Step 4) is not documented.
+- Company-owner (SSM) purchase: no insurer on Secarang supports company today; Allianz rule says individual renewal only.
+- Motorcycle purchase, TPFT on Secarang, refunds and policy documents beyond the receipt PDF are not covered.
+- Whether the "GrabPay - PayLater by Grab" filter covers GrabPay PayLater full amount, instalment, or both was not stated by the BA.
+- BoldPay FPX bank name and "MBBMGATE_MS" vs "Mastercard" mismatches with SRD 12327 are still open.
+- Which environment cibo.bintangprospek.com is (production or another staging) is unconfirmed.
+- How CIBO gets its data (live join, sync, or write-time copy) is unconfirmed.
+- Whether Allianz quotes the made-up /ia plates is unconfirmed.
+- Whether the old EAINT-9024 rule "Display ONLY the top insurance" still applies anywhere is unconfirmed.
+Prepared from the eAuto QA knowledge base (flow-secarang-insurance, flow-secarang-social-media, cibo, flow-cibo, flow-zurich-takaful, releases, production-regression-scope). Source tags in square brackets point to the SRD, TS, Jira, Teams message, Miro board or live run each fact came from.

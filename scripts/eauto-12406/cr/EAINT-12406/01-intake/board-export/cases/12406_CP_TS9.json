@@ -1,0 +1,20 @@
+{
+  "expected": "",
+  "id": "12406_CP_TS9",
+  "kiv": "ON HOLD (decided 29.10 under Azfar's full permission, main session): no source for Terms of Use (Q22)",
+  "labels": [],
+  "order": 9,
+  "points": [],
+  "priority": "P3",
+  "qa": "",
+  "remarks": "",
+  "result": "",
+  "reviewed": false,
+  "section": "Open scope (for the QA to decide)",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/",
+  "sheet": "CP",
+  "situation": "[ON HOLD: no source for Terms of Use (Q22)] Terms of Use (and Privacy / Refund Policy): do they list insurers, and is Allianz there?",
+  "source": "none: not in SRD v1.1 §2.2.3 Affected Pages; About Us 'Our vision' sends customers to Terms of Use for 'full list of agents and principal insurers' (mockup 20261015). Recorded until Q22",
+  "steps": "1. Secarang footer > TERMS OF USE: screenshot any list of agents / principal insurers\n2. Same for PRIVACY POLICY and REFUND POLICY",
+  "updatedAt": "2026-10-29T10:40:12+00:00"
+}

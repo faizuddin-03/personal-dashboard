@@ -1,0 +1,13 @@
+{
+  "ts": "12406_RC_TS2",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"\", page shows \"Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (02-cibo-receipt-insurer-name.png)",
+    "E2: expected \"Insurer, next line: \"200601015674 (735426-V)\"\", page shows \"Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (03-cibo-receipt-company-number.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS2/2026-10-30T09-59-58_DEFECT",
+  "run": "eaint-12406-retest-sretest-20261030-1640-F",
+  "instance": "ia",
+  "at": "30/10/2026, 17:59:58",
+  "warnings": []
+}

@@ -1,0 +1,86 @@
+## customers 2026-10-28T05:20:53.493Z
+map-06a-crm-filters.png  <- https://staging.secarang.com/cibo/crm
+map-06b-crm-ownership-type-filter-values.png  <- https://staging.secarang.com/cibo/crm
+map-06c-crm-listing-header.png  <- https://staging.secarang.com/cibo/crm
+map-06d-crm-listing-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/crm
+map-06e-crm-pager.png  <- https://staging.secarang.com/cibo/crm
+map-06f-crm-customer-details-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/crm/customer-details/i/<ID No> (REMOVED: blank below the header, the page scrolls inside its own container; see map-06g)
+map-06g-crm-customer-details-top-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/crm/customer-details/i/<ID No>
+map-07a-visitor-management-filters.png  <- https://staging.secarang.com/cibo/visitor-management
+map-07b-visitor-management-listing-header.png  <- https://staging.secarang.com/cibo/visitor-management
+map-07c-visitor-management-listing-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/visitor-management
+video-customers.webm
+non-read requests: none
+
+## admin 2026-10-28T05:21:14.065Z
+map-01-dashboard.png  <- https://staging.secarang.com/cibo/dashboard
+map-02a-user-account-management-filters.png  <- https://staging.secarang.com/cibo/user-account-management
+map-02b-user-account-management-role-filter-values.png  <- https://staging.secarang.com/cibo/user-account-management
+map-02c-user-account-management-account-status-filter-values.png  <- https://staging.secarang.com/cibo/user-account-management
+map-02d-user-account-management-date-range-type-values.png  <- https://staging.secarang.com/cibo/user-account-management
+map-02e-user-account-management-listing-header.png  <- https://staging.secarang.com/cibo/user-account-management
+map-02f-user-account-management-listing-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/user-account-management
+map-02g-user-details-edit-form-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/user-account-management/user-details/72
+map-02h-user-details-role-status-and-save-update-button.png  <- https://staging.secarang.com/cibo/user-account-management/user-details/72
+map-02i-create-new-user-form-empty.png  <- https://staging.secarang.com/cibo/user-account-management/create-new-user
+map-02j-create-new-user-insurance-company-user-role-insurer-list.png  <- https://staging.secarang.com/cibo/user-account-management/create-new-user
+map-03a-agent-management-filters.png  <- https://staging.secarang.com/cibo/agent-management
+map-03b-agent-management-platform-filter-values.png  <- https://staging.secarang.com/cibo/agent-management
+map-03c-agent-management-entity-type-filter-values.png  <- https://staging.secarang.com/cibo/agent-management
+map-03d-agent-management-bank-filter-values.png  <- https://staging.secarang.com/cibo/agent-management
+map-03e-agent-management-listing-header.png  <- https://staging.secarang.com/cibo/agent-management
+map-03f-agent-management-listing-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/agent-management
+map-04a-discount-code-management-filters.png  <- https://staging.secarang.com/cibo/discount-management
+map-04b-discount-code-management-platform-filter-values.png  <- https://staging.secarang.com/cibo/discount-management
+map-04c-discount-code-management-status-filter-values.png  <- https://staging.secarang.com/cibo/discount-management
+map-04d-discount-code-management-listing-header.png  <- https://staging.secarang.com/cibo/discount-management
+map-04e-discount-codes-page1-code-discount-commission-columns.png  <- https://staging.secarang.com/cibo/discount-management
+map-04f-discount-code-management-page1-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/discount-management
+map-04e-discount-codes-page2-code-discount-commission-columns.png  <- https://staging.secarang.com/cibo/discount-management
+map-04f-discount-code-management-page2-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/discount-management
+map-04e-discount-codes-page3-code-discount-commission-columns.png  <- https://staging.secarang.com/cibo/discount-management
+map-04f-discount-code-management-page3-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/discount-management
+map-05-macrokiosk-template-management-settings.png  <- https://staging.secarang.com/cibo/macrokiosk-template-management
+video-admin.webm
+non-read requests: none
+
+## reports 2026-10-28T05:21:52.659Z
+map-11a-payment-report-filters-allianz.png  <- https://staging.secarang.com/cibo/payment-report
+map-11b-payment-report-state-filter-values.png  <- https://staging.secarang.com/cibo/payment-report
+map-11c-payment-report-coverage-type-filter-values.png  <- https://staging.secarang.com/cibo/payment-report
+map-11d-payment-report-road-tax-filter-values.png  <- https://staging.secarang.com/cibo/payment-report
+map-11e-payment-report-discount-code-filter-values.png  <- https://staging.secarang.com/cibo/payment-report
+map-11f-payment-report-allianz-summary-and-header.png  <- https://staging.secarang.com/cibo/payment-report
+map-11g-payment-report-allianz-payment-mode-to-commission-columns.png  <- https://staging.secarang.com/cibo/payment-report
+map-11h-payment-report-allianz-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/payment-report
+map-12a-commission-report-road-tax-filter-values.png  <- https://staging.secarang.com/cibo/commission-report
+map-12b-commission-report-allianz-summary-and-header.png  <- https://staging.secarang.com/cibo/commission-report
+map-12c-commission-report-allianz-insurer-to-commission-columns.png  <- https://staging.secarang.com/cibo/commission-report
+map-12d-commission-report-allianz-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/commission-report
+video-reports.webm
+non-read requests: none
+
+## transactions 2026-10-28T05:22:05.815Z
+map-08a-transaction-management-listing-header-print-export.png  <- https://staging.secarang.com/cibo/transaction-management
+map-08b-transaction-management-listing-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/transaction-management
+map-09a-payment-management-filters.png  <- https://staging.secarang.com/cibo/payment-management
+map-09b-payment-management-payment-status-filter-values.png  <- https://staging.secarang.com/cibo/payment-management
+map-09c-payment-management-listing-header.png  <- https://staging.secarang.com/cibo/payment-management
+map-09d-payment-management-listing-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/payment-management
+map-10a-referred-risk-log-filters-default-dates.png  <- https://staging.secarang.com/cibo/referred-risk-log
+map-10b-referred-risk-log-platform-filter-values.png  <- https://staging.secarang.com/cibo/referred-risk-log
+map-10c-referred-risk-log-plan-code-filter-values.png  <- https://staging.secarang.com/cibo/referred-risk-log
+map-10d-referred-risk-log-listing-header.png  <- https://staging.secarang.com/cibo/referred-risk-log
+map-10e-referred-risk-log-listing-this-month-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/referred-risk-log
+map-10f-referred-risk-log-till-limited-to-30-days-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/referred-risk-log
+map-10g-referred-risk-log-allianz-may-2025-insurer-and-remark-columns.png  <- https://staging.secarang.com/cibo/referred-risk-log
+map-10h-referred-risk-log-allianz-may-2025-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/referred-risk-log
+video-transactions.webm
+non-read requests: none
+
+map-10f2-referred-risk-log-till-calendar-30-days-crop.png  <- cropped from map-10f (date fields and calendar only)
+## crm-edit 2026-10-28T05:25:34.435Z
+map-06h-crm-vehicle-card-edit-view-PERSONAL-DATA.png  <- https://staging.secarang.com/cibo/crm/customer-details/i/<ID No> (Edit opened, then Cancel)
+video-crm-edit-and-tooltips.webm
+non-read requests: none
+

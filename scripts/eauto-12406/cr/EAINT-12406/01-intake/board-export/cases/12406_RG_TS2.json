@@ -1,0 +1,47 @@
+{
+  "expected": "Ensure:\n• Transaction Details Insurer \"Lonpac Insurance Berhad\" (no number); receipt Insurer \"Lonpac Insurance Berhad (307414-T)\" on one line (observed 28.10)",
+  "gate": {
+    "at": "29/10/2026, 16:21:31",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RG_TS2/2026-10-29T08-21-31_EVIDENCE",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2"
+    ],
+    "reasons": [
+      "no proof for E3"
+    ],
+    "run": "eaint-12406-run-sRG-20261029-1545-c1",
+    "verdict": "EVIDENCE",
+    "warnings": []
+  },
+  "id": "12406_RG_TS2",
+  "labels": [],
+  "order": 44,
+  "points": [
+    {
+      "id": "E1",
+      "text": "BEFORE (28.10): BR60006309 Transaction Details \"Lonpac Insurance Berhad\" (no number); receipt \"Lonpac Insurance Berhad (307414-T)\""
+    },
+    {
+      "id": "E2",
+      "text": "AFTER: BR60006309 insurer box and receipt Insurer block identical to the 28.10 capture"
+    },
+    {
+      "id": "E3",
+      "text": "AFTER: QT_TS4 Lonpac transaction: Details \"Lonpac Insurance Berhad\", receipt \"Lonpac Insurance Berhad (307414-T)\" (Bhd also accepted, EAINT-12422)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "BEFORE 28.10: BR60006309",
+  "result": "RE-RUN",
+  "reviewed": false,
+  "section": "Other insurers unchanged",
+  "setup": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• BEFORE captured on 28.10.2026 (walk): BR60006309 (Lonpac, Secarang, 20-10-2026). After: the same one, plus the new Lonpac transaction of 12406_QT_TS4. BEFORE evidence: the 28.10 before-deploy capture, copied into this TS's evidence folder and labelled 'FROM THE BEFORE CAPTURE' (Azfar 29.10)\n• Lonpac's name is 'Lonpac Insurance Bhd' on the Secarang site since 11.08.2026 (EAINT-12175, team doc §4 / §14), but CIBO and the receipt still say 'Lonpac Insurance Berhad' (walk 28.10) until EAINT-12422 (To Do): either is accepted and treated as identical (Azfar 29.10), not judged here. Lonpac's agency in CIBO is Pemaju Eksklusif",
+  "sheet": "RG",
+  "situation": "Lonpac receipt (Secarang and CIBO) and Transaction Details: same as captured on 28.10, before the deploy, and on a new purchase after it",
+  "source": "SRD v1.1 REQ-010 Example 2a ('Receipt for Tokio Marine or Lonpac transaction: No change'); REQ-011 Example 2a (Lonpac: No change). Baseline = observed before the deploy (walk 28.10, BR60006309, cibo-12c / 12d). Lonpac name: EAINT-12175 (site) / EAINT-12422 To Do (receipt)",
+  "steps": "1. (Done 28.10) CIBO > Transaction Management: Lonpac ticked, Platform Secarang; open BR60006309; screenshot the Transaction Details insurer box; Receipt: screenshot the Insurer block",
+  "updatedAt": "2026-10-29T05:00:44+00:00"
+}

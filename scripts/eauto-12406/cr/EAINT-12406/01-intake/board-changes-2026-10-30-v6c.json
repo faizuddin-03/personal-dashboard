@@ -1,0 +1,80 @@
+[
+ {
+  "collection": "cases",
+  "doc_id": "12406_E2E_TS9",
+  "data": {
+   "id": "12406_E2E_TS9",
+   "sheet": "E2E",
+   "order": 23,
+   "section": "Allianz purchase: add-ons, Confirmation, switching insurer",
+   "priority": "P2",
+   "situation": "Allianz add-ons and Confirmation: pick Tokio Marine first, go back to Allianz; tick / untick add-ons; Confirmation (gender, PIAM 'i' pop-up); pay; same add-ons on receipt and CIBO",
+   "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: an individual-owner renewal car that all three insurers quote (not used by another row)\n• Payment: tile 'FPX Online banking' > RHB Bank > Fiuu Bank Simulator popup (its own username + password) > Status 'Approved' (00) > copy the TAC shown into 'Enter TAC' > [Pay now]. The popup closes itself after Pay (doc §5; proven on /ia/ 19.10, receipt Payment Method 'Online Banking - RHB Bank')\n• For comparison: the Confirmation pages of the Lonpac (12406_QT_TS4) and Tokio Marine (12406_E2E_TS10) purchases",
+   "steps": "1. Secarang: the car + owner > All Quotations > select Tokio Marine > on Add-ons go back (record any 'Kindly confirm your navigation' popup) > on the Allianz card record the sum insured options offered; if more than one, change it once and note the price > select Allianz\n2. Add-ons (wait for the page to load): screenshot every add-on offered with its price (recorded against the SA brief list: all-driver, CART, Road Rangers, PAB-ERW, MPA A/B, agreed value; Q32); tick two add-ons and note the premium; untick one and note the premium\n3. Confirmation: fill the owner details; screenshot which fields carry \"*\" and its colour, the agent line and commission % (recorded, compared with the Lonpac / Tokio Marine Confirmation; Q37)\n3a. Change the gender MALE → FEMALE; note the Total Premium before and after (recorded); set it back if needed\n3b. Open the 'i' next to the PIAM ID; screenshot the pop-up (agent name, PIAM ID, contact); Confirm and Pay\n4. FPX Online banking > RHB Bank > Status Approved (00) > TAC > [Pay now]; screenshot the Success page; download the [Receipt]\n5. CIBO > Transaction Details: screenshot the premium breakdown with Add-ons",
+   "expected": "Ensure:\n• After going back from Tokio Marine and selecting Allianz, the Add-ons and Confirmation pages are for Allianz (no Tokio Marine name or price)\n• Recorded: the sum insured options offered (one value, RM20,200, for the made-up cars on 29.10); if more than one is offered, changing it re-prices\n• Ticking an add-on adds its shown price to the premium; unticking it takes the price off again\n• Recorded: Total Premium before / after changing Gender MALE → FEMALE. The /ia/ simulator does not price by gender for any insurer (probe 30.10, run EAINT-12406-probe-gender-20261030-0914: Lonpac RM884.48 and Tokio Marine RM1,171.22 unchanged, change-gender answered 200 with the same premium; Allianz RM941.13 / RM944.37 unchanged on 29.10). Judged only on a real-API (SIT) pass\n• The PIAM ID 'i' pop-up names Serba Sentral Sdn Bhd as the agent, not Pemaju Eksklusif or another agency (wording and PIAM ID recorded, Q37)\n• The add-on left ticked and its amount are the same on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)\n• Receipt and CIBO show Allianz as the insurer (no Tokio Marine)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "After going back from Tokio Marine and selecting Allianz, the Add-ons and Confirmation pages are for Allianz (no Tokio Marine name or price)"
+    },
+    {
+     "id": "E2",
+     "text": "Recorded: the sum insured options offered (one value, RM20,200, for the made-up cars on 29.10); if more than one is offered, changing it re-prices"
+    },
+    {
+     "id": "E3",
+     "text": "Ticking an add-on adds its shown price to the premium; unticking it takes the price off again"
+    },
+    {
+     "id": "E4",
+     "text": "Recorded: Total Premium before / after changing Gender MALE → FEMALE. The /ia/ simulator does not price by gender for any insurer (probe 30.10, run EAINT-12406-probe-gender-20261030-0914: Lonpac RM884.48 and Tokio Marine RM1,171.22 unchanged, change-gender answered 200 with the same premium; Allianz RM941.13 / RM944.37 unchanged on 29.10). Judged only on a real-API (SIT) pass"
+    },
+    {
+     "id": "E5",
+     "text": "The PIAM ID 'i' pop-up names Serba Sentral Sdn Bhd as the agent, not Pemaju Eksklusif or another agency (wording and PIAM ID recorded, Q37)"
+    },
+    {
+     "id": "E6",
+     "text": "The add-on left ticked and its amount are the same on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)"
+    },
+    {
+     "id": "E7",
+     "text": "Receipt and CIBO show Allianz as the insurer (no Tokio Marine)"
+    }
+   ],
+   "source": "E4 recorded on the simulator (decided 30.10 under Azfar's full permission, main session): the /ia/ simulator does not price by gender (probe 30.10); 'changing gender re-prices' (team doc §3) is judged only on a real-API (SIT) pass. E2 recorded (decided 29.10 under Azfar's full permission, main session, v6b: one sum insured value, RM20,200, offered for the made-up cars on 29.10). SRD v1.1 REQ-002 Example 1b and 'Existing Allianz flow and options remain unchanged', §2.1.3a (add-ons); ticket item 5; values compared within the one transaction. Sum insured dropdown changes the price, changing gender re-prices: observed (team doc §3). Agent in the PIAM pop-up: Allianz agency Serba Sentral (SRD 2.1.3b; receipt mockup 'Exclusively by agent Serba Sentral Sdn Bhd'), pop-up text recorded (Q37). Add-ons line on CIBO: mockup CIBO 20261006. Add-on list, Road Rangers price, '*' marks, agent line, commission %: recorded (Q32, Q37)",
+   "updatedAt": "2026-10-30T01:18:55+00:00"
+  }
+ },
+ {
+  "collection": "cases",
+  "doc_id": "12406_E2E_TS12",
+  "data": {
+   "id": "12406_E2E_TS12",
+   "sheet": "E2E",
+   "order": 27,
+   "section": "Allianz purchase: add-ons, Confirmation, switching insurer",
+   "priority": "P2",
+   "situation": "Allianz add-on options one by one, then a purchase with ALL add-ons ticked (Zurich's all-add-ons purchase failed)",
+   "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: an individual-owner renewal car that Allianz quotes (not used by another row). Seen 29.10: Add-ons lists 13 for Allianz, Road Rangers FREE\n• Payment: tile 'Credit or Debit Card' > Fiuu card form: VISA 4456 5300 0000 1096 (or Master 5200 0000 0000 1096), expiry 12/26, CVV 111 > 3D Secure page OTP 123456. Visa 4111... / Master 5105... are refused ('P10'). Do not press [CANCEL] on 3D Secure (it leaves the transaction Pending) (doc §5)\n• Paid by Credit or Debit Card, not FPX (decided 30.10 under Azfar's full permission, main session): the Fiuu sandbox refuses FPX above MYR 2,000 (P15) and the all-add-ons total is RM2,510.87. None of E1–E3 judge the payment channel. Observation for Dev, not a 12406 point: on the FPX refusal Secarang showed a blank window with no message\n• Add-on options to look for (SA brief test scenario 4, 29.09): all-driver, CART, Road Rangers, PAB-ERW, MPA A/B, agreed value. The old Allianz add-on list on the team's Zurich board (Road Rangers 'Mandatory & unremovable', windscreen sum insured, Road Warrior Plan A / B / C, CART assessment period / daily compensation, PA Plan A / B ...) is a question for the BA (Q32), never an expected result",
+   "steps": "1. Secarang: the car + owner > All Quotations > Allianz > Add-ons (wait for the page to load); screenshot every add-on with its price and More Info (recorded)\n2. For each add-on that has options (e.g. CART period / daily compensation, Road Warrior plan, PA plan): change the option once and note the premium; screenshot each (recorded). Windscreen Sum Insured: type a value below its range, then above it, then inside it (range RM500–RM1,820 on 29.10); record what is accepted; APPLY the inside value, so the all-add-ons purchase carries it\n3. Try to remove each add-on that looks mandatory (e.g. Road Rangers); screenshot (recorded)\n4. Tick EVERY add-on; note the premium; Continue > Confirmation (owner details) > screenshot the add-ons and the total > Confirm and Pay\n5. Credit or Debit Card > VISA 4456 5300 0000 1096, 12/26, CVV 111 > 3D Secure OTP 123456; screenshot the Success page; download the [Receipt]\n6. CIBO > Transaction Management: search the plate; open Transaction Details; screenshot the premium breakdown with Add-ons",
+   "expected": "Ensure:\n• The purchase with every add-on ticked completes: Success page ('Thank you for your purchase!') with a [Receipt] download, and CIBO shows the transaction Paid, Ins. Co. Allianz, Transaction Status \"Insurance created\"\n• The same add-ons and amounts are on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)\n• Receipt Total Premium = the Confirmation total",
+   "points": [
+    {
+     "id": "E1",
+     "text": "The purchase with every add-on ticked completes: Success page ('Thank you for your purchase!') with a [Receipt] download, and CIBO shows the transaction Paid, Ins. Co. Allianz, Transaction Status \"Insurance created\""
+    },
+    {
+     "id": "E2",
+     "text": "The same add-ons and amounts are on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)"
+    },
+    {
+     "id": "E3",
+     "text": "Receipt Total Premium = the Confirmation total"
+    }
+   ],
+   "source": "SRD v1.1 REQ-002 Example 1b ('Customer can complete purchase using existing Allianz flow'), REQ-002b ('Existing Allianz flow and options remain unchanged'), §2.1.3a (add-ons); values compared within the one transaction. Which add-ons exist, which are mandatory, option prices, sum insured ranges: SRD silent, recorded (Q32)",
+   "updatedAt": "2026-10-30T01:18:55+00:00"
+  }
+ }
+]

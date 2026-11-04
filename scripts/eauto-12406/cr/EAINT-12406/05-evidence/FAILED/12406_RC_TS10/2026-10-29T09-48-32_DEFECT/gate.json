@@ -1,0 +1,12 @@
+{
+  "ts": "12406_RC_TS10",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E5: expected \"Print opens a print view of the listing\", page shows \"Print (after Clear all): browser print called 0 time(s) within 240 s of the click; listing fetch for Print: insurance-transactions/main-page HTTP 404 after 124 s; page as printed (print CSS): listing table NOT shown, sidebar hidden\" (16-print-view.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS10/2026-10-29T09-48-32_DEFECT",
+  "run": "eaint-12406-rerun-sRC-20261029-1545",
+  "instance": "ia",
+  "at": "29/10/2026, 17:48:32",
+  "warnings": []
+}

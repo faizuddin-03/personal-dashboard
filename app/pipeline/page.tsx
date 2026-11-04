@@ -27,6 +27,8 @@ export default function PipelineBoardPage() {
   const [keyInput, setKeyInput] = useState("");
   const [adding, setAdding] = useState(false);
   const [addMsg, setAddMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  // Key already in the pipeline (2026-11-02): warn, then Cancel or Start new process.
+  const [dupe, setDupe] = useState<{ key: string; text: string } | null>(null);
   const [allNeeds, setAllNeeds] = useState(false);
 
   const load = useCallback(async () => {
@@ -49,11 +51,26 @@ export default function PipelineBoardPage() {
     e.preventDefault();
     const key = normaliseKey(keyInput);
     if (!key) { setAddMsg({ ok: false, text: "Type a ticket key like EAINT-12345 or just 12345." }); return; }
-    setAdding(true); setAddMsg(null);
-    const r = await api<{ ticket?: PipelineTicket }>("/api/pipeline/tickets", { method: "POST", json: { key } });
+    await send(key);
+  }
+
+  async function send(key: string, restart = false) {
+    setAdding(true); setAddMsg(null); setDupe(null);
+    const r = await api<{ ticket?: PipelineTicket; archivedTo?: string }>("/api/pipeline/tickets", {
+      method: "POST", json: restart ? { key, mode: "restart" } : { key },
+    });
     setAdding(false);
-    if (!r.ok) { setAddMsg({ ok: false, text: r.error }); return; }
-    setAddMsg({ ok: true, text: `${key} added. Scout is studying it now; Scribe follows.` });
+    if (!r.ok) {
+      if (r.status === 409) setDupe({ key, text: r.error });
+      else setAddMsg({ ok: false, text: r.error });
+      return;
+    }
+    setAddMsg({
+      ok: true,
+      text: r.data.archivedTo
+        ? `${key} restarted as a new process. The old one is archived in ${r.data.archivedTo}. Scout is studying it now; Scribe follows.`
+        : `${key} added. Scout is studying it now; Scribe follows.`,
+    });
     setKeyInput("");
     void load();
   }
@@ -92,6 +109,26 @@ export default function PipelineBoardPage() {
         </form>
       </header>
 
+      {dupe && (
+        <div role="alertdialog" aria-labelledby="dupe-title" className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-3 space-y-2">
+          <p id="dupe-title" className="flex items-center gap-2 text-sm font-semibold text-amber-300">
+            <AlertTriangle size={14} aria-hidden /> {dupe.text}
+          </p>
+          <p className="text-sm text-slate-300">
+            A new process stops its running work, archives the current process (chats, findings, runs, work files) and starts again from the Scout study.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={() => setDupe(null)} disabled={adding} className="px-3 py-1.5 rounded-lg border border-slate-600 text-sm text-slate-200 hover:bg-slate-800 disabled:opacity-40">
+              Cancel
+            </button>
+            <button type="button" onClick={() => void send(dupe.key, true)} disabled={adding} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 text-white text-sm hover:bg-amber-500 disabled:opacity-40">
+              {adding && <Loader2 size={14} className="animate-spin" aria-hidden />}
+              Start new process
+            </button>
+            <Link href={`/pipeline/${dupe.key}`} className="px-3 py-1.5 text-sm text-blue-300 hover:underline">Open current process</Link>
+          </div>
+        </div>
+      )}
       {addMsg && (
         <p role="status" className={clsx("text-sm", addMsg.ok ? "text-green-300" : "text-red-300")}>{addMsg.text}</p>
       )}

@@ -18,7 +18,24 @@ export class HomePage extends BasePage {
     super(page);
   }
 
+  /**
+   * Home page popup (BNPL renewal ad, seen on /ia staging 2026-10-30): an
+   * ngb-modal-window over the form, closed with its X (aria-label="Close").
+   * Waits briefly because Angular opens it just after load; does nothing when
+   * no popup comes. Capture: _reference/html/secarang/car-insurance-home-bnpl-popup.html
+   */
+  async closeHomePopup(): Promise<void> {
+    const popup = this.page.locator('ngb-modal-window').first();
+    const shown = await popup.waitFor({ state: 'visible', timeout: 3000 }).then(() => true).catch(() => false);
+    if (!shown) return;
+    const title = (await popup.locator('#bnpl-popup-title, h2, h5').first().textContent().catch(() => ''))?.trim();
+    console.log(`   💬 Home popup${title ? ` ("${title}")` : ''} — closing`);
+    await popup.locator('.bnpl-popup__close, button[aria-label="Close"]').first().click();
+    await popup.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+  }
+
   async selectVehicleAndOwner(vehicleType: string, ownerType: string): Promise<void> {
+    await this.closeHomePopup();
     const vtLower = vehicleType.toLowerCase();
     const otLower = ownerType.toLowerCase();
 

@@ -1,0 +1,90 @@
+TS No.	Insurance		Test Scenario		Expected Result		QA	Test Result (P/F)
+	"Error
+Code"	Error Description	BackOffice > Insurance Quote Enquiry	UCD > Insurance Step Page	BackOffice > Insurance Quote Enquiry	UCD > Insurance Step Page		
+Response Codes								
+	000	Success - Request processed successfully						
+IE_RRE_TS1	099	"System error,
+please contact IT support"	"Log in to BackOffice
+Go to Insurance Quote Enquiry page
+--- Dev to advise which vn prefix to use ---
+Enter vehicle details
+Click [Show Result] button
+Get insurance quotationx"	"Log in to UCD
+Go to Insurance > Get a Free Quote
+Create Insurance trx with the vehicle details
+Redirect to Insurance Step 1: Quotes Page"	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are displayed
+Refer Risk section shows the correct error code and description
+Note: Check Refer Risk Log and ensure all details are displayed correctly."	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are NOT displayed
+User unable to select or proceed with Zurich insurance"	Azfar	PASS
+Referral Codes								
+IE_RRE_TS2	R02	"Referred due to
+Insured Age"	"Log in to BackOffice
+Go to Insurance Quote Enquiry page
+--- Dev to advise which vn prefix to use ---
+Enter vehicle details
+Click [Show Result] button
+Get insurance quotation"	"Log in to UCD
+Go to Insurance > Get a Free Quote
+Create Insurance trx with the vehicle details
+Redirect to Insurance Step 1: Quotes Page"	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are displayed
+Refer Risk section shows the correct error code and description
+Note: Check Refer Risk Log and ensure all details are displayed correctly."	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are NOT displayed
+User unable to select or proceed with Zurich insurance"	Azfar	PASS
+IE_RRE_TS3	R03	"Referred due to
+Vehicle Sum Insured"					Azfar	PASS
+IE_RRE_TS4	R07	"Referred due to
+Vehicle Age"					Azfar	PASS
+Error Codes								
+IE_RRE_TS5	6	Maximum Vehicle Age exceeded	"Log in to BackOffice
+Go to Insurance Quote Enquiry page
+--- Dev to advise which vn prefix to use ---
+Enter vehicle details
+Click [Show Result] button
+Get insurance quotation"	"Log in to UCD
+Create eSTM transaction
+Proceed to complete eSTM, Tx Status = Approved
+Redirect to Insurance Step 1: Quotes Page"	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are displayed
+Refer Risk section shows the correct error code and description
+Note: Check Refer Risk Log and ensure all details are displayed correctly."	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are NOT displayed
+User unable to select or proceed with Zurich insurance"	Azfar	PASS
+IE_RRE_TS6	10	Minimum Sum Insured not met					Azfar	PASS
+NCD Status Codes								
+	000	OK - NCD enquiry successful						
+IE_RRE_TS7	077	Data not found	"Log in to BackOffice
+Go to Insurance Quote Enquiry page
+--- Dev to advise which vn prefix to use ---
+Enter vehicle details
+Click [Show Result] button
+Get insurance quotation"	"Log in to UCD
+Create eSTM transaction
+Proceed to complete eSTM, Tx Status = Approved
+Redirect to Insurance Step 1: Quotes Page"	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are displayed
+Refer Risk section shows the correct error code and description
+Note: Check Refer Risk Log and ensure all details are displayed correctly."	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are NOT displayed
+User unable to select or proceed with Zurich insurance"	Azfar	PASS
+ISM Response Codes								
+	000	OK - NCD confirmation/enquiry successful						
+IE_RRE_TS8	014	"No NCD granted -
+claims affecting NCD"	"Log in to BackOffice
+Go to Insurance Quote Enquiry page
+--- Dev to advise which vn prefix to use ---
+Enter vehicle details
+Click [Show Result] button
+Get insurance quotation"	"Create Hire Purchase Record with Status = Active
+Log in to UCD
+Create eSTM transaction
+Step 4 to Step 5 JPJ Enquiry = Failed (VEL000069E)
+Redirect to Insurance Step 1: Quotes Page"	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are displayed
+Refer Risk section shows the correct error code and description
+Note: Check Refer Risk Log and ensure all details are displayed correctly."	"Show ALL available insurance quotations, ensure:
+Both Zurich Comprehensive and TPFT quotations are NOT displayed
+User unable to select or proceed with Zurich insurance"	Azfar	PASS

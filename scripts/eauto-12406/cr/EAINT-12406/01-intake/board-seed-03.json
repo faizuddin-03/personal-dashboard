@@ -1,0 +1,338 @@
+[
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q11",
+  "data": {
+   "id": "Q11",
+   "question": "PRE-DEPLOY, URGENT: has Dev already deployed EAINT-12406 to the Secarang / CIBO staging (Dev said 26.10: '28/10 will be ready for testing')? If not, please hold the deploy until the yellow rows' BEFORE captures are done (12406_CP_TS8, RC_TS8, RG_TS1, RG_TS2, RG_TS3, RG_TS4). If it is already deployed, those rows keep only their AFTER half: pages are compared with production instead, and Lonpac / RHB have no baseline",
+   "who": "Dev Mong Guo Hao",
+   "sources": "Teams 26.10.2026 (Mong Guo Hao); Jira status Ready For Development 28.10.2026",
+   "decision": "ANSWERED 28.10.2026 (Azfar): EAINT-12406 is NOT deployed to the Secarang / CIBO staging yet. The yellow BEFORE captures can still be done; do them before Dev deploys"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q12",
+  "data": {
+   "id": "Q12",
+   "question": "Test data on staging: which vehicle + owner gives (a) all three insurers quoting an individual renewal; (b) Allianz alone not quoting an individual renewal while Lonpac and Tokio Marine quote; (c) Lonpac not quoting; (d) Tokio Marine not quoting; (e) an individual NON-renewal: what does Secarang treat as non-renewal (new vehicle, expired policy, change of owner ...)?",
+   "who": "Dev Mong Guo Hao / BA Lim Yi Link",
+   "sources": "SRD v1.1 REQ-002 ('Allianz only returns a quotation for individual owners renewing'), REQ-003 Ex.2, REQ-004 Ex.2-4",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q13",
+  "data": {
+   "id": "Q13",
+   "question": "Where does the Lonpac or Tokio Marine 'Quotation unavailable' card go, and in which order are the cards when two insurers have no quotation? SRD REQ-003 places only Allianz's card ('after Tokio Marine'); REQ-004 lists only the available quotations",
+   "who": "BA Lim Yi Link",
+   "sources": "SRD v1.1 REQ-003, REQ-004 Ex.2 / Ex.4",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q15",
+  "data": {
+   "id": "Q15",
+   "question": "REQ-006: where does the customer open the four Allianz product documents (policy wording, product disclosure sheet, privacy notice, claim guide): quotation card, plan details, Add-ons or Confirmation? Any name / language variant (BM / EN)? (SA brief question 5: are the 2022 documents still current? SRD REQ-006 answers: no update, use existing)",
+   "who": "BA Lim Yi Link",
+   "sources": "SRD v1.1 REQ-006; SA brief 29.09 question 5",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q16",
+  "data": {
+   "id": "Q16",
+   "question": "CIBO Commission Report and Payment Report for Allianz under Serba Sentral: (a) what commission rate / amount should show (SA brief open check: 'active Allianz commission rate for Secarang at release'); (b) which amount the Payment Report shows per transaction (gross premium, after discount, with road tax)? SRD 2.1.3b says only that Finance signs off sales and commission under agency Serba Sentral",
+   "who": "BA Lim Yi Link / Finance",
+   "sources": "SRD v1.1 §2.1.3b; SA brief 29.09 open checks; coverage review U7",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q17",
+  "data": {
+   "id": "Q17",
+   "question": "Allianz payment failed or cancelled at Fiuu: what should the customer see on Secarang? SRD says only 'existing Allianz flow remains unchanged'; the current failed-payment page is not written down in the repo. (The CIBO side follows the mockup row BR55009007: Failed, Unpaid, no Receipt)",
+   "who": "BA Lim Yi Link / Dev",
+   "sources": "SRD v1.1 §2.2.2 #2b, REQ-002; mockup CIBO 20261006 row BR55009007",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q18",
+  "data": {
+   "id": "Q18",
+   "question": "Allianz cover note submission failed / JPJ rejected after payment: what should happen (internal WhatsApp alert as for Lonpac / Tokio Marine, EAINT-8536 / 12347; CIBO status)? SRD 2.1.3a names cover note and callbacks but gives no expected result; the SA brief names callbacks as a risk",
+   "who": "BA Lim Yi Link / Dev",
+   "sources": "SRD v1.1 §2.1.3a; SA brief 29.09 Risks row 2; secarang-study §2 (8536, 12347)",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q19",
+  "data": {
+   "id": "Q19",
+   "question": "Does Secarang sell motorcycle insurance today (Motorcycle tab), and does Allianz quote motorcycles there? SRD v1.1 does not mention vehicle type; the CIBO mockup shows Car only; the SA brief says 'Individual renewal car'",
+   "who": "BA Lim Yi Link",
+   "sources": "SRD v1.1 (silent); SA brief 29.09 test scenario 1; secarang-study §1 (Car / Motorcycle tabs, EAINT-11541)",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q20",
+  "data": {
+   "id": "Q20",
+   "question": "Do REQ-010 / REQ-011 (new Allianz BRN on the receipt and CIBO Transaction Details) also apply to (a) Allianz transactions created on Secarang before May 2025 and (b) Allianz transactions from the eAuto platform shown in CIBO (the mockup listing has one, BR55009010)? The SRD says 'Allianz transaction' without limits. SA brief open check: 'Allianz transactions since May 2025 and any stuck in a non-final status' (and 'Existing transactions not changed', older than REQ-010/011)",
+   "who": "BA Lim Yi Link / Dev",
+   "sources": "SRD v1.1 REQ-010, REQ-011; mockup CIBO 20261006 row BR55009010; SA brief 29.09 'What stays the same' and open checks",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q21",
+  "data": {
+   "id": "Q21",
+   "question": "Customer messages after an Allianz purchase: payment-success / receipt WhatsApp, policy-created WhatsApp, e-Receipt email (FAQ: 'an email ... with an attachment of e-Receipt'), insurer e-Certificate email. Does staging send them (to which address / phone), are they in scope (SA brief test scenario 6: 'WhatsApp and email after payment; receipt PDF'), and should the attached receipt carry the new Allianz company number (REQ-010)? Templates changed after May 2025 (9117, 12218)",
+   "who": "BA Lim Yi Link / Dev",
+   "sources": "SRD v1.1 REQ-010, §2.1.3a; SA brief 29.09 test scenario 6, Risks row 1; Secarang mockup 20261015 FAQ Topic 2 (current text); secarang-study §1",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q22",
+  "data": {
+   "id": "Q22",
+   "question": "About Us says 'refer to Terms of Use section on this platform to obtain full list of agents and principal insurers'. Should Terms of Use (and Privacy / Refund Policy) also list Allianz? It is not in the SRD's Affected Pages (2.2.3)",
+   "who": "BA Lim Yi Link",
+   "sources": "Secarang mockup 20261015 (Our vision text); SRD v1.1 §2.2.3",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q23",
+  "data": {
+   "id": "Q23",
+   "question": "Is the insurer order (control sequence) shared between eAuto and Secarang today (EAINT-12150 'separate control sequence for eAuto vs Secarang' is To Do)? The SA brief (Dev analysis, 29.09) says no: 'the Allianz switch is per tenant ... the insurer order table is in the Secarang DB'. Please confirm; until then 12406_RG_TS4 only captures the order before and after",
+   "who": "Dev Mong Guo Hao",
+   "sources": "secarang-study §1 timeline (EAINT-12150, To Do); SA brief 29.09 'What stays the same'; SRD v1.1 §2.2.1 (Portal: Secarang)",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q24",
+  "data": {
+   "id": "Q24",
+   "question": "FOR AZFAR: Fiuu ShopeePay (Full Amount / SPayLater) and PayLater by Grab cannot be paid in the Fiuu sandbox ('its simulator in sandbox doesn't work', EAINT-12107). Coverage review suggests folding 'Payment methods lists the same channels as for Lonpac / Tokio Marine' into 12406_E2E_TS1 (done) and deprioritising 12406_E2E_TS4. Keep, deprioritise, or try once? (QA decides)",
+   "who": "Azfar (QA)",
+   "sources": "[REQ] 12107 v1.2 §2.2.8; Jira 12107 comment 07.09.2026 (secarang-study §2); coverage review §4",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q25",
+  "data": {
+   "id": "Q25",
+   "question": "Which options does the Secarang homepage flow offer today besides add-ons (discount code, road tax, sum insured / agreed value), do discount codes apply to Allianz, and what road tax amounts / CIBO Road Tax value should an Allianz purchase with road tax show? The ticket says 'Allow Allianz in Secarang with all options available in Secarang'",
+   "who": "BA Lim Yi Link",
+   "sources": "Ticket item 5; mockup CIBO 20261006 (Discount Code, Road Tax columns); Secarang footer 'motor insurance renewal and road tax'",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q26",
+  "data": {
+   "id": "Q26",
+   "question": "Mockup Secarang 20261015 shows review marks beside the Allianz items: orange pills ('Changed: ...', 'New', 'New section', 'New sentence'), yellow text highlight, a dashed orange frame with pale yellow background on the Allianz Support section, orange dots in the menu. Draft reads them as review notes that do NOT appear on the site. Confirm",
+   "who": "BA Lim Yi Link",
+   "sources": "Mockup Secarang 20261015 (coverage review MD-1)",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q27",
+  "data": {
+   "id": "Q27",
+   "question": "FAQ 'Which insurers can I get instant quotation from?': numbered 1. 2. 3. (SRD REQ-008, also its 'Existing') or bulleted (mockup 20261015)? Draft expects the same list style as today",
+   "who": "BA Lim Yi Link",
+   "sources": "SRD v1.1 REQ-008; mockup Secarang 20261015 (coverage review MD-4, Q-A)",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q28",
+  "data": {
+   "id": "Q28",
+   "question": "Support: is the Allianz section closed on page load like Lonpac / Tokio Marine? The mockup shows it open on load (recorded)",
+   "who": "BA Lim Yi Link",
+   "sources": "Mockup Secarang 20261015 (coverage review MD-7, Q-B)",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q29",
+  "data": {
+   "id": "Q29",
+   "question": "CIBO Transaction Details for Tokio Marine TODAY: does it show '198601000381 (149520-U)' under the name (SRD REQ-011 'Tokio Marine (current)') or not (mockup 20261006)? Answered by the BEFORE capture of 12406_RG_TS1; ask the BA only if it does not",
+   "who": "QA (look), then BA Lim Yi Link",
+   "sources": "SRD v1.1 REQ-011; mockup CIBO 20261006 (coverage review MD-13, Q-C)",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q30",
+  "data": {
+   "id": "Q30",
+   "question": "CIBO Payment Ref ID: which insurer code does an Allianz Secarang payment get (Lonpac is 'LON', shape <insurer><yyyymmdd>S<channel><nnnn>, EAINT-12107 REQ-014 went live 21.10.2026 while Allianz was off, so no Allianz Ref ID was ever produced)?",
+   "who": "Dev / BA Lim Yi Link",
+   "sources": "[REQ] 12107 v1.2 REQ-014; [Jira] 12566 (secarang-study §2); coverage review M8, Q-D",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q31",
+  "data": {
+   "id": "Q31",
+   "question": "Which insurers are switched on for quoting on the Secarang staging (RHB, Chubb, Zurich Takaful 8608 in 1st env, Takaful Malaysia)? SA brief risk: 'Only 3 quotations shown: if Chubb or another insurer is on for Secarang, Lonpac + Allianz + Tokio Marine fill all slots and others drop silently' (mitigation: DB check of enabled insurers). Another insurer on staging would break the order rows for reasons outside 12406",
+   "who": "Dev Mong Guo Hao",
+   "sources": "SA brief 29.09 Risks row 3 and open checks; coverage review M2, Q-E",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q32",
+  "data": {
+   "id": "Q32",
+   "question": "Allianz add-ons on Secarang: which ones are offered (SA brief: all-driver, CART, Road Rangers, PAB-ERW, MPA A/B, agreed value), and is 'Allianz Road Rangers' a free add-on (CIBO mockup shows 'Allianz Road Rangers FREE')?",
+   "who": "BA Lim Yi Link",
+   "sources": "SA brief 29.09 test scenario 4; mockup CIBO 20261006 Add-ons; coverage review M6, Q-F",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q33",
+  "data": {
+   "id": "Q33",
+   "question": "FOR AZFAR: does the 'no mobile' rule (22.10.2026, UCD app) also cover Secarang in a phone browser? The Secarang mockup has a phone layout and MacroKiosk customers open Secarang from WhatsApp on their phones. No row added until decided",
+   "who": "Azfar (QA)",
+   "sources": "Mockup Secarang 20261015 phone layout; QA rule 22.10.2026; coverage review M19, Q-G",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q34",
+  "data": {
+   "id": "Q34",
+   "question": "Is the receipt / insurer-name code shared with eAuto UCD Insurance, so that the eAuto Allianz receipt could change too? (SA brief says eAuto is unaffected by the switch, but REQ-010 is newer than the brief.) A yellow before / after row is added only if yes",
+   "who": "Dev Mong Guo Hao",
+   "sources": "Coverage review M20, Q-H; SA brief 29.09 'What stays the same'",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q35",
+  "data": {
+   "id": "Q35",
+   "question": "Allianz quotation service gives an error / no answer: does REQ-003 ('Applies when Allianz has no quotation, e.g. company vehicle or non-renewal') mean the 'Allianz – Quotation unavailable' card shows then too? Can Dev make Allianz fail or time out on staging?",
+   "who": "BA Lim Yi Link / Dev",
+   "sources": "SRD v1.1 REQ-003; coverage review M5, Q-I",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q36",
+  "data": {
+   "id": "Q36",
+   "question": "Does Allianz ever refer a quotation on Secarang (CIBO status 'Pending approval', Referred Risk Log)? The SA brief lists 'Allianz refer-risk, including Allianz as the only insurer available' in its tests. What should the customer and CIBO see?",
+   "who": "BA Lim Yi Link / Dev",
+   "sources": "SA brief 29.09 test scenario 3; mockup CIBO 20261006 status list ('Pending approval'); coverage review M18, Q-J",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q37",
+  "data": {
+   "id": "Q37",
+   "question": "Allianz Confirmation page: which agent line ('Exclusively by agent Serba Sentral Sdn Bhd' + PIAM ID, as on the receipt mockup?) and which commission % should show?",
+   "who": "BA Lim Yi Link / Finance",
+   "sources": "Mockup CIBO 20261006 receipt; SRD v1.1 §2.1.3b (reports only); coverage review M7, Q-K",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q38",
+  "data": {
+   "id": "Q38",
+   "question": "Is there a picture of the Allianz logo / quotation card as it was before May 2025 ('same as before it was disabled', REQ-005)?",
+   "who": "BA Lim Yi Link / Dev",
+   "sources": "SRD v1.1 REQ-005; coverage review Q-L",
+   "decision": ""
+  }
+ },
+ {
+  "op": "set",
+  "collection": "questions",
+  "doc_id": "Q39",
+  "data": {
+   "id": "Q39",
+   "question": "When does an unpaid Secarang quotation become 'Quotation expired' in CIBO (how long)? Needed to see the expired state of an unpaid Allianz transaction",
+   "who": "BA Lim Yi Link / Dev",
+   "sources": "Mockup CIBO 20261006 row BR55009005 (Quotation expired); coverage review M4",
+   "decision": ""
+  }
+ }
+]

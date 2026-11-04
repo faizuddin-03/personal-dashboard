@@ -1,0 +1,54 @@
+{
+  "ts": "12406_QT_TS1",
+  "run": "eaint-12406-run-sQT-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Quotations shown in this order: Lonpac, Allianz, Tokio Marine",
+      "shows": "quotations, left to right: Lonpac, Allianz, Tokio Marine (all cards: Lonpac RM819.07 > Allianz RM862.16 > Tokio Marine RM1,355.08)",
+      "match": true,
+      "shot": "01-all-quotations-order.png",
+      "at": "29/10/2026, 16:10:45",
+      "url": "/ia/car-insurance/choose-your-insurance/190b7c53-6d6e-4ca1-aea0-f4d57fee8782",
+      "side": "Secarang"
+    },
+    {
+      "point": "E2",
+      "expected": "The Allianz quotation shows the Allianz logo",
+      "shows": "Allianz card quotation RM862.16; logo alt \"Allianz logo\", file allianz.png, image loaded true, drawn 269x99px",
+      "match": true,
+      "shot": "02-allianz-card-logo.png",
+      "at": "29/10/2026, 16:10:47",
+      "url": "/ia/car-insurance/choose-your-insurance/190b7c53-6d6e-4ca1-aea0-f4d57fee8782",
+      "side": "Secarang"
+    },
+    {
+      "point": "E3",
+      "expected": "No other card: no \"– Quotation unavailable\" card and no card for any other insurer (e.g. RHB)",
+      "shows": "3 card(s): Lonpac RM819.07 > Allianz RM862.16 > Tokio Marine RM1,355.08; \"Quotation unavailable\" cards: none; other insurers: none",
+      "match": true,
+      "shot": "03-no-other-card.png",
+      "at": "29/10/2026, 16:10:48",
+      "url": "/ia/car-insurance/choose-your-insurance/190b7c53-6d6e-4ca1-aea0-f4d57fee8782",
+      "side": "Secarang"
+    },
+    {
+      "point": "E4",
+      "expected": "After [Edit] postcode: the cards are quoted again, the Allianz quotation is still shown with its logo, and the order is still Lonpac, Allianz, Tokio Marine (Allianz price before / after recorded)",
+      "shows": "after [Edit] postcode 55000 -> 50450: cards quoted again; quotations Lonpac, Allianz, Tokio Marine (all cards: Lonpac RM819.07 > Allianz RM862.16 > Tokio Marine RM1,355.08); Allianz logo \"Allianz logo\" allianz.png, loaded true; Allianz price RM862.16 -> RM862.16 (recorded)",
+      "match": true,
+      "shot": "04-after-edit-postcode.png",
+      "at": "29/10/2026, 16:11:02",
+      "url": "/ia/car-insurance/choose-your-insurance/190b7c53-6d6e-4ca1-aea0-f4d57fee8782",
+      "side": "Secarang"
+    }
+  ],
+  "notes": [
+    "on the site: Secarang (https://staging.secarang.com/ia/)",
+    "screens: home > car-details > quotations; Car Details: Car Details | All Quotation | Add-On | Confirmation | Payment | Are these your car details? | Plate No | HXA0011A | Make | - | Model | HONDA HR-V | Year | 2024 | Seat | 5 | CC | 1497 | Variant | V MY14 FACELIFT | Transmission | 1 SP AUTOMATIC CONSTANTLY VARIABLE ( | Current Coverage | 11 Nov 2025 - ",
+    "All Quotations cards (left to right): Lonpac RM819.07 > Allianz RM862.16 > Tokio Marine RM1,355.08",
+    "Allianz price (recorded, SRD silent): postcode 55000 RM862.16 -> postcode 50450 RM862.16"
+  ],
+  "opened": []
+}

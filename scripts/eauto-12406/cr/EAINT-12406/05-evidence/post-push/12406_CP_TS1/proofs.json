@@ -1,0 +1,31 @@
+{
+  "ts": "12406_CP_TS1",
+  "run": "eaint-12406-run-sCP-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Home page insurer logos, in this order: Lonpac, Allianz, Tokio Marine (no other insurer logo, e.g. no RHB)",
+      "shows": "Home insurer logos, left to right: Lonpac (lonpac-logo.png), Allianz (allianz.png), Tokio Marine (tokiomarine.png)",
+      "match": true,
+      "shot": "01-home-insurer-logos.png",
+      "at": "29/10/2026, 15:50:01",
+      "url": "/ia/car-insurance",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E2",
+      "expected": "The Allianz logo is the Allianz logo image (not a broken image, blank box or text)",
+      "shows": "Allianz logo allianz.png: image loaded true, file 502x185px, drawn 163x60px, 60 colours painted",
+      "match": true,
+      "shot": "02-home-allianz-logo.png",
+      "at": "29/10/2026, 15:50:03",
+      "url": "/ia/car-insurance",
+      "side": "Secarang (public site, no login)"
+    }
+  ],
+  "notes": [
+    "Home logos read: [{\"file\":\"lonpac-logo.png\",\"src\":\"./assets/img/insurance-logo/lonpac-logo.png\",\"alt\":\"Insurance logo\",\"loaded\":true,\"natural\":\"839x297\",\"width\":169,\"height\":60,\"x\":590,\"y\":1300,\"colours\":31},{\"file\":\"allianz.png\",\"src\":\"./assets/img/insurance-logo/allianz.png\",\"alt\":\"Insurance logo\",\"loaded\":true,\"natural\":\"502x185\",\"width\":163,\"height\":60,\"x\":879,\"y\":1300,\"colours\":60},{\"file\":\"tokiomarine.png\",\"src\":\"./assets/img/insurance-logo/tokiomarine.png\",\"alt\":\"Insurance logo\",\"loaded\":true,\"natural\":\"502x185\",\"width\":163,\"height\":60,\"x\":1164,\"y\":1300,\"colours\":185}]"
+  ],
+  "opened": []
+}

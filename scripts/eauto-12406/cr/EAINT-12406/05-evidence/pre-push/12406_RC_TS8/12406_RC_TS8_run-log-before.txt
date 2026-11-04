@@ -1,0 +1,16 @@
+# 12406_RC_TS8 — BEFORE half, 2026-10-28 15:16:24 MYT
+Staging: Secarang /ia/ (https://staging.secarang.com/ia) and CIBO (https://staging.secarang.com/cibo). EAINT-12406 not deployed (Azfar, 28.10.2026). Video: video_12406_RC_TS8.webm (one tab, one continuous recording).
+
+- BR55004010: found in the listing (one row); Transaction Details at https://staging.secarang.com/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b; status "Insurance created"; buttons ["e-Certificate","Receipt"]
+  - Transaction Details Insurer: "Allianz General Insurance Company (Malaysia) Berhad"
+  - Receipt BR55004010_receipt_PERSONAL-DATA.pdf (downloaded, shown on screen in this tab). Insurer block lines (pdftotext): ["Insurer                                           Total Premium","Allianz General Insurance Company (Malaysia)","Berhad (735426-V)                                 Exclusively by agent Serba Sentral Sdn Bhd","PIAM ID: 195379-01"]
+E1 BR55004010 receipt Insurer block: ["Insurer                                           Total Premium","Allianz General Insurance Company (Malaysia)","Berhad (735426-V)                                 Exclusively by agent Serba Sentral Sdn Bhd","PIAM ID: 195379-01"]
+E2 BR55004010 Transaction Details Insurer: "Allianz General Insurance Company (Malaysia) Berhad"
+- BR44003678: found in the listing (one row); Transaction Details at https://staging.secarang.com/cibo/transaction-management/transaction-details/910dcd05-c1cf-4474-9489-125042a36955; status "Pending payment"; buttons []
+  - Transaction Details Insurer: "Allianz General Insurance Company (Malaysia) Berhad"
+E2 BR44003678 Transaction Details Insurer: "Allianz General Insurance Company (Malaysia) Berhad" (status Pending payment; Receipt button: no)
+- BR3D003430: found in the listing (one row); Transaction Details at https://staging.secarang.com/cibo/transaction-management/transaction-details/de85ed96-856b-4480-b346-f5bc5e319082; status "Pending payment"; buttons []
+  - Transaction Details Insurer: "Allianz General Insurance Company (Malaysia) Berhad"
+E2 BR3D003430 Transaction Details Insurer: "Allianz General Insurance Company (Malaysia) Berhad" (status Pending payment; Receipt button: no)
+
+Screenshots: 12406_RC_TS8_E2_01-listing-BR55004010.png, 12406_RC_TS8_E2_02-transaction-details-BR55004010-blurred.png, 12406_RC_TS8_E2_03-insurer-box-BR55004010.png, 12406_RC_TS8_E1_04-receipt-BR55004010-full_PERSONAL-DATA.png, 12406_RC_TS8_E1_05-receipt-BR55004010-insurer-block.png, 12406_RC_TS8_E2_01-listing-BR44003678.png, 12406_RC_TS8_E2_02-transaction-details-BR44003678-blurred.png, 12406_RC_TS8_E2_03-insurer-box-BR44003678.png, 12406_RC_TS8_E2_01-listing-BR3D003430.png, 12406_RC_TS8_E2_02-transaction-details-BR3D003430-blurred.png, 12406_RC_TS8_E2_03-insurer-box-BR3D003430.png

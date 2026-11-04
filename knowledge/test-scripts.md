@@ -144,6 +144,10 @@ they are not bundled into the scenario cell.
 
 Header row: bold white on solid `FF1F4E78`. Every cell wraps, aligned top.
 
+**One tab per section for long workbooks (2026-10-29).** "for the excel test scenarios, can you seperate it into different tabs/sheet, for every section? so that its easier for me to navigate and read it" `[Faizuddin, dashboard chat to Elf, 2026-10-29]` — asked for the 68-TS EAINT-12028 workbook (13 sections, A. to M.). Section letters and TS numbers keep running across tabs. Whether every workbook gets this, or only long ones, is not stated `[unconfirmed]`. The draft-TS-excel build script writes one **Test Scenarios** sheet only (`build-workbook.mjs`, `wb.addWorksheet('Test Scenarios')`) until a per-section option is added `[source: pipeline EAINT-12028, Elf chat, 2026-10-29]`.
+
+**Tab names carry no section letter (2026-10-30).** "update the TS so that every tab name does not have A. B. C. etc." `[Faizuddin, dashboard chat to Elf, 2026-10-30]` — EAINT-12028 tabs became e.g. **Drafter**, not **E. Drafter**. The section banner row inside each tab still keeps its letter until he says otherwise. Whether this holds for every workbook is not stated `[unconfirmed]`.
+
 ### TS No.
 
 `<ticket-number>_TS<NN>` — `11934_TS01`, `11934_TS05`. **No underscore before the
@@ -240,6 +244,55 @@ Excel as a formula**, so `- item` breaks. ` - item` does not.
 `[from QA team, 2026-08-14]`
 
 `[from QA team, Maisarah's EAINT-11934 script, 2026-08-13]`
+
+### Priority column — only when asked (2026-10-30)
+
+1. **Own column, never Remarks**: "if want to include priority, do not put it in remarks. need to make a new column to the right of the TS No. column". `[Faizuddin, 2026-10-30, quoted in .claude/skills/draft-TS-excel/SKILL.md line 30]`
+2. **Only on request**: "the priority must only be created if i ask of it". Not asked → no Priority column and no priority anywhere in the row. `[same]`
+3. Builder colours: P1 red, P2 yellow, P3 green, with a P1/P2/P3 dropdown (SKILL.md line 30). First used on the EAINT-9805 suggestion workbook. [source: pipeline EAINT-9805, Elf build, 2026-10-30]
+4. **How to grade P1 / P2 / P3** — the pattern of the EAINT-7229 QA Team workbook (85 TS read 2026-10-30; confirmed by Faizuddin: "yes"). `[.claude/skills/draft-TS-excel/SKILL.md lines 31–35]`
+   1. "P1 = the change itself, one attempt": happy path, one interruption at each stage, timeouts, security checks, old vs new side by side, performance, the main browser / device.
+   2. "P2 = recovery and secondary paths": retry after a failure, invalid or mixed input, cancel, refresh, multi-tab / multi-browser, secondary browsers / devices.
+   3. "P3 = stress and rare edges": rapid repeats, another user reusing a session URL, revisiting earlier steps, cosmetic or cross-page display checks.
+   4. "Expect roughly 60% P1, 30% P2, 10% P3 (7229: 54 / 23 / 8)."
+   5. Applied to EAINT-9805 (119 TS → 71 P1 / 39 P2 / 9 P3). One kept outlier: the four thumbprint-document TS stayed P2, not P3, because of the f2f note "perakuan [check the thumbprint picture]". [source: pipeline EAINT-9805, Elf scenarios, 2026-10-30]
+4. **How P1/P2/P3 were assigned in the EAINT-7229 workbook** — read in full, 9 TS tabs, 85 TS: 54 P1, 23 P2, 8 P3. The workbook has **no written legend**; the rule below was inferred from the pattern and **confirmed by Faizuddin 2026-10-30 ("yes")** as the grading rule for his workbooks (now in draft-TS-excel SKILL.md). `[EAINT-7229 workbook, QA Team SharePoint, read 2026-10-30 via Excel Online link]`
+   1. **P1 = the change itself, one attempt**: happy path, and each single interruption at each stage (unplug / reconnect / remove card / swap card / network loss, before / during / after MyKad read or thumbprint), timeouts, security (HMAC, wrong key), applet vs web socket side by side, and every performance comparison. E.g. 7229_DD_TS1–TS11, 7229_C S_TS11–TS13, all PF.
+   2. **P2 = recovery and secondary paths**: retry after a failure ("Retry read after reconnect", "Multiple failed MyKad attempts", "Retry after connection loss"), invalid or mixed input ("1 valid + 1 invalid MyKad", "Auto Read invalid MyKad"), cancel before completion (7229_FUNC_TS1–TS4), refresh, same-technology multi-tab / multi-browser.
+   3. **P3 = stress and rare edges**: rapid repeats ("Rapid plug/unplug device", "Multiple rapid swaps", "Rapid click on [Cancel]"), another user reusing a session URL, revisiting earlier steps, details shown across pages (7229_C S_TS17–TS19).
+   4. **Outliers**: 7229_FUNC_TS5 "Cancel transaction after thumbprint" is P1 while cancel before/during is P2; 7229_C S_TS17 (session reuse by another user) and TS19 (MyKad details correct on all pages) are P3 although they read like security / data checks.
+   5. Same workbook, other tabs: **Browsers** — Chrome web socket P1, Firefox applet P1, Firefox web socket P2, Edge P2 (main target first). **QA Laptop Specs** — the lowest-spec laptops are P1, high-spec P3 (weakest hardware first).
+
+### Tab names and tab count (EAINT-9805, 2026-10-30)
+
+1. **Tab names = "<topic> TS"**, like the EAINT-7229 workbook ("Dermalog TS", "MyKad TS", "Thumbprint TS", "2 MyKads TS", "Functional TS" …). `[Faizuddin, dashboard chat to Elf, 2026-10-30]`
+2. **No section letters**: "you did not include A. B. C. right? dont include those. just the names" (applies to the section banner rows inside a tab too). `[same]`
+3. **Fewer tabs**: "the pages are too much. if you are able to combine some, than just combine it. Especially those with around 3 TS only". `[same]`
+4. Given on EAINT-9805; whether it holds for every workbook is [unconfirmed].
+
+### One result per condition (2026-10-30)
+
+1. **A TS that tests several conditions needs a Pass/Fail for each**: "for stuufs with multiple scenarios (example, Connection Loss TS (bluetooth off, out of range, IRIS reader off)), these need to have seperate result for each their own. in case lets say the bluetooth scenario passes, but the reader of scenario fails." `[Faizuddin, dashboard chat to Elf, 2026-10-30]`
+2. **Two allowed shapes**: "you can either make different TS, or make each of them in one TS, but they have seperate rows for results and the other rows are merged". `[same]`
+3. Given on EAINT-9805; whether it holds for every workbook is [unconfirmed].
+
+### Status cell colours (2026-10-30)
+
+1. **Colours**: "PASS - GREEN / FAIL - RED / IN PROGRESS - YELLOW / NOT STARTED - BLUE". Dropdown values: Pass / Fail / In Progress / Not Started. `[Faizuddin, dashboard chat to Elf, 2026-10-30]`
+2. **Only the cell itself**: "it should only affect the cell it is on. it should not affect any of the cells around it. example, if the status is for android 15, the cell for andoird 16 should not be affected at all". `[same]`
+3. **Trap — copied colour rules keep their old cell reference**: on the EAINT-9805 workbook the per-OS result columns reused the colour rules of the builder's Test Result column, so each cell read the value of the cell to its left and changing one status recoloured its neighbour. Priority colours on combined tabs also stopped at the first section. Fix: write each colour rule against the cell's own range. Cost: a workbook sent to Faizuddin with wrong colours. [source: pipeline EAINT-9805, Elf scenarios (job 20261030-151124-EAINT-9805-elf-chat-603e), 2026-10-30]
+4. **No hand edits after the build**: "Never add result columns, dropdowns or colour rules by hand after the build". Per-platform result columns come from the spec: `resultColumns` at top level and `platforms` on each row; they replace `Test Result`, sit right of `Remarks`, and unused platforms are grey with no dropdown. `[.claude/skills/draft-TS-excel/SKILL.md lines 42–43]`
+
+### Names keep their own spelling after "->" (2026-10-30)
+
+1. A line after "->" normally starts with a capital letter, but a product or feature name keeps its own spelling: **e-Signature** stays lower-case "e" (EAINT-9805 documents TS DC_TS03 / DC_TS04). Faizuddin, asked "Keep e-Signature, the name as written" or "Change it to E-Signature": "keep name as written". `[Faizuddin, dashboard chat to Elf, 2026-10-30]` Whether this covers every product name is [unconfirmed].
+
+### Step wording, order and per-OS rows (2026-10-30)
+
+1. **Module name in every step**: "for test steps and expected results, always include the module name in step (example: eSTM Step 1, STMS Step 3) because it can be confusing for people if you dont include the module name". `[Faizuddin, dashboard chat to Elf, 2026-10-30]`
+2. **Group TS by flow**: "reorganize the TS if different TS are within the same flow (example: eSTM step 1, eSTM step 3, STMS step 1, STMS step 3)". `[same]`
+3. **One row for OS-only differences**: "if the TS have the same exact step and expected result, but only different OS, then make them in one row only, and make the cells for both OS of that row to have the dropdown. this is to avoid redundancy". `[same]`
+4. Given on EAINT-9805 (per-OS result columns); items 1–2 are worded as "always" — whether they hold for every workbook is [unconfirmed].
 
 
 ## In-cell emphasis — bold and colour inside Steps / Expected Result

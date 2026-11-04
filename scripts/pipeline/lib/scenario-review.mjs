@@ -19,7 +19,7 @@ export const SCENARIO_REVIEW_RULES = `Self-review before you finish (a skeptical
 6. **Specific enough to fail.** Each expected line must be false on a plausibly broken build: the old behaviour, the neighbouring control, the other role's view. Write "**Status** shows **Approved**", never "status is updated", "works correctly", "handled properly", "as expected", "displayed correctly".
 7. **The setup can reach the rule.** The role, data and path in the steps must actually produce the condition the expected line checks (no check of a restriction from a role that has full access anyway).
 8. **The project's words.** Name screens, statuses, buttons and modules as the ticket, SRD or knowledge/ name them. Never coin a new name.
-9. **Size.** More than 40 TS: split by flow or portal and say so in Open points.
+9. **Size.** More than 40 TS: split by flow or portal (tabs or sub-section prefixes) and say so in Open points. There is no cap once split.
 10. **Priority by who bears the risk** (round 24): give each TS "priority" P1, P2 or P3. P1 = money taken or refunded, ownership or a record transferred, a record shown to a role / company that must not see it, an approval bypassed, a submission that cannot be recalled (JPJ). P2 = the ticket's main rule otherwise. P3 = wording, layout, convenience. Faizuddin runs P1 first when time is short.`;
 
 const VAGUE_RE = /\b(works?|working|functions?)\s+(correctly|properly|fine|as (expected|intended))\b|\bhandled\s+(correctly|properly)\b|\b(as expected|as intended)\b|\b(displayed|shown|updated|saved|processed)\s+(correctly|properly|successfully)\b|\bno issues?\b|\bshould work\b|\bis updated\b/i;
@@ -38,7 +38,10 @@ const norm = s => String(s ?? "").toLowerCase().replace(/[*+!]{2}/g, "").replace
 export function lintScenarios(list, opts = {}) {
   const warnings = [];
   const add = (id, kind, text, fixable = true) => warnings.push({ id, kind, text, fixable });
-  if (list.length > 40) add("*", "size", `${list.length} TS — over 40; split by flow or portal`, false);
+  // A list already split into tabs or sub-section prefixes is fine at any size: "it doesnt have
+  // a cap. can make more if needed" (Faizuddin, EAINT-9805, 2026-10-29).
+  const split = new Set(list.map(s => s.tab ?? /^\d+_([A-Z]{2,4})_TS/.exec(s.id ?? "")?.[1]).filter(Boolean)).size > 1;
+  if (list.length > 40 && !split) add("*", "size", `${list.length} TS — over 40; split by flow or portal`, false);
   const seenTitle = new Map(), seenSteps = new Map();
   for (const s of list) {
     if (s.manual) continue;

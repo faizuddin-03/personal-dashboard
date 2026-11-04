@@ -1,8 +1,8 @@
-# EAINT-12406 — related history (2026-10-27)
+# EAINT-12406 — related history (2026-11-02)
 
 ## Ticket brief
 
-Same content as `data/pipeline/work/EAINT-12406/brief.json`. Test host: **staging/ia** [answered by Faizuddin on 2026-10-27].
+Same content as `data/pipeline/work/EAINT-12406/brief.json`. Test host: **staging/ia** [answered by Faizuddin on 2026-10-27]. Allianz test data: from the developer / stakeholder later [answered by Faizuddin on 2026-10-27].
 
 1. **High-level scope:**
    1. **Secarang static pages:** Allianz logo on Home (Lonpac, Allianz, Tokio Marine); new About Us partnership sentence; FAQ insurer list; new Allianz Support section (expand / collapse).
@@ -12,20 +12,60 @@ Same content as `data/pipeline/work/EAINT-12406/brief.json`. Test host: **stagin
    5. **Receipt** (Secarang + CIBO): Allianz name with "200601015674 (735426-V)" on its own line; Lonpac and Tokio Marine receipts unchanged.
    6. **CIBO Transaction Details:** Allianz registration number below the insurer name; other insurers unchanged.
    7. **Regression:** Lonpac and Tokio Marine purchases; Allianz row in CIBO Transaction Management.
-2. **Estimated testing time:** **4.5 man-days** (range **4-5**), confidence **low** [unconfirmed]. No official figure: Jira "[QA] Est Man-day (cf 10081): —" (`EAINT-12406-jira.md` line 11); no Miro card (Scout study, Open question 2).
+2. **Estimated testing time:** **4 man-days** (1 QA) = **base 3** + **buffer 1** (requirement change + bug fix + retest); range **4-5**, confidence **medium** [unconfirmed]. **Official:** Jira "[QA] Est Man-day (cf 10081): 5" (`EAINT-12406-jira.md` line 11, refreshed 2026-11-02). No Miro card. Updated 2026-11-02: the TS already exists (picked up from the PIC on leave), so TS drafting drops out; was 4.5, low.
 3. **Modules / pages to cover:**
    1. **Secarang insurance (Secarang):** Home, Quotation, About Us, FAQs, Support — changed by REQ-001 to REQ-009 (logo, Allianz quote, order, unavailable card, wording, contact section).
    2. **Secarang purchase (Secarang):** Add-ons, Confirmation, Select Payment Method, Payment Successful, Receipt PDF — Allianz full E2E required (SRD v1.1 §2.1.3 a) + REQ-010 receipt BRN line.
    3. **Transaction Management (CIBO):** Transaction Management listing, Transaction Details, Receipt download — REQ-011 BRN line and REQ-010 CIBO receipt; listing is regression.
+4. **Testing scope** (mode: **Manual + Automation**):
+   1. **Changes**: Allianz back on Secarang — logo, quotation, wording, contact, receipt BRN, CIBO BRN line
+   2. **User Type**: Secarang customer (individual owner, company owner); CIBO user
+   3. **Modules Affected**:
+      1. **Secarang Home** - insurer logos show Lonpac, Allianz, Tokio Marine
+      2. **Secarang Quotation** - Allianz card with Allianz logo; order Lonpac > Allianz > Tokio Marine
+      3. **Secarang About Us** - Our partnership shows new Allianz sentence; rest unchanged
+      4. **Secarang FAQs** - instant quotation list shows 3 insurers in order; other FAQs unchanged
+      5. **Secarang Support** - Allianz section between Lonpac and Tokio Marine; expand / collapse
+      6. **Secarang Receipt PDF** - Allianz name + 200601015674 (735426-V) on its own line
+      7. **CIBO Transaction Details** - Allianz name with 200601015674 (735426-V) below it
+      8. **CIBO Receipt** - same BRN line as Secarang receipt
+   4. **Owner Type**:
+      1. **Individual, renewal**: Allianz quotation shown
+      2. **Individual, non-renewal**: Allianz – Quotation unavailable card after Tokio Marine
+      3. **Company**: Allianz – Quotation unavailable card after Tokio Marine [unconfirmed: company may get no-quotation popup]
+   5. **Insurer availability**:
+      1. **All 3 available**: Lonpac, Allianz, Tokio Marine
+      2. **Lonpac not available**: Allianz, Tokio Marine
+      3. **Allianz not available**: Lonpac, Tokio Marine + Allianz unavailable card
+      4. **Tokio Marine not available**: Lonpac, Allianz
+   6. **Payment Type**:
+      1. **FPX**: RHB simulator
+      2. **Credit or Debit Card**: Fiuu test card
+      3. **SPayLater / PayLater by Grab**: regression only
+   7. **Functional**:
+      1. [+] / [−] on Allianz Support header --> expand / collapse contact details
+      2. [Plan Details] --> Allianz 2022 product documents open
+      3. [Receipt] in CIBO --> PDF with Allianz BRN line
+   8. **Test Scenarios**:
+      1. New Allianz transaction
+         1. Payment = OK --> success page, receipt, cover note
+         2. Payment = Failed --> back to Select Payment Method
+      2. Lonpac / Tokio Marine transaction
+         1. Receipt = no change
+      3. Old Allianz transaction in CIBO
+         1. Transaction Details / receipt BRN line [unconfirmed: SRD silent]
 
 ## Header
 
 1. **Module / portal:** **Secarang** insurance (public site: Home, Quotation, About Us, FAQs, Support, Receipt) + **CIBO** (Receipt, Transaction Details). `[EAINT-12406-study.md § Header #13; § What changes #7]`
-2. **Past tickets kept:** **7** (5 with a QA Team workbook, 1 with a TS only in the repo snapshot, 1 with no workbook).
-3. **Own official TS:** **none** in the QA Team folder as of 2026-10-27.
-4. **Dropped (name-only matches, eAuto-side only):** EAINT-8467, 9615, 9214, 9306, 9023, 10435, 8595, 11977, 11925. All test eAuto Get Quote / BO / AATF, not Secarang. EAINT-9023 is the eAuto twin of EAINT-9024 (kept).
-5. **Peripheral, not kept:** EAINT-11541 (CIBO Payment Report "RMS → Fiuu"). Only relevant if CIBO payment reports are in scope (Scout Open question 8).
-6. **Rechecked 2026-10-27 (second ranking):** EAINT-12151 (CIBO Transaction Management date fields + Insurance Creation Date filter) **not kept**. Its TS test listing date columns and filters, not the Transaction Details insurer line. `_reference/tickets/EAINT-9615/EAINT-9615-qa-team-ts-study.md` is eAuto BackOffice — not kept.
+2. **Past tickets kept:** **8** (5 with a QA Team workbook, 1 with a TS only in the repo snapshot, 2 with no workbook). EAINT-12175 (Lonpac insurer name on Secarang) added 2026-11-02.
+3. **Own official TS:** **exists** — Faizuddin, 2026-11-02 (dashboard chat): "this is an already existing TS. i am just picking it up because the PIC is on leave". **Not located yet:** `fetch.mjs ts EAINT-12406` and `fetch.mjs ts Allianz` → "No workbook matches" (synced eAuto CR Test Scenarios + both repo snapshots); no 12406 file in the OneDrive ticket folder or anywhere under the OneDrive root; no .xlsx in the Jira attachment list. Corrects the earlier line **none in the QA Team folder**, which only meant not found.
+   1. **Update 2026-11-02 (Faizuddin, dashboard chat):** "i think the existing TS is in his local device" — the PIC's own laptop, not synced to SharePoint [unconfirmed]. No toolbox path reaches it. Until a copy is shared, the reusable scenarios and the 16-22 TS count in this file stay the working basis [unconfirmed].
+4. **Jira refreshed 2026-11-02:** "[QA] Est Man-day (cf 10081): 5"; "Exp. Deploy Date (cf 10087): 2026-11-06"; "QA (cf 10041): —" (`EAINT-12406-jira.md` lines 7, 11). The 5 man-days is the original PIC's figure [unconfirmed who set it].
+5. **Dropped (name-only matches, eAuto-side only):** EAINT-8467, 9615, 9214, 9306, 9023, 10435, 8595, 11977, 11925. All test eAuto Get Quote / BO / AATF, not Secarang. EAINT-9023 is the eAuto twin of EAINT-9024 (kept).
+6. **Peripheral, not kept:** EAINT-11541 (CIBO Payment Report "RMS → Fiuu"). Only relevant if CIBO payment reports are in scope (Scout Open question 8).
+7. **Rechecked 2026-10-27 (second ranking):** EAINT-12151 (CIBO Transaction Management date fields + Insurance Creation Date filter) **not kept**. Its TS test listing date columns and filters, not the Transaction Details insurer line. `_reference/tickets/EAINT-9615/EAINT-9615-qa-team-ts-study.md` is eAuto BackOffice — not kept.
+8. **Rechecked 2026-11-02 (third ranking):** dropped EAINT-9306 (eDereg Pre-Check, AATF), EAINT-9611 (eAuto insurance inception date / premium API) and EAINT-12058 (CIBO listing UCD name columns). None touch Secarang pages or the CIBO insurer line. Studies `EAINT-9306-qa-team-ts-study.md` and `EAINT-9611-qa-team-ts-study.md` are eAuto-side — not kept.
 
 ## Related past tickets
 
@@ -50,6 +90,10 @@ Same content as `data/pipeline/work/EAINT-12406/brief.json`. Test host: **stagin
 7. **EAINT-8536** — "[eAuto & Secarang] [Insurance] To enable WhatsApp notifications to 018-2884889 for failed cover note submissions".
    1. Workbook: `EAINT-8536 - [eAuto & Secarang] [Insurance] … .xlsx`. Text copy: `_reference/sharepoint/qa-team-ts/EAINT-8536 - … .md`.
    2. Why: **Secarang cover note path** (success + failed). SRD v1.1 §2.1.3 a asks for full E2E incl. "cover note, callbacks".
+8. **EAINT-12175** — "⚪[Secarang & eAuto-Insurance] To Correct Insurer Name to Lonpac Insurance Bhd & Update SDPA Policy Wording Link" (Done). Added 2026-11-02.
+   1. Workbook: **none found** (`fetch.mjs ts EAINT-12175` → "No workbook matches").
+   2. **Other QA's coverage:** automation folder `by-ticket/eaint-12175-lonpac-insurer-name` (21 files, 9 tests; `probe-secarang.mjs`, `probe-insurer-name.mjs`, `probe-pdf.mjs`, `run-ts.mjs`). Inventory only: `_reference/codebases/eauto-qa-charmain/intake/reports/charmain-12175.md`. The folder itself is **not in the clone**.
+   3. Why: **same Secarang pages** — "Secarang About Us / FAQ / Support / Add-on / Confirmation pages (REQ-001–005, already live)" `[knowledge/cr-ledger.md § EAINT-12175 item 1]`. Last insurer-name wording change on the pages REQ-007 to REQ-009 now change.
 
 ## What was tested before
 
@@ -81,6 +125,7 @@ Same content as `data/pipeline/work/EAINT-12406/brief.json`. Test host: **stagin
    1. **WA_FAILCN_TS1** (R9) "New Transaction - Secarang (Homepage) ⏎ Cover Note Submission = Failed" — Tokio Marine, "vehicle details with prefix VB". **PASS**.
    2. **WA_FAILCN_TS6** (R14) "New Transaction - Secarang (Homepage) ⏎ E2E Happy Flow" — Lonpac. **PASS**.
 7. **EAINT-8608:** no TS workbook. Only the QA-Issue list (see "Past QA-Issues mentioned").
+8. **EAINT-12175:** no TS workbook in the QA Team folder; "TS / evidence: none drafted" at 2026-09-25 `[knowledge/cr-ledger.md § EAINT-12175 item 6]`. Another QA ran it "Worked 2 October 2026 ... Ran against UAT4 as well as staging" `[knowledge/cr-ledger.md § EAINT-12175 item 11]`. TS rows not available to count.
 
 ## Reusable scenarios
 
@@ -93,6 +138,7 @@ Same content as `data/pipeline/work/EAINT-12406/brief.json`. Test host: **stagin
 7. **Allianz product documents** (REQ-006): adapt **8786_SEC_TS1-TS4** — "[Plan Details]" → "More Info" links at Step 2, Step 4, Confirm and Pay, plus e-Policy email ZIP. Expected = 2022 documents open; no date defect.
 8. **Cover note success / failed** (SRD §2.1.3 a): adapt **WA_FAILCN_TS6** (happy flow) and **WA_FAILCN_TS1** (prefix VB = cover note failed) with Allianz. [unconfirmed that the VB prefix stub covers Allianz]
 9. **Regression Lonpac / Tokio Marine unaffected:** reuse **12107_TS07 / TS08** as is.
+10. **Static-page wording** (REQ-007 About Us, REQ-008 FAQs, REQ-009 Support): follow the EAINT-12175 approach — the same About Us / FAQ / Support pages were checked for insurer name text. No TS rows to copy; write one row per page with the SRD text as expected result. [unconfirmed: 12175 TS layout not seen]
 
 ## Known traps
 
@@ -110,6 +156,9 @@ Same content as `data/pipeline/work/EAINT-12406/brief.json`. Test host: **stagin
 8. **Dev-patched payments:** 12107_TS03-05 "Ask dev to patch the transactions to ShopeePay". Same approach may be needed for Allianz callback paths.
 9. **Cover note fail stub:** 8536 R10 remark "Dev will hardcode specific vehno prefix to allow sending of required whatsapp message"; prefix "VB" = failed cover note, "VF" = JPJ rejected (R9, R12).
 10. **Serba Sentral = Allianz agency:** 8331 R23 "Serba Sentral (Allianz / eTiqa)"; "Pemaju Eksklusif (Lonpac / Tokio Marine)". Matches SRD §2.1.3 b Finance check "under agency Serba Sentral".
+11. **Insurer name is looked up at display time** (EAINT-12175): "The name shown is looked up at display time, so reprinted old policies also show "Bhd"." `[knowledge/teams-decisions-by-ticket.md § EAINT-12175 #1, Teams 2026-09-28 17:19, the developer]` Old Allianz receipts in CIBO may show the new BRN line too [unconfirmed: same lookup for BRN].
+12. **Plan code shown instead of insurer name:** EAINT-12175 sub-task "EAINT-12423 [eAuto - BackOffice] Insurance Transaction Listing - Insurance Company column shows the plan code Lonpac instead of the full insurer name" `[EAINT-12175-jira.md line 13]`. Check the CIBO Allianz row shows the full name, not a code.
+13. **8786 Secarang PDS sheet was never marked:** no Test Result values on R3-R10 `[knowledge/flow-secarang-insurance.md § Update 2026-10-27 EAINT-12078 #3]`. Do not treat 8786 rows as proven.
 
 ## Past QA-Issues mentioned
 
@@ -125,7 +174,8 @@ Same content as `data/pipeline/work/EAINT-12406/brief.json`. Test host: **stagin
    9. 27 sub-tasks in total.
 2. **EAINT-8631** (sub-task of EAINT-8334): "[Secarang - CIBO] Existing old transaction's receipt 'Discount' & 'Total Amount' hidden". Relevant to old Allianz receipts.
 3. **EAINT-9054** (sub-task of EAINT-8536): "[Secarang] Not receiving Failed Cover Note Submission whatsapp message".
-4. **EAINT-12107, 9024, 8786, 9062:** no sub-tasks in Jira.
+4. **EAINT-12423** (sub-task of EAINT-12175): "[eAuto - BackOffice] Insurance Transaction Listing - Insurance Company column shows the plan code Lonpac instead of the full insurer name" `[EAINT-12175-jira.md line 13]`.
+5. **EAINT-12107, 9024, 8786, 9062:** no sub-tasks in Jira.
 
 ## Estimated testing effort
 
@@ -142,16 +192,19 @@ Faizuddin, 2026-10-27. **[unconfirmed]** — the official figure lives in the QA
 | EAINT-9062 | Secarang renewal window | 5 | "—" (`EAINT-9062-jira.md` line 11) |
 | EAINT-8536 | Secarang cover note WA | 7 | "—" (`EAINT-8536-jira.md` line 11) |
 | EAINT-8608 | New insurer on Secarang | no workbook | **15** (`EAINT-8608-jira.md` line 11) |
+| EAINT-12175 | Lonpac name on Secarang pages + eAuto filter | no workbook | **3** (`EAINT-12175-jira.md` line 11, fetched 2026-11-02) |
+| **EAINT-12406 (this ticket)** | Allianz back on Secarang + CIBO | existing TS, not located | **5** (`EAINT-12406-jira.md` line 11, refreshed 2026-11-02) |
 
    1. Scout study: "[QA] Est Man-day: blank" and "No Miro card found" `[EAINT-12406-study.md § Header #5; Open questions #2]`.
 2. **Expected TS count for EAINT-12406:** **16-22**.
    1. Why: 4 static pages (REQ-001, 007, 008, 009) + 4-5 quotation order / unavailable rows (REQ-003, 004) + 1-2 Allianz E2E + 2-3 receipt + 2 CIBO Transaction Details + 2-3 regression. Wider than 12107 (8), far smaller than a new-insurer onboard (8608).
-3. **Estimate in man-days: 4-5.**
+3. **Estimate in man-days: 4-5** (single figure **4.5**, 1 QA = **base 3.5** + **buffer 1**). EAINT-12175 (name wording on the same pages, no new insurer, no E2E) was **3**; 12406 adds an insurer switch-on and full E2E on top.
    1. **TS drafting:** 0.5.
    2. **Test execution:** 2 — static pages are fast; the Allianz E2E and finding a renewal-due individual vehicle that quotes Allianz on staging are slow.
    3. **Retest / QA-Issue buffer:** 1 — Allianz has not run since May 2025; 8608 showed an insurer switch-on raises receipt, CIBO and document issues.
    4. **Automation build:** 0.5-1.5 — static-page text + logo order checks and quotation order via existing `scripts/eauto-12107` / `scripts/secarang-insurance` page objects. Allianz E2E only if test data quotes it.
-4. **Confidence: low.**
+   5. **Update 2026-11-02:** the TS already exists (Faizuddin, dashboard chat), so **TS drafting 0.5 → 0** (reading the PIC's TS is inside execution). New split: **base 3** (execution 2 + automation 1) + **buffer 1** = **4 man-days**. The official Jira figure **5** sits at the top of the range. Expected TS count 16-22 stays [unconfirmed] until the existing TS is read.
+4. **Confidence: medium** (updated 2026-11-02; was low). An official Jira figure now exists. Still open: the TS row count and the Allianz test data.
    1. Raises it: test env named; a known plate + IC that returns an Allianz quote on staging; answer on Zurich / other insurers in the sequence (Scout Open question 3).
    2. **Update 2026-10-27:** Scout confirmed host and Allianz test data are **both unknown** (see Known traps #6). Confidence stays **low** until the developer answers.
    3. **Update 2026-10-27 (Faizuddin):** host settled as **staging/ia**. Allianz data comes from the developer or stakeholder later. Confidence stays **low** (corrected 2026-10-27; an earlier note said "low-medium", but the Allianz test data is still missing). Execution time depends on when that data arrives. Single figure for the brief: **4.5 man-days**.
@@ -170,5 +223,7 @@ Faizuddin, 2026-10-27. **[unconfirmed]** — the official figure lives in the QA
 9. `knowledge/cr-test-scenario-catalogue.md` (Secarang & CIBO table, rows 031, 065, 129-137).
 10. `knowledge/flow-secarang-insurance.md` §7 Traps, §8.
 11. Grep of `_reference/sharepoint/qa-team-ts/` for "secarang" / "allianz"; candidate list items 2-10 checked by title and dropped.
-12. `_reference/tickets/*/*-qa-team-ts-study.md` — **none exist**.
-13. `fetch.mjs ts EAINT-8608` — "No workbook matches".
+12. `_reference/tickets/*/*-qa-team-ts-study.md` — none existed on 2026-10-27. On 2026-11-02: 8536, 8786, 9306, 9611 studies listed; 9306 and 9611 are eAuto-side, dropped.
+13. `fetch.mjs ts EAINT-8608` and `fetch.mjs ts EAINT-12175` — "No workbook matches".
+14. Added 2026-11-02: `_reference/tickets/Studying/EAINT-12175/EAINT-12175-jira.md` (fetched); `knowledge/cr-ledger.md` § EAINT-12175; `knowledge/teams-decisions-by-ticket.md` § EAINT-12175; `knowledge/script-inventory-team.md` row 15; `_reference/codebases/eauto-qa-charmain/intake/reports/charmain-12175.md`; `data/pipeline/answers.json` (ticket:EAINT-12406); `data/pipeline/work/EAINT-12406/history.md`.
+15. Other QA's scenario ledgers `_reference/codebases/eauto-qa-charmain/test-scenarios/*` — none cover Secarang or CIBO.

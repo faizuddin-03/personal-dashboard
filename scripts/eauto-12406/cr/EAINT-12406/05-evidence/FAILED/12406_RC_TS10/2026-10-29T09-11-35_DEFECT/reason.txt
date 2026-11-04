@@ -1,0 +1,8 @@
+12406_RC_TS10 — FAIL — the page does not match the expected result (a defect until triage says otherwise)
+run eaint-12406-run-sRC-20261029-1545-c2, staging /ia, 29/10/2026, 17:11:35 MYT
+
+- E3: expected "Secarang lists the new Allianz transactions", page shows "Platform Secarang + Allianz (created 29.10.2026 - today): 1 row(s); BR60006349 NOT listed" (08-platform-secarang-allianz.png)
+- E4: expected "Allianz + Transaction Status "Insurance created": only Allianz rows with that status, 12406_E2E_TS1 among them", page shows "Allianz + "Insurance created": 1 row(s); 12406_E2E_TS1 BR60006349 NOT listed; rows of another insurer or status:  "" """ (11-allianz-status-insurance-created.png)
+- E4: expected "Allianz + Transaction Status "Pending payment": only Allianz rows with that status, 12406_RC_TS9 among them", page shows "Allianz + "Pending payment": 1 row(s); 12406_RC_TS9 BR60006338 NOT listed; rows of another insurer or status:  "" """ (12-allianz-status-pending-payment.png)
+- E5: expected "Clear all sets every filter back to its default (Date Range Type 'Transaction Creation Date') and empties the search box (same as before the deploy)", page shows "after Clear all: platform = (empty); insuranceComp = (empty); dateRange = Transaction Creation Date; status = (empty); jpjStatus = (empty); roadTax = (empty); discountCode = (empty); fromDate = ""; toDate = ""; search = "". Date Range Type "Transaction Creation Date"; search box ""; controls not back to their first-load value: dateRange = Transaction Creation Date (on load: (empty))" (13-clear-all.png)
+- E5: expected "Print opens a print view of the listing", page shows "Print: browser print called 0 time(s); page as printed (print CSS): listing table NOT shown, sidebar hidden" (14-print-view.png)

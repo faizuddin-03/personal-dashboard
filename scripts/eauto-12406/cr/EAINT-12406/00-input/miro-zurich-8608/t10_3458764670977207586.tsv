@@ -1,0 +1,116 @@
+TS No.	eAuto Service Portal > Hire Purchase Record					Expected Result		QA	Test Result (P/F)
+	Trigger Point	Refer Risk Code	Prefix	Insurer	Test Scenario	Record Status	Hire Purchase Record		
+B/T_HP_TS1	"Create New Hire Purchase Record Page,
+upon clicking the [Save] button"	"Beyond Economic Repair
+(BER)"	ZU	"Zurich
+(Error Code = R26)"	"Go to eAuto Service Portal > Hire Purchase Record Creation Listing
+Create New Hire Purchase Record
+Enter valid UCD New BRN, VN and IC
+Click [Save] button to save the Hire Purchase Record
+Zurich insurance API return Refer Risk Code = BER"	B	"In Create New Hire Purchase Record page, ensure:
+System prompt popup with details below,
+Content: ""Record created. However, Used Car Dealer will unable to proceed with the eSerahan transaction for this vehicle. Please contact eAuto for further info.""
+[OK] button
+Clicking [OK] redirects user back to Hire Purchase Record Creation Listing page.
+Record showing correctly in the listing.
+
+Ensure the following:
+Hire Purchase Record Creation Listing
+Record Status = B
+eSTM Trx Status = -
+eSTM Approved Date = -
+Insurance Purchase (eAuto) = -
+Insurance Approved At = -
+eLKM = -
+eVOC = -
+Last Updated On = {dd-mm-yyyy HH:mm}
+Action = Edit
+
+Click Edit hyperlink, in Edit New Hire Purchase Record page, ensure:
+ALL details showing correctly
+
+Note: XStar users should be ABLE to edit / update the record status."	Azfar	PASS
+B/T_HP_TS2		Total Loss (TL)	ZV	"Zurich
+(Error Code = 090)"	"Go to eAuto Service Portal > Hire Purchase Record Creation Listing
+Create New Hire Purchase Record
+Enter valid UCD New BRN, VN and IC
+Click [Save] button to save the Hire Purchase Record
+Zurich insurance API return Refer Risk Code = TL"	T	"In Create New Hire Purchase Record page, ensure:
+System prompt popup with details below,
+Content: ""Record created. However, Used Car Dealer will unable to proceed with the eSerahan transaction for this vehicle. Please contact eAuto for further info.""
+[OK] button
+Clicking [OK] redirects user back to Hire Purchase Record Creation Listing page.
+Record showing correctly in the listing.
+
+Ensure the following:
+Hire Purchase Record Creation Listing
+Record Status = T
+eSTM Trx Status = -
+eSTM Approved Date = -
+Insurance Purchase (eAuto) = -
+Insurance Approved At = -
+eLKM = -
+eVOC = -
+Last Updated On = {dd-mm-yyyy HH:mm}
+Action = Edit
+
+Click Edit hyperlink, in Edit New Hire Purchase Record page, ensure:
+ALL details showing correctly
+
+Note: XStar users should be ABLE to edit / update the record status."	Azfar	PASS
+B/T_HP_TS3		Other than BER / TL	ZX	Zurich	"Go to eAuto Service Portal > Hire Purchase Record Creation Listing
+Create New Hire Purchase Record
+Enter valid UCD New BRN, VN and IC
+Click [Save] button to save the Hire Purchase Record
+Zurich insurance API return Refer Risk Code = Other than BER / TL"	Active	"In Create New Hire Purchase Record page, ensure:
+System prompt popup with details below,
+Content: ""Record created. Used Car Dealer has 30 days to complete the eSerahan transaction before it expires.""
+[OK] button
+Clicking [OK] redirects user back to Hire Purchase Record Creation Listing page.
+Record showing correctly in the listing.
+
+Ensure the following:
+Hire Purchase Record Creation Listing
+Record Status = Active
+eSTM Trx Status = -
+eSTM Approved Date = -
+Insurance Purchase (eAuto) = -
+Insurance Approved At = -
+eLKM = -
+eVOC = -
+Last Updated On = {dd-mm-yyyy HH:mm}
+Action = Edit
+
+Edit New Hire Purchase Record
+Click Edit hyperlink in listing page, Hire Purchase Record details showing correctly (default)
+Record Status = Active
+
+Note: XStar users should be ABLE to edit / update the record status."	Azfar	PASS
+B/T_HP_TS4		API Down	-	ALL	"Go to eAuto Service Portal > Hire Purchase Record Creation Listing
+Create New Hire Purchase Record
+Enter valid UCD New BRN, VN and IC
+Click [Save] button to save the Hire Purchase Record
+ALL insurance API Down"		"In Create New Hire Purchase Record page, ensure:
+System prompt popup with details below,
+Content: ""Record created. Used Car Dealer has 30 days to complete the eSerahan transaction before it expires.""
+[OK] button
+Clicking [OK] redirects user back to Hire Purchase Record Creation Listing page.
+Record showing correctly in the listing.
+
+Ensure the following:
+Hire Purchase Record Creation Listing
+Record Status = Active
+eSTM Trx Status = -
+eSTM Approved Date = -
+Insurance Purchase (eAuto) = -
+Insurance Approved At = -
+eLKM = -
+eVOC = -
+Last Updated On = {dd-mm-yyyy HH:mm}
+Action = Edit
+
+Edit New Hire Purchase Record
+Click Edit hyperlink in listing page, Hire Purchase Record details showing correctly (default)
+Record Status = Active
+
+Note: XStar users should be ABLE to edit / update the record status."	Azfar	PASS

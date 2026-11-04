@@ -1,0 +1,112 @@
+Insurance Quote Enquiry							
+TS No.	Vehicle Type	Insurance Quote	Plan	Test Scenarios	Expected Result	QA	Test Result (P/F)
+TS_BOIQE_1	Fuel Car	Quotation	Comprehensive	"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with available quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: value returned from Zurich API
+Basic Premium: value returned from Zurich API
+NCD: value returned from Zurich API
+Service Tax: value returned from Zurich API
+Stamp Duty: value returned from Zurich API
+Total Price: value returned from Zurich API
+Refer Risk Code: -
+Allow to purchase insurance: Yes"	Azfar	Pass
+TS_BOIQE_2		Hit refer risk		"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with refer risk quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: -
+Basic Premium: -
+NCD: -
+Service Tax: -
+Stamp Duty: -
+Total Price: -
+Refer Risk Code: Risk reason returned from Zurich API
+Allow to purchase insurance: No"	Azfar	Pass
+TS_BOIQE_3		Quotation	TPFT	"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with available quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: value returned from Zurich API
+Basic Premium: value returned from Zurich API
+NCD: value returned from Zurich API
+Service Tax: value returned from Zurich API
+Stamp Duty: value returned from Zurich API
+Total Price: value returned from Zurich API
+Refer Risk Code: -
+Allow to purchase insurance: Yes"	Azfar	Pass
+TS_BOIQE_4		Hit refer risk		"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with refer risk quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: -
+Basic Premium: -
+NCD: -
+Service Tax: -
+Stamp Duty: -
+Total Price: -
+Refer Risk Code: Risk reason returned from Zurich API
+Allow to purchase insurance: No"	Azfar	Pass
+	EV	Quotation		"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with available quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: value returned from Zurich API
+Basic Premium: value returned from Zurich API
+NCD: value returned from Zurich API
+Service Tax: value returned from Zurich API
+Stamp Duty: value returned from Zurich API
+Total Price: value returned from Zurich API
+Refer Risk Code: -
+Allow to purchase insurance: Yes"		
+		Hit refer risk		"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with refer risk quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: -
+Basic Premium: -
+NCD: -
+Service Tax: -
+Stamp Duty: -
+Total Price: -
+Refer Risk Code: Risk reason returned from Zurich API
+Allow to purchase insurance: No"		
+TS_BOIQE_5	Motorbike	Quotation	Comprehensive	"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with available quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: value returned from Zurich API
+Basic Premium: value returned from Zurich API
+NCD: value returned from Zurich API
+Service Tax: value returned from Zurich API
+Stamp Duty: value returned from Zurich API
+Total Price: value returned from Zurich API
+Refer Risk Code: -
+Allow to purchase insurance: Yes"	Azfar	Pass
+TS_BOIQE_6		Hit refer risk		"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with refer risk quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: -
+Basic Premium: -
+NCD: -
+Service Tax: -
+Stamp Duty: -
+Total Price: -
+Refer Risk Code: Risk reason returned from Zurich API
+Allow to purchase insurance: No"	Azfar	Pass
+TS_BOIQE_7		Quotation	Third Party	"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with available quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: value returned from Zurich API
+Basic Premium: value returned from Zurich API
+NCD: value returned from Zurich API
+Service Tax: value returned from Zurich API
+Stamp Duty: value returned from Zurich API
+Total Price: value returned from Zurich API
+Refer Risk Code: -
+Allow to purchase insurance: Yes"	Azfar	Pass
+TS_BOIQE_8		Hit refer risk		"Backoffice > Insurance Quote Enquiry
+Input Vehicle Number and IC Number with refer risk quotation for Zurich
+Click ""Get Quote"""	"Ensure there are Zurich table displayed with:
+Sum Coverage: -
+Basic Premium: -
+NCD: -
+Service Tax: -
+Stamp Duty: -
+Total Price: -
+Refer Risk Code: Risk reason returned from Zurich API
+Allow to purchase insurance: No"	Azfar	Pass

@@ -1,0 +1,73 @@
+{
+  "ts": "12406_E2E_TS10",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c2",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Confirmation is for Tokio Marine (no Allianz name or price)",
+      "shows": "Confirmation after the change: Insurer \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\"; Total Premium RM1,171.22; \"Allianz\" on the page: no; Allianz's total RM 941.13 on the page: no",
+      "match": true,
+      "shot": "06-confirmation-tokio-marine.png",
+      "at": "29/10/2026, 16:55:28",
+      "url": "/ia/car-insurance/confirm-payment/d79431e1-ed6b-49c9-89af-efdd29690899",
+      "side": "Secarang"
+    },
+    {
+      "point": "E1",
+      "expected": "the Success page is for Tokio Marine (no Allianz name or price)",
+      "shows": "Success: \"Thank you for your purchase!\" shown; Receipt No. \"26102921300034\"; Tokio Marine total RM 1171.22 shown: yes; \"Allianz\" on the page: no; Allianz's total shown: no",
+      "match": true,
+      "shot": "07-success-tokio-marine.png",
+      "at": "29/10/2026, 16:55:52",
+      "url": "/ia/car-insurance/payment-success/d79431e1-ed6b-49c9-89af-efdd29690899",
+      "side": "Secarang"
+    },
+    {
+      "point": "E2",
+      "expected": "Secarang receipt Insurer: \"Tokio Marine Insurans (Malaysia) Berhad\", next line \"198601000381 (149520-U)\" (no Allianz company number)",
+      "shows": "receipt Insurer lines: \"Tokio Marine Insurans (Malaysia) Berhad\" / \"198601000381 (149520-U)\"; Allianz company number in the receipt: no",
+      "match": true,
+      "shot": "08-receipt-insurer-tokio-marine.png",
+      "at": "29/10/2026, 16:55:57",
+      "url": "/ia/car-insurance/payment-success/d79431e1-ed6b-49c9-89af-efdd29690899",
+      "side": "Secarang"
+    },
+    {
+      "point": "E3",
+      "expected": "CIBO row Ins. Co. Tokio Marine with agency badge Pemaju Eksklusif",
+      "shows": "Ref BR60006354: Ins. Co. \"TokioMarine Pemaju Eksklusif\", Payment \"RM…Paid 29-10-2026 16:55\", Payment Mode \"Fiuu | Online Banking – FPX-RHB Bank\", Transaction Status \"Insurance created V6872447\"",
+      "match": true,
+      "shot": "09-cibo-listing-row-tokio-marine.png",
+      "at": "29/10/2026, 16:56:07",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "Transaction Details insurer \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\", number on the same line as the name (wrapping), as captured on 28.10",
+      "shows": "Transaction Details Insurer \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\"; number in its own element / after a line break: no; drawn lower than the start of the name (wrapping): no",
+      "match": true,
+      "shot": "10-cibo-details-insurer-tokio-marine.png",
+      "at": "29/10/2026, 16:56:11",
+      "url": "/cibo/transaction-management/transaction-details/d79431e1-ed6b-49c9-89af-efdd29690899",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "on the site: Secarang (https://staging.secarang.com/ia/)",
+    "payment window allowed: fpx success",
+    "window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/d79431e1-ed6b-49c9-89af-efdd29690899/fpx_rhb",
+    "Success page names Tokio Marine: yes (recorded)",
+    "downloaded: secarang-receipt-HXA0004A-tokio-marine-PERSONAL-DATA.pdf",
+    "switch: {\"from\":\"Allianz\",\"to\":\"Tokio Marine\",\"addOnsEdited\":true,\"popup\":\"Change your insurance plan? You will lose current plan and all the keyed-in details if you decide to change to another plan. ChangeCancel\"}; purchase: FPX fpx_rhb, TAC typed, window closed: true; Receipt No 26102921300034",
+    "signed in: CIBO (cibo)",
+    "handed on for later TS: tokioMarinePurchase = {\"ref\":\"BR60006354\",\"plate\":\"HXA0004A\",\"receiptNo\":\"26102921300034\",\"since\":\"2026-10-29T08:54:23.661Z\",\"secarangReceipt\":\"C:\\\\Users\\\\Azfar\\\\Documents\\\\Github Pro\\\\eauto-qa-azfar\\\\cr\\\\EAINT-12406\\\\04-runs\\\\eaint-12406-run-sE2E-20261029-1545-c2\\\\ts\\\\12406_E2E_TS10\\\\downloadable (after)\\\\secarang-receipt-HXA0004A-tokio-marine-PERSONAL-DATA.pdf\"}",
+    "downloaded: cibo-receipt-HXA0004A-tokio-marine-PERSONAL-DATA.pdf",
+    "payment window 1 on the TS video 01:14.3–01:22.8",
+    "payment window video laid into video_12406_E2E_TS10.webm (1 window(s), picture-in-picture, bottom right)"
+  ],
+  "opened": [
+    "about:blank"
+  ]
+}

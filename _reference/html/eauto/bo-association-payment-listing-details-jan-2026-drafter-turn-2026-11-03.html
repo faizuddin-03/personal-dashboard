@@ -1,0 +1,543 @@
+<!--
+  Capture: EAINT-12028 Association Payment Listing — Details, January 2026, NEW BUILD
+  URL: /backoffice/admin/association/2026/1 (form action line ~297). "Back to Backoffice" →
+       https://staging.eauto.my/uat1/home/ → environment = staging uat1
+  State: all three Pending, Drafter's turn (chip "Pending · your turn"); window.__hasSignature = true
+  Logged in as: not shown (no header name); the Drafter buttons are rendered, so a Drafter login
+  Captured: 2026-11-03, pasted by Faizuddin into a Claude Code session
+  Trimmed: nothing. <body> only (the paste had no <head>). All 16 state rows kept.
+  Not redacted: the _csrf value is kept as pasted (session-bound, expired).
+  Differs from bo-association-payment-listing-details-sep-2026-approver-not-turn.html (2026-11-02):
+    1. Title <h1 id="det-title"> gone → .page-title .app-title.
+    2. "← Back to Summary" gone → a#ap-summary "Summary".
+    3. #wf-bar / #pill-* gone → #action-panel with #chip-drafter/-reviewer/-approver
+       (.ap-chip-role + .ap-chip-status, text "Pending · your turn").
+    4. Buttons have ids: #btn-drafter-kiv, #btn-drafter-approve (.ap-btn).
+    5. Turn note → #ap-note .ap-note-text (role=status).
+    6. #pdf-bar, #tbl-veh, #tbl-log, modals unchanged.
+-->
+<body>
+    <!-- Real OBS header: an absolute maroon banner (#custom-header) with a white "Back to
+         Backoffice" link where core has "Home | Menu", and a #logo-container that is core's white
+         logo box (140×75 logo slot, hanging below the bar). -->
+    <div id="header">
+        <div id="custom-header">
+            <div class="flex flex-row header-links">
+                <!-- backUrl = <session originalUrl | EAUTO_CORE_BASE_URL> + "/home/" (LayoutModelAdvice,
+                     untouched). Same target as OBS's window.open(originalUrl + '/home/'). Must NOT be
+                     core's bare root context (302s to /public/login and looks like a logout). -->
+                <a id="back-to-backoffice" class="back-link" href="https://staging.eauto.my/uat1/home/">Back to Backoffice</a>
+            </div>
+        </div>
+        <div id="logo-container">
+            <img class="brand-logo" src="/backoffice/common/eauto-logo-tm-white-bg.png" alt="eAuto">
+        </div>
+    </div>
+
+    <div id="container">
+        <main>
+    <!-- CR 16: same OBS restyle as summary.html — Inter font, OBS header blue, alternating
+         odd/even row striping, and plain colored-TEXT statuses (no pills). -->
+    <style>
+        .rpt { border-collapse: collapse; width: 100%; font-size: 12px; font-family: Inter, sans-serif; }
+        .rpt th, .rpt td { border: 1px solid #fff; padding: 8px; }
+        .rpt thead th { background: #58ACFA; color: #fff; text-align: center; }
+        .rpt thead th.state { text-align: left; }
+        .rpt tbody td { text-align: center; }
+        .rpt tbody tr.odd td { background: #A9E2F3; }
+        .rpt tbody tr.even td { background: #CEF6F5; }
+        .rpt td.state, .rpt td.left { text-align: left; }
+        .rpt td.num { text-align: right; font-variant-numeric: tabular-nums; }
+        .rpt tfoot td { background: #a9d5ea; font-weight: bold; text-align: right; }
+        .rpt tfoot td.left { text-align: left; }
+        /* CR 10 — align primary button to the mockup's red (.btn #c8102e); secondary stays grey. */
+        /* core-screen.css has a blanket `a { color:blue !important; text-decoration:underline !important; }` —
+           !important is needed here too so the PDF/back-to-summary anchor buttons aren't blue-underlined. */
+        .btn { background: #c8102e; color: #fff !important; border: none; padding: 7px 16px; border-radius: 3px; font-weight: bold; cursor: pointer; text-decoration: none !important; display: inline-block; }
+        .btn.secondary { background: #6c757d; }
+        .section-head { color:#fff; padding:7px 12px; font-weight:bold; border-radius:3px 3px 0 0; margin-top:14px; }
+        /* OBS status convention — bold colored TEXT (no chip/background/border-radius). */
+        .status { font-size: 11px; font-weight: bold; white-space: nowrap; }
+        .status.pending { color: #0000FF; } .status.approved { color: #008E00; }
+        .status.kiv { color: #000000; } .status.review { color: #FF4000; }
+        .wf-bar { border: 1px solid #e2e2e2; background: #fafafa; border-radius: 5px; padding: 12px 14px; margin: 4px 0 18px; }
+        .wf-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin-bottom: 10px; }
+        .wf-stat { font-size: 12px; color: #444; }
+        .wf-note { font-size: 12px; color: #666; font-style: italic; margin-top: 8px; }
+        .ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; align-items: center; justify-content: center; }
+        .ov.show { display: flex; }
+        .mbox { background: #fff; border-radius: 8px; padding: 22px 24px; width: 430px; max-width: 92%; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+        .mbox h3 { margin: 0 0 12px; color: #7a1420; font-size: 16px; }
+        .mbox p { font-size: 12px; color: #555; margin: 0 0 8px; }
+        .mbox textarea, .mbox input[type=date] { width: 100%; padding: 8px; border: 1px solid #bbb; border-radius: 4px; font-size: 13px; font-family: inherit; box-sizing: border-box; }
+        .mbtns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+        #sig-pad { border: 1px solid #bbb; border-radius: 4px; touch-action: none; background: #fff; width: 100%; }
+        .note { font-size: 11px; color: #888; margin-top: 6px; font-style: italic; }
+    </style>
+
+    <!-- Page title: the same shared part as the listing (layouts/parts.html :: page-title). -->
+    <div class="page-title">
+    <span class="app-title">Association Payment Listing — January 2026</span>
+</div>
+    <p class="page-intro">Review the amounts and act according to your role.
+        Approval sequence: Drafter → Reviewer → Approver.</p>
+
+    <!-- EAINT-12028 — show WHY an action was rejected, instead of silently bouncing to the listing.
+         The workflow controller sets these flash attributes on a failed/succeeded action. -->
+
+
+    <!-- Not-closed months keep today's back button and "Not yet closed" bar, unchanged. -->
+
+
+    <!-- ===================== NOT YET CLOSED (EAINT-12028 F2r/F4) =====================
+         No stored snapshot ⇒ the month-end job has not produced this month's figures yet, so there is
+         nothing final to approve. Distinct from a closed month that simply had no transactions. -->
+
+
+    <!-- ===================== ACTION PANEL (EAINT-12028, "Option C, single toolbar") =====================
+         One row (Summary link | the three steps as chips | this viewer's buttons) and a note bar under it.
+         What it shows comes from ActionPanel (unit-tested): the buttons are exactly the ones this page
+         showed before, with the same ids and handlers, and the server still checks every action.
+         All text is th:text (remarks included), never th:utext. -->
+    <div class="ap" id="action-panel">
+        <div class="ap-row">
+            <a class="ap-summary" id="ap-summary" href="/backoffice/admin/association?year=2026">
+                <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+                Summary</a>
+            <span class="ap-divider" aria-hidden="true"></span>
+            <div class="ap-chips">
+
+
+                    <span class="ap-chip chip-mine" id="chip-drafter">
+                        <span class="ap-chip-role">Drafter</span><span class="ap-chip-sp"> </span>
+                        <span class="ap-chip-status st-pending"><span>Pending · your turn</span></span>
+                    </span>
+
+                    <svg class="ap-chev" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+                    <span class="ap-chip chip-plain" id="chip-reviewer">
+                        <span class="ap-chip-role">Reviewer</span><span class="ap-chip-sp"> </span>
+                        <span class="ap-chip-status st-pending"><span>Pending</span></span>
+                    </span>
+
+                    <svg class="ap-chev" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+                    <span class="ap-chip chip-plain" id="chip-approver">
+                        <span class="ap-chip-role">Approver</span><span class="ap-chip-sp"> </span>
+                        <span class="ap-chip-status st-pending"><span>Pending</span></span>
+                    </span>
+
+            </div>
+            <div class="ap-actions">
+
+                    <button class="ap-btn ap-btn-kiv" id="btn-drafter-kiv" onclick="submitAction('DRAFTER','KIV')">KIV</button>
+
+                    <!-- EAINT-12028: a KIV month is resumed only by its Drafter, via Undo KIV. -->
+
+
+
+
+
+
+
+                    <button class="ap-btn ap-btn-approve" id="btn-drafter-approve" onclick="approveWithSignature('DRAFTER')">Approve</button>
+                    <!-- EAINT-12028: a KIV month is resumed only by its Drafter, via Undo KIV. -->
+
+
+
+
+
+
+            </div>
+        </div>
+        <div class="ap-note ap-note-info" id="ap-note" role="status">
+
+                <svg class="ap-note-icon" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+
+
+
+
+
+            <span class="ap-note-text">Your turn as Drafter. Approve to send to the Reviewer, or KIV to put this month on hold.</span>
+        </div>
+    </div>
+
+    <!-- ===================== PDF / documents (CR 5 — real OpenPDF requisition) ===================== -->
+    <div class="section-head" style="background:#1f6390;">📄 Payment Request Documents</div>
+    <div class="wf-bar" id="pdf-bar">
+        <!-- Downloadable only once fully APPROVED (REQ-016); the route also enforces this server-side. -->
+
+        <span class="note">Payment Request documents become available for download once the Drafter, Reviewer and Approver have all approved.</span>
+    </div>
+
+    <!-- ===================== BREAKDOWN (CR 3) ===================== -->
+    <div class="section-head" style="background:#1f6390;">Vehicle Breakdown by State
+        <span>January 2026</span></div>
+    <table class="rpt" id="tbl-veh">
+        <thead><tr>
+            <th>#</th><th class="state">State</th>
+            <th>Car Transactions</th><th>Cars (RM)</th>
+            <th>Motorcycle Transactions</th><th>Motorcycles (RM)</th>
+        </tr></thead>
+        <tbody>
+        <tr data-state="01" class="even">
+            <td>1</td>
+            <td class="state">JOHOR (01)</td>
+            <td class="num">250</td>
+            <td class="num">250.00</td>
+            <td class="num">2</td>
+            <td class="num">4.00</td>
+        </tr>
+        <tr data-state="02" class="odd">
+            <td>2</td>
+            <td class="state">KEDAH (02)</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="03" class="even">
+            <td>3</td>
+            <td class="state">KELANTAN (03)</td>
+            <td class="num">5</td>
+            <td class="num">5.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="04" class="odd">
+            <td>4</td>
+            <td class="state">MELAKA (04)</td>
+            <td class="num">12</td>
+            <td class="num">12.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="05" class="even">
+            <td>5</td>
+            <td class="state">NEGERI SEMBILAN (05)</td>
+            <td class="num">34</td>
+            <td class="num">34.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="06" class="odd">
+            <td>6</td>
+            <td class="state">PAHANG (06)</td>
+            <td class="num">2</td>
+            <td class="num">2.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="07" class="even">
+            <td>7</td>
+            <td class="state">PULAU PINANG (07)</td>
+            <td class="num">3</td>
+            <td class="num">3.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="08" class="odd">
+            <td>8</td>
+            <td class="state">PERAK (08)</td>
+            <td class="num">4</td>
+            <td class="num">4.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="09" class="even">
+            <td>9</td>
+            <td class="state">PERLIS (09)</td>
+            <td class="num">6</td>
+            <td class="num">6.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="10" class="odd">
+            <td>10</td>
+            <td class="state">SELANGOR (10)</td>
+            <td class="num">311</td>
+            <td class="num">311.00</td>
+            <td class="num">18</td>
+            <td class="num">36.00</td>
+        </tr>
+        <tr data-state="11" class="even">
+            <td>11</td>
+            <td class="state">TERENGGANU (11)</td>
+            <td class="num">39</td>
+            <td class="num">39.00</td>
+            <td class="num">3</td>
+            <td class="num">6.00</td>
+        </tr>
+        <tr data-state="12" class="odd">
+            <td>12</td>
+            <td class="state">SABAH (12)</td>
+            <td class="num">152</td>
+            <td class="num">152.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="13" class="even">
+            <td>13</td>
+            <td class="state">SARAWAK (13)</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="14" class="odd">
+            <td>14</td>
+            <td class="state">WILAYAH PERSEKUTUAN KUALA LUMPUR (14)</td>
+            <td class="num">167</td>
+            <td class="num">167.00</td>
+            <td class="num">1</td>
+            <td class="num">2.00</td>
+        </tr>
+        <tr data-state="15" class="even">
+            <td>15</td>
+            <td class="state">WILAYAH PERSEKUTUAN LABUAN (15)</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        <tr data-state="16" class="odd">
+            <td>16</td>
+            <td class="state">WILAYAH PERSEKUTUAN PUTRAJAYA (16)</td>
+            <td class="num">2</td>
+            <td class="num">2.00</td>
+            <td class="num">0</td>
+            <td class="num">0.00</td>
+        </tr>
+        </tbody>
+        <tfoot><tr>
+            <td class="left" colspan="2">TOTAL</td>
+            <td>987</td>
+            <td>987.00</td>
+            <td>24</td>
+            <td>48.00</td>
+        </tr></tfoot>
+    </table>
+
+    <!-- ===================== AUDIT LOG (AC11) ===================== -->
+    <div class="section-head" style="background:#555;">🕔 Audit Log
+        <span>(0)</span></div>
+    <table class="rpt" id="tbl-log">
+        <!-- CR 13: "Previous Status"/"New Status" columns are dropped (OBS's audit-log table has no
+             such columns) — the Action column already conveys what happened; `previous_status` and
+             `new_status` are still recorded in the table for audit, simply not rendered.
+             F9: REQ-015 example 5 expects the Approver's approval row to carry the Finance payment
+             date, so it is shown here (blank on every other row). -->
+        <thead><tr>
+            <th>When</th><th class="state">Actor</th><th>Role</th><th>Action</th>
+            <th>Payment Date</th><th class="state">Remarks</th>
+        </tr></thead>
+        <tbody>
+        <tr><td colspan="6">No workflow actions recorded yet.</td></tr>
+
+        </tbody>
+    </table>
+
+    <!-- ===================== ACTION FORM (single, hidden fields set by JS) ===================== -->
+    <form id="wf-form" method="post" style="display:none" action="/backoffice/admin/association/2026/1/1387d32e-38ff-4753-b2dc-de0840caab24/action"><input type="hidden" name="_csrf" value="CqdK4QvKdoFivMH6cHVOomx2Mlkjh40XqdaTGqXFUKY7P69SOZ992TmsEOVP2afNElh6xFxGH2EXsbw6nbWgfpSnM5MMCs0z">
+        <input type="hidden" name="role" id="f-role">
+        <input type="hidden" name="action" id="f-action">
+        <input type="hidden" name="version" id="f-version" value="0">
+        <input type="hidden" name="remarks" id="f-remarks">
+        <input type="hidden" name="paymentDate" id="f-paymentDate">
+        <input type="hidden" name="signatureDataUrl" id="f-signatureDataUrl">
+    </form>
+
+    <!-- ===================== MODALS ===================== -->
+    <div class="ov" id="rmk-modal"><div class="mbox">
+        <h3 id="rmk-title">Reject — Remarks</h3>
+        <p>Please state the reason for rejection. This will be recorded in the audit log.</p>
+        <textarea id="rmk-text" rows="4" placeholder="Enter remarks (required)"></textarea>
+        <div class="mbtns">
+            <button type="button" class="btn secondary" onclick="closeRmk()">Cancel</button>
+            <button type="button" class="btn" id="rmk-submit" onclick="submitRmk()" disabled="">Submit Reject</button>
+        </div>
+    </div></div>
+
+    <div class="ov" id="date-modal"><div class="mbox">
+        <h3>Approve — Finance Payment Date</h3>
+        <p>Select the date when Finance needs to make the payment. Only a future date is allowed.</p>
+        <input type="date" id="pay-date" onkeydown="return false" onpaste="return false" autocomplete="off">
+        <p class="note">Select from the date picker only — typing or pasting is disabled.</p>
+        <div class="mbtns">
+            <button type="button" class="btn secondary" onclick="closeDate()">Cancel</button>
+            <button type="button" class="btn" onclick="submitDate()">Confirm Approve</button>
+        </div>
+    </div></div>
+
+    <div class="ov" id="sig-modal"><div class="mbox">
+        <h3 id="sig-title">Sign to Approve</h3>
+        <p id="sig-desc">First-time approval. Please sign below — your signature will be saved and reused for all future approvals.</p>
+        <canvas id="sig-pad" width="382" height="150"></canvas>
+        <div class="mbtns">
+            <button type="button" class="btn secondary" onclick="clearSig()">Clear</button>
+            <button type="button" class="btn secondary" onclick="closeSig()">Cancel</button>
+            <button type="button" class="btn" onclick="saveSig()">Save &amp; Approve</button>
+        </div>
+    </div></div>
+
+    <!-- Session thresholds are config-injectable (backoffice.session.*) so timed tests use a short window. -->
+    <div id="session-cfg" style="display:none" data-idle="900" data-warn="120" data-ping="30"></div>
+
+    <div class="ov" id="idle-modal"><div class="mbox">
+        <h3>Still there?</h3>
+        <p>Your session is about to expire from inactivity. Stay signed in to keep your work.</p>
+        <div class="mbtns">
+            <button type="button" class="btn" onclick="staySignedIn()">Stay signed in</button>
+        </div>
+    </div></div>
+
+    <script>
+    /*<![CDATA[*/
+    window.__hasSignature = true;
+    const KEEPALIVE_URL = "\/backoffice\/admin\/association\/keepalive";
+    const cfg = document.getElementById('session-cfg');
+    // Fall back to production defaults if the server config is ever absent — never NaN timers.
+    const secs = (v, d) => (Number.isFinite(+v) && +v > 0 ? +v : d) * 1000;
+    const IDLE = secs(cfg.dataset.idle, 900), WARN = secs(cfg.dataset.warn, 120), PING = secs(cfg.dataset.ping, 30);
+
+    // ---------- action submit ----------
+    function setF(id,v){ document.getElementById(id).value = v; }
+    function submitAction(role, action){
+        setF('f-role', role); setF('f-action', action);
+        document.getElementById('wf-form').submit();
+    }
+
+    // ---------- reject remarks modal ----------
+    let rejRole = null;
+    function openReject(role){ rejRole = role; document.getElementById('rmk-text').value='';
+        document.getElementById('rmk-submit').disabled = true; show('rmk-modal'); }
+    function closeRmk(){ hide('rmk-modal'); }
+    document.getElementById('rmk-text').addEventListener('input', function(){
+        document.getElementById('rmk-submit').disabled = this.value.trim().length === 0; });
+    function submitRmk(){
+        const t = document.getElementById('rmk-text').value.trim();
+        if(!t){ return; }                       // client guard; server also enforces (AC2)
+        setF('f-remarks', t); submitAction(rejRole, 'REJECT');
+    }
+
+    // ---------- approver payment-date modal ----------
+    function openDate(){ const p=document.getElementById('pay-date');
+        const t=new Date(); t.setDate(t.getDate()+1);
+        const localMin=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+        p.min=localMin; p.value='';   // local tomorrow — never offers a non-future date
+        show('date-modal'); }
+    function closeDate(){ hide('date-modal'); }
+    function submitDate(){
+        const v = document.getElementById('pay-date').value;
+        if(!v){ alert('Please pick a future payment date.'); return; }
+        setF('f-paymentDate', v); hide('date-modal'); approveWithSignature('APPROVER');
+    }
+
+    // ---------- signature capture (first time), else submit directly ----------
+    let sigRole=null, sigCtx=null, drawing=false, hasInk=false;
+    function approveWithSignature(role){
+        sigRole = role;
+        // Ask the server whether a signature already exists via a hidden data attr set below.
+        if(window.__hasSignature){ setF('f-signatureDataUrl',''); submitAction(role,'APPROVE'); return; }
+        openSig();
+    }
+    function openSig(){ show('sig-modal'); const c=document.getElementById('sig-pad');
+        sigCtx=c.getContext('2d'); clearSig(); }
+    function clearSig(){ const c=document.getElementById('sig-pad');
+        sigCtx.clearRect(0,0,c.width,c.height); hasInk=false; }
+    function closeSig(){ hide('sig-modal'); }
+    function saveSig(){
+        if(!hasInk){ alert('Please provide your signature.'); return; }
+        setF('f-signatureDataUrl', document.getElementById('sig-pad').toDataURL('image/png'));
+        hide('sig-modal'); submitAction(sigRole, 'APPROVE');
+    }
+    (function bindPad(){
+        const c=document.getElementById('sig-pad'); if(!c) return;
+        function pos(e){ const r=c.getBoundingClientRect();
+            const t=e.touches?e.touches[0]:e; return {x:t.clientX-r.left, y:t.clientY-r.top}; }
+        function start(e){ drawing=true; const p=pos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x,p.y); e.preventDefault(); }
+        function move(e){ if(!drawing) return; const p=pos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); hasInk=true; e.preventDefault(); }
+        function end(){ drawing=false; }
+        ['mousedown','touchstart'].forEach(ev=>c.addEventListener(ev,start));
+        ['mousemove','touchmove'].forEach(ev=>c.addEventListener(ev,move));
+        ['mouseup','mouseleave','touchend'].forEach(ev=>c.addEventListener(ev,end));
+    })();
+
+    function show(id){ document.getElementById(id).classList.add('show'); }
+    function hide(id){ document.getElementById(id).classList.remove('show'); }
+
+    // ---------- draft preservation (best-effort, sessionStorage) ----------
+    const DRAFT_KEY = 'assocpay-draft-' + location.pathname;
+    function stashDraft(){
+        try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+            remarks: document.getElementById('rmk-text').value,
+            paymentDate: document.getElementById('pay-date').value,
+            version: document.getElementById('f-version').value
+        })); } catch(e){}
+    }
+    function restoreDraft(){
+        try { const d = JSON.parse(sessionStorage.getItem(DRAFT_KEY)||'null'); if(!d) return;
+            if(d.remarks) document.getElementById('rmk-text').value = d.remarks;
+            if(d.paymentDate) document.getElementById('pay-date').value = d.paymentDate;
+        } catch(e){}
+    }
+    restoreDraft();
+
+    // ---------- activity-gated keepalive + T-2min idle modal (AC7/8/9/10) ----------
+    let activitySincePing = false;   // AC7: ping ONLY fires when this is set by real activity
+    let lastActivity = Date.now();
+    // Deliberately click/keydown/scroll ONLY — NOT mousemove (a jiggler must not keep sessions alive).
+    ['click','keydown','scroll'].forEach(ev => window.addEventListener(ev, function(){
+        activitySincePing = true; lastActivity = Date.now(); stashDraft();
+        hide('idle-modal');
+    }, {passive:true}));
+
+    setInterval(function(){                       // ping interval ≤ 60s (config)
+        if(activitySincePing){                    // AC7: no bare-timer path — gated on real activity
+            activitySincePing = false;
+            fetch(KEEPALIVE_URL, {method:'GET', credentials:'same-origin'});
+        }
+    }, PING);
+
+    setInterval(function(){                        // idle watchdog: show T-2min warning
+        const idleFor = Date.now() - lastActivity;
+        if(idleFor >= IDLE - WARN && idleFor < IDLE){ show('idle-modal'); }
+    }, 1000);
+
+    function staySignedIn(){                        // explicit keepalive from the warning modal (AC8)
+        lastActivity = Date.now(); activitySincePing = false;
+        fetch(KEEPALIVE_URL, {method:'GET', credentials:'same-origin'});
+        hide('idle-modal');
+    }
+    /*]]>*/
+    </script>
+</main>
+    </div>
+
+    <!-- Footer: copied from OBS's UCD Application Listing layout (onboarding/layouts/backoffice.html),
+         itself core's public/footer.jsp. Year = the current year, as both do (never hardcoded).
+         The links open core's own /public/*.jsp pages in the same pop-ups as core and OBS. -->
+    <footer id="custom-footer" class="footer">
+        <div class="footer-text">
+            <div>Best Compatible With Mozilla Firefox V36.0.4</div>
+            <div>Copyright © <span>2026</span> eAuto Sdn Bhd (676967-T) All Rights Reserved.</div>
+            <div class="footer-links">
+                <a class="footer-popup pr" data-name="ContactUs" data-features="width=900,height=600, scrollbars=yes, resizable=yes" data-url="https://staging.eauto.my/uat1/public/contact-us.jsp">Contact Us</a>
+                <span class="separator">|</span>
+                <a class="footer-popup px" data-name="TermsConditions" data-features="width=800,height=500, scrollbars=yes, resizable=yes" data-url="https://staging.eauto.my/uat1/public/terms-condition.jsp">Terms &amp; Conditions</a>
+                <span class="separator">|</span>
+                <a class="footer-popup pl" data-name="Privacy" data-features="width=800,height=500, scrollbars=yes, resizable=yes" data-url="https://staging.eauto.my/uat1/public/privacy.jsp">Privacy</a>
+            </div>
+        </div>
+        <div class="footer-logo">
+            <img src="/backoffice/common/eauto-logo-tm.png" alt="eAuto">
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('#custom-footer .footer-popup').forEach(function (a) {
+            a.addEventListener('click', function () {
+                window.open(a.dataset.url, a.dataset.name, a.dataset.features);
+            });
+        });
+    </script>
+
+
+</body>

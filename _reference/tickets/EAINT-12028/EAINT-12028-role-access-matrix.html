@@ -1,0 +1,63 @@
+<!doctype html>
+<!-- Made 2026-11-02 by Scribe (pipeline) for Faizuddin. Sources: SRD v1.1 REQ-003/009-016 (_reference/tickets/Studying/EAINT-12028/EAINT-12028_SRD_v1.1_20260731-text.md),
+     developer's QA guide (_reference/tickets/EAINT-12028/EAINT-12028-artifact-qa-test-guide-from-dev.html), mockup 20260731. Local file only, not published. -->
+<html lang="en"><head><meta charset="utf-8"><title>EAINT-12028 — Who can do what</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;margin:24px;color:#1f2937;background:#f8fafc}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:16px;margin:28px 0 8px}
+.sub{color:#64748b;font-size:12px;margin-bottom:16px}
+table{border-collapse:collapse;background:#fff;font-size:13px;width:100%}
+th,td{border:1px solid #cbd5e1;padding:6px 8px;text-align:left;vertical-align:top}
+th{background:#1e3a8a;color:#fff}
+.y{background:#dcfce7;color:#166534;font-weight:bold;text-align:center}
+.n{background:#fee2e2;color:#991b1b;font-weight:bold;text-align:center}
+.c{background:#fef9c3;color:#854d0e;text-align:center}
+.q{font-style:italic;color:#334155}.src{color:#64748b;font-size:11px}
+.warn{background:#fff7ed;border:1px solid #fdba74;padding:10px;border-radius:6px;font-size:13px}
+ol{font-size:13px}
+</style></head><body>
+<h1>EAINT-12028 Association Payment Listing — who can do what</h1>
+<div class="sub">Built 2026-11-02 from SRD v1.1, the developer's QA guide and the 31 Jul mockup. Not checked on a live build.</div>
+
+<h2>1. Accounts and roles</h2>
+<table>
+<tr><th>Login ID</th><th>Name on PDF (mockup)</th><th>Drafter</th><th>Reviewer</th><th>Approver</th></tr>
+<tr><td>eautozara</td><td>— (not shown)</td><td class="y">Yes</td><td class="n">No</td><td class="n">No</td></tr>
+<tr><td>mfared</td><td>Muhammad Fared</td><td class="y">Yes</td><td class="n">No</td><td class="n">No</td></tr>
+<tr><td>eautonurul</td><td>Nurul Saadiah</td><td class="n">No</td><td class="y">Yes</td><td class="n">No</td></tr>
+<tr><td>kmcheah</td><td>Chia Ket Ming</td><td class="n">No</td><td class="n">No</td><td class="y">Yes</td></tr>
+<tr><td>mfizni</td><td>— (not shown)</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+<tr><td>Any other BO user</td><td>—</td><td class="n">No</td><td class="n">No</td><td class="n">No</td></tr>
+</table>
+<p class="src">SRD v1.1 REQ-003: <span class="q">"Mapping: 1. Drafter: eautozara, mfared, mfizni 2. Reviewer: eautonurul, mfizni 3. Approver: kmcheah, mfizni A user may hold more than one role (e.g. mfizni)."</span></p>
+
+<h2>2. Actions per role</h2>
+<table>
+<tr><th>Action</th><th>Drafter</th><th>Reviewer</th><th>Approver</th><th>No role</th><th>When allowed</th></tr>
+<tr><td>Open Summary + Details (view)</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">403</td><td>Any time</td></tr>
+<tr><td>Approve</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">No</td><td>Only on own turn: Drafter first, then Reviewer, then Approver</td></tr>
+<tr><td>KIV</td><td class="y">Yes</td><td class="n">No</td><td class="n">No</td><td class="n">No</td><td>Drafter status Pending / Review Again</td></tr>
+<tr><td>Reject (remarks required)</td><td class="n">No</td><td class="y">Yes → Drafter "Review Again"</td><td class="y">Yes → Reviewer "Review Again"</td><td class="n">No</td><td>Own turn only</td></tr>
+<tr><td>Sign (first approval only)</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">No</td><td>Pad shows once per person, reused after</td></tr>
+<tr><td>Set Finance payment date</td><td class="n">No</td><td class="n">No</td><td class="y">Yes</td><td class="n">No</td><td>On Approve; future date, picker only</td></tr>
+<tr><td>Download FMC / MMSDA PDF</td><td class="y">Yes</td><td class="y">Yes</td><td class="y">Yes</td><td class="n">403</td><td>Only after all 3 approved</td></tr>
+</table>
+<p class="src">SRD v1.1 REQ-009 to REQ-016; download for all roles is from the mockup comment <span class="q">"Invoice bar - shown for ALL roles on details; downloadable once fully approved"</span> [unconfirmed: SRD silent].</p>
+
+<h2>3. Users with no access</h2>
+<table>
+<tr><th>Question</th><th>Answer</th><th>Source</th></tr>
+<tr><td>Can they see the menu link?</td><td class="c">Yes (developer's guide) — SRD does not say</td><td class="q">"Negative case: menu link visible from core, but the module itself must 403 — "visibility ≠ authorization"."<br><span class="src">dev QA guide, test accounts table, line 177</span></td></tr>
+<tr><td>What happens when they click it?</td><td class="c">SSO login works, then 403 "No access to this module"</td><td class="q">"Expect: 403 "No access to this module" — the SSO hand-off itself succeeds (real login), only the module authorization fails."<br><span class="src">dev QA guide, Security section, line 419</span></td></tr>
+<tr><td>Typed Details URL directly?</td><td class="c">403</td><td class="q">"Case 3 → 403, even though the Reports menu link was visible in core."<br><span class="src">dev QA guide, REQ-003, line 253</span></td></tr>
+<tr><td>Typed PDF download URL directly?</td><td class="c">403, not a blank file</td><td class="q">"Case 3 — 403, not a partial/blank file."<br><span class="src">dev QA guide, REQ-016, line 390</span></td></tr>
+<tr><td>What the SRD says</td><td colspan="2" class="q">"a user not mapped to any role cannot perform Drafter / Reviewer / Approver actions." <span class="src">SRD v1.1 REQ-003</span></td></tr>
+</table>
+<div class="warn"><b>Not settled:</b>
+<ol>
+<li>The SRD never says whether the menu link is shown or hidden for a no-role user. Only the developer's guide says "visible".</li>
+<li>Past BO reports hid the page instead: EAINT-8638 (JomCheck Report Listing) "Authorized Users" R14 — <span class="q">""JomCheck Report Listing" will be hidden for not authorized user"</span>.</li>
+<li>The exact 403 screen text "No access to this module" comes from the developer's guide only, not the SRD or mockup.</li>
+<li>Already sent to the BA as a question (related history, Questions for the team 1).</li>
+</ol></div>
+</body></html>

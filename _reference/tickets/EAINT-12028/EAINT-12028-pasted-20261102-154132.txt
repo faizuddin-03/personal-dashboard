@@ -1,0 +1,159 @@
+Pasted by Faizuddin into the dashboard chat with dwarf, 2026-11-02T07:41:32.992Z. Saved exactly as pasted.
+
+===== 12028_TS20: Drafter first Approve with the signature pad sets Drafter Status Approved =====
+
+Running 1 test using 1 worker
+
+✅ Logged in as Drafter — header shows "Muhammad Fared"
+DETAIL:{"label":"Drafter (BO header)","value":"mfared — Muhammad Fared"}
+   💬 Browser dialog: "Please provide your signature."
+DETAIL:{"label":"Empty pad message","value":"Please provide your signature."}
+  ✘  1 [association-payment-listing] › tests\e-drafter.spec.ts:15:5 › 12028_TS20: Drafter first Approve with the signature pad sets Drafter Status Approved @P2 (1.1m)
+
+
+  1) [association-payment-listing] › tests\e-drafter.spec.ts:15:5 › 12028_TS20: Drafter first Approve with the signature pad sets Drafter Status Approved @P2 › Check the Audit Log has one new "Drafter — Approved" row dated today 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+       at ..\utils\workflow.ts:28
+
+      26 |     const newest = rows[rows.length - 1];
+      27 |     await d.verify(`${ts}-log`, newest ? d.logRowAt(newest.row) : d.logTable(), `Expected ${before + 1} "${role} — ${action}" rows, found ${rows.length}`, async () => {
+    > 28 |       expect(rows.length).toBe(before + 1);
+         |                           ^
+      29 |       expect(newest.time.slice(0, 10)).toBe(ddmmyyyy(today()));
+      30 |       if (remarks !== undefined) expect(newest.remarks).toBe(remarks);
+      31 |     });
+        at check (C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\utils\workflow.ts:28:27)
+        at AplDetailsPage.verify (C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\pages\AplBase.ts:64:13)
+        at C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\utils\workflow.ts:27:13
+        at expectNewLogRow (C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\utils\workflow.ts:22:3)
+        at C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\tests\e-drafter.spec.ts:68:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS20-Draft-1f1c6-ets-Drafter-Status-Approved-association-payment-listing\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS20-Draft-1f1c6-ets-Drafter-Status-Approved-association-payment-listing\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e-drafter-12028-TS20-Draft-1f1c6-ets-Drafter-Status-Approved-association-payment-listing\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS20-Draft-1f1c6-ets-Drafter-Status-Approved-association-payment-listing\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\e-drafter-12028-TS20-Draft-1f1c6-ets-Drafter-Status-Approved-association-payment-listing\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [association-payment-listing] › tests\e-drafter.spec.ts:15:5 › 12028_TS20: Drafter first Approve with the signature pad sets Drafter Status Approved @P2 
+
+
+===== 12028_TS21: Drafter KIV on a Pending month sets Drafter Status KIV =====
+
+Running 1 test using 1 worker
+
+✅ Logged in as Drafter — header shows "Muhammad Fared"
+DETAIL:{"label":"Drafter (BO header)","value":"mfared — Muhammad Fared"}
+  ✘  1 [association-payment-listing] › tests\e-drafter.spec.ts:72:5 › 12028_TS21: Drafter KIV on a Pending month sets Drafter Status KIV @P2 (46.9s)
+
+
+  1) [association-payment-listing] › tests\e-drafter.spec.ts:72:5 › 12028_TS21: Drafter KIV on a Pending month sets Drafter Status KIV @P2 › Check the Audit Log has one new "Drafter — KIV" row dated today 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "02-11-2026"
+    Received: "02 Nov 202"
+
+       at ..\utils\workflow.ts:29
+
+      27 |     await d.verify(`${ts}-log`, newest ? d.logRowAt(newest.row) : d.logTable(), `Expected ${before + 1} "${role} — ${action}" rows, found ${rows.length}`, async () => {
+      28 |       expect(rows.length).toBe(before + 1);
+    > 29 |       expect(newest.time.slice(0, 10)).toBe(ddmmyyyy(today()));
+         |                                        ^
+      30 |       if (remarks !== undefined) expect(newest.remarks).toBe(remarks);
+      31 |     });
+      32 |     await d.showValue(d.logRowAt(newest.row));
+        at check (C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\utils\workflow.ts:29:40)
+        at AplDetailsPage.verify (C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\pages\AplBase.ts:64:13)
+        at C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\utils\workflow.ts:27:13
+        at expectNewLogRow (C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\utils\workflow.ts:22:3)
+        at C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\tests\e-drafter.spec.ts:78:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS21-Draft-c27d4-nth-sets-Drafter-Status-KIV-association-payment-listing\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS21-Draft-c27d4-nth-sets-Drafter-Status-KIV-association-payment-listing\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e-drafter-12028-TS21-Draft-c27d4-nth-sets-Drafter-Status-KIV-association-payment-listing\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS21-Draft-c27d4-nth-sets-Drafter-Status-KIV-association-payment-listing\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\e-drafter-12028-TS21-Draft-c27d4-nth-sets-Drafter-Status-KIV-association-payment-listing\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [association-payment-listing] › tests\e-drafter.spec.ts:72:5 › 12028_TS21: Drafter KIV on a Pending month sets Drafter Status KIV @P2 
+
+
+===== 12028_TS23: Drafter KIV on a Review Again month sets Drafter Status KIV =====
+
+Running 1 test using 1 worker
+
+✅ Logged in as Drafter — header shows "Muhammad Fared"
+DETAIL:{"label":"Drafter (BO header)","value":"mfared — Muhammad Fared"}
+  ✘  1 [association-payment-listing] › tests\e-drafter.spec.ts:91:5 › 12028_TS23: Drafter KIV on a Review Again month sets Drafter Status KIV @P2 (38.8s)
+
+
+  1) [association-payment-listing] › tests\e-drafter.spec.ts:91:5 › 12028_TS23: Drafter KIV on a Review Again month sets Drafter Status KIV @P2 › Check October 2026 is Drafter Review Again 
+
+    Error: Precondition not met: October 2026 shows Drafter KIV / Reviewer Pending / Approver Pending; this TS needs a month that is Drafter Review Again. Pick such a month on the 12028_TS23 row (12028_PREP can move a Pending month there).
+
+       at ..\utils\session.ts:137
+
+      135 |       if (!sameStatus(s, MONTH_STATE[want].s)) {
+      136 |         await details.captureIssue(`${this.ts}-precondition`, details.wfBar(), `Needs ${MONTH_STATE[want].label}; shows ${showStatus(s)}`);
+    > 137 |         throw new Error(`Precondition not met: ${month} ${CONFIG.year} shows ${showStatus(s)}; this TS needs a month that is ${MONTH_STATE[want].label}. Pick such a month on the ${this.ts} row (12028_PREP can move a Pending month there).`);
+          |               ^
+      138 |       }
+      139 |       return s;
+      140 |     });
+        at C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\utils\session.ts:137:15
+        at openAs (C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\utils\workflow.ts:16:3)
+        at C:\Users\Faizuddin\Documents\Github\personal-dashboard\scripts\eauto-12028\tests\e-drafter.spec.ts:93:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS23-Draft-65959-nth-sets-Drafter-Status-KIV-association-payment-listing\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS23-Draft-65959-nth-sets-Drafter-Status-KIV-association-payment-listing\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\e-drafter-12028-TS23-Draft-65959-nth-sets-Drafter-Status-KIV-association-payment-listing\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\e-drafter-12028-TS23-Draft-65959-nth-sets-Drafter-Status-KIV-association-payment-listing\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\e-drafter-12028-TS23-Draft-65959-nth-sets-Drafter-Status-KIV-association-payment-listing\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [association-payment-listing] › tests\e-drafter.spec.ts:91:5 › 12028_TS23: Drafter KIV on a Review Again month sets Drafter Status KIV @P2 
+
+
+what are these issues? tell me first, dont do anything

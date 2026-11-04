@@ -15,7 +15,7 @@
 
 import { NAMES, parseAsks, stripAsks, hasQuestions, firstQuestion } from "./prompts-common.mjs";
 
-export const MAX_ASKS = 3;
+export const MAX_ASKS = 1;                   // token cut (2026-11-02): was 3
 export const MAX_DEPTH = 3;
 const REPEAT_MS = 60 * 60 * 1000;
 

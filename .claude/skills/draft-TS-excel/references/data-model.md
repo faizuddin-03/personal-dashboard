@@ -17,7 +17,8 @@ indents for you from the shapes below.
 {
   "title": "EAINT-12339 - [eAuto-JomCheck] Upgrade JomCheck Gateway API Integration from v1.9 to v2.0",
   "sections": [ /* see below */ ],
-  "fieldReference": [ /* optional, see below */ ]
+  "fieldReference": [ /* optional, see below */ ],
+  "sheetPerSection": false /* optional */
 }
 ```
 
@@ -26,12 +27,42 @@ indents for you from the shapes below.
   from array order — don't include the letter yourself.
 - `fieldReference` — omit entirely (or pass `[]`) when the CR doesn't add/change
   enough fields to warrant a separate sheet.
+- `sheetPerSection` — optional. `true` puts each section on its own tab, for
+  large workbooks (Faizuddin, 2026-10-29: "seperate it into different
+  tabs/sheet, for every section ... easier for me to navigate"). Each tab
+  repeats the A1 title and header row; section letters keep running A., B.,
+  C. across tabs. Omitted or `false` = one "Test Scenarios" sheet (default).
+- `tabs` — optional, only with `sheetPerSection: true` (2026-10-30). Puts
+  several sections on one tab:
+  `[{ "name": "STMS & eSTM TS", "sections": ["STMS Flow TS", "eSTM TS"] }, ...]`.
+  Each entry in `sections` is a section's `sheet` value; every section needs a
+  `sheet` and must be in exactly one tab, or the build stops with an error.
+  Tabs come in this list's order, sections in the order listed. Each tab has
+  the A1 title, the header row and one banner per section.
+- `sectionLetters` — optional. `false` = banners show the section title only,
+  no `"A. "` / `"B. "` (Faizuddin, 2026-10-30: "dont include those. just the
+  names"). Omitted or `true` = lettered (default).
+- `resultColumnsPerTab` — optional, only with `resultColumns`. `true` = each
+  tab (or the single sheet) shows only the platform columns that at least one
+  of its rows lists in `platforms`; a row without `platforms` counts as all
+  (Faizuddin, 2026-10-30: "if the tab doesnt have at least 1 scenario for it,
+  then remove that column in that tab"). Omitted = every tab shows all.
+- `resultColumns` — optional. One result column per platform instead of the
+  single `Test Result` column (Faizuddin, 2026-10-30, EAINT-9805 mobile), e.g.
+  `[{ "header": "Android 15", "fill": "android" }, { "header": "iOS 27", "fill": "apple" }]`.
+  `fill` colours the header: `"android"` light green, `"apple"` light blue, or
+  an ARGB hex like `"FFE2EFDA"`; omitted = the dark title blue. A plain string
+  (`"Android 15"`) also works. Same columns on every tab, right of `Remarks`,
+  max 12. Each cell gets its own status dropdown and colour (centred; Pass
+  green, Fail red, In Progress yellow, Not Started blue), and a pick changes
+  only that cell.
 
 ## A section
 
 ```jsonc
 {
   "title": "UCD — JOMCHECK PURCHASE & REPORT",
+  "sheet": "A. Purchase & report", /* optional, only used with sheetPerSection */
   "rows": [ /* see below */ ]
 }
 ```
@@ -39,7 +70,16 @@ indents for you from the shapes below.
 `title` should already be UPPERCASE with an em dash (`—`), matching
 `"<PORTAL> — <FEATURE>"`. The script prepends `"A. "` / `"B. "` etc itself.
 
+`sheet` — optional tab name when `sheetPerSection` is `true`. Default:
+`"<letter>. <title>"` with a leading `"BO — "` removed. Excel limits apply: the
+script cuts it to 31 characters, replaces `\ / ? * [ ] :` with `-`, and stops
+on a duplicate name.
+
 ## A row
+
+With `resultColumns`, a row may add `"platforms": ["Android 15", "iOS 27"]`:
+the headers this TS runs on. Those cells start as "Not Started"; the other
+platform cells are grey, empty, with no dropdown. Omitted = every platform.
 
 ```jsonc
 {
@@ -47,6 +87,7 @@ indents for you from the shapes below.
   "objective": "Verify UCD JomCheck purchase downloads a v2.0 report and reflects in BackOffice",
   "steps": [ /* array of step items, see below */ ],
   "expected": [ /* array of expected items, see below */ ],
+  "priority": "P1", /* optional */
   "remarks": ""
 }
 ```
@@ -58,6 +99,12 @@ indents for you from the shapes below.
   Faizuddin, 2026-10-19: "why is it not ordered correctly, ascending?"
 - `objective` — one sentence, must already start with `"Verify "`. Don't
   include a trailing period requirement either way; write it plainly.
+- `priority` — set it **only when Faizuddin asks for priority** in the
+  workbook (2026-10-30: "the priority must only be created if i ask of it");
+  otherwise leave it out of every row. `"P1"`, `"P2"` or `"P3"` only
+  (anything else stops the build). If any row has one, the script adds a coloured `Priority` column
+  right of `TS No.` on every tab (P1 red, P2 yellow, P3 green). Never write
+  the priority into `remarks` (Faizuddin, 2026-10-30).
 - `remarks` — usually `""`. Only put something here if there's a genuinely
   open question the user asked you to mark, or a note the user explicitly
   wants kept (most rows should NOT have a remark — SRD citations, technique

@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- Made 2026-11-02 by Scribe (pipeline) for Faizuddin. Source: SRD v1.1 REQ-003 — role by user ID
+     (_reference/tickets/Studying/EAINT-12028/EAINT-12028_SRD_v1.1_20260731-text.md line 134). Local file only, not published. -->
+<html lang="en"><head><meta charset="utf-8"><title>EAINT-12028 — Role accounts (copy)</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;margin:24px;background:#f8fafc;color:#1f2937}
+h1{font-size:19px;margin:0 0 4px}.sub{color:#64748b;font-size:12px;margin-bottom:18px}
+.card{background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:12px 14px;margin:10px 0}
+.card h2{font-size:15px;margin:0 0 8px}
+.row{display:flex;align-items:center;gap:8px;margin:4px 0}
+code{font-family:Consolas,monospace;font-size:14px;background:#f1f5f9;padding:3px 8px;border-radius:4px;min-width:110px;display:inline-block}
+button{font-size:12px;padding:3px 10px;border:1px solid #1e3a8a;background:#1e3a8a;color:#fff;border-radius:4px;cursor:pointer}
+button.all{background:#fff;color:#1e3a8a}
+textarea{width:100%;height:150px;font-family:Consolas,monospace;font-size:13px}
+.src{color:#64748b;font-size:11px}
+</style></head><body>
+<h1>EAINT-12028 — accounts with access</h1>
+<div class="sub">From SRD v1.1 REQ-003 (role by user ID). Passwords are not in any source.</div>
+
+<div class="card"><h2>Drafter</h2>
+<div class="row"><code>eautozara</code><button onclick="cp('eautozara',this)">Copy</button></div>
+<div class="row"><code>mfared</code><button onclick="cp('mfared',this)">Copy</button></div>
+<div class="row"><code>mfizni</code><button onclick="cp('mfizni',this)">Copy</button> <span class="src">also Reviewer + Approver</span></div>
+<button class="all" onclick="cp('eautozara\nmfared\nmfizni',this)">Copy all Drafters</button></div>
+
+<div class="card"><h2>Reviewer</h2>
+<div class="row"><code>eautonurul</code><button onclick="cp('eautonurul',this)">Copy</button></div>
+<div class="row"><code>mfizni</code><button onclick="cp('mfizni',this)">Copy</button> <span class="src">also Drafter + Approver</span></div>
+<button class="all" onclick="cp('eautonurul\nmfizni',this)">Copy all Reviewers</button></div>
+
+<div class="card"><h2>Approver</h2>
+<div class="row"><code>kmcheah</code><button onclick="cp('kmcheah',this)">Copy</button></div>
+<div class="row"><code>mfizni</code><button onclick="cp('mfizni',this)">Copy</button> <span class="src">also Drafter + Reviewer</span></div>
+<button class="all" onclick="cp('kmcheah\nmfizni',this)">Copy all Approvers</button></div>
+
+<div class="card"><h2>All 5 accounts (plain text)</h2>
+<textarea id="all" readonly>Drafter: eautozara, mfared, mfizni
+Reviewer: eautonurul, mfizni
+Approver: kmcheah, mfizni
+
+eautozara
+mfared
+eautonurul
+kmcheah
+mfizni</textarea>
+<button onclick="cp(document.getElementById('all').value,this)">Copy all</button></div>
+
+<p class="src">SRD v1.1 REQ-003: "Mapping: 1. Drafter: eautozara, mfared, mfizni 2. Reviewer: eautonurul, mfizni 3. Approver: kmcheah, mfizni A user may hold more than one role (e.g. mfizni)."</p>
+<script>
+function cp(t,b){navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=o,1200);}).catch(()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();b.textContent='Copied';});}
+</script>
+</body></html>

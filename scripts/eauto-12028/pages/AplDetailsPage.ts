@@ -1,51 +1,63 @@
-import { Download, Locator, Page } from '@playwright/test';
+import { Download, Locator, Page, expect } from '@playwright/test';
 import { AplBase } from './AplBase';
 import { CONFIG } from '../data/config';
 import { readTable, colOf, cellText, cellLocator, rowLocator, TableData, TableRow, norm } from '../utils/table';
 import { pickDatepickerDate } from '../utils/datepicker';
-import { ddmmyyyy } from '../utils/format';
+import { ddmmyyyy, parseWhen, whenDay, DATE_RE } from '../utils/format';
 import { PENDING_NOTE } from '../data/expected';
 import { watchDialogs, takeDialogs, peekDialogs } from '../utils/dialogs';
 
-// Association Payment Listing — Details page (one month) and its three popups.
-// [unconfirmed] NOT captured live: every handle is the 31.07 mock-up's
-// (_reference/tickets/Studying/EAINT-12028/association-payment-listing-mockup_20260731.html):
-// title `#det-title` line 209, "← Back to Summary" line 211, workflow bar
-// `#wf-bar` line 213 (statuses / buttons / note built at lines 468-503),
-// download bar `#inv-bar` line 214 (lines 509-518), state table `#tbl-veh`
-// line 218 (line 617), audit log `#tbl-log` line 222 (lines 544-552),
-// Reject popup `#rmk-modal` lines 227-237, payment date popup `#date-modal`
-// lines 240-251, signature popup `#sig-modal` lines 254-265.
-// Capture the live Details page in each status, and each popup, to confirm.
+// Association Payment Listing — Details page (one month) and its popups.
+// Live capture (staging uat1, 2026-11-02, Approver login, September 2026 all Pending, not its turn):
+//   DETAILS = _reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html
+// Confirmed there: #det-title, the "← Back to Summary" link, #wf-bar with #pill-drafter /
+// #pill-reviewer / #pill-approver, #wf-not-your-turn, .wf-note, #pdf-bar and its pending note,
+// #tbl-veh, #tbl-log, and the #rmk-modal / #date-modal / #sig-modal popups.
+// Still [unconfirmed] (not rendered in that capture): the role buttons Approve / KIV / Reject
+// and the FMC / MMSDA download controls — names from the 31.07 mock-up
+// (_reference/tickets/Studying/EAINT-12028/association-payment-listing-mockup_20260731.html lines 472-486, 513-514).
 
 export type Status = { drafter: string; reviewer: string; approver: string };
 export type Role = 'Drafter' | 'Reviewer' | 'Approver';
 
 export class AplDetailsPage extends AplBase {
-  // mock-up line 209
-  title = () => this.page.locator('#det-title');
-  // mock-up line 211 `<button class="btn secondary" …>&#8592; Back to Summary</button>`
-  backBtn = () => this.page.getByRole('button', { name: /Back to Summary/ });
-  // mock-up line 213
-  wfBar = () => this.page.locator('#wf-bar');
-  // mock-up line 503 `<div class='wf-note'>`
-  note = () => this.wfBar().locator('.wf-note');
-  // mock-up lines 472-486 `<button class='abtn approve'>Approve</button>` / kiv / reject
-  approveBtn = () => this.page.getByRole('button', { name: 'Approve', exact: true });
-  kivBtn = () => this.page.getByRole('button', { name: 'KIV', exact: true });
-  rejectBtn = () => this.page.getByRole('button', { name: 'Reject', exact: true });
-  // mock-up line 214
-  invBar = () => this.page.locator('#inv-bar');
-  // mock-up lines 513-514
-  fmcBtn = () => this.page.getByRole('button', { name: 'FMC Payment Request', exact: true });
-  mmsdaBtn = () => this.page.getByRole('button', { name: 'MMSDA Payment Request', exact: true });
-  // SRD v1.1 REQ-016 Example 2 wording (mock-up line 516 shows the same text)
-  pendingNote = () => this.page.getByText(PENDING_NOTE, { exact: true });
-  // mock-up line 218 / line 222
+  // 2026-11-03 build — DETAILS2 = _reference/html/eauto/bo-association-payment-listing-details-jan-2026-drafter-turn-2026-11-03.html
+  // (Drafter login, January 2026, Drafter's turn). The old ids (#det-title, #wf-bar, #pill-*) are kept as fallbacks.
+  // DETAILS2 lines 79-81 `<div class="page-title"><span class="app-title">Association Payment Listing — January 2026</span>`
+  title = () => this.page.locator('#det-title, .page-title .app-title');
+  // DETAILS2 lines 104-106 `<a class="ap-summary" id="ap-summary" href="/backoffice/admin/association?year=2026">… Summary</a>`
+  // (was DETAILS line 91 "← Back to Summary")
+  backBtn = () => this.page.locator('#ap-summary').or(this.page.getByRole('link', { name: /Back to Summary/ }));
+  // DETAILS2 line 102 `<div class="ap" id="action-panel">` — chips, the role's buttons and the note (was DETAILS line 99 #wf-bar)
+  wfBar = () => this.page.locator('#action-panel, #wf-bar');
+  // DETAILS2 lines 151-159 `<div class="ap-note …" id="ap-note" role="status"> … <span class="ap-note-text">Your turn as Drafter. …</span>`
+  // (was DETAILS lines 128-133 `.wf-note`)
+  note = () => this.page.locator('#ap-note .ap-note-text, #wf-bar .wf-note');
+  // DETAILS line 126 `#wf-not-your-turn`. [unconfirmed] not in DETAILS2 (a Drafter on its own turn); the new build may say it in #ap-note instead.
+  notYourTurn = () => this.page.locator('#wf-not-your-turn');
+  // DETAILS2 lines 111-126 `<span class="ap-chip …" id="chip-drafter"> … <span class="ap-chip-status st-pending"><span>Pending · your turn</span>`
+  // (was DETAILS lines 102-106 `#pill-drafter` "Pending")
+  pill = (role: Role) => this.page.locator(`#chip-${role.toLowerCase()} .ap-chip-status, #pill-${role.toLowerCase()}`);
+  // DETAILS2 lines 131 / 141 `<button class="ap-btn ap-btn-kiv" id="btn-drafter-kiv">KIV</button>`,
+  // `<button class="ap-btn ap-btn-approve" id="btn-drafter-approve">Approve</button>`, inside #action-panel.
+  // Only the buttons of the role whose turn it is are rendered. Reject: [unconfirmed] not in DETAILS2 (Drafter has none).
+  approveBtn = () => this.wfBar().getByRole('button', { name: 'Approve', exact: true });
+  kivBtn = () => this.wfBar().getByRole('button', { name: 'KIV', exact: true });
+  rejectBtn = () => this.wfBar().getByRole('button', { name: 'Reject', exact: true });
+  // from DETAILS line 138 `<div class="wf-bar" id="pdf-bar">` (the mock-up's #inv-bar)
+  invBar = () => this.page.locator('#pdf-bar');
+  // [unconfirmed] mock-up lines 513-514 names; DETAILS lines 53-54 say the PDF controls are anchor
+  // buttons (`.btn` links), so both a link and a button are accepted, inside #pdf-bar only.
+  fmcBtn = () => this.invBar().locator('a, button', { hasText: /^\s*FMC Payment Request\s*$/ });
+  mmsdaBtn = () => this.invBar().locator('a, button', { hasText: /^\s*MMSDA Payment Request\s*$/ });
+  // PENDING_NOTE = SRD v1.1 REQ-016 Example 2 wording, kept on purpose (Faizuddin is checking DETAILS line 141's
+  // "become available" vs the SRD's "will be available" with the SA, 2026-11-02).
+  pendingNote = () => this.invBar().getByText(PENDING_NOTE, { exact: true });
+  // from DETAILS lines 147 / 295
   stateTable = () => this.page.locator('#tbl-veh');
   logTable = () => this.page.locator('#tbl-log');
 
-  // Signature popup — mock-up lines 254-265
+  // Signature popup — from DETAILS lines 343-352
   sigModal = () => this.page.locator('#sig-modal');
   sigTitle = () => this.sigModal().getByText(/^Sign to Approve/);
   sigPad = () => this.page.locator('#sig-pad');
@@ -53,13 +65,13 @@ export class AplDetailsPage extends AplBase {
   sigCancel = () => this.sigModal().getByRole('button', { name: 'Cancel', exact: true });
   sigSave = () => this.sigModal().getByRole('button', { name: 'Save & Approve', exact: true });
 
-  // Reject popup — mock-up lines 227-237
+  // Reject popup — from DETAILS lines 322-330 (#rmk-submit starts disabled; enabled once remarks are typed, script line 386-387)
   rmkModal = () => this.page.locator('#rmk-modal');
   rmkText = () => this.page.locator('#rmk-text');
-  rmkSubmit = () => this.rmkModal().getByRole('button', { name: 'Submit Reject', exact: true });
+  rmkSubmit = () => this.page.locator('#rmk-submit');
   rmkCancel = () => this.rmkModal().getByRole('button', { name: 'Cancel', exact: true });
 
-  // Payment date popup — mock-up lines 240-251
+  // Payment date popup — from DETAILS lines 332-341 (min = local tomorrow, script lines 395-399)
   dateModal = () => this.page.locator('#date-modal');
   dateTitle = () => this.dateModal().getByText('Approve — Finance Payment Date', { exact: true });
   payDate = () => this.page.locator('#pay-date');
@@ -77,20 +89,31 @@ export class AplDetailsPage extends AplBase {
 
   async expectOpenFor(month: string, year: number): Promise<void> {
     const ok = await this.waitForCondition(async () => (await this.stateTable().count()) > 0 && (await this.wfBar().count()) > 0);
-    if (!ok) throw new Error(`The Details page did not open (no state table / workflow bar) at ${this.page.url()}.`);
-    const title = norm(await this.title().innerText().catch(() => ''));
-    if (!title.includes(`${month} ${year}`)) throw new Error(`Details title is "${title}", not ${month} ${year}.`);
+    if (!ok) {
+      await this.captureIssue('details-not-shown', this.page.locator('main, body').first(), 'No state table (#tbl-veh) / action panel (#action-panel) on this page');
+      throw new Error(`The Details page did not open (no state table #tbl-veh / action panel #action-panel) at ${this.page.url()}.`);
+    }
+    const title = norm((await this.title().allInnerTexts().catch(() => [] as string[])).join(' '));
+    if (!title.includes(`${month} ${year}`)) {
+      await this.captureIssue('details-wrong-month', this.title(), `Title "${title}" is not ${month} ${year}`);
+      throw new Error(`Details title is "${title}", not ${month} ${year}.`);
+    }
   }
 
   // ── Statuses ──────────────────────────────────────────────
 
-  /** "Drafter Status: Approved" etc. from the workflow bar (mock-up lines 498-500). */
+  /**
+   * The three statuses — read from the chips #chip-drafter / -reviewer / -approver (DETAILS2 lines 111-126).
+   * The chip of the role whose turn it is adds " · your turn" ("Pending · your turn", line 113): only the
+   * status word before " · " is returned.
+   */
   async statuses(): Promise<Status> {
-    const text = norm(await this.wfBar().innerText());
-    const pick = (role: Role) => text.match(new RegExp(`${role} Status:?\\s*(Pending|Approved|KIV|Review Again)`))?.[1];
-    const s = { drafter: pick('Drafter'), reviewer: pick('Reviewer'), approver: pick('Approver') };
-    if (!s.drafter || !s.reviewer || !s.approver) throw new Error(`Cannot read the three statuses from the workflow bar: "${text.slice(0, 200)}".`);
-    return s as Status;
+    const read = async (role: Role) => {
+      const p = this.pill(role);
+      if (!(await p.count())) throw new Error(`No ${role} status (#chip-${role.toLowerCase()}) on the Details page (${this.page.url()}).`);
+      return norm(await p.first().innerText()).split('·')[0].trim();
+    };
+    return { drafter: await read('Drafter'), reviewer: await read('Reviewer'), approver: await read('Approver') };
   }
 
   /** Waits until a status shows the expected word (lesson 14: confirm every submit by the page's own words). */
@@ -265,9 +288,9 @@ export class AplDetailsPage extends AplBase {
 
   async backToSummary(): Promise<void> {
     const b = this.backBtn();
-    if (!(await b.count())) throw new Error('No [← Back to Summary] button on the Details page.');
-    await this.demoHighlight(b);
-    await b.click();
+    if (!(await b.count())) throw new Error('No [Summary] link (#ap-summary) on the Details page.');
+    await this.demoHighlight(b.first());
+    await b.first().click();
     await this.page.waitForLoadState('load', { timeout: CONFIG.navigationTimeout });
     await this.settleAfterLoad();
   }
@@ -307,44 +330,124 @@ export class AplDetailsPage extends AplBase {
     return readTable(this.logTable());
   }
 
-  /** "Role — Action/Status" of each log row (works whether role and action are one cell or two). */
-  logEntries(data: TableData): { entry: string; time: string; remarks: string; row: TableRow }[] {
-    const has = (h: string) => data.headers.some(x => x.toLowerCase() === h.toLowerCase());
+  /** Live Audit Log columns (DETAILS lines 301-304): When, Actor, Role, Action, Payment Date, Remarks. */
+  static readonly LOG_COLUMNS = ['When', 'Actor', 'Role', 'Action', 'Payment Date', 'Remarks'];
+  /** Columns the TS expects (12028_TS48: "Date/Time, Role, Action/Status, Remarks"; Payment Date: SRD REQ-015 Example 5 puts the Approver's payment date on the log).
+   *  Faizuddin, 2026-11-02: follow the expected results; only the Actor column is overlooked. */
+  static readonly LOG_COLUMNS_EXPECTED = ['Date/Time', 'Role', 'Action/Status', 'Payment Date', 'Remarks'];
+
+  private static readonly LOG_COL = {
+    when: /^(when|date\s*\/?\s*time)$/i,
+    role: /^role$/i,
+    action: /^action(\s*\/\s*status)?$/i,
+    paymentDate: /^payment date$/i,
+    remarks: /^remarks$/i,
+  };
+
+  /** One row of the Audit Log. "Role — Action" is built from the Role and Action cells, as shown. The empty-state row has one cell and is skipped. */
+  logEntries(data: TableData): { entry: string; role: string; action: string; time: string; remarks: string; paymentDate: string; row: TableRow }[] {
+    const C = AplDetailsPage.LOG_COL;
+    const get = (row: TableRow, re: RegExp) => (data.headers.some(h => re.test(h.trim())) ? cellText(data, row, re) : '');
     return data.rows
       .filter(r => Object.keys(r.byCol).length > 1)
       .map(row => {
-        const action = has('Action/Status') ? cellText(data, row, 'Action/Status') : '';
-        const role = has('Role') ? cellText(data, row, 'Role') : '';
+        const action = get(row, C.action);
+        const role = get(row, C.role);
         return {
           entry: role ? `${role} — ${action}` : action,
-          time: has('Date/Time') ? cellText(data, row, 'Date/Time') : '',
-          remarks: has('Remarks') ? cellText(data, row, 'Remarks') : '',
+          role, action,
+          time: get(row, C.when),
+          remarks: get(row, C.remarks),
+          paymentDate: get(row, C.paymentDate),
           row,
         };
       });
   }
 
-  /** SRD v1.1 REQ-015 log words: "Drafter — Approved", "Drafter — KIV", "Reviewer — Rejected (returned to Drafter)". */
+  /** Finds a row by role and action, whatever the letter case or tense ("Drafter — Approved" or "DRAFTER — APPROVE"); the exact words are checked by checkLogRowFormat().
+   *  Expected words: SRD v1.1 REQ-015 "Drafter — Approved", "Drafter — KIV", "Reviewer — Rejected (returned to Drafter)". */
   static entryRe(role: Role, action: 'Approved' | 'KIV' | 'Rejected'): RegExp {
-    const a = action === 'Approved' ? 'Approved\\b' : action === 'KIV' ? 'KIV$' : `Rejected\\W+returned to ${role === 'Reviewer' ? 'Drafter' : 'Reviewer'}\\W*$`;
+    const a = action === 'Approved' ? 'Approve[ds]?\\b' : action === 'KIV' ? 'KIV\\s*$' : 'Reject(ed)?\\b';
     return new RegExp(`^${role}\\s*[—–-]\\s*${a}`, 'i');
   }
 
-  async logCount(role: Role, action: 'Approved' | 'KIV' | 'Rejected'): Promise<number> {
+  /** True when the page lists the newest row first (live), false when oldest first (SA mock-up). Read from the times, so row order never decides a pass or fail by accident. */
+  static listedNewestFirst(entries: { time: string }[]): boolean {
+    const t = entries.map(e => parseWhen(e.time)).filter(x => !Number.isNaN(x));
+    if (t.length < 2) return true;
+    if (t[0] === t[t.length - 1]) return true;
+    return t[0] > t[t.length - 1];
+  }
+
+  /** The rows oldest → newest, whichever way the page lists them. */
+  static chronological<T extends { time: string }>(entries: T[]): T[] {
+    return AplDetailsPage.listedNewestFirst(entries) ? [...entries].reverse() : [...entries];
+  }
+
+  /** Rows of one role + action, oldest → newest (the last one is the newest). */
+  static matching<T extends { entry: string; time: string }>(entries: T[], role: Role, action: 'Approved' | 'KIV' | 'Rejected'): T[] {
     const re = AplDetailsPage.entryRe(role, action);
-    return this.logEntries(await this.readLog()).filter(e => re.test(e.entry)).length;
+    return AplDetailsPage.chronological(entries).filter(e => re.test(e.entry));
+  }
+
+  async logCount(role: Role, action: 'Approved' | 'KIV' | 'Rejected'): Promise<number> {
+    return AplDetailsPage.matching(this.logEntries(await this.readLog()), role, action).length;
   }
 
   logRowAt(row: TableRow): Locator { return rowLocator(this.logTable(), row); }
   logCell(data: TableData, row: TableRow, header: string): Locator { return cellLocator(this.logTable(), data, row, header); }
 
-  /** Date (DD-MM-YYYY) of the newest "<role> — Approved" row. */
+  /** One format mismatch: red box on the cell, a plain line in the run log, and a soft failure (the TS carries on, then fails at the end). */
+  private async logMismatch(label: string, target: Locator, what: string, shown: string, expected: string | RegExp, expectedText: string): Promise<void> {
+    const ok = typeof expected === 'string' ? shown === expected : expected.test(shown);
+    if (ok) return;
+    const msg = `${what}: shows "${shown}", expected ${expectedText}`;
+    console.log(`DETAIL:${JSON.stringify({ label: 'Does not follow the expected result', value: msg })}`);
+    await this.captureIssue(label, target, msg.slice(0, 200));
+    expect.soft(false, msg).toBe(true);
+  }
+
+  /**
+   * The words and shapes of one Audit Log row, against the expected results (SA mock-up lines 329 and 548; TS 12028_TS20/TS21: "Drafter — Approved", "Drafter — KIV"):
+   * Role "Drafter" (not "DRAFTER"), Action "Approved (signed)" / "KIV" / "Rejected — returned to <role>" (not "APPROVE"),
+   * When "DD-MM-YYYY HH:mm" (not "02 Nov 2026 15:36"). Empty Remarks / Payment Date are not checked (dropped 2026-11-03).
+   * The Actor column and the Pending / Approved status words are NOT held to the mock-up (Faizuddin, 2026-11-02: the mock-up is wrong for those only). Every mismatch is named in plain words.
+   */
+  async checkLogRowFormat(data: TableData, e: { role: string; action: string; time: string; remarks: string; paymentDate: string; row: TableRow }, role: Role, action: 'Approved' | 'KIV' | 'Rejected', opts: { remarksTyped?: boolean } = {}): Promise<void> {
+    const C = AplDetailsPage.LOG_COL;
+    const who = `Audit Log row "${role} — ${action}"`;
+    const cell = (re: RegExp) => {
+      const h = data.headers.find(x => re.test(x.trim()));
+      return h ? this.logCell(data, e.row, h) : this.logRowAt(e.row);
+    };
+    const key = `log-${role}-${action}`.toLowerCase();
+    await this.logMismatch(`${key}-role`, cell(C.role), `${who}, Role`, e.role, role, `"${role}"`);
+    // Approved: "Approved (signed)" (SA mock-up lines 519-523; Faizuddin, dashboard chat 2026-11-02).
+    const wantAction = action === 'Rejected' ? `Rejected — returned to ${role === 'Reviewer' ? 'Drafter' : 'Reviewer'}` : action === 'Approved' ? 'Approved (signed)' : action;
+    await this.logMismatch(`${key}-action`, cell(C.action), `${who}, Action`, e.action, wantAction, `"${wantAction}"`);
+    await this.logMismatch(`${key}-when`, cell(C.when), `${who}, When`, e.time, /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}$/, '"DD-MM-YYYY HH:mm" (e.g. "02-11-2026 15:36")');
+    // Empty Payment Date / Remarks cells are not checked for "-" (Faizuddin, dashboard chat 2026-11-03: "drop those for now").
+    if (role === 'Approver' && action === 'Approved') {
+      await this.logMismatch(`${key}-payment-date`, cell(C.paymentDate), `${who}, Payment Date`, e.paymentDate, DATE_RE, '"DD-MM-YYYY"');
+    }
+  }
+
+  /** The Audit Log header row against the expected columns; the Actor column is left out of the comparison. */
+  async checkLogColumns(data: TableData): Promise<void> {
+    const shown = data.headers.map(h => h.trim()).filter(h => !/^actor$/i.test(h));
+    const want = AplDetailsPage.LOG_COLUMNS_EXPECTED;
+    const head = this.logTable().locator('tr').first();
+    for (let i = 0; i < Math.max(shown.length, want.length); i++) {
+      await this.logMismatch(`log-column-${i + 1}`, head, `Audit Log column ${i + 1} (Actor left out)`, shown[i] ?? '(no column)', want[i] ?? '(none)', `"${want[i] ?? '(no column)'}"`);
+    }
+  }
+
+  /** Date (DD-MM-YYYY) of the newest "<role> — Approved" row, read from its When cell in either format. */
   async approvedDate(role: Role): Promise<string> {
-    const re = AplDetailsPage.entryRe(role, 'Approved');
-    const rows = this.logEntries(await this.readLog()).filter(e => re.test(e.entry));
+    const rows = AplDetailsPage.matching(this.logEntries(await this.readLog()), role, 'Approved');
     const last = rows[rows.length - 1];
-    const d = last?.time.match(/\d{2}-\d{2}-\d{4}/)?.[0];
-    if (!d) throw new Error(`No "${role} — Approved" row with a DD-MM-YYYY date in the Audit Log.`);
+    const d = last ? whenDay(last.time) : null;
+    if (!d) throw new Error(`No "${role} — Approved" row with a readable date in the Audit Log${last ? ` (When shows "${last.time}")` : ''}.`);
     return d;
   }
 

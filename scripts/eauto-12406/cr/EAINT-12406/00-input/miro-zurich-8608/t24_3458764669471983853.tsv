@@ -1,0 +1,63 @@
+CAR								
+TS No	UCD State	User Type	Category	Entry Point	Quotation Available	Expected Result	QA	Test Result
+TS_ISQ_CAR_01	East Coast (Pahang, Terengganu & Kelantan)	Main UCD	Individual	UCD land on insurance after Failed due to VEL000069E in eSTM Step 5 (Non-Xstar)	"Zurich Takaful (Comprehensive) ✅
+Zurich Takaful (TPFT) ✅
+Syarikat Takaful Malaysia (Comprehensive)✅
+Syarikat Takaful Malaysia(TPFT) ✅
+Chubb ✅
+Lonpac ✅
+Tokio Marine ✅"	"Quotation sequence show as follow
+Zurich Takaful (Comprehensive) 
+Zurich Takaful (TPFT)
+Syarikat Takaful Malaysia (Comprehensive)
+Syarikat Takaful Malaysia(TPFT)"	Azfar	PASS
+TS_ISQ_CAR_02	Non - East Coast states	Main UCD	Company	UCD land on Insurance through Insurance banner in eSTM Transaction Details Page	"Chubb✅
+Zurich Takaful (Comprehensive) ✅
+Zurich Takaful (TPFT) ✅
+Syarikat Takaful Malaysia (Comprehensive)✅
+Syarikat Takaful Malaysia(TPFT) ✅
+Lonpac ❌
+Tokio Marine ❌"	"Quotation sequence show as follow
+Chubb
+Zurich Takaful (Comprehensive)
+Zurich Takaful (TPFT)"	Faiz	PASS
+TS_ISQ_CAR_03	East Coast (Pahang, Terengganu & Kelantan)	Sub UCD	Individual	UCD land on Insurance through Insurance (Get a Free Quote) - After eSTM Approved	"Zurich Takaful (Comprehensive) ❌
+Zurich Takaful (TPFT) ❌
+Syarikat Takaful Malaysia (Comprehensive)✅
+Syarikat Takaful Malaysia(TPFT) ✅
+Chubb ✅
+Lonpac ✅
+Tokio Marine ✅"	"Quotation sequence show as follow
+Syarikat Takaful Malaysia (Comprehensive)
+Syarikat Takaful Malaysia(TPFT)'
+Chubb"	Faiz	PASS
+TS_ISQ_CAR_04	Non - East Coast states	Main UCD	Company		"Chubb❌
+Zurich Takaful (Comprehensive) ✅
+Zurich Takaful (TPFT) ✅
+Syarikat Takaful Malaysia (Comprehensive)✅
+Syarikat Takaful Malaysia(TPFT) ✅
+Lonpac ❌
+Tokio Marine ❌"	"Quotation sequence show as follow
+Zurich Takaful (Comprehensive) 
+Zurich Takaful (TPFT)
+Syarikat Takaful Malaysia (Comprehensive)
+Syarikat Takaful Malaysia(TPFT)"	Azfar	PASS
+TS_ISQ_CAR_05	East Coast (Pahang, Terengganu & Kelantan)	Main UCD	Individual	(Get a Free Quote) - Without eSTM Approved	"Zurich Takaful (Comprehensive) ✅
+Zurich Takaful (TPFT) ✅
+Syarikat Takaful Malaysia (Comprehensive)❌
+Syarikat Takaful Malaysia(TPFT) ❌
+Chubb ❌
+Lonpac ❌
+Tokio Marine ✅"	"Quotation sequence show as follow
+Zurich Takaful (Comprehensive) 
+Zurich Takaful (TPFT) 
+Tokio Marine"	Azfar	PASS
+TS_ISQ_CAR_06	Non - East Coast states	Sub UCD	Company		"Chubb✅
+Zurich Takaful (Comprehensive) ❌
+Zurich Takaful (TPFT) ❌
+Syarikat Takaful Malaysia (Comprehensive)❌
+Syarikat Takaful Malaysia(TPFT) ❌
+Lonpac ❌
+Tokio Marine ❌"	"Quotation sequence show as follow
+Chubb
+Lonpac"	Faiz	PASS

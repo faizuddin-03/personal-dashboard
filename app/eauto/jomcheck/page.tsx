@@ -1019,6 +1019,9 @@ export default function JomCheckPage() {
 
   const saved = typeof window !== "undefined" ? loadCreds() : DEFAULT_CREDS;
   const [creds, setCreds] = useState<Creds>(saved);
+  // Run configuration is saved as it is typed, not only on Run (Faizuddin, 2026-11-02:
+  // survive a refresh or restart). Run still saves its own changes (counters, companies).
+  useEffect(() => { try { localStorage.setItem(CREDS_KEY, JSON.stringify(creds)); } catch { /* full */ } }, [creds]);
   const set = (k: keyof Creds, v: string) => setCreds(p => ({ ...p, [k]: v }));
 
   const [vnCounter, setVnCounter] = useState<number>(1);

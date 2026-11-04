@@ -1,0 +1,54 @@
+{
+  "expected": "Ensure:\n• Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"\n• Insurer, next line: \"200601015674 (735426-V)\"\n• Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1\n• Agent line \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)",
+  "gate": {
+    "at": "30/10/2026, 09:09:29",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS2/2026-10-30T01-09-29_DEFECT",
+    "mismatch": [
+      "E2"
+    ],
+    "proved": [
+      "E1",
+      "E3",
+      "E4"
+    ],
+    "reasons": [
+      "E2: expected \"Insurer, next line: \"200601015674 (735426-V)\"\", page shows \"Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (03-cibo-receipt-company-number.png)"
+    ],
+    "run": "eaint-12406-retest-sretest-20261030-0040-C-c1",
+    "verdict": "DEFECT",
+    "warnings": []
+  },
+  "id": "12406_RC_TS2",
+  "labels": [],
+  "order": 33,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\""
+    },
+    {
+      "id": "E2",
+      "text": "Insurer, next line: \"200601015674 (735426-V)\""
+    },
+    {
+      "id": "E3",
+      "text": "Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1"
+    },
+    {
+      "id": "E4",
+      "text": "Agent line \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "FAIL",
+  "reviewed": false,
+  "section": "Receipt",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• The Allianz transaction of 12406_E2E_TS1",
+  "sheet": "RC",
+  "situation": "CIBO user opens the receipt of an Allianz transaction: same Allianz name and company number",
+  "source": "SRD v1.1 REQ-010 Example 1a ('Customer or CIBO user opens receipt'); receipt layout and agent line: mockup CIBO 20261006 receipt (SRD §1.5 #5); agency Serba Sentral: SRD 2.1.3b",
+  "steps": "1. CIBO > Transaction Management: search the plate of E2E_TS1; open Transaction Details\n2. Click Receipt: a PDF downloads directly (R<receipt no><plate>.pdf, walk 28.10); open it, screenshot the Insurer block and keep the file",
+  "updatedAt": "2026-10-29T18:30:00+08:00"
+}

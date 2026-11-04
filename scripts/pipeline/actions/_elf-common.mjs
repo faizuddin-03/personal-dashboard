@@ -44,7 +44,7 @@ export function scenarioFormat(key) {
 1. ${scenariosMdRel(key)} — the reviewable list for Faizuddin. Layout:
    1. Title line "# ${key} — scenarios" then one short line on the basis (official TS / study / related history).
    2. One "## <letter>. <section>" heading per section (A., B., ...).
-   3. Under it, one numbered line per TS: "**${d}_TS01** — <title>". Under each TS, short indented numbered sub-lists or lines: **Objective** (one "Verify ..." sentence), **Steps** (short verb-first lines), **Expected** ("<Screen> -> <What is seen>", only what the ticket changes), **Source** (one short line: where the expected results come from), **Priority** (P1 / P2 / P3).
+   3. Under it, one numbered line per TS: "**${d}_TS01** — <title>". Under each TS, short indented numbered sub-lists or lines: **Objective** (one "Verify ..." sentence), **Steps** (short verb-first lines), **Expected** ("<Screen> -> <What is seen>", only what the ticket changes), **Source** (one short line: where the expected results come from), **Priority** (P1 / P2 / P3; grade with the "How to grade P1 / P2 / P3" rule in .claude/skills/draft-TS-excel/SKILL.md: P1 = the change itself in one attempt, P2 = recovery / invalid input / cancel / secondary paths, P3 = stress and rare edges).
    4. Manual-only TS (e.g. Wholesale) say "(manual)" after the title.
    5. Then "## Coverage of the ticket brief": one numbered line per module/page of the ticket brief, "<module> / <page> -> <TS ids>" or "-> no TS: <why>".
    6. Then "## Self-review" (max 6 short numbered lines: coverage dimensions left out and why, see the self-review rules).
@@ -52,7 +52,7 @@ export function scenarioFormat(key) {
    8. End with "## Open points" (numbered) only if something is not known.
 2. ${scenariosJsonRel(key)} — a JSON array, one object per TS, same order:
    {"id":"${d}_TS01","section":"A. <section>","title":"<one line>","objective":"Verify ...","steps":["..."],"expected":["..."],"basis":"<source of the expected results: SRD v<n> §<section> / REQ id, Jira field or comment (author, date), official TS row, mock-up, or his answer (date)>","priority":"P1 | P2 | P3","manual":false,"notes":"optional"}
-   Ids are "${d}_TS" + two digits, unique, sequential from 01 with no gaps. Titles are one line, plain characters only (letters, digits, spaces and _ - : / ( ) . , & ' + #) because Dwarf uses "<id>: <title>" as the Playwright test title. In-cell marks (**, ++, !!) are allowed in steps/expected only.`;
+   Ids are "${d}_TS" + two digits, unique, sequential from 01 with no gaps. If Faizuddin asks for sub-section prefixes, ids are "${d}_<XX>_TS" + two digits (XX = 2-4 capital letters, one per section), numbered from 01 per prefix with no gaps. Titles are one line, plain characters only (letters, digits, spaces and _ - : / ( ) . , & ' + #) because Dwarf uses "<id>: <title>" as the Playwright test title. In-cell marks (**, ++, !!) are allowed in steps/expected only.`;
 }
 
 /** Validates scenarios.json. Returns { ok, errors, scenarios }. */
@@ -64,12 +64,24 @@ export function validateScenarios(abs, key) {
   const d = digitsOf(key);
   const seen = new Set();
   const SAFE_TITLE = /^[A-Za-z0-9 _\-:/().,&'+#]{1,200}$/;
+  // Ids are <digits>_TS<NN> in one running sequence, or <digits>_<XX>_TS<NN> where XX is the
+  // sub-section short form and the count restarts per prefix (Faizuddin, EAINT-9805, 2026-10-29:
+  // "use 9805_XX_TS01 (the xx is short form of what part or sub-section it is)").
+  const ID = /^(\d+)(?:_([A-Z]{2,4}))?_TS(\d{2,})$/;
+  const count = {}, prefixOfSection = {};
   list.forEach((s, i) => {
-    const want = `${d}_TS${String(i + 1).padStart(2, "0")}`;
     if (!s || typeof s !== "object") { errors.push(`Item ${i + 1} is not an object`); return; }
-    if (typeof s.id !== "string" || !/^\d+_TS\d{2,}$/.test(s.id)) errors.push(`Item ${i + 1}: id "${s.id}" must look like ${want}`);
+    const m = typeof s.id === "string" ? ID.exec(s.id) : null;
+    const prefix = m?.[2] ?? "";
+    const n = (count[prefix] = (count[prefix] ?? 0) + 1);
+    const want = `${d}${prefix ? `_${prefix}` : ""}_TS${String(n).padStart(2, "0")}`;
+    if (!m) errors.push(`Item ${i + 1}: id "${s.id}" must look like ${d}_TS01 or ${d}_XX_TS01`);
     else if (seen.has(s.id)) errors.push(`Duplicate id ${s.id}`);
     else if (s.id !== want) errors.push(`Item ${i + 1}: id ${s.id} is out of sequence (expected ${want})`);
+    else if (typeof s.section === "string" && prefix) {
+      if (prefixOfSection[s.section] && prefixOfSection[s.section] !== prefix) errors.push(`${s.id}: section "${s.section}" mixes prefixes ${prefixOfSection[s.section]} and ${prefix}`);
+      prefixOfSection[s.section] ??= prefix;
+    }
     seen.add(s.id);
     if (typeof s.title !== "string" || !s.title.trim() || /\n/.test(s.title)) errors.push(`${s.id}: title must be one line`);
     else if (!SAFE_TITLE.test(`${s.id}: ${s.title}`)) errors.push(`${s.id}: title has characters the runner cannot use`);
@@ -130,26 +142,44 @@ export async function finishScenarios(ctx, { ok, text }, { askedForReview }) {
   const changedNow = newHash !== ctx.state.beforeHash;
   if (changedNow) lintAfterElf(ctx, v.scenarios, { askedForReview });
   const asked = /^#{1,4}\s*Questions for Faizuddin/im.test(text ?? "");
-  let queueSync = false;
+  let queueSync = false, queueDwarf = false, wbPending = 0;
   store.updateTicket(key, t => {
     t.files = { ...t.files, scenariosJson: jsonRel, ...(exists(mdRel) ? { scenariosMd: mdRel } : {}) };
     store.raiseStage(t, "scenarios");
     if (changedNow) t.events = [{ at: store.nowIso(), text: `Elf ${askedForReview ? "drafted" : "revised"} ${v.scenarios.length} scenario(s)` }, ...(t.events ?? [])].slice(0, 100);
     if (!t.approvedAt) {
       t.characters.elf = { ...t.characters.elf, state: "waiting", note: asked ? t.characters.elf.note : "Faizuddin to review the scenarios" };
-    } else if (changedNow && newHash !== (t.dwarfScenarioHash ?? t.approvedScenarioHash)) {
-      // After the green light, Dwarf must mirror every scenario change.
+    } else if (changedNow) {
+      // The TS workbook waits for "Create new version now" (2026-10-30: "dont
+      // create the new excel yet"): changes pile up here and one rebuild
+      // carries them all, so a chat of small fixes does not leave a pile of workbooks.
       const note = diffNote(ctx.state.beforeList ?? [], v.scenarios) ?? `${new Date().toLocaleString("en-MY")}: Elf changed scenarios.json`;
-      t.pendingDwarfChanges = [...(t.pendingDwarfChanges ?? []), note];
+      t.pendingWorkbookChanges = [...(t.pendingWorkbookChanges ?? []), note].slice(-50);
+      wbPending = t.pendingWorkbookChanges.length;
+    }
+    if (t.approvedAt && changedNow && newHash !== (t.dwarfScenarioHash ?? t.approvedScenarioHash)) {
+      // After the green light, Dwarf must mirror every scenario change — unless
+      // automation is on hold with nothing built: "Start Dwarf" later reads the
+      // latest scenarios anyway (2026-10-30).
       queueSync = true;
+      if (!(t.automationOnHold && !t.files?.suiteDir)) {
+        const note = diffNote(ctx.state.beforeList ?? [], v.scenarios) ?? `${new Date().toLocaleString("en-MY")}: Elf changed scenarios.json`;
+        t.pendingDwarfChanges = [...(t.pendingDwarfChanges ?? []), note];
+        queueDwarf = true;
+      }
     }
   });
   if (queueSync) {
     const queued = store.listJobs({ key, active: true }).filter(j => j.state === "queued");
-    if (!queued.some(j => j.action === "dwarf:sync")) store.queueJob({ key, action: "dwarf:sync" });
-    // The TS workbook follows the approved scenarios too (2026-10-28): rebuild it.
-    if (!queued.some(j => j.action === "elf:build")) store.queueJob({ key, action: "elf:build", input: { rebuild: true } });
-    store.addEvent(key, "Scenario change sent to Dwarf; TS workbook rebuild queued");
+    if (queueDwarf && !queued.some(j => j.action === "dwarf:sync")) store.queueJob({ key, action: "dwarf:sync" });
+    if (queueDwarf) store.addEvent(key, "Scenario change sent to Dwarf");
+  }
+  if (wbPending) {
+    store.appendChat(key, "elf", {
+      from: "system",
+      text: `Change applied to the scenarios. The TS workbook is **not** rebuilt yet (${wbPending} change(s) waiting). Press **Create new version now** in the Elf panel when you are done: one new workbook carries all of them.`,
+      jobId: job.id,
+    });
   }
 }
 

@@ -1,0 +1,123 @@
+{
+  "ts": "12406_E2E_TS9",
+  "run": "eaint-12406-retest-sretest-20261029-1950-B-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E2",
+      "expected": "recorded: the sum insured options offered (one value, RM20,200, for this car); if more than one, changing it re-prices",
+      "shows": "the Allianz card's sum insured offers 1 value(s): RM20,200 for HXA0003A; nothing to change to (recorded)",
+      "match": true,
+      "shot": "03-allianz-sum-insured-options.png",
+      "at": "29/10/2026, 20:02:29",
+      "url": "/ia/car-insurance/choose-your-insurance/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "Secarang"
+    },
+    {
+      "point": "E1",
+      "expected": "Add-ons is for Allianz (no Tokio Marine name or price)",
+      "shows": "Add-ons: names Allianz yes; \"Tokio Marine\" not shown; Tokio Marine's premium RM 1355.08 not shown (page footer left out)",
+      "match": true,
+      "shot": "04-add-ons-allianz-not-tokio-marine.png",
+      "at": "29/10/2026, 20:02:33",
+      "url": "/ia/car-insurance/choose-addons/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "Secarang"
+    },
+    {
+      "point": "E3",
+      "expected": "ticking an add-on adds its shown price to the premium",
+      "shows": "premium RM786.81; ADD Car Break-In/Robbery RM3.00 -> RM789.81; ADD Key Care RM7.00 -> RM796.81",
+      "match": true,
+      "shot": "06-add-ons-tick-two.png",
+      "at": "29/10/2026, 20:02:40",
+      "url": "/ia/car-insurance/choose-addons/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "Secarang"
+    },
+    {
+      "point": "E3",
+      "expected": "unticking it takes the price off again",
+      "shows": "REMOVE Key Care RM7.00: premium RM796.81 -> RM789.81 (before it was ticked: RM789.81)",
+      "match": true,
+      "shot": "07-add-ons-untick-one.png",
+      "at": "29/10/2026, 20:02:42",
+      "url": "/ia/car-insurance/choose-addons/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "Secarang"
+    },
+    {
+      "point": "E1",
+      "expected": "Confirmation is for Allianz (no Tokio Marine name or price)",
+      "shows": "Confirmation: names Allianz yes; \"Tokio Marine\" not shown; Tokio Marine's premium RM 1355.08 not shown (page footer left out)",
+      "match": true,
+      "shot": "08-confirmation-allianz-not-tokio-marine.png",
+      "at": "29/10/2026, 20:02:48",
+      "url": "/ia/car-insurance/confirm-payment/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "Secarang"
+    },
+    {
+      "point": "E4",
+      "expected": "Changing the gender on Confirmation re-prices the Allianz premium (observed rule)",
+      "shows": "Gender MALE -> FEMALE: Total Premium RM944.37 -> RM944.37",
+      "match": false,
+      "shot": "10-confirmation-gender-reprice.png",
+      "at": "29/10/2026, 20:02:53",
+      "url": "/ia/car-insurance/confirm-payment/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "Secarang"
+    },
+    {
+      "point": "E5",
+      "expected": "The PIAM ID 'i' pop-up names Serba Sentral Sdn Bhd as the agent, not Pemaju Eksklusif or another agency (wording and PIAM ID recorded, Q37)",
+      "shows": "PIAM ID 'i' (popover): \"Serba Sentral Sdn Bhd is a licensed agent of the insurance company that is governed by Persatuan Insurans Am Malaysia (PIAM). Get in touch? +601327142714 Level 15, Sunway Tower, Jalan Ampang, 50450 Kuala Lumpur\"",
+      "match": true,
+      "shot": "11-confirmation-piam-popup.png",
+      "at": "29/10/2026, 20:02:57",
+      "url": "/ia/car-insurance/confirm-payment/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "Secarang"
+    },
+    {
+      "point": "E7",
+      "expected": "CIBO shows Allianz as the insurer (no Tokio Marine)",
+      "shows": "CIBO Ref BR60006372: Ins. Co. \"Allianz Serba Sentral\", Payment \"RM…Paid 29-10-2026 20:03\", Payment Mode \"Fiuu | Online Banking – FPX-RHB Bank\", Transaction Status \"Insurance created\"; Transaction Details Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\"",
+      "match": true,
+      "shot": "13-cibo-allianz-not-tokio-marine.png",
+      "at": "29/10/2026, 20:04:13",
+      "url": "/cibo/transaction-management/transaction-details/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "CIBO"
+    },
+    {
+      "point": "E7",
+      "expected": "the receipt shows Allianz as the insurer (no Tokio Marine)",
+      "shows": "receipt: \"Allianz General Insurance Company (Malaysia)      Service Tax 8%                              RM 69.21\"; \"Tokio Marine\" anywhere in the receipt: no",
+      "match": true,
+      "shot": "14-receipt-allianz-not-tokio-marine.png",
+      "at": "29/10/2026, 20:04:17",
+      "url": "/cibo/transaction-management/transaction-details/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "CIBO"
+    },
+    {
+      "point": "E6",
+      "expected": "The add-on left ticked and its amount are the same on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)",
+      "shows": "Car Break-In/Robbery RM3.00 on Add-ons; Confirmation RM3.00; receipt RM 3.00; CIBO RM3.00",
+      "match": true,
+      "shot": "15-add-on-left-ticked-everywhere.png",
+      "at": "29/10/2026, 20:04:21",
+      "url": "/cibo/transaction-management/transaction-details/d2587c36-a804-4075-80d2-7f74b79c3594",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "on the site: Secarang (https://staging.secarang.com/ia/)",
+    "step 1: pop-up on \"Back to insurance selection\": \"no pop-up\" (recorded)",
+    "step 2: add-ons offered for Allianz (recorded, Q32): Allianz Road Rangers FREE | Windscreen, Windows and Sunroof RM210.00 | Motor Enhanced Road Warrior RM0.00 | Legal Liability of Passengers for Negligent Acts RM7.50 | Strike, Riot and Civil Commotion (SRCC) RM0.00 | Legal Liability to Passengers RM30.15 | Private Hire Car (e-Hailing) RM766.81 | Inclusion of Special Perils RM40.40 | Compensation for Assessed Repair Time (CART) RM0.00 | Waiver of Betterment Contribution RM120.00 | Car Break-In/Robbery RM3.00 | Key Care RM7.00 | Motorist Personal Accident (MPA) RM30.00",
+    "step 3: fields marked \"*\": none; agent line \"Exclusively by agent Serba Sentral Sdn Bhd PIAM ID: 195379-01\"; commission \"Commission (10.00%) RM86.22\" (recorded, Q37)",
+    "3a: Gender set back to MALE: Total Premium RM944.37 (recorded)",
+    "payment window allowed: fpx success",
+    "window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/d2587c36-a804-4075-80d2-7f74b79c3594/fpx_rhb",
+    "downloaded: secarang-receipt-HXA0003A-PERSONAL-DATA.pdf",
+    "signed in: CIBO (cibo)",
+    "payment window 1 on the TS video 01:18.5–01:26.1",
+    "payment window video laid into video_12406_E2E_TS9.webm (1 window(s), picture-in-picture, bottom right)"
+  ],
+  "opened": [
+    "about:blank"
+  ]
+}

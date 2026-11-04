@@ -1,0 +1,5 @@
+# CIBO shows customers' and staff names, IC numbers, phones, emails, addresses, plates and bank accounts.
+# Captures holding them stay on this PC only (see README.md). Never commit them or put them on a board as they are.
+*PERSONAL-DATA*
+# every video (they pass through listings with personal data)
+*.webm

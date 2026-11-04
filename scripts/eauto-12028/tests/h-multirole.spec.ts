@@ -10,12 +10,12 @@ import { savePdf, highlightPdf } from '../utils/pdf';
 
 // H. Multi-role user (one login holding Drafter, Reviewer and Approver —
 // SRD v1.1 REQ-003 "A user may hold more than one role (e.g. mfizni)") —
-// 12028_TS42 to TS45. [unconfirmed] how the Details page offers the next
+// 12028_TS43 to TS46. [unconfirmed] how the Details page offers the next
 // role's action to a multi-role user is not captured; these TS assume the
 // same buttons, for the step the month is at.
 
-test('12028_TS42: Multi-role user completes a month alone', tagOf('12028_TS42'), async ({ page }) => {
-  const ts = '12028_TS42';
+test('12028_TS43: Multi-role user completes a month alone', tagOf('12028_TS43'), async ({ page }) => {
+  const ts = '12028_TS43';
   // Open point 9 — typed on the row: "per role" (pad shown again at the Reviewer step) or "per person" (not shown).
   const rule = required('E12028_EXPECT_SIG', 'Final signature rule').toLowerCase();
   if (rule !== 'per role' && rule !== 'per person') throw new Error(`Final signature rule must be "per role" or "per person", got "${rule}".`);
@@ -80,8 +80,8 @@ test('12028_TS42: Multi-role user completes a month alone', tagOf('12028_TS42'),
   });
 });
 
-test('12028_TS43: Multi-role user KIV sets Drafter Status KIV', tagOf('12028_TS43'), async ({ page }) => {
-  const ts = '12028_TS43';
+test('12028_TS44: Multi-role user KIV sets Drafter Status KIV', tagOf('12028_TS44'), async ({ page }) => {
+  const ts = '12028_TS44';
   const { d } = await openAs(page, ts, 'multi', 'Pending', 'E12028_MONTH', 'Pending month');
   const before = await d.logCount('Drafter', 'KIV');
   await test.step('Click [KIV]', async () => { await d.kiv(); });
@@ -89,8 +89,8 @@ test('12028_TS43: Multi-role user KIV sets Drafter Status KIV', tagOf('12028_TS4
   await expectNewLogRow(d, ts, 'Drafter', 'KIV', before);
 });
 
-test('12028_TS44: Multi-role user Reviewer Reject then re-approves as Drafter', tagOf('12028_TS44'), async ({ page }) => {
-  const ts = '12028_TS44';
+test('12028_TS45: Multi-role user Reviewer Reject then re-approves as Drafter', tagOf('12028_TS45'), async ({ page }) => {
+  const ts = '12028_TS45';
   const { d } = await openAs(page, ts, 'multi', 'DA', 'E12028_MONTH', 'Drafter Approved month');
   const remarks = remarksFor(ts);
   await test.step(`Click [Reject] (Reviewer step), type "${remarks}", [Submit Reject]`, async () => { await d.reject('Reviewer', remarks); });
@@ -99,8 +99,8 @@ test('12028_TS44: Multi-role user Reviewer Reject then re-approves as Drafter', 
   await expectStatus(d, ts, 'Drafter', 'Approved');
 });
 
-test('12028_TS45: Multi-role user Approver Reject sets Reviewer Status Review Again', tagOf('12028_TS45'), async ({ page }) => {
-  const ts = '12028_TS45';
+test('12028_TS46: Multi-role user Approver Reject sets Reviewer Status Review Again', tagOf('12028_TS46'), async ({ page }) => {
+  const ts = '12028_TS46';
   const { d } = await openAs(page, ts, 'multi', 'RA', 'E12028_MONTH', 'Reviewer Approved month');
   const before = await d.logCount('Approver', 'Rejected');
   const remarks = remarksFor(ts);

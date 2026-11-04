@@ -1,0 +1,33 @@
+"6
+
+ Plan Details & + More Info"						
+TS No.	Vehicle Type	Field	Test Steps	Expected result	QA	Test Result (P/F)
+TS_PDMI_1	Fuel Car	Z- Drive Assist Takaful	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance"	Display Z- Drive Assist Takaful description based on Fuel Car type	Faiz	Pass
+TS_PDMI_2		Key Benefits	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance"	Display Key Benefits details based on Fuel Car type	Faiz	Pass
+TS_PDMI_3		Documents and Guides	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance
+Click and open all documents"	"Display all Documents and Guides details based on Fuel Car type
+Z-Drive Assist Takaful Flyer
+Product Disclosure Sheet
+Certificate Wording"	Faiz	Pass
+TS_PDMI_4	EV	Z-Driver Comprehensive: EV Protect	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance"	Display Z-Driver Comprehensive: EV Protect description based on EV type		
+TS_PDMI_5		Key Benefits	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance"	Display Key Benefits details based on EV type		
+TS_PDMI_6		Documents and Guides	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance
+Click and open all documents"	"Display all Documents and Guides details based on EV type
+Z-Driver Comprehensive: EV Protect  Flyer
+Product Disclosure Sheet
+Certificate Wording"		
+TS_PDMI_7	Motorbike	Z-Rider (Plus) Takaful	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance"	Display Z-Rider (Plus) Takaful description based on Motorbike type	Azfar	Pass
+TS_PDMI_8		Key Benefits	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance"	Display Key Benefits details based on Motorbike type	Azfar	"Retest Pass
+6/5"
+TS_PDMI_9		Documents and Guides	"Click [+ More Info] on step1 insurance
+Click [View Plan Details] on step 2 insurance
+Click and open all documents"	Display all Documents and Guides details based on Motorbike type	Azfar	"Retest Pass
+6/5"

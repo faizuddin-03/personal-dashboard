@@ -631,13 +631,19 @@ export function loadAndApplyTheme() {
 // palette; the look itself lives in app/styles/medieval/*.css, scoped to
 // [data-style="medieval"]. The chosen colour theme is kept and comes back
 // when switching to Normal (Faizuddin, 2026-10-27).
-export type UiStyle = "normal" | "medieval";
+// Dragons (2026-10-29): How to Train Your Dragon look on the Dashboard page
+// only; every other page uses the Normal colour theme. The look lives in
+// app/styles/dragons/home.css + components/dragons/DragonSky.tsx, scoped to
+// [data-style="dragons"][data-page="home"]. Medieval is labelled "Cozy" in
+// Settings (2026-10-29); its id stays "medieval".
+export type UiStyle = "normal" | "medieval" | "dragons";
+const UI_STYLES: UiStyle[] = ["normal", "medieval", "dragons"];
 export const UI_STYLE_KEY = "qa-style";
 
 export const MEDIEVAL_THEME: Theme = {
   // Cozy cottage (2026-10-27): dark oak surfaces, cream text, honey accent.
   // Every surface stays dark; app/styles/medieval/COTTAGE.md has the guide.
-  id: "medieval", name: "Medieval", type: "dark",
+  id: "medieval", name: "Cozy", type: "dark",
   preview: { page: "#16110d", panel: "#221913", text: "#dccaa6" },
   vars: {
     "--bg-page":      "#16110d",
@@ -658,7 +664,10 @@ export const MEDIEVAL_THEME: Theme = {
 };
 
 export function getUiStyle(): UiStyle {
-  try { return localStorage.getItem(UI_STYLE_KEY) === "medieval" ? "medieval" : "normal"; }
+  try {
+    const s = localStorage.getItem(UI_STYLE_KEY) as UiStyle | null;
+    return s && UI_STYLES.includes(s) ? s : "normal";
+  }
   catch { return "normal"; }
 }
 

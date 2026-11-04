@@ -238,6 +238,10 @@ pre-check popup showed a different message than the same manual action,
 traced to filling `#vehicleRegNo` immediately after Step 2's `domcontentloaded`
 with no settle time]`
 
+**Lesson — a dropdown that submits on change: do not re-select the value already chosen (EAINT-12028, 2026-11-02).** On the Association Payment Listing Summary, `#sel-year` has `onchange="this.form.submit()"`. `selectOption` fires `change` even when the year is already selected, so the page started reloading and `searchBtn().count()` ran mid-navigation and returned 0. It showed as "No [Search] button on the Summary page." in 12028_TS20, TS21 and TS23, while the failure screenshot showed the reloaded page with the red [Search] button, so it looked like a missing button. It cost one failed run of three TS and a diagnosis by Faizuddin. Fix: read the selected option first and skip the select if it already matches; when it differs, wait for the navigation and the table before looking for the button. `[Faizuddin, dashboard chat to Dwarf, 2026-11-02; dwarf.jsonl job 20261102-153607-EAINT-12028-dwarf-chat-7a5c]`
+
+**Lesson — a page-ready wait on one heading, 20 seconds, fails while the screenshot shows the page (EAINT-12028, 2026-11-03).** `AplSummaryPage.expectShown` waited only for the heading and `AplDetailsPage.expectOpenFor` checked the state table and workflow bar straight away. On slow staging runs (one test took 52.2 s) the wait ended before the page finished rendering, so 12028_TS06, 12028_TS20 and 12028_TS21 each failed with "no heading" or "no state table / workflow bar" although the failure screenshot showed the full page. Three runs were spent on the same cause, and the real checks after it were never reached. Proposed fix: wait for the heading **and** the Year filter or month table (or the state table and workflow bar), with a longer limit `[unconfirmed whether applied]`. `[source: Elf findings 12028_TS06-8b0b7c97, 12028_TS20-5935c55e, 12028_TS21-65ce6428, 2026-11-02/03]`
+
 ## Cross-portal tests
 
 A test that needs both portals at once (BO acting while UCD observes) opens a

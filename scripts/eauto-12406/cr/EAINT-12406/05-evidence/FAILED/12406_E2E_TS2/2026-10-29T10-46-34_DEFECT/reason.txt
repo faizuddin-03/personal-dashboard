@@ -1,0 +1,4 @@
+12406_E2E_TS2 — FAIL — the page does not match the expected result (a defect until triage says otherwise)
+run eaint-12406-retest-sretest-20261029-1835-A-c1, staging /ia, 29/10/2026, 18:46:34 MYT
+
+- E3: expected "CIBO Transaction Details: Cover Note No filled (not "-")", page shows "Cover Note No "-"" (06-cibo-details-cover-note.png)

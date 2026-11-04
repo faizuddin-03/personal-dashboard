@@ -1,0 +1,10 @@
+"2
+
+ Insurance Homepage"					
+TS No.	Page	Test Scenarios	Expected Result	QA	Test Result (P/F)
+TS_HOME_1	Insurance Homepage	Go to Insurance page.	Zurich Logo displayed correctly under Lonpac	Faiz	Pass
+TS_HOME_2	"Insurance Homepage >
+Click on logo"	"Go to Insurance page.
+Click on Zurich Logo
+Click on all Documents and Guides"	"Zurich Malaysia contact info displayed correctly
+All the Documents and Guides files can be open and displayed correctly"	Faiz	Pass

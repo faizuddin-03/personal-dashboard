@@ -1,0 +1,18 @@
+# 12406_E2E_TS4 — Allianz purchase paid by SPayLater (ShopeePay simulator): All Quotations > Add-ons > Confirmation > SPayLater QR > Success > CIBO
+# run eaint-12406-run-sE2E-20261029-1545-c1 on staging /ia (post-push), started 29/10/2026, 16:43:53 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 16:43:57 | note: on the site: Secarang (https://staging.secarang.com/ia/)
+29/10/2026, 16:44:30 | note: payment window allowed: shopeepay success
+29/10/2026, 16:44:33 | note: window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/5480206f-bafe-4628-8445-a990bb54b9eb/ShopeePay
+29/10/2026, 16:44:39 | note: window opened by the site and kept (payment window 2): about:blank
+29/10/2026, 16:45:26 | E1 | expected: Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'ShopeePay' and a [Receipt] download | page shows: Success: "Thank you for your purchase!" shown; Receipt No. "26102921300030"; Purchase Date "29 Oct 2026 - 4:44 PM"; Payment Method "ShopeePay"; [Receipt] shown | matches | 01-success-page.png
+29/10/2026, 16:45:27 | note: downloaded: secarang-receipt-HXA0014A-PERSONAL-DATA.pdf
+29/10/2026, 16:45:31 | E1 | expected: Receipt Total Premium = the total on the Confirmation page | page shows: Receipt Total Premium (not found in the PDF); Confirmation Total Premium RM 941.13 | DOES NOT MATCH | 02-receipt-total-premium.png
+29/10/2026, 16:45:36 | note: signed in: CIBO (cibo)
+29/10/2026, 16:45:40 | note: handed on for later TS: allianzPurchase:shopeepay = {"ref":"BR60006352","plate":"HXA0014A","receiptNo":"26102921300030","since":"2026-10-29T08:43:55.801Z","secarangReceipt":"C:\\Users\\Azfar\\Documents\\Github Pro\\eauto-qa-azfar\\cr\\EAINT-12406\\04-runs\\eaint-12406-run-sE2E-20261029-1545-c1\\ts\\12406_E2E_TS4\\downloadable (after)\\secarang-receipt-HXA0014A-PERSONAL-DATA.pdf"}
+29/10/2026, 16:45:41 | E2 | expected: CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status "Insurance created"; Payment Mode "Fiuu | eWallet – ShopeePay" (observed) | page shows: Ref BR60006352: Ins. Co. "Allianz Serba Sentral", Payment "RM…Paid 29-10-2026 16:44", Payment Mode "Fiuu | eWallet – ShopeePay", Transaction Status "Insurance created" | matches | 03-cibo-listing-row.png
+29/10/2026, 16:45:44 | note: Allianz insurer code in the Payment Ref ID (recorded, Q30): "ALZ"
+29/10/2026, 16:45:46 | E3 | expected: CIBO Transaction Details: Payment Ref ID with 'SEW' like a Lonpac e-wallet payment, with Allianz's own insurer code (recorded, Q30) | page shows: Payment Ref ID "ALZ20261029SEW0028" (insurer code "ALZ") | matches | 04-cibo-details-ref.png
+29/10/2026, 16:46:44 | note: payment window 1 on the TS video 00:40.9–00:51.2
+29/10/2026, 16:46:44 | note: payment window 2 on the TS video 00:46.7–00:51.9
+29/10/2026, 16:46:44 | note: payment window video laid into video_12406_E2E_TS4.webm (2 window(s), picture-in-picture, bottom right)

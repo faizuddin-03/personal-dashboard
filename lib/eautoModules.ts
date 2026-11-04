@@ -105,11 +105,11 @@ export const EAUTO_MODULES: TicketAutomation[] = [
     updatedAt: "2026-10-20",
   },
   {
-    label: "Secarang Plate Check",
+    label: "Secarang Insurance Checker",
     keys: [],
     href: "/eauto/secarang-plate-checker",
     icon: "CarFront",
-    title: "Secarang Plate / SSM Checker",
+    title: "Secarang Insurance Checker",
     module: "Secarang",
     portals: ["Secarang"],
     kind: "checker",

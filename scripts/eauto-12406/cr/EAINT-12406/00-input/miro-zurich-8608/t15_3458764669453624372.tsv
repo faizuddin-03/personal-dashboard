@@ -1,0 +1,29 @@
+Cronjobs								
+TS No.	Type	Cover Type	Scenarios	Test Scenarios	Expected Result	QA	Test Result (P/F)	Remarks
+TS_CJ_01	Insurance Quotation Expired	Comprehensive	Pending Payment	"Create eSTM till Tx Status = Approved
+Proceed to purchase Zurich Insurance, on Step 2, click [Make Payment] and redirect UCD to Step 3, Quotation status = Pending Payment
+ Wait for 24 hours
+ Attempt to proceed with the insurance purchase after 24 hours, Quotation status = Quotation Expired 
+ Get a Free Quote for same vehicle no > able to purchase same Zurich Insurance, Payment = OK, Status = Insurance Created"	"Quotation Status should change to Quotation status = Quotation Expired 
+Should be able to get another quote after Quotation status = Quotation Expired"	Azfar	Pass	"JVJ6453
+To monitor on 04-06-2026 17:52"
+TS_CJ_02		TPFT	Failed Payment	"Create eSTM till Tx Status = Approved
+Proceed to purchase Zurich Insurance, on Step 2, click [Make Payment] and redirect UCD to Step 3, Quotation status = Pending Payment
+Click [PAY NOW] and [OK] button to make payment on Step 3, Payment = Failed , Tx status = Failed 
+ Wait for 24 hours
+ Attempt to proceed with the insurance purchase after 24 hours, Quotation status = Quotation Expired
+Get a Free Quote for same vehicle no > able to purchase same Zurich Insurance, Payment = OK, Status = Insurance Created"		Azfar	Pass	"AKP9515
+To monitor on 04-06-2026 17:58"
+TS_CJ_03	Insurance Enquiry Jpj Status Job	Comprehensive	Insurance Status = Insurance Created , JPJ Status = Pending / Null	"Create eSTM till Tx Status = Approved
+Proceed to purchase Zurich Insurance
+Insurance Status = Insurance Created , JPJ Status = Pending / Null
+Run cron job
+Ensure JPJ Status = Accepted / Rejected / Pending"	Cron Job will update JPJ Status when JPJ Status = Pending / Null	Azfar	Pass	"every 2min 
+9 am - 11.59 pm"
+TS_CJ_04	Insurance Resubmit Cover Note	TPFT	"Insurance status = failed but 
+payment = Paid"	"Create eSTM till Tx Status = Approved
+Proceed to purchase Zurich Insurance
+Create insurance till Status = Failed, Payment = Paid
+Run cronjob
+Insurance Status = Success/Failed"	Cron Job will resubmit cover note when insurance Status = Failed, Payment = Paid	Azfar	Pass	"every 30 min 
+9am -11.59 pm"

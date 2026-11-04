@@ -1,0 +1,10 @@
+{
+  "ts": "12406_CP_TS2",
+  "verdict": "VALID",
+  "reasons": [],
+  "folder": "cr/EAINT-12406/05-evidence/post-push/12406_CP_TS2",
+  "run": "eaint-12406-run-sCP-20261029-1545-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 15:50:23",
+  "warnings": []
+}

@@ -123,6 +123,17 @@ Provenance tags: [azfar: ...] = colleague Azfar's QA repo copy at _reference/cod
 - [unconfirmed] Responses are HMAC-signed. Whether eAuto checks the signature is not known. [azfar: knowledge/_core/mykad-emulator.md]
 - Installer v2 (EAINT-9944) was on hold per BA on 2026-04-16 and never went live (Closed 2026-08-28). A WebSocket reconnect button (EAINT-12332) is To Do. [mine: knowledge/business-rules-from-test-scenarios.md] [azfar: knowledge/_core/mykad-emulator.md] [jira: EAINT-12332]
 
+**Shared reader panel and server check (Ask eAuto answer, live prod, pasted by Faizuddin in the dashboard chat to Scribe, 2026-10-30):**
+
+1. **One panel, one check for every thumbprint screen:** "Every thumbprint screen in eAuto uses one shared reader panel and one shared server check, and both are built for the reader you use today. AATF uses that same panel and check too, so changing them for UCD would also change AATF unless the change is limited to UCD on purpose."
+2. **Server check rules:** "accepts a scan only if the reader software signed the data, the match result is \"Identical\", the quality score is above zero, the timestamp is recent, and the scan hasn't been used before. A new reader has to produce exactly this, or every scan gets rejected."
+3. **UCD capture screens** (Ask eAuto table): STMS "Seller and buyer perakuan, including UCD-to-UCD and interstate"; eSTM "New owner and UCD perakuan"; Wholesale "STMS thumbprint, handover reject-vehicle"; BMK "Owner and UCD perakuan"; eInvoice "MVD agreement consent"; Insurance "Add user / user permission"; Account "Director activation, company activation".
+4. **Where the result shows:** "The wholesale STMS form shows the thumbprint image." / "Several detail pages show a \"MyKad/Thumbprint verified on\" date: eSTM, BMK, SSM, eInvoice and wholesale." / "Printed PDFs include the image: eSTM buyer authentication, insurance add-user authorisation and declaration, e-contract signature and customer verification."
+5. **AATF screens on the same pieces:** "AATF registration, the AATF dereg owner-consent and COD steps, and AATF user MyKad settings."
+6. **Old plug-in fallback:** "STMS and eSTM still contain an old reader plug-in as a fallback, tied to the old reader's driver."
+7. **Emulator copies today's reader:** "Dev testing uses a reader emulator that copies today's reader, so it would need to match the new one." A pass on the emulator does not prove a new reader (e.g. Iris) works. [source: pipeline EAINT-9805, Scribe related history, 2026-10-30]
+8. **Mobile app not confirmed:** "I couldn't confirm whether the mobile app's STMS and eSTM thumbprint steps use the same check, so treat them as possibly affected." [unconfirmed]
+
 ### QA scope to check
 - Any new thumbprint screen must use the same widget and block Next until the read passes. [mine: knowledge/mykad-emulator.md]
 - Messages for no device, no card, unplugged device. [mine: knowledge/business-rules-from-test-scenarios.md]

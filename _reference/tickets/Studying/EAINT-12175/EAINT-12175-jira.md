@@ -1,4 +1,4 @@
-# EAINT-12175 — Jira capture (27/10/2026, 5:31:54 pm)
+# EAINT-12175 — Jira capture (02/11/2026, 9:28:13 am)
 
 Captured by the pipeline toolbox (scripts/pipeline/tools/fetch.mjs issue). Raw text of the Jira fields, description and comments.
 
@@ -7,7 +7,7 @@ Captured by the pipeline toolbox (scripts/pipeline/tools/fetch.mjs issue). Raw t
 3. **Assignee:** Shane · **Reporter:** Batrisyia Hasanah Binti Nursyamsi · **QA (cf 10041):** Charmain Ea Chiang
 4. **Fix versions:** S34.3-20261002🌞 (2026-10-02)
 5. **Labels:** 260810-260814, August2026, ProductBacklog, Secarang
-6. **Created:** 2026-08-12T16:23:16.986+0800 · **Updated:** 2026-10-05T14:48:45.853+0800
+6. **Created:** 2026-08-12T16:23:16.986+0800 · **Updated:** 2026-10-29T09:18:51.725+0800
 7. **Exp. Deploy Date (cf 10087):** 2026-10-02 · **ETA for Testing (cf 10057):** 2026-09-28 · **[QA] Est Man-day (cf 10081):** 3
 8. **Links:** Relates: EAINT-12422 ⚪[Secarang-BackEnd] To Update Insurer Name to Lonpac Insurance Bhd in Secarang PDF Receipt
 9. **Sub-tasks:** EAINT-12423 [eAuto - BackOffice] Insurance Transaction Listing - Insurance Company column shows the plan code Lonpac instead of the full insurer name

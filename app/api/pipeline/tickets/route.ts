@@ -2,12 +2,16 @@
 // POST /api/pipeline/tickets { key } — Faizuddin adds a ticket by key. If no
 // Scout study exists yet, the Scout studies that one key first (its handoff
 // then queues Scribe); otherwise Scribe's related-history job starts now.
+// A key already in the pipeline is refused with 409 unless { mode: "restart" }
+// is sent (Faizuddin, 2026-11-02: warn, then "cancel or create new process for
+// the same ticket"); restart archives the old process and starts a fresh one.
 // Design: scripts/pipeline/README.md §1.1, §3.1.
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { spawn } from "node:child_process";
 import {
   ROOT, KEY_RE, listTickets, readTicket, ensureTicket, updateTicket, jiraCreds, jiraFetch, repoPath, addEvent,
+  listJobs, stopJob, archiveTicket,
 } from "@/scripts/pipeline/store.mjs";
 import { nextStep } from "@/scripts/pipeline/lib/next-step.mjs";
 
@@ -25,12 +29,27 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  let body: { key?: unknown };
+  let body: { key?: unknown; mode?: unknown };
   try { body = await request.json(); }
   catch { return Response.json({ error: "Body must be JSON: { key }" }, { status: 400 }); }
   const key = normaliseKey(body?.key);
   if (!key) return Response.json({ error: "Type a ticket key, e.g. EAINT-12345" }, { status: 400 });
 
+  const current = readTicket(key);
+  let archivedTo: string | null = null;
+  if (current && body?.mode !== "restart") {
+    const busy = Object.entries(current.characters ?? {})
+      .filter(([, c]) => (c as { state?: string })?.state === "working").map(([name]) => name);
+    return Response.json({
+      error: `${key} is already in the pipeline (stage: ${current.stage}${busy.length ? `, working now: ${busy.join(", ")}` : ""}).`,
+      exists: true, stage: current.stage, busy,
+    }, { status: 409 });
+  }
+  if (current) {
+    // Stop its running jobs first so nothing writes the old ticket back.
+    for (const j of listJobs({ key, active: true })) stopJob(j.id, "Faizuddin (new process)");
+    archivedTo = archiveTicket(key);
+  }
   const existed = !!readTicket(key);
   let title: string | undefined, jiraStatus: string | undefined, jiraError: string | undefined;
   if (jiraCreds()) {
@@ -69,11 +88,12 @@ export async function POST(request: Request) {
       child.on("error", () => { /* shows on the Agents page */ });
       child.unref();
       started = "scout-study";
+      if (archivedTo) addEvent(key, `New process started; the old one is archived in ${archivedTo}`);
       addEvent(key, hasStudy ? "Scout is updating the study" : "Scout is studying the ticket");
     } catch (e) {
       addEvent(key, `Could not start the Scout study: ${(e as Error).message}`);
       updateTicket(key, t => { t.characters.scout = { ...(t.characters.scout ?? {}), state: "error", note: "Could not start the study" }; });
     }
   }
-  return Response.json({ ticket: readTicket(key) ?? ticket, added: !existed, started, ...(jiraError ? { jiraError } : {}) });
+  return Response.json({ ticket: readTicket(key) ?? ticket, added: !existed, started, ...(archivedTo ? { archivedTo } : {}), ...(jiraError ? { jiraError } : {}) });
 }

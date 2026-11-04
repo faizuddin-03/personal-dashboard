@@ -1,0 +1,6 @@
+# 12406_CP_TS3 — FAQs > 'Which insurers can I get instant quotation from?' lists Lonpac, Allianz, Tokio Marine and no other insurer
+# run eaint-12406-run-sCP-20261029-1545-c1 on staging /ia (post-push), started 29/10/2026, 15:50:24 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 15:50:29 | note: BEFORE reference shown and kept: 01-FROM-THE-BEFORE-CAPTURE-12406_CP_TS8_E4_faq-which-insurers-instant-quo.png (from 05-evidence/pre-push/12406_CP_TS8/12406_CP_TS8_E4_faq-which-insurers-instant-quotation.png)
+29/10/2026, 15:50:39 | E1 | expected: The answer lists exactly three insurers, in this order: Lonpac Insurance Bhd Allianz General Insurance Company (Malaysia) Berhad Tokio Marine Insurans (Malaysia) Berhad | page shows: the answer lists 3: 1. Lonpac Insurance Bhd | 2. Allianz General Insurance Company (Malaysia) Berhad | 3. Tokio Marine Insurans (Malaysia) Berhad | matches | 02-faq-which-insurers-answer.png
+29/10/2026, 15:50:41 | E2 | expected: The list has the same style as before the deploy (numbered or bulleted, as in 12406_CP_TS8 BEFORE; Q27) | page shows: the answer is a bulleted list (UL, marker disc, 1 list); BEFORE the deploy: bulleted (12406_CP_TS8 E4) | matches | 03-faq-which-insurers-list-style.png

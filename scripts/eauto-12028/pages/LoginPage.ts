@@ -61,6 +61,7 @@ export class LoginPage extends AplBase {
     // Lesson 4: a refused login is reported, never retried into a lockout.
     if (!(await this.userName().isVisible())) {
       const why = (await this.bodyText()).match(/invalid[^\n]*|incorrect[^\n]*|locked[^\n]*/i)?.[0] ?? 'still on the login page';
+      await this.captureIssue(`login-refused-${user.role}`, this.usernameInput(), `Login refused for ${user.username}: ${why}`);
       throw new Error(`Login refused for ${user.label} (${user.username}): ${why}. Not retried (repeated logins look like a wrong password).`);
     }
     const name = (await this.userName().innerText()).replace(/,\s*$/, '').trim();

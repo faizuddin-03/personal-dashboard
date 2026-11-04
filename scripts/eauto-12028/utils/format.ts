@@ -19,6 +19,24 @@ export function toNumber(text: string, what: string): number {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 export const ddmmyyyy = (d: Date) => `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}`;
+const MON = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+/** Reads an Audit Log When cell in the expected "DD-MM-YYYY HH:mm" or the live "02 Nov 2026 15:36" shape; NaN when neither. Used to FIND rows only: the format itself is checked separately. */
+export function parseWhen(text: string): number {
+  const s = text.trim();
+  let m = s.match(/^(\d{2})-(\d{2})-(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/);
+  if (m) return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] ?? 0), +(m[5] ?? 0)).getTime();
+  m = s.match(/^(\d{1,2})\s+([A-Za-z]{3})[a-z]*\s+(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/);
+  if (m) {
+    const mo = MON.indexOf(m[2].toLowerCase());
+    if (mo >= 0) return new Date(+m[3], mo, +m[1], +(m[4] ?? 0), +(m[5] ?? 0)).getTime();
+  }
+  return NaN;
+}
+/** The DD-MM-YYYY day of a When cell, or null when it cannot be read as a date. */
+export function whenDay(text: string): string | null {
+  const t = parseWhen(text);
+  return Number.isNaN(t) ? null : ddmmyyyy(new Date(t));
+}
 export const addDays = (d: Date, n: number) => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; };
 export const today = () => addDays(new Date(), 0);
 

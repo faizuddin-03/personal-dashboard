@@ -1,0 +1,5 @@
+# Captures that show customers' names, IC numbers, phone numbers, emails and addresses.
+# Keep them on this PC only (see README.md). Never commit them or put them on a board as they are.
+*PERSONAL-DATA*
+video-listing.webm
+video-transactions.webm

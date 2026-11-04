@@ -1,0 +1,12 @@
+{
+  "ts": "12406_E2E_TS1",
+  "verdict": "SCRIPT",
+  "reasons": [
+    "stopped before the end: Error: The Secarang site password page is still showing after Login (https://staging.secarang.com/ia/auth/login?returnUrl=%2Fcar-insurance): wrong SECARANG_SITE_PASSWORD?"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS1/2026-11-03T04-03-39_SCRIPT",
+  "run": "EAINT-12406-dash-20261103-120229",
+  "instance": "ia",
+  "at": "03/11/2026, 12:03:39",
+  "warnings": []
+}

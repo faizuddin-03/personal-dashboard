@@ -1,0 +1,13 @@
+Monthly Handling Fee Report							
+TS No.	Element Name	Data Type	Test Scenarios	Expected Result	QA	Test Result (P/F)	Remarks
+TS_MHFR_1	Multi Search & Filter		"2026 + April
+Click [Generate Now]
+Click [Export]"	"All fields display correctly
+Zurich display correctly under Insurance Company
+Exported CSV display correctly
+Total Transaction, Total Amount & Total Handling Fee display correctly"	Faiz	Pass	
+TS_MHFR_2			"2025 + November
+Click [Generate Now]
+Click [Export]"	"All fields display correctly
+Exported CSV display correctly
+Total Transaction, Total Amount & Total Handling Fee display correctly"	Faiz	Pass	

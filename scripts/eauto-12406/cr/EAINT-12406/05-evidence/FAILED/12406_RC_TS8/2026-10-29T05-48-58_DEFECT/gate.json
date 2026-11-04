@@ -1,0 +1,13 @@
+{
+  "ts": "12406_RC_TS8",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E3: expected \"AFTER: BR55004010 receipt \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"\", page shows \"BR55004010 receipt Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (06-after-br55004010-receipt-insurer.png)",
+    "and the run then stopped: Error: Could not find \"CIBO sidebar transaction-management\" on https://staging.secarang.com/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS8/2026-10-29T05-48-58_DEFECT",
+  "run": "eaint-12406-run-sRC-20261029-1330-c2",
+  "instance": "ia",
+  "at": "29/10/2026, 13:48:58",
+  "warnings": []
+}

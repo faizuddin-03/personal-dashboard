@@ -1,0 +1,35 @@
+{
+  "ts": "12406_RC_TS11",
+  "run": "eaint-12406-retest-sretest-20261030-0040-C-c2",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "recorded: the CRM record of the Allianz buyer of 12406_E2E_TS1",
+      "shows": "CRM listing (Ownership Type Private, Latest Coverage Expires 03.11.2027 - 17.11.2027, search \"HXA0011A\"): 1 row(s); the Allianz buyer of 12406_E2E_TS1 (HXA0011A): Vehicle \"HXA0011A\", Ownership Type \"Private\", Latest Coverage Period \"11-11-2026 - 10-11-2027\", Last Update \"- 29-10-2026 16:30\" (recorded, Q43)",
+      "match": true,
+      "shot": "01-crm-row-hxa0011a.png",
+      "at": "30/10/2026, 09:14:09",
+      "url": "/cibo/crm",
+      "side": "CIBO"
+    },
+    {
+      "point": "E1",
+      "expected": "recorded: the vehicle card of HXA0011A (latest policy purchase, coverage period, Last Updated By)",
+      "shows": "vehicle card HXA0011A: Latest Policy Purchase \"29-10-2026 19:50\", Latest Policy Coverage Period \"11-11-2026 - 10-11-2027\", Last Updated By \"- 29-10-2026 19:50\" (recorded, Q43)",
+      "match": true,
+      "shot": "02-crm-vehicle-card-hxa0011a.png",
+      "at": "30/10/2026, 09:14:12",
+      "url": "/cibo/crm/customer-details/i/900101145671",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "hand-off \"allianzPurchase\": 12406_E2E_TS1 in run eaint-12406-retest-sretest-20261029-1950-B-c1 at 2026-10-29T11:51:57.193Z — ref BR60006370, plate HXA0011A, receipt no 26102921300046, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "hand-off \"lonpacPurchase\": none in any run of EAINT-12406",
+    "signed in: CIBO (cibo)",
+    "E1: Customer Details: 12 vehicle card(s) for this ID (recorded)",
+    "E2 NOT proved: 12406_QT_TS4 (the Lonpac purchase, \"lonpacPurchase\") has not run yet: it waits for Dev's simulator set-up (Q12). Run QT_TS4, then this TS again"
+  ],
+  "opened": []
+}

@@ -1,0 +1,12 @@
+{
+  "ts": "12406_E2E_TS2",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E3: expected \"CIBO Transaction Details: Cover Note No filled (not \"-\")\", page shows \"Cover Note No \"-\"\" (06-cibo-details-cover-note.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS2/2026-10-29T10-46-34_DEFECT",
+  "run": "eaint-12406-retest-sretest-20261029-1835-A-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 18:46:34",
+  "warnings": []
+}

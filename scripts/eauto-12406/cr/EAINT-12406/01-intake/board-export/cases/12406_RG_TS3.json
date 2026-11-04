@@ -1,0 +1,41 @@
+{
+  "expected": "Ensure:\n• Transaction Details Insurer \"RHB Insurance Berhad\" (no number); receipt Insurer \"RHB Insurance Berhad (38000-U)\" (observed 28.10)",
+  "gate": {
+    "at": "29/10/2026, 16:21:54",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_RG_TS3",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sRG-20261029-1545-c1",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_RG_TS3",
+  "labels": [],
+  "order": 45,
+  "points": [
+    {
+      "id": "E1",
+      "text": "BEFORE (28.10): BR55004008 Transaction Details \"RHB Insurance Berhad\" (no number); receipt \"RHB Insurance Berhad (38000-U)\""
+    },
+    {
+      "id": "E2",
+      "text": "AFTER: BR55004008 Transaction Details and receipt identical to the 28.10 capture (no company number line added)"
+    }
+  ],
+  "priority": "P3",
+  "qa": "",
+  "remarks": "BEFORE 28.10: BR55004008",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "Other insurers unchanged",
+  "setup": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• BEFORE captured on 28.10.2026 (walk): BR55004008 (RHB, Secarang, Insurance created, 04-05-2025). RHB is hidden from Secarang since 19.05.2025; agency Bintang Prospek. BEFORE evidence: the 28.10 before-deploy capture, copied into this TS's evidence folder and labelled 'FROM THE BEFORE CAPTURE' (Azfar 29.10)",
+  "sheet": "RG",
+  "situation": "CIBO Transaction Details and receipt of an RHB transaction: same as captured on 28.10",
+  "source": "SRD v1.1 REQ-011 ('Other insurers (e.g.: RHB, Lonpac, etc.) remain unchanged', Example 2a). Baseline = observed before the deploy (walk 28.10, BR55004008, cibo-13c / 13d). The RHB receipt is not named by REQ-010 Example 2: checked as 'same as captured'",
+  "steps": "1. (Done 28.10) CIBO > Transaction Management: RHB ticked; open BR55004008; screenshot the insurer box; Receipt: screenshot the Insurer block",
+  "updatedAt": "2026-10-29T05:00:44+00:00"
+}

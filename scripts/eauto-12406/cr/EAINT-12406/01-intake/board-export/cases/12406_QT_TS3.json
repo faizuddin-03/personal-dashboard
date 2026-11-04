@@ -1,0 +1,29 @@
+{
+  "expected": "Ensure:\n• Today's answer for a company owner captured (popup text or cards, recorded; team doc: no insurer supports company today)",
+  "id": "12406_QT_TS3",
+  "kiv": "ON HOLD (decided 29.10 under Azfar's full permission, main session): needs Azfar's real company number (Q40)",
+  "labels": [],
+  "order": 12,
+  "points": [
+    {
+      "id": "E1",
+      "text": "BEFORE: today's answer for a company owner captured (popup text or cards, recorded)"
+    },
+    {
+      "id": "E2",
+      "text": "AFTER: if All Quotations opens, card 'Allianz – Quotation unavailable' after the Tokio Marine card, Lonpac / Tokio Marine as usual, no other insurer's card; if a popup shows instead, its text recorded for Q40"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "",
+  "reviewed": false,
+  "section": "No Allianz quotation",
+  "setup": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• Company test data: a REAL company SSM number for a company-owned car, postcode 55000 (a made-up SSM gets 'Sorry, we're unable to retrieve your vehicle information.', team doc §13); Azfar will provide it (28.10)\n• Today 'there are no insurance in secarang that supports company' (QA team 20.10.2026, team doc §3): no purchase is attempted in this row. The Tokio Marine purchase that RG_TS1 needs now comes from 12406_E2E_TS10",
+  "sheet": "QT",
+  "situation": "[ON HOLD: needs Azfar's real company number (Q40)] Company vehicle (Company tab, company SSM): what Secarang shows before and after the deploy. SRD REQ-003 says 'Allianz shown as unavailable'; today no Secarang insurer supports company owners",
+  "source": "SRD v1.1 REQ-003 Example 1a ('Company vehicle: Allianz shown as unavailable'), Example 3a, 'Card appears after Tokio Marine'; REQ-004. Today's company behaviour: team doc §3 / §15 (QA team 20.10.2026), popups §3 / §13 (live runs 19-20.10). The two disagree: Q40",
+  "steps": "1. Before the deploy: Secarang > Car tab > Company > Vehicle Plate No., Company SSM, Postal Code > [Get quotation]; screenshot what shows (popup text, or the All Quotations cards)",
+  "updatedAt": "2026-10-29T10:40:12+00:00"
+}

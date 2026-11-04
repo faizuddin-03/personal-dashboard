@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 import NumericTextInput from "@/components/NumericTextInput";
 
-// ── Secarang Plate / SSM Checker ───────────────────────────────
+// ── Secarang Insurance Checker (was "Plate / SSM Checker", renamed 2026-10-30) ───────────────────────────────
 // Faizuddin, 2026-10-20: real vehicle numbers and company SSMs from an Excel
 // sheet; for each one, "the checker will only check if the secarang/ia will
 // return an error message, or it will be able to proceed". 20 tabs at once by
@@ -25,11 +25,14 @@ const ENV_PRESETS = [
 type OwnerMode = "auto" | "private" | "company";
 interface RowInput { vehicleNo: string; idNo: string; ownerType: "private" | "company"; postcode?: string }
 interface RowResult extends RowInput { result: "PROCEED" | "ERROR"; stage: string; message: string }
-interface Form { baseUrl: string; sitePassword: string; postcode: string; tabs: number; ownerMode: OwnerMode; headed: boolean; raw: string }
+/** One row of a dropped sheet: every ID column is kept, the owner type picks one. */
+interface FileRow { vehicle: string; roc: string; buyer: string }
+interface FileData { name: string; rows: FileRow[] }
+interface Form { baseUrl: string; sitePassword: string; postcode: string; tabs: number; ownerMode: OwnerMode; headed: boolean; raw: string; file: FileData | null }
 
 const DEFAULT_FORM: Form = {
   baseUrl: ENV_PRESETS[0].value, sitePassword: "eAuTo<2025#", postcode: "55000",
-  tabs: 20, ownerMode: "auto", headed: false, raw: "",
+  tabs: 20, ownerMode: "auto", headed: false, raw: "", file: null,
 };
 
 /** An IC is 12 digits starting with a real YYMMDD date; anything else is taken
@@ -44,9 +47,35 @@ function looksLikeIc(id: string): boolean {
 
 // Faizuddin, 2026-10-20: "automatically reads and takes the values from the 2
 // columns titled 'Company ROC' and 'Vehicle' … i just need to drag and drop my
-// excel". The header row is looked for in the first 10 rows; matching ignores
-// case and spaces at the ends.
-const FILE_COLUMNS = { vehicle: "vehicle", roc: "company roc" } as const;
+// excel". 2026-10-30 (eSTM export, _reference/excel/ESTM-202610301108.csv):
+// "after a drop, the system will still collect all. if use choose private, will
+// use IC. if choose company, will use Company ROC" — so Buyer ID (the IC) is
+// read too, and the owner type picks the column. The header row is looked for
+// in the first 10 rows; matching ignores case and spaces at the ends.
+const FILE_COLUMNS = { vehicle: "vehicle", roc: "company roc", buyer: "buyer id" } as const;
+
+/** Excel turns a 12-digit IC into "9.10825E+11" when the sheet is saved as CSV; the digits are lost. */
+const isScientific = (v: string) => /^\d+(\.\d+)?e\+\d+$/i.test(v.trim());
+const blank = (v: string) => !v.trim() || v.trim() === "-";
+
+/** Rows to check from a dropped sheet, for the chosen owner type, plus why rows were left out. */
+function fileToRows(file: FileData, mode: OwnerMode): { rows: RowInput[]; skipped: { scientific: number; noIc: number; noRoc: number } } {
+  const skipped = { scientific: 0, noIc: 0, noRoc: 0 };
+  const rows: RowInput[] = [];
+  for (const r of file.rows) {
+    const vehicleNo = r.vehicle.toUpperCase().replace(/\s+/g, "");
+    const ic = r.buyer.replace(/[-\s]/g, "");
+    const hasIc = looksLikeIc(ic);
+    const usePrivate = mode === "private" || (mode === "auto" && hasIc);
+    if (usePrivate) {
+      if (hasIc) rows.push({ vehicleNo, idNo: ic, ownerType: "private" });
+      else if (isScientific(r.buyer)) skipped.scientific++;
+      else skipped.noIc++;
+    } else if (!blank(r.roc)) rows.push({ vehicleNo, idNo: r.roc.trim(), ownerType: "company" });
+    else skipped.noRoc++;
+  }
+  return { rows, skipped };
+}
 
 /** Minimal CSV split — quoted fields, escaped "", CRLF. */
 function parseCsv(text: string): string[][] {
@@ -63,8 +92,8 @@ function parseCsv(text: string): string[][] {
   return rows;
 }
 
-/** Reads Vehicle + Company ROC from a dropped .xlsx / .csv as "VN⇥ROC" lines. */
-async function readFileRows(file: File): Promise<string[]> {
+/** Reads Vehicle, Company ROC and Buyer ID from a dropped .xlsx / .csv. */
+async function readFileRows(file: File): Promise<FileRow[]> {
   let table: string[][];
   if (file.name.toLowerCase().endsWith(".csv")) table = parseCsv(await file.text());
   else {
@@ -76,28 +105,41 @@ async function readFileRows(file: File): Promise<string[]> {
     table = [];
     ws.eachRow({ includeEmpty: true }, (r, n) => {
       const cells: string[] = [];
-      r.eachCell({ includeEmpty: true }, (c, col) => { cells[col - 1] = (c.text ?? "").trim(); });
+      // A numeric IC cell loses its leading zero ("030426010837" → 30426010837): put it back.
+      r.eachCell({ includeEmpty: true }, (c, col) => {
+        const t = (c.text ?? "").trim();
+        cells[col - 1] = typeof c.value === "number" && /^\d{10,11}$/.test(t) ? t.padStart(12, "0") : t;
+      });
       table[n - 1] = Array.from(cells, v => v ?? "");
     });
     table = Array.from(table, r => r ?? []);
   }
   const norm = (s: string) => (s ?? "").trim().toLowerCase();
-  const headerAt = table.slice(0, 10).findIndex(r => r.some(c => norm(c) === FILE_COLUMNS.vehicle) && r.some(c => norm(c) === FILE_COLUMNS.roc));
-  if (headerAt < 0) throw new Error('Couldn\'t find both "Vehicle" and "Company ROC" columns in the first 10 rows.');
+  const has = (r: string[], name: string) => r.some(c => norm(c) === name);
+  const headerAt = table.slice(0, 10).findIndex(r => has(r, FILE_COLUMNS.vehicle) && (has(r, FILE_COLUMNS.roc) || has(r, FILE_COLUMNS.buyer)));
+  if (headerAt < 0) throw new Error('Couldn\'t find a "Vehicle" column with a "Company ROC" or "Buyer ID" column in the first 10 rows.');
   const header = table[headerAt].map(norm);
-  const vi = header.indexOf(FILE_COLUMNS.vehicle), ri = header.indexOf(FILE_COLUMNS.roc);
-  const lines = table.slice(headerAt + 1)
-    .map(r => [(r[vi] ?? "").trim(), (r[ri] ?? "").trim()])
-    .filter(([v, roc]) => v && roc && v !== "-" && roc !== "-")
-    .map(([v, roc]) => `${v}\t${roc}`);
-  if (!lines.length) throw new Error("No rows with both a Vehicle and a Company ROC under the header.");
-  return lines;
+  const vi = header.indexOf(FILE_COLUMNS.vehicle), ri = header.indexOf(FILE_COLUMNS.roc), bi = header.indexOf(FILE_COLUMNS.buyer);
+  const cell = (r: string[], i: number) => (i < 0 ? "" : (r[i] ?? "").trim());
+  const rows = table.slice(headerAt + 1)
+    .map(r => ({ vehicle: cell(r, vi), roc: cell(r, ri), buyer: cell(r, bi) }))
+    .filter(r => !blank(r.vehicle) && (!blank(r.roc) || !blank(r.buyer)));
+  if (!rows.length) throw new Error("No rows with a Vehicle and a Company ROC or Buyer ID under the header.");
+  return rows;
 }
 
 /** One row per line: Vehicle No. ⇥ IC / SSM [⇥ Postcode]. Header lines are skipped. */
 function parseRows(raw: string, mode: OwnerMode): RowInput[] {
   return raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean).flatMap(line => {
-    const cells = (line.includes("\t") ? line.split("\t") : line.split(/\s{2,}|,/)).map(c => c.trim());
+    let cells = (line.includes("\t") ? line.split("\t") : line.split(/\s{2,}|,/)).map(c => c.trim());
+    // Typed with single spaces ("VA5919 820724015555 50450", 2026-10-30): the ID is
+    // the last word, or the one before a 5-digit postcode; the rest is the vehicle
+    // no., so "WXY 1234 820724015555" still works.
+    if (cells.length < 2) {
+      const words = line.split(/\s+/);
+      const tail = words.length >= 3 && /^\d{5}$/.test(words[words.length - 1]) ? words.splice(-1) : [];
+      if (words.length >= 2) cells = [words.slice(0, -1).join(""), words[words.length - 1], ...tail];
+    }
     const vehicleNo = (cells[0] ?? "").toUpperCase().replace(/\s+/g, "");
     const idNo = cells[1] ?? "";
     if (!vehicleNo || !idNo || !/\d/.test(vehicleNo)) return [];
@@ -129,13 +171,13 @@ export default function SecarangPlateCheckerPage() {
   const [dragOver, setDragOver] = useState(false);
   const [fileNote, setFileNote] = useState<{ ok: boolean; text: string } | null>(null);
 
-  // A dropped sheet fills the paste box; its ROC column means company owner.
+  // A dropped sheet keeps all its ID columns; the owner type picks IC or Company ROC.
   async function loadFile(file: File | undefined) {
     if (!file || running) return;
     try {
-      const lines = await readFileRows(file);
-      setForm(f => ({ ...f, raw: lines.join("\n"), ownerMode: "company" }));
-      setFileNote({ ok: true, text: `${file.name}: ${lines.length} row(s) taken from "Vehicle" + "Company ROC"` });
+      const fileRows = await readFileRows(file);
+      setForm(f => ({ ...f, file: { name: file.name, rows: fileRows } }));
+      setFileNote({ ok: true, text: `${file.name}: ${fileRows.length} row(s) taken from "Vehicle", "Company ROC" and "Buyer ID"` });
     } catch (e) {
       setFileNote({ ok: false, text: `${file.name}: ${e instanceof Error ? e.message : "could not read the file"}` });
     }
@@ -162,7 +204,8 @@ export default function SecarangPlateCheckerPage() {
     return () => { alive = false; clearInterval(t); };
   }, [running]);
 
-  const rows = useMemo(() => parseRows(form.raw, form.ownerMode), [form.raw, form.ownerMode]);
+  const fromFile = useMemo(() => (form.file ? fileToRows(form.file, form.ownerMode) : null), [form.file, form.ownerMode]);
+  const rows = useMemo(() => fromFile?.rows ?? parseRows(form.raw, form.ownerMode), [fromFile, form.raw, form.ownerMode]);
   const finished = (bgRun?.result as { results?: RowResult[] } | null)?.results;
   const results: RowResult[] = (running ? live?.results : finished) ?? live?.results ?? [];
   const total = running ? live?.total || (bgRun?.meta?.total as number) || 0 : results.length;
@@ -187,12 +230,44 @@ export default function SecarangPlateCheckerPage() {
     await navigator.clipboard.writeText(tsv());
     setCopied(true); setTimeout(() => setCopied(false), 1500);
   }
-  function downloadCsv() {
-    const esc = (s: string) => `"${s.replace(/"/g, '""')}"`;
-    const csv = tsv().split("\n").map(l => l.split("\t").map(esc).join(",")).join("\r\n");
+  // Same format as the Company Details Checker export (2026-11-02): blue bold
+  // header with filters, coloured bold result. Vehicle No. and IC / SSM cells
+  // are Text ("@"), so a 12-digit IC never turns into 9.10825E+11 or loses a
+  // leading zero.
+  async function downloadExcel() {
+    const ExcelJS = (await import("exceljs")).default;
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Secarang Insurance Checker");
+    ws.columns = [
+      { header: "Vehicle No.", key: "vehicleNo", width: 16, style: { numFmt: "@" } },
+      { header: "IC / SSM",    key: "idNo",      width: 20, style: { numFmt: "@" } },
+      { header: "Owner",       key: "ownerType", width: 12 },
+      { header: "Result",      key: "result",    width: 12 },
+      { header: "Stopped at",  key: "stage",     width: 22 },
+      { header: "Message",     key: "message",   width: 70 },
+    ];
+    const headerRow = ws.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.eachCell(cell => { cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFBDD7EE" } }; });
+    ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: ws.columns.length } };
+    ws.views = [{ state: "frozen", ySplit: 1 }];
+
+    for (const r of results) {
+      const row = ws.addRow({
+        vehicleNo: String(r.vehicleNo), idNo: String(r.idNo),
+        ownerType: r.ownerType === "private" ? "Private" : "Company",
+        result: r.result, stage: r.stage, message: r.message,
+      });
+      row.getCell("vehicleNo").numFmt = "@";
+      row.getCell("idNo").numFmt = "@";
+      row.getCell("result").font = { bold: true, color: { argb: r.result === "PROCEED" ? "FF008000" : "FFC00000" } };
+      row.getCell("message").alignment = { wrapText: true, vertical: "top" };
+    }
+
+    const buffer = await wb.xlsx.writeBuffer();
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-    a.download = `secarang-plate-check-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.href = URL.createObjectURL(new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    a.download = `secarang-insurance-checker_${new Date().toISOString().slice(0, 10)}.xlsx`;
     a.click();
     URL.revokeObjectURL(a.href);
   }
@@ -203,11 +278,11 @@ export default function SecarangPlateCheckerPage() {
         <span className="text-xs text-slate-600">eAuto</span>
         <span className="text-slate-700">/</span>
         <CarFront size={14} className="text-slate-500" />
-        <h1 className="text-sm font-semibold text-slate-200">Secarang Plate / SSM Checker</h1>
+        <h1 className="text-sm font-semibold text-slate-200">Secarang Insurance Checker</h1>
         <span className="text-xs text-slate-600 hidden sm:block ml-auto">Error message, or can it proceed?</span>
       </header>
 
-      <div className="p-4 sm:p-6 space-y-4 max-w-6xl">
+      <div className="p-4 sm:p-6 space-y-4">
         <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <div className="lg:col-span-2">
@@ -241,7 +316,9 @@ export default function SecarangPlateCheckerPage() {
             {(["auto", "private", "company"] as const).map(m => (
               <label key={m} className="flex items-center gap-1.5 cursor-pointer">
                 <input type="radio" checked={form.ownerMode === m} onChange={() => set("ownerMode", m)} disabled={running} />
-                {m === "auto" ? "Auto (12-digit IC = private, else company SSM)" : m === "private" ? "All private (IC)" : "All company (SSM)"}
+                {form.file
+                  ? (m === "auto" ? "Auto (Buyer ID is an IC = private, else Company ROC)" : m === "private" ? "Private (Buyer ID / IC)" : "Company (Company ROC)")
+                  : (m === "auto" ? "Auto (12-digit IC = private, else company SSM)" : m === "private" ? "All private (IC)" : "All company (SSM)")}
               </label>
             ))}
             <label className="flex items-center gap-1.5 cursor-pointer ml-auto">
@@ -258,7 +335,7 @@ export default function SecarangPlateCheckerPage() {
               dragOver ? "border-blue-500 bg-blue-950/30" : "border-slate-700 hover:border-slate-500")}>
             <UploadCloud size={18} className="shrink-0 text-slate-500" />
             <span className="text-sm text-slate-400">
-              Drop the Excel (.xlsx / .csv) here, or click to choose. Reads the <b className="text-slate-300">Vehicle</b> and <b className="text-slate-300">Company ROC</b> columns.
+              Drop the Excel (.xlsx / .csv) here, or click to choose. Reads the <b className="text-slate-300">Vehicle</b>, <b className="text-slate-300">Company ROC</b> and <b className="text-slate-300">Buyer ID</b> columns; the owner type picks IC or Company ROC.
             </span>
             <input type="file" accept=".xlsx,.csv" className="hidden" disabled={running}
               onChange={e => { loadFile(e.target.files?.[0]); e.target.value = ""; }} />
@@ -270,12 +347,29 @@ export default function SecarangPlateCheckerPage() {
           )}
 
           <div>
-            <span className={label}>Or paste from Excel — one row per line: Vehicle No. ⇥ IC / Company SSM (⇥ Postcode, optional). Header rows are skipped.</span>
-            <textarea className={clsx(field, "font-mono h-48")} value={form.raw} onChange={e => set("raw", e.target.value)} disabled={running}
+            <span className={label}>
+              {form.file
+                ? <>Rows to check from <b className="text-slate-300">{form.file.name}</b> for the owner type above. Typing here stops using the file. <button type="button" className="text-blue-400 hover:text-blue-300" disabled={running} onClick={() => { set("file", null); setFileNote(null); }}>Clear file</button></>
+                : "Or paste from Excel — one row per line: Vehicle No. ⇥ IC / Company SSM (⇥ Postcode, optional). Header rows are skipped."}
+            </span>
+            <textarea className={clsx(field, "font-mono h-48")}
+              value={form.file ? rows.map(r => `${r.vehicleNo}\t${r.idNo}`).join("\n") : form.raw}
+              onChange={e => setForm(f => ({ ...f, raw: e.target.value, file: null }))} disabled={running}
               placeholder={"WXY1234\t1234567-X\nVBA5678\t201901003993\t50450"} {...noFill} />
             <p className="text-xs text-slate-500 mt-1">
               {rows.length} row(s) read · {rows.filter(r => r.ownerType === "private").length} private · {rows.filter(r => r.ownerType === "company").length} company
             </p>
+            {fromFile && (fromFile.skipped.scientific + fromFile.skipped.noIc + fromFile.skipped.noRoc) > 0 && (
+              <p className="text-xs text-amber-400 mt-1 flex items-start gap-1.5">
+                <AlertCircle size={12} className="mt-0.5 shrink-0" />
+                <span>
+                  Left out:
+                  {fromFile.skipped.scientific > 0 && <> {fromFile.skipped.scientific} with a Buyer ID Excel turned into a number like 9.10825E+11 (digits lost in the .csv; drop the .xlsx instead, or format the column as Text before saving).</>}
+                  {fromFile.skipped.noIc > 0 && <> {fromFile.skipped.noIc} whose Buyer ID is not an IC.</>}
+                  {fromFile.skipped.noRoc > 0 && <> {fromFile.skipped.noRoc} with no Company ROC.</>}
+                </span>
+              </p>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -320,9 +414,9 @@ export default function SecarangPlateCheckerPage() {
                   className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs border border-slate-800 text-slate-400 hover:text-slate-200">
                   {copied ? <Check size={12} /> : <Copy size={12} />} Copy
                 </button>
-                <button type="button" onClick={downloadCsv} disabled={!results.length}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs border border-slate-800 text-slate-400 hover:text-slate-200">
-                  <Download size={12} /> CSV
+                <button type="button" onClick={downloadExcel} disabled={!results.length}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs bg-green-700 hover:bg-green-600 disabled:opacity-40 text-white">
+                  <Download size={12} /> Export Excel
                 </button>
               </div>
             </div>

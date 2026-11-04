@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12028_TS23 Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #f5f7f9; --surface: #ffffff; --fg: #1b2530; --muted: #5a6876; --line: #d8dfe6;
+  --accent: #1f5f8b; --bad: #b42318; --bad-bg: #fdecea; --good: #146c43; --good-bg: #e7f5ee; --quote-bg: #eef3f7;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; --mono: "JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a; --quote-bg: #1f2b36; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a; --quote-bg: #1f2b36; color-scheme: dark }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 30px/1.15 var(--body); margin: 0; }
+h2 { font: 700 22px/1.2 var(--body); margin: 0; }
+h3 { font: 600 13px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.meta { color: var(--muted); font-size: 14px; }
+.status { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.pill { font: 600 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; background: var(--bad-bg); color: var(--bad); }
+.pill.good { background: var(--good-bg); color: var(--good); }
+section.finding { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px 20px; display: grid; gap: 20px; }
+.finding-head { display: grid; gap: 8px; border-left: 4px solid var(--bad); padding-left: 12px; }
+.finding-head.soft { border-left-color: var(--accent); }
+.source { display: grid; gap: 10px; min-width: 0; }
+blockquote { margin: 0; background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; }
+blockquote cite { display: block; margin-top: 8px; font: 12px/1.4 var(--mono); color: var(--muted); font-style: normal; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+figcaption { font: 12px/1.4 var(--mono); color: var(--muted); }
+.ask { background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; display: grid; gap: 4px; }
+.ask strong { color: var(--accent); }
+ul.passed { margin: 0; padding-left: 20px; }
+</style></head>
+<body><div class="wrap">
+  <header>
+    <span class="eyebrow">EAINT-12028</span>
+    <h1>12028_TS23: Drafter KIV on a Review Again month sets Drafter Status KIV</h1>
+    <p class="meta">Dashboard run 2 Nov 2026, 3:40 pm (run 1b5767d7-c4de-4323-ac12-6aa747180ddd). Written by Elf from the run result.</p>
+    <div class="status"><span class="pill good">1 data / expected</span></div>
+  </header>
+
+  <section class="finding">
+    <div class="finding-head soft">
+      <span class="eyebrow">Issue 1 · data / expected</span>
+      <h2>October 2026 was already Drafter KIV (not Review Again), so the TS precondition stopped the run before any KIV click</h2>
+      <p><strong>Actual:</strong> October 2026 shows Drafter KIV / Reviewer Pending / Approver Pending, with Undo KIV button and 1 audit row (DRAFTER, KIV) &nbsp; <strong>Expected:</strong> A month with Drafter Status Review Again, as the TS step 2 says. The SRD has no rule on this setup; the expectation comes from the TS row 7 (12028_TS23).</p>
+      <p><strong>Triage:</strong> data (plausible) — Evidence image shows October 2026 already at Drafter KIV with one audit row &#39;DRAFTER KIV 02 Nov 2026 15:37&#39;; a month in Drafter KIV cannot be a Review Again month, so the script&#39;s guard at utils/session.ts:137 threw correctly before clicking KIV.<br><strong>Ruled out:</strong> Script read the wrong thing: the screenshot status bar matches the error text (Drafter KIV / Reviewer Pending / Approver Pending); Product defect: no KIV click happened, so KIV behaviour was not exercised; Login or timing: login succeeded as Muhammad Fared and the detail page fully loaded</p>
+    </div>
+    <div class="source"><h3>What the TS says</h3><blockquote>Row 7 (12028_TS23)
+Test Objective: Verify the Drafter can KIV a month the Reviewer sent back.
+Test Steps: 1. Login to BO as Drafter
+2. Click [View] on a month with Drafter Status Review Again
+3. Click [KIV]
+Expected Result: Ensure:
+1. Details -&gt; Drafter Status KIV
+2. Details -&gt; New Audit Log row &quot;Drafter — KIV&quot;<cite>12028_TS23</cite></blockquote></div>
+    <div class="source"><h3>What the SRD says</h3><p>Nothing on this. The expected result comes from the TS.</p></div>
+    <div class="source"><h3>What the system shows</h3>
+      <figure><img src="img/evidence-01-12028_TS23-precondition-ISSUE.png" alt="12028_TS23-precondition-ISSUE"><figcaption>12028_TS23-precondition-ISSUE</figcaption></figure>
+      <blockquote>Error: Precondition not met: October 2026 shows Drafter KIV / Reviewer Pending / Approver Pending; this TS needs a month that is Drafter Review Again. Pick such a month on the 12028_TS23 row (12028_PREP can move a Pending month there).<cite>Run error · step "Check October 2026 is Drafter Review Again"</cite></blockquote>
+    </div>
+    
+  </section>
+
+</div></body></html>

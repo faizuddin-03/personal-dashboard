@@ -206,14 +206,11 @@ function triageOf(t) {
 const planPath = (key, jobId) => path.join(PIPE_DIR, "work", key, `findings-plan-${safeId(jobId)}.json`);
 
 const action = {
-  // File tools + the SRD renderer only; the findings page under _reference/ is
-  // written by finish(), so Elf may not edit _reference/ itself.
+  // Full set (2026-10-29); the findings page under _reference/ is written by
+  // finish(), so Elf may not edit _reference/ itself.
   tools: () => {
     const base = elfTools();
-    return {
-      allowed: [...base.allowed.filter(t => t !== "Skill"), "Bash(node scripts/pipeline/lib/srd-render.mjs *)"],
-      disallowed: [...base.disallowed.filter(t => t !== "Bash"), "Bash(git *)", "Edit(./_reference/**)"],
-    };
+    return { allowed: base.allowed, disallowed: [...base.disallowed, "Edit(./_reference/**)"] };
   },
 
   async prepare(ctx) {

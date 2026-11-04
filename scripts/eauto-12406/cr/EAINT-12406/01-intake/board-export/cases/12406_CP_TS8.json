@@ -1,0 +1,61 @@
+{
+  "expected": "Ensure:\n• Home logos: Lonpac, Tokio Marine (no Allianz)",
+  "gate": {
+    "at": "29/10/2026, 15:55:58",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_CP_TS8",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E6"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sCP-20261029-1545-c2",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_CP_TS8",
+  "labels": [],
+  "order": 1,
+  "points": [
+    {
+      "id": "E1",
+      "text": "BEFORE: Home logos Lonpac, Tokio Marine (no Allianz)"
+    },
+    {
+      "id": "E2",
+      "text": "BEFORE: not captured before the deploy (made-up IC got 'no instant quotation' on 28.10; old build gone): recorded as not available (Azfar 29.10)"
+    },
+    {
+      "id": "E3",
+      "text": "BEFORE: About Us > Our partnership ends '...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.'"
+    },
+    {
+      "id": "E4",
+      "text": "BEFORE: FAQ 'Which insurers can I get instant quotation from?' lists Lonpac Insurance Bhd, Tokio Marine Insurans (Malaysia) Berhad"
+    },
+    {
+      "id": "E5",
+      "text": "BEFORE: Support > Need to contact insurance company? has sections for Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad only"
+    },
+    {
+      "id": "E6",
+      "text": "AFTER: Home, About Us, FAQs (all topics) and Support differ from BEFORE only by the Allianz changes of 12406_CP_TS1 to CP_TS5"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "Before and after the deploy",
+  "setup": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle for the quotation: the individual-owner renewal car of 12406_QT_TS1 (quotation only, do not pay)\n• BEFORE done 28.10, before Dev deployed: E1, E3, E4, E5 captured; E2 not captured (the made-up IC got 'no instant quotation'; the old build is gone), recorded as not available (Azfar 29.10). BEFORE evidence: the 28.10 before-deploy capture, copied into this TS's evidence folder and labelled 'FROM THE BEFORE CAPTURE' (Azfar 29.10)\n• Not deployed yet (Azfar, 28.10.2026, Q11), so the BEFORE can be taken. Only if the deploy happens before the capture: no BEFORE; the AFTER compares with production secarang.com (look only) while 12406 is not live there, and differences from other Secarang changes on staging (e.g. EAINT-10444, same 02.11 release) are noted, not failed",
+  "sheet": "CP",
+  "situation": "BEFORE the deploy: capture Home logos, All Quotations, About Us, every FAQ and Support on staging. AFTER: the same pages differ only by the Allianz changes",
+  "source": "BEFORE: SRD v1.1 §2.2.2 #1b (only Lonpac and Tokio Marine at Home, About Us, FAQs, Support), REQ-001 / REQ-007 / REQ-008 / REQ-009 'Existing', REQ-002 'Existing'. AFTER: REQ-007 Example 1b and REQ-008 Example 1b ('rest unchanged'), REQ-001, REQ-009",
+  "steps": "1. Before the deploy: Secarang > Home: screenshot the insurer logos\n2. Car tab > the QT_TS1 car + owner > All Quotations: screenshot all cards (do not pay)\n3. About Us: save the page text and screenshot Our partnership\n4. FAQs: expand every question of Topics 1, 2, 3; save the page text\n5. Support > Need to contact insurance company?: expand every section; save the page text",
+  "updatedAt": "2026-10-29T16:30:00+08:00"
+}

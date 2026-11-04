@@ -1,0 +1,29 @@
+{
+  "name": "eauto-qa-automation-intake",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Azfar's eAuto automation, restructured to eauto-qa-automation conventions ahead of intake.",
+  "scripts": {
+    "test": "playwright test",
+    "test:staging": "playwright test --project=staging",
+    "test:production": "playwright test --project=production",
+    "test:e2e": "playwright test \".e2e.spec.ts$\"",
+    "test:func": "playwright test \".func.spec.ts$\"",
+    "test:list": "playwright test --list",
+    "probe": "playwright test --project=explore",
+    "onboard": "playwright test --project=explore onboarding-e2e",
+    "seed:jpj": "tsx scripts/seed-jpj-codes.ts",
+    "typecheck": "tsc --noEmit",
+    "report": "playwright show-report",
+    "playwright:install": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "ws": "^8.18.0"
+  }
+}

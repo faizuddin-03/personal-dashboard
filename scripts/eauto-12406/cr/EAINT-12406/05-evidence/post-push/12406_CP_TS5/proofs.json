@@ -1,0 +1,39 @@
+{
+  "ts": "12406_CP_TS5",
+  "run": "eaint-12406-run-sCP-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Allianz expanded: one contact line only, \"24-Hours Helpline\" with \"1800 22 5542\", in the same format as the Lonpac / Tokio Marine contact lines (no \"Road Assistance Hotline\" or \"Customer Service\" line)",
+      "shows": "Allianz contact lines (1): \"24-Hours Helpline\" \"1800 22 5542\". Format Allianz li(list-item) h6 Inter 17px w500 rgb(51, 51, 51) / p Inter 15px w400 rgb(51, 51, 51); Lonpac li(list-item) h6 Inter 17px w500 rgb(51, 51, 51) / p Inter 15px w400 rgb(51, 51, 51); Tokio Marine li(list-item) h6 Inter 17px w500 rgb(51, 51, 51) / p Inter 15px w400 rgb(51, 51, 51)",
+      "match": true,
+      "shot": "01-support-allianz-expanded-contact-line.png",
+      "at": "29/10/2026, 15:51:24",
+      "url": "/ia/support",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E2",
+      "expected": "Below the Allianz contact details: \"You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542\"",
+      "shows": "below the contact details: \"You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542\" (under the contact line: true)",
+      "match": true,
+      "shot": "02-support-allianz-towing-sentence.png",
+      "at": "29/10/2026, 15:51:26",
+      "url": "/ia/support",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E3",
+      "expected": "Allianz collapsed: its contact details and sentence are hidden, as for the other insurers",
+      "shows": "Allianz collapsed: header closed true, contact line shown false, towing sentence shown false; Lonpac / Tokio Marine closed with details hidden: true",
+      "match": true,
+      "shot": "03-support-allianz-collapsed.png",
+      "at": "29/10/2026, 15:51:28",
+      "url": "/ia/support",
+      "side": "Secarang (public site, no login)"
+    }
+  ],
+  "notes": [],
+  "opened": []
+}

@@ -1,0 +1,80 @@
+{
+  "ts": "12406_E2E_TS5",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "After the failed FPX payment: back on the payment page with \"Unsuccessful payment You may try again.\", no receipt, and the other payment tiles can still be picked",
+      "shows": "payment page: \"Unsuccessful payment\"; receipt none; tiles still offered: \"Credit or Debit Card\", \"FPX Online banking\", \"SPayLater\", \"PayLater by Grab\"",
+      "match": false,
+      "shot": "01-failed-fpx-payment-page.png",
+      "at": "29/10/2026, 16:47:54",
+      "url": "/ia/car-insurance/payment-methods/85ecfe28-a989-42d7-a0eb-011905a02788/26102921300031",
+      "side": "Secarang"
+    },
+    {
+      "point": "E3",
+      "expected": "After cancelling SPayLater with [OK]: back on 'How would you like to pay?' with the same vehicle and premium",
+      "shows": "after [OK]: \"How would you like to pay?\" shown, 4 tiles; plate HXA0015A shown; premium RM 941.13 shown",
+      "match": true,
+      "shot": "02-after-spaylater-cancel.png",
+      "at": "29/10/2026, 16:48:07",
+      "url": "/ia/car-insurance/payment-methods/85ecfe28-a989-42d7-a0eb-011905a02788/26102921300032",
+      "side": "Secarang"
+    },
+    {
+      "point": "E4",
+      "expected": "Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' and a [Receipt] download",
+      "shows": "Success: \"Thank you for your purchase!\" shown; Receipt No. \"26102921300033\"; Purchase Date \"29 Oct 2026 - 4:47 PM\"; Payment Method \"Online Banking - RHB Bank\"; [Receipt] shown",
+      "match": true,
+      "shot": "03-success-page.png",
+      "at": "29/10/2026, 16:49:09",
+      "url": "/ia/car-insurance/payment-success/85ecfe28-a989-42d7-a0eb-011905a02788",
+      "side": "Secarang"
+    },
+    {
+      "point": "E4",
+      "expected": "CIBO shows the transaction with Payment Paid, Ins. Co. Allianz",
+      "shows": "Ref BR60006353: Ins. Co. \"Allianz Serba Sentral\", Payment \"RM…Paid 29-10-2026 16:48\", Payment Mode \"Fiuu | Online Banking – FPX-RHB Bank\", Transaction Status \"Insurance created\"",
+      "match": true,
+      "shot": "04-cibo-paid-row.png",
+      "at": "29/10/2026, 16:49:21",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "the failed attempt shows Transaction Status \"Failed\", Payment not 'Paid' (badge text recorded)",
+      "shows": "no row of HXA0015A with Transaction Status \"Failed\" (rows: BR60006353 \"Insurance created\")",
+      "match": false,
+      "shot": "05-cibo-failed-row.png",
+      "at": "29/10/2026, 16:49:23",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "on the site: Secarang (https://staging.secarang.com/ia/)",
+    "payment window allowed: fpx failed",
+    "window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/85ecfe28-a989-42d7-a0eb-011905a02788/fpx_rhb",
+    "payment window allowed: shopeepay cancelled",
+    "window opened by the site and kept (payment window 2): https://staging.secarang.com/ia/payment/landing/85ecfe28-a989-42d7-a0eb-011905a02788/ShopeePay",
+    "payment window allowed: fpx success",
+    "window opened by the site and kept (payment window 3): https://staging.secarang.com/ia/payment/landing/85ecfe28-a989-42d7-a0eb-011905a02788/fpx_rhb",
+    "downloaded: secarang-receipt-HXA0015A-PERSONAL-DATA.pdf",
+    "receipt downloaded: secarang-receipt-HXA0015A-PERSONAL-DATA.pdf",
+    "signed in: CIBO (cibo)",
+    "rows of HXA0015A since the TS started: BR60006353 \"Insurance created\" / \"Paid 29-10-2026 16:48\"; the failed attempt and the paid one share a Ref. No.: no Failed row (recorded)",
+    "E2: Transaction Details of the failed attempt not opened: no Failed row was found",
+    "payment window 1 on the TS video 00:41.7–00:50.5",
+    "payment window 2 on the TS video 00:57.1–01:03.3",
+    "payment window 3 on the TS video 01:11.4–01:18.6",
+    "payment window video laid into video_12406_E2E_TS5.webm (3 window(s), picture-in-picture, bottom right)"
+  ],
+  "opened": [
+    "about:blank",
+    "about:blank",
+    "about:blank"
+  ]
+}

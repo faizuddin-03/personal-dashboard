@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { recordFinishedRun } from "@/lib/finishedRuns";
 import Link from "next/link";
 import {
   Play, Square, Loader2, CheckCircle2, XCircle, AlertTriangle, ChevronDown, ChevronRight, Film, RefreshCw, Image as ImageIcon, Download, Copy, Check, ClipboardList, FileSpreadsheet, History, Landmark, Hand, Trash2, ArrowLeft,
@@ -21,7 +22,7 @@ const RUN_KEY = "eauto/12028";
 // from the 31.07 mock-up and is [unconfirmed] until the first run.
 
 type RoleKey = "drafter" | "drafter2" | "reviewer" | "approver" | "multi" | "norole" | "superadmin";
-type InputKey = "month" | "month2" | "state" | "state2" | "vehicle" | "count" | "count2" | "name" | "name2" | "name3" | "payDate" | "expectMenu" | "expectKiv" | "expectSig" | "waitMin" | "timeoutMin" | "target"
+type InputKey = "month" | "month2" | "state" | "state2" | "vehicle" | "count" | "count2" | "name" | "name2" | "name3" | "payDate" | "expectKiv" | "expectSig" | "waitMin" | "timeoutMin" | "target"
   | "mPending" | "mKIV" | "mDRA" | "mDA" | "mRRA" | "mRA" | "mFull";
 
 interface Scenario {
@@ -56,45 +57,23 @@ const TS_SECTIONS: { letter: string; title: string }[] = [
   { letter: "M", title: "BO login, SSO, session and double submit" },
 ];
 
-// P1 first, then P2, then P3 (scenarios.json "priority"), so the default order runs the P1 tests first.
+// Listed in ascending TS order (Faizuddin, 2026-11-02: "the TS must always be ordered by ascending order"); the sort below enforces it.
 const SCENARIOS: Scenario[] = [
-  { id: "12028_TS05", section: "A", priority: "P1", title: "12028_TS05: No-role BO user Reports menu item visible or hidden per BA answer", roles: ["norole"], inputs: ["expectMenu"] },
-  { id: "12028_TS06", section: "A", priority: "P1", title: "12028_TS06: No-role BO user blocked on the Summary and Details page addresses", roles: ["drafter","norole"], inputs: ["month"], labels: {"month":"Closed month"} },
-  { id: "12028_TS08", section: "B", priority: "P1", title: "12028_TS08: Summary figures use the FMC and MMSDA rates and the total row sums the months", roles: ["drafter"] },
-  { id: "12028_TS10", section: "B", priority: "P1", title: "12028_TS10: View opens the month's Details matching the Summary row and Back to Summary returns", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month"} },
-  { id: "12028_TS13", section: "C", priority: "P1", title: "12028_TS13: Running month-close on an approved month keeps statuses and Payment Date", roles: ["drafter"], inputs: ["month","waitMin"], labels: {"month":"Fully approved month"} },
-  { id: "12028_TS14", section: "D", priority: "P1", title: "12028_TS14: Details shows 16 states, TOTAL and amounts at the FMC and MMSDA rates", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month with an amount of 1,000+"} },
-  { id: "12028_TS15", section: "D", priority: "P1", title: "12028_TS15: State counts match Transaction Summary Report (State)", roles: ["superadmin","drafter"], inputs: ["month"], labels: {"month":"Closed month"} },
-  { id: "12028_TS25", section: "E", priority: "P1", title: "12028_TS25: Drafter buttons disabled once the Drafter step is done", roles: ["drafter"], inputs: ["mDA","mRRA","mFull"] },
-  { id: "12028_TS28", section: "F", priority: "P1", title: "12028_TS28: Reviewer buttons disabled with waiting note until the Drafter approves", roles: ["reviewer"], inputs: ["mPending","mKIV","mDRA"] },
-  { id: "12028_TS33", section: "F", priority: "P1", title: "12028_TS33: Reviewer buttons disabled once the Reviewer step is done", roles: ["reviewer"], inputs: ["mRA","mFull"] },
-  { id: "12028_TS35", section: "G", priority: "P1", title: "12028_TS35: Approver buttons disabled with waiting note until the Reviewer approves", roles: ["approver"], inputs: ["mPending","mKIV","mDA","mDRA","mRRA"] },
-  { id: "12028_TS36", section: "G", priority: "P1", title: "12028_TS36: Approver first Approve with signature and tomorrow's date completes the month", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month (Approver never signed)"} },
-  { id: "12028_TS39", section: "G", priority: "P1", title: "12028_TS39: Approver buttons disabled on a fully approved month", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
-  { id: "12028_TS48", section: "J", priority: "P1", title: "12028_TS48: Download buttons hidden with pending note until the month is fully approved", roles: ["approver"], inputs: ["mPending","mKIV","mDA","mDRA","mRA","mRRA"] },
-  { id: "12028_TS49", section: "J", priority: "P1", title: "12028_TS49: Approver sees both download buttons on a fully approved month", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
-  { id: "12028_TS52", section: "J", priority: "P1", title: "12028_TS52: No-role BO user blocked on the PDF download address (manual)", manual: true },
-  { id: "12028_TS53", section: "J", priority: "P1", title: "12028_TS53: Download address of a month not fully approved is blocked (manual)", manual: true },
-  { id: "12028_TS55", section: "K", priority: "P1", title: "12028_TS55: FMC Payment Request PDF shows the SRD fields and the month's car amount", roles: ["approver"], inputs: ["month","name","name2","name3"], labels: {"month":"Fully approved month"} },
-  { id: "12028_TS56", section: "L", priority: "P1", title: "12028_TS56: MMSDA Payment Request PDF shows the SRD fields and the month's motorcycle amount", roles: ["approver"], inputs: ["month","name","name2","name3"], labels: {"month":"Fully approved month"} },
-  { id: "12028_TS57", section: "M", priority: "P1", title: "12028_TS57: BO login hand-off opens Association Payment Listing and module logout needs a fresh login", roles: ["drafter"] },
-  { id: "12028_TS58", section: "M", priority: "P1", title: "12028_TS58: Used SSO hand-off address cannot log in again (manual)", manual: true },
-  { id: "12028_TS59", section: "M", priority: "P1", title: "12028_TS59: Core logout logs out the open Association Payment Listing tab", roles: ["drafter"] },
-  { id: "12028_TS61", section: "M", priority: "P1", title: "12028_TS61: Logout redirect to an outside address stays on eAuto (manual)", manual: true },
-  { id: "12028_TS62", section: "M", priority: "P1", title: "12028_TS62: Session-expiry redirect to an outside address stays on eAuto (manual)", manual: true },
-  { id: "12028_TS63", section: "M", priority: "P1", title: "12028_TS63: Drafter Approve from two tabs makes one audit row", roles: ["drafter"], inputs: ["month"], labels: {"month":"Pending month"} },
-  { id: "12028_TS64", section: "M", priority: "P1", title: "12028_TS64: Reviewer Approve from two tabs makes one audit row", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Drafter Approved month"} },
-  { id: "12028_TS65", section: "M", priority: "P1", title: "12028_TS65: Approver Approve from two tabs makes one audit row and one payment date", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
-  { id: "12028_TS66", section: "M", priority: "P1", title: "12028_TS66: Forced Reviewer approval on a Pending month is rejected (manual)", manual: true },
-  { id: "12028_TS67", section: "M", priority: "P1", title: "12028_TS67: Forced Approver approval before the Reviewer approves is rejected (manual)", manual: true },
-  { id: "12028_TS68", section: "M", priority: "P1", title: "12028_TS68: Forced action on a fully approved month is rejected (manual)", manual: true },
   { id: "12028_TS01", section: "A", priority: "P2", title: "12028_TS01: Drafter sees Association Payment Listing under Reports and opens Summary", roles: ["drafter"] },
   { id: "12028_TS02", section: "A", priority: "P2", title: "12028_TS02: Reviewer sees Association Payment Listing under Reports and opens Summary", roles: ["reviewer"] },
   { id: "12028_TS03", section: "A", priority: "P2", title: "12028_TS03: Approver sees Association Payment Listing under Reports and opens Summary", roles: ["approver"] },
   { id: "12028_TS04", section: "A", priority: "P2", title: "12028_TS04: Multi-role user sees Association Payment Listing under Reports and opens Summary", roles: ["multi"] },
+  { id: "12028_TS05", section: "A", priority: "P1", title: "12028_TS05: No-role BO user does not see Association Payment Listing under Reports", roles: ["norole"], inputs: [] },
+  { id: "12028_TS06", section: "A", priority: "P1", title: "12028_TS06: No-role BO user blocked on the Summary and Details page addresses", roles: ["norole"], inputs: [] },
   { id: "12028_TS07", section: "B", priority: "P2", title: "12028_TS07: Summary for Year 2026 shows the year filter, 12 months, columns, total label and Payment Date", roles: ["drafter"], inputs: ["month"], labels: {"month":"Month with Approver Status Pending"} },
+  { id: "12028_TS08", section: "B", priority: "P1", title: "12028_TS08: Summary figures use the FMC and MMSDA rates and the total row sums the months", roles: ["drafter"] },
+  { id: "12028_TS09", section: "B", priority: "P3", title: "12028_TS09: Closed month with zero transactions shows 0.00 and can be opened", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month, zero transactions, all Pending"} },
+  { id: "12028_TS10", section: "B", priority: "P1", title: "12028_TS10: View opens the month's Details matching the Summary row and Back to Summary returns", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month"} },
   { id: "12028_TS11", section: "C", priority: "P2", title: "12028_TS11: Month-close on a past month shows its figures with all statuses Pending", roles: ["drafter"], inputs: ["month","waitMin"], labels: {"month":"Past month not yet closed"} },
   { id: "12028_TS12", section: "C", priority: "P2", title: "12028_TS12: Running month-close twice keeps the same figures", roles: ["drafter"], inputs: ["month","waitMin"], labels: {"month":"Closed month"} },
+  { id: "12028_TS13", section: "C", priority: "P1", title: "12028_TS13: Running month-close on an approved month keeps statuses and Payment Date", roles: ["drafter"], inputs: ["month","waitMin"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS14", section: "D", priority: "P1", title: "12028_TS14: Details shows 16 states, TOTAL and amounts at the FMC and MMSDA rates", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month with an amount of 1,000+"} },
+  { id: "12028_TS15", section: "D", priority: "P1", title: "12028_TS15: State counts match Transaction Summary Report (State)", roles: ["superadmin","drafter"], inputs: ["month"], labels: {"month":"Closed month"} },
   { id: "12028_TS16", section: "D", priority: "P2", title: "12028_TS16: Private and company vehicles both counted under Car and Motorcycle", roles: ["drafter"], inputs: ["month","state","count","count2"], labels: {"month":"Closed month","count":"Car count (private + company)","count2":"Motorcycle count (private + company)"} },
   { id: "12028_TS17", section: "D", priority: "P2", title: "12028_TS17: Transaction counted in the month of its JPJ Approved Date", roles: ["drafter"], inputs: ["month","month2","state","vehicle","count","count2"], labels: {"month":"JPJ approval month","count":"Count, approval month","count2":"Count, creation month"} },
   { id: "12028_TS18", section: "D", priority: "P2", title: "12028_TS18: Approved transaction not yet paid is not counted", roles: ["drafter"], inputs: ["month","state","vehicle","count"], labels: {"month":"Month of the unpaid transaction","count":"Count (paid only)"} },
@@ -104,29 +83,53 @@ const SCENARIOS: Scenario[] = [
   { id: "12028_TS22", section: "E", priority: "P2", title: "12028_TS22: Drafter Approve on a Review Again month sets Drafter Status Approved", roles: ["drafter"], inputs: ["month"], labels: {"month":"Drafter Review Again month"} },
   { id: "12028_TS23", section: "E", priority: "P2", title: "12028_TS23: Drafter KIV on a Review Again month sets Drafter Status KIV", roles: ["drafter"], inputs: ["month"], labels: {"month":"Drafter Review Again month"} },
   { id: "12028_TS24", section: "E", priority: "P2", title: "12028_TS24: Drafter action on a KIV month follows the final KIV rule", roles: ["drafter"], inputs: ["month","expectKiv"], labels: {"month":"KIV month"} },
+  { id: "12028_TS25", section: "E", priority: "P1", title: "12028_TS25: Drafter buttons hidden once the Drafter step is done", roles: ["drafter"], inputs: ["mDA","mRRA","mFull"] },
   { id: "12028_TS26", section: "E", priority: "P2", title: "12028_TS26: Second Drafter user approves a Pending month and is blocked after another Drafter approved", roles: ["drafter2"], inputs: ["mPending","mDA"], labels: {"mDA":"Month the first Drafter approved"} },
   { id: "12028_TS27", section: "E", priority: "P2", title: "12028_TS27: Drafter second approval reuses the signature without the pad", roles: ["drafter"], inputs: ["month"], labels: {"month":"Another Pending month"} },
+  { id: "12028_TS28", section: "F", priority: "P1", title: "12028_TS28: Reviewer buttons hidden with not-your-turn note until the Drafter approves", roles: ["reviewer"], inputs: ["mPending","mKIV","mDRA"] },
   { id: "12028_TS29", section: "F", priority: "P2", title: "12028_TS29: Reviewer first Approve with the signature pad sets Reviewer Status Approved", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Drafter Approved month (Reviewer never signed)"} },
   { id: "12028_TS30", section: "F", priority: "P2", title: "12028_TS30: Reviewer Reject needs remarks and returns the month to Drafter Review Again", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Drafter Approved month"} },
   { id: "12028_TS31", section: "F", priority: "P2", title: "12028_TS31: Reviewer re-approves a Reviewer Review Again month", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Reviewer Review Again month"} },
   { id: "12028_TS32", section: "F", priority: "P2", title: "12028_TS32: Reviewer Reject on a Review Again month sets Drafter Status Review Again", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Reviewer Review Again month"} },
+  { id: "12028_TS33", section: "F", priority: "P1", title: "12028_TS33: Reviewer buttons hidden once the Reviewer step is done", roles: ["reviewer"], inputs: ["mRA","mFull"] },
   { id: "12028_TS34", section: "F", priority: "P2", title: "12028_TS34: Reviewer second approval reuses the signature without the pad", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Another Drafter Approved month"} },
+  { id: "12028_TS35", section: "G", priority: "P1", title: "12028_TS35: Approver buttons hidden with not-your-turn note until the Reviewer approves", roles: ["approver"], inputs: ["mPending","mKIV","mDA","mDRA","mRRA"] },
+  { id: "12028_TS36", section: "G", priority: "P1", title: "12028_TS36: Approver first Approve with signature and tomorrow's date completes the month", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month (Approver never signed)"} },
   { id: "12028_TS37", section: "G", priority: "P2", title: "12028_TS37: Payment date popup blocks cancel, blank, today, past, typed and pasted dates", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
   { id: "12028_TS38", section: "G", priority: "P2", title: "12028_TS38: Approver Reject needs remarks and returns the month to Reviewer Review Again", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
+  { id: "12028_TS39", section: "G", priority: "P1", title: "12028_TS39: Approver buttons hidden on a fully approved month", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
   { id: "12028_TS40", section: "G", priority: "P2", title: "12028_TS40: Approver second approval reuses the signature and still asks payment date", roles: ["approver"], inputs: ["month"], labels: {"month":"Another Reviewer Approved month"} },
   { id: "12028_TS41", section: "G", priority: "P2", title: "12028_TS41: Approver approves a month after the Reviewer re-approves it", roles: ["approver"], inputs: ["month"], labels: {"month":"Month re-approved in 12028_TS31"} },
-  { id: "12028_TS42", section: "H", priority: "P2", title: "12028_TS42: Multi-role user completes a month alone", roles: ["multi"], inputs: ["month","expectSig"], labels: {"month":"Pending month (multi-role user never signed)"} },
-  { id: "12028_TS43", section: "H", priority: "P2", title: "12028_TS43: Multi-role user KIV sets Drafter Status KIV", roles: ["multi"], inputs: ["month"], labels: {"month":"Pending month"} },
-  { id: "12028_TS44", section: "H", priority: "P2", title: "12028_TS44: Multi-role user Reviewer Reject then re-approves as Drafter", roles: ["multi"], inputs: ["month"], labels: {"month":"Drafter Approved month"} },
-  { id: "12028_TS45", section: "H", priority: "P2", title: "12028_TS45: Multi-role user Approver Reject sets Reviewer Status Review Again", roles: ["multi"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
-  { id: "12028_TS47", section: "I", priority: "P2", title: "12028_TS47: Audit Log shows its columns, keeps every row after a reject loop and shows no signature image", roles: ["drafter"], inputs: ["month"], labels: {"month":"Month approved in 12028_TS41"} },
-  { id: "12028_TS50", section: "J", priority: "P2", title: "12028_TS50: Drafter can download both PDFs on a fully approved month", roles: ["drafter"], inputs: ["month"], labels: {"month":"Fully approved month"} },
-  { id: "12028_TS51", section: "J", priority: "P2", title: "12028_TS51: Reviewer can download both PDFs on a fully approved month", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Fully approved month"} },
-  { id: "12028_TS60", section: "M", priority: "P2", title: "12028_TS60: Session expiry returns to BO login without an error page", roles: ["drafter"], inputs: ["timeoutMin"] },
-  { id: "12028_TS09", section: "B", priority: "P3", title: "12028_TS09: Closed month with zero transactions shows 0.00 and can be opened", roles: ["drafter"], inputs: ["month"], labels: {"month":"Closed month, zero transactions, all Pending"} },
-  { id: "12028_TS46", section: "I", priority: "P3", title: "12028_TS46: New month Audit Log shows No activity yet", roles: ["drafter"], inputs: ["month"], labels: {"month":"Pending month with no action yet"} },
-  { id: "12028_TS54", section: "J", priority: "P3", title: "12028_TS54: Second download gives the same file", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS42", section: "G", priority: "P2", title: "12028_TS42: Approver signature kept after the payment date popup is cancelled", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month (Approver never signed)"} },
+  { id: "12028_TS43", section: "H", priority: "P2", title: "12028_TS43: Multi-role user completes a month alone", roles: ["multi"], inputs: ["month","expectSig"], labels: {"month":"Pending month (multi-role user never signed)"} },
+  { id: "12028_TS44", section: "H", priority: "P2", title: "12028_TS44: Multi-role user KIV sets Drafter Status KIV", roles: ["multi"], inputs: ["month"], labels: {"month":"Pending month"} },
+  { id: "12028_TS45", section: "H", priority: "P2", title: "12028_TS45: Multi-role user Reviewer Reject then re-approves as Drafter", roles: ["multi"], inputs: ["month"], labels: {"month":"Drafter Approved month"} },
+  { id: "12028_TS46", section: "H", priority: "P2", title: "12028_TS46: Multi-role user Approver Reject sets Reviewer Status Review Again", roles: ["multi"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
+  { id: "12028_TS47", section: "I", priority: "P3", title: "12028_TS47: New month Audit Log shows No workflow actions recorded yet", roles: ["drafter"], inputs: ["month"], labels: {"month":"Pending month with no action yet"} },
+  { id: "12028_TS48", section: "I", priority: "P2", title: "12028_TS48: Audit Log shows its columns, keeps every row after a reject loop and shows no signature image", roles: ["drafter"], inputs: ["month"], labels: {"month":"Month approved in 12028_TS41"} },
+  { id: "12028_TS49", section: "J", priority: "P1", title: "12028_TS49: Download buttons hidden with pending note until the month is fully approved", roles: ["approver"], inputs: ["mPending","mKIV","mDA","mDRA","mRA","mRRA"] },
+  { id: "12028_TS50", section: "J", priority: "P1", title: "12028_TS50: Approver sees both download buttons on a fully approved month", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS51", section: "J", priority: "P2", title: "12028_TS51: Drafter can download both PDFs on a fully approved month", roles: ["drafter"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS52", section: "J", priority: "P2", title: "12028_TS52: Reviewer can download both PDFs on a fully approved month", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS53", section: "J", priority: "P1", title: "12028_TS53: No-role BO user blocked on the PDF download address (manual)", manual: true },
+  { id: "12028_TS54", section: "J", priority: "P1", title: "12028_TS54: Download address of a month not fully approved is blocked (manual)", manual: true },
+  { id: "12028_TS55", section: "J", priority: "P3", title: "12028_TS55: Second download gives the same file", roles: ["approver"], inputs: ["month"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS56", section: "K", priority: "P1", title: "12028_TS56: FMC Payment Request PDF shows the SRD fields and the month's car amount", roles: ["approver"], inputs: ["month","name","name2","name3"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS57", section: "L", priority: "P1", title: "12028_TS57: MMSDA Payment Request PDF shows the SRD fields and the month's motorcycle amount", roles: ["approver"], inputs: ["month","name","name2","name3"], labels: {"month":"Fully approved month"} },
+  { id: "12028_TS58", section: "M", priority: "P1", title: "12028_TS58: BO login hand-off opens Association Payment Listing and module logout needs a fresh login", roles: ["drafter"] },
+  { id: "12028_TS59", section: "M", priority: "P1", title: "12028_TS59: Used SSO hand-off address cannot log in again (manual)", manual: true },
+  { id: "12028_TS60", section: "M", priority: "P1", title: "12028_TS60: Core logout logs out the open Association Payment Listing tab", roles: ["drafter"] },
+  { id: "12028_TS61", section: "M", priority: "P2", title: "12028_TS61: Session expiry returns to BO login without an error page", roles: ["drafter"], inputs: ["timeoutMin"] },
+  { id: "12028_TS62", section: "M", priority: "P1", title: "12028_TS62: Logout redirect to an outside address stays on eAuto (manual)", manual: true },
+  { id: "12028_TS63", section: "M", priority: "P1", title: "12028_TS63: Session-expiry redirect to an outside address stays on eAuto (manual)", manual: true },
+  { id: "12028_TS64", section: "M", priority: "P1", title: "12028_TS64: Drafter Approve from two tabs makes one audit row", roles: ["drafter"], inputs: ["month"], labels: {"month":"Pending month"} },
+  { id: "12028_TS65", section: "M", priority: "P1", title: "12028_TS65: Reviewer Approve from two tabs makes one audit row", roles: ["reviewer"], inputs: ["month"], labels: {"month":"Drafter Approved month"} },
+  { id: "12028_TS66", section: "M", priority: "P1", title: "12028_TS66: Approver Approve from two tabs makes one audit row and one payment date", roles: ["approver"], inputs: ["month"], labels: {"month":"Reviewer Approved month"} },
+  { id: "12028_TS67", section: "M", priority: "P1", title: "12028_TS67: Forced Reviewer approval on a Pending month is rejected (manual)", manual: true },
+  { id: "12028_TS68", section: "M", priority: "P1", title: "12028_TS68: Forced Approver approval before the Reviewer approves is rejected (manual)", manual: true },
+  { id: "12028_TS69", section: "M", priority: "P1", title: "12028_TS69: Forced action on a fully approved month is rejected (manual)", manual: true },
 ];
+SCENARIOS.sort((a, b) => Number(a.id.split("_TS")[1]) - Number(b.id.split("_TS")[1]));
 
 /** Test-data setup (not a TS): its own box above the TS sections. */
 const SETUP = { id: "12028_PREP", title: "12028_PREP: Move a month to a chosen workflow status", roles: ["drafter", "reviewer", "approver"] as RoleKey[] };
@@ -153,15 +156,23 @@ const ROLES = Object.keys(ROLE_LABEL) as RoleKey[];
 const INPUT_ENV: Record<InputKey, string> = {
   month: "E12028_MONTH", month2: "E12028_MONTH2", state: "E12028_STATE", state2: "E12028_STATE2", vehicle: "E12028_VEHICLE",
   count: "E12028_COUNT", count2: "E12028_COUNT2", name: "E12028_NAME", name2: "E12028_NAME2", name3: "E12028_NAME3", payDate: "E12028_PAY_DATE",
-  expectMenu: "E12028_EXPECT_MENU", expectKiv: "E12028_EXPECT_KIV", expectSig: "E12028_EXPECT_SIG",
+  expectKiv: "E12028_EXPECT_KIV", expectSig: "E12028_EXPECT_SIG",
   waitMin: "E12028_WAIT_MIN", timeoutMin: "E12028_TIMEOUT_MIN", target: "E12028_TARGET",
   // One month per status, for the TS that visit several months (scripts/eauto-12028/utils/combined.ts MONTH_KEY).
   mPending: "E12028_M_PENDING", mKIV: "E12028_M_KIV", mDRA: "E12028_M_DRA", mDA: "E12028_M_DA", mRRA: "E12028_M_RRA", mRA: "E12028_M_RA", mFull: "E12028_M_FULL",
 };
 const MONTH_INPUTS: InputKey[] = ["month", "month2", "mPending", "mKIV", "mDRA", "mDA", "mRRA", "mRA", "mFull"];
+// Month fields may be left blank: the script then picks the first month in the status the TS needs from the
+// Summary, and skips the TS with a note when there is none (Faizuddin, 2026-11-03: "it will automatically search
+// of available month based on the status it is targetting ... DOES NOT considered failed").
+// These TS need one particular month a status cannot find (data typed with it, or a month from an earlier TS), so they stay required.
+const TYPED_MONTH = new Set(["12028_TS09", "12028_TS11", "12028_TS14", "12028_TS15", "12028_TS16", "12028_TS17", "12028_TS18", "12028_TS19", "12028_TS41", "12028_TS47", "12028_TS48", "12028_PREP"]);
+const autoMonth = (id: string, k: InputKey) => MONTH_INPUTS.includes(k) && !TYPED_MONTH.has(id);
 
 /** Environments (staging = the /eauto instance from 2026-10-21). Chosen, never prefilled. */
-const ENVIRONMENTS = [{ value: "https://staging.eauto.my|eauto", label: "Staging — staging.eauto.my/eauto" }];
+// uat3 removed (Faizuddin, dashboard chat 2026-11-02: "remove it"); sit4 and uat3 are never used.
+const ENVIRONMENTS = ["eauto", "sit2", "sit3", "uat1", "uat2", "uat4"]
+  .map(i => ({ value: `https://staging.eauto.my|${i}`, label: `Staging — staging.eauto.my/${i}` }));
 
 function inputLabel(s: { labels?: Partial<Record<InputKey, string>> }, k: InputKey): string {
   const own = s.labels?.[k];
@@ -178,7 +189,6 @@ function inputLabel(s: { labels?: Partial<Record<InputKey, string>> }, k: InputK
     case "name2": return "Reviewer full name (as on the PDF)";
     case "name3": return "Approver full name (as on the PDF)";
     case "payDate": return "Payment date (DD-MM-YYYY)";
-    case "expectMenu": return "BA answer: menu item for a no-role user";
     case "expectKiv": return "Final KIV rule (BA)";
     case "expectSig": return "Final signature rule (BA)";
     case "waitMin": return "Month-close wait (minutes, ≥ one cron interval)";
@@ -196,7 +206,6 @@ function inputLabel(s: { labels?: Partial<Record<InputKey, string>> }, k: InputK
 
 const CHOICES: Partial<Record<InputKey, string[]>> = {
   vehicle: ["Car", "Motorcycle"],
-  expectMenu: ["shown", "hidden"],
   expectKiv: ["can act", "locked"],
   expectSig: ["per role", "per person"],
 };
@@ -215,7 +224,7 @@ interface RunResponse {
   error?: string; stopped?: boolean; log?: string; video?: string; evidence?: EvidenceItem[]; details?: DetailItem[]; runId?: string; runLabel?: string;
 }
 
-type QueueStatus = "pending" | "running" | "passed" | "failed" | "stopped";
+type QueueStatus = "pending" | "running" | "passed" | "failed" | "skipped" | "stopped";
 interface QueueItem { id: string; title: string; record: boolean; status: QueueStatus; env: Record<string, string>; res?: RunResponse }
 interface QueueState { items: QueueItem[]; currentIndex: number; active: boolean; body: Record<string, unknown> }
 
@@ -228,10 +237,20 @@ const UI_KEY = "eauto_12028_ui_state";
 const POOL_KEY = "eauto_12028_month_pool";
 
 interface Creds { env: string; users: Record<RoleKey, { user: string; pass: string }> }
-const EMPTY_CREDS: Creds = { env: "", users: Object.fromEntries(ROLES.map(r => [r, { user: "", pass: "" }])) as Creds["users"] };
-interface UiState { selected: string[]; headless: boolean; detailed: boolean; collapsed: Record<string, boolean>; rows: Record<string, Partial<Record<InputKey, string>>> }
+// Default staging logins — Faizuddin, 2026-11-02 (dashboard chat to Dwarf): "put in the username and password.
+// the username is the same as the user mentioned by scribe. they all share the same password".
+// Users from Scribe's related history (EAINT-8638 sheet "Authorized Users" R4-R12): kmcheah, mfizni,
+// eautonurul, mfared, eautozara. Which Drafter ID is "Drafter" vs "Second Drafter" is [unconfirmed].
+// No-role user: onghongkee (Faizuddin, 2026-11-02, same shared password). Super Admin not named yet: stays blank. Fields stay editable.
+const SHARED_STAGING_PASS = "eAut0#2026!"; // pipeline-check: allow password — shared staging password Faizuddin asked to prefill on 2026-11-02
+const DEFAULT_USERS: Partial<Record<RoleKey, string>> = { drafter: "mfared", drafter2: "eautozara", reviewer: "eautonurul", approver: "kmcheah", multi: "mfizni", norole: "onghongkee" }; // no-role login: "use onghongkee" (Faizuddin, 2026-11-02)
+const DEFAULT_CREDS: Creds = {
+  env: "",
+  users: Object.fromEntries(ROLES.map(r => [r, DEFAULT_USERS[r] ? { user: DEFAULT_USERS[r]!, pass: SHARED_STAGING_PASS } : { user: "", pass: "" }])) as Creds["users"],
+};
+interface UiState { selected: string[]; headless: boolean; detailed: boolean; collapsed: Record<string, boolean>; rows: Record<string, Partial<Record<InputKey, string>>>; results: Record<string, "passed" | "failed" | "skipped"> }
 // New runner: Headless OFF, Detailed ON (Faizuddin, 2026-10-15).
-const DEFAULT_UI: UiState = { selected: [], headless: false, detailed: true, collapsed: {}, rows: {} };
+const DEFAULT_UI: UiState = { selected: [], headless: false, detailed: true, collapsed: {}, rows: {}, results: {} };
 
 function load<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -288,6 +307,15 @@ function groupByTs(items: EvidenceItem[]): [string, EvidenceItem[]][] {
   return Array.from(groups.entries()).sort(([a], [b]) => (a === "Other" ? 1 : b === "Other" ? -1 : a.localeCompare(b)));
 }
 
+/** Row colour by the TS's latest result (scaffold skill §5 rule 17). */
+const RESULT_ROW: Record<string, string> = {
+  passed: "bg-green-950/40 border-l-4 border-green-600",
+  failed: "bg-red-950/40 border-l-4 border-red-600",
+  // No month in the needed status: not run, not failed (stays ticked to run again later).
+  skipped: "bg-amber-950/30 border-l-4 border-amber-600",
+  "": "",
+};
+
 const PRIORITY_STYLE: Record<string, string> = {
   P1: "border-red-800 text-red-300", P2: "border-amber-800 text-amber-300", P3: "border-slate-700 text-slate-400",
 };
@@ -300,9 +328,17 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
   const [detailed, setDetailed] = useState(savedUi.detailed);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(savedUi.collapsed);
   const [rows, setRows] = useState<UiState["rows"]>(savedUi.rows ?? {});
+  // Latest result per TS id (scaffold skill §5 rule 17): green row = passed, red = failed, amber = skipped (no month in the needed status), plain = not run.
+  const [results, setResults] = useState<UiState["results"]>(savedUi.results ?? {});
   const [creds, setCreds] = useState<Creds>(() => {
-    const c = load<Creds>(CREDS_KEY, EMPTY_CREDS);
-    return { ...c, users: { ...EMPTY_CREDS.users, ...c.users } };
+    const c = load<Creds>(CREDS_KEY, DEFAULT_CREDS);
+    // A role left blank in this browser takes the default login; anything typed stays as typed.
+    const users = { ...DEFAULT_CREDS.users };
+    for (const r of ROLES) {
+      const saved = c.users?.[r];
+      if (saved && (saved.user || saved.pass)) users[r] = saved;
+    }
+    return { ...c, users };
   });
   const [pool, setPool] = useState<PoolRecord[]>(() => loadList<PoolRecord>(POOL_KEY));
   const [formError, setFormError] = useState("");
@@ -322,7 +358,7 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
   const toggleTsSection = (id: string) => setCollapsed(p => ({ ...p, [id]: p[id] === false }));
   const tsCollapsed = (id: string) => collapsed[id] !== false;
 
-  useEffect(() => { localStorage.setItem(UI_KEY, JSON.stringify({ selected: Array.from(selected), headless, detailed, collapsed, rows })); }, [selected, headless, detailed, collapsed, rows]);
+  useEffect(() => { localStorage.setItem(UI_KEY, JSON.stringify({ selected: Array.from(selected), headless, detailed, collapsed, rows, results })); }, [selected, headless, detailed, collapsed, rows, results]);
   useEffect(() => { localStorage.setItem(CREDS_KEY, JSON.stringify(creds)); }, [creds]);
   useEffect(() => { localStorage.setItem(POOL_KEY, JSON.stringify(pool)); }, [pool]);
 
@@ -367,17 +403,25 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
     const prev = queueRef.current;
     if (!prev) return;
     const data = bgRun.result as RunResponse;
+    // Hand this run to PipelineRunWatcher before the next queued TS replaces it on RUN_KEY,
+    // so the official sheet gets its Pass / Fail (lib/finishedRuns.ts).
+    recordFinishedRun({ key: RUN_KEY, runId: bgRun.runId, startedAt: bgRun.startedAt, finishedAt: bgRun.finishedAt, result: bgRun.result, error: bgRun.error, meta: bgRun.meta });
     const idx = prev.currentIndex;
     const items = prev.items.slice();
     if (items[idx]) {
       const failed = !!data.error || !data.result || data.result.failed > 0 || data.result.total === 0;
-      const status: QueueStatus = data.stopped ? "stopped" : failed ? "failed" : "passed";
+      const skipped = !failed && !!data.result && data.result.checks.every(c => c.status === "skipped");
+      const status: QueueStatus = data.stopped ? "stopped" : failed ? "failed" : skipped ? "skipped" : "passed";
       items[idx] = { ...items[idx], res: data, status };
       const it = items[idx];
+      // Rule 17: colour the row by its result; a passed TS is unticked, a failed one stays ticked. A stopped TS stays plain and ticked.
+      if (status === "passed" || status === "failed" || status === "skipped") {
+        setResults(r => ({ ...r, [it.id]: status }));
+        if (status === "passed") setSelected(p => { if (!p.has(it.id)) return p; const n = new Set(p); n.delete(it.id); return n; });
+      }
       // A passed PREP run adds its month to the pool.
       if (it.id === SETUP.id && status === "passed") {
         const d = Object.fromEntries((data.details ?? []).map(x => [x.label, x.value]));
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- consumes a finished background run (external store), same queue pattern as app/eauto/12153
         if (d.Month && d.Status) setPool(p => [{ month: d.Month, status: d.Status, env: envLabel, created: Date.now(), uses: [] }, ...p.filter(r => !(r.month === d.Month && r.env === envLabel))]);
       }
       // Usage log on the pool record of the month this TS ran on.
@@ -433,7 +477,7 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
     for (const s of rowsToCheck) {
       for (const k of s.inputs) {
         const v = (rows[s.id]?.[k] ?? "").trim();
-        if (!v) missing.push(`${tsNo(s.id)} ${inputLabel(SCENARIOS.find(x => x.id === s.id) ?? {}, k)}`);
+        if (!v && !autoMonth(s.id, k)) missing.push(`${tsNo(s.id)} ${inputLabel(SCENARIOS.find(x => x.id === s.id) ?? {}, k)}`);
         else if (k === "payDate" && !/^\d{2}-\d{2}-\d{4}$/.test(v)) missing.push(`${tsNo(s.id)} payment date as DD-MM-YYYY`);
       }
     }
@@ -456,6 +500,8 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
       ...selectedTs.map(s => ({ id: s.id, title: s.title, record: true, status: "pending" as QueueStatus, env: rowEnv(s.id, s.inputs ?? []) })),
     ];
     items[0].status = "running";
+    // Rule 17: a new run clears the colour of the rows in this run only.
+    setResults(r => { const n = { ...r }; for (const it of items) delete n[it.id]; return n; });
     const q: QueueState = { items, currentIndex: 0, active: true, body: { env, headless, detailed } };
     setQueue(q);
     saveQueue(q);
@@ -507,7 +553,7 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
     let control: ReactNode;
     if (MONTH_INPUTS.includes(k)) control = (
       <select value={v} onChange={e => set(e.target.value)} className={field}>
-        <option value="">— month —</option>
+        <option value="">{autoMonth(s.id, k) ? "— auto: first month in the needed status —" : "— month —"}</option>
         {monthOptions(s.id).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
     );
@@ -535,7 +581,7 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
     else control = <input autoComplete="off" value={v} onChange={e => set(e.target.value)} placeholder={k === "payDate" ? "DD-MM-YYYY" : ""} className={field} />;
     return (
       <div key={k} className="min-w-0">
-        <span className={label}>{inputLabel(s, k)} <span className="text-red-400">*</span></span>
+        <span className={label}>{inputLabel(s, k)} {autoMonth(s.id, k) ? <span className="text-slate-500">(optional)</span> : <span className="text-red-400">*</span>}</span>
         {control}
       </div>
     );
@@ -613,7 +659,7 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
         )}
 
         <Section id="setup" title="Test data setup" collapsed={!!collapsed.setup} onToggle={toggleSection}>
-          <div className="flex gap-3 px-4 py-2.5">
+          <div className={clsx("flex gap-3 px-4 py-2.5", RESULT_ROW[results[SETUP.id] ?? ""])}>
             <input type="checkbox" checked={setupSelected} onChange={() => toggle(SETUP.id)} className="mt-1 accent-indigo-600 shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-mono text-slate-300 cursor-pointer" onClick={() => toggle(SETUP.id)}>{tsNo(SETUP.title)}</p>
@@ -648,7 +694,7 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3 px-1">
             <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Test scenarios</span>
-            <span className="text-xs text-slate-600">{automatedCount} automated · {manualCount} manual · P1 first</span>
+            <span className="text-xs text-slate-600">{automatedCount} automated · {manualCount} manual</span>
             <div className="flex-1" />
             <button onClick={() => setCollapsed(p => ({ ...p, ...Object.fromEntries(TS_SECTIONS.map(s => [`ts${s.letter}`, false])) }))} className="text-xs text-indigo-400 hover:text-indigo-300">Expand all</button>
             <button onClick={() => setCollapsed(p => ({ ...p, ...Object.fromEntries(TS_SECTIONS.map(s => [`ts${s.letter}`, true])) }))} className="text-xs text-slate-500 hover:text-slate-300">Collapse all</button>
@@ -667,7 +713,7 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
                   <button onClick={() => setSelected(p => { const n = new Set(p); auto.forEach(s => n.delete(s.id)); return n; })} className="text-xs text-slate-500 hover:text-slate-300">Clear</button>
                 </>}>
                 {list.map(s => (
-                  <div key={s.id} className={clsx("flex gap-3 px-4 py-2.5", s.manual ? "opacity-60" : "hover:bg-slate-800/40")}>
+                  <div key={s.id} className={clsx("flex gap-3 px-4 py-2.5", s.manual ? "opacity-60" : results[s.id] ? RESULT_ROW[results[s.id]] : "hover:bg-slate-800/40")}>
                     <input type="checkbox" disabled={s.manual} checked={selected.has(s.id)} onChange={() => toggle(s.id)} className="mt-1 accent-indigo-600 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <div className={clsx(!s.manual && "cursor-pointer")} onClick={() => !s.manual && toggle(s.id)}>
@@ -711,8 +757,8 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
             <div className="flex flex-wrap gap-1.5">
               {queue.items.map((it, i) => (
                 <span key={i} title={it.title} className={clsx("inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded border",
-                  it.status === "passed" && "border-green-800 text-green-300", it.status === "failed" && "border-red-800 text-red-300", it.status === "running" && "border-indigo-700 text-indigo-300", it.status === "stopped" && "border-amber-800 text-amber-300", it.status === "pending" && "border-slate-700 text-slate-500")}>
-                  {it.status === "running" ? <Loader2 size={10} className="animate-spin" /> : it.status === "passed" ? <CheckCircle2 size={10} /> : it.status === "failed" ? <XCircle size={10} /> : it.status === "stopped" ? <Square size={10} /> : null}
+                  it.status === "passed" && "border-green-800 text-green-300", it.status === "failed" && "border-red-800 text-red-300", it.status === "running" && "border-indigo-700 text-indigo-300", it.status === "stopped" && "border-amber-800 text-amber-300", it.status === "skipped" && "border-amber-700 text-amber-200", it.status === "pending" && "border-slate-700 text-slate-500")}>
+                  {it.status === "running" ? <Loader2 size={10} className="animate-spin" /> : it.status === "passed" ? <CheckCircle2 size={10} /> : it.status === "failed" ? <XCircle size={10} /> : it.status === "skipped" ? <AlertTriangle size={10} /> : it.status === "stopped" ? <Square size={10} /> : null}
                   {tsNo(it.title)}
                 </span>
               ))}
@@ -769,7 +815,8 @@ export default function Runner({ embedded = false, pick }: RunnerProps) {
                   {!c.video && !ev.length && !(c.details ?? []).length && <p className="p-4 text-xs text-slate-600">No evidence captured for this TS.</p>}
                 </div>
                 <div className="p-4 min-w-0">
-                  {c.friendlyError && <p className="mb-2 text-xs text-red-400/90 break-words">{c.friendlyError}</p>}
+                  {c.status === "skipped" && <p className="mb-2 text-xs text-amber-300 break-words">{(c.details ?? []).find(d => d.label === "No available month")?.value ?? "Not run (skipped)."}</p>}
+                  {c.status !== "skipped" && c.friendlyError && <p className="mb-2 text-xs text-red-400/90 break-words">{c.friendlyError}</p>}
                   {c.steps.length > 0 ? <StepList steps={c.steps} /> : <p className="text-xs text-slate-600">No steps recorded.</p>}
                 </div>
               </div>

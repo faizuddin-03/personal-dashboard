@@ -1,0 +1,8 @@
+# 12406_QT_TS3 — BEFORE half, 2026-10-28 15:21:15 MYT
+Staging: Secarang /ia/ (https://staging.secarang.com/ia) and CIBO (https://staging.secarang.com/cibo). EAINT-12406 not deployed (Azfar, 28.10.2026). Video: video_12406_QT_TS3.webm (one tab, one continuous recording).
+
+- Home form, tab "Company Car": typed ["HXA0002A","202501999999","55000"]; field values read back ["HXA0002A","202501999999","55000"]
+- Pop-up after Get quotation: "Sorry, we're unable to retrieve your vehicle information. Try again Do reach out to us via email or chat if you find this particular to be inaccurate. OK"
+E1 company owner answer: state "popup" at https://staging.secarang.com/ia/car-insurance; text "Sorry, we're unable to retrieve your vehicle information. Try again Do reach out to us via email or chat if you find this particular to be inaccurate. OK"
+
+Screenshots: 12406_QT_TS3_E1_01-home-form-filled-company-car.png, 12406_QT_TS3_E1_02-popup-after-get-quotation.png

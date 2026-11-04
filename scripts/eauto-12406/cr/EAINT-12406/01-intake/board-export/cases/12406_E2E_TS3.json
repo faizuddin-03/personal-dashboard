@@ -1,0 +1,50 @@
+{
+  "expected": "Ensure:\n• GrabPay sandbox payment settles: Success page 'Thank you for your purchase!' with Payment Method 'GrabPay' (observed) and a [Receipt] download; Receipt Total Premium = the Confirmation total\n• CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode in the e-wallet format of a Lonpac PayLater by Grab payment (observed today: \"Fiuu | eWallet – GrabPay – ...\"; exact text recorded)\n• CIBO Transaction Details: Cover Note No filled (not \"-\"); Payment Ref ID with 'SEW' like a Lonpac e-wallet payment (e.g. LON<yyyymmdd>SEW<nnnn>), with Allianz's own insurer code (recorded, Q30)",
+  "gate": {
+    "at": "29/10/2026, 18:49:55",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS3/2026-10-29T10-49-55_DEFECT",
+    "mismatch": [
+      "E3"
+    ],
+    "proved": [
+      "E1",
+      "E2"
+    ],
+    "reasons": [
+      "E3: expected \"CIBO Transaction Details: Cover Note No filled (not \"-\"); Payment Ref ID with 'SEW' like a Lonpac e-wallet payment (e.g. LON<yyyymmdd>SEW<nnnn>), with Allianz's\", page shows \"Cover Note No \"-\", Payment Ref ID \"ALZ20261029SEW0037\" (insurer code \"ALZ\")\" (04-cibo-details-cover-note-ref.png)"
+    ],
+    "run": "eaint-12406-retest-sretest-20261029-1835-A-c1",
+    "verdict": "DEFECT",
+    "warnings": []
+  },
+  "id": "12406_E2E_TS3",
+  "kiv": "Waiting for Dev (Q44): all passes except Cover Note '-' (Allianz cover note never returned on staging /ia/, before the deploy too).",
+  "labels": [],
+  "order": 22,
+  "points": [
+    {
+      "id": "E1",
+      "text": "GrabPay sandbox payment settles: Success page 'Thank you for your purchase!' with Payment Method 'GrabPay' (observed) and a [Receipt] download; Receipt Total Premium = the Confirmation total"
+    },
+    {
+      "id": "E2",
+      "text": "CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode in the e-wallet format of a Lonpac PayLater by Grab payment (observed today: \"Fiuu | eWallet – GrabPay – ...\"; exact text recorded)"
+    },
+    {
+      "id": "E3",
+      "text": "CIBO Transaction Details: Cover Note No filled (not \"-\"); Payment Ref ID with 'SEW' like a Lonpac e-wallet payment (e.g. LON<yyyymmdd>SEW<nnnn>), with Allianz's own insurer code (recorded, Q30)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "KIV",
+  "reviewed": false,
+  "section": "Allianz purchase, Fiuu payment channels",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: a third individual-owner renewal car that Allianz quotes\n• Payment: tile 'PayLater by Grab' (logo 'GrabPay') > Fiuu GrabPay sandbox popup > status 'Success' > [Pay] (doc §5; proven on /ia/ 19.10, receipt Payment Method 'GrabPay')",
+  "sheet": "E2E",
+  "situation": "Allianz purchase paid by PayLater by Grab: All Quotations > Add-ons > Confirmation > GrabPay sandbox > Success > CIBO",
+  "source": "SRD v1.1 REQ-002 Example 1b, §2.1.3a. Observed / current behaviour: tile 'PayLater by Grab', GrabPay sandbox, receipt Payment Method 'GrabPay' (team doc §5, live 19.10.2026); Payment Mode strings (doc §9: BA 20.10 / SRD 12327 v1.1; which string PayLater by Grab gives is open in the doc §15, so recorded); Ref ID 'SEW' for new e-wallet data (doc §9). CIBO columns / status: mockup CIBO 20261006 + doc §8",
+  "steps": "1. Secarang > Car tab > Private > plate, IC, postcode 55000 > [Get quotation] > All Quotations > Allianz\n2. Add-ons: keep the default; Confirmation: fill the owner details; Confirm and Pay\n3. Payment page: PayLater by Grab > GrabPay sandbox popup: status Success > [Pay]\n4. Screenshot the Success page; download the [Receipt]\n5. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot",
+  "updatedAt": "2026-10-30T00:30:00+08:00"
+}

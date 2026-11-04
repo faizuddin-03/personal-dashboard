@@ -1,0 +1,57 @@
+{
+  "expected": "Ensure:\n• Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the Insurance Company filter lists Allianz under the Serba Sentral group\n• With Allianz ticked: the list holds the E2E_TS1 to TS4 transactions; no Lonpac or Tokio Marine row\n• Same as before the deploy (SRD v1.1 §2.2.3: the listing is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): each Allianz row shows Ins. Co. \"Allianz\" over the agency badge \"Serba Sentral\" (as the old Allianz rows did on 28.10), the Ref. No. with its platform badge and the Paid badge styled like the Tokio Marine row, and \"-\" in UCD and UCD Name\n• The CSV export has the same Allianz rows as the screen, Insurance Company Allianz, Agency Serba Sentral\n• Same as before the deploy (REQ-010 Ex.2 / REQ-011: other insurers remain unchanged; SRD v1.1 §2.2.3): Lonpac and Tokio Marine rows show the agency Pemaju Eksklusif, and ticking Lonpac / TokioMarine returns their transactions (QT_TS4 / E2E_TS10)",
+  "gate": {
+    "at": "29/10/2026, 17:03:54",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS4/2026-10-29T09-03-54_EVIDENCE",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+    ],
+    "reasons": [
+      "no proof for E5"
+    ],
+    "run": "eaint-12406-run-sRC-20261029-1545-c1",
+    "verdict": "EVIDENCE",
+    "warnings": []
+  },
+  "id": "12406_RC_TS4",
+  "labels": [],
+  "order": 35,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the Insurance Company filter lists Allianz under the Serba Sentral group"
+    },
+    {
+      "id": "E2",
+      "text": "With Allianz ticked: the list holds the E2E_TS1 to TS4 transactions; no Lonpac or Tokio Marine row"
+    },
+    {
+      "id": "E3",
+      "text": "Same as before the deploy (SRD v1.1 §2.2.3: the listing is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): each Allianz row shows Ins. Co. \"Allianz\" over the agency badge \"Serba Sentral\" (as the old Allianz rows did on 28.10), the Ref. No. with its platform badge and the Paid badge styled like the Tokio Marine row, and \"-\" in UCD and UCD Name"
+    },
+    {
+      "id": "E4",
+      "text": "The CSV export has the same Allianz rows as the screen, Insurance Company Allianz, Agency Serba Sentral"
+    },
+    {
+      "id": "E5",
+      "text": "Same as before the deploy (REQ-010 Ex.2 / REQ-011: other insurers remain unchanged; SRD v1.1 §2.2.3): Lonpac and Tokio Marine rows show the agency Pemaju Eksklusif, and ticking Lonpac / TokioMarine returns their transactions (QT_TS4 / E2E_TS10)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "RE-RUN",
+  "reviewed": false,
+  "section": "CIBO listing and reports",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• The Allianz transactions of 12406_E2E_TS1 to TS4; the Lonpac transaction of 12406_QT_TS4 and the Tokio Marine one of E2E_TS10\n• Today's listing (walk 28.10, team doc §8): filters Platform, Insurance Company (grouped by agency), Date Range Type, From / Till, Transaction Status, Submission to JPJ Status, Road Tax, Discount Code, Search, Clear all; columns # · Transaction Ref. No. · Transaction Created Date · Insurance Created Date · UCD · UCD Name · Vehicle No · Vehicle Type · Insured · Payment · Payment Mode · Discount Code · Road Tax · Ins. Co. · Transaction Status · JPJ · Remark. Old Allianz rows already show 'Allianz' over a 'Serba Sentral' badge",
+  "sheet": "RC",
+  "situation": "CIBO Transaction Management: Allianz picked in the Insurance Company filter (Serba Sentral group); Allianz rows show Ins. Co. Allianz over the agency badge Serba Sentral, styled like other rows; the CSV export matches the screen",
+  "source": "Rule B (Azfar 29.10) for the 'Same as before the deploy' points: a page or behaviour 12406 does not change passes when it is the same after the deploy as before it, with a source saying it stays unchanged; a change is a defect. Agency Serba Sentral for Allianz: SRD v1.1 §2.1.3b + mockup CIBO 20261006 (Ins. Co. with agency) + observed on old Allianz rows (walk 28.10); filter groups, listing columns: observed (walk 28.10, team doc §8); CSV name and Agency column, '-' in UCD columns on Secarang rows, Lonpac / Tokio Marine = Pemaju Eksklusif: observed, current behaviour (team doc §4, §6, §8; BA testing plan EAINT-12058). Dashboard: recorded",
+  "steps": "1. CIBO > Transaction Management: open the Insurance Company filter; screenshot the three agency groups and their insurers\n2. Tick Allianz (under Serba Sentral; not the group header), Platform Secarang, Date Range Type Transaction Creation Date, today; [Search]; screenshot\n3. Untick Allianz, tick TokioMarine as well as Allianz; [Search]; one screenshot with an Allianz row next to a Tokio Marine row\n4. Allianz only again; Export; open the CSV (Transaction_Management_<date time>.csv); screenshot the Allianz rows with the Insurance Company and Agency columns\n5. Tick Lonpac, then TokioMarine (same date); [Search]; screenshot each\n6. CIBO > Dashboard: record whether it counts sales per insurer and whether Allianz is in it",
+  "updatedAt": "2026-10-29T05:00:44+00:00"
+}

@@ -1,0 +1,41 @@
+{
+  "expected": "Ensure:\n• Home page insurer logos, in this order: Lonpac, Allianz, Tokio Marine (no other insurer logo, e.g. no RHB)\n• The Allianz logo is the Allianz logo image (not a broken image, blank box or text)",
+  "gate": {
+    "at": "29/10/2026, 15:50:06",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_CP_TS1",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sCP-20261029-1545-c1",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_CP_TS1",
+  "labels": [],
+  "order": 2,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Home page insurer logos, in this order: Lonpac, Allianz, Tokio Marine (no other insurer logo, e.g. no RHB)"
+    },
+    {
+      "id": "E2",
+      "text": "The Allianz logo is the Allianz logo image (not a broken image, blank box or text)"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "Home page",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/",
+  "sheet": "CP",
+  "situation": "Home page insurer logos show Allianz between Lonpac and Tokio Marine",
+  "source": "SRD v1.1 §2.2.4 REQ-001 Example 1a (exactly these three); §2.2.2 #2e",
+  "steps": "1. Open Secarang > Home\n2. Scroll to the insurer logos; screenshot them left to right",
+  "updatedAt": "2026-10-29T16:30:00+08:00"
+}

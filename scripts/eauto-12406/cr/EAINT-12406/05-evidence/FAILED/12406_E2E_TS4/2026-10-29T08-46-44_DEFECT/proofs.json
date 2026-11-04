@@ -1,0 +1,63 @@
+{
+  "ts": "12406_E2E_TS4",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'ShopeePay' and a [Receipt] download",
+      "shows": "Success: \"Thank you for your purchase!\" shown; Receipt No. \"26102921300030\"; Purchase Date \"29 Oct 2026 - 4:44 PM\"; Payment Method \"ShopeePay\"; [Receipt] shown",
+      "match": true,
+      "shot": "01-success-page.png",
+      "at": "29/10/2026, 16:45:26",
+      "url": "/ia/car-insurance/payment-success/5480206f-bafe-4628-8445-a990bb54b9eb",
+      "side": "Secarang"
+    },
+    {
+      "point": "E1",
+      "expected": "Receipt Total Premium = the total on the Confirmation page",
+      "shows": "Receipt Total Premium (not found in the PDF); Confirmation Total Premium RM 941.13",
+      "match": false,
+      "shot": "02-receipt-total-premium.png",
+      "at": "29/10/2026, 16:45:31",
+      "url": "/ia/car-insurance/payment-success/5480206f-bafe-4628-8445-a990bb54b9eb",
+      "side": "Secarang"
+    },
+    {
+      "point": "E2",
+      "expected": "CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode \"Fiuu | eWallet – ShopeePay\" (observed)",
+      "shows": "Ref BR60006352: Ins. Co. \"Allianz Serba Sentral\", Payment \"RM…Paid 29-10-2026 16:44\", Payment Mode \"Fiuu | eWallet – ShopeePay\", Transaction Status \"Insurance created\"",
+      "match": true,
+      "shot": "03-cibo-listing-row.png",
+      "at": "29/10/2026, 16:45:41",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "CIBO Transaction Details: Payment Ref ID with 'SEW' like a Lonpac e-wallet payment, with Allianz's own insurer code (recorded, Q30)",
+      "shows": "Payment Ref ID \"ALZ20261029SEW0028\" (insurer code \"ALZ\")",
+      "match": true,
+      "shot": "04-cibo-details-ref.png",
+      "at": "29/10/2026, 16:45:46",
+      "url": "/cibo/transaction-management/transaction-details/5480206f-bafe-4628-8445-a990bb54b9eb",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "on the site: Secarang (https://staging.secarang.com/ia/)",
+    "payment window allowed: shopeepay success",
+    "window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/5480206f-bafe-4628-8445-a990bb54b9eb/ShopeePay",
+    "window opened by the site and kept (payment window 2): about:blank",
+    "downloaded: secarang-receipt-HXA0014A-PERSONAL-DATA.pdf",
+    "signed in: CIBO (cibo)",
+    "handed on for later TS: allianzPurchase:shopeepay = {\"ref\":\"BR60006352\",\"plate\":\"HXA0014A\",\"receiptNo\":\"26102921300030\",\"since\":\"2026-10-29T08:43:55.801Z\",\"secarangReceipt\":\"C:\\\\Users\\\\Azfar\\\\Documents\\\\Github Pro\\\\eauto-qa-azfar\\\\cr\\\\EAINT-12406\\\\04-runs\\\\eaint-12406-run-sE2E-20261029-1545-c1\\\\ts\\\\12406_E2E_TS4\\\\downloadable (after)\\\\secarang-receipt-HXA0014A-PERSONAL-DATA.pdf\"}",
+    "Allianz insurer code in the Payment Ref ID (recorded, Q30): \"ALZ\"",
+    "payment window 1 on the TS video 00:40.9–00:51.2",
+    "payment window 2 on the TS video 00:46.7–00:51.9",
+    "payment window video laid into video_12406_E2E_TS4.webm (2 window(s), picture-in-picture, bottom right)"
+  ],
+  "opened": [
+    "about:blank"
+  ]
+}

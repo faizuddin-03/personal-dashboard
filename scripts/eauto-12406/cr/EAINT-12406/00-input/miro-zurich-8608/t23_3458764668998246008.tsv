@@ -1,0 +1,287 @@
+"6/12
+
+ Plan Details & Excess Info"								
+TS No.	Vehicle Type	Insurance Type	Page	Test Scenario	Expected Result	QA	Result	Remark
+TS_PDEI_1	Car	Comprehensive	Choose Insurance > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Plan Details]
+Observe the details of the plan"	"Ensure the Plan Details has the following:
+Coverage Inclusion
+Third Party Bodily Injury and Death
+Third Party Loss or Damage
+Loss/damage to your vehicle caused by theft or fire
+Damage to your vehicle due to accident
+Towing service
+Unlimited towing & breakdown assistance nationwide
+Driver Coverage
+Cover all drivers
+Daily Hospital Income
+Inconvenience Allowance due to Flood
+Road assistance services
+Unlimited towing & breakdown assistance nationwide
+Panel workshop referral services
+Courtesy Car
+Optional coverage
+All Drivers
+Legal Liability to Passengers
+CART (Compensation for Assessed Repair Time)
+Inclusion of Special Perils
+Legal Liability of Passengers for Negligent Acts
+Breakage of Glass in Windscreen, Window, or Sunroof
+More info (hyperlinks should open new tab)
+Z-Drive Assist Takaful Flyer
+Product Disclosure (Driver version)
+Certificate Wording (Driver Version)"	Faiz	Pass	
+TS_PDEI_2			Payment Confirmation > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Plan Details]
+Observe the details of the plan"		Faiz	Pass	
+TS_PDEI_3			Payment Confirmation > Excess Info	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Info] ('i' symbol) at the 'Excess' row
+Observe the details of the additional information"	"Ensure the Excess Info has the following:
+
+Compulsory Excess / Excess / Damage Claim 
+
+This refers to an additional excess amount that you, as policy holder, would be required to bear, in the event of a claim.
+
+The relevance of this excess depends on specific circumstances of the authorised driver at the time of the accident.
+
+Here are some instances as to why compulsory excess applies to you:
+Below 21 years old
+Holds an L license
+Held a full license for less than 2 years"	Faiz	Pass	
+TS_PDEI_4		TPFT	Choose Insurance > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (TPFT) and click [Plan Details]
+Observe the details of the plan"	"Ensure the Plan Details has the following:
+Coverage Inclusion
+Third Party Bodily Injury and Death
+Third Party Loss or Damage
+Loss/damage to your vehicle caused by theft or fire
+Damage to your vehicle due to accident
+Towing service
+Unlimited towing & breakdown assistance nationwide
+Driver Coverage
+Cover all drivers
+Daily Hospital Income
+Inconvenience Allowance due to Flood
+Road assistance services
+Unlimited towing & breakdown assistance nationwide
+Panel workshop referral services
+Courtesy Car
+Optional coverage
+All Drivers
+Legal Liability to Passengers
+CART (Compensation for Assessed Repair Time)
+Inclusion of Special Perils
+Legal Liability of Passengers for Negligent Acts
+Breakage of Glass in Windscreen, Window, or Sunroof
+More info (hyperlinks should open new tab)
+Z-Drive Assist Takaful Flyer
+Product Disclosure (Driver version)
+Certificate Wording (Driver Version)"	Faiz		
+TS_PDEI_5			Payment Confirmation > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (TPFT) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Plan Details]
+Observe the details of the plan"		Faiz		
+TS_PDEI_6			Payment Confirmation > Excess Info	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (TPFT) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Info] ('i' symbol) at the 'Excess' row
+Observe the details of the additional information"	"Ensure the Excess Info has the following:
+
+Compulsory Excess / Excess / Damage Claim 
+
+This refers to an additional excess amount that you, as policy holder, would be required to bear, in the event of a claim.
+
+The relevance of this excess depends on specific circumstances of the authorised driver at the time of the accident.
+
+Here are some instances as to why compulsory excess applies to you:
+Below 21 years old
+Holds an L license
+Held a full license for less than 2 years"	Faiz		
+TS_PDEI_7	EV	Comprehensive	Choose Insurance > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Plan Details]
+Observe the details of the plan"	"Ensure the Plan Details has the following:
+Coverage Inclusion
+Third Party Bodily Injury and Death
+Third Party Loss or Damage
+Loss/damage to your vehicle caused by theft or fire
+Damage to your vehicle due to accident
+Towing service
+Unlimited towing & breakdown assistance nationwide
+Driver Coverage
+Cover all drivers
+Daily Hospital Income
+Inconvenience Allowance due to Flood
+Road assistance services
+Unlimited towing & breakdown assistance nationwide
+Panel workshop referral services
+Courtesy Car
+Optional coverage
+All Drivers
+Legal Liability to Passengers
+CART (Compensation for Assessed Repair Time)
+Inclusion of Special Perils
+Legal Liability of Passengers for Negligent Acts
+Breakage of Glass in Windscreen, Window, or Sunroof
+More info (hyperlinks should open new tab)
+Z-Driver Comprehensive: EV Protect Flyer
+Product Disclosure (Driver version)
+Certificate Wording (Driver Version)"			
+TS_PDEI_8			Payment Confirmation > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Plan Details]
+Observe the details of the plan"				
+TS_PDEI_9			Payment Confirmation > Excess Info	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Info] ('i' symbol) at the 'Excess' row
+Observe the details of the additional information"	"Ensure the Excess Info has the following:
+
+Compulsory Excess / Excess / Damage Claim 
+
+This refers to an additional excess amount that you, as policy holder, would be required to bear, in the event of a claim.
+
+The relevance of this excess depends on specific circumstances of the authorised driver at the time of the accident.
+
+Here are some instances as to why compulsory excess applies to you:
+Below 21 years old
+Holds an L license
+Held a full license for less than 2 years"			
+		TPFT	Choose Insurance > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (TPFT) and click [Plan Details]
+Observe the details of the plan"	"Ensure the Plan Details has the following:
+Coverage Inclusion
+Third Party Bodily Injury and Death
+Third Party Loss or Damage
+Loss/damage to your vehicle caused by theft or fire
+Damage to your vehicle due to accident
+Towing service
+Unlimited towing & breakdown assistance nationwide
+Driver Coverage
+Cover all drivers
+Daily Hospital Income
+Inconvenience Allowance due to Flood
+Road assistance services
+Unlimited towing & breakdown assistance nationwide
+Panel workshop referral services
+Courtesy Car
+Optional coverage
+All Drivers
+Legal Liability to Passengers
+CART (Compensation for Assessed Repair Time)
+Inclusion of Special Perils
+Legal Liability of Passengers for Negligent Acts
+Breakage of Glass in Windscreen, Window, or Sunroof
+More info (hyperlinks should open new tab)
+Z-Driver Comprehensive: EV Protect Flyer
+Product Disclosure (Driver version)
+Certificate Wording (Driver Version)"			
+			Payment Confirmation > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (TPFT) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Plan Details]
+Observe the details of the plan"				
+			Payment Confirmation > Excess Info	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (TPFT) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Info] ('i' symbol) at the 'Excess' row
+Observe the details of the additional information"	"Ensure the Excess Info has the following:
+
+Compulsory Excess / Excess / Damage Claim 
+
+This refers to an additional excess amount that you, as policy holder, would be required to bear, in the event of a claim.
+
+The relevance of this excess depends on specific circumstances of the authorised driver at the time of the accident.
+
+Here are some instances as to why compulsory excess applies to you:
+Below 21 years old
+Holds an L license
+Held a full license for less than 2 years"			
+TS_PDEI_10	Motorbike	Comprehensive	Choose Insurance > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Plan Details]
+Observe the details of the plan"	"Ensure the Plan Details has the following:
+Coverage Inclusion
+Third Party Coverages
+Towing service
+Unlimited towing & breakdown assistance nationwide
+Rider Coverage
+Cover all riders
+Road assistance services
+Unlimited towing & breakdown assistance nationwide
+Panel workshop referral services
+Optional coverage
+Inclusion of Special Perils
+Legal Liability to Pillion
+More info (hyperlinks should open new tab)
+Z-Rider (Plus) Takaful
+Product Disclosure Sheet
+Certificate Wording"	Faiz	Pass	Rider Coverage is showing as Driver Coverage without any details
+TS_PDEI_11			Payment Confirmation > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Plan Details]
+Observe the details of the plan"		Faiz	Pass	Rider Coverage is showing as Driver Coverage without any details
+TS_PDEI_12			Payment Confirmation > Excess Info	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Comprehensive) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Info] ('i' symbol) at the 'Excess' row
+Observe the details of the additional information"	"Ensure the Excess Info has the following:
+
+Compulsory Excess / Excess / Damage Claim 
+
+This refers to an additional excess amount that you, as policy holder, would be required to bear, in the event of a claim.
+
+The relevance of this excess depends on specific circumstances of the authorised driver at the time of the accident.
+
+Here are some instances as to why compulsory excess applies to you:
+Below 21 years old
+Holds an L license
+Held a full license for less than 2 years"	Faiz	Pass	
+TS_PDEI_13		Third Party	Choose Insurance > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Third Party) and click [Plan Details]
+Observe the details of the plan"	"Ensure the Plan Details has the following:
+Coverage Inclusion
+Third Party Coverages
+Towing service
+Unlimited towing & breakdown assistance nationwide
+Rider Coverage
+Cover all riders
+Road assistance services
+Unlimited towing & breakdown assistance nationwide
+Panel workshop referral services
+Optional coverage
+All Riders
+Inclusion of Special Perils
+Legal Liability to Pillion
+More info
+Z-Rider (Plus) Takaful
+Product Disclosure Sheet
+Certificate Wording
+
+Note: Driver and Rider have different Certificate Wording and Product Disclosure"	Faiz		
+TS_PDEI_14			Payment Confirmation > Plan Details	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Third Party) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Plan Details]
+Observe the details of the plan"		Faiz		
+TS_PDEI_15			Payment Confirmation > Excess Info	"From Secarang main page, enter vehicle details and click [Get Quotation]
+Select Zurich Takaful (Third Party) and click [Buy]
+Choose add-ons and click [Continue]
+At Takaful Details, click [Info] ('i' symbol) at the 'Excess' row
+Observe the details of the additional information"	"Ensure the Excess Info has the following:
+
+Compulsory Excess / Excess / Damage Claim 
+
+This refers to an additional excess amount that you, as policy holder, would be required to bear, in the event of a claim.
+
+The relevance of this excess depends on specific circumstances of the authorised driver at the time of the accident.
+
+Here are some instances as to why compulsory excess applies to you:
+Below 21 years old
+Holds an L license
+Held a full license for less than 2 years"	Faiz		

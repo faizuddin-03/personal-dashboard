@@ -17,8 +17,9 @@ import { header, joinPrompt, STYLE_RULES, NAMES } from "../prompts-common.mjs";
 import { sageTools } from "./_tools.mjs";
 import { KNOWLEDGE_RULES, ANSWER_RULES, IMPROVEMENT_RULES, handoffRules, snapshotKnowledge, finishSageJob } from "./_sage-common.mjs";
 
-const QUIET_MS = Number(process.env.PIPELINE_SAGE_QUIET_MS ?? 2 * 60 * 1000);
-const MAX_WAIT_MS = 20 * 60 * 1000;          // a busy afternoon still gets learned within 20 min
+// Token cut (Faizuddin, 2026-11-02): was 2 min quiet / 20 min max.
+const QUIET_MS = Number(process.env.PIPELINE_SAGE_QUIET_MS ?? 30 * 60 * 1000);
+const MAX_WAIT_MS = 2 * 60 * 60 * 1000;      // a busy afternoon still gets learned within 2 h
 const MAX_EVENTS = 60;
 const CHAT_BUDGET = 60_000;
 const sleep = ms => new Promise(r => setTimeout(r, ms));

@@ -1,0 +1,45 @@
+{
+  "ts": "12406_RC_TS3",
+  "run": "eaint-12406-rerun-sRC-20261029-1545",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Insurer: \"Allianz General Insurance Company (Malaysia) Berhad\", with \"200601015674 (735426-V)\" below it (SRD wording; if it comes on the same line as the name, like Tokio Marine today, record it for Q42)",
+      "shows": "Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\"; the number is after the name in the same text, drawn on the line below (wrapped) (layout recorded for Q42)",
+      "match": true,
+      "shot": "01-transaction-details-insurer.png",
+      "at": "29/10/2026, 17:54:21",
+      "url": "/cibo/transaction-management/transaction-details/1268559d-8d8c-4b0f-95f3-5678552a0d85",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "The insurer box shows the Allianz logo",
+      "shows": "insurer box logo: src \"./assets/images/bank-logo/allianz.png\", alt \"Allianz logo\"",
+      "match": true,
+      "shot": "02-transaction-details-allianz-logo.png",
+      "at": "29/10/2026, 17:54:23",
+      "url": "/cibo/transaction-management/transaction-details/1268559d-8d8c-4b0f-95f3-5678552a0d85",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "More Info: Platform \"Secarang\", Agency \"Serba Sentral\" (Agency No. and Agency PIAM ID recorded; today's old Allianz rows show SC12562 / 195379-01)",
+      "shows": "More Info: Platform \"Secarang\", Agency \"Serba Sentral\" (recorded: Agency No. \"SC12562\", Agency PIAM ID \"195379-01\")",
+      "match": true,
+      "shot": "03-transaction-details-more-info.png",
+      "at": "29/10/2026, 17:54:25",
+      "url": "/cibo/transaction-management/transaction-details/1268559d-8d8c-4b0f-95f3-5678552a0d85",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "hand-off \"allianzPurchase\": 12406_E2E_TS1 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:31:20.401Z — ref BR60006349, plate HXA0011A, receipt no 26102921300027, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "signed in: CIBO (cibo)",
+    "recorded: \"Check JPJ Status\" is not shown; document buttons: Receipt",
+    "hand-off \"tokioMarinePurchase\": 12406_E2E_TS10 in run eaint-12406-run-sE2E-20261029-1545-c2 at 2026-10-29T08:56:05.766Z — ref BR60006354, plate HXA0004A, receipt no 26102921300034, receipt file secarang-receipt-HXA0004A-tokio-marine-PERSONAL-DATA.pdf",
+    "recorded for Q42: Allianz BR60006349 number after the name in the same text, drawn on the line below (wrapped); Tokio Marine BR60006354 \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\" number on the same line"
+  ],
+  "opened": []
+}

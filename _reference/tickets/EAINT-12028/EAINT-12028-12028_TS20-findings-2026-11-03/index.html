@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12028_TS20 Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #f5f7f9; --surface: #ffffff; --fg: #1b2530; --muted: #5a6876; --line: #d8dfe6;
+  --accent: #1f5f8b; --bad: #b42318; --bad-bg: #fdecea; --good: #146c43; --good-bg: #e7f5ee; --quote-bg: #eef3f7;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; --mono: "JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a; --quote-bg: #1f2b36; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a; --quote-bg: #1f2b36; color-scheme: dark }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 30px/1.15 var(--body); margin: 0; }
+h2 { font: 700 22px/1.2 var(--body); margin: 0; }
+h3 { font: 600 13px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.meta { color: var(--muted); font-size: 14px; }
+.status { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.pill { font: 600 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; background: var(--bad-bg); color: var(--bad); }
+.pill.good { background: var(--good-bg); color: var(--good); }
+section.finding { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px 20px; display: grid; gap: 20px; }
+.finding-head { display: grid; gap: 8px; border-left: 4px solid var(--bad); padding-left: 12px; }
+.finding-head.soft { border-left-color: var(--accent); }
+.source { display: grid; gap: 10px; min-width: 0; }
+blockquote { margin: 0; background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; }
+blockquote cite { display: block; margin-top: 8px; font: 12px/1.4 var(--mono); color: var(--muted); font-style: normal; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+figcaption { font: 12px/1.4 var(--mono); color: var(--muted); }
+.ask { background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; display: grid; gap: 4px; }
+.ask strong { color: var(--accent); }
+ul.passed { margin: 0; padding-left: 20px; }
+</style></head>
+<body><div class="wrap">
+  <header>
+    <span class="eyebrow">EAINT-12028</span>
+    <h1>12028_TS20: Drafter first Approve with the signature pad sets Drafter Status Approved</h1>
+    <p class="meta">Dashboard run 3 Nov 2026, 5:08 pm (run 5935c55e-dc61-422e-83bf-3bd6d8f8ae30). Written by Elf from the run result.</p>
+    <div class="status"><span class="pill good">1 automation, not the system</span></div>
+  </header>
+
+  <section class="finding">
+    <div class="finding-head soft">
+      <span class="eyebrow">Issue 1 · automation, not the system</span>
+      <h2>Run stopped at the Drafter&#39;s own step &#39;Open Reports → Association Payment Listing&#39; saying the heading was missing, yet the failure screenshot shows the Summary page with its heading</h2>
+      <p><strong>Actual:</strong> Error: no &quot;Association Payment Listing&quot; heading within 20 s at /backoffice/admin/association; screenshot shows the heading, Year filter and 12 month rows &nbsp; <strong>Expected:</strong> Drafter reaches the Summary page, then the TS continues to the signature steps. The failure is before step 1 of the TS finishes (Drafter login/open); the SRD has no rule on this, the expectation comes from the TS row 4 (12028_TS20).</p>
+      <p><strong>Triage:</strong> known (plausible) · same as 12028_TS06-8b0b7c97-6f4e-4909-b0b0-b73790f21e80 — Same error, same step and same script line (AplSummaryPage.expectShown, pages/AplSummaryPage.ts:27-29) as 12028_TS06 on 2026-11-02; this time reached through Session.openMonth (utils/session.ts:115). The screenshot shows the Summary heading, Year 2026 and 12 months, so the page had rendered; the 20 s heading wait still reports it missing. The wait in expectShown is unchanged.<br><strong>Ruled out:</strong> Product defect: the Summary page is correct in the screenshot (heading, Year 2026, Search, View links); Wrong URL or module: https://staging.eauto.my/backoffice/admin/association is the module&#39;s own address; Login failure: run log shows login OK as Drafter &#39;Muhammad Fared&#39;; Data: the month states in the screenshot never come into play, the run stopped before any month was opened</p>
+    </div>
+    <div class="source"><h3>What the TS says</h3><blockquote>Row 4 (12028_TS20)
+Test Objective: Verify the Drafter is offered Approve and KIV only, and the first approval needs a signature before Drafter Status turns Approved.
+Test Steps: 1. Login to BO as Drafter (never signed before)
+2. Search Year 2026
+3. Click [View] on a month with all statuses Pending
+4. Click [Approve]
+5. Draw a signature; click [Clear]
+6. Click [Save &amp; Approve] with the pad empty
+7. Click [Cancel]
+8. Click [Approve]
+9. Sign on the pad
+10. Click [Save &amp; Approve]<cite>12028_TS20</cite></blockquote></div>
+    <div class="source"><h3>What the SRD says</h3><p>Nothing on this. The expected result comes from the TS.</p></div>
+    <div class="source"><h3>What the system shows</h3>
+      <figure><img src="img/evidence-01-12028_TS20-failed.png" alt="12028_TS20-failed"><figcaption>12028_TS20-failed</figcaption></figure>
+      <blockquote>Error: The Association Payment Listing Summary did not open (no &quot;Association Payment Listing&quot; heading) at https://staging.eauto.my/backoffice/admin/association.<cite>Run error · step "Open Reports → Association Payment Listing"</cite></blockquote>
+    </div>
+    
+  </section>
+
+</div></body></html>

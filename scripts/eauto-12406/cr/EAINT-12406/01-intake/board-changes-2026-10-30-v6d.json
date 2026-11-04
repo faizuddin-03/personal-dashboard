@@ -1,0 +1,33 @@
+[
+ {
+  "collection": "cases",
+  "doc_id": "12406_E2E_TS12",
+  "data": {
+   "id": "12406_E2E_TS12",
+   "sheet": "E2E",
+   "order": 27,
+   "section": "Allianz purchase: add-ons, Confirmation, switching insurer",
+   "priority": "P2",
+   "situation": "Allianz add-on options one by one, then a purchase with ALL add-ons ticked (Zurich's all-add-ons purchase failed)",
+   "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: an individual-owner renewal car that Allianz quotes (not used by another row). Seen 29.10: Add-ons lists 13 for Allianz, Road Rangers FREE\n• Payment: tile 'PayLater by Grab' (logo 'GrabPay') > Fiuu GrabPay sandbox popup > status 'Success' > [Pay] (doc §5; proven on /ia/ 19.10, receipt Payment Method 'GrabPay')\n• Paid by PayLater by Grab (GrabPay simulator), not FPX or card (decided 30.10 under Azfar's full permission, main session): the Fiuu sandbox refuses both FPX and card above MYR 2,000 (P15; runs 1950-B-c2 FPX, 0920-D-c1 card), the all-add-ons total is RM2,510.87, and the e-wallet rails have no amount limit (team doc §5; SRD EAINT-12107 REQ-004). None of E1–E3 judge the payment channel. Observations for Dev, not 12406 points: the FPX refusal (Secarang showed a blank window with no message) and the card refusal, both P15 above MYR 2,000\n• Add-on options to look for (SA brief test scenario 4, 29.09): all-driver, CART, Road Rangers, PAB-ERW, MPA A/B, agreed value. The old Allianz add-on list on the team's Zurich board (Road Rangers 'Mandatory & unremovable', windscreen sum insured, Road Warrior Plan A / B / C, CART assessment period / daily compensation, PA Plan A / B ...) is a question for the BA (Q32), never an expected result",
+   "steps": "1. Secarang: the car + owner > All Quotations > Allianz > Add-ons (wait for the page to load); screenshot every add-on with its price and More Info (recorded)\n2. For each add-on that has options (e.g. CART period / daily compensation, Road Warrior plan, PA plan): change the option once and note the premium; screenshot each (recorded). Windscreen Sum Insured: type a value below its range, then above it, then inside it (range RM500–RM1,820 on 29.10); record what is accepted; APPLY the inside value, so the all-add-ons purchase carries it\n3. Try to remove each add-on that looks mandatory (e.g. Road Rangers); screenshot (recorded)\n4. Tick EVERY add-on; note the premium; Continue > Confirmation (owner details) > screenshot the add-ons and the total > Confirm and Pay\n5. PayLater by Grab > GrabPay sandbox popup: status Success > [Pay]; screenshot the Success page; download the [Receipt]\n6. CIBO > Transaction Management: search the plate; open Transaction Details; screenshot the premium breakdown with Add-ons",
+   "expected": "Ensure:\n• The purchase with every add-on ticked completes: Success page ('Thank you for your purchase!') with a [Receipt] download, and CIBO shows the transaction Paid, Ins. Co. Allianz, Transaction Status \"Insurance created\"\n• The same add-ons and amounts are on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)\n• Receipt Total Premium = the Confirmation total",
+   "points": [
+    {
+     "id": "E1",
+     "text": "The purchase with every add-on ticked completes: Success page ('Thank you for your purchase!') with a [Receipt] download, and CIBO shows the transaction Paid, Ins. Co. Allianz, Transaction Status \"Insurance created\""
+    },
+    {
+     "id": "E2",
+     "text": "The same add-ons and amounts are on Confirmation, on the Secarang receipt (Add-ons) and on CIBO Transaction Details (Add-ons)"
+    },
+    {
+     "id": "E3",
+     "text": "Receipt Total Premium = the Confirmation total"
+    }
+   ],
+   "source": "SRD v1.1 REQ-002 Example 1b ('Customer can complete purchase using existing Allianz flow'), REQ-002b ('Existing Allianz flow and options remain unchanged'), §2.1.3a (add-ons); values compared within the one transaction. Which add-ons exist, which are mandatory, option prices, sum insured ranges: SRD silent, recorded (Q32)",
+   "updatedAt": "2026-10-30T01:31:20+00:00"
+  }
+ }
+]

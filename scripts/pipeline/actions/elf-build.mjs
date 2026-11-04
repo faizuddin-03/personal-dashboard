@@ -47,17 +47,17 @@ const action = {
     const base = workbookBaseName(key, ticket.title, suggestion);
     const specRel = `${workDir(key)}/ts-spec.json`;
     const outRel = `${workDir(key)}/build.xlsx`;
-    Object.assign(ctx.state, { base, specRel, outRel, suggestion });
+    Object.assign(ctx.state, { base, specRel, outRel, suggestion, builtHash: store.hashFile(store.repoPath(jsonRel)) });
     if (!ctx.dry) { try { fs.unlinkSync(store.repoPath(outRel)); } catch { /* none */ } }
 
     const intro = ctx.input?.rebuild
-      ? `The approved scenarios changed after the green light. Rebuild the TS workbook from the current ${jsonRel} (the dashboard keeps the older workbook as superseded).`
+      ? `Faizuddin pressed "Create new version now": the approved scenarios changed after the green light. Rebuild the TS workbook from the current ${jsonRel}, which already holds every change (the dashboard keeps the older workbook as superseded).`
       : `Faizuddin approved the scenarios. Build the TS workbook from ${jsonRel}.`;
     const task = `${intro}
 
 Steps:
 1. Read .claude/skills/draft-TS-excel/SKILL.md and .claude/skills/draft-TS-excel/references/data-model.md in full.
-2. Turn ${jsonRel} into the spec JSON the skill describes and write it to ${specRel}. Title row: "${base.replace(/ \(Suggestion by Claude\)$/, "")}". Keep every TS id, title, section order, objective, steps and expected result as approved; only shape them (sections A., B., ...; marks **, ++, !! kept). Do not add, drop or reword TS.
+2. Turn ${jsonRel} into the spec JSON the skill describes and write it to ${specRel}. Title row: "${base.replace(/ \(Suggestion by Claude\)$/, "")}". Keep every TS id, title, section order, objective, steps and expected result as approved; only shape them (sections A., B., ...; marks **, ++, !! kept). Do not add, drop or reword TS. Priority: only if Faizuddin asked for priority in this workbook (check history.md and his chat messages), copy each scenario's "priority" (P1 / P2 / P3) into the row's "priority" field. Not asked → leave "priority" out of every row. Never put priority in "remarks". Result columns per platform (Android / iOS ...): only if Faizuddin asked for them, use the spec's "resultColumns" and each row's "platforms" (references/data-model.md). Never add columns, dropdowns or colour rules to the built workbook by hand.
 3. Run exactly: node .claude/skills/draft-TS-excel/scripts/build-workbook.mjs ${specRel} ${outRel}
 4. Check the output against the skill's §7 step 4 list. Report only what you actually checked.
 ${suggestion ? "\nAn official TS exists for this ticket, so this workbook is a \"Suggestion by Claude\" only; the official sheet stays the source of truth." : ""}
@@ -88,6 +88,8 @@ Your final message: TS count, the checks you ran, and anything you could not che
     try { mine = copyToMyTicketDir(job.key, built, state.base); } catch (e) { mineError = e.message; }
     store.updateTicket(job.key, t => {
       t.files = { ...t.files, workbook: rel, ...(mine ? { myWorkbook: mine } : {}) };
+      // Changes made while this build ran stay waiting for the next version.
+      if (store.hashFile(store.repoPath(scenariosJsonRel(job.key))) === state.builtHash) t.pendingWorkbookChanges = undefined;
       t.events = [{ at: store.nowIso(), text: `Elf built the TS workbook${mine ? " (copy in your OneDrive folder)" : ""}${superseded ? " (older copy kept as superseded)" : ""}` }, ...(t.events ?? [])].slice(0, 100);
     });
     const lines = [

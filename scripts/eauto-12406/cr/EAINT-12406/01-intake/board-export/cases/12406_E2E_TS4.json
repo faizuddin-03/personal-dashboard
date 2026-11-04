@@ -1,0 +1,46 @@
+{
+  "expected": "Ensure:\n• SPayLater payment settles: Success page 'Thank you for your purchase!' with Payment Method 'ShopeePay' (observed) and a [Receipt] download; Receipt Total Premium = the Confirmation total\n• CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode \"Fiuu | eWallet – ShopeePay\" (observed)\n• CIBO Transaction Details: Payment Ref ID with 'SEW' like a Lonpac e-wallet payment, with Allianz's own insurer code (recorded, Q30)",
+  "gate": {
+    "at": "29/10/2026, 17:22:56",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_E2E_TS4",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-rerun-sE2E-20261029-1545",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_E2E_TS4",
+  "labels": [],
+  "order": 25,
+  "points": [
+    {
+      "id": "E1",
+      "text": "SPayLater payment settles: Success page 'Thank you for your purchase!' with Payment Method 'ShopeePay' (observed) and a [Receipt] download; Receipt Total Premium = the Confirmation total"
+    },
+    {
+      "id": "E2",
+      "text": "CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode \"Fiuu | eWallet – ShopeePay\" (observed)"
+    },
+    {
+      "id": "E3",
+      "text": "CIBO Transaction Details: Payment Ref ID with 'SEW' like a Lonpac e-wallet payment, with Allianz's own insurer code (recorded, Q30)"
+    }
+  ],
+  "priority": "P3",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "Allianz purchase, Fiuu payment channels",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: a fourth individual-owner renewal car that Allianz quotes\n• Payment: tile 'SPayLater' (logo 'ShopeePay') > popup with a QR > open the QR link (Fiuu ShopeePay simulator) > '✓ Success' > [PROCEED TO PAY]; ignore the extra tab that lands on a login page, the result shows in the main window (doc §5; works end to end on /ia/ since 20.10, receipt Payment Method 'ShopeePay')\n• Sandbox only: in real life ShopeePay completes in the Shopee app (team doc §5)",
+  "sheet": "E2E",
+  "situation": "Allianz purchase paid by SPayLater (ShopeePay simulator): All Quotations > Add-ons > Confirmation > SPayLater QR > Success > CIBO",
+  "source": "Ticket item 5 ('all options available'); SRD v1.1 REQ-002 Example 1b. Observed / current behaviour: SPayLater tile and ShopeePay simulator, receipt Payment Method 'ShopeePay' (team doc §5, live 20.10.2026; works end to end on /ia/ since 20.10, doc §13); Payment Mode 'Fiuu | eWallet – ShopeePay' for ShopeePay full amount and SPayLater (doc §6, §9: BA 20.10, SRD 12327 v1.1); Ref ID 'SEW' (doc §9)",
+  "steps": "1. Secarang > Car tab > Private > plate, IC, postcode 55000 > [Get quotation] > All Quotations > Allianz > Add-ons > Confirmation > Confirm and Pay\n2. Payment page: SPayLater > QR popup > open the QR link > '✓ Success' > [PROCEED TO PAY] (ignore the extra tab on a login page)\n3. Screenshot the Success page in the main window; download the [Receipt]\n4. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot",
+  "updatedAt": "2026-10-28T07:56:11+00:00"
+}

@@ -1,0 +1,156 @@
+# Committed template. Every value is blank on purpose — no hostname and no
+# credential is ever committed. Copy to env/.staging.env-local and fill it in.
+#
+#   cp env/env-default env/.staging.env-local
+#
+# ONE file serves every staging instance (eauto, sit2, uat1, preprod1 …): they
+# share the host and the accounts and differ only in the path segment. Pick the
+# instance at run time — the file's BASE_PATH is just the default:
+#
+#   INSTANCE=uat1 npx playwright test …      (TEST_ENV=uat1 works the same)
+#
+# Resolution ladder (config/load-env.ts):
+#   ENV_FILE=/abs/path/.env      explicit, CI uses this
+#   env/.<TEST_ENV>.env-local    only for an instance with different accounts
+#   env/.staging.env-local       the shared staging file
+#   env/env-default              this file
+
+TEST_ENV=staging
+
+# --- portal ---------------------------------------------------------------
+# The root is COMPOSED: https://<BASE_URL>/<BASE_PATH>/
+# One host serves many named instances, so neither half is written out whole.
+BASE_URL=
+BASE_PATH=
+
+# --- personas (config/personas.ts) ----------------------------------------
+UCD_USERNAME=
+UCD_PASSWORD=
+UCD_E2E_USERNAME=
+UCD_E2E_PASSWORD=
+# SECOND dealer (persona ucdE2E2). Only for flows that need two UCDs, such as
+# UCD to UCD where ucdE2E is one party and this account is the other. Leave
+# blank if you never run a two-dealer flow.
+UCD2_E2E_USERNAME=
+UCD2_E2E_PASSWORD=
+# Runner lanes 3 and 4 (personas ucdE2E3 / ucdE2E4): Sub UCD users of the lane-1
+# company, one per lane, so more runs can go at once (env/lanes.md).
+UCD3_E2E_USERNAME=
+UCD3_E2E_PASSWORD=
+UCD4_E2E_USERNAME=
+UCD4_E2E_PASSWORD=
+# QA companies made in BO 21.10.2026 (personas ucdCo1..5): main users of five separate UCD companies.
+QA_CO1_USERNAME=
+QA_CO1_PASSWORD=
+QA_CO2_USERNAME=
+QA_CO2_PASSWORD=
+QA_CO3_USERNAME=
+QA_CO3_PASSWORD=
+QA_CO4_USERNAME=
+QA_CO4_PASSWORD=
+QA_CO5_USERNAME=
+QA_CO5_PASSWORD=
+# Persona ucdCo6: NOT a lane, a company for manual card / thumbprint steps on the real reader (env/lanes.md).
+QA_CO6_USERNAME=
+QA_CO6_PASSWORD=
+# Sub users of Co1 / Co2 (personas ucdCo1Sub / ucdCo2Sub, lanes 10 / 11).
+QA_CO1S_USERNAME=
+QA_CO1S_PASSWORD=
+QA_CO2S_USERNAME=
+QA_CO2S_PASSWORD=
+# AATF user (persona aatf): eDEREG Deregistration / e-Dereg Pre-Checking (EAINT-12253).
+AATF_USERNAME=
+AATF_PASSWORD=
+
+# --- eSim, the JPJ / RHB response simulator -------------------------------
+# Internal address; needs the company VPN. Leave blank to skip eSim specs.
+ESIM_BASE_URL=
+ESIM_USERNAME=
+ESIM_PASSWORD=
+# eSim serves a self-signed certificate.
+NODE_TLS_REJECT_UNAUTHORIZED=0
+
+# --- MyKad reader emulator ------------------------------------------------
+# The PAGE opens this from the browser, so the emulator runs beside the
+# browser and never on the server. The portal hardcodes the default /IDCard
+# channel, so do not set a channel here.
+MYKAD_WS_HOST=ws://localhost:7878
+
+# ------------------------------------------------------------------- Mailtrap
+# The staging mail sink. Nothing eAuto sends on staging reaches a real mailbox.
+# The token needs read access to the sandbox inbox; never commit a real value.
+MAILTRAP_TOKEN=
+# From the inbox URL: /api/accounts/<ACCOUNT_ID>/inboxes/<INBOX_ID>/messages
+MAILTRAP_ACCOUNT_ID=
+MAILTRAP_INBOX_ID=2581833
+
+# ----------------------------------------------------------------- onboarding
+# BackOffice, which reviews Pre-Applications and Applications. Not discoverable
+# by probing — every /obs/* path returns 403.
+BO_URL=
+# The APPROVER. Approves a Pre-Application, assigns an Application, and gives
+# the final Approve. The approver account.
+BO_USERNAME=
+BO_PASSWORD=
+# The ASSIGNEE — a DIFFERENT account, and the workflow needs both. It sets UCD
+# Group and presses "Submit for Approval", which is what moves an Application
+# to Pending. The approver has no such button, so the chain stalls without it.
+# The hub-administrator account.
+BO_ADMIN_USERNAME=
+BO_ADMIN_PASSWORD=
+# The assignee's DISPLAY NAME as the BackOffice Assignee dropdown lists it —
+# not a login. The approver hands each new Application to this name, because
+# the dealer's submission auto-assigns whoever is next in rotation. Blank =
+# leave the auto-assignee in place.
+BO_ASSIGNEE_NAME=
+# The Fiuu FPX payment simulator that takes the RM108 Pre-Application fee. The same bank-simulator login is used
+# for a Secarang FPX payment (src/pages/secarang/fiuu-popup.page.ts; typed only on bank-simulator.fiuu.com).
+FIUU_BANK=
+FIUU_USERNAME=
+FIUU_PASSWORD=
+
+# ------------------------------------------------------------ Firefox 36 runs
+# Playwright cannot drive Firefox 36; src/ff36/bridge.py does it with Selenium 2.53.6 (ONBOARDING.md, "Firefox 36").
+# Blank = automation/.ff36venv, the default the set-up creates.
+FF36_PY=
+# Blank = C:\Program Files (x86)\Mozilla Firefox\firefox.exe
+FF36_FIREFOX=
+# ffmpeg.exe, records the Firefox 36 window. Blank = the winget Gyan.FFmpeg install path.
+FFMPEG=
+
+# ------------------------------------------------- LKM Refund / IC documents
+# Real files the AI document check reads (src/data/lkm-refund-docs.ts). They are a real person's documents, so
+# they live outside the repo: ask the QA who owns them, copy them to your PC and name them here.
+LKM_COPY_OF_IC=
+LKM_BANK_STATEMENT=
+LKM_BANK=
+LKM_ACCOUNT_NO=
+
+# ---------------------------------------------------- Jira / SharePoint / hub
+# scripts/jira-attachments.py downloads a ticket's SRD. Token: id.atlassian.com > Security > API tokens.
+JIRA_EMAIL=
+JIRA_API_TOKEN=
+# The synced SharePoint evidence library (scripts/cr-upload-evidence.py). Blank = the OneDrive shortcut path.
+QA_EVIDENCE_LIBRARY=
+# Your own TS Hub page, if you keep one (scripts/cr-hub-refresh.py). Blank = Azfar's hub.
+TS_HUB_URL=
+
+# ----------------------------------------------------- Secarang + CIBO (EAINT-12406)
+# Secarang (public car-insurance site) and CIBO (its back office) have their OWN staging host, not BASE_URL
+# (config/environments.ts). The site root is COMPOSED: https://<SECARANG_BASE_URL>/<SECARANG_BASE_PATH>/
+# SECARANG_BASE_URL may be written with or without https://. SECARANG_BASE_PATH: ia or preprod (which ticket
+# is on which is Dev's). Run on the other one with SECARANG_INSTANCE=preprod (only with its owner's OK).
+SECARANG_BASE_URL=
+SECARANG_BASE_PATH=
+# The site password page in front of /ia/ and /preprod/ (password only, no user). Ask the QA team.
+SECARANG_SITE_PASSWORD=
+# CIBO. Blank = https://<SECARANG_BASE_URL>/cibo/ (NOT .../<SECARANG_BASE_PATH>/cibo, which is the site's fallback).
+CIBO_BASE_URL=
+# Persona `cibo` (config/personas.ts). Ask the QA team for the staging admin login.
+CIBO_USERNAME=
+CIBO_PASSWORD=
+
+# --- eauto-ocr API (IC split / IC check service; internal, needs the VPN) --------
+# Base URL and the X-API-Key header value. Ask Dev for the key.
+EAUTO_OCR_API_BASE=
+EAUTO_OCR_API_KEY=

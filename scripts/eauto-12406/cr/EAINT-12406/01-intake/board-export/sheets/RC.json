@@ -1,0 +1,66 @@
+{
+  "columns": [
+    {
+      "field": "doc",
+      "group": "",
+      "kind": "long",
+      "label": "Document / screen",
+      "list": true,
+      "width": 20
+    },
+    {
+      "field": "portal",
+      "group": "",
+      "kind": "short",
+      "label": "Portal",
+      "list": true,
+      "width": 10
+    },
+    {
+      "field": "situation",
+      "group": "",
+      "kind": "long",
+      "label": "Test Scenario",
+      "list": true,
+      "width": 30
+    },
+    {
+      "field": "preconditions",
+      "group": "",
+      "kind": "long",
+      "label": "Pre-condition / Test data",
+      "list": true,
+      "width": 30
+    },
+    {
+      "field": "steps",
+      "group": "",
+      "kind": "long",
+      "label": "Test Steps",
+      "list": true,
+      "width": 44
+    },
+    {
+      "field": "expected",
+      "group": "",
+      "kind": "long",
+      "label": "Expected Result",
+      "list": true,
+      "width": 58
+    },
+    {
+      "field": "setup",
+      "group": "",
+      "kind": "long",
+      "label": "Set-up / pre-condition",
+      "list": false,
+      "width": 30
+    }
+  ],
+  "key": "RC",
+  "name": "4 Receipt and CIBO",
+  "order": 4,
+  "prefix": "12406_RC_TS",
+  "title": "Allianz company number on the receipt (Secarang and CIBO) and on CIBO Transaction Details (REQ-010, REQ-011); CIBO Transaction listing (search, filters, export), unpaid transactions, Payment Report and Commission Report under Serba Sentral (SRD 2.1.3b)",
+  "type": "document"
+}

@@ -1,0 +1,12 @@
+{
+  "ts": "12406_RC_TS6",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E2: expected \"Same as before the deploy (SRD v1.1 §2.2.3: Commission Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payme\", page shows \"screen 2 row(s), export 3; screen rows (as \"<plate>-ALLIANZ\") not in the export's Recipient Reference: none\" (02-commission-report-export.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS6/2026-10-30T01-07-49_DEFECT",
+  "run": "eaint-12406-retest-sretest-20261030-0040-C-c1",
+  "instance": "ia",
+  "at": "30/10/2026, 09:07:49",
+  "warnings": []
+}

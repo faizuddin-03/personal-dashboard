@@ -1,0 +1,90 @@
+TS No.	Insurance Transaction		E2E Flow	Expected Result			QA	Test Result (P/F)
+	Page	Trigger Point	Test Scenario	Insurance Step Page	Insurance Transaction Listing Page	Insurance Transaction Details Page		
+	Insurance Step 1	Land on Insurance Step 1	"Create Any Hire Purchase Record with Status = Active
+Create eSTM transaction
+-- Zurich Insurance API Down --
+Step 4 to Step 5 JPJ Enquiry = Failed (VEL000069E)
+Redirect to Insurance Step 1: Quotes Page"				"Deprioritize
+(As double confirmed with KJ, P2)"	
+IE_APID_TS1		[Apply Changes] button	"Go to Insurance > Get a Free Quote
+Create Insurance transaction with valid VN and IC/BRN
+Redirect to Insurance Step 1: Quotes Page
+-- Zurich Insurance API Down --
+Click [Apply Changes] button"	"System redirects to Create Free Quote page, ensure:
+System prompt popup with details below,
+Title: Error
+Content: Sorry, we're unable to retrieve your vehicle information."	(The insurance transaction will not appear in the listing or details page)		Faiz	PASS
+IE_APID_TS2		[SELECT ZURICH] button	"Create Any Hire Purchase Record with Status = Active
+Create eSTM transaction
+Step 4 to Step 5 JPJ Enquiry = Failed (VEL000069E)
+Redirect to Insurance Step 1: Quotes Page
+-- Zurich Insurance API Down --
+Click [SELECT ZURICH] button"	"System remains on Insurance Step 1: Quotes page, ensure:
+System prompt popup with details below,
+Content: ""xxx""
+[OK] button
+Clicking [OK] keeps user on Insurance Step 1: Quotes
+Hide Zurich Insurance quotations
+Unable to select or proceed with Zurich insurance
+All available insurance quotations are displayed correctly"	(The insurance transaction will not appear in the listing or details page)		"Deprioritize
+(As double confirmed with KJ, P2)"	
+	Insurance Step 2	[Back] button	"Create Any Hire Purchase Record with Status = Active
+Create eSTM transaction
+Step 4 to Step 5 JPJ Enquiry = Failed (VEL000069E)
+Redirect to Insurance Step 1: Quotes Page
+Proceed to Insurance Step 2: Optional Coverage Page
+-- Zurich Insurance API Down --
+Click [Back] button"				"Deprioritize
+(As double confirmed with KJ, P2)"	
+IE_APID_TS3		[Make Payment] button	"Create eSTM transaction
+Proceed to complete eSTM, Tx Status = Approved
+Redirect to Insurance Step 1: Quotes Page
+Select Zurich (Comprehensive)
+Proceed to Insurance Step 2: Optional Coverage Page
+-- Zurich Insurance API Down --
+Click [Make Payment] button"	"System remains on Insurance Step 2: Optional Coverage page, ensure:
+System prompt popup with details below,
+Content: ""Error: Insurance quote enquiry is temporarily unavailable now, please try again in 10 minutes.""
+[OK] button
+Clicking [OK] keeps user on Insurance Step 2: Optional Coverage
+Unable to proceed to Insurance Step 3
+All details are shown correctly"	(The insurance transaction will not appear in the listing or details page)		Azfar	PASS
+	Insurance Step 3	[Back] button	"Create Any Hire Purchase Record with Status = Active
+Create eSTM transaction
+Step 4 to Step 5 JPJ Enquiry = Failed (VEL000069E)
+Redirect to Insurance Step 1: Quotes Page
+Proceed to Insurance Step 3: Payment Page
+-- Zurich Insurance API Down --
+Click [Back] button"				"Deprioritize
+(As double confirmed with KJ, P2)"	
+IE_APID_TS4		[PAY NOW] button	"Create Any Hire Purchase Record with Status = Active
+Create eSTM transaction
+Step 4 to Step 5 JPJ Enquiry = Failed (VEL000069E)
+Redirect to Insurance Step 1: Quotes Page
+Select Zurich (TPFT)
+Proceed to Insurance Step 3: Payment Page
+-- Zurich Insurance API Down --
+Click [PAY NOW] button"	"System remains on Insurance Step 3: Payment page, ensure:
+System prompt popup with details below,
+Content: ""xxx""
+[OK] button
+Clicking [OK] keeps user on Insurance Step 3: Payment
+Unable to proceed to Insurance Step 4
+All details are shown correctly"			"Deprioritize
+(As double confirmed with KJ, P2)"	
+	Insurance Step 4	"Payment = Failed
+[Try Again] button"	"Create Any Hire Purchase Record with Status = Active
+Create eSTM transaction
+Step 4 to Step 5 JPJ Enquiry = Failed (VEL000069E)
+Redirect to Insurance Step 1: Quotes Page
+Proceed to purchase Insurance, but Payment = Failed
+-- Zurich Insurance API Down --
+Click [Try Again] button"				"Deprioritize
+(As double confirmed with KJ, P2)"	
+		[Done] button	"Create Any Hire Purchase Record with Status = Active
+Create eSTM transaction
+Step 4 to Step 5 JPJ Enquiry = Failed (VEL000069E)
+Redirect to Insurance Step 1: Quotes Page
+Proceed to purchase Insurance, Status = Insurance Created
+-- Zurich Insurance API Down --
+Click [Done] button"					

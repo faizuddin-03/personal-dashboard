@@ -1,0 +1,1447 @@
+[
+ {
+  "op": "set",
+  "collection": "settings",
+  "doc_id": "board",
+  "data": {
+   "ticket": "EAINT-12406",
+   "title": "[Secarang-Allianz] To Allow and Display Allianz in Secarang Including Logo and Wording",
+   "instance": "",
+   "qa": [
+    "Azfar"
+   ],
+   "labels": [],
+   "labelHints": {},
+   "build": "",
+   "seededAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "sheets",
+  "doc_id": "CP",
+  "data": {
+   "key": "CP",
+   "name": "1 Secarang Pages",
+   "order": 1,
+   "prefix": "12406_CP_TS",
+   "title": "Secarang customer pages: Home insurer logos, About Us > Our partnership, FAQs, Support > Need to contact insurance company? (REQ-001, 007, 008, 009), against the Secarang mockup 20261015; BEFORE / AFTER capture; production look after go-live",
+   "type": "ui",
+   "columns": [
+    {
+     "field": "page",
+     "label": "Page",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 18
+    },
+    {
+     "field": "situation",
+     "label": "Test Scenario",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 32
+    },
+    {
+     "field": "preconditions",
+     "label": "Pre-condition / Test data",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 32
+    },
+    {
+     "field": "steps",
+     "label": "Test Steps",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 46
+    },
+    {
+     "field": "expected",
+     "label": "Expected Result",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 60
+    },
+    {
+     "field": "setup",
+     "label": "Set-up / pre-condition",
+     "group": "",
+     "list": false,
+     "kind": "long",
+     "width": 30
+    }
+   ]
+  }
+ },
+ {
+  "op": "set",
+  "collection": "sheets",
+  "doc_id": "QT",
+  "data": {
+   "key": "QT",
+   "name": "2 Quotation",
+   "order": 2,
+   "prefix": "12406_QT_TS",
+   "title": "Quotation page (Choose your insurance): which insurers quote, their order, no other insurer, the Allianz unavailable card, the Allianz logo and product documents (REQ-002 to REQ-006)",
+   "type": "matrix",
+   "columns": [
+    {
+     "field": "owner_type",
+     "label": "Owner",
+     "group": "Test Scenarios",
+     "list": true,
+     "kind": "short",
+     "width": 12
+    },
+    {
+     "field": "policy",
+     "label": "Policy",
+     "group": "Test Scenarios",
+     "list": true,
+     "kind": "short",
+     "width": 12
+    },
+    {
+     "field": "quoting",
+     "label": "Insurers quoting",
+     "group": "Test Scenarios",
+     "list": true,
+     "kind": "long",
+     "width": 18
+    },
+    {
+     "field": "situation",
+     "label": "Test Scenario",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 30
+    },
+    {
+     "field": "preconditions",
+     "label": "Pre-condition / Test data",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 32
+    },
+    {
+     "field": "steps",
+     "label": "Test Steps",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 44
+    },
+    {
+     "field": "expected",
+     "label": "Expected Result",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 56
+    },
+    {
+     "field": "setup",
+     "label": "Set-up / pre-condition",
+     "group": "",
+     "list": false,
+     "kind": "long",
+     "width": 30
+    }
+   ]
+  }
+ },
+ {
+  "op": "set",
+  "collection": "sheets",
+  "doc_id": "E2E",
+  "data": {
+   "key": "E2E",
+   "name": "3 Allianz Purchase",
+   "order": 3,
+   "prefix": "12406_E2E_TS",
+   "title": "Full Allianz purchase on Secarang: quote > add-ons > confirmation > Fiuu payment > Payment successful > CIBO status, cover note, e-Certificate (REQ-002, SRD 2.1.3a), per payment channel; add-ons, switching insurer, failure paths and open-scope rows",
+   "type": "e2e",
+   "columns": [
+    {
+     "field": "insurer",
+     "label": "Insurer",
+     "group": "Test Scenarios",
+     "list": true,
+     "kind": "short",
+     "width": 10
+    },
+    {
+     "field": "channel",
+     "label": "Payment channel",
+     "group": "Test Scenarios",
+     "list": true,
+     "kind": "short",
+     "width": 16
+    },
+    {
+     "field": "platform",
+     "label": "Platform",
+     "group": "Test Scenarios",
+     "list": true,
+     "kind": "short",
+     "width": 12
+    },
+    {
+     "field": "situation",
+     "label": "Flow (A > B > C)",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 30
+    },
+    {
+     "field": "preconditions",
+     "label": "Pre-condition / Test data",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 32
+    },
+    {
+     "field": "steps",
+     "label": "Test Steps",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 48
+    },
+    {
+     "field": "expected",
+     "label": "Expected Result (each checkpoint)",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 58
+    },
+    {
+     "field": "setup",
+     "label": "Set-up / pre-condition",
+     "group": "",
+     "list": false,
+     "kind": "long",
+     "width": 30
+    }
+   ]
+  }
+ },
+ {
+  "op": "set",
+  "collection": "sheets",
+  "doc_id": "RC",
+  "data": {
+   "key": "RC",
+   "name": "4 Receipt and CIBO",
+   "order": 4,
+   "prefix": "12406_RC_TS",
+   "title": "Allianz company number on the receipt (Secarang and CIBO) and on CIBO Transaction Details (REQ-010, REQ-011); CIBO Transaction listing (search, filters, export), unpaid transactions, Payment Report and Commission Report under Serba Sentral (SRD 2.1.3b)",
+   "type": "document",
+   "columns": [
+    {
+     "field": "doc",
+     "label": "Document / screen",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 20
+    },
+    {
+     "field": "portal",
+     "label": "Portal",
+     "group": "",
+     "list": true,
+     "kind": "short",
+     "width": 10
+    },
+    {
+     "field": "situation",
+     "label": "Test Scenario",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 30
+    },
+    {
+     "field": "preconditions",
+     "label": "Pre-condition / Test data",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 30
+    },
+    {
+     "field": "steps",
+     "label": "Test Steps",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 44
+    },
+    {
+     "field": "expected",
+     "label": "Expected Result",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 58
+    },
+    {
+     "field": "setup",
+     "label": "Set-up / pre-condition",
+     "group": "",
+     "list": false,
+     "kind": "long",
+     "width": 30
+    }
+   ]
+  }
+ },
+ {
+  "op": "set",
+  "collection": "sheets",
+  "doc_id": "RG",
+  "data": {
+   "key": "RG",
+   "name": "5 Regression",
+   "order": 5,
+   "prefix": "12406_RG_TS",
+   "title": "Lonpac, Tokio Marine and other insurers unchanged on the receipt and CIBO Transaction Details (REQ-010 Ex.2, REQ-011 Ex.2); eAuto UCD Insurance quotation order unchanged",
+   "type": "regression",
+   "columns": [
+    {
+     "field": "area",
+     "label": "Module / page",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 20
+    },
+    {
+     "field": "portal",
+     "label": "Portal",
+     "group": "",
+     "list": true,
+     "kind": "short",
+     "width": 10
+    },
+    {
+     "field": "situation",
+     "label": "Test Scenario",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 30
+    },
+    {
+     "field": "preconditions",
+     "label": "Pre-condition / Test data",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 32
+    },
+    {
+     "field": "steps",
+     "label": "Test Steps",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 44
+    },
+    {
+     "field": "expected",
+     "label": "Expected Result",
+     "group": "",
+     "list": true,
+     "kind": "long",
+     "width": 56
+    },
+    {
+     "field": "setup",
+     "label": "Set-up / pre-condition",
+     "group": "",
+     "list": false,
+     "kind": "long",
+     "width": 30
+    }
+   ]
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS8",
+  "data": {
+   "id": "12406_CP_TS8",
+   "sheet": "CP",
+   "order": 1,
+   "section": "Before and after the deploy",
+   "priority": "P2",
+   "situation": "BEFORE the deploy: capture Home logos, Choose your insurance, About Us, every FAQ and Support on staging. AFTER: the same pages differ only by the Allianz changes",
+   "setup": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle for the quotation: the individual-owner renewal car of 12406_QT_TS1 (quotation only, do not pay)\n• Not deployed yet (Azfar, 28.10.2026, Q11), so the BEFORE can be taken. Only if the deploy happens before the capture: no BEFORE; the AFTER compares with production secarang.com (look only) while 12406 is not live there, and differences from other Secarang changes on staging (e.g. EAINT-10444, same 02.11 release) are noted, not failed",
+   "steps": "1. Before the deploy: Secarang > Home: screenshot the insurer logos\n2. Car tab > the QT_TS1 car + owner > Choose your insurance: screenshot all cards (do not pay)\n3. About Us: save the page text and screenshot Our partnership\n4. FAQs: expand every question of Topics 1, 2, 3; save the page text\n5. Support > Need to contact insurance company?: expand every section; save the page text",
+   "expected": "Ensure:\n• Home logos: Lonpac, Tokio Marine (no Allianz)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "BEFORE: Home logos Lonpac, Tokio Marine (no Allianz)"
+    },
+    {
+     "id": "E2",
+     "text": "BEFORE: Choose your insurance captured (whether Allianz shows on staging is recorded: REQ-002 says it is 'available in Secarang but disabled in production', Q3)"
+    },
+    {
+     "id": "E3",
+     "text": "BEFORE: About Us > Our partnership ends '...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.'"
+    },
+    {
+     "id": "E4",
+     "text": "BEFORE: FAQ 'Which insurers can I get instant quotation from?' lists Lonpac Insurance Bhd, Tokio Marine Insurans (Malaysia) Berhad"
+    },
+    {
+     "id": "E5",
+     "text": "BEFORE: Support > Need to contact insurance company? has sections for Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad only"
+    },
+    {
+     "id": "E6",
+     "text": "AFTER: Home, About Us, FAQs (all topics) and Support differ from BEFORE only by the Allianz changes of 12406_CP_TS1 to CP_TS5"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "BEFORE: SRD v1.1 §2.2.2 #1b (only Lonpac and Tokio Marine at Home, About Us, FAQs, Support), REQ-001 / REQ-007 / REQ-008 / REQ-009 'Existing', REQ-002 'Existing'. AFTER: REQ-007 Example 1b and REQ-008 Example 1b ('rest unchanged'), REQ-001, REQ-009",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS8",
+  "data": {
+   "page": "Home, Choose your insurance, About Us, FAQs, Support",
+   "preconditions": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle for the quotation: the individual-owner renewal car of 12406_QT_TS1 (quotation only, do not pay)\n• Not deployed yet (Azfar, 28.10.2026, Q11), so the BEFORE can be taken. Only if the deploy happens before the capture: no BEFORE; the AFTER compares with production secarang.com (look only) while 12406 is not live there, and differences from other Secarang changes on staging (e.g. EAINT-10444, same 02.11 release) are noted, not failed",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS1",
+  "data": {
+   "id": "12406_CP_TS1",
+   "sheet": "CP",
+   "order": 2,
+   "section": "Home page",
+   "priority": "P1",
+   "situation": "Home page insurer logos show Allianz between Lonpac and Tokio Marine",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "steps": "1. Open Secarang > Home\n2. Scroll to the insurer logos; screenshot them left to right",
+   "expected": "Ensure:\n• Home page insurer logos, in this order: Lonpac, Allianz, Tokio Marine (no other insurer logo, e.g. no RHB)\n• The Allianz logo is the Allianz logo image (not a broken image, blank box or text)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Home page insurer logos, in this order: Lonpac, Allianz, Tokio Marine (no other insurer logo, e.g. no RHB)"
+    },
+    {
+     "id": "E2",
+     "text": "The Allianz logo is the Allianz logo image (not a broken image, blank box or text)"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 §2.2.4 REQ-001 Example 1a (exactly these three); §2.2.2 #2e",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS1",
+  "data": {
+   "page": "Home",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS2",
+  "data": {
+   "id": "12406_CP_TS2",
+   "sheet": "CP",
+   "order": 3,
+   "section": "About Us, FAQs, Support",
+   "priority": "P1",
+   "situation": "About Us > Our partnership shows the new Allianz wording",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "steps": "1. Open Secarang > About Us; screenshot Our partnership",
+   "expected": "Ensure:\n• Our partnership contains the sentence \"Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"\n• Our partnership reads as in the mockup: \"At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"\n• The old ending \"...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\" is no longer shown",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Our partnership contains the sentence \"Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\""
+    },
+    {
+     "id": "E2",
+     "text": "Our partnership reads as in the mockup: \"At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\""
+    },
+    {
+     "id": "E3",
+     "text": "The old ending \"...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\" is no longer shown"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 §2.2.6 REQ-007 (new and existing wording; Example 1a); full paragraph from mockup Secarang 20261015 (SRD §1.5 #4). 'Rest of the page unchanged' (Example 1b): 12406_CP_TS8",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS2",
+  "data": {
+   "page": "About Us > Our partnership",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS3",
+  "data": {
+   "id": "12406_CP_TS3",
+   "sheet": "CP",
+   "order": 4,
+   "section": "About Us, FAQs, Support",
+   "priority": "P1",
+   "situation": "FAQs > 'Which insurers can I get instant quotation from?' lists Lonpac, Allianz, Tokio Marine and no other insurer",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "steps": "1. Open Secarang > FAQs > Topic 1: General Info\n2. Expand \"Which insurers can I get instant quotation from?\"; screenshot the answer\n(Other FAQs: compared once in 12406_CP_TS8. Do not judge other answers against the mockup: its Topic 2 payment answer is older than the e-wallets of EAINT-12107)",
+   "expected": "Ensure:\n• The answer lists exactly three insurers, in this order:\n    Lonpac Insurance Bhd\n    Allianz General Insurance Company (Malaysia) Berhad\n    Tokio Marine Insurans (Malaysia) Berhad\n• The list has the same style as before the deploy (numbered or bulleted, as in 12406_CP_TS8 BEFORE; Q27)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "The answer lists exactly three insurers, in this order:\nLonpac Insurance Bhd\nAllianz General Insurance Company (Malaysia) Berhad\nTokio Marine Insurans (Malaysia) Berhad"
+    },
+    {
+     "id": "E2",
+     "text": "The list has the same style as before the deploy (numbered or bulleted, as in 12406_CP_TS8 BEFORE; Q27)"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 §2.2.7 REQ-008 (New Expected list; Example 1a); list style: SRD (numbered) and mockup Secarang 20261015 (bulleted) differ, Q27. 'Other FAQs unchanged' (Example 1b): 12406_CP_TS8",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS3",
+  "data": {
+   "page": "FAQs",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS4",
+  "data": {
+   "id": "12406_CP_TS4",
+   "sheet": "CP",
+   "order": 5,
+   "section": "About Us, FAQs, Support",
+   "priority": "P1",
+   "situation": "Support > Need to contact insurance company? shows an Allianz section between Lonpac and Tokio Marine, in the same format, and no other insurer",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "steps": "1. Open Secarang > Support > Need to contact insurance company?; screenshot as the page loads (record which sections are open, Q28)\n2. Expand Lonpac, then Tokio Marine; screenshot each (their content is compared in 12406_CP_TS8)",
+   "expected": "Ensure:\n• Sections in this order: Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, and no section for any other insurer (e.g. RHB)\n• The Allianz section has an insurer name header with the same expand / collapse control as the Lonpac and Tokio Marine headers",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Sections in this order: Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, and no section for any other insurer (e.g. RHB)"
+    },
+    {
+     "id": "E2",
+     "text": "The Allianz section has an insurer name header with the same expand / collapse control as the Lonpac and Tokio Marine headers"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 §2.2.8 REQ-009 a-b, Example 1a (three sections); Allianz header text from mockup Secarang 20261015 (SRD names it 'insurer name header' only). State on load: mockup shows Allianz open, others closed: recorded (Q28)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS4",
+  "data": {
+   "page": "Support > Need to contact insurance company?",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS5",
+  "data": {
+   "id": "12406_CP_TS5",
+   "sheet": "CP",
+   "order": 6,
+   "section": "About Us, FAQs, Support",
+   "priority": "P2",
+   "situation": "Support: expand the Allianz section (one helpline line and the towing sentence), then collapse it",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "steps": "1. Secarang > Support > Need to contact insurance company?: expand Allianz; screenshot\n2. Collapse Allianz; screenshot",
+   "expected": "Ensure:\n• Allianz expanded: one contact line only, \"24-Hours Helpline\" with \"1800 22 5542\", in the same format as the Lonpac / Tokio Marine contact lines (no \"Road Assistance Hotline\" or \"Customer Service\" line)\n• Below the Allianz contact details: \"You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542\"\n• Allianz collapsed: its contact details and sentence are hidden, as for the other insurers",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Allianz expanded: one contact line only, \"24-Hours Helpline\" with \"1800 22 5542\", in the same format as the Lonpac / Tokio Marine contact lines (no \"Road Assistance Hotline\" or \"Customer Service\" line)"
+    },
+    {
+     "id": "E2",
+     "text": "Below the Allianz contact details: \"You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542\""
+    },
+    {
+     "id": "E3",
+     "text": "Allianz collapsed: its contact details and sentence are hidden, as for the other insurers"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 §2.2.8 REQ-009 b-d (c lists one contact detail), Examples 2 and 3; mockup Secarang 20261015 (one line). The ticket's 'Road Assistance Hotline, Customer Service' is superseded by the SRD",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS5",
+  "data": {
+   "page": "Support > Need to contact insurance company?",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS6",
+  "data": {
+   "id": "12406_CP_TS6",
+   "sheet": "CP",
+   "order": 7,
+   "section": "About Us, FAQs, Support",
+   "priority": "P2",
+   "situation": "Look of the changed blocks against the Secarang mockup 20261015: font, colour, bullets, icons, spacing, alignment; no mockup review marks on the site",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Mockup: Mock Up_EAINT-12406_Secarang_20261015 (from the Jira ticket), opened beside the page",
+   "steps": "1. Put About Us > Our partnership beside the mockup's Our partnership; screenshot both\n2. Same for FAQs > 'Which insurers can I get instant quotation from?' (expanded) and Support > Allianz section (expanded)\n3. Look at the top menu and the three pages for any mockup review mark (pill, yellow highlight, dashed frame, coloured dot)\n4. Home: compare the Allianz logo with the Lonpac and Tokio Marine logos (size, alignment): recorded (no Home mockup; earlier look: Q38)",
+   "expected": "Ensure:\n• Our partnership paragraph: same font, size and colour as the rest of About Us and as the mockup (centred)\n• FAQ answer list: Allianz line in the same style as the Lonpac and Tokio Marine lines; the question shows \"−\" when open and \"+\" when closed, as the other questions\n• Support > Allianz section: header, expand / collapse icon, bullet, label and number laid out as the Lonpac and Tokio Marine sections and the mockup (label \"24-Hours Helpline\", number below / beside it as in the mockup)\n• Towing sentence: full width under the contact line, plain text with no bullet, number written \"1800-22-5542\" with hyphens\n• No mockup review mark on the site: no \"Changed: ...\", \"New\", \"New section\", \"New sentence\" pills, no yellow text highlight, no orange dots in the menu; the Allianz Support section has the same background and no frame, like Lonpac / Tokio Marine",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Our partnership paragraph: same font, size and colour as the rest of About Us and as the mockup (centred)"
+    },
+    {
+     "id": "E2",
+     "text": "FAQ answer list: Allianz line in the same style as the Lonpac and Tokio Marine lines; the question shows \"−\" when open and \"+\" when closed, as the other questions"
+    },
+    {
+     "id": "E3",
+     "text": "Support > Allianz section: header, expand / collapse icon, bullet, label and number laid out as the Lonpac and Tokio Marine sections and the mockup (label \"24-Hours Helpline\", number below / beside it as in the mockup)"
+    },
+    {
+     "id": "E4",
+     "text": "Towing sentence: full width under the contact line, plain text with no bullet, number written \"1800-22-5542\" with hyphens"
+    },
+    {
+     "id": "E5",
+     "text": "No mockup review mark on the site: no \"Changed: ...\", \"New\", \"New section\", \"New sentence\" pills, no yellow text highlight, no orange dots in the menu; the Allianz Support section has the same background and no frame, like Lonpac / Tokio Marine"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "Mockup Secarang 20261015 (SRD §1.5 #4), looked at in a browser (coverage review MD-1, MD-2, MD-5, MD-8, MD-9, MD-10); SRD v1.1 REQ-009b ('same format as existing insurers'), REQ-009d (sentence text with hyphens); REQ-008. Review marks read as review notes: Q26",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS6",
+  "data": {
+   "page": "About Us, FAQs, Support (look)",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Mockup: Mock Up_EAINT-12406_Secarang_20261015 (from the Jira ticket), opened beside the page",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS7",
+  "data": {
+   "id": "12406_CP_TS7",
+   "sheet": "CP",
+   "order": 8,
+   "section": "Production after go-live (look only)",
+   "priority": "P1",
+   "situation": "Production after go-live, look only (no payment): Allianz logo, Allianz quotation card, About Us, FAQs and Support on secarang.com",
+   "setup": "• When: after EAINT-12406 goes live on production (release 02.11.2026 or later)\n• Production secarang.com, no login, desktop browser. Look only: no purchase (a paid purchase is the separate orange row 12406_E2E_TS8)\n• For the quotation: a real individual-owner renewal car whose owner agrees (agreed with Azfar); the owner's details are kept out of evidence names and covered in screenshots",
+   "steps": "1. secarang.com > Home: screenshot the insurer logos\n2. Car tab > the agreed car + owner > Choose your insurance: screenshot all cards; stop there (do not select, do not pay)\n3. About Us > Our partnership; FAQs > 'Which insurers can I get instant quotation from?' (expanded); Support > Allianz (expanded): screenshot each",
+   "expected": "Ensure:\n• Home logos in this order: Lonpac, Allianz, Tokio Marine\n• Choose your insurance shows the Allianz quotation with the Allianz logo, between Lonpac and Tokio Marine (if all three quote this car)\n• About Us > Our partnership contains \"Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"\n• FAQ answer lists Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, in this order\n• Support > Allianz: \"24-Hours Helpline\" \"1800 22 5542\" and the towing sentence below it",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Home logos in this order: Lonpac, Allianz, Tokio Marine"
+    },
+    {
+     "id": "E2",
+     "text": "Choose your insurance shows the Allianz quotation with the Allianz logo, between Lonpac and Tokio Marine (if all three quote this car)"
+    },
+    {
+     "id": "E3",
+     "text": "About Us > Our partnership contains \"Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\""
+    },
+    {
+     "id": "E4",
+     "text": "FAQ answer lists Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, in this order"
+    },
+    {
+     "id": "E5",
+     "text": "Support > Allianz: \"24-Hours Helpline\" \"1800 22 5542\" and the towing sentence below it"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 §2.2.2 #2a ('Enable Allianz back in Secarang production'), §2.1.1; REQ-001 Ex.1a, REQ-002 Ex.1a, REQ-004 Ex.1a, REQ-005 Ex.1a, REQ-007, REQ-008, REQ-009 (same texts as 12406_CP_TS1 to CP_TS5, QT_TS1)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS7",
+  "data": {
+   "page": "Home, Quotation, About Us, FAQs, Support (production)",
+   "preconditions": "• When: after EAINT-12406 goes live on production (release 02.11.2026 or later)\n• Production secarang.com, no login, desktop browser. Look only: no purchase (a paid purchase is the separate orange row 12406_E2E_TS8)\n• For the quotation: a real individual-owner renewal car whose owner agrees (agreed with Azfar); the owner's details are kept out of evidence names and covered in screenshots",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_CP_TS9",
+  "data": {
+   "id": "12406_CP_TS9",
+   "sheet": "CP",
+   "order": 9,
+   "section": "Open scope (for the QA to decide)",
+   "priority": "P3",
+   "situation": "[For the QA, Q22] Terms of Use (and Privacy / Refund Policy): do they list insurers, and is Allianz there?",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "steps": "1. Secarang footer > TERMS OF USE: screenshot any list of agents / principal insurers\n2. Same for PRIVACY POLICY and REFUND POLICY",
+   "expected": "",
+   "points": [],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "none: not in SRD v1.1 §2.2.3 Affected Pages; About Us 'Our vision' sends customers to Terms of Use for 'full list of agents and principal insurers' (mockup 20261015). Recorded until Q22",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_CP_TS9",
+  "data": {
+   "page": "Terms of Use, Privacy Policy, Refund Policy",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS1",
+  "data": {
+   "id": "12406_QT_TS1",
+   "sheet": "QT",
+   "order": 10,
+   "section": "Insurer order and Allianz quotation",
+   "priority": "P1",
+   "situation": "All three insurers quote: Allianz quotation shown with its logo, in the order Lonpac, Allianz, Tokio Marine; no other insurer",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on staging (Q3, Q12)\n• The same car is used by 12406_E2E_TS1 (which selects Allianz and pays)",
+   "steps": "1. Secarang > Home > Car tab: enter the vehicle plate number and the owner's ID; continue to Choose your insurance\n2. Screenshot all quotation cards",
+   "expected": "Ensure:\n• Quotations shown in this order: Lonpac, Allianz, Tokio Marine\n• The Allianz quotation shows the Allianz logo\n• No other card: no \"– Quotation unavailable\" card and no card for any other insurer (e.g. RHB)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Quotations shown in this order: Lonpac, Allianz, Tokio Marine"
+    },
+    {
+     "id": "E2",
+     "text": "The Allianz quotation shows the Allianz logo"
+    },
+    {
+     "id": "E3",
+     "text": "No other card: no \"– Quotation unavailable\" card and no card for any other insurer (e.g. RHB)"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-004 Example 1a ('Displayed as Lonpac, Allianz, Tokio Marine'); REQ-005 Example 1a; REQ-002 Example 1a; REQ-003 (card only when no quotation). SA brief risk 'Only 3 quotations shown' (Q31)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS1",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Renewal",
+   "quoting": "Lonpac, Allianz, Tokio Marine",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on staging (Q3, Q12)\n• The same car is used by 12406_E2E_TS1 (which selects Allianz and pays)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS2",
+  "data": {
+   "id": "12406_QT_TS2",
+   "sheet": "QT",
+   "order": 11,
+   "section": "No Allianz quotation",
+   "priority": "P1",
+   "situation": "Allianz gives no quotation, Lonpac and Tokio Marine do: 'Allianz – Quotation unavailable' card after Tokio Marine",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, renewal, that Lonpac and Tokio Marine quote and Allianz does not (Q12 b)\n• Data needs one insurer to decline one specific car: only possible if staging answers that insurer from eSim or Dev can switch it (Q3, Q12). If the data cannot be made, tell the QA (REQ-003 Ex.3 is still hit by 12406_QT_TS3 and QT_TS4)",
+   "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance\n2. Screenshot all cards\n3. Select the Lonpac quotation and go back; select the Tokio Marine quotation and go back",
+   "expected": "Ensure:\n• Quotations shown: Lonpac, then Tokio Marine\n• Card \"Allianz – Quotation unavailable\" shown after the Tokio Marine quotation\n• The Allianz unavailable card looks the same as the Lonpac / Tokio Marine unavailable cards (compare with 12406_QT_TS5 and QT_TS6)\n• Lonpac and Tokio Marine quotations can be selected as usual",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Quotations shown: Lonpac, then Tokio Marine"
+    },
+    {
+     "id": "E2",
+     "text": "Card \"Allianz – Quotation unavailable\" shown after the Tokio Marine quotation"
+    },
+    {
+     "id": "E3",
+     "text": "The Allianz unavailable card looks the same as the Lonpac / Tokio Marine unavailable cards (compare with 12406_QT_TS5 and QT_TS6)"
+    },
+    {
+     "id": "E4",
+     "text": "Lonpac and Tokio Marine quotations can be selected as usual"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-003 (card text, 'same as Lonpac and Tokio Marine today', 'Card appears after Tokio Marine', Example 3a); REQ-004 Example 3a",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS2",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Renewal",
+   "quoting": "Lonpac, Tokio Marine (Allianz none)",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, renewal, that Lonpac and Tokio Marine quote and Allianz does not (Q12 b)\n• Data needs one insurer to decline one specific car: only possible if staging answers that insurer from eSim or Dev can switch it (Q3, Q12). If the data cannot be made, tell the QA (REQ-003 Ex.3 is still hit by 12406_QT_TS3 and QT_TS4)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS3",
+  "data": {
+   "id": "12406_QT_TS3",
+   "sheet": "QT",
+   "order": 12,
+   "section": "No Allianz quotation",
+   "priority": "P1",
+   "situation": "Company vehicle: Allianz shown as unavailable; the customer still buys Tokio Marine to the end (normal flow, company)",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Vehicle: a company-owned car due for renewal; owner = a test company (Q12)\n• Payment: Fiuu sandbox, Online Banking (FPX) > RHB (an FPX RHB payment settled on Secarang staging on 20.10.2026, EAINT-12566)\n• This transaction is read again by 12406_RG_TS1: record the plate and the CIBO Transaction Ref. No.",
+   "steps": "1. Secarang > Home > Car tab: enter the company vehicle and company owner details; continue to Choose your insurance\n2. Screenshot all cards\n3. Select Tokio Marine > Add-ons (keep the default) > Confirmation (fill the company details) > Confirm and Pay\n4. Pay by FPX > RHB in the Fiuu sandbox; screenshot the Payment successful page; download the receipt",
+   "expected": "Ensure:\n• Card \"Allianz – Quotation unavailable\" shown, after the Tokio Marine quotation\n• The Lonpac and Tokio Marine quotations that are available are shown as usual, in the order Lonpac, Tokio Marine; no card for any other insurer (e.g. RHB)\n• The Tokio Marine purchase completes: Payment successful page with a Receipt (observed, current flow)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Card \"Allianz – Quotation unavailable\" shown, after the Tokio Marine quotation"
+    },
+    {
+     "id": "E2",
+     "text": "The Lonpac and Tokio Marine quotations that are available are shown as usual, in the order Lonpac, Tokio Marine; no card for any other insurer (e.g. RHB)"
+    },
+    {
+     "id": "E3",
+     "text": "The Tokio Marine purchase completes: Payment successful page with a Receipt (observed, current flow)"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-003 Example 1a and 3a ('after Tokio Marine'); REQ-004; payment path observed (secarang-study §1-2, EAINT-12566 FPX RHB 20.10.2026)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS3",
+  "data": {
+   "owner_type": "Company",
+   "policy": "Renewal",
+   "quoting": "Lonpac / Tokio Marine as usual (Allianz none)",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Vehicle: a company-owned car due for renewal; owner = a test company (Q12)\n• Payment: Fiuu sandbox, Online Banking (FPX) > RHB (an FPX RHB payment settled on Secarang staging on 20.10.2026, EAINT-12566)\n• This transaction is read again by 12406_RG_TS1: record the plate and the CIBO Transaction Ref. No.",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS4",
+  "data": {
+   "id": "12406_QT_TS4",
+   "sheet": "QT",
+   "order": 13,
+   "section": "No Allianz quotation",
+   "priority": "P1",
+   "situation": "Individual owner, non-renewal: Allianz shown as unavailable; the customer still buys Lonpac to the end (normal flow, non-renewal)",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, NOT a renewal (what counts as non-renewal on Secarang: Q12 e)\n• Payment: Fiuu sandbox, Online Banking (FPX) > RHB (an FPX RHB payment settled on Secarang staging on 20.10.2026, EAINT-12566)\n• This transaction is read again by 12406_RG_TS2: record the plate and the CIBO Transaction Ref. No.",
+   "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance\n2. Screenshot all cards\n3. Select Lonpac > Add-ons (keep the default) > Confirmation > Confirm and Pay\n4. Pay by FPX > RHB in the Fiuu sandbox; screenshot the Payment successful page; download the receipt",
+   "expected": "Ensure:\n• Card \"Allianz – Quotation unavailable\" shown, after the Tokio Marine quotation\n• The Lonpac and Tokio Marine quotations that are available are shown as usual, in the order Lonpac, Tokio Marine\n• The Lonpac purchase completes: Payment successful page with a Receipt (observed, current flow)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Card \"Allianz – Quotation unavailable\" shown, after the Tokio Marine quotation"
+    },
+    {
+     "id": "E2",
+     "text": "The Lonpac and Tokio Marine quotations that are available are shown as usual, in the order Lonpac, Tokio Marine"
+    },
+    {
+     "id": "E3",
+     "text": "The Lonpac purchase completes: Payment successful page with a Receipt (observed, current flow)"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-003 Example 2a ('Same as Example 1'), Example 3a; REQ-004; payment path observed (secarang-study §1-2)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS4",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Non-renewal",
+   "quoting": "Lonpac / Tokio Marine as usual (Allianz none)",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, NOT a renewal (what counts as non-renewal on Secarang: Q12 e)\n• Payment: Fiuu sandbox, Online Banking (FPX) > RHB (an FPX RHB payment settled on Secarang staging on 20.10.2026, EAINT-12566)\n• This transaction is read again by 12406_RG_TS2: record the plate and the CIBO Transaction Ref. No.",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS5",
+  "data": {
+   "id": "12406_QT_TS5",
+   "sheet": "QT",
+   "order": 14,
+   "section": "Insurer order and Allianz quotation",
+   "priority": "P2",
+   "situation": "Lonpac gives no quotation: Allianz then Tokio Marine",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: individual-owner renewal that Allianz and Tokio Marine quote and Lonpac does not (Q12 c)\n• Data needs one insurer to decline one specific car: only possible if staging answers that insurer from eSim or Dev can switch it (Q3, Q12). If the data cannot be made, tell the QA (REQ-003 Ex.3 is still hit by 12406_QT_TS3 and QT_TS4)",
+   "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance\n2. Screenshot all cards; note where the Lonpac unavailable card is (Q13)",
+   "expected": "Ensure:\n• Quotations shown in this order: Allianz, Tokio Marine\n• Allianz quotation with the Allianz logo\n• A \"Lonpac – Quotation unavailable\" card is shown (its position is recorded, Q13)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Quotations shown in this order: Allianz, Tokio Marine"
+    },
+    {
+     "id": "E2",
+     "text": "Allianz quotation with the Allianz logo"
+    },
+    {
+     "id": "E3",
+     "text": "A \"Lonpac – Quotation unavailable\" card is shown (its position is recorded, Q13)"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-004 Example 2a; REQ-005; REQ-003 ('same as Lonpac and Tokio Marine today': existing unavailable cards); card position not in the SRD (Q13)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS5",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Renewal",
+   "quoting": "Allianz, Tokio Marine (Lonpac none)",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: individual-owner renewal that Allianz and Tokio Marine quote and Lonpac does not (Q12 c)\n• Data needs one insurer to decline one specific car: only possible if staging answers that insurer from eSim or Dev can switch it (Q3, Q12). If the data cannot be made, tell the QA (REQ-003 Ex.3 is still hit by 12406_QT_TS3 and QT_TS4)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS6",
+  "data": {
+   "id": "12406_QT_TS6",
+   "sheet": "QT",
+   "order": 15,
+   "section": "Insurer order and Allianz quotation",
+   "priority": "P2",
+   "situation": "Tokio Marine gives no quotation: Lonpac then Allianz",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: individual-owner renewal that Lonpac and Allianz quote and Tokio Marine does not (Q12 d)\n• Data needs one insurer to decline one specific car: only possible if staging answers that insurer from eSim or Dev can switch it (Q3, Q12). If the data cannot be made, tell the QA (REQ-003 Ex.3 is still hit by 12406_QT_TS3 and QT_TS4)",
+   "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance\n2. Screenshot all cards; note where the Tokio Marine unavailable card is (Q13)",
+   "expected": "Ensure:\n• Quotations shown in this order: Lonpac, Allianz\n• Allianz quotation with the Allianz logo\n• A \"Tokio Marine – Quotation unavailable\" card is shown (its position is recorded, Q13)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Quotations shown in this order: Lonpac, Allianz"
+    },
+    {
+     "id": "E2",
+     "text": "Allianz quotation with the Allianz logo"
+    },
+    {
+     "id": "E3",
+     "text": "A \"Tokio Marine – Quotation unavailable\" card is shown (its position is recorded, Q13)"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-004 Example 4a; REQ-005; REQ-003 (existing unavailable cards); card position not in the SRD (Q13)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS6",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Renewal",
+   "quoting": "Lonpac, Allianz (Tokio Marine none)",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: individual-owner renewal that Lonpac and Allianz quote and Tokio Marine does not (Q12 d)\n• Data needs one insurer to decline one specific car: only possible if staging answers that insurer from eSim or Dev can switch it (Q3, Q12). If the data cannot be made, tell the QA (REQ-003 Ex.3 is still hit by 12406_QT_TS3 and QT_TS4)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS7",
+  "data": {
+   "id": "12406_QT_TS7",
+   "sheet": "QT",
+   "order": 16,
+   "section": "Insurer order and Allianz quotation",
+   "priority": "P2",
+   "situation": "Allianz product documents open: policy wording, product disclosure sheet, privacy notice, claim guide",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on staging (Q3, Q12)",
+   "steps": "1. Get an Allianz quotation (as in 12406_QT_TS1)\n2. Open each Allianz document link where Secarang offers it (quotation card / plan details / Add-ons / Confirmation: Q15); screenshot each document's first page and keep the files",
+   "expected": "Ensure:\n• Policy wording opens: an Allianz document dated 2022\n• Product disclosure sheet opens: an Allianz document dated 2022\n• Privacy notice opens: an Allianz document dated 2022\n• Claim guide opens: an Allianz document dated 2022\n• Each link opens the document it names, not another document or another insurer's",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Policy wording opens: an Allianz document dated 2022"
+    },
+    {
+     "id": "E2",
+     "text": "Product disclosure sheet opens: an Allianz document dated 2022"
+    },
+    {
+     "id": "E3",
+     "text": "Privacy notice opens: an Allianz document dated 2022"
+    },
+    {
+     "id": "E4",
+     "text": "Claim guide opens: an Allianz document dated 2022"
+    },
+    {
+     "id": "E5",
+     "text": "Each link opens the document it names, not another document or another insurer's"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 §2.2.5 REQ-006 ('policy wording, product disclosure sheet, privacy notice, claim guide) are dated 2022 ... use existing documents', Example 1a)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS7",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Renewal",
+   "quoting": "Allianz",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on staging (Q3, Q12)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS9",
+  "data": {
+   "id": "12406_QT_TS9",
+   "sheet": "QT",
+   "order": 17,
+   "section": "No Allianz quotation",
+   "priority": "P2",
+   "situation": "[For the QA, Q35] Allianz quotation service gives an error or no answer: Allianz unavailable card, the others as usual, the page does not hang",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on staging (Q3, Q12)\n• Set-up by Dev: Allianz quotation made to fail or time out on staging for this car (eSim error answer or a switch), only if Dev can (Q35)",
+   "steps": "1. Ask Dev to make the Allianz quotation fail / time out; note the time\n2. Secarang > Home > Car tab: the car + owner > Choose your insurance; screenshot all cards and how long the page took (recorded)\n3. Select Lonpac and go back; Dev restores Allianz",
+   "expected": "Ensure:\n• Card \"Allianz – Quotation unavailable\" shown after the Tokio Marine quotation\n• Lonpac and Tokio Marine quotations shown as usual, in the order Lonpac, Tokio Marine, and can be selected",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Card \"Allianz – Quotation unavailable\" shown after the Tokio Marine quotation"
+    },
+    {
+     "id": "E2",
+     "text": "Lonpac and Tokio Marine quotations shown as usual, in the order Lonpac, Tokio Marine, and can be selected"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-003 ('Applies when Allianz has no quotation, e.g. ...'; 'Card appears after Tokio Marine'; Example 3a), REQ-004 Example 3a. Whether an error counts as 'no quotation': Q35",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS9",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Renewal",
+   "quoting": "Lonpac, Tokio Marine (Allianz error / no answer)",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on staging (Q3, Q12)\n• Set-up by Dev: Allianz quotation made to fail or time out on staging for this car (eSim error answer or a switch), only if Dev can (Q35)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS10",
+  "data": {
+   "id": "12406_QT_TS10",
+   "sheet": "QT",
+   "order": 18,
+   "section": "Open scope (for the QA to decide)",
+   "priority": "P3",
+   "situation": "[For the QA, Q36] Allianz refers the quotation (refer-risk): what the customer sees, CIBO 'Pending approval' / Referred Risk Log; also with Allianz the only insurer available",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: an individual-owner renewal car that Allianz refers (and one where Allianz is the only insurer that quotes), only if Dev can provide it (Q36)",
+   "steps": "1. Secarang: the car + owner > Choose your insurance > Allianz; continue as far as the page allows; screenshot each page (recorded)\n2. CIBO > Transaction Management and Referred Risk Log: search the plate; screenshot (recorded)",
+   "expected": "",
+   "points": [],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "none: SRD v1.1 is silent on refer-risk. SA brief 29.09 test scenario 3 lists it (scope only). Recorded until Q36",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS10",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Renewal",
+   "quoting": "Allianz refers (also Allianz alone)",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: an individual-owner renewal car that Allianz refers (and one where Allianz is the only insurer that quotes), only if Dev can provide it (Q36)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_QT_TS8",
+  "data": {
+   "id": "12406_QT_TS8",
+   "sheet": "QT",
+   "order": 19,
+   "section": "Open scope (for the QA to decide)",
+   "priority": "P3",
+   "situation": "[For the QA, Q19] Motorcycle tab: individual-owner renewal of a motorcycle; which insurers quote, does Allianz appear",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a motorcycle, individual owner, renewal (only if Secarang sells motorcycle insurance: Q19)",
+   "steps": "1. Secarang > Home > Motorcycle tab: enter the motorcycle and owner; continue to the quotations\n2. Record the cards shown and their order",
+   "expected": "",
+   "points": [],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "none: SRD v1.1 does not mention vehicle type (Q19)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_QT_TS8",
+  "data": {
+   "owner_type": "Individual",
+   "policy": "Renewal",
+   "quoting": "Motorcycle: unknown",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a motorcycle, individual owner, renewal (only if Secarang sells motorcycle insurance: Q19)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_E2E_TS1",
+  "data": {
+   "id": "12406_E2E_TS1",
+   "sheet": "E2E",
+   "order": 20,
+   "section": "Allianz purchase, Fiuu payment channels",
+   "priority": "P1",
+   "situation": "Secarang Home > quotation > Allianz > Add-ons > Confirmation > Fiuu FPX > Payment successful > CIBO Transaction Details, cover note, e-Certificate",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: the individual-owner renewal car of 12406_QT_TS1 (all three quote)\n• Payment: Fiuu sandbox, Online Banking (FPX) > RHB (an FPX RHB payment settled on Secarang staging on 20.10.2026, EAINT-12566)",
+   "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; continue to Choose your insurance\n2. Select the Allianz quotation\n3. Add-ons: keep the default; screenshot the amounts\n4. Confirmation: fill the owner details; screenshot the premium breakdown and the agent line (recorded); Confirm and Pay\n5. Payment methods: screenshot the channels offered; Online Banking (FPX) > RHB; approve in the Fiuu sandbox\n6. Screenshot the Payment successful page; open and download the Receipt (kept for 12406_RC_TS1)\n7. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot; click e-Certificate and keep the file\n8. After the JPJ status job has run (next day if needed): reopen Transaction Details; record the JPJ column and 'Submission status to JPJ'; record whether 'Check JPJ Status' is shown",
+   "expected": "Ensure:\n• Choose your insurance: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz\n• Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded)\n• Payment methods offers the same channels as for a Lonpac / Tokio Marine purchase (Credit / Debit Card, Online Banking FPX, e-wallets)\n• Fiuu FPX payment settles: Secarang shows the Payment successful page with a Receipt\n• Receipt Total Premium = the total on the Confirmation page\n• CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode in the same format as a Lonpac FPX payment (observed today: \"Fiuu | Online Banking – FPX-\" + the bank)\n• CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID in the same shape as a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with Allianz's own insurer code (code recorded, Q30)\n• e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Choose your insurance: the Allianz quotation (with the Allianz logo) can be selected and Add-ons opens for Allianz"
+    },
+    {
+     "id": "E2",
+     "text": "Confirmation: insurer Allianz, with the premium from the Add-ons page (amounts recorded)"
+    },
+    {
+     "id": "E3",
+     "text": "Payment methods offers the same channels as for a Lonpac / Tokio Marine purchase (Credit / Debit Card, Online Banking FPX, e-wallets)"
+    },
+    {
+     "id": "E4",
+     "text": "Fiuu FPX payment settles: Secarang shows the Payment successful page with a Receipt"
+    },
+    {
+     "id": "E5",
+     "text": "Receipt Total Premium = the total on the Confirmation page"
+    },
+    {
+     "id": "E6",
+     "text": "CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode in the same format as a Lonpac FPX payment (observed today: \"Fiuu | Online Banking – FPX-\" + the bank)"
+    },
+    {
+     "id": "E7",
+     "text": "CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID in the same shape as a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with Allianz's own insurer code (code recorded, Q30)"
+    },
+    {
+     "id": "E8",
+     "text": "e-Certificate and Receipt buttons shown; e-Certificate opens a document for this vehicle plate"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-002 Example 1a-b ('Customer can complete purchase using existing Allianz flow'); §2.1.3a (quote, add-ons, payment, cover note, callbacks, receipt); ticket item 5 ('all options available'); CIBO row, status 'Insurance created', Cover Note No / Policy No, e-Certificate / Receipt buttons: mockup CIBO 20261006 (SRD §1.5 #5); Payment Mode and Payment Ref ID shape: observed, current rule ([Jira] 12327 / 12566, [REQ] 12107 REQ-014, live 21.10.2026). JPJ status, Check JPJ Status, agent line: recorded",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_E2E_TS1",
+  "data": {
+   "insurer": "Allianz",
+   "channel": "FPX (RHB)",
+   "platform": "Secarang",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: the individual-owner renewal car of 12406_QT_TS1 (all three quote)\n• Payment: Fiuu sandbox, Online Banking (FPX) > RHB (an FPX RHB payment settled on Secarang staging on 20.10.2026, EAINT-12566)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_E2E_TS2",
+  "data": {
+   "id": "12406_E2E_TS2",
+   "sheet": "E2E",
+   "order": 21,
+   "section": "Allianz purchase, Fiuu payment channels",
+   "priority": "P2",
+   "situation": "Allianz purchase paid by card, discount code tried: quotation > Add-ons > Confirmation > Fiuu card > Payment successful > CIBO",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: another individual-owner renewal car that Allianz quotes (not the one of E2E_TS1)\n• Discount code: a code valid on this staging (CIBO > Discount Code Management), its value noted before the run (whether codes apply to Allianz: Q25)\n• Payment: Fiuu sandbox, Credit / Debit Card (test card for the sandbox, from the team / Dev)",
+   "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; Choose your insurance > Allianz\n2. Add-ons: keep the default; Confirmation: fill the owner details, enter the discount code; screenshot the breakdown (accepted or refused: recorded, Q25)\n3. Confirm and Pay > Credit / Debit Card; pay with the sandbox test card\n4. Screenshot the Payment successful page; download the Receipt\n5. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot",
+   "expected": "Ensure:\n• Card payment settles: Payment successful page with a Receipt; Receipt Total Premium = the Confirmation total\n• CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"\n• CIBO Transaction Details: Cover Note No filled (not \"-\")",
+   "points": [
+    {
+     "id": "E1",
+     "text": "Card payment settles: Payment successful page with a Receipt; Receipt Total Premium = the Confirmation total"
+    },
+    {
+     "id": "E2",
+     "text": "CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\""
+    },
+    {
+     "id": "E3",
+     "text": "CIBO Transaction Details: Cover Note No filled (not \"-\")"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "Ticket item 5 ('Allow Allianz in Secarang with all options available in Secarang'); SRD v1.1 REQ-002 Example 1b, §2.1.3a (cover note); CIBO columns and status from mockup CIBO 20261006; card channel 'working fine' on staging ([Jira] 12107, 07.09.2026). Discount: recorded (Q25)",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_E2E_TS2",
+  "data": {
+   "insurer": "Allianz",
+   "channel": "Credit / Debit Card (+ discount code)",
+   "platform": "Secarang",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: another individual-owner renewal car that Allianz quotes (not the one of E2E_TS1)\n• Discount code: a code valid on this staging (CIBO > Discount Code Management), its value noted before the run (whether codes apply to Allianz: Q25)\n• Payment: Fiuu sandbox, Credit / Debit Card (test card for the sandbox, from the team / Dev)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "cases",
+  "doc_id": "12406_E2E_TS3",
+  "data": {
+   "id": "12406_E2E_TS3",
+   "sheet": "E2E",
+   "order": 22,
+   "section": "Allianz purchase, Fiuu payment channels",
+   "priority": "P2",
+   "situation": "Allianz purchase paid by GrabPay (Full Amount): quotation > Add-ons > Confirmation > Fiuu GrabPay > Payment successful > CIBO",
+   "setup": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a third individual-owner renewal car that Allianz quotes\n• Payment: Fiuu sandbox, eWallet > GrabPay > Full Amount (the only e-wallet the Fiuu sandbox can pay, EAINT-12107 §2.2.8)",
+   "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; Choose your insurance > Allianz\n2. Add-ons: keep the default; Confirmation: fill the owner details; Confirm and Pay\n3. Payment methods: GrabPay > Full Amount; approve in the Fiuu sandbox\n4. Screenshot the Payment successful page; download the Receipt\n5. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot",
+   "expected": "Ensure:\n• GrabPay payment settles: Payment successful page with a Receipt; Receipt Total Premium = the Confirmation total\n• CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode in the same format as a Lonpac GrabPay payment (observed today: \"Fiuu | eWallet – GrabPay – Full Amount – Single Payment\")\n• CIBO Transaction Details: Cover Note No filled (not \"-\"); Payment Ref ID in the e-wallet shape (e.g. LON<yyyymmdd>SEW<nnnn> for Lonpac) with Allianz's own insurer code (recorded, Q30)",
+   "points": [
+    {
+     "id": "E1",
+     "text": "GrabPay payment settles: Payment successful page with a Receipt; Receipt Total Premium = the Confirmation total"
+    },
+    {
+     "id": "E2",
+     "text": "CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode in the same format as a Lonpac GrabPay payment (observed today: \"Fiuu | eWallet – GrabPay – Full Amount – Single Payment\")"
+    },
+    {
+     "id": "E3",
+     "text": "CIBO Transaction Details: Cover Note No filled (not \"-\"); Payment Ref ID in the e-wallet shape (e.g. LON<yyyymmdd>SEW<nnnn> for Lonpac) with Allianz's own insurer code (recorded, Q30)"
+    }
+   ],
+   "qa": "",
+   "result": "",
+   "remarks": "",
+   "reviewed": false,
+   "source": "SRD v1.1 REQ-002 Example 1b, §2.1.3a; Payment Mode text and Ref ID shape observed, current rule ([Jira] 12327 description, 12566; [REQ] 12107 REQ-014, live 21.10.2026); CIBO columns and status from mockup CIBO 20261006",
+   "labels": [],
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ },
+ {
+  "op": "set",
+  "collection": "testdata",
+  "doc_id": "12406_E2E_TS3",
+  "data": {
+   "insurer": "Allianz",
+   "channel": "GrabPay Full Amount",
+   "platform": "Secarang",
+   "preconditions": "• When: after Dev deploys EAINT-12406 to the Secarang staging and CIBO staging (which staging: Q1)\n• Secarang customer site on staging (Q1), opened as a member of the public (no login), desktop browser\n• CIBO on staging: the QA team's CIBO login (Q2). Open each CIBO page read-only once first and use its real filter / column names\n• Car owner: a test identity the insurers quote on staging (Q3, Q12). Never the QA's own name, IC, phone or address\n• Vehicle: a third individual-owner renewal car that Allianz quotes\n• Payment: Fiuu sandbox, eWallet > GrabPay > Full Amount (the only e-wallet the Fiuu sandbox can pay, EAINT-12107 §2.2.8)",
+   "updatedAt": "2026-10-28T04:18:45+00:00"
+  }
+ }
+]

@@ -13,6 +13,7 @@ import { InsuranceJob, InsuranceRunParams, saveInsuranceResults } from "@/lib/in
 import { SecarangJob, SecarangRunParams, SecarangRow, saveSecarangResults, saveRegressionSecarangResults } from "@/lib/secarang";
 import { useAutoBackup } from "@/hooks/useAutoBackup";
 import { useBackgroundRuns, type RunMap, type StartRunOptions } from "@/hooks/useBackgroundRuns";
+import { useOfficialTsSync } from "@/hooks/useOfficialTsSync";
 import { loadAndApplyTheme } from "@/lib/themes";
 import HistoryButtons from "@/components/HistoryButtons";
 import clsx from "clsx";
@@ -307,6 +308,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { runs, startRun, stopRun, clearRun } = useBackgroundRuns();
 
   useAutoBackup();
+  useOfficialTsSync(); // TS Tracker follows the official TS sheets (2026-11-03)
 
   useEffect(() => {
     const stored = getStoredCredentials();
@@ -391,7 +393,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Menu size={22} />
             </button>
             <HistoryButtons size={18} />
-            <span className="flex-1 text-center text-base font-semibold text-slate-200">Udin&apos;s Board</span>
+            <span className="flex-1 text-center text-base font-bold text-slate-200">Udin&apos;s Board</span>
             <button
               onClick={() => setSearchOpen(true)}
               className="text-slate-400 hover:text-slate-200 p-2.5 rounded-xl hover:bg-slate-800 active:bg-slate-700 transition-colors"

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Play, Square, Loader2, CheckCircle2, XCircle, AlertTriangle, Film,
   ChevronDown, ChevronRight, Download, Image as ImageIcon, FileArchive,
@@ -295,6 +295,9 @@ export default function E2ETestsTab() {
 
   const saved = typeof window !== "undefined" ? loadCreds() : DEFAULT_CREDS;
   const [creds, setCreds] = useState<Creds>(saved);
+  // Run configuration is saved as it is typed, not only on Run (Faizuddin, 2026-11-02:
+  // survive a refresh or restart).
+  useEffect(() => { try { localStorage.setItem(CREDS_KEY, JSON.stringify(creds)); } catch { /* full */ } }, [creds]);
   const set = (k: keyof Creds, v: string) => setCreds((p) => ({ ...p, [k]: v }));
 
   const selectedScenarios = SCENARIOS.filter((s) => selected.has(s.id));

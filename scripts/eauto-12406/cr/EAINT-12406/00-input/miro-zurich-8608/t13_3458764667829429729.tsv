@@ -1,0 +1,53 @@
+Insurance Transaction Listing						
+TS No.	Search & Filter	Data Type	Test Scenarios	Expected Result	QA	Test Result (P/F)
+TS_BOITL_1	Insurance Company	Dropdown	"From & To (Date Record Created)
+Insurance Company = Zurich General Takaful Malaysia Berhad
+Click [Search]
+Export CSV"	"Display insurance record for ""Zurich"" insurance
+Exported CSV display ""Zurich"" insurance"	Faiz	Pass
+TS_BOITL_2			"From & To (Date Record Created)
+Insurance Company = RHB Insurance Berhad
+Click [Search]
+Export CSV"	"Display insurance record for ""RHB"" insurance
+Exported CSV display ""RHB"" insurance"	Faiz	Pass
+TS_BOITL_3			"From & To (Date Record Created)
+Insurance Company = Takaful Malaysia Berhad
+Click [Search]
+Export CSV"	"Display insurance record for ""Takaful"" insurance
+Exported CSV display ""Takaful"" insurance"	Faiz	Pass
+TS_BOITL_4			"From & To (Date Record Created)
+Insurance Company = Chubb Insurance Malaysia Berhad
+Click [Search]
+Export CSV"	"Display insurance record for ""Chubb"" insurance
+Exported CSV display ""Chubb"" insurance"	Faiz	Pass
+TS_BOITL_5			"From & To (Date Record Created)
+Insurance Company = Lonpac Insurance Berhad
+Click [Search]
+Export CSV"	"Display insurance record for ""Lonpac"" insurance
+Exported CSV display ""Lonpac"" insurance"	Faiz	Pass
+TS_BOITL_6			"From & To (Date Record Created)
+Insurance Company = Tokio Marine Malaysia Berhad
+Click [Search]
+Export CSV"	"Display insurance record for ""Tokio Marine"" insurance
+Exported CSV display ""Tokio Marine"" insurance"	Faiz	Pass
+TS_BOITL_7	Multi Search & Filters		"Company Name + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass
+TS_BOITL_8			"Vehicle No. + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass
+TS_BOITL_9			"Reference No +
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass
+TS_BOITL_10			"From & To (Date Record Created) +
+Status (Any) + 
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass
+TS_BOITL_11			"Company ROC +
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass
+TS_BOITL_12			"From & To (Date Payment) +
+Insurance Company = Zurich Takaful"	Results displayed matching the search criteria	Faiz	Pass
+TS_BOITL_13			"Company Name +
+Veh no. +
+Reference no. +
+From & To (Date Record Created) +
+Status + 
+Company ROC + 
+Insurance Company = Zurich Takaful +
+From & To (Date Payment)"	Results displayed matching the search criteria	Faiz	Pass

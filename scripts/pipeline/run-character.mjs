@@ -11,8 +11,10 @@
 // follow-up jobs). --dry prints the claude command and the prompt and exits
 // without calling Claude (used by tests).
 //
-// Every character uses Faizuddin's Claude Code default model: no --model
-// (decision 2026-10-27). Design: scripts/pipeline/README.md §2.
+// Model: building jobs (elf:plan, elf:build, dwarf:build) use Faizuddin's
+// Claude Code default model (no --model, decision 2026-10-27); every other
+// job runs on Sonnet to save tokens (2026-11-02, see modelFor). Design:
+// scripts/pipeline/README.md §2.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -21,11 +23,12 @@ import crypto from "node:crypto";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import * as store from "./store.mjs";
-import { hasQuestions, firstQuestion, NAMES } from "./prompts-common.mjs";
+import { hasQuestions, firstQuestion, NAMES, fromCharacter } from "./prompts-common.mjs";
 import { splitFinalText, handleAsks, relayAnswer, helpFailed } from "./ask.mjs";
 import { autoAnswer } from "./answers.mjs";
 import { deferredBlock } from "./lib/deferred-questions.mjs";
 import { MY_DOCS, myDocsAvailable } from "./lib/my-folder.mjs";
+import { OUTSIDE_WRITE } from "./actions/_tools.mjs";
 
 const jobId = process.argv[2];
 const DRY = process.argv.includes("--dry");
@@ -33,7 +36,16 @@ const DRY = process.argv.includes("--dry");
 const LOCK_WAIT_MS = Number(process.env.PIPELINE_LOCK_WAIT_MS) > 0 ? Number(process.env.PIPELINE_LOCK_WAIT_MS) : 60 * 60 * 1000;
 const TIMEOUT_MS = { "dwarf:build": 45 * 60 * 1000 };
 const DEFAULT_TIMEOUT_MS = 20 * 60 * 1000;
-const BASE_DISALLOWED = ["WebFetch", "WebSearch", "Agent", "Workflow"];
+// Token cut (Faizuddin, 2026-11-02): only these keep the default (Opus) model.
+const DEFAULT_MODEL_ACTIONS = new Set(["elf:plan", "elf:build", "dwarf:build"]);
+const ROUTINE_MODEL = "sonnet";
+/** --model for a job: null = his default model. */
+const modelFor = action => (DEFAULT_MODEL_ACTIONS.has(action) ? null : ROUTINE_MODEL);
+// Tools that change files: a job that used none has nothing new for the Sage.
+const WRITE_TOOLS = new Set(["Write", "Edit", "MultiEdit", "NotebookEdit", "Bash"]);
+// Web and subagents are open since 2026-10-29 (full access); Workflow stays
+// off: it needs his explicit opt-in and can start dozens of agents.
+const BASE_DISALLOWED = ["Workflow"];
 
 if (!jobId || jobId.startsWith("--")) {
   console.error("Usage: node scripts/pipeline/run-character.mjs <jobId> [--dry]");
@@ -41,6 +53,9 @@ if (!jobId || jobId.startsWith("--")) {
 }
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/** Set when his chat message for this job carries a permission line (store.claimPermission). */
+let grant = null;
 
 // ── Claude Code ─────────────────────────────────────────────────────
 function claudeBin() {
@@ -54,16 +69,19 @@ function claudeBin() {
 // globs (e.g. "Bash(node *)") must be quoted for cmd.exe.
 const q = a => (/^[A-Za-z0-9_.:=\/-]+$/.test(a) ? a : `"${String(a).replace(/"/g, '\\"')}"`);
 
-function buildArgs(tools, session) {
-  const allowed = tools?.allowed ?? ["Read", "Glob", "Grep"];
-  const disallowed = [...new Set([...BASE_DISALLOWED, ...(tools?.disallowed ?? [])])];
+function buildArgs(tools, session, model = null) {
+  // Outside writes stay denied unless he typed the permission line for this job (grant).
+  const open = new Set(grant ? OUTSIDE_WRITE : []);
+  const allowed = [...(tools?.allowed ?? ["Read", "Glob", "Grep"]), ...open];
+  const disallowed = [...new Set([...BASE_DISALLOWED, ...OUTSIDE_WRITE, ...(tools?.disallowed ?? [])])].filter(t => !open.has(t));
   return [
     "-p", "--output-format", "stream-json", "--verbose",
     "--permission-mode", "acceptEdits",
+    ...(model ? ["--model", model] : []),
     ...(session.resume ? ["--resume", session.id] : ["--session-id", session.id]),
     "--allowedTools", ...allowed,
     "--disallowedTools", ...disallowed,
-    "--strict-mcp-config",
+    // Claude.ai connectors load (no --strict-mcp-config) since 2026-10-29.
     // His personal OneDrive "eAuto Documents" folder (2026-10-29), so every
     // character can read what he drops there and save files he can open.
     ...(myDocsAvailable() ? ["--add-dir", MY_DOCS] : []),
@@ -97,10 +115,10 @@ function killTree(child) {
 
 let currentChild = null;
 
-/** One `claude -p` run. Resolves { ok, text, error, sessionMissing, activity }. */
-function runClaude({ prompt, tools, session, timeoutMs, onActivity }) {
+/** One `claude -p` run. Resolves { ok, text, error, sessionMissing, activity, wrote }. */
+function runClaude({ prompt, tools, session, timeoutMs, onActivity, model = null }) {
   return new Promise(resolve => {
-    const args = buildArgs(tools, session);
+    const args = buildArgs(tools, session, model);
     const child = spawn(`${claudeBin()} ${args.map(q).join(" ")}`, {
       cwd: store.ROOT,
       shell: true,
@@ -108,7 +126,7 @@ function runClaude({ prompt, tools, session, timeoutMs, onActivity }) {
       env: { ...process.env, CLAUDE_PIPELINE_JOB: jobId },
     });
     currentChild = child;
-    let buf = "", stderr = "", result = null, lastText = "", timedOut = false;
+    let buf = "", stderr = "", result = null, lastText = "", timedOut = false, wrote = false;
     const activity = [];
     const timer = setTimeout(() => { timedOut = true; killTree(child); }, timeoutMs);
     child.stdout.on("data", chunk => {
@@ -122,6 +140,7 @@ function runClaude({ prompt, tools, session, timeoutMs, onActivity }) {
           const texts = [];
           for (const c of msg.message?.content ?? []) {
             if (c.type === "tool_use") {
+              if (WRITE_TOOLS.has(c.name)) wrote = true;
               const l = toolLine(c);
               if (activity.length < 400) activity.push(l);
               onActivity(l);
@@ -147,6 +166,7 @@ function runClaude({ prompt, tools, session, timeoutMs, onActivity }) {
         text,
         sessionMissing,
         activity,
+        wrote,
         error: ok ? undefined
           : timedOut ? `Timed out after ${Math.round(timeoutMs / 60000)} min`
           : (result?.errors?.join("; ") || (result?.is_error ? result?.result : "") || stderr.trim().slice(-400) || `claude exited with ${code}`),
@@ -391,9 +411,18 @@ async function main() {
   // A module may ask for more time (a sage:apply batch: a few minutes per change).
   const timeoutMs = Number(prep.timeoutMs) > 0 ? Number(prep.timeoutMs) : TIMEOUT_MS[job.action] ?? DEFAULT_TIMEOUT_MS;
   const tools = prep.tools ?? (typeof mod.tools === "function" ? mod.tools(ctx) : mod.tools);
+  // Outside writes (2026-10-29): only a message from Faizuddin himself (not a
+  // relayed character message) with the exact line opens them, for this job.
+  if (!isHelpJob() && !fromCharacter(job.input) && typeof job.input?.text === "string") {
+    grant = DRY ? null : store.claimPermission({ key: job.key, character: job.character, text: job.input.text, jobId: job.id });
+    if (grant && typeof prep.prompt === "string") {
+      prep.prompt = `${prep.prompt}\n\n## Permission granted\nFaizuddin typed the permission line for: "${grant.what}". In this job only you may do that write outside the repo (Jira, Confluence, Claude Docs, published page). Do exactly that and nothing else outside; report what you wrote and where.`;
+      ctx.log(`${NAMES[job.character] ?? job.character}: outside write allowed for this job: ${grant.what}`);
+    }
+  }
   if (DRY) {
     console.log("COMMAND:");
-    console.log(`${claudeBin()} ${buildArgs(tools, session).map(q).join(" ")}`);
+    console.log(`${claudeBin()} ${buildArgs(tools, session, modelFor(job.action)).map(q).join(" ")}`);
     console.log(`TIMEOUT_MIN: ${timeoutMs / 60000}`);
     console.log("PROMPT:");
     console.log(prep.prompt);
@@ -406,7 +435,7 @@ async function main() {
   store.updateTicket(job.key, t => { t.characters[job.character][slot] = session.id; });
   if (slot !== "sessionId") store.updateJob(job.id, { sessionSlot: slot });
   activity("Thinking");
-  let r = await runClaude({ prompt: prep.prompt, tools, session, timeoutMs, onActivity: activity });
+  let r = await runClaude({ prompt: prep.prompt, tools, session, timeoutMs, onActivity: activity, model: modelFor(job.action) });
   let notes = [];
   if (!r.ok && r.sessionMissing) {
     // The saved session is gone (cleared or another machine): start fresh.
@@ -414,7 +443,7 @@ async function main() {
     notes.push(`The earlier ${job.character} session for this ticket was missing, so a new one was started.`);
     store.updateTicket(job.key, t => { t.characters[job.character][slot] = session.id; });
     store.updateJob(job.id, { sessionId: session.id });
-    r = await runClaude({ prompt: prep.prompt, tools, session, timeoutMs, onActivity: activity });
+    r = await runClaude({ prompt: prep.prompt, tools, session, timeoutMs, onActivity: activity, model: modelFor(job.action) });
   }
   if (flushTimer) { clearTimeout(flushTimer); flushTimer = null; }
 
@@ -490,7 +519,10 @@ async function main() {
 
   // Sage (2026-10-27): every finished job is something the knowledge keeper
   // may learn from. Never from the Sage's own jobs or jobs it started (no loops).
-  if (ok && job.character !== "sage") {
+  // Token cut (2026-11-02): skip a job that changed no files and listed no
+  // knowledge candidates; his own chat messages still reach the Sage (chat route).
+  const sageWorthy = r.wrote || /knowledge candidates/i.test(String(r.text ?? ""));
+  if (ok && job.character !== "sage" && sageWorthy) {
     store.noteForSage(job.key, {
       type: "job", action: job.action, character: job.character, jobId: job.id, by: job.character,
       text: String(split.text ?? "").slice(0, 3000),

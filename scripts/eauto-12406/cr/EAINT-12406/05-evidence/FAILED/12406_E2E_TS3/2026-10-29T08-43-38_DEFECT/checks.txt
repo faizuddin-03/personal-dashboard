@@ -1,0 +1,17 @@
+# 12406_E2E_TS3 — Allianz purchase paid by PayLater by Grab: All Quotations > Add-ons > Confirmation > GrabPay sandbox > Success > CIBO
+# run eaint-12406-run-sE2E-20261029-1545-c1 on staging /ia (post-push), started 29/10/2026, 16:40:39 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 16:40:43 | note: on the site: Secarang (https://staging.secarang.com/ia/)
+29/10/2026, 16:41:16 | note: payment window allowed: grabpay success
+29/10/2026, 16:41:19 | note: window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/4485955d-7986-4d79-84bd-98d6d99739dd/GrabPay
+29/10/2026, 16:42:16 | E1 | expected: Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'GrabPay' and a [Receipt] download | page shows: Success: "Thank you for your purchase!" shown; Receipt No. "26102921300029"; Purchase Date "29 Oct 2026 - 4:40 PM"; Payment Method "GrabPay"; [Receipt] shown | matches | 01-success-page.png
+29/10/2026, 16:42:17 | note: downloaded: secarang-receipt-HXA0013A-PERSONAL-DATA.pdf
+29/10/2026, 16:42:21 | E1 | expected: Receipt Total Premium = the total on the Confirmation page | page shows: Receipt Total Premium (not found in the PDF); Confirmation Total Premium RM 941.13 | DOES NOT MATCH | 02-receipt-total-premium.png
+29/10/2026, 16:42:26 | note: signed in: CIBO (cibo)
+29/10/2026, 16:42:30 | note: handed on for later TS: allianzPurchase:grabpay = {"ref":"BR60006351","plate":"HXA0013A","receiptNo":"26102921300029","since":"2026-10-29T08:40:41.730Z","secarangReceipt":"C:\\Users\\Azfar\\Documents\\Github Pro\\eauto-qa-azfar\\cr\\EAINT-12406\\04-runs\\eaint-12406-run-sE2E-20261029-1545-c1\\ts\\12406_E2E_TS3\\downloadable (after)\\secarang-receipt-HXA0013A-PERSONAL-DATA.pdf"}
+29/10/2026, 16:42:30 | note: Payment Mode exact text (recorded): "Fiuu | eWallet – GrabPay – Full Amount – Single Payment"
+29/10/2026, 16:42:32 | E2 | expected: CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status "Insurance created"; Payment Mode in the e-wallet format of a Lonpac PayLater by Grab payment (observed today: "Fiuu | eWallet – GrabPay – ..."; exact text recorded) | page shows: Ref BR60006351: Ins. Co. "Allianz Serba Sentral", Payment "RM…Paid 29-10-2026 16:41", Payment Mode "Fiuu | eWallet – GrabPay – Full Amount – Single Payment", Transaction Status "Insurance created" | matches | 03-cibo-listing-row.png
+29/10/2026, 16:42:35 | note: Allianz insurer code in the Payment Ref ID (recorded, Q30): "ALZ"
+29/10/2026, 16:42:36 | E3 | expected: CIBO Transaction Details: Cover Note No filled (not "-"); Payment Ref ID with 'SEW' like a Lonpac e-wallet payment (e.g. LON<yyyymmdd>SEW<nnnn>), with Allianz's own insurer code (recorded, Q30) | page shows: Cover Note No "-", Payment Ref ID "ALZ20261029SEW0027" (insurer code "ALZ") | DOES NOT MATCH | 04-cibo-details-cover-note-ref.png
+29/10/2026, 16:43:38 | note: payment window 1 on the TS video 00:41.0–00:49.0
+29/10/2026, 16:43:38 | note: payment window video laid into video_12406_E2E_TS3.webm (1 window(s), picture-in-picture, bottom right)

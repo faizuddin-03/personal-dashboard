@@ -1,0 +1,9 @@
+12406_RC_TS10 — evidence not valid (moved here by the evidence review; the run's check said VALID) — re-run
+run eaint-12406-retest-sretest-20261030-0040-C-c2, staging /ia, 30/10/2026, 09:13:55 MYT
+
+- E5 is only half proved. E5 = "Clear all sets every filter back to its default ... AND Print on the filtered listing (Allianz, today's dates) opens a print view of that listing".
+  Clear all is shown (15-clear-all.png). Print was NOT done: CIBO > Transaction Management filtered on Allianz, 30.10.2026 gave "Ops, no search result found", so there was nothing to print and there is no print-view screenshot in this folder.
+  The run's check counted E5 as proved from the Clear all line alone (too loose). Print is the part that failed on 29.10 (run eaint-12406-rerun-sRC-20261029-1545: browser print not called, listing fetch HTTP 404 after 124 s), so it must be shown, not skipped.
+- Step 4, "+ the Discount Code of E2E_TS2" was not done: E2E_TS2's row shows Discount Code "RJC7", but the Discount Code filter only offers "Included" / "Exempted" (13-e2e-ts2-discount-code.png, 14-discount-code-filter-values.png). E4's expected result does not mention it; question for the QA whether the step should read "Included".
+- E1-E4 and the Clear all half of E5 are shown correctly (checked 11-allianz-status-insurance-created.png: staging /ia, CIBO, BR60006370 highlighted, Allianz / Insurance created rows only).
+To fix: re-run on a day with Allianz purchases (run sheet E2E first), so "Allianz, today's dates" lists rows and Print can be shown.

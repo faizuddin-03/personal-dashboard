@@ -1,0 +1,89 @@
+{
+  "expected": "Ensure:\n• Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"\n• Insurer, next line: \"200601015674 (735426-V)\"\n• The old form \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\" on one line is not shown\n• Laid out like the Tokio Marine Insurer block of 12406_RG_TS1 (name, then company number with the old number in brackets on the next line)\n• Vehicle Plate No., For (owner name) and Total Premium match the purchase of E2E_TS1\n• Receipt Summary ends with \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)\n• The receipts of E2E_TS2, E2E_TS3 and E2E_TS4 show the same two Insurer lines\n• Every label on the Allianz receipt is the same as on the Tokio Marine receipt of E2E_TS10 (e.g. 'Vehicle Plate No.', not 'Car Plate No.')\n• Recorded only: what the Success page [Print] view shows (no Insurer block on 29.10); the print view is not a 'Receipt' under SRD §2.2.3 #6 / REQ-010, which are the receipt PDF and the e-receipt (N1)\n• Receipt Summary: 'Premium After NCD' equals Basic Premium − NCD + the add-on lines listed above it on the same receipt, and equals Confirmation's 'Premium After NCD'",
+  "gate": {
+    "at": "30/10/2026, 09:08:52",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS1/2026-10-30T01-08-52_DEFECT",
+    "mismatch": [
+      "E10",
+      "E2",
+      "E4",
+      "E7"
+    ],
+    "proved": [
+      "E1",
+      "E3",
+      "E5",
+      "E6",
+      "E8",
+      "E9"
+    ],
+    "reasons": [
+      "E2: expected \"Insurer, next line: \"200601015674 (735426-V)\"\", page shows \"Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (03-e2e-ts1-receipt-company-number.png)",
+      "E4: expected \"Laid out like the Tokio Marine Insurer block of 12406_RG_TS1 (name, then company number with the old number in brackets on the next line)\", page shows \"Allianz: company number on the same line as (part of) the name (\"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"); Tokio Marine: name, then company number (\"Tokio Marine Insurans (Malaysia) Berhad\" / \"198601000381 (149520-U)\")\" (05-insurer-block-allianz-vs-tokio-marine.png)",
+      "E7: expected \"12406_E2E_TS2: \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"\", page shows \"12406_E2E_TS2 (Credit or Debit Card) Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (08-12406_E2E_TS2-receipt-insurer.png)",
+      "E7: expected \"12406_E2E_TS3: \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"\", page shows \"12406_E2E_TS3 (PayLater by Grab) Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (09-12406_E2E_TS3-receipt-insurer.png)",
+      "E7: expected \"12406_E2E_TS4: \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"\", page shows \"12406_E2E_TS4 (SPayLater) Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (10-12406_E2E_TS4-receipt-insurer.png)",
+      "E10: expected \"Receipt Summary: 'Premium After NCD' equals Basic Premium − NCD + the add-on lines listed above it on the same receipt, and equals Confirmation's 'Premium After\", page shows \"receipt: Basic Premium 1203.08 − NCD 360.92 + All Drivers 20.00 = 862.16; 'Premium After NCD' shown 882.16; Confirmation 'Premium After NCD' 862.16\" (13-e2e-ts1-receipt-premium-after-ncd.png)"
+    ],
+    "run": "eaint-12406-retest-sretest-20261030-0040-C-c1",
+    "verdict": "DEFECT",
+    "warnings": []
+  },
+  "id": "12406_RC_TS1",
+  "labels": [],
+  "order": 32,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\""
+    },
+    {
+      "id": "E2",
+      "text": "Insurer, next line: \"200601015674 (735426-V)\""
+    },
+    {
+      "id": "E3",
+      "text": "The old form \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\" on one line is not shown"
+    },
+    {
+      "id": "E4",
+      "text": "Laid out like the Tokio Marine Insurer block of 12406_RG_TS1 (name, then company number with the old number in brackets on the next line)"
+    },
+    {
+      "id": "E5",
+      "text": "Vehicle Plate No., For (owner name) and Total Premium match the purchase of E2E_TS1"
+    },
+    {
+      "id": "E6",
+      "text": "Receipt Summary ends with \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)"
+    },
+    {
+      "id": "E7",
+      "text": "The receipts of E2E_TS2, E2E_TS3 and E2E_TS4 show the same two Insurer lines"
+    },
+    {
+      "id": "E8",
+      "text": "Every label on the Allianz receipt is the same as on the Tokio Marine receipt of E2E_TS10 (e.g. 'Vehicle Plate No.', not 'Car Plate No.')"
+    },
+    {
+      "id": "E9",
+      "text": "Recorded only: what the Success page [Print] view shows (no Insurer block on 29.10); the print view is not a 'Receipt' under SRD §2.2.3 #6 / REQ-010, which are the receipt PDF and the e-receipt (N1)"
+    },
+    {
+      "id": "E10",
+      "text": "Receipt Summary: 'Premium After NCD' equals Basic Premium − NCD + the add-on lines listed above it on the same receipt, and equals Confirmation's 'Premium After NCD'"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "FAIL",
+  "reviewed": false,
+  "section": "Receipt",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Receipts downloaded on the Success page in 12406_E2E_TS1 (FPX Online banking), E2E_TS2 (Credit or Debit Card), E2E_TS3 (PayLater by Grab), E2E_TS4 (SPayLater); the Tokio Marine receipt of 12406_E2E_TS10 (read in RG_TS1) for one side-by-side comparison",
+  "sheet": "RC",
+  "situation": "Secarang receipt of an Allianz purchase shows the Allianz name with the new company number below it, laid out as Tokio Marine, and the Serba Sentral agent line",
+  "source": "E9 recorded only, E10 added (decided 29.10 under Azfar's full permission, main session). E10: the receipt's own lines and the Confirmation page of the same purchase (internal consistency); SRD v1.1 §2.1.3a ('Existing Allianz journey (quote, add-ons, payment, cover note, callbacks, receipt) ... full end-to-end test is required'); seen 29.10: RM 882.16 against 862.16 on every Allianz receipt (PDF + e-receipt). SRD v1.1 §2.2.9 REQ-010 (Existing / New Expected, Example 1a 'same layout as Tokio Marine'); receipt fields and agent line from mockup CIBO 20261006 receipt (SRD §1.5 #5; coverage review MD-23); agency Serba Sentral: SRD 2.1.3b. Labels: current behaviour = the Tokio Marine receipt on the same staging (unchanged by 12406, REQ-010 Example 2). Print view: REQ-010 Example 1 ('Customer ... opens receipt')",
+  "steps": "1. Open the receipt of E2E_TS1; screenshot the Purchase Details block and the Receipt Summary\n2. Put the Tokio Marine receipt of RG_TS1 beside it; one screenshot of both Insurer blocks\n3. Open the receipts of E2E_TS2, E2E_TS3 and E2E_TS4; screenshot their Insurer block and Payment Method\n4. Put the E2E_TS1 receipt beside the Tokio Marine receipt of E2E_TS10; compare every label (e.g. 'Vehicle Plate No.', 'Ownership Type', 'Coverage Type'). Until E2E_TS10's Tokio Marine purchase exists, compare with the CIBO receipt of BR69005852 (Tokio Marine, 17.09.2026) (29.10)\n5. Success page [Print] view of E2E_TS1: record what it shows (not a receipt under SRD §2.2.3 #6 / REQ-010; N1)\n6. On the E2E_TS1 receipt: add up Basic Premium − NCD + the add-on lines listed above 'Premium After NCD'; compare with the receipt's 'Premium After NCD' and with 'Premium After NCD' on the Confirmation page of the same purchase (E2E_TS1 step 4 screenshot)",
+  "updatedAt": "2026-10-29T10:40:12+00:00"
+}

@@ -1,0 +1,334 @@
+{
+ "_note": "EAINT-9805 UI TS tab (Faizuddin, 2026-11-03). Marks: **bold**, ++bold green++, !!bold red!!. dev = result columns open for the TS; the rest are grey. 2026-11-03: iOS 18 / iOS 26 columns added for the thumbprint UI rows (UI_TS05, UI_TS22, UI_TS40).",
+ "columns": [
+  "Android 15",
+  "Android 17",
+  "Fold (Android 17)",
+  "Tablet (Android 15)",
+  "iOS 18",
+  "iOS 26",
+  "iOS 27",
+  "iPadOS"
+ ],
+ "sets": {
+  "ALL": [
+   "Android 15",
+   "Android 17",
+   "Fold (Android 17)",
+   "Tablet (Android 15)",
+   "iOS 27",
+   "iPadOS"
+  ],
+  "DERM": [
+   "Android 15",
+   "Tablet (Android 15)"
+  ],
+  "FOLD": [
+   "Fold (Android 17)"
+  ],
+  "LARGE": [
+   "Tablet (Android 15)",
+   "iPadOS"
+  ],
+  "THUMB": [
+   "Android 15",
+   "Android 17",
+   "Fold (Android 17)",
+   "Tablet (Android 15)",
+   "iOS 18",
+   "iOS 26",
+   "iOS 27",
+   "iPadOS"
+  ],
+  "IOS_ALL": [
+   "iOS 18",
+   "iOS 26",
+   "iOS 27",
+   "iPadOS"
+  ]
+ },
+ "sections": [
+  {
+   "title": "UCD MOBILE APP — SCREEN LAYOUT PER PAGE",
+   "dev": "ALL",
+   "rows": [
+    {
+     "p": "P2",
+     "obj": "Verify the Login page layout fits the screen.",
+     "steps": "1. Open the app on the **Login** page with no saved account\n2. Check the page again with saved accounts listed (build with biometric login)\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Login page -> Logo, fields and **[Log In]** shown in full, !!not cut or overlapped!!\n2. Login page -> Saved account rows readable, long company names wrap"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the Home page and the bottom tab bar fit the screen.",
+     "steps": "1. Login as **Main UCD**\n2. Check the **Home** page\n3. Tap each tab on the bottom tab bar (**Home**, **Help**, **Account**)\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Home page -> Menus and tiles shown in full\n2. Bottom tab bar -> All tabs shown and tappable, !!not hidden under the navigation bar!!"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the Help and Account pages fit the screen.",
+     "steps": "1. Open the **Help** tab\n2. Open the **Account** tab\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Help page -> Text readable, !!not cut!!\n2. Account page -> Rows and the **Login with Face ID** switch shown in full, long username wraps"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the STMS module page and the seller category list fit the screen.",
+     "steps": "1. Open **STMS**\n2. Tap **New STMS Transaction**\n3. Check the **Sila Pilih Kategori ID PENJUAL** list\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS module page -> Buttons shown in full\n2. Category list -> **MALAYSIAN**, **MyPR – PEMASTAUTIN TETAP** and **SYARIKAT** shown in full and tappable"
+    },
+    {
+     "p": "P1",
+     "obj": "Verify the Iris reader section at STMS Step 1 and STMS Step 3 fits the screen.",
+     "steps": "1. Open **STMS Step 1** with the Iris reader connected\n2. Read MyKad, place thumb\n3. Repeat on **STMS Step 3**\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 1 / STMS Step 3 -> MyKad details, thumbprint area, messages and buttons shown in full\n2. STMS Step 1 / STMS Step 3 -> Long names and addresses wrap, !!not cut or overlapped!!",
+     "rem": "Dermalog layout is 9805_UI_TS06.",
+     "dev": "THUMB"
+    },
+    {
+     "p": "P1",
+     "obj": "Verify the Dermalog section at STMS Step 1 fits the screen.",
+     "dev": "DERM",
+     "steps": "1. Open **STMS Step 1** with Dermalog unplugged\n2. Plug in **Dermalog**, read MyKad, place thumb",
+     "exp": "Ensure:\n1. STMS Step 1 -> \"Fingerprint Verification\" message on the page shown in full\n2. STMS Step 1 -> MyKad details and thumbprint result shown in full, !!not cut or overlapped!!",
+     "rem": "Dermalog only: no iOS. Android 16 and 17 not included: \"Dermalog does not officially support Android 16 and above.\" (Device & Test Scope R12)."
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the STMS Step 2 form fits the screen while typing.",
+     "steps": "1. Open **STMS Step 2**\n2. Tap every field, open every dropdown and the date picker\n3. Type in each field\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 2 -> Labels and fields !!not cut!!\n2. STMS Step 2 -> Dropdown list and date picker fit the screen\n3. STMS Step 2 -> Field being typed !!not covered by the keyboard!!"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the STMS Step 4 JPJ check page fits the screen.",
+     "steps": "1. Complete **STMS Step 1** to **STMS Step 3**\n2. Check **STMS Step 4**\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 4 -> JPJ result, vehicle details and buttons shown in full, !!not cut or overlapped!!"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the STMS Step 5 payment page and its pop-ups fit the screen.",
+     "steps": "1. Open **STMS Step 5**\n2. Open the **LKM Refund** pop-up and the insurance cancellation pop-up\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 5 -> Amounts, add-ons and **[Pay]** shown in full\n2. Pop-ups -> Text and buttons shown in full and tappable"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the STMS Step 6 page and the e-Signature pad fit the screen.",
+     "steps": "1. Open **STMS Step 6**\n2. Sign on the **e-Signature** pad\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 6 -> Page shown in full\n2. e-Signature pad -> Fits the screen, signature !!not cut!!"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the progress bar and Progress Details fit the screen on every step.",
+     "steps": "1. On **STMS Step 1** to **STMS Step 6**, check the progress bar\n2. Tap the progress bar to open **Progress Details**, tap **[X]**\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Progress bar -> Steps 1 to 6 and checkmarks shown in full\n2. Progress Details -> Text readable, **[X]** closes it"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the STMS Transaction Listing fits the screen with many rows.",
+     "steps": "1. Open **STMS Transaction Listing** with many transactions\n2. Scroll to the end\n3. Search and filter\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Listing -> Rows, status labels and dates shown in full, !!not cut or overlapped!!\n2. Listing -> Search and filter controls shown in full and usable"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the STMS Transaction Details page and its documents fit the screen.",
+     "steps": "1. Open a completed **STMS Transaction Details**\n2. Open **Slip Pengesahan**, the Perakuan and the **LKM Refund** document\n3. Zoom and scroll each document\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Transaction Details -> All fields readable, !!not cut!!\n2. Documents -> Readable, thumbprint picture shown"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the STMS + Transfer History pages fit the screen.",
+     "steps": "1. Open **STMS + Transfer History** for Individual and for Company\n2. Open the listing and one details page\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS + Transfer History -> Listing and details shown in full, !!not cut or overlapped!!"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the UCD to UCD pages fit the screen.",
+     "steps": "1. Open **UCD to UCD**\n2. Open **Standard** and **Interstate**\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. UCD to UCD -> Buttons and the Interstate notes shown in full, long text wraps"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the eSTM pages fit the screen.",
+     "steps": "1. Create new **eSTM** transaction\n2. Go through every eSTM step, including the consent fields\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. eSTM -> Every step shown in full, !!not cut or overlapped!!\n2. eSTM -> Field being typed !!not covered by the keyboard!!"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify pop-ups, dialogs and toasts fit the screen.",
+     "steps": "1. Trigger an error message, a confirm dialog, the **No internet connection** toast and the session expired message\n2. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Pop-ups and dialogs -> Centred, text !!not cut!!, buttons tappable\n2. Toasts -> Text shown in full, !!not hidden under the navigation bar!!"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify long data wraps on the listing, details and form pages.",
+     "steps": "1. Use a transaction with a long company name, long address and long vehicle model\n2. Check **STMS Transaction Listing**, **STMS Transaction Details** and **STMS Step 2**\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Every page -> Long text wraps, !!not cut or overlapped!!"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the layout does not break with the largest font and display size.",
+     "steps": "1. Set the phone font size and display size to the largest\n2. Go through **Login**, **Home**, **STMS Step 1** and **STMS Transaction Listing**\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Every page -> Layout !!does not break!!, buttons tappable\n2. Every page -> Text readable",
+     "rem": "Whether the app follows the phone font size: open with the developer."
+    }
+   ]
+  },
+  {
+   "title": "UCD MOBILE APP — SCREEN ROTATION (STAYS PORTRAIT)",
+   "dev": "ALL",
+   "rows": [
+    {
+     "p": "P2",
+     "obj": "Verify the screen stays in portrait when the device is rotated on non-transaction pages.",
+     "steps": "1. Turn on device auto-rotate\n2. Rotate the device on **Login**, **Home**, **STMS Transaction Listing** and **STMS Transaction Details**\n3. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. Every page -> Screen !!does not rotate!!, stays in portrait\n2. Every page -> Layout !!does not break!!",
+     "rem": "Auto-rotate is disabled for now; rotation is a later phase (f2f notes 2026-10-29)."
+    },
+    {
+     "p": "P1",
+     "obj": "Verify the screen stays in portrait and typed data stays when rotated mid-process.",
+     "steps": "1. Turn on device auto-rotate\n2. Fill **STMS Step 2** fields\n3. Rotate the device to landscape and back\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 2 -> Screen !!does not rotate!!\n2. STMS Step 2 -> Typed data kept"
+    },
+    {
+     "p": "P1",
+     "obj": "Verify rotating at the thumbprint step does not affect the read MyKad or the thumbprint.",
+     "steps": "1. Turn on device auto-rotate\n2. Read MyKad at **STMS Step 1** with Iris\n3. Rotate the device, then place thumb\n4. Repeat at **STMS Step 3**\n5. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 1 / STMS Step 3 -> Screen !!does not rotate!!\n2. STMS Step 1 / STMS Step 3 -> MyKad details kept, ++\"Verification Passed\"++",
+     "dev": "THUMB"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify rotating with a pop-up or the e-Signature pad open keeps them open.",
+     "steps": "1. Turn on device auto-rotate\n2. Open the **LKM Refund** pop-up on **STMS Step 5**, rotate the device\n3. Sign the **e-Signature** pad on **STMS Step 6**, rotate before **[Proceed]**\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 5 / STMS Step 6 -> Screen !!does not rotate!!\n2. Pop-up still open, signature kept"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the app opens in portrait when the device is held in landscape.",
+     "steps": "1. Turn on device auto-rotate\n2. Hold the device in landscape (tablet on a stand, phone sideways)\n3. Open the app from closed, then from the background\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. App -> Opens in portrait\n2. App -> Layout !!does not break!!"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify fast rotation during page loading does not crash the app.",
+     "steps": "1. Turn on device auto-rotate\n2. Tap **[Next]** on **STMS Step 2**\n3. Rotate the device several times while the next page loads\n4. On the fold phone, do it folded, then unfolded",
+     "exp": "Ensure:\n1. STMS Step 3 -> Opens in portrait\n2. App -> !!does not crash or freeze!!"
+    }
+   ]
+  },
+  {
+   "title": "UCD MOBILE APP — FOLD PHONE: FOLD AND UNFOLD MID PROCESS",
+   "dev": "FOLD",
+   "rows": [
+    {
+     "p": "P2",
+     "obj": "Verify typed login details stay when the fold phone is unfolded or folded.",
+     "steps": "1. On the cover screen, type username and password on **Login**\n2. Unfold the phone, then fold it\n3. Tap **[Log In]**",
+     "exp": "Ensure:\n1. Login page -> Typed values kept after each change\n2. Home page -> Opens"
+    },
+    {
+     "p": "P1",
+     "obj": "Verify unfolding while MyKad is being read gives a clear result.",
+     "steps": "1. Open **STMS Step 1** with Iris on the cover screen\n2. Insert MyKad and start the read\n3. Unfold the phone during the read\n4. Repeat starting unfolded, then fold during the read",
+     "exp": "Ensure:\n1. STMS Step 1 -> MyKad read completes, or a clear read error with retry\n2. App -> !!does not crash or freeze!!"
+    },
+    {
+     "p": "P1",
+     "obj": "Verify unfolding while a page is submitting does not submit twice.",
+     "steps": "1. Tap **[Next]** on **STMS Step 2**, unfold the phone while it loads\n2. Tap **[Pay]** on **STMS Step 5**, fold the phone while it loads\n3. Check **STMS Transaction Listing**",
+     "exp": "Ensure:\n1. Next page -> Opens once\n2. STMS Transaction Listing -> !!No duplicate transaction or payment!!"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the listing keeps its search and filter when the fold phone is unfolded or folded.",
+     "steps": "1. Open **STMS Transaction Listing**, search and filter, scroll down\n2. Unfold the phone, then fold it",
+     "exp": "Ensure:\n1. Listing -> Search and filter kept\n2. Listing -> Layout fits each screen",
+     "rem": "Whether the scroll position is kept: open."
+    },
+    {
+     "p": "P2",
+     "obj": "Verify eSTM data stays when the fold phone is unfolded or folded mid-process.",
+     "steps": "1. Create new **eSTM** transaction on the cover screen, fill the consent fields\n2. Unfold the phone, continue to the next step\n3. Fold the phone, continue",
+     "exp": "Ensure:\n1. eSTM -> Typed data kept after each change\n2. eSTM -> Layout fits each screen"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify an open pop-up or dialog stays usable when the fold phone is unfolded or folded.",
+     "steps": "1. Open the **LKM Refund** pop-up, an error message and the session expired message, one at a time\n2. Unfold the phone, then fold it\n3. Tap the pop-up buttons",
+     "exp": "Ensure:\n1. Pop-up -> Still shown after each change\n2. Pop-up -> Buttons work"
+    },
+    {
+     "p": "P2",
+     "obj": "Verify the screen stays in portrait on both fold phone screens.",
+     "steps": "1. Turn on device auto-rotate\n2. Rotate the phone on the cover screen\n3. Unfold, rotate the phone on the inner screen",
+     "exp": "Ensure:\n1. Cover and inner screen -> Screen !!does not rotate!!, stays in portrait"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the app keeps the page when the phone is folded with the cover-screen setting on and off.",
+     "steps": "1. Turn on the phone setting that keeps apps open on the cover screen\n2. Open **STMS Step 2**, fill fields on the inner screen, fold the phone\n3. Turn the setting off, repeat",
+     "exp": "Ensure:\n1. Setting on -> App stays on **STMS Step 2**, typed data kept\n2. Setting off -> App !!does not crash!!",
+     "rem": "Setting name on Galaxy Z Fold 7: check on the phone."
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the app in split screen on the inner screen.",
+     "steps": "1. Unfold the phone\n2. Open the app in split screen with another app\n3. Go through **Home** and **STMS Step 1**",
+     "exp": "Ensure:\n1. App -> Layout usable, or split screen not allowed\n2. App -> !!does not crash or freeze!!",
+     "rem": "Whether split screen is allowed: open with the developer. Note the result here."
+    }
+   ]
+  },
+  {
+   "title": "UCD MOBILE APP — TABLET AND IPAD (LARGE SCREEN)",
+   "dev": "LARGE",
+   "rows": [
+    {
+     "p": "P2",
+     "obj": "Verify every main page fits the large screen.",
+     "steps": "1. Go through **Login**, **Home**, **STMS Step 1** to **STMS Step 6**, **STMS Transaction Listing** and **STMS Transaction Details**",
+     "exp": "Ensure:\n1. Every page -> Text readable, icons and pictures !!not stretched!!\n2. Every page -> Buttons shown in full and tappable"
+    },
+    {
+     "p": "P1",
+     "obj": "Verify the Iris reader section at STMS Step 1 and STMS Step 3 fits the large screen.",
+     "steps": "1. Open **STMS Step 1** with the Iris reader connected\n2. Read MyKad, place thumb\n3. Repeat on **STMS Step 3**",
+     "exp": "Ensure:\n1. STMS Step 1 / STMS Step 3 -> Same messages and buttons as on the phone, shown in full\n2. STMS Step 1 / STMS Step 3 -> ++\"Verification Passed\"++"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the keyboard does not cover the field being typed on the large screen.",
+     "steps": "1. Tap the fields on **STMS Step 2** and the JPJ receipt email field on **STMS Step 3**\n2. On iPad, repeat with the floating keyboard",
+     "exp": "Ensure:\n1. STMS Step 2 / STMS Step 3 -> Field being typed !!not covered by the keyboard!!"
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the app in split screen on the tablet and in Split View on iPad.",
+     "steps": "1. Open the app in split screen (tablet) or Split View / Slide Over (iPad) with another app\n2. Go through **Home** and **STMS Step 1**",
+     "exp": "Ensure:\n1. App -> Layout usable, or split screen not allowed\n2. App -> !!does not crash or freeze!!",
+     "rem": "Whether split screen is allowed: open with the developer. Note the result here."
+    },
+    {
+     "p": "P3",
+     "obj": "Verify the listing shows all data on the large screen.",
+     "steps": "1. Open **STMS Transaction Listing** with many transactions\n2. Scroll to the end, search and filter",
+     "exp": "Ensure:\n1. Listing -> All rows and labels shown in full, !!no blank or cut area!!"
+    }
+   ]
+  },
+  {
+   "title": "UCD MOBILE APP — IRIS THUMBPRINT UI PER iOS VERSION",
+   "dev": "IOS_ALL",
+   "rows": [
+    {
+     "p": "P1",
+     "obj": "Verify the Iris thumbprint screens look and work the same on every iOS version.",
+     "steps": "1. On each iOS version, open **STMS Step 1** with the Iris reader connected\n2. Read MyKad, place thumb, check the reader status, messages, buttons and any pop-up or dialog\n3. Repeat on **STMS Step 3** and **eSTM Step 1**\n4. Compare the screens across iOS 18, iOS 26, iOS 27 and iPadOS",
+     "exp": "Ensure:\n1. Every iOS version -> Same text, buttons and pop-ups, shown in full, !!not cut or overlapped!!\n2. STMS Step 1 / STMS Step 3 / eSTM Step 1 -> ++\"Verification Passed\"++",
+     "rem": "iOS draws screens with its own design library, which changes per iOS version (Faizuddin, 2026-11-03)."
+    }
+   ]
+  }
+ ]
+}

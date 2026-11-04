@@ -1,0 +1,18 @@
+	Platform	Module / Features		Link	Total TS	Passed TS	"Progress
+(Testing TS)"	Drafted By	"Progress
+(Drafting TS)"	ETA	Testing Effort Estimation (1 QA)	ETA for Testing
+1	Secarang	"E2E Test
+Scenarios"	Comprehensive	>	12	1						
+2			TPFT	>	12							
+3		Optional Coverage	Car	>	6	5						
+4			Motorbike	>	2	2						
+5		Home Page	Car	>	4	4						
+6			Motorbike	>	4	4						
+7		Plan Details & Excess Info	Motor Vehicle - Comprehensive	>	3	3						
+8			Motor Vehicle - TPFT	>	3							
+9			Motorbike - Comprehensive	>	3	1						
+10			Motorbike - Third Party	>	3							
+11		Additional Functions	-	>	11	8						
+12		Text Display - Car	-	>	6	6						
+13		Text Display - Motor	-	>	6	6						
+					75	49						

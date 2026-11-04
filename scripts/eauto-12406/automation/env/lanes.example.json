@@ -1,0 +1,8 @@
+{
+  "_about": "Template for env/lanes.local.json: YOUR OWN lane roster (gitignored). When lanes.local.json exists it is read instead of lanes.json (config/lane-roster.ts, scripts/lib/lane-broker.mjs). One lane = one staging UCD user of yours. persona = a key in config/personas.ts (its username/password come from .staging.env-local under that persona's variable names); card = a key in src/data/cards.ts (the MyKad the emulator inserts for that user); role = main | sub; prefix = the eSim vehicle prefix you own for that lane; ready = false until the lane passed one STMS to Step 6. See ONBOARDING.md section 4.",
+  "lanes": {
+    "1": { "persona": "ucdE2E",  "card": "<your card key>", "company": "<your UCD company name>", "companyId": "<BO company ID>", "roc": "<ROC no>", "role": "main", "prefix": "<your prefix>", "ready": false },
+    "2": { "persona": "ucdE2E2", "card": "<card key>",      "company": "<a DIFFERENT company, for UCD to UCD>", "companyId": "", "roc": "", "role": "main", "prefix": "<prefix>", "ready": false },
+    "3": { "persona": "ucdE2E3", "card": "<card key>",      "company": "<same company as lane 1>", "companyId": "", "roc": "", "role": "sub", "prefix": "<prefix>", "ready": false }
+  }
+}

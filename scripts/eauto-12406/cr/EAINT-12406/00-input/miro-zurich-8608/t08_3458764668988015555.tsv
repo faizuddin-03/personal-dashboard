@@ -1,0 +1,14 @@
+Get A Free Quote								
+TS No.	Category	Pre-Requisites	Vehicle Type	Test Scenarios	Expected Result	QA	Test Result (P/F)	Remarks
+TS_FQ_1	Individual	Without any eSTM transactions	Fuel Car	"Go to Insurance > Get a free quote
+Input the valid fuel car Vehicle Number and valid IC Number. Click [Show My Results] button.
+Procced until Step 2: Optional Coverage"	"Only able to proceed until Step 2
+Ensure all plan details displayed based on Fuel Car type"	Faiz	Pass	
+TS_FQ_2			EV	"Go to Insurance > Get a free quote
+Input the valid EV Vehicle Number and valid IC Number. Click [Show My Results] button.
+Procced until Step 2: Optional Coverage"	"Only able to proceed until Step 2
+Ensure all plan details displayed based on EV type"			
+TS_FQ_3			Motorbike	"Go to Insurance > Get a free quote
+Input the valid motorbike Vehicle Number and valid IC Number. Click [Show My Results] button.
+Procced until Step 2: Optional Coverage"	"Only able to proceed until Step 2
+Ensure all plan details displayed based on Motorbike type"	Faiz	Retest Pass 5/5	Raised in EAINT-11047

@@ -1,0 +1,25 @@
+	Platform	Module / Features		Link	Total TS	Passed TS	"Progress
+(Testing TS)"	Drafted By	"Progress
+(Drafting TS)"	ETA	Testing Effort Estimation (1 QA)	ETA for Testing
+1	eAuto	"E2E Test
+Scenarios"	Comprehensive	>	10							
+2			TPFT	>	10							
+		Insurance	Get A Free Quote	>	2	2	100%					
+			Plan Details & + More Info	>	6	6	100%					
+3			Optional Coverage	>	8	6						
+4		UCD	Insurance Homepage	>	2	2	100%					
+5			Insurance Transaction Listing	>	14	14	100%					
+6			Insurance Payment Report	>	21	21	100%					
+7			Monthly Handling Fee Report	>	2	2	100%					
+8		BO	Insurance Transaction Listing	>	13	13	100%					
+9			Insurance Quote Enquiry	>	8	6						
+10		Insurance API Response Test Scenarios	Insurance Error: Refer Risk Error	>	8							
+11			Insurance Error: Insurance API Down	>	4							
+12		Insurance Sequence	Car	>	6							
+13			Motorbike	>	4							
+14		CronJobs		>	4							
+15		Regression		>	5							
+16		Existing Insurance Transaction Test Scenarios		>	4							
+17		Hire Purchase Record Status	B / T	>	3 (TBC)							
+18			Active	>	1 (TBC)							
+					133	83	51.13%					

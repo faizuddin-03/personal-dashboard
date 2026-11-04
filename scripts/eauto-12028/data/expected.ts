@@ -11,29 +11,44 @@ export const WAIT_NOTE = {
   forReviewer: 'Waiting for the Reviewer to approve first.',
   drafterDone: 'Drafter has already approved this month. Waiting for the Reviewer.',
   reviewerDone: 'Reviewer has already approved. Waiting for the Approver.',
+  fullyApproved: 'Fully approved.', // mock-up line 488 (Approver on a fully approved month)
 };
 
-/** Mock-up renderLog() empty state (line 547) — [unconfirmed]. */
-export const NO_ACTIVITY = 'No activity yet.';
+/** Note under the workflow bar when it is not this login's turn —
+ *  _reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html line 132. */
+export const NOT_YOUR_TURN_NOTE = 'Awaiting the next role in the approval sequence.';
+
+/** Validation messages, from the live Details capture's script
+ *  (_reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html).
+ *  The Reject popup has NO remarks message: #rmk-submit stays disabled until remarks are typed (lines 328, 386-387).
+ *  A past or today date has no message: the field's min is tomorrow (lines 395-399). */
+export const MSG = {
+  signature: 'Please provide your signature.', // DETAILS line 421
+  noDate: 'Please pick a future payment date.', // DETAILS line 403 (Confirm with no date)
+};
+
+/** Audit Log empty state — DETAILS line 306. */
+export const NO_ACTIVITY = 'No workflow actions recorded yet.';
 
 /** SRD v1.1 REQ-008: 16 states, code → names (SRD short form; mock-up long form, line 271). */
-export const STATES: { code: string; names: string[] }[] = [
-  { code: '01', names: ['Johor'] },
-  { code: '02', names: ['Kedah'] },
-  { code: '03', names: ['Kelantan'] },
-  { code: '04', names: ['Melaka'] },
-  { code: '05', names: ['Negeri Sembilan'] },
-  { code: '06', names: ['Pahang'] },
-  { code: '07', names: ['Pulau Pinang'] },
-  { code: '08', names: ['Perak'] },
-  { code: '09', names: ['Perlis'] },
-  { code: '10', names: ['Selangor'] },
-  { code: '11', names: ['Terengganu'] },
-  { code: '12', names: ['Sabah'] },
-  { code: '13', names: ['Sarawak'] },
-  { code: '14', names: ['W.P. Kuala Lumpur', 'Wilayah Persekutuan Kuala Lumpur'] },
-  { code: '15', names: ['W.P. Labuan', 'Wilayah Persekutuan Labuan'] },
-  { code: '16', names: ['W.P. Putrajaya', 'Wilayah Persekutuan Putrajaya'] },
+/** label = the live cell text, from _reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html lines 156-276 (upper case + code). */
+export const STATES: { code: string; label: string; names: string[] }[] = [
+  { code: '01', label: 'JOHOR (01)', names: ['Johor'] },
+  { code: '02', label: 'KEDAH (02)', names: ['Kedah'] },
+  { code: '03', label: 'KELANTAN (03)', names: ['Kelantan'] },
+  { code: '04', label: 'MELAKA (04)', names: ['Melaka'] },
+  { code: '05', label: 'NEGERI SEMBILAN (05)', names: ['Negeri Sembilan'] },
+  { code: '06', label: 'PAHANG (06)', names: ['Pahang'] },
+  { code: '07', label: 'PULAU PINANG (07)', names: ['Pulau Pinang'] },
+  { code: '08', label: 'PERAK (08)', names: ['Perak'] },
+  { code: '09', label: 'PERLIS (09)', names: ['Perlis'] },
+  { code: '10', label: 'SELANGOR (10)', names: ['Selangor'] },
+  { code: '11', label: 'TERENGGANU (11)', names: ['Terengganu'] },
+  { code: '12', label: 'SABAH (12)', names: ['Sabah'] },
+  { code: '13', label: 'SARAWAK (13)', names: ['Sarawak'] },
+  { code: '14', label: 'WILAYAH PERSEKUTUAN KUALA LUMPUR (14)', names: ['W.P. Kuala Lumpur', 'Wilayah Persekutuan Kuala Lumpur'] },
+  { code: '15', label: 'WILAYAH PERSEKUTUAN LABUAN (15)', names: ['W.P. Labuan', 'Wilayah Persekutuan Labuan'] },
+  { code: '16', label: 'WILAYAH PERSEKUTUAN PUTRAJAYA (16)', names: ['W.P. Putrajaya', 'Wilayah Persekutuan Putrajaya'] },
 ];
 
 /** SRD v1.1 REQ-008 "FMC (Car) = RM1.00", "MMSDA (Motorcycle) = RM2.00". */

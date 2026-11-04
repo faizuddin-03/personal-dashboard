@@ -1,0 +1,4 @@
+12406_RG_TS1 — the script stopped before the end (spec problem — fix and re-run)
+run eaint-12406-retest-sretest-20261030-0040-C-c2, staging /ia, 30/10/2026, 09:16:15 MYT
+
+- stopped before the end: TimeoutError: locator.fill: Timeout 90000ms exceeded.

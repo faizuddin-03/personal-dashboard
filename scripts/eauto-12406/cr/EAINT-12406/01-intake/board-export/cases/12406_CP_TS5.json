@@ -1,0 +1,46 @@
+{
+  "expected": "Ensure:\n• Allianz expanded: one contact line only, \"24-Hours Helpline\" with \"1800 22 5542\", in the same format as the Lonpac / Tokio Marine contact lines (no \"Road Assistance Hotline\" or \"Customer Service\" line)\n• Below the Allianz contact details: \"You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542\"\n• Allianz collapsed: its contact details and sentence are hidden, as for the other insurers",
+  "gate": {
+    "at": "29/10/2026, 15:51:31",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_CP_TS5",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sCP-20261029-1545-c1",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_CP_TS5",
+  "labels": [],
+  "order": 6,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Allianz expanded: one contact line only, \"24-Hours Helpline\" with \"1800 22 5542\", in the same format as the Lonpac / Tokio Marine contact lines (no \"Road Assistance Hotline\" or \"Customer Service\" line)"
+    },
+    {
+      "id": "E2",
+      "text": "Below the Allianz contact details: \"You can request 24/7 towing and roadside assistance from Allianz by calling the toll-free Allianz Road Rangers Helpline at 1800-22-5542\""
+    },
+    {
+      "id": "E3",
+      "text": "Allianz collapsed: its contact details and sentence are hidden, as for the other insurers"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "About Us, FAQs, Support",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/",
+  "sheet": "CP",
+  "situation": "Support: expand the Allianz section (one helpline line and the towing sentence), then collapse it",
+  "source": "SRD v1.1 §2.2.8 REQ-009 b-d (c lists one contact detail), Examples 2 and 3; mockup Secarang 20261015 (one line). The ticket's 'Road Assistance Hotline, Customer Service' is superseded by the SRD",
+  "steps": "1. Secarang > Support > Need to contact insurance company?: expand Allianz; screenshot\n2. Collapse Allianz; screenshot",
+  "updatedAt": "2026-10-28T04:49:41+00:00"
+}

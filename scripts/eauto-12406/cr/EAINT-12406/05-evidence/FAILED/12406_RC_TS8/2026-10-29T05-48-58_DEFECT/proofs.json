@@ -1,0 +1,73 @@
+{
+  "ts": "12406_RC_TS8",
+  "run": "eaint-12406-run-sRC-20261029-1330-c2",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "BEFORE (28.10): BR55004010 receipt Insurer \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\"",
+      "shows": "FROM THE BEFORE CAPTURE 28.10.2026 (old build, not redone: deployed): Insurer block (pdftotext -layout) [\"Insurer                                           Total Premium\",\"Allianz General Insurance Company (Malaysia)\",\"Berhad (735426-V)                                 Exclusively by agent Serba Sentral Sdn Bhd\",\"PIAM ID: 195379-01\"]",
+      "match": true,
+      "shot": "01-FROM-THE-BEFORE-CAPTURE-28-10-12406_RC_TS8_E1_05-receipt-BR55004010-in.png",
+      "at": "29/10/2026, 13:48:02",
+      "url": "",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "BR55004010: the Allianz name only, no number",
+      "shows": "FROM THE BEFORE CAPTURE 28.10.2026: BR55004010 Insurer \"Allianz General Insurance Company (Malaysia) Berhad\"",
+      "match": true,
+      "shot": "02-FROM-THE-BEFORE-CAPTURE-28-10-12406_RC_TS8_E2_03-insurer-box-BR5500401.png",
+      "at": "29/10/2026, 13:48:05",
+      "url": "",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "BR44003678: the Allianz name only, no number",
+      "shows": "FROM THE BEFORE CAPTURE 28.10.2026: BR44003678 Insurer \"Allianz General Insurance Company (Malaysia) Berhad\"",
+      "match": true,
+      "shot": "03-FROM-THE-BEFORE-CAPTURE-28-10-12406_RC_TS8_E2_03-insurer-box-BR4400367.png",
+      "at": "29/10/2026, 13:48:07",
+      "url": "",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "BR3D003430: the Allianz name only, no number",
+      "shows": "FROM THE BEFORE CAPTURE 28.10.2026: BR3D003430 Insurer \"Allianz General Insurance Company (Malaysia) Berhad\"",
+      "match": true,
+      "shot": "04-FROM-THE-BEFORE-CAPTURE-28-10-12406_RC_TS8_E2_03-insurer-box-BR3D00343.png",
+      "at": "29/10/2026, 13:48:10",
+      "url": "",
+      "side": ""
+    },
+    {
+      "point": "E4",
+      "expected": "AFTER: BR55004010 Transaction Details shows \"200601015674 (735426-V)\" with the Allianz name (layout recorded, Q42)",
+      "shows": "BR55004010 Transaction Details Insurer \"Allianz General Insurance Company (Malaysia) Berhad 200601015674 (735426-V)\"; number after the name, wrapped onto the line below (layout recorded, Q42)",
+      "match": true,
+      "shot": "05-after-br55004010-transaction-details.png",
+      "at": "29/10/2026, 13:48:20",
+      "url": "/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "AFTER: BR55004010 receipt \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"",
+      "shows": "BR55004010 receipt Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "06-after-br55004010-receipt-insurer.png",
+      "at": "29/10/2026, 13:48:25",
+      "url": "/cibo/transaction-management/transaction-details/b41dabc4-b454-4052-a38c-458e8aa8fa2b",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "signed in: CIBO (cibo)",
+    "downloaded: BR55004010_receipt_after_PERSONAL-DATA.pdf",
+    "BR55004010 listing row: {\"#\":\"1\",\"Transaction Ref. No.\":\"BR55004010 Secarang\",\"Transaction Created Date\":\"09-05-2025 11:13\",\"Insurance Created Date\":\"04-05-2025 11:15\",\"UCD\":\"-\",\"UCD Name\":\"-\",\"Vehicle No\":\"DAX0900\",\"Vehicle Type\":\"Car\",\"Payment\":\"RM941.13Paid 04-05-2025 11:15\",\"Payment Mode\":\"Fiuu\",\"Discount Code\":\"\",\"Road Tax\":\"\",\"Ins. Co.\":\"Allianz Serba Sentral\",\"Transaction Status\":\"Insurance created\",\"JPJ\":\"Accepted\",\"Remark\":\"\"}"
+  ],
+  "opened": []
+}

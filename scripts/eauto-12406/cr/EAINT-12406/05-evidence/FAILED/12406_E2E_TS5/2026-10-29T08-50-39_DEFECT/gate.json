@@ -1,0 +1,13 @@
+{
+  "ts": "12406_E2E_TS5",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"After the failed FPX payment: back on the payment page with \"Unsuccessful payment You may try again.\", no receipt, and the other payment tiles can still be pick\", page shows \"payment page: \"Unsuccessful payment\"; receipt none; tiles still offered: \"Credit or Debit Card\", \"FPX Online banking\", \"SPayLater\", \"PayLater by Grab\"\" (01-failed-fpx-payment-page.png)",
+    "E2: expected \"the failed attempt shows Transaction Status \"Failed\", Payment not 'Paid' (badge text recorded)\", page shows \"no row of HXA0015A with Transaction Status \"Failed\" (rows: BR60006353 \"Insurance created\")\" (05-cibo-failed-row.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS5/2026-10-29T08-50-39_DEFECT",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 16:50:39",
+  "warnings": []
+}

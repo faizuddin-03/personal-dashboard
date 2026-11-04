@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
-import { LayoutGrid, StickyNote, ListTodo, Timer, ClipboardPen, Flame, ChevronRight } from "lucide-react";
+import { LayoutGrid, StickyNote, ListTodo, Timer, ClipboardPen, Flame, ChevronRight, SquareKanban, Scissors } from "lucide-react";
 import clsx from "clsx";
 import {
   clampGeom, loadLayout, saveLayout,
@@ -10,6 +10,8 @@ import { formatClock, streakDays, todayCount, startTimer, pauseTimer } from "@/l
 import FloatingWindow from "./FloatingWindow";
 import FocusTimer from "./FocusTimer";
 import Scratchpad from "./Scratchpad";
+import KanbanQuickAdd from "./KanbanQuickAdd";
+import SnipEditor from "@/components/snip/SnipEditor";
 import { NotesPanel, TodoPanel } from "./MiniPanels";
 import { useFocusTimer } from "./useFocusTimer";
 import s from "./floating.module.css";
@@ -31,6 +33,8 @@ const DEFS: WinDef[] = [
   { id: "todo",    title: "To-do",       icon: n => <ListTodo size={n} />,     tint: "linear-gradient(135deg,#10b981,#06b6d4)", code: "KeyT", keyLabel: "Alt T", content: <TodoPanel /> },
   { id: "timer",   title: "Focus timer", icon: n => <Timer size={n} />,        tint: "linear-gradient(135deg,#f43f5e,#ec4899)", code: "KeyP", keyLabel: "Alt P", content: <FocusTimer /> },
   { id: "scratch", title: "Scratchpad",  icon: n => <ClipboardPen size={n} />, tint: "linear-gradient(135deg,#6366f1,#8b5cf6)", code: "KeyS", keyLabel: "Alt S", content: <Scratchpad /> },
+  { id: "kanban",  title: "Add Kanban task", icon: n => <SquareKanban size={n} />, tint: "linear-gradient(135deg,#0ea5e9,#3b82f6)", code: "KeyK", keyLabel: "Alt K", content: <KanbanQuickAdd /> },
+  { id: "snip",    title: "Snip Editor", icon: n => <Scissors size={n} />,     tint: "linear-gradient(135deg,#ef4444,#f59e0b)", code: "KeyE", keyLabel: "Alt E", content: <SnipEditor variant="window" /> },
 ];
 
 const DOCK_KEY = { code: "Backquote", label: "Alt `" };
@@ -48,7 +52,7 @@ const getSheet = () => window.matchMedia(SHEET_QUERY).matches;
 const getSheetServer = () => false;
 
 /**
- * In-page floating windows (Notes, To-do, Focus timer, Scratchpad) plus the
+ * In-page floating windows (Notes, To-do, Focus timer, Scratchpad, Kanban task, Snip Editor) plus the
  * bottom-right dock that launches them. Mounted once in AppShell, which
  * never unmounts on client navigation, so windows stay open across pages;
  * layout is also persisted to localStorage for reloads.
@@ -202,7 +206,7 @@ export default function FloatingLayer() {
         >
           {layout.dockExpanded ? <ChevronRight size={17} /> : <LayoutGrid size={16} />}
           <span className={clsx(s.tip, s.tipRight)}>
-            {layout.dockExpanded ? "Collapse" : "Notes, to-do, timer, scratchpad"}<kbd>{DOCK_KEY.label}</kbd>
+            {layout.dockExpanded ? "Collapse" : "Notes, to-do, timer, scratchpad, Kanban task, Snip Editor"}<kbd>{DOCK_KEY.label}</kbd>
           </span>
         </button>
       </nav>

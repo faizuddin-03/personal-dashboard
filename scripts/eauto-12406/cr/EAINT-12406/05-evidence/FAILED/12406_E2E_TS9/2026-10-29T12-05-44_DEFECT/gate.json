@@ -1,0 +1,12 @@
+{
+  "ts": "12406_E2E_TS9",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E4: expected \"Changing the gender on Confirmation re-prices the Allianz premium (observed rule)\", page shows \"Gender MALE -> FEMALE: Total Premium RM944.37 -> RM944.37\" (10-confirmation-gender-reprice.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS9/2026-10-29T12-05-44_DEFECT",
+  "run": "eaint-12406-retest-sretest-20261029-1950-B-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 20:05:44",
+  "warnings": []
+}

@@ -1,0 +1,32 @@
+{
+  "expected": "Ensure:\n• Card \"Allianz – Quotation unavailable\" shown, after the Tokio Marine quotation\n• The Lonpac and Tokio Marine quotations that are available are shown as usual, in the order Lonpac, Tokio Marine\n• The Lonpac purchase completes: Success page ('Thank you for your purchase!') with a [Receipt] download (observed, current flow)",
+  "id": "12406_QT_TS4",
+  "labels": [],
+  "order": 13,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Card \"Allianz – Quotation unavailable\" shown, after the Tokio Marine quotation"
+    },
+    {
+      "id": "E2",
+      "text": "The Lonpac and Tokio Marine quotations that are available are shown as usual, in the order Lonpac, Tokio Marine"
+    },
+    {
+      "id": "E3",
+      "text": "The Lonpac purchase completes: Success page ('Thank you for your purchase!') with a [Receipt] download (observed, current flow)"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "",
+  "reviewed": false,
+  "section": "No Allianz quotation",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: a private car, individual owner, NOT a renewal (what counts as non-renewal on Secarang: Q12 e)\n• Payment: tile 'FPX Online banking' > RHB Bank > Fiuu Bank Simulator popup (its own username + password) > Status 'Approved' (00) > copy the TAC shown into 'Enter TAC' > [Pay now]. The popup closes itself after Pay (doc §5; proven on /ia/ 19.10, receipt Payment Method 'Online Banking - RHB Bank')\n• This transaction is read again by 12406_RG_TS2: record the plate and the CIBO Transaction Ref. No.",
+  "sheet": "QT",
+  "situation": "Individual owner, non-renewal: Allianz shown as unavailable; the customer still buys Lonpac to the end (normal flow, non-renewal)",
+  "source": "SRD v1.1 REQ-003 Example 2a ('Same as Example 1'), Example 3a; REQ-004; payment path observed (secarang-study §1-2)",
+  "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; continue to All Quotations\n2. Screenshot all cards\n3. Select Lonpac > Add-ons (keep the default) > Confirmation > Confirm and Pay\n4. FPX Online banking > RHB Bank > Bank Simulator Status Approved (00) > TAC > [Pay now]; screenshot the Success page; download the [Receipt]",
+  "updatedAt": "2026-10-28T07:56:11+00:00"
+}

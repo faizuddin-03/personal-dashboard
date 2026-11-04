@@ -1,0 +1,10 @@
+{
+  "ts": "12406_E2E_TS10",
+  "verdict": "VALID",
+  "reasons": [],
+  "folder": "cr/EAINT-12406/05-evidence/post-push/12406_E2E_TS10",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c2",
+  "instance": "ia",
+  "at": "29/10/2026, 16:57:12",
+  "warnings": []
+}

@@ -879,6 +879,8 @@ The SSM price is also inside the Pre-Application payment, which "Remain as RM
    2. Unplugged while reading: "Unable to read photo. Please try again." `[row 12]`.
    3. No card: "No card is detected. Please insert IC and click [Scan IC] to try again." `[sheet MyKad TS, row 11]`.
    4. After a good read: "Place Thumb on reader" `[sheet Dermalog TS, row 13]`.
+   5. **Removing the MyKad after a good read does not stop the thumbprint**: "System able to detect thumbprint successfully after MyKad read successful and removed before thumbprint" `[sheet Thumbprint TS, row 15, 7229_TP_TS6]`. TS7 / TS8 (card removed during / after the thumbprint) also pass `[rows 16–17]`. Use as the expected result for the mobile app too (web-first rule, `flow-mobile-app.md` §6 item 7). [source: pipeline EAINT-9805, Elf scenarios, 2026-10-29]
+   6. **Non-MyKad card** (e.g. debit card), manual [Scan IC] and Auto Scan: with chip → "No card is detected. Please insert IC and click [Scan IC] to try again." after 10 seconds; without chip → web text with typos "No card is detecetd. Please insert IC and click [Read IC] to try again." `[sheet MyKad TS, rows 12 and 17, 7229_MK_TS3 "Manual Scan IC: a. Non-MyKad with chip" / "b. Non-MyKad without chip", 7229_MK_TS8]` On the app, check the wording on screen, not the web typo. [source: pipeline EAINT-9805, Elf scenarios, 2026-10-29]
 2. Installer v2 (EAINT-9944, on hold per BA 16/04/2026): button "Dermalog Biometric
    Software Upgrade v2"; with v1 installed on a gated page: "Update Required Please
    update the Dermalog Biometric Device to the latest version…"

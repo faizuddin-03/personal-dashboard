@@ -1,0 +1,58 @@
+{
+  "columns": [
+    {
+      "field": "page",
+      "group": "",
+      "kind": "long",
+      "label": "Page",
+      "list": true,
+      "width": 18
+    },
+    {
+      "field": "situation",
+      "group": "",
+      "kind": "long",
+      "label": "Test Scenario",
+      "list": true,
+      "width": 32
+    },
+    {
+      "field": "preconditions",
+      "group": "",
+      "kind": "long",
+      "label": "Pre-condition / Test data",
+      "list": true,
+      "width": 32
+    },
+    {
+      "field": "steps",
+      "group": "",
+      "kind": "long",
+      "label": "Test Steps",
+      "list": true,
+      "width": 46
+    },
+    {
+      "field": "expected",
+      "group": "",
+      "kind": "long",
+      "label": "Expected Result",
+      "list": true,
+      "width": 60
+    },
+    {
+      "field": "setup",
+      "group": "",
+      "kind": "long",
+      "label": "Set-up / pre-condition",
+      "list": false,
+      "width": 30
+    }
+  ],
+  "key": "CP",
+  "name": "1 Secarang Pages",
+  "order": 1,
+  "prefix": "12406_CP_TS",
+  "title": "Secarang customer pages: Home insurer logos, About Us > Our partnership, FAQs, Support > Need to contact insurance company? (REQ-001, 007, 008, 009), against the Secarang mockup 20261015; BEFORE / AFTER capture; production look after go-live",
+  "type": "ui"
+}

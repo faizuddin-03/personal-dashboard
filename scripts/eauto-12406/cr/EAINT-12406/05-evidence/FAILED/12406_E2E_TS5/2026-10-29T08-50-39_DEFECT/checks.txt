@@ -1,0 +1,24 @@
+# 12406_E2E_TS5 — Allianz payment fails (FPX simulator status not 00), then is cancelled (SPayLater), then the customer pays by FPX: messages on the payment page, CIBO status, final purchase
+# run eaint-12406-run-sE2E-20261029-1545-c1 on staging /ia (post-push), started 29/10/2026, 16:47:01 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 16:47:05 | note: on the site: Secarang (https://staging.secarang.com/ia/)
+29/10/2026, 16:47:37 | note: payment window allowed: fpx failed
+29/10/2026, 16:47:42 | note: window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/85ecfe28-a989-42d7-a0eb-011905a02788/fpx_rhb
+29/10/2026, 16:47:54 | E1 | expected: After the failed FPX payment: back on the payment page with "Unsuccessful payment You may try again.", no receipt, and the other payment tiles can still be picked | page shows: payment page: "Unsuccessful payment"; receipt none; tiles still offered: "Credit or Debit Card", "FPX Online banking", "SPayLater", "PayLater by Grab" | DOES NOT MATCH | 01-failed-fpx-payment-page.png
+29/10/2026, 16:47:54 | note: payment window allowed: shopeepay cancelled
+29/10/2026, 16:47:57 | note: window opened by the site and kept (payment window 2): https://staging.secarang.com/ia/payment/landing/85ecfe28-a989-42d7-a0eb-011905a02788/ShopeePay
+29/10/2026, 16:48:07 | E3 | expected: After cancelling SPayLater with [OK]: back on 'How would you like to pay?' with the same vehicle and premium | page shows: after [OK]: "How would you like to pay?" shown, 4 tiles; plate HXA0015A shown; premium RM 941.13 shown | matches | 02-after-spaylater-cancel.png
+29/10/2026, 16:48:07 | note: payment window allowed: fpx success
+29/10/2026, 16:48:12 | note: window opened by the site and kept (payment window 3): https://staging.secarang.com/ia/payment/landing/85ecfe28-a989-42d7-a0eb-011905a02788/fpx_rhb
+29/10/2026, 16:49:09 | E4 | expected: Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' and a [Receipt] download | page shows: Success: "Thank you for your purchase!" shown; Receipt No. "26102921300033"; Purchase Date "29 Oct 2026 - 4:47 PM"; Payment Method "Online Banking - RHB Bank"; [Receipt] shown | matches | 03-success-page.png
+29/10/2026, 16:49:10 | note: downloaded: secarang-receipt-HXA0015A-PERSONAL-DATA.pdf
+29/10/2026, 16:49:10 | note: receipt downloaded: secarang-receipt-HXA0015A-PERSONAL-DATA.pdf
+29/10/2026, 16:49:15 | note: signed in: CIBO (cibo)
+29/10/2026, 16:49:21 | E4 | expected: CIBO shows the transaction with Payment Paid, Ins. Co. Allianz | page shows: Ref BR60006353: Ins. Co. "Allianz Serba Sentral", Payment "RM…Paid 29-10-2026 16:48", Payment Mode "Fiuu | Online Banking – FPX-RHB Bank", Transaction Status "Insurance created" | matches | 04-cibo-paid-row.png
+29/10/2026, 16:49:22 | note: rows of HXA0015A since the TS started: BR60006353 "Insurance created" / "Paid 29-10-2026 16:48"; the failed attempt and the paid one share a Ref. No.: no Failed row (recorded)
+29/10/2026, 16:49:23 | E2 | expected: the failed attempt shows Transaction Status "Failed", Payment not 'Paid' (badge text recorded) | page shows: no row of HXA0015A with Transaction Status "Failed" (rows: BR60006353 "Insurance created") | DOES NOT MATCH | 05-cibo-failed-row.png
+29/10/2026, 16:49:23 | note: E2: Transaction Details of the failed attempt not opened: no Failed row was found
+29/10/2026, 16:50:39 | note: payment window 1 on the TS video 00:41.7–00:50.5
+29/10/2026, 16:50:39 | note: payment window 2 on the TS video 00:57.1–01:03.3
+29/10/2026, 16:50:39 | note: payment window 3 on the TS video 01:11.4–01:18.6
+29/10/2026, 16:50:39 | note: payment window video laid into video_12406_E2E_TS5.webm (3 window(s), picture-in-picture, bottom right)

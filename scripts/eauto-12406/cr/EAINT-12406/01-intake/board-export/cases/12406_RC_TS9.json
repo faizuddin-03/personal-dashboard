@@ -1,0 +1,41 @@
+{
+  "expected": "Ensure:\n• CIBO row (created at Step 4 / 5 without payment): Ins. Co. Allianz, Payment badge not 'Paid' (text recorded: 'Pending' on staging per team doc §8, 'Unpaid' in the mockup), Transaction Status \"Pending payment\"\n• Transaction Details: status badge \"Pending payment\" (amber, no tick); no e-Certificate and no Receipt button; Cover Note No and Policy No \"-\"",
+  "gate": {
+    "at": "29/10/2026, 17:13:45",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_RC_TS9",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sRC-20261029-1545-c2",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_RC_TS9",
+  "labels": [],
+  "order": 38,
+  "points": [
+    {
+      "id": "E1",
+      "text": "CIBO row (created at Step 4 / 5 without payment): Ins. Co. Allianz, Payment badge not 'Paid' (text recorded: 'Pending' on staging per team doc §8, 'Unpaid' in the mockup), Transaction Status \"Pending payment\""
+    },
+    {
+      "id": "E2",
+      "text": "Transaction Details: status badge \"Pending payment\" (amber, no tick); no e-Certificate and no Receipt button; Cover Note No and Policy No \"-\""
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "CIBO listing and reports",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: an individual-owner renewal car that Allianz quotes (not used by another row)",
+  "sheet": "RC",
+  "situation": "Allianz transaction not paid (left at Payment methods): CIBO shows it Pending payment / Unpaid, without Receipt or e-Certificate; later Quotation expired",
+  "source": "Record created without payment at Step 4 / 5: team doc §6 (Deployment Checklist 20250630 R53). Mockup CIBO 20261006 row BR55009003 (Pending payment, Unpaid, amber) and its Transaction Details (buttons only when Insurance created; Cover Note / Policy No '-' when not created) (coverage review M4, MD-12). Expired state: mockup row BR55009005, timing Q39, recorded",
+  "steps": "1. Secarang: the car + owner > All Quotations > Allianz > Add-ons > Confirmation > Confirm and Pay; on the payment page 'How would you like to pay?' close the page without paying\n2. CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot\n3. When the quotation has expired (how long: Q39), open the row again; screenshot (recorded)",
+  "updatedAt": "2026-10-28T07:56:11+00:00"
+}

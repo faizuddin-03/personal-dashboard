@@ -21,7 +21,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PIPE = path.resolve(HERE, "..");
 const ROOT = path.resolve(PIPE, "..", "..");
 // Modules that run something when imported: syntax-checked only.
-const NO_IMPORT = new Set(["run-character.mjs", "fetch.mjs", "miro.mjs", "selftest.mjs", "unit-tests.mjs"]);
+const NO_IMPORT = new Set(["run-character.mjs", "fetch.mjs", "miro.mjs", "selftest.mjs", "unit-tests.mjs", "to-my-folder.mjs", "ask-permission.mjs"]);
 
 const files = [];
 for (const d of [PIPE, path.join(PIPE, "actions"), path.join(PIPE, "lib"), path.join(PIPE, "tools")]) {

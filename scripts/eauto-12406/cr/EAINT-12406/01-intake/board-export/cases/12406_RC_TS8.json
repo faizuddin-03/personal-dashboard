@@ -1,0 +1,59 @@
+{
+  "expected": "Ensure:\n• BR55004010 receipt Insurer: \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\" (today's form)",
+  "gate": {
+    "at": "29/10/2026, 17:12:41",
+    "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_RC_TS8/2026-10-29T09-12-41_DEFECT",
+    "mismatch": [
+      "E3"
+    ],
+    "proved": [
+      "E1",
+      "E2",
+      "E4",
+      "E5"
+    ],
+    "reasons": [
+      "E3: expected \"AFTER: BR55004010 receipt \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"\", page shows \"BR55004010 receipt Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"\" (06-after-br55004010-receipt-insurer.png)"
+    ],
+    "run": "eaint-12406-run-sRC-20261029-1545-c2",
+    "verdict": "DEFECT",
+    "warnings": []
+  },
+  "id": "12406_RC_TS8",
+  "labels": [],
+  "order": 42,
+  "points": [
+    {
+      "id": "E1",
+      "text": "BEFORE (28.10): BR55004010 receipt Insurer \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\""
+    },
+    {
+      "id": "E2",
+      "text": "BEFORE (28.10): Transaction Details of BR55004010, BR44003678, BR3D003430 show the Allianz name only, no number (observed)"
+    },
+    {
+      "id": "E3",
+      "text": "AFTER: BR55004010 receipt \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\""
+    },
+    {
+      "id": "E4",
+      "text": "AFTER: BR55004010 Transaction Details shows \"200601015674 (735426-V)\" with the Allianz name (layout recorded, Q42)"
+    },
+    {
+      "id": "E5",
+      "text": "AFTER: BR44003678 and BR3D003430 insurer box recorded (Q20)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "BEFORE 28.10: BR55004010, BR44003678, BR3D003430",
+  "result": "FAIL",
+  "reviewed": false,
+  "section": "Existing Allianz transactions",
+  "setup": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• BEFORE captured on 28.10.2026 (walk, 04-explore/2026-10-28-before-deploy): BR55004010 (Insurance created, Secarang, 09-05-2025), BR44003678 and BR3D003430 (Pending payment, 2024 / 2023, no Receipt button). 13 pages of Allianz transactions exist, all on platform Secarang; NONE on platform eAuto (so no eAuto step). BEFORE evidence: the 28.10 before-deploy capture, copied into this TS's evidence folder and labelled 'FROM THE BEFORE CAPTURE' (Azfar 29.10)\n• BR55004010 today shows Cover Note No / Policy No '-' and a blank receipt Payment Method; its Transaction Created Date is after its Insurance Created Date (existing data, not 12406)",
+  "sheet": "RC",
+  "situation": "Allianz transactions created before the change (Secarang, before May 2025; non-final ones from 2023-2024): receipt and Transaction Details before and after the deploy",
+  "source": "Before: SRD v1.1 REQ-010 'Existing' text, matched on screen (walk 28.10, cibo-14d); Details name only observed (cibo-14c, 15c, 16c). After: REQ-010 Example 1a, REQ-011 Example 1a (the SRD says 'Allianz transaction' without limiting it to new ones). Non-final: Q20",
+  "steps": "1. (Done 28.10) CIBO > Transaction Management: Allianz ticked, Platform Secarang; open BR55004010: screenshot the insurer box; Receipt: screenshot the Insurer block. Open BR44003678 and BR3D003430: screenshot the insurer box",
+  "updatedAt": "2026-10-29T05:00:44+00:00"
+}

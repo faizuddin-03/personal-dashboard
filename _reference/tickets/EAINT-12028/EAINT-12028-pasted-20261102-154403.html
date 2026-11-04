@@ -1,0 +1,362 @@
+<!-- Pasted by Faizuddin into the dashboard chat with dwarf, 2026-11-02T07:44:03.419Z.
+     URL: not given (paths found in the page: /backoffice/logout, /backoffice/admin/association, /backoffice/admin/association/<id>/<id>). Environment: not given. Nothing trimmed (saved exactly as pasted).
+     Rename or annotate this header once the page and environment are known (AGENTS.md, _reference/html/README.md). -->
+<body>
+    <!-- Real OBS header: an absolute maroon banner (#custom-header) with a white "Back to
+         Backoffice" link, and a #logo-container holding the 140×75 white-bg logo poking below it. -->
+    <div id="header">
+        <div id="custom-header">
+            <div class="flex flex-row header-links">
+                <!-- backUrl = <session originalUrl | EAUTO_CORE_BASE_URL> + "/home/" (LayoutModelAdvice,
+                     untouched). Same target as OBS's window.open(originalUrl + '/home/'). Must NOT be
+                     core's bare root context (302s to /public/login and looks like a logout). -->
+                <a id="back-to-backoffice" class="back-link" href="https://staging.eauto.my/uat1/home/">Back to Backoffice</a>
+            </div>
+            <!-- CR 18 judgement call: local logout has no OBS equivalent. Kept minimal — small white
+                 text, right-aligned on the banner. POST /logout (CSRF auto-injected via th:action),
+                 shown only when a backoffice session exists; invalidates THIS session only. -->
+            <form id="logout-form" class="logout-form" action="/backoffice/logout" method="post"><input type="hidden" name="_csrf" value="m7Fgr_RIQFtT_eDNCu3FJMzP_16oRNGW2b21PUw2Tg2E9Gh5ooYGnMN7dz5-zdOsM8DxFfz50mafIrO76IqHW34PLW-wkgwb">
+                <span class="who-name">Chia Ket Ming</span>
+                <button id="btn-logout" class="logout-btn" type="submit">Logout</button>
+            </form>
+        </div>
+        <div id="logo-container">
+            <img class="brand-logo" src="/backoffice/common/eauto-logo-tm-white-bg.png" alt="eAuto">
+        </div>
+    </div>
+
+    <div id="container">
+        <main>
+    <!-- CR 16: restyle to match real OBS (eauto-onboarding pre-onboarding/listing) — Inter font,
+         plain colored-TEXT statuses (no pills), alternating odd/even row striping, OBS header blue,
+         and the page title centered BELOW the filter form with a record-count indicator. -->
+    <style>
+        .rpt { border-collapse: collapse; width: 100%; font-size: 12px; font-family: Inter, sans-serif; }
+        .rpt th, .rpt td { border: 1px solid #fff; padding: 8px; }
+        .rpt thead th { background: #58ACFA; color: #fff; text-align: center; vertical-align: middle; }
+        .rpt thead th.left { text-align: left; }
+        .rpt tbody td { text-align: center; }
+        /* OBS alternating row striping (index % 2 === 0 ? "even" : "odd"). */
+        .rpt tbody tr.odd td { background: #A9E2F3; }
+        .rpt tbody tr.even td { background: #CEF6F5; }
+        .rpt tbody tr:hover td { background: #b6ddef; }
+        .rpt td.left { text-align: left; }
+        .rpt td.num { text-align: right; font-variant-numeric: tabular-nums; }
+        .rpt tfoot td { background: #a9d5ea; font-weight: bold; text-align: right; }
+        .rpt tfoot td.left { text-align: left; }
+        .rpt a.view { color: #1a3fd0; font-weight: bold; text-decoration: none; }
+        .rpt a.view:hover { text-decoration: underline; }
+        /* OBS status convention — bold colored TEXT (no chip/background/border-radius).
+           approved/ok #008E00 · rejected/needs-attention #FF4000 · pending/new #0000FF · kiv/draft #000000. */
+        .status { font-size: 11px; font-weight: bold; white-space: nowrap; }
+        .status.pending { color: #0000FF; }
+        .status.approved { color: #008E00; }
+        .status.kiv { color: #000000; }
+        .status.review { color: #FF4000; }
+        .report-title { color: #7a1420; font-size: 20px; margin: 0 0 4px; }
+        .header-text { text-align: center; margin: 18px 0 6px; }
+        .header-text .report-title { margin: 0 0 4px; }
+        #count-container { display: block; font-size: 12px; color: #555; font-weight: bold; }
+        .section-title { text-align: center; font-weight: bold; font-size: 16px; color: #222; margin: 22px 0 6px; }
+        .filters { background: #faf7f2; border: 1px solid #e7ddcd; padding: 10px 12px; border-radius: 4px; margin: 12px 0 18px; }
+        .filters label { font-size: 11px; color: #666; margin-right: 6px; }
+        .filters select { padding: 5px 7px; }
+        .btn { background: #c8102e; color: #fff; border: none; padding: 7px 16px; border-radius: 3px; font-weight: bold; cursor: pointer; }
+    </style>
+
+    <p>Monthly summary for the year. Click <b>View</b> on any month to drill into the
+        state-level breakdown (Cars &amp; Motorcycles counted separately).</p>
+
+    <form class="filters" method="get" action="/backoffice/admin/association">
+        <label for="sel-year">Year</label>
+        <select id="sel-year" name="year" onchange="this.form.submit()">
+            <option value="2026" selected="selected">2026</option>
+        </select>
+        <button class="btn" type="submit">Search</button>
+    </form>
+
+    <!-- CR 16: OBS centers the page title BELOW the filter form and shows a record-count indicator. -->
+    <div class="header-text">
+        <h1 class="report-title">Association Payment Listing</h1>
+        <span id="count-container">12 record(s) in total</span>
+    </div>
+
+    <div class="section-title">Association Payment Listing — 2026 Monthly Summary</div>
+
+    <table class="rpt" id="tbl-summary">
+        <thead>
+        <tr>
+            <th>#</th><th class="left">Month</th>
+            <th>Car Transactions</th><th>Cars (RM)</th>
+            <th>Motorcycle Transactions</th><th>Motorcycles (RM)</th>
+            <th>Drafter Status</th><th>Reviewer Status</th><th>Approver Status</th>
+            <th>Payment Date</th><th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-month="1" class="even">
+            <td>1</td>
+            <td class="left">January</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="2" class="odd">
+            <td>2</td>
+            <td class="left">February</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="3" class="even">
+            <td>3</td>
+            <td class="left">March</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="4" class="odd">
+            <td>4</td>
+            <td class="left">April</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="5" class="even">
+            <td>5</td>
+            <td class="left">May</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="6" class="odd">
+            <td>6</td>
+            <td class="left">June</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="7" class="even">
+            <td>7</td>
+            <td class="left">July</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="8" class="odd">
+            <td>8</td>
+            <td class="left">August</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="9" class="even">
+            <td>9</td>
+            <td class="left">September</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+                <td class="num">451</td>
+                <td class="num car-amt">451.00</td>
+                <td class="num">22</td>
+                <td class="num bike-amt">44.00</td>
+                <td><span class="status approved">Approved</span></td>
+                <td><span class="status pending">Pending</span></td>
+                <td><span class="status pending">Pending</span></td>
+                <td>-</td>
+                <td><a class="view" href="/backoffice/admin/association/2026/9">View</a></td>
+            
+            
+        </tr>
+        <tr data-month="10" class="odd">
+            <td>10</td>
+            <td class="left">October</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+                <td class="num">1,009</td>
+                <td class="num car-amt">1,009.00</td>
+                <td class="num">56</td>
+                <td class="num bike-amt">112.00</td>
+                <td><span class="status kiv">KIV</span></td>
+                <td><span class="status pending">Pending</span></td>
+                <td><span class="status pending">Pending</span></td>
+                <td>-</td>
+                <td><a class="view" href="/backoffice/admin/association/2026/10">View</a></td>
+            
+            
+        </tr>
+        <tr data-month="11" class="even">
+            <td>11</td>
+            <td class="left">November</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        <tr data-month="12" class="odd">
+            <td>12</td>
+            <td class="left">December</td>
+            <!-- EAINT-12028 F2r — TWO states, because the figures are now a stored month-close
+                 snapshot rather than a live recomputation:
+                   1. not closed → the month-end job has not produced figures yet: every column "-"
+                   2. closed     → the frozen figures + real Drafter/Reviewer/Approver status, whether
+                                    or not there were qualifying transactions that month (a closed
+                                    month with zero transactions still shows its real workflow status,
+                                    e.g. "Approved", not a "no data" placeholder). -->
+            
+            
+                <td class="num">-</td><td class="num">-</td><td class="num">-</td><td class="num">-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td>
+                <!-- EAINT-12028 (PO): the Action cell is always rendered, so the row keeps its colour. -->
+                <td>-</td>
+            
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td class="left" colspan="2">YEAR TO DATE TOTAL</td>
+            <td>1,460</td>
+            <td>1,460.00</td>
+            <td>78</td>
+            <td>156.00</td>
+            <td></td><td></td><td></td><td></td><td></td>
+        </tr>
+        </tfoot>
+    </table>
+    <p style="font-size:11px;color:#888;">Cars and Motorcycles are counted separately
+        (transaction values are not combined across vehicle types). Figures are the month-end
+        snapshot: a month that has not been closed yet shows "-" in every column.</p>
+</main>
+    </div>
+
+    <!-- OBS-style footer (real OBS `.footer` values): copyright / contact / T&C / privacy. -->
+    <footer id="custom-footer" class="footer">
+        <div class="footer-inner">
+            <span class="copyright">© <span>2026</span>
+                eAuto. All rights reserved.</span>
+            <span class="footer-links">
+                <a href="mailto:support@eauto.com.my">Contact</a>
+                <span class="separator">|</span>
+                <a href="#">Terms &amp; Conditions</a>
+                <span class="separator">|</span>
+                <a href="#">Privacy Policy</a>
+            </span>
+        </div>
+    </footer>
+
+
+</body>
+
+2. i will check again
+
+
+dont forget the rule that every HTML i give must be saved. can you do this? if not, i'll give to main claude

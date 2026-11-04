@@ -1,0 +1,46 @@
+{
+  "expected": "Ensure:\n• Insurer: \"Allianz General Insurance Company (Malaysia) Berhad\", with \"200601015674 (735426-V)\" below it (SRD wording; if it comes on the same line as the name, like Tokio Marine today, record it for Q42)\n• The insurer box shows the Allianz logo\n• More Info: Platform \"Secarang\", Agency \"Serba Sentral\" (Agency No. and Agency PIAM ID recorded; today's old Allianz rows show SC12562 / 195379-01)",
+  "gate": {
+    "at": "29/10/2026, 17:54:33",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_RC_TS3",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-rerun-sRC-20261029-1545",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_RC_TS3",
+  "labels": [],
+  "order": 34,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Insurer: \"Allianz General Insurance Company (Malaysia) Berhad\", with \"200601015674 (735426-V)\" below it (SRD wording; if it comes on the same line as the name, like Tokio Marine today, record it for Q42)"
+    },
+    {
+      "id": "E2",
+      "text": "The insurer box shows the Allianz logo"
+    },
+    {
+      "id": "E3",
+      "text": "More Info: Platform \"Secarang\", Agency \"Serba Sentral\" (Agency No. and Agency PIAM ID recorded; today's old Allianz rows show SC12562 / 195379-01)"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "CIBO Transaction Details",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• The Allianz transaction of 12406_E2E_TS1; the Tokio Marine Transaction Details of 12406_RG_TS1 for one side-by-side comparison\n• NOTE: the CIBO mockup (06.10.2026) shows NO company number line under the insurer name; REQ-011 was added in SRD v1.1 on 26.10.2026. The SRD wins: the number IS expected although the mockup does not show it\n• Today (walk 28.10): old Allianz Transaction Details show the name only; Tokio Marine shows its number on the SAME line as the name (BR69005852). Whether Allianz's number goes below the name (SRD wording) or inline like Tokio Marine today: Q42",
+  "sheet": "RC",
+  "situation": "CIBO Transaction Details of an Allianz transaction: company registration number below the insurer name; Allianz logo; agency Serba Sentral",
+  "source": "SRD v1.1 §2.2.10 REQ-011 (New Expected 'below the insurer name, same as Tokio Marine', Example 1a 'with 200601015674 (735426-V) below it'); SRD wins over the 06.10 mockup for the number (coverage review MD-13); layout vs Tokio Marine today: Q42 (walk 28.10). Logo and More Info layout: mockup CIBO 20261006; agency Serba Sentral: SRD 2.1.3b, observed on old Allianz rows (walk 28.10, BR55004010). Check JPJ Status: recorded (review M14)",
+  "steps": "1. CIBO > Transaction Management: open Transaction Details of E2E_TS1; screenshot the insurer box and More Info\n2. Put the Tokio Marine Transaction Details of RG_TS1 beside it; one screenshot of both insurer boxes (layout recorded for Q42)\n3. Compare the rest of the page with the mockup CIBO Transaction Management 20261006 (Transaction Details); record whether 'Check JPJ Status' is shown and what it does",
+  "updatedAt": "2026-10-28T07:56:11+00:00"
+}

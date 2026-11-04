@@ -834,3 +834,44 @@ SRD text copy: `_reference/tickets/Studying/EAINT-12406/SRD_EAINT-12406_v1.1_202
    quote (Sheet1 R9-R10, both "Not Started"; only TS1 was run). EAINT-12406 REQ-003 shows an
    unavailable card instead. Whether the 9024 rule still applies anywhere is `[unconfirmed]`.
    `[source: pipeline EAINT-12406, Scribe related history "Known traps" 1-2, 2026-10-27]`
+10. **Insurer column can show a plan code, not the name.** Past QA-Issue under EAINT-12175
+    (Lonpac name wording): "EAINT-12423 [eAuto - BackOffice] Insurance Transaction Listing -
+    Insurance Company column shows the plan code Lonpac instead of the full insurer name"
+    (`_reference/tickets/Studying/EAINT-12175/EAINT-12175-jira.md` line 13). When an insurer is
+    switched on, check every listing shows the full insurer name.
+    `[source: pipeline EAINT-12406, Scribe related history "Known traps" 12, 2026-11-02]`
+11. **Old records may show new insurer text.** The insurer name is looked up at display time
+    (`teams-decisions-by-ticket.md` § EAINT-12175 #1). So old Allianz receipts and CIBO
+    Transaction Details may also show the new BRN line "200601015674 (735426-V)" `[unconfirmed]`
+    — the SRD is silent; question sent to the BA.
+    `[source: pipeline EAINT-12406, Scribe related history "Known traps" 11, 2026-11-02]`
+12. **Company vehicle: SRD and staging disagree.** REQ-003 — No Allianz Quotation, Example 1:
+    "Company vehicle ⏎ a. Allianz shown as unavailable." But on 2026-10-20 Faizuddin said
+    "there are no insurance in secarang that supports company" (§7 #15 g). Which one a
+    company-vehicle test sees (unavailable card or no-quotation popup) is `[unconfirmed]`;
+    the question is with the BA. `[source: pipeline EAINT-12406, Elf scenarios, 2026-11-02]`
+13. **Source tickets cannot be opened.** SRD v1.1 §1.5 rows #2-#3: "CCB-992 — ESI / To Allow
+    and Display Allianz in Secarang Including Logo and Wording" ("Cross-department ticket")
+    and "ESI-361 — To allow Allianz in Secarang" ("Source ticket"). Both the Jira fetch ("was
+    not found in Jira (or this login cannot see it)") and the Atlassian connector ("Issue does
+    not exist or you do not have permission to see it.") fail, so SRD v1.1 is the only
+    requirement source. `[source: pipeline EAINT-12406, Scout help, 2026-11-02]`
+    They add no scope: asked whether they name anything SRD v1.1 leaves out, Faizuddin said
+    "no, the related one is just the general ticket. not anything specific to this CR".
+    `[Faizuddin, dashboard chat to Elf, 2026-11-02]`
+
+## Update 2026-10-30: home page popup (BNPL renewal ad)
+
+1. **The home page now opens a popup over the form** on /ia staging: "Renew your insurance with
+   Secarang" (image alt "Renew your insurance with Secarang. Pay with GrabPay or ShopeePay BNPL.").
+   It is an `ngb-modal-window` (class `bnpl-popup-window`) with a backdrop; the form cannot be
+   clicked until it is closed with its X, `button.bnpl-popup__close[aria-label="Close"]`.
+   `[verified: live HTML from staging /ia, 2026-10-30, _reference/html/secarang/car-insurance-home-bnpl-popup.html]`
+2. **Automation:** `HomePage.closeHomePopup()` in `scripts/secarang-insurance/pages/HomePage.ts` and
+   `scripts/eauto-12107/pages/HomePage.ts`, called at the start of `selectVehicleAndOwner()`, so the
+   plate checker, batch run, regression and 12107 flow all close it. It waits up to 3 s for any
+   `ngb-modal-window` and does nothing when none comes. Live check passed 2026-10-30 (popup seen,
+   closed, Company Car card clickable). `[verified: temporary Playwright check on staging /ia, 2026-10-30]`
+3. **Trap:** the popup is not an `app-info-modal`, so the plate checker's error-modal check never
+   reports it as a Secarang error. A future campaign popup in the same `ngb-modal-window` is closed
+   the same way; one without an `aria-label="Close"` button is `[unconfirmed]`.

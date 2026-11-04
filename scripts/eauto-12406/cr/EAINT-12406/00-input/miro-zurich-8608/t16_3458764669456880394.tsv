@@ -1,0 +1,33 @@
+Regression Testing							
+TS No.	Insurer	Category	Entry Point	Test Scenarios	Expected Result	QA	Test Result (P/F)
+TS_REG_01	Lonpac	Individual	Insurance Page Banner	"Create eSTM transaction (Individual - MyKad)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"	"Verify the following & ensure the E2E flow are working correctly:
+- Insurance Quotation Page Step 4
+- UCD Insurance Trx Listing
+- BO Insurance Trx Listing > Export CSV
+- CIBO Insurance Trx Listing
+- eAuto Service Portal > Insurance Tab
+- UCD eSTM Transaction Details Page
+- UCD Insurance Details Page
+- BO Insurance Details Page 
+- CIBO Insurance Details Page
+- Insurance Receipt
+- Insurance Downloadables (e.g. E-certificates,Policies)"	Azfar	PASS
+TS_REG_02		Company		"Create eSTM transaction (Individual - MyKad)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"			
+TS_REG_03	Takaful (Comprehensive)	Individual		"Create eSTM transaction (Individual - MyKad)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"			
+TS_REG_04		Company	eSTM Approval	"Create eSTM transaction (Company)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"		Azfar	PASS
+TS_REG_05	Tokio Marine	Individual	Get a Free Quote	"Create eSTM transaction (Individual - MyKad)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"		Azfar	PASS
+TS_REG_06		Company		"Create eSTM transaction (Individual - MyKad)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"			
+TS_REG_07	Chubb	Individual		"Create eSTM transaction (Individual - MyKad)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"			
+TS_REG_08		Company	eSTM Approval	"Create eSTM transaction (Company)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"		Azfar	PASS
+TS_REG_09	Takaful (TPFT)	Individual	Get a Free Quote	"Create eSTM transaction (Individual - MyPR)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"		Azfar	PASS
+TS_REG_10		Company		"Create eSTM transaction (Individual - MyKad)
+Proceed to purchase Insurance, Payment = OK, Status = Insurance Created"			

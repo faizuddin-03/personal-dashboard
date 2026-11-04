@@ -59,7 +59,8 @@ export function extractQuestions(text) {
     const line = raw.trim();
     if (/^#{1,4}\s/.test(line)) break;            // next section
     const m = line.match(/^\d+[.)]\s+(.*)$/);
-    if (m) out.push(m[1].trim());
+    if (m && /^\(?[a-z]\)\s/i.test(m[1]) && out.length) out[out.length - 1] += ` ${m[1].trim()}`; // "1. (a) ..." = an option
+    else if (m) out.push(m[1].trim());
     else if (line && out.length) out[out.length - 1] += ` ${line}`;
   }
   return out.map(q => q.replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 10);

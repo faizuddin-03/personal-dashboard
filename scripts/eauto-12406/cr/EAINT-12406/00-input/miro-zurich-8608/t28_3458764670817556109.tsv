@@ -1,0 +1,61 @@
+Text Display - Motorbike							
+TS No.	Page	Section/Area	Test Scenario	Expected Result / Text To Be Displayed	QA	Result	Date
+TS_SUIM_1	Home Page	Home page title	"Open the Secarang homepage
+Observe the main title at the left of the input fields"	"Text to be displayed:
+Buy your vehicle insurance"	Faiz	Pass	
+		Home page picture	"Open the Secarang homepage
+Observe the background image"	Ensure the background image contains a picture of a car and a motorcycle	Faiz	Pass	
+		Car/Motorcycle tab	"Open the Secarang homepage
+Observe the tab for vehicle type: Motorcycle"	Contains logo of a motorcycle	Faiz	Pass	
+		Input fields	"Open the Secarang homepage
+Observe the first input field"	"Text to be displayed:
+Vehicle Plate No."	Faiz	Pass	
+		Footer	"Open the Secarang homepage
+Scroll down to the footer
+Observe the first paragraph and first sentence of the footer"	"Text to be displayed:
+Discover Malaysia's best vehicle insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs."	Faiz	Pass	
+TS_SUIM_2	Vehicle Details Confirmation	Title	"Enter valid car details
+Observe the title at the top of the page"	"Text to be displayed:
+Are these your vehicle details"	Faiz	Pass	
+		Progress Bar	Observe the first part of the progress bar	"Text to be displayed:
+Vehicle details"	Faiz	Pass	
+		Confirmation	Observe the confirmation and declaration message under the [Get quotation] button	"Text to be displayed:
+By continuing, I confirm and declare that the above vehicle details are true, accurate and the vehicle is not blacklisted by any of the authoritative bodies/agencies."	Faiz	Pass	
+		Footer	"Scroll down to the footer
+Observe the first paragraph and first sentence of the footer"	"Text to be displayed:
+Discover Malaysia's best vehicle insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs."	Faiz	Pass	
+TS_SUIM_3	Choose Insurance	Back button	Observe the back button at the bottom left of the page	"Text to be displayed:
+Back to vehicle details confirmation"	Faiz	Pass	
+		Progress Bar	Observe the first part of the progress bar	"Text to be displayed:
+Vehicle details"	Faiz	Pass	
+		Footer	"Scroll down to the footer
+Observe the first paragraph and first sentence of the footer"	"Text to be displayed:
+Discover Malaysia's best vehicle insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs."	Faiz	Pass	
+TS_SUIM_4	Choose Add-Ons	Progress Bar	Observe the first part of the progress bar	"Text to be displayed:
+Vehicle details"	Faiz	Pass	
+		Footer	"Scroll down to the footer
+Observe the first paragraph and first sentence of the footer"	"Text to be displayed:
+Discover Malaysia's best vehicle insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs."	Faiz	Pass	
+TS_SUIM_5	Confirmation	Vehicle Owner Details	Observe the title for the vehicle owner details section, at the top of the page	"Text to be displayed:
+Vehicle Owner Details"	Faiz	Pass	
+		Vehicle Details	Observe the title for the vehicle details section, below the Takaful Details	"Text to be displayed:
+Vehicle Details"	Faiz	Pass	
+		Progress Bar	Observe the first part of the progress bar	"Text to be displayed:
+Vehicle details"	Faiz	Pass	
+		Footer	"Scroll down to the footer
+Observe the first paragraph and first sentence of the footer"	"Text to be displayed:
+Discover Malaysia's best vehicle insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs."	Faiz	Pass	
+TS_SUIM_6	Complete Purchase	Vehicle Owner Details	Observe the second title at details section	"Text to be displayed:
+Vehicle Owner Details"	Faiz	Pass	
+		Vehicle Details	Observe the third title at details section	"Text to be displayed:
+Vehicle Details"	Faiz	Pass	
+		Download Receipt	"Click the [download receipt] button
+Observe the receipt format"	"Text to be displayed:
+Car plate number"	Faiz	Pass	Receipt is showing Car Plate No. It should be Vehicle Plate No.
+		Print Receipt	"Click the [print receipt] button
+Observe the receipt format"	"Text to be displayed:
+Vehicle owner details
+Vehicle details"	Faiz	Pass	
+		Footer	"Scroll down to the footer
+Observe the first paragraph and first sentence of the footer"	"Text to be displayed:
+Discover Malaysia's best vehicle insurance for motor insurance renewal and road tax with Secarang. Secured, hassle-free, and tailored to your needs."	Faiz	Pass	

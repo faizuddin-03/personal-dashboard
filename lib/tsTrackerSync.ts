@@ -128,7 +128,7 @@ export function extractOutcomes(result: unknown, meta: Record<string, unknown> =
 
 // ── Download-all mapping ──────────────────────────────────
 
-const QUEUE_PAGES = new Set(["12107", "12153", "12257", "12412", "jomcheck"]);
+const QUEUE_PAGES = new Set(["12028", "12107", "12153", "12257", "12412", "jomcheck"]);
 const FOLDER_PAGES: Record<string, { api: string; art: string }> = {
   "eauto/12166": { api: "/api/eauto/12166/download-all", art: "eauto-12166" },
   "eauto/user-access-regression": { api: "/api/eauto/user-access-regression/download-all", art: "eauto-uar" },

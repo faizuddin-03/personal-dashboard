@@ -1,0 +1,51 @@
+{
+  "expected": "Ensure:\n• Quotations shown in this order: Lonpac, Allianz, Tokio Marine\n• The Allianz quotation shows the Allianz logo\n• No other card: no \"– Quotation unavailable\" card and no card for any other insurer (e.g. RHB)\n• After [Edit] postcode: the cards are quoted again, the Allianz quotation is still shown with its logo, and the order is still Lonpac, Allianz, Tokio Marine (Allianz price before / after recorded)",
+  "gate": {
+    "at": "29/10/2026, 16:11:05",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_QT_TS1",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sQT-20261029-1545-c1",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_QT_TS1",
+  "labels": [],
+  "order": 10,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Quotations shown in this order: Lonpac, Allianz, Tokio Marine"
+    },
+    {
+      "id": "E2",
+      "text": "The Allianz quotation shows the Allianz logo"
+    },
+    {
+      "id": "E3",
+      "text": "No other card: no \"– Quotation unavailable\" card and no card for any other insurer (e.g. RHB)"
+    },
+    {
+      "id": "E4",
+      "text": "After [Edit] postcode: the cards are quoted again, the Allianz quotation is still shown with its logo, and the order is still Lonpac, Allianz, Tokio Marine (Allianz price before / after recorded)"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "Insurer order and Allianz quotation",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: a private car, individual owner, insurance due for renewal, that Lonpac, Allianz and Tokio Marine all quote on /ia/. Made-up plates HXA0001A–HXA0020A / ZZZ1A quote Lonpac (doc §13); whether Allianz quotes them is unconfirmed, and Tokio Marine showed 'Quotation unavailable' for a private car on /ia/ on 20.10: ask Dev for a simulator plate that all three quote (Q12)\n• The same car is used by 12406_E2E_TS1 (which selects Allianz and pays)",
+  "sheet": "QT",
+  "situation": "All three insurers quote: Allianz quotation shown with its logo, in the order Lonpac, Allianz, Tokio Marine; no other insurer",
+  "source": "SRD v1.1 REQ-004 Example 1a ('Displayed as Lonpac, Allianz, Tokio Marine'); REQ-005 Example 1a; REQ-002 Example 1a; REQ-003 (card only when no quotation). SA brief risk 'Only 3 quotations shown' (Q31). Postcode [Edit] on All Quotations re-quotes: observed, current behaviour (team doc §3); price change recorded only (SRD silent)",
+  "steps": "1. Secarang > Home > Car tab: enter the vehicle plate number and the owner's ID; continue to All Quotations\n2. Screenshot all quotation cards; note the Allianz price\n3. On All Quotations, [Edit] the postcode to another West Malaysia postcode (e.g. 50450); wait for the cards; screenshot; note the Allianz price (recorded)",
+  "updatedAt": "2026-10-28T07:56:11+00:00"
+}

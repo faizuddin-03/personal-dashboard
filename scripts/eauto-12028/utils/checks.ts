@@ -1,6 +1,7 @@
 import { expect, Locator, test } from '@playwright/test';
 import { AplDetailsPage } from '../pages/AplDetailsPage';
 import { norm } from './table';
+import { NOT_YOUR_TURN_NOTE } from '../data/expected';
 
 // Assertions several TS share. Each one says exactly which state it means
 // (lesson 11): "absent" = count 0; "disabled" = in the page and greyed.
@@ -72,6 +73,27 @@ export async function expectNote(d: AplDetailsPage, ts: string, text: string): P
     });
     await d.showValue(n);
   });
+}
+
+/**
+ * Not this login's turn: the role's buttons are not rendered at all (count 0, not disabled), and the
+ * page explains it — from _reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html
+ * line 126 "You hold APPROVER for this module, but it is not your turn yet." and line 132
+ * "Awaiting the next role in the approval sequence." The Drafter / Reviewer wording follows the
+ * same pattern [unconfirmed: only the APPROVER line is captured].
+ */
+export async function expectNotYourTurn(d: AplDetailsPage, ts: string, role: 'Drafter' | 'Reviewer' | 'Approver'): Promise<void> {
+  await expectButtons(d, ts, { absent: role === 'Drafter' ? ['Approve', 'KIV'] : ['Approve', 'Reject'] });
+  const want = `You hold ${role.toUpperCase()} for this module, but it is not your turn yet.`;
+  await test.step(`Check "${want}" is shown`, async () => {
+    const n = d.notYourTurn();
+    await d.verify(`${ts}-not-your-turn`, (await n.count()) ? n : d.wfBar(), `Should read "${want}"`, async () => {
+      await expect(n).toHaveCount(1);
+      expect(norm(await n.innerText())).toBe(want);
+    });
+    await d.showValue(n);
+  });
+  await expectNote(d, ts, NOT_YOUR_TURN_NOTE);
 }
 
 /** The signature popup is NOT shown (lesson 11: given a short time, then count of visible = 0). */

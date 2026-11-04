@@ -1,0 +1,24 @@
+# 12406_E2E_TS5 — Allianz payment fails (FPX simulator status not 00), then is cancelled (SPayLater), then the customer pays by FPX: messages on the payment page, CIBO status, final purchase
+# run eaint-12406-retest-sretest-20261029-1950-B-c1 on staging /ia (post-push), started 29/10/2026, 19:57:08 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 19:57:12 | note: on the site: Secarang (https://staging.secarang.com/ia/)
+29/10/2026, 19:57:42 | note: payment window allowed: fpx failed
+29/10/2026, 19:57:47 | note: window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/2a0a495d-da88-437b-853a-5e48f6c271f3/fpx_rhb
+29/10/2026, 19:57:57 | note: failed attempt: the flow read "Unsuccessful payment"; message boxes with "Unsuccessful payment": 1
+29/10/2026, 19:57:59 | E1 | expected: After the failed FPX payment: back on the payment page with "Unsuccessful payment You may try again.", no receipt, and the other payment tiles can still be picked | page shows: payment page message box: "Unsuccessful payment You may try again."; receipt none; tiles still offered: "Credit or Debit Card", "FPX Online banking", "SPayLater", "PayLater by Grab" | matches | 01-failed-fpx-payment-page.png
+29/10/2026, 19:57:59 | note: payment window allowed: shopeepay cancelled
+29/10/2026, 19:58:02 | note: window opened by the site and kept (payment window 2): https://staging.secarang.com/ia/payment/landing/2a0a495d-da88-437b-853a-5e48f6c271f3/ShopeePay
+29/10/2026, 19:58:11 | E3 | expected: After cancelling SPayLater with [OK]: back on 'How would you like to pay?' with the same vehicle and premium | page shows: after [OK]: "How would you like to pay?" shown, 4 tiles; plate HXA0015A shown; premium RM 941.13 shown | matches | 02-after-spaylater-cancel.png
+29/10/2026, 19:58:11 | note: payment window allowed: fpx success
+29/10/2026, 19:58:15 | note: window opened by the site and kept (payment window 3): https://staging.secarang.com/ia/payment/landing/2a0a495d-da88-437b-853a-5e48f6c271f3/fpx_rhb
+29/10/2026, 19:59:10 | E4 | expected: Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Online Banking - RHB Bank' and a [Receipt] download | page shows: Success: "Thank you for your purchase!" shown; Receipt No. "26102921300049"; Purchase Date "29 Oct 2026 - 7:57 PM"; Payment Method "Online Banking - RHB Bank"; [Receipt] shown | matches | 03-success-page.png
+29/10/2026, 19:59:11 | note: downloaded: secarang-receipt-HXA0015A-PERSONAL-DATA.pdf
+29/10/2026, 19:59:11 | note: receipt downloaded: secarang-receipt-HXA0015A-PERSONAL-DATA.pdf
+29/10/2026, 19:59:15 | note: signed in: CIBO (cibo)
+29/10/2026, 19:59:21 | E4 | expected: CIBO shows the transaction with Payment Paid, Ins. Co. Allianz | page shows: Ref BR60006371: Ins. Co. "Allianz Serba Sentral", Payment "RM…Paid 29-10-2026 19:58", Payment Mode "Fiuu | Online Banking – FPX-RHB Bank", Transaction Status "Insurance created" | matches | 04-cibo-paid-row.png
+29/10/2026, 19:59:50 | E2 | expected: recorded: CIBO Payment Management and Transaction Management each show one row for the transaction, final status Paid / Insurance created; the failed FPX attempt is not listed separately | page shows: Payment Management, any Payment Status, plate HXA0015A, Thu Oct 29 2026 - today: 2 row(s): BR60006371 "Online Banking RHB Bank" "RM941.13 Paid 29-10-2026 19:58" ALZ20261029SFX0050; BR60006353 "Online Banking RHB Bank" "RM941.13 Paid 29-10-2026 16:48" ALZ20261029SFX0032; rows of the paid transaction BR60006371: 1; a separate "Failed" row: none (recorded) | matches | 05-payment-management-rows.png
+29/10/2026, 20:00:22 | E2 | expected: recorded: CIBO Payment Management and Transaction Management each show one row for the transaction, final status Paid / Insurance created; the failed FPX attempt is not listed separately | page shows: Transaction Management, plate HXA0015A since the TS started: 1 row(s): BR60006371 "Insurance created" / "Paid 29-10-2026 19:58" (recorded) | matches | 07-transaction-management-rows.png
+29/10/2026, 20:01:45 | note: payment window 1 on the TS video 00:39.7–00:48.0
+29/10/2026, 20:01:45 | note: payment window 2 on the TS video 00:54.7–00:59.9
+29/10/2026, 20:01:45 | note: payment window 3 on the TS video 01:07.8–01:14.8
+29/10/2026, 20:01:45 | note: payment window video laid into video_12406_E2E_TS5.webm (3 window(s), picture-in-picture, bottom right)

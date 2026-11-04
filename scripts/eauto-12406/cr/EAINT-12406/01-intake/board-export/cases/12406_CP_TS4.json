@@ -1,0 +1,41 @@
+{
+  "expected": "Ensure:\n• Sections in this order: Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, and no section for any other insurer (e.g. RHB)\n• The Allianz section has an insurer name header with the same expand / collapse control as the Lonpac and Tokio Marine headers",
+  "gate": {
+    "at": "29/10/2026, 15:51:11",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_CP_TS4",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sCP-20261029-1545-c1",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_CP_TS4",
+  "labels": [],
+  "order": 5,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Sections in this order: Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, and no section for any other insurer (e.g. RHB)"
+    },
+    {
+      "id": "E2",
+      "text": "The Allianz section has an insurer name header with the same expand / collapse control as the Lonpac and Tokio Marine headers"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "About Us, FAQs, Support",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/",
+  "sheet": "CP",
+  "situation": "Support > Need to contact insurance company? shows an Allianz section between Lonpac and Tokio Marine, in the same format, and no other insurer",
+  "source": "SRD v1.1 §2.2.8 REQ-009 a-b, Example 1a (three sections); Allianz header text from mockup Secarang 20261015 (SRD names it 'insurer name header' only). State on load: mockup shows Allianz open, others closed: recorded (Q28)",
+  "steps": "1. Open Secarang > Support > Need to contact insurance company?; screenshot as the page loads (record which sections are open, Q28)\n2. Expand Lonpac, then Tokio Marine; screenshot each (their content is compared in 12406_CP_TS8)",
+  "updatedAt": "2026-10-28T04:49:41+00:00"
+}

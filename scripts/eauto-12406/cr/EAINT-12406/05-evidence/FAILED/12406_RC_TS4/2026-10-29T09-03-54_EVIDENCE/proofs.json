@@ -1,0 +1,96 @@
+{
+  "ts": "12406_RC_TS4",
+  "run": "eaint-12406-run-sRC-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the Insurance Company filter lists Allianz under the Serba Sentral group",
+      "shows": "Insurance Company filter: Bintang Prospek (Chubb, RHB, Takaful Malaysia) · Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful) · Serba Sentral (Allianz, eTiqa)",
+      "match": true,
+      "shot": "01-insurance-company-filter-groups.png",
+      "at": "29/10/2026, 17:03:10",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "With Allianz ticked: the list holds the E2E_TS1 to TS4 transactions; no Lonpac or Tokio Marine row",
+      "shows": "Allianz, Secarang, created 29.10.2026 - today: 20 row(s) (pager \"« 1 (current) 2 »\"); E2E_TS1..TS4 all listed (BR60006349, BR60006350, BR60006351, BR60006352); rows of another insurer: none",
+      "match": true,
+      "shot": "02-listing-allianz-ticked.png",
+      "at": "29/10/2026, 17:03:20",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "12406_E2E_TS1: Ins. Co. \"Allianz\" over \"Serba Sentral\"; platform and Paid badges styled like the Tokio Marine row; UCD and UCD Name \"-\"",
+      "shows": "12406_E2E_TS1 BR60006349: Ins. Co. \"Allianz Serba Sentral\" (badge Serba Sentral (badge px-2 serba-sentral-badge)); Ref. No. badge \"Secarang\", Payment badge \"Paid\" (style badge px-2 ia-badge|rgb(210, 231, 255)|rgb(42, 45, 121) / badge px-2 align-middle ok-badge|rgb(216, 255, 219)|rgb(41, 134, 66) vs Tokio Marine BR60006354 badge px-2 ia-badge|rgb(210, 231, 255)|rgb(42, 45, 121) / badge px-2 align-middle ok-badge|rgb(216, 255, 219)|rgb(41, 134, 66)); UCD \"-\", UCD Name \"-\"",
+      "match": true,
+      "shot": "04-row-BR60006349-beside-tokio-marine.png",
+      "at": "29/10/2026, 17:03:34",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "12406_E2E_TS2: Ins. Co. \"Allianz\" over \"Serba Sentral\"; platform and Paid badges styled like the Tokio Marine row; UCD and UCD Name \"-\"",
+      "shows": "12406_E2E_TS2 BR60006350: Ins. Co. \"Allianz Serba Sentral\" (badge Serba Sentral (badge px-2 serba-sentral-badge)); Ref. No. badge \"Secarang\", Payment badge \"Paid\" (style badge px-2 ia-badge|rgb(210, 231, 255)|rgb(42, 45, 121) / badge px-2 align-middle ok-badge|rgb(216, 255, 219)|rgb(41, 134, 66) vs Tokio Marine BR60006354 badge px-2 ia-badge|rgb(210, 231, 255)|rgb(42, 45, 121) / badge px-2 align-middle ok-badge|rgb(216, 255, 219)|rgb(41, 134, 66)); UCD \"-\", UCD Name \"-\"",
+      "match": true,
+      "shot": "05-row-BR60006350-beside-tokio-marine.png",
+      "at": "29/10/2026, 17:03:35",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "12406_E2E_TS3: Ins. Co. \"Allianz\" over \"Serba Sentral\"; platform and Paid badges styled like the Tokio Marine row; UCD and UCD Name \"-\"",
+      "shows": "12406_E2E_TS3 BR60006351: Ins. Co. \"Allianz Serba Sentral\" (badge Serba Sentral (badge px-2 serba-sentral-badge)); Ref. No. badge \"Secarang\", Payment badge \"Paid\" (style badge px-2 ia-badge|rgb(210, 231, 255)|rgb(42, 45, 121) / badge px-2 align-middle ok-badge|rgb(216, 255, 219)|rgb(41, 134, 66) vs Tokio Marine BR60006354 badge px-2 ia-badge|rgb(210, 231, 255)|rgb(42, 45, 121) / badge px-2 align-middle ok-badge|rgb(216, 255, 219)|rgb(41, 134, 66)); UCD \"-\", UCD Name \"-\"",
+      "match": true,
+      "shot": "06-row-BR60006351-beside-tokio-marine.png",
+      "at": "29/10/2026, 17:03:37",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "12406_E2E_TS4: Ins. Co. \"Allianz\" over \"Serba Sentral\"; platform and Paid badges styled like the Tokio Marine row; UCD and UCD Name \"-\"",
+      "shows": "12406_E2E_TS4 BR60006352: Ins. Co. \"Allianz Serba Sentral\" (badge Serba Sentral (badge px-2 serba-sentral-badge)); Ref. No. badge \"Secarang\", Payment badge \"Paid\" (style badge px-2 ia-badge|rgb(210, 231, 255)|rgb(42, 45, 121) / badge px-2 align-middle ok-badge|rgb(216, 255, 219)|rgb(41, 134, 66) vs Tokio Marine BR60006354 badge px-2 ia-badge|rgb(210, 231, 255)|rgb(42, 45, 121) / badge px-2 align-middle ok-badge|rgb(216, 255, 219)|rgb(41, 134, 66)); UCD \"-\", UCD Name \"-\"",
+      "match": true,
+      "shot": "07-row-BR60006352-beside-tokio-marine.png",
+      "at": "29/10/2026, 17:03:39",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E4",
+      "expected": "The CSV export has the same Allianz rows as the screen, Insurance Company Allianz, Agency Serba Sentral",
+      "shows": "screen 20 row(s) (more pages: \"« 1 (current) 2 »\", screen page 1 checked against the CSV), CSV 33 row(s); on screen not in CSV: none; in CSV not on screen: none; CSV rows not Allianz / Serba Sentral: none; E2E_TS1..TS4 missing from CSV: none",
+      "match": true,
+      "shot": "08-transaction-management-export-csv.png",
+      "at": "29/10/2026, 17:03:50",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "signed in: CIBO (cibo)",
+    "hand-off \"allianzPurchase\": 12406_E2E_TS1 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:31:20.401Z — ref BR60006349, plate HXA0011A, receipt no 26102921300027, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:card\": 12406_E2E_TS2 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:39:10.640Z — ref BR60006350, plate HXA0012A, receipt no 26102921300028, receipt file secarang-receipt-HXA0012A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:grabpay\": 12406_E2E_TS3 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:42:30.830Z — ref BR60006351, plate HXA0013A, receipt no 26102921300029, receipt file secarang-receipt-HXA0013A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:shopeepay\": 12406_E2E_TS4 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:45:40.518Z — ref BR60006352, plate HXA0014A, receipt no 26102921300030, receipt file secarang-receipt-HXA0014A-PERSONAL-DATA.pdf",
+    "step 2, Allianz ticked (attempt 1): asked Insurance Company \"Allianz\", Search box \"\"; read back: Insurance Company ticked \"Allianz\", Search box \"\"; 20 transaction row(s)",
+    "hand-off \"tokioMarinePurchase\": 12406_E2E_TS10 in run eaint-12406-run-sE2E-20261029-1545-c2 at 2026-10-29T08:56:05.766Z — ref BR60006354, plate HXA0004A, receipt no 26102921300034, receipt file secarang-receipt-HXA0004A-tokio-marine-PERSONAL-DATA.pdf",
+    "Tokio Marine style reference BR60006354 (attempt 1): asked Insurance Company \"TokioMarine\", Search box \"BR60006354\"; read back: Insurance Company ticked \"TokioMarine\", Search box \"BR60006354\"; 1 transaction row(s)",
+    "Tokio Marine style reference BR60006354 (12406_E2E_TS10): {\"Transaction Ref. No.\":[{\"text\":\"Secarang\",\"cls\":\"badge px-2 ia-badge\",\"background\":\"rgb(210, 231, 255)\",\"color\":\"rgb(42, 45, 121)\"}],\"Payment\":[{\"text\":\"Paid\",\"cls\":\"badge px-2 align-middle ok-badge\",\"background\":\"rgb(216, 255, 219)\",\"color\":\"rgb(41, 134, 66)\"}],\"Ins. Co.\":[{\"text\":\"Pemaju Eksklusif\",\"cls\":\"badge px-2 pemaju-rakyat-badge\",\"background\":\"rgb(254, 232, 255)\",\"color\":\"rgb(115, 23, 141)\"}]}; row found: true",
+    "step 3, Allianz + TokioMarine ticked (attempt 1): asked Insurance Company \"Allianz + TokioMarine\", Search box \"\"; read back: Insurance Company ticked \"Allianz, TokioMarine\", Search box \"\"; 20 transaction row(s)",
+    "Allianz + TokioMarine ticked: 20 row(s): BR60006354 TokioMarine Pemaju Eksklusif; BR60006353 Allianz Serba Sentral; BR60006352 Allianz Serba Sentral; BR60006351 Allianz Serba Sentral; BR60006350 Allianz Serba Sentral; BR60006349 Allianz Serba Sentral; BR60006345 Allianz Serba Sentral; BR60006344 Allianz Serba Sentral; BR60006343 Allianz Serba Sentral; BR60006342 Allianz Serba Sentral; BR60006341 Allianz Serba Sentral; BR60006340 Allianz Serba Sentral; BR60006339 Allianz Serba Sentral; BR60006338 Allianz Serba Sentral; BR60006337 Allianz Serba Sentral; BR60006336 Allianz Serba Sentral; BR60006334 Allianz Serba Sentral; BR60006333 Allianz Serba Sentral; BR60006332 Allianz Serba Sentral; BR60006331 Allianz Serba Sentral; Tokio Marine rows on this screen: BR60006354",
+    "step 4, Allianz only again (attempt 1): asked Insurance Company \"Allianz\", Search box \"\"; read back: Insurance Company ticked \"Allianz\", Search box \"\"; 20 transaction row(s)",
+    "downloaded: Transaction_Management_allianz_29.10.2026-PERSONAL-DATA.csv",
+    "hand-off \"lonpacPurchase\": none in any run of EAINT-12406",
+    "E5 NOT proved: needs 12406_QT_TS4 (\"lonpacPurchase\": none) and 12406_E2E_TS10 (\"tokioMarinePurchase\": ok)",
+    "back to CIBO: the dashboard opened again (still signed in) after a file was shown in the tab"
+  ],
+  "opened": []
+}

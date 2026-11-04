@@ -1,0 +1,4 @@
+12406_RC_TS11 — evidence not valid — a point has no proof, no screenshot, or no video (re-run)
+run eaint-12406-retest-sretest-20261030-0040-C-c2, staging /ia, 30/10/2026, 09:14:13 MYT
+
+- no proof for E2

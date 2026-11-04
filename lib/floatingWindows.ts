@@ -6,9 +6,11 @@
  * Rendered by components/floating/FloatingLayer.tsx.
  */
 
-export type FloatingWinId = "notes" | "todo" | "timer" | "scratch";
+export type FloatingWinId = "notes" | "todo" | "timer" | "scratch" | "kanban" | "snip";
 
-export const FLOATING_WIN_IDS: FloatingWinId[] = ["notes", "todo", "timer", "scratch"];
+// "kanban" = quick-add Kanban task (2026-10-29); last so first-time tiling of the others is unchanged.
+// "snip" = Snip Editor (2026-10-30), same reason.
+export const FLOATING_WIN_IDS: FloatingWinId[] = ["notes", "todo", "timer", "scratch", "kanban", "snip"];
 
 export interface WinGeom {
   x: number;
@@ -44,6 +46,8 @@ const DEFAULT_SIZE: Record<FloatingWinId, { w: number; h: number }> = {
   todo:    { w: 380, h: 460 },
   timer:   { w: 300, h: 430 },
   scratch: { w: 380, h: 320 },
+  kanban:  { w: 360, h: 400 },
+  snip:    { w: 720, h: 520 },
 };
 
 function defaultWin(id: FloatingWinId, index: number): WinState {

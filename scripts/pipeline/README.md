@@ -74,6 +74,11 @@ adding optional fields is fine).
    `{key, ts:[ids], status:"In Progress"}`; when it resolves → Pass/Fail per TS
    from the result checks; if any failed → POST `/api/pipeline/jobs`
    `{key, action:"elf:findings", input:{runId, result}}`. Stage `testing`.
+   A queue page starts its next TS on the same key at once, so the live run alone
+   misses finished ones (EAINT-12028, 2026-11-03: sheet stuck on "In Progress").
+   The queue page records each finished run with `recordFinishedRun()`
+   (`lib/finishedRuns.ts`, localStorage `dashboard_finished_runs`) and the watcher
+   reads that list too. Done for `/eauto/12028`; other queue pages still need it.
    On every resolved run it first POSTs the full result (checks with error,
    friendlyError, steps, evidence, video, details; runKey, runId, server
    runId/runLabel, timestamps, log tail) to `/api/pipeline/runs` →
@@ -122,18 +127,25 @@ reloads. It:
    `--session-id <new uuid>` on the first job of that ticket+character, else
    `--resume <sessionId>` (stored in `ticket.characters[c].sessionId`), prompt
    via stdin, cwd = repo root, `%APPDATA%\npm\claude.cmd`, shell true;
-4. per-character tools (`--allowedTools`, `--permission-mode acceptEdits`):
-   1. scribe / scout: Read Glob Grep Write Edit + the toolbox (§7); no other Bash
-   2. elf: Read Glob Grep Write Edit `Skill` + the toolbox; `elf:build` also `Bash(node .claude/skills/draft-TS-excel/scripts/*)`
-   3. dwarf: Read Glob Grep Write Edit `Bash(node *)` `Bash(npm *)` `Bash(npx tsc *)` `Bash(npx eslint *)` `Bash(npx playwright *)` `Skill`; `--disallowedTools` `Bash(git *)` `Bash(rm -rf *)`
-   4. elf findings / scout issue: Read Glob Grep Write Edit `Bash(node *)`
-   All: no WebFetch/WebSearch/Agent/Workflow, `--strict-mcp-config`. Jira
-   and SharePoint are READ through the toolbox (§7) and written only by the
-   API after Faizuddin approves. Scribe/Scout/Elf no longer deny plain
-   `Bash` (a blanket deny beats the toolbox allow); instead `shellDenies()`
-   in actions/_tools.mjs denies by name every command his settings files
-   allow (curl, git, node -e, ...), so only the toolbox runs. Dwarf keeps
-   its own Bash rules (+ the toolbox).
+4. tools (`--allowedTools`, `--permission-mode acceptEdits`), since
+   2026-10-29 the same full set for every character ("full permission and
+   access as you"; actions/_tools.mjs `fullTools()`):
+   1. allowed: Bash, file tools, Skill, WebFetch, WebSearch, Agent, the
+      Claude.ai Atlassian and Claude Docs connectors (no `--strict-mcp-config`),
+      the toolbox (§7).
+   2. core guards (denied): git commit / push, rm -r, PowerShell, existing
+      eAuto suites not owned by the job, _reference/ except html, tickets,
+      miro, inbox, miro-links.txt; job / permission / shared Sage files.
+      Workflow stays off.
+   3. outside writes (`OUTSIDE_WRITE`: Jira and Confluence writes, Claude
+      Docs writes, Artifact*, curl / wget / gh) are denied unless Faizuddin
+      typed the line from `tools/ask-permission.mjs` in that character's chat:
+      `store.claimPermission()` matches it exactly (one line, one job, 24 h,
+      data/pipeline/permissions.json) and the runner opens those tools for
+      that job only.
+   Per-action extras stay: elf:help / dwarf:help cannot edit code or
+   data/pipeline, elf:findings / scout:issue cannot edit _reference/ (their
+   finish() writes it), dwarf:build cannot edit its marker.
 5. streams tool events into the job file (`activity`) and the chat file
    (`chats/<KEY>/<character>.jsonl`), appends the final assistant text as a
    ChatEntry, updates the ticket (files, stage, character state, events);
@@ -213,6 +225,11 @@ same code. Exports:
 7. Saved runs: `writeRun(rec)`, `readRun(key, runId)`, `listRuns(key)`,
    `findRun(key, id)` (client runId, server runId or runLabel), `isRunId(id)`.
 8. Misc: `setupInfo()` (data/agents/setup.json), `hashFile(path)`, `nowIso()`.
+9. Ticket history (2026-10-29): `historyRel(key)`, `appendHistory(key, text)` →
+   `data/pipeline/work/<KEY>/history.md`, uncapped, append-only. `addEvent` and
+   every Faizuddin chat message (any character) are logged there. Standing
+   decisions sit above `## Log` (hand-written). `ticketFiles()` lists it first and
+   `header()` tells every character to read it before anything else.
 
 ### 6.2 Action modules — `scripts/pipeline/actions/<character>-<verb>.mjs`
 
@@ -361,8 +378,14 @@ Callers:
 6. `scripts/agents/run-agent.mjs pipelineHandoff` — Scout study written or updated.
 
 Debounce: `sage-learn.mjs` exports `waitUntilReady()`; the runner calls it
-before taking the lock, and it waits until the inbox has been quiet for 2 min
-(`PIPELINE_SAGE_QUIET_MS`), at most 20 min.
+before taking the lock, and it waits until the inbox has been quiet for 30 min
+(`PIPELINE_SAGE_QUIET_MS`), at most 2 h (token cut, 2026-11-02; was 2 min / 20 min).
+A finished character job is only noted for the Sage when it changed files
+(Write/Edit/Bash) or listed "Knowledge candidates".
+
+Token cut (2026-11-02): only `elf:plan`, `elf:build` and `dwarf:build` run on
+the default model (Opus); every other job passes `--model sonnet`
+(`modelFor` in run-character.mjs). One ```ask block per reply (`MAX_ASKS = 1`).
 
 ### 8.2 `sage:learn` (`actions/sage-learn.mjs`)
 
@@ -387,12 +410,10 @@ snapshot taken in `prepare()` (lines added/removed per file; removed lines →
 warning in the chat and the record), appends a `learnings.jsonl` record,
 clears the processed inbox events. The model never edits the shared files.
 
-Tools (`sageTools()` in `_tools.mjs`): Read Glob Grep Write Edit + the
-read-only toolbox. Edit/Write denied everywhere except `knowledge/**` and
-`data/pipeline/sage-out/**`: every top-level entry, every `data/` entry and
-every `data/pipeline/` entry is denied by name (incl. the four shared files),
-plus ALWAYS_PROTECTED minus knowledge. Other characters keep
-`Edit(./knowledge/**)` denied.
+Tools (`sageTools()` in `_tools.mjs`): the full set every character has since
+2026-10-29 (§2 item 4); the four shared files stay denied to all. Keeping
+`knowledge/` edits to the Sage is now a prompt rule (header() in
+prompts-common.mjs), not a permission.
 
 ### 8.3 Approval — `/api/pipeline/learnings` + `/pipeline/learnings`
 
@@ -785,7 +806,7 @@ Round 41: ASK_RULES 4 "Carry on where you can" (assume minor readings as [unconf
 
 Faizuddin, 2026-10-27: "once the automation is created, the dwarf should also build a page for it in the ticket page, for me to track the automation, and to run it".
 
-1. **Runner component.** For every suite the pipeline's Dwarf builds, the runner UI lives in `app/eauto/<digits>/Runner.tsx` ("use client", default export, props `RunnerProps = { embedded?: boolean; pick?: string[] }`). `embedded` hides the page header and back link and fits a panel; `pick` holds scenarios.json ids and ticks exactly those TS each time it changes. SCENARIOS are listed P1 first. `app/eauto/<digits>/page.tsx` only renders `<Runner />`.
+1. **Runner component.** For every suite the pipeline's Dwarf builds, the runner UI lives in `app/eauto/<digits>/Runner.tsx` ("use client", default export, props `RunnerProps = { embedded?: boolean; pick?: string[] }`). `embedded` hides the page header and back link and fits a panel; `pick` holds scenarios.json ids and ticks exactly those TS each time it changes. SCENARIOS are listed in ascending TS number order, never by priority (Faizuddin, 2026-11-02; replaces the old P1-first order). `app/eauto/<digits>/page.tsx` only renders `<Runner />`.
 2. **Registry.** `lib/pipeline/runnerRegistry.ts` → `RUNNERS[KEY] = { runKey, page, load: () => import("@/app/eauto/<digits>/Runner") }`, one line per suite (Dwarf adds it; the line shape is `registryLine()` in `actions/_dwarf-common.mjs`).
 3. **Prompts.** `runnerContractRules(key)` (`_dwarf-common.mjs`) is in the dwarf:build and dwarf:sync tasks; AUTOMATION_RULES 11 carries the short form for every Dwarf job.
 4. **Check.** dwarf:build / dwarf:sync `finish()` call `runnerAfterDwarf()`: `runnerContractProblems()` checks Runner.tsx (exists, default export, uses `embedded`, uses the RUN_KEY), page.tsx renders `./Runner`, and the registry line matches. Advisory: problems go to Dwarf's chat and the ticket's events; `files.runner` is set when Runner.tsx exists. `files.runnerPage` and `runKey` are set as before.
@@ -802,5 +823,6 @@ Faizuddin, 2026-10-28: "if i update a requirement during the process, the other 
 1. **Scout / Scribe → Elf.** `scout:chat` and `scribe:chat` hash the study, related history and brief.json in `prepare()` (`snapshotRequirements`, `lib/requirement-change.mjs`). In `finish()`, `passRequirementChange` queues `elf:chat` with `input { requirementChange, by, changed[] }` when one of them changed and Elf already has scenarios.json. A queued re-check is not queued twice; Elf's chat shows a system line.
 2. **Elf re-check.** `requirementChangeTask()` is the task: read the changed files, change only the TS the requirement change affects, leave the files untouched when nothing is affected.
 3. **Elf → Dwarf + workbook.** After approval, a scenario change (from Faizuddin's chat or the re-check) queues `dwarf:sync` (as before) and now also `elf:build` with `input.rebuild` (`finishScenarios`, `_elf-common.mjs`). The rebuilt workbook replaces the old one in `_reference/tickets/<KEY>/`; the old one is kept as "(superseded vN)". The official SharePoint TS is never written.
+   **Update 2026-10-30:** the workbook no longer rebuilds by itself. Each change after approval is added to `pendingWorkbookChanges` and Elf's chat says so; the Elf panel shows **Create new version now**, which queues one `elf:build` (`input.rebuild`) that carries every waiting change. The build clears the list only if `scenarios.json` did not change while it ran.
 4. Jobs of one character run one at a time per ticket, so a rebuild waits for Elf's chat to finish.
 5. Unit test: "requirement change: …" in `tools/unit-tests.mjs`.

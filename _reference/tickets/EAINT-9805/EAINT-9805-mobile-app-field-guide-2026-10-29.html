@@ -1,0 +1,460 @@
+<title>eAuto App Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: left rail of section links on wide screens, one reading column; tables scroll in their own box. */
+:root{
+  --bg:#f6f7f6; --panel:#ffffff; --fg:#17201f; --muted:#56635f; --line:#d9e0dd;
+  --accent:#0e6b66; --accent-soft:#e2f0ee; --warn:#9a5b00; --warn-soft:#fbf0dc;
+  --bad:#a3302a; --bad-soft:#f8e3e1; --good:#2d6a2f; --good-soft:#e3f1e2;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111716; --panel:#182120; --fg:#e4ebe9; --muted:#9aa9a5; --line:#2c3836;
+  --accent:#5cc4bb; --accent-soft:#163331; --warn:#e2a64a; --warn-soft:#33270f;
+  --bad:#ec8b84; --bad-soft:#3a1d1b; --good:#8fd18f; --good-soft:#1b311b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111716; --panel:#182120; --fg:#e4ebe9; --muted:#9aa9a5; --line:#2c3836;
+  --accent:#5cc4bb; --accent-soft:#163331; --warn:#e2a64a; --warn-soft:#33270f;
+  --bad:#ec8b84; --bad-soft:#3a1d1b; --good:#8fd18f; --good-soft:#1b311b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px}
+nav.rail{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-top:40px;font-size:13px}
+nav.rail ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.rail a{display:block;padding:4px 8px;border-radius:4px;color:var(--muted);text-decoration:none}
+nav.rail a:hover,nav.rail a:focus-visible{background:var(--accent-soft);color:var(--fg);outline:none}
+nav.rail a.new::after{content:" NEW";font:600 10px var(--f-mono);color:var(--accent)}
+main{min-width:0;padding-top:40px}
+header.top{border-bottom:2px solid var(--fg);padding-bottom:20px;margin-bottom:8px}
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(30px,5vw,44px)/1.05 var(--f-display);margin:10px 0 12px;text-wrap:balance;letter-spacing:-.01em}
+h2{font:700 26px/1.15 var(--f-display);margin:0 0 6px;text-wrap:balance}
+h3{font:600 16px/1.3 var(--f-body);margin:22px 0 8px}
+.lede{max-width:68ch;color:var(--muted);margin:0}
+section{padding-block:36px;border-bottom:1px solid var(--line)}
+section>p,section>ol,section>.note{max-width:72ch}
+.sec-no{font:500 12px var(--f-mono);color:var(--muted);letter-spacing:.06em}
+ol{padding-left:22px;margin:8px 0}
+ol li{margin:4px 0}
+ol ol{list-style:lower-alpha}
+b,strong{font-weight:600}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+q,.quote{font-style:italic}
+blockquote{margin:12px 0;padding:10px 14px;border-left:3px solid var(--fg);background:var(--panel);max-width:72ch;font-style:italic}
+.src{font:400 11.5px/1.4 var(--f-mono);color:var(--muted);white-space:nowrap}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 6px 6px 0;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn-soft)}
+.note.bad{border-color:var(--bad);background:var(--bad-soft)}
+.tbl{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font:600 12px/1.3 var(--f-body);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;font-family:var(--f-mono);font-size:12.5px;white-space:nowrap}
+.pill{display:inline-block;font:600 11px/1 var(--f-mono);padding:4px 7px;border-radius:999px;white-space:nowrap}
+.yes{background:var(--good-soft);color:var(--good)} .no{background:var(--bad-soft);color:var(--bad)}
+.tbc{background:var(--warn-soft);color:var(--warn)} .star{background:var(--accent-soft);color:var(--accent)}
+.jobs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
+.job{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}
+.job .k{font:500 11px var(--f-mono);color:var(--accent);letter-spacing:.06em}
+.job h3{margin:6px 0 6px}
+.job p{margin:0;font-size:13.5px;color:var(--muted)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;min-width:0}
+.card h3{margin-top:0}
+dl.gloss{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);gap:6px 16px;margin:10px 0;max-width:80ch}
+dl.gloss dt{font-weight:600}
+dl.gloss dd{margin:0;color:var(--muted)}
+.check li::marker{color:var(--accent);font-weight:600}
+footer{padding-top:28px;font-size:13px;color:var(--muted)}
+a{color:var(--accent)}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:0} nav.rail{display:none} .jobs,.two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){dl.gloss{grid-template-columns:minmax(0,1fr)} dl.gloss dd{margin-bottom:8px}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+<nav class="rail" aria-label="Sections">
+  <ol>
+    <li><a href="#brief">The brief</a></li>
+    <li><a href="#manual" class="new">Your manual part</a></li>
+    <li><a href="#basics">Mobile testing basics</a></li>
+    <li><a href="#app">The eAuto App</a></li>
+    <li><a href="#scope">Device &amp; test scope</a></li>
+    <li><a href="#interrupt">Interruption testing</a></li>
+    <li><a href="#readers">Dermalog vs Iris</a></li>
+    <li><a href="#iris">Iris TS tab draft</a></li>
+    <li><a href="#ask">Questions to ask</a></li>
+    <li><a href="#start">Day-one checklist</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="top">
+  <div class="eyebrow">EAINT-9805 · eAuto Mobile App Phase 6 · studied 28 Oct 2026 · updated 29 Oct 2026</div>
+  <h1>eAuto App Field Guide</h1>
+  <p class="lede">Everything needed to start testing the eAuto mobile app with no prior mobile experience: what is different from web testing, what the team already tested in Phase 2, the device plan for Phase 6, and how the Dermalog WebSocket TS turns into an Iris TS.</p>
+</header>
+
+<!-- 1 -->
+<section id="brief">
+  <div class="sec-no">01</div>
+  <h2>The brief, decoded</h2>
+  <p>The lead sent three links and one task. One link turned out to be the task's own file.</p>
+  <div class="jobs">
+    <div class="job"><div class="k">READ</div><h3>High-Level Test Scope</h3><p>The SharePoint link opens <b>the EAINT-9805 workbook itself</b>. It has 2 tabs: "Device &amp; Test Scope" and "Iris &amp; Dermalog Support". Last saved 28 Oct 2026, 11:09.</p></div>
+    <div class="job"><div class="k">REUSE</div><h3>Interruption Testing</h3><p>Google Sheet "EAINT-6014: eAuto Mobile App (Phase 2) - Test Scenarios", tab "Functional &amp; Interruption Test". 30 interruption TS, all PASS.</p></div>
+    <div class="job"><div class="k">BUILD</div><h3>Iris manual TS</h3><p>New tab in the EAINT-9805 workbook, modelled on the EAINT-7229 Dermalog WebSocket TS (85 TS over 9 TS sheets).</p></div>
+  </div>
+  <div class="note"><b>People.</b> QA PIC on EAINT-9805 in Jira: <b>Hui Xin Lee</b> (also the automation tester in the device sheet). Progress questions go to her. Interruption TS owner per the sheet: "check the TS with Charmain". Dev: Zhen (Android), Shane (iOS biometric login), Desmond Wong (Android reviews).</div>
+</section>
+
+<!-- 2 -->
+<section id="manual">
+  <div class="sec-no">02 · NEW</div>
+  <h2>Your manual part</h2>
+  <p>The lead's message uses the word "manual" once. It is about <b>writing</b> the Iris TS. <b>Your role: manual</b> — write the Iris TS and test by hand. Automation is Hui Xin's.</p>
+  <div class="note"><b>The app is a real installed app</b> (Android / iOS), not Chrome or a web page. Web-only checks (browsers, installer download, F12, one-tab rule) do not apply.</div>
+
+  <h3>The lead's words</h3>
+  <blockquote>Iris Dermalog is new, so we’ll need to prepare similar test scenarios for Iris based on the WebSocket Dermalog test scenarios. Please add the manual TS in EAINT-9805 excel by creating a new tab ya.</blockquote>
+  <p class="src">Lead, Teams message to Faizuddin, 28 Oct 2026</p>
+
+  <h3>What is asked, and what is not</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Item</th><th>Status</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td><b>Write</b> the Iris manual TS as a new tab in the EAINT-9805 workbook</td><td><span class="pill yes">Asked</span></td><td>Lead's message, above</td></tr>
+      <tr><td>Base it on the EAINT-7229 WebSocket Dermalog TS</td><td><span class="pill yes">Asked</span></td><td>Lead's message, above</td></tr>
+      <tr><td>Read the High-Level Test Scope and the Phase 2 interruption TS</td><td><span class="pill yes">Asked</span></td><td>Lead's message: <q>You can go through it first and refer to our previous test scenarios below as references</q></td></tr>
+      <tr><td><b>Run</b> the manual tests on the devices</td><td><span class="pill yes">Yours</span></td><td>Faizuddin, 29 Oct 2026: focus is manual testing. Workbook manual column still reads <q>Manual device (??)</q>.</td></tr>
+      <tr><td>Automation</td><td><span class="pill no">Not yours</span></td><td>Workbook automation column names Hui Xin.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>"Manual TS" in plain words</h3>
+  <ol>
+    <li>A test scenario a person carries out by hand, step by step, on a real phone.</li>
+    <li>It covers what a script cannot do: insert a MyKad, place a thumb, switch Bluetooth off, walk out of range, take a call.</li>
+    <li>Each row has: what to do, what should happen, which device, which app build, Pass / Fail, remarks.</li>
+  </ol>
+
+  <h3>What the Iris tab must hold</h3>
+  <ol>
+    <li><b>Rows:</b> Iris scenarios built from the 7229 Dermalog sheets. Mapping is in section 07, outline in section 08.</li>
+    <li><b>Kept from 7229:</b> MyKad, thumbprint, two-card, button, performance scenarios.</li>
+    <li><b>Changed:</b> "unplug the cable" becomes Bluetooth off, out of range, reader powered off.</li>
+    <li><b>Added (app only):</b> Bluetooth permission, pairing, unpair, call / Home / lock / kill during a scan, tablet rotation.</li>
+    <li><b>Dropped:</b> web-only rows such as browsers, installer download, HMAC (F12), one-tab rule.</li>
+  </ol>
+
+  <h3>Manual run depth per device</h3>
+  <p>The workbook sets how deep the manual run goes on each device. Full table in section 05.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Depth</th><th>Devices</th><th>Manual work (from the workbook)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Full manual</b></td><td>Android 15 ★ (Infinix Note 40 Pro / Galaxy A54), iOS 27 ★ (iPhone 17e)</td><td>Iris and Dermalog full testing incl. negative; face and fingerprint login; interruption testing. iOS: no Dermalog, Face ID only.</td></tr>
+      <tr><td><b>Tablet</b></td><td>Galaxy Tab Active4 Pro (Android 15)</td><td>1 Iris trx, 1 Dermalog trx, 1 biometric login</td></tr>
+      <tr><td><b>Short check</b></td><td>Android 13, 16, 17</td><td>Iris and Dermalog: 5 scanner steps each</td></tr>
+      <tr><td><b>Short check</b></td><td>iOS 18, iOS 26, iPad</td><td>Iris + 1 biometric login (iPad: Touch ID)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>One manual run, start to end</h3>
+  <ol>
+    <li>Install the UAT build. Note app version and build no.</li>
+    <li>Mirror the phone to the laptop and start recording.</li>
+    <li>Do the steps in the TS row by hand.</li>
+    <li>Compare with the expected result. Mark Pass or Fail.</li>
+    <li>Fill device, OS, build no. and remarks.</li>
+    <li>Check the record on web (UCD, BO) where the TS says so.</li>
+    <li>On Fail: raise a QA-Issue with device model and build no.</li>
+  </ol>
+
+  <div class="note warn"><b>Ask at the sync-up:</b> <q>Which devices are mine for the manual run?</q> Section 09 lists the other questions.</div>
+</section>
+
+<!-- 3 -->
+<section id="basics">
+  <div class="sec-no">03</div>
+  <h2>Mobile testing basics</h2>
+  <p>Web testing checks one page in one browser. Mobile testing checks the same flow across <b>many devices, OS versions, permissions and life events</b> of the app.</p>
+
+  <h3>What changes compared with web</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Area</th><th>Web (what you know)</th><th>Mobile app (what is new)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Install</b></td><td>Open a staging URL.</td><td>Install a UAT build from Play Store (tester list). Update by hand on every new build.</td></tr>
+      <tr><td><b>Version</b></td><td>Whatever is deployed.</td><td>Every bug and retest states <b>app version + build no.</b>, phone model, OS.</td></tr>
+      <tr><td><b>Coverage</b></td><td>Chrome, maybe Edge.</td><td>Android 13–17, iOS 18–27, tablet, iPad. Screen sizes differ.</td></tr>
+      <tr><td><b>Hardware</b></td><td>Dermalog via a local WebSocket service.</td><td>Dermalog via <b>USB (OTG)</b>; Iris via <b>Bluetooth</b>. App asks for USB / Bluetooth permission.</td></tr>
+      <tr><td><b>Life cycle</b></td><td>Tab open or closed.</td><td>App goes to background, is locked, killed, rotated, interrupted by a call.</td></tr>
+      <tr><td><b>Login</b></td><td>Username + password.</td><td>Also fingerprint, Face ID, Touch ID.</td></tr>
+      <tr><td><b>Evidence</b></td><td>Browser screenshots.</td><td>Mirror the phone to the laptop and screen-record (Phone Link, Dr. Fone Air).</td></tr>
+      <tr><td><b>Data check</b></td><td>Same portal.</td><td>App writes to the same database. Confirm on <b>web</b>: UCD and BO listing / details, BO JPJ XML Log.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Words you will meet</h3>
+  <dl class="gloss">
+    <dt>Interruption test</dt><dd>Something outside the app breaks in mid-flow: call, notification, Home, lock, network loss. Check the app recovers correctly.</dd>
+    <dt>Home button</dt><dd>Sends the app to the background. App stays alive.</dd>
+    <dt>Overview button</dt><dd>The square / recent-apps button. Shows open apps to switch between.</dd>
+    <dt>Kill the app</dt><dd>Swipe the app away in Overview. Process ends. Reopen starts fresh.</dd>
+    <dt>Toast</dt><dd>Small message that pops up at the bottom and fades, e.g. <q>No internet connection</q>.</dd>
+    <dt>Edge-to-edge</dt><dd>Android 15+ draws the app under the status bar and navigation bar. Bug sign: buttons or text hidden behind those bars.</dd>
+    <dt>Portrait / landscape</dt><dd>Phone upright / sideways. Phase 2 phones stay portrait; Phase 6 tablets must work both ways.</dd>
+    <dt>OTG</dt><dd>USB On-The-Go. Lets a phone power and talk to a USB device such as Dermalog. Needs a USB-C adapter.</dd>
+    <dt>Pair (Bluetooth)</dt><dd>One-time link between phone and Iris reader. Unpair removes it.</dd>
+    <dt>Runtime licence</dt><dd>Dermalog licence needed on the phone. Phase 2 testers without it marked thumbprint rows N/A.</dd>
+    <dt>Rooted device</dt><dd>Android phone with admin access unlocked. EAINT-12570 added handling for it (Done).</dd>
+    <dt>Build no.</dt><dd>Number that changes on every app build. Same version can have many builds.</dd>
+  </dl>
+</section>
+
+<!-- 4 -->
+<section id="app">
+  <div class="sec-no">04</div>
+  <h2>The eAuto App</h2>
+  <ol>
+    <li><b>Who uses it:</b> UCD dealers. Same database as the web portal. <b>Web is the reference</b> for behaviour.</li>
+    <li><b>Phases</b> (epic EAINT-7554):
+      <ol>
+        <li>Phase 1 EAINT-5566 and Phase 2 EAINT-6014 (eLKM, SSM): Ready for Prod Deployment.</li>
+        <li>Phase 3 EAINT-6015 (Insurance in eSTM, JomCheck), Phase 4 EAINT-7109 (UCD to UCD), Phase 5 EAINT-6016 (Transfer History, BMK, Insurance): requirement stage or To Do.</li>
+        <li><b>Phase 6 EAINT-9805:</b> <q>To complete STMS module same as Production Web Portal</q>. Jira note: <q>Can roll out this with STMS module only, can hide other modules if haven’t ready.</q></li>
+      </ol>
+    </li>
+    <li><b>Phase 6 work already Done:</b> tile price RM25 → RM35 (12550), Perakuan + JPJ Official Receipt in eSTM (12551), S00044 popup (12552), usage code AH (12553), rooted device handling (12570), backend alignment (12575), eSTM city list + keyboard covering consent fields (12568).</li>
+    <li><b>Phase 6 work still open:</b> STMS LKM Refund (12567, Code Review), iOS biometric login with saved accounts (12592, In Development), Insurance Cancellation (12637, In Development).</li>
+    <li><b>Ticket status:</b> EAINT-9805 is "REQ REFINEMENT IN PROGRESS". SRD v0.1 dated 06.02.2026.</li>
+  </ol>
+  <div class="note warn"><b>Watch:</b> in production code the app's eSTM entry points are commented out. Phase 6 headline is STMS. Confirm which modules are visible in the build you test.</div>
+</section>
+
+<!-- 5 -->
+<section id="scope">
+  <div class="sec-no">05</div>
+  <h2>Device &amp; test scope (EAINT-9805 workbook)</h2>
+  <p>The workbook is a <b>test-depth plan per device</b>, not a TS list. Manual tester column is still <q>Manual device (??)</q>.</p>
+
+  <div class="tbl"><table>
+    <thead><tr><th>OS</th><th>Device</th><th>Automation (Hui Xin)</th><th>Manual</th></tr></thead>
+    <tbody>
+      <tr><td class="num">Android 13</td><td>ZTE Blade V50</td><td>Short check</td><td>Short check: Iris and Dermalog</td></tr>
+      <tr><td class="num">Android 15</td><td>Samsung Galaxy Tab Active4 Pro 5G (tablet)</td><td>"Can use" check</td><td>1 Iris trx, 1 Dermalog trx, 1 biometric login</td></tr>
+      <tr><td class="num">Android 15 <span class="pill star">★</span></td><td>Infinix Note 40 Pro / Samsung Galaxy A54 5G (No. 2)</td><td><b>Full E2E</b></td><td><b>Full manual testing</b></td></tr>
+      <tr><td class="num">Android 16</td><td>REALME 13+ 5G</td><td>Short check + edge-to-edge</td><td>Short check: Iris and Dermalog</td></tr>
+      <tr><td class="num">Android 17</td><td>Xiaomi 14T (when available)</td><td>Same as 16</td><td>Same as 16</td></tr>
+      <tr><td class="num">iOS 18</td><td><span class="pill tbc">TBC</span></td><td>Short check</td><td>Short check: Iris + 1 biometric login</td></tr>
+      <tr><td class="num">iOS 26</td><td>colleague's phone <span class="pill tbc">TBC</span></td><td>Short check</td><td>Short check: Iris + 1 biometric login</td></tr>
+      <tr><td class="num">iOS 27 <span class="pill star">★</span></td><td>iPhone 17e <span class="pill tbc">TBC</span></td><td><b>Full E2E</b></td><td><b>Full manual</b>, no Dermalog, no fingerprint (Face ID only)</td></tr>
+      <tr><td class="num">iPadOS ?</td><td>iPad (A16) - iPad 11</td><td>"Can use" check</td><td>Short check: Iris + Touch ID</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="two">
+    <div class="card">
+      <h3>What each depth means</h3>
+      <ol>
+        <li><b>Full manual:</b> Iris and Dermalog full testing incl. negative; face and fingerprint login; interruption testing.</li>
+        <li><b>Short check (manual):</b> 5 scanner steps per reader (connect, transaction, reconnect, lock/idle, unplug or unpair).</li>
+        <li><b>"Can use" (tablet):</b> portrait + landscape on every screen; rotate mid-flow and check data stays.</li>
+        <li><b>Edge-to-edge (Android 16/17):</b> nothing hidden under status or navigation bar.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Reader support matrix</h3>
+      <div class="tbl" style="margin:0"><table style="min-width:0">
+        <thead><tr><th>OS</th><th>Iris</th><th>Dermalog</th></tr></thead>
+        <tbody>
+          <tr><td>Android 8–12</td><td><span class="pill no">No</span></td><td><span class="pill yes">Yes</span></td></tr>
+          <tr><td>Android 13–15</td><td><span class="pill yes">Yes</span></td><td><span class="pill yes">Yes</span></td></tr>
+          <tr><td>Android 16–17</td><td><span class="pill yes">Yes</span></td><td><span class="pill no">No</span></td></tr>
+          <tr><td>iOS 14–27, iPad</td><td><span class="pill yes">Yes</span></td><td><span class="pill no">No</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="note bad"><b>Dermalog on Android 16/17:</b> <q>If the Dermalog transaction passes, there is no concern.</q> <q>If it fails, the app should show a clear message and must not crash or freeze. Raise it to SA, because the expected result is not confirmed.</q> <span class="src">Device &amp; Test Scope R13–R14</span></div>
+</section>
+
+<!-- 6 -->
+<section id="interrupt">
+  <div class="sec-no">06</div>
+  <h2>Interruption testing (Phase 2 reference)</h2>
+  <p>Phase 2 ran one interruption TS per screen: login, homepage, module dashboard, listing, details, category selection, and every step state (Step 4 before enquiry / JPJ success / JPJ failed, Step 5 before payment / payment failed, Step 6 approved / submission failed). STMS by Charmain; eSTM by Dura and Johnes. <b>30 TS, all PASS.</b></p>
+
+  <h3>The 8 interruptions on normal screens</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Action</th><th>Expected (verbatim)</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td>Incoming phone call / message / notifications</td><td>Remain on the page</td></tr>
+      <tr><td class="num">2</td><td>Rotate phone screen</td><td>Remain as potrait view</td></tr>
+      <tr><td class="num">3</td><td>Home button, reopen app</td><td>Remain on the page</td></tr>
+      <tr><td class="num">4</td><td>Overview button, reopen app</td><td>Remain on the page</td></tr>
+      <tr><td class="num">5</td><td>Phone Back button</td><td>Should behave the same as In-App Back button (Back in login page / homepage will kill the app)</td></tr>
+      <tr><td class="num">6</td><td>No connection</td><td>Remain on the page. Will show toast message, "No internet connection"</td></tr>
+      <tr><td class="num">7</td><td>Lock screen, then unlock</td><td>Remain on the page</td></tr>
+      <tr><td class="num">8</td><td>Kill and reopen the app</td><td>Launch from Homepage (Login page will remain)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">Functional &amp; Interruption Test, R78 (APP_eSTMUCDREG_INTERRUPT_TS1)</p>
+
+  <h3>Thumbprint steps behave differently</h3>
+  <p>On STMS / eSTM <b>Step 1 and Step 3</b> (MyKad + thumbprint), Home, Overview + switch app, and lock / unlock all give: <q>Remain on the same page - Auto refresh the page, need to rescan MyKad &amp; redo thumbprint</q>. Network loss gives the toast. Kill and reopen: <q>Launch from Homepage</q>. <span class="src">P2 - Compatibility Test, STMSAPP_COMPATIBILITY_TS2</span></p>
+  <p>Session rule: app idle 1 hour in background → <q>Your session has expired Please log in again to continue.</q> above Username. <span class="src">APP_COMPATIBILITY_TS1</span></p>
+
+  <div class="note warn"><b>Phase 6 conflict to raise:</b> Phase 2 says rotate → <q>Remain as potrait view</q>. Phase 6 tablet check says <q>Check every visited screen in both portrait and landscape</q>. Ask whether phones still lock to portrait and only tablets rotate.</div>
+</section>
+
+<!-- 7 -->
+<section id="readers">
+  <div class="sec-no">07</div>
+  <h2>Dermalog vs Iris</h2>
+  <div class="two">
+    <div class="card">
+      <h3>Dermalog</h3>
+      <ol>
+        <li>MyKad + thumbprint reader. Used on web today.</li>
+        <li>App link: <b>USB cable</b> via OTG. App asks USB permission.</li>
+        <li>Android 8–15 only. Not iOS, not iPad, not officially Android 16+.</li>
+        <li>Needs a runtime licence on the phone.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Iris (new)</h3>
+      <ol>
+        <li>Teams calls it an <q>iris card reader</q> <span class="src">Kasheng Liew, 16 Oct 2026</span>. It is a <b>card reader brand</b>, not an eye scanner. <span class="pill tbc">confirm model</span></li>
+        <li>App link: <b>Bluetooth</b>. App asks Bluetooth permission; reader must be paired.</li>
+        <li>Android 13+ and all iOS / iPad. Not Android 8–12.</li>
+        <li>Dev status 16 Oct: <q>still some negative scenarios need to test more</q>.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h3>How the EAINT-7229 Dermalog TS maps to Iris</h3>
+  <p>7229 had 85 TS on web. Some carry over almost as-is; some change because the link is Bluetooth; some are web-only.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>7229 sheet</th><th>TS</th><th>Iris treatment</th></tr></thead>
+    <tbody>
+      <tr><td>Dermalog TS (unplug / reconnect at 5 points)</td><td class="num">13</td><td><b>Rewrite.</b> "Unplug" becomes 3 Bluetooth events: Bluetooth off, out of range, reader powered off. Same 5 points: before read, during read, after read, during thumbprint, after thumbprint.</td></tr>
+      <tr><td>MyKad TS</td><td class="num">8</td><td><b>Carry over.</b> Valid, no card, invalid, retry, multiple fails, remove during / after read, non-MyKad card.</td></tr>
+      <tr><td>Thumbprint TS</td><td class="num">9</td><td><b>Carry over.</b> Right / left thumb, wrong thumb, retries, card removed around the thumbprint. "Refresh page" becomes "leave the step and come back".</td></tr>
+      <tr><td>2 MyKads TS</td><td class="num">12</td><td><b>Adapt.</b> Two Iris readers in range; Iris + Dermalog both connected (Android 13–15); one reader paired to two phones.</td></tr>
+      <tr><td>Functional TS ([Cancel], [Reconnect])</td><td class="num">8</td><td><b>Carry over.</b> Button names to confirm in the app.</td></tr>
+      <tr><td>Auto Scan TS</td><td class="num">6</td><td><b>Ask first.</b> Only if the app has Auto Scan IC.</td></tr>
+      <tr><td>Connectivity &amp; Security</td><td class="num">21</td><td><b>Split.</b> Network loss rows carry over. HMAC (F12), one-tab rule, applet vs WebSocket are web-only.</td></tr>
+      <tr><td>Performance TS</td><td class="num">4+4</td><td><b>Carry over.</b> Connect time, MyKad read time, thumbprint time, next-step time; 5 readings and average.</td></tr>
+      <tr><td>Browsers, Installer download, QA Laptop Specs</td><td class="num">—</td><td><b>Drop.</b> Replaced by the device matrix.</td></tr>
+      <tr><td><i>New, app only</i></td><td class="num">—</td><td>Bluetooth permission allow / deny, pairing, unpair, app interruptions during a scan (call, Home, lock, kill), tablet rotation mid-scan, unsupported OS (Android 8–12).</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Final web Dermalog messages (for reference, not the Iris expected result)</h3>
+  <ol>
+    <li>No device: <q>Please plug in Dermalog Biometric Device and click [Reconnect]</q></li>
+    <li>No card: <q>No card is detected. Please insert IC and click [Scan IC] to try again.</q></li>
+    <li>No chip: <q>Please ensure the IC is placed properly or the chip surface is cleaned</q></li>
+    <li>Read broken: <q>Unable to read photo. Please try again.</q></li>
+    <li>Wrong thumb: <q>Verification failed. Please click on [Scan IC] to try again</q></li>
+    <li>Good thumb: <q>Verification Passed</q> and <q>Verification Completed</q></li>
+  </ol>
+  <p class="src">EAINT-7229 TS: Dermalog TS R10, R12; MyKad TS R11–R12; Thumbprint TS R10, R12</p>
+</section>
+
+<!-- 8 -->
+<section id="iris">
+  <div class="sec-no">08</div>
+  <h2>Iris TS tab — proposed outline</h2>
+  <p><b>Draft for discussion, not written to the workbook.</b> Expected results stay blank where the app text is unknown. Columns follow the 7229 layout, with web columns swapped for device columns.</p>
+
+  <h3>Columns</h3>
+  <p class="mono" style="overflow-wrap:anywhere">TS No | Priority | Test Objective / Entry Point / Module | Pre-Requisite | Test Scenarios | Expected Result | Device / OS | App Version &amp; Build | QA | Test Result | Remarks</p>
+  <p>TS ids two-digit: <span class="mono">9805_IR_TS01</span>, <span class="mono">9805_IR_TS02</span> …</p>
+
+  <h3>Sections and candidate scenarios</h3>
+  <ol>
+    <li><b>Pairing &amp; permission</b> (new): first pair + allow Bluetooth; deny Bluetooth permission; Bluetooth off before opening the thumbprint step; reader off / not paired; unpair then open the step.</li>
+    <li><b>Connection loss</b> (from 7229 Dermalog TS): Bluetooth off / out of range / reader off × before read, during read, after read, during thumbprint, after thumbprint.</li>
+    <li><b>Reconnect</b>: connection back at the same 5 points; rapid off / on.</li>
+    <li><b>MyKad</b> (from MyKad TS): 8 scenarios.</li>
+    <li><b>Thumbprint</b> (from Thumbprint TS): 9 scenarios.</li>
+    <li><b>Two readers / two cards</b>: two Iris in range; Iris + Dermalog on one Android 13–15 phone; reader paired to two phones.</li>
+    <li><b>Buttons</b> (from Functional TS): [Cancel] at 5 points; rapid [Cancel] / [Reconnect] / [Scan IC].</li>
+    <li><b>App interruptions during a scan</b> (from Phase 2): call, notification, Home, Overview, lock, kill, network loss, idle.</li>
+    <li><b>Platform</b>: Android 13, 15, 16, 17; iOS; iPad; tablet rotation mid-scan; Android 8–12 message.</li>
+    <li><b>Performance</b>: 4 timings, 5 readings each.</li>
+  </ol>
+  <div class="note">Entry points: every app step that needs a thumbprint. On web these are STMS Step 1 Seller and Step 3 Buyer, eSTM Step 1 Buyer and Step 3 Seller, plus UCD to UCD, BMK, eSerahan and Insurance permission pages. Confirm which exist in the Phase 6 app.</div>
+</section>
+
+<!-- 9 -->
+<section id="ask">
+  <div class="sec-no">09</div>
+  <h2>Questions to ask before writing the TS</h2>
+  <div class="two">
+    <div class="card">
+      <h3>Lead (sync-up)</h3>
+      <ol>
+        <li>Am I the manual tester in column D (<q>Manual device (??)</q>)? Which phone is mine?</li>
+        <li>Iris tab: one execution column per device, or one row per device?</li>
+        <li>Phones: still portrait-only? Tablets: both orientations?</li>
+        <li>Interruption TS: re-run Phase 2 set as-is on Phase 6, or update it?</li>
+        <li>Does the Iris TS cover every thumbprint page, or STMS only?</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Hui Xin / dev / BA</h3>
+      <ol>
+        <li>Iris reader model; how many units; who holds them. Is the unit due back 3 Nov the same one?</li>
+        <li>Exact app messages for Bluetooth off, out of range, unpair, permission denied. SRD or Figma?</li>
+        <li>Which staging instance the Phase 6 UAT app points to.</li>
+        <li>iOS install route (TestFlight?) and how to mirror an iPhone for evidence.</li>
+        <li>Dermalog runtime licence and OTG adapter for test phones.</li>
+        <li>Does the app have Auto Scan IC and the [Reconnect] button?</li>
+        <li>Hui Xin's "eAuto - Latest TS Suite.xlsx" (5 Oct): is it the module list for app testing?</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section id="start">
+  <div class="sec-no">10</div>
+  <h2>Day-one checklist</h2>
+  <ol class="check">
+    <li>Send your Google Play email to be added to the UAT tester list (Phase 2: Desmond; confirm the owner now).</li>
+    <li>Install the UAT app. Note the version and build no. from the login page.</li>
+    <li>Set up mirroring + recording: Phone Link (Windows) or Dr. Fone Air.</li>
+    <li>Collect hardware: Iris reader, Dermalog + OTG adapter, valid MyKad A and B, an invalid MyKad, a chip card that is not MyKad, a card without chip.</li>
+    <li>Run one STMS happy path on <b>web staging</b> first. Then the same in the app. Compare listing and details on web.</li>
+    <li>Run the 5-step Iris and Dermalog short checks from the device sheet to learn the readers.</li>
+    <li>Take the questions in section 09 to the sync-up.</li>
+    <li>Draft the Iris tab from section 08 once expected messages are known.</li>
+  </ol>
+  <div class="note"><b>Raising bugs:</b> Phase 2 rule: <q>Include your Android device model and APP version &amp; build number in your ticket</q>. Retests also need the build no.</div>
+</section>
+
+<!-- 11 -->
+<section id="sources">
+  <div class="sec-no">11</div>
+  <h2>Sources</h2>
+  <ol>
+    <li>Lead's Teams message to Faizuddin, 28 Oct 2026 (the brief, incl. <q>Please add the manual TS in EAINT-9805 excel by creating a new tab ya.</q>).</li>
+    <li>EAINT-9805 workbook (SharePoint, QATeam › 1. eAuto Project › eAuto - CR Test Scenarios), saved 28 Oct 2026 11:09. Tabs "Device &amp; Test Scope", "Iris &amp; Dermalog Support".</li>
+    <li>Google Sheet "EAINT-6014: eAuto Mobile App (Phase 2) - Test Scenarios": tabs "Functional &amp; Interruption Test", "P2 - Functional Test", "P2 - Compatibility Test", "PROGRESS TRACKING".</li>
+    <li>EAINT-7229 TS workbook (13 sheets, 85 TS) and the two "List of Modules and Pages that requires Thumbprint" workbooks.</li>
+    <li>Jira EAINT-9805 and its 13 sub-tasks; epic EAINT-7554, read 28 Oct 2026.</li>
+    <li>Teams: eAuto-Secarang Main Group, 16 Oct 2026 (Kasheng Liew, Zhen Hao Choo, Wen Ching Chua); EAINT-12099 group, 13 Oct 2026 (Mei Jia Chee).</li>
+  </ol>
+</section>
+
+<footer>Prepared for Faizuddin · eAuto QA · 28 Oct 2026, updated 29 Oct 2026. Raw captures: <span class="mono">_reference/tickets/EAINT-9805/</span>. Durable facts: <span class="mono">knowledge/flow-mobile-app.md</span>.</footer>
+</main>
+</div>

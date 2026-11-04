@@ -120,6 +120,47 @@ function withFileLock(p, fn) {
   try { return fn(); } finally { try { fs.rmdirSync(lock); } catch { /* ignore */ } }
 }
 
+// ── outside-write permissions (2026-10-29) ──────────────────────────
+// A character that wants to write outside the repo (Jira, Confluence, Claude
+// Docs, published pages) asks first: tools/ask-permission.mjs stores a request
+// with a one-time line. Faizuddin types that line in the character's chat; the
+// runner then opens the outside-write tools for that one job only.
+const PERMS_PATH = path.join(PIPE_DIR, "permissions.json");
+const PERM_TTL_MS = 24 * 60 * 60 * 1000;
+
+/** Stores a pending request and returns it (with the line he must type). */
+export function addPermissionRequest({ key, character, jobId, what }) {
+  checkKey(key);
+  const code = crypto.randomBytes(3).toString("hex").toUpperCase().slice(0, 4);
+  const req = {
+    id: crypto.randomUUID(), key, character, jobId: jobId ?? null,
+    what: String(what).replace(/\s+/g, " ").trim().slice(0, 300),
+    phrase: `i give permission to ${character} for ${key} ${code}`,
+    state: "pending", at: nowIso(),
+  };
+  withFileLock(PERMS_PATH, () => writeJsonAtomic(PERMS_PATH, [...readJson(PERMS_PATH, []), req].slice(-200)));
+  return req;
+}
+
+/**
+ * Marks a pending request of this ticket+character as granted when `text`
+ * (his chat message) contains its line exactly, typed as given. Returns the
+ * request, or null. One line opens one job.
+ */
+export function claimPermission({ key, character, text, jobId }) {
+  const msg = String(text ?? "");
+  if (!msg) return null;
+  return withFileLock(PERMS_PATH, () => {
+    const all = readJson(PERMS_PATH, []);
+    const hit = all.find(r => r.state === "pending" && r.key === key && r.character === character
+      && Date.now() - Date.parse(r.at) < PERM_TTL_MS && msg.includes(r.phrase));
+    if (!hit) return null;
+    hit.state = "granted"; hit.grantedAt = nowIso(); hit.grantJobId = jobId ?? null;
+    writeJsonAtomic(PERMS_PATH, all);
+    return hit;
+  });
+}
+
 function checkKey(key) {
   if (typeof key !== "string" || !KEY_RE.test(key)) throw new Error(`Not a ticket key: ${key}`);
   return key;
@@ -198,11 +239,65 @@ export function removeTicket(key) {
   try { fs.unlinkSync(ticketPath(key)); return true; } catch { return false; }
 }
 
-/** Adds an event (newest first, max 100). Returns the ticket or null. */
+/**
+ * Starts a ticket over (Faizuddin, 2026-11-02: re-adding a ticket gives "the
+ * option to either cancel or create new process for the same ticket"). Moves
+ * everything the old process owns — ticket record, chats, findings, runs,
+ * work folder, Sage inbox, its job records — to
+ * data/pipeline/archive/<KEY>/<stamp>/, and copies the Scout study and Scribe
+ * related history there too (those stay in place for the new process to
+ * update). Stop the ticket's active jobs first. Returns the archive path, repo-relative.
+ */
+export function archiveTicket(key) {
+  checkKey(key);
+  const dest = path.join(PIPE_DIR, "archive", key, stamp());
+  fs.mkdirSync(dest, { recursive: true });
+  const move = (from, name) => {
+    if (!fs.existsSync(from)) return;
+    const to = path.join(dest, name);
+    fs.mkdirSync(path.dirname(to), { recursive: true });
+    try { fs.renameSync(from, to); }
+    catch { fs.cpSync(from, to, { recursive: true }); fs.rmSync(from, { recursive: true, force: true }); }
+  };
+  move(ticketPath(key), "ticket.json");
+  for (const dir of ["chats", "findings", "runs", "work"]) move(path.join(PIPE_DIR, dir, key), dir);
+  move(sageInboxPath(key), "sage-inbox.jsonl");
+  const jobsDir = path.join(PIPE_DIR, "jobs");
+  let jobNames = [];
+  try { jobNames = fs.readdirSync(jobsDir).filter(n => n.endsWith(".json")); } catch { /* none */ }
+  for (const n of jobNames) {
+    if (readJson(path.join(jobsDir, n), null)?.key === key) move(path.join(jobsDir, n), path.join("jobs", n));
+  }
+  const studying = repoPath(`_reference/tickets/Studying/${key}`);
+  for (const n of [`${key}-study.md`, `${key}-related-history.md`]) {
+    try { fs.copyFileSync(path.join(studying, n), path.join(dest, n)); } catch { /* not written yet */ }
+  }
+  return relPath(dest);
+}
+
+/** Adds an event (newest first, max 100). Returns the ticket or null. Also kept, uncapped, in the ticket history. */
 export function addEvent(key, text) {
+  appendHistory(key, text);
   return updateTicket(key, t => {
     t.events = [{ at: nowIso(), text }, ...(t.events ?? [])].slice(0, 100);
   });
+}
+
+// ── ticket history ──────────────────────────────────────────────────
+// data/pipeline/work/<KEY>/history.md: one shared, uncapped log every
+// character reads first (Faizuddin, 2026-10-29: long tickets need "proper
+// tracking of histories so that the characters can do their job properly").
+// Standing decisions sit above "## Log"; lines are only ever appended.
+export const historyRel = key => `data/pipeline/work/${checkKey(key)}/history.md`;
+
+export function appendHistory(key, text, max = 600) {
+  try {
+    const p = repoPath(historyRel(key));
+    fs.mkdirSync(path.dirname(p), { recursive: true });
+    if (!fs.existsSync(p)) fs.writeFileSync(p, `# ${key} — ticket history\n\nRead this first. Standing decisions above the log; the log is oldest first.\n\n## Standing decisions\n\n(none yet)\n\n## Log\n\n`);
+    const one = String(text ?? "").replace(/\s+/g, " ").trim().slice(0, max);
+    if (one) fs.appendFileSync(p, `- ${nowIso().slice(0, 16).replace("T", " ")} — ${one}\n`);
+  } catch { /* history is best effort; never block the pipeline */ }
 }
 
 // ── chats ───────────────────────────────────────────────────────────
@@ -214,6 +309,8 @@ export function appendChat(key, character, entry) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
   const e = { at: nowIso(), ...entry };
   fs.appendFileSync(p, JSON.stringify(e) + "\n");
+  // His messages reach every character through the history, not only the one he wrote to.
+  if (e.from === "faizuddin" && key !== SYSTEM_KEY) appendHistory(key, `Faizuddin → ${character}: ${e.text}`, 8000); // his words are never cut short
   return e;
 }
 

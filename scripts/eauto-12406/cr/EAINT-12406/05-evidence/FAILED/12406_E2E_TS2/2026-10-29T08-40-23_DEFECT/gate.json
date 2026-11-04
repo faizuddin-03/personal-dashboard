@@ -1,0 +1,13 @@
+{
+  "ts": "12406_E2E_TS2",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"Receipt Total Premium = the total on the Confirmation page\", page shows \"Receipt Total Premium (not found in the PDF); Confirmation Total Premium RM 941.13\" (03-receipt-total-premium.png)",
+    "E3: expected \"CIBO Transaction Details: Cover Note No filled (not \"-\")\", page shows \"Cover Note No \"-\"\" (06-cibo-details-cover-note.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS2/2026-10-29T08-40-23_DEFECT",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 16:40:23",
+  "warnings": []
+}

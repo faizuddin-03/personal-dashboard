@@ -1,0 +1,81 @@
+{
+  "ts": "12406_RC_TS5",
+  "run": "eaint-12406-rerun-sRC-20261029-1545",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "The four Allianz payments (E2E_TS1 to TS4) are listed under agency Serba Sentral",
+      "shows": "Payment Report 29.10.2026 - 29.10.2026: 20 row(s) (pager \"« 1 (current) 2 »\"); 12406_E2E_TS1 BR60006349: \"Allianz Serba Sentral\"; 12406_E2E_TS2 BR60006350: \"Allianz Serba Sentral\"; 12406_E2E_TS3 BR60006351: \"Allianz Serba Sentral\"; 12406_E2E_TS4 BR60006356: \"Allianz Serba Sentral\"",
+      "match": true,
+      "shot": "01-payment-report-allianz-serba-sentral.png",
+      "at": "29/10/2026, 17:50:57",
+      "url": "/cibo/payment-report",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "Same as before the deploy (SRD v1.1 §2.2.3: Payment Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the export holds the same rows as the screen",
+      "shows": "screen 20 row(s), export 22; on screen not in export: none; in export not on screen: none; export rows not Allianz / Serba Sentral: none",
+      "match": true,
+      "shot": "02-payment-report-export.png",
+      "at": "29/10/2026, 17:51:02",
+      "url": "/cibo/payment-report",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "12406_E2E_TS1's payment under its own channel (FPX Online banking)",
+      "shows": "12406_E2E_TS1 BR60006349 (FPX Online banking): FPX Online Banking: found; Payment Channel \"Online Banking RHB Bank\", Payment Ref ID \"ALZ20261029SFX0025\"",
+      "match": true,
+      "shot": "03-payment-management-fpx-online-banking.png",
+      "at": "29/10/2026, 17:51:32",
+      "url": "/cibo/payment-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "12406_E2E_TS2's payment under its own channel (Credit or Debit Card)",
+      "shows": "12406_E2E_TS2 BR60006350 (Credit or Debit Card): Credit / Debit Card: found; Payment Channel \"Credit/Debit Card Visa 1096\", Payment Ref ID \"ALZ20261029SCC0026\"",
+      "match": true,
+      "shot": "04-payment-management-credit-or-debit-card.png",
+      "at": "29/10/2026, 17:51:59",
+      "url": "/cibo/payment-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "12406_E2E_TS3's payment under its own channel (PayLater by Grab); which GrabPay option recorded",
+      "shows": "12406_E2E_TS3 BR60006351 (PayLater by Grab): Fiuu - eWallet > GrabPay - PayLater by Grab: not found; Fiuu - eWallet > GrabPay: found; Payment Channel \"Fiuu eWallet GrabPay\", Payment Ref ID \"ALZ20261029SEW0027\"",
+      "match": true,
+      "shot": "05-payment-management-paylater-by-grab.png",
+      "at": "29/10/2026, 17:52:44",
+      "url": "/cibo/payment-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "12406_E2E_TS4's payment under its own channel (SPayLater)",
+      "shows": "12406_E2E_TS4 BR60006356 (SPayLater): Fiuu - eWallet > ShopeePay: found; Payment Channel \"Fiuu eWallet ShopeePay\", Payment Ref ID \"ALZ20261029SEW0034\"",
+      "match": true,
+      "shot": "06-payment-management-spaylater.png",
+      "at": "29/10/2026, 17:53:08",
+      "url": "/cibo/payment-management",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "signed in: CIBO (cibo)",
+    "hand-off \"allianzPurchase\": 12406_E2E_TS1 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:31:20.401Z — ref BR60006349, plate HXA0011A, receipt no 26102921300027, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:card\": 12406_E2E_TS2 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:39:10.640Z — ref BR60006350, plate HXA0012A, receipt no 26102921300028, receipt file secarang-receipt-HXA0012A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:grabpay\": 12406_E2E_TS3 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:42:30.830Z — ref BR60006351, plate HXA0013A, receipt no 26102921300029, receipt file secarang-receipt-HXA0013A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:shopeepay\": 12406_E2E_TS4 in run eaint-12406-rerun-sE2E-20261029-1545 at 2026-10-29T09:21:54.812Z — ref BR60006356, plate HXA0014A, receipt no 26102921300035, receipt file secarang-receipt-HXA0014A-PERSONAL-DATA.pdf",
+    "downloaded: Payment_Report_allianz_29.10.2026-PERSONAL-DATA.csv",
+    "Q16 (recorded) 12406_E2E_TS1 BR60006349: Payment Report Total Premium 941.13, Payment Amount 941.13, Insurance Commission 86.22, Discount Code -",
+    "Q16 (recorded) 12406_E2E_TS2 BR60006350: Payment Report Total Premium 941.13, Payment Amount 880.78, Insurance Commission 86.22, Discount Code RJC7",
+    "Q16 (recorded) 12406_E2E_TS3 BR60006351: Payment Report Total Premium 941.13, Payment Amount 941.13, Insurance Commission 86.22, Discount Code -",
+    "Q16 (recorded) 12406_E2E_TS4 BR60006356: Payment Report Total Premium 941.13, Payment Amount 941.13, Insurance Commission 86.22, Discount Code -",
+    "back to CIBO: the dashboard opened again (still signed in) after a file was shown in the tab"
+  ],
+  "opened": []
+}

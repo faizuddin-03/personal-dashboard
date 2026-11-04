@@ -1,0 +1,32 @@
+{
+  "expected": "Ensure:\n• Quotations shown in this order: Allianz, Tokio Marine\n• Allianz quotation with the Allianz logo\n• A \"Lonpac – Quotation unavailable\" card is shown (its position is recorded, Q13)",
+  "id": "12406_QT_TS5",
+  "labels": [],
+  "order": 14,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Quotations shown in this order: Allianz, Tokio Marine"
+    },
+    {
+      "id": "E2",
+      "text": "Allianz quotation with the Allianz logo"
+    },
+    {
+      "id": "E3",
+      "text": "A \"Lonpac – Quotation unavailable\" card is shown (its position is recorded, Q13)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "",
+  "reviewed": false,
+  "section": "Insurer order and Allianz quotation",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: individual-owner renewal that Allianz and Tokio Marine quote and Lonpac does not (Q12 c)\n• Data needs one insurer to decline one specific car: only possible if staging answers that insurer from eSim or Dev can switch it (Q3, Q12). If the data cannot be made, tell the QA (REQ-003 Ex.3 is still hit by 12406_QT_TS3 and QT_TS4)",
+  "sheet": "QT",
+  "situation": "Lonpac gives no quotation: Allianz then Tokio Marine",
+  "source": "SRD v1.1 REQ-004 Example 2a; REQ-005; REQ-003 ('same as Lonpac and Tokio Marine today': existing unavailable cards); card position not in the SRD (Q13)",
+  "steps": "1. Secarang > Home > Car tab: enter the vehicle and owner; continue to All Quotations\n2. Screenshot all cards; note where the Lonpac unavailable card is (Q13)",
+  "updatedAt": "2026-10-28T07:56:11+00:00"
+}

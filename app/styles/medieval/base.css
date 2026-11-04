@@ -101,7 +101,10 @@
    container (AppShell), so the default background-attachment keeps the
    scene still while content scrolls; nothing is drawn over the content.
    Layers, top first: dark top band so headers and intros read, a light
-   overall scrim so text off-panel stays readable, then the scene. */
+   overall scrim so text off-panel stays readable, a flat 50% black layer
+   over every scene (Faizuddin, 2026-10-29: "as if you put a black overlay
+   with 30% opacity ... darken every single pixel"; then "increase to 50%"),
+   then the scene. */
 [data-style="medieval"] main,
 [data-style="medieval"] main.bg-slate-950 {
   background-color: var(--m-night);
@@ -111,9 +114,10 @@
       rgb(18 12 16 / .55) 160px,
       rgb(18 12 16 / 0) 45%),
     linear-gradient(rgb(14 10 8 / var(--m-scrim, .22)), rgb(14 10 8 / var(--m-scrim, .22))),
+    linear-gradient(rgb(0 0 0 / .50), rgb(0 0 0 / .50)),
     var(--m-scene);
-  background-size: auto, auto, cover;
-  background-position: 0 0, 0 0, center bottom;
+  background-size: auto, auto, auto, cover;
+  background-position: 0 0, 0 0, 0 0, center bottom;
   background-repeat: no-repeat;
   background-attachment: scroll;
   image-rendering: pixelated;

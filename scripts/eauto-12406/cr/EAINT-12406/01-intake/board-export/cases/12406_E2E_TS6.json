@@ -1,0 +1,20 @@
+{
+  "expected": "",
+  "id": "12406_E2E_TS6",
+  "kiv": "ON HOLD (decided 29.10 under Azfar's full permission, main session): cover note failure cannot be set up: today Allianz gives no cover note at all on staging (Q44, Dev)",
+  "labels": [],
+  "order": 29,
+  "points": [],
+  "priority": "P3",
+  "qa": "",
+  "remarks": "",
+  "result": "",
+  "reviewed": false,
+  "section": "Allianz purchase: failure paths",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: individual-owner renewal car with prefix VB (cover note failed) or VF (JPJ rejected), if these still work on Secarang staging for Allianz (Q4)\n• Payment: tile 'FPX Online banking' > RHB Bank > Fiuu Bank Simulator popup (its own username + password) > Status 'Approved' (00) > copy the TAC shown into 'Enter TAC' > [Pay now]. The popup closes itself after Pay (doc §5; proven on /ia/ 19.10, receipt Payment Method 'Online Banking - RHB Bank')",
+  "sheet": "E2E",
+  "situation": "[ON HOLD: cover note failure cannot be set up: today Allianz gives no cover note at all on staging (Q44, Dev)] Allianz paid, then cover note submission fails (vehicle prefix VB) or JPJ rejects (prefix VF)",
+  "source": "none: SRD v1.1 §2.1.3a names cover note and callbacks but gives no expected result for a failure. Q18 answered on resubmission only (Azfar 29.10: Secarang resubmits nothing); the row stays ON HOLD for Azfar",
+  "steps": "1. Secarang: Allianz quotation > Add-ons > Confirmation > Confirm and Pay > FPX > RHB approve\n2. Screenshot the Success page\n3. CIBO > Transaction Details: record the Transaction Status, Cover Note No and Submission status to JPJ\n4. Record any internal WhatsApp alert (cover note failed / JPJ rejected alerts go to one internal recipient only, team doc §11: ask Dev who receives them on staging) (Q18)\n5. Cover note failed: reopen Transaction Details after 30 and 60 minutes; record the cover note status (Secarang has no cover-note resubmission: nothing is resubmitted, Azfar 29.10, Q18)",
+  "updatedAt": "2026-10-29T10:40:12+00:00"
+}

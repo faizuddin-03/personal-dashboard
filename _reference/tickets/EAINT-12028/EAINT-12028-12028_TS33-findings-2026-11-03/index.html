@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>12028_TS33 Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #f5f7f9; --surface: #ffffff; --fg: #1b2530; --muted: #5a6876; --line: #d8dfe6;
+  --accent: #1f5f8b; --bad: #b42318; --bad-bg: #fdecea; --good: #146c43; --good-bg: #e7f5ee; --quote-bg: #eef3f7;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif; --mono: "JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a; --quote-bg: #1f2b36; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #18212a; --fg: #e3e9ef; --muted: #9aa8b5; --line: #2c3a47;
+  --accent: #7cb7e3; --bad: #ff8a80; --bad-bg: #3a1d1b; --good: #6fd3a0; --good-bg: #16302a; --quote-bg: #1f2b36; color-scheme: dark }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding: 28px 16px 56px; display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 30px/1.15 var(--body); margin: 0; }
+h2 { font: 700 22px/1.2 var(--body); margin: 0; }
+h3 { font: 600 13px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.meta { color: var(--muted); font-size: 14px; }
+.status { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+.pill { font: 600 12px/1 var(--mono); padding: 6px 9px; border-radius: 999px; background: var(--bad-bg); color: var(--bad); }
+.pill.good { background: var(--good-bg); color: var(--good); }
+section.finding { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px 20px; display: grid; gap: 20px; }
+.finding-head { display: grid; gap: 8px; border-left: 4px solid var(--bad); padding-left: 12px; }
+.finding-head.soft { border-left-color: var(--accent); }
+.source { display: grid; gap: 10px; min-width: 0; }
+blockquote { margin: 0; background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; font-size: 15px; white-space: pre-line; overflow-wrap: anywhere; }
+blockquote cite { display: block; margin-top: 8px; font: 12px/1.4 var(--mono); color: var(--muted); font-style: normal; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+figcaption { font: 12px/1.4 var(--mono); color: var(--muted); }
+.ask { background: var(--quote-bg); border-radius: 6px; padding: 12px 14px; display: grid; gap: 4px; }
+.ask strong { color: var(--accent); }
+ul.passed { margin: 0; padding-left: 20px; }
+</style></head>
+<body><div class="wrap">
+  <header>
+    <span class="eyebrow">EAINT-12028</span>
+    <h1>12028_TS33: Reviewer buttons hidden once the Reviewer step is done</h1>
+    <p class="meta">Dashboard run 3 Nov 2026, 6:17 pm (run b58f1e91-d6ee-4309-9e99-0fbfabe10d60). Written by Elf from the run result.</p>
+    <div class="status"><span class="pill good">1 automation, not the system</span></div>
+  </header>
+
+  <section class="finding">
+    <div class="finding-head soft">
+      <span class="eyebrow">Issue 1 · automation, not the system</span>
+      <h2>Script looked for a Reviewer &quot;You hold REVIEWER ... not your turn yet.&quot; line that is in no TS or SRD; the screen shows &quot;Waiting for the Approver.&quot;</h2>
+      <p><strong>Actual:</strong> January 2026 (Drafter Approved, Reviewer Approved, Approver Pending) has no [Approve] / [Reject] and shows the line &quot;Waiting for the Approver.&quot;; no #wf-not-your-turn element &nbsp; <strong>Expected:</strong> [Approve] and [Reject] not available, and Note &quot;Reviewer has already approved. Waiting for the Approver.&quot; (TS row 9, 12028_TS33, expected result 1). The &quot;You hold REVIEWER for this module, but it is not your turn yet.&quot; line is not in the TS.</p>
+      <p><strong>Triage:</strong> script (plausible) — checks.ts expectNotYourTurn (utils/checks.ts:88-93) asserts #wf-not-your-turn with the text &quot;You hold REVIEWER for this module, but it is not your turn yet.&quot;; its own comment tags this wording [unconfirmed: only the APPROVER line is captured]. The saved pages only contain it for the Approver, and the TS never asks for it. Buttons were already absent (that step passed).<br><strong>Ruled out:</strong> Product defect on the buttons: the screenshot shows no [Approve] / [Reject] on the Reviewer Approved month; Wrong month: details show January 2026 with Drafter Approved, Reviewer Approved, Approver Pending; Timing: 14 polls over 5 s found 0 elements and the screenshot shows the page fully rendered; Data: the month state is the one the TS asks for</p>
+    </div>
+    <div class="source"><h3>What the TS says</h3><blockquote>Row 9 (12028_TS33)
+Test Objective: Verify the Reviewer cannot act on a month the Reviewer already approved or a fully approved month.
+Test Steps: 1. Login to BO as Reviewer
+2. Click [View] on a month with Reviewer Status Approved and Approver Status Pending
+3. Click [View] on a fully approved month
+Expected Result: Ensure:
+1. Details (Reviewer Approved) -&gt; [Approve] and [Reject] disabled; Note &quot;Reviewer has already approved. Waiting for the Approver.&quot; shown
+2. Details (fully approved) -&gt; [Approve] and [Reject] disabled or not shown; Note &quot;Reviewer has already approved. Waiting for the Approver.&quot; shown
+3. Summary -&gt; Reviewer Status stays Approved on the fully approved month<cite>12028_TS33</cite></blockquote></div>
+    <div class="source"><h3>What the SRD says</h3><p>Nothing on this. The expected result comes from the TS.</p></div>
+    <div class="source"><h3>What the system shows</h3>
+      <figure><img src="img/evidence-01-12028_TS33-RA-not-your-turn-ISSUE.png" alt="12028_TS33-RA-not-your-turn-ISSUE"><figcaption>12028_TS33-RA-not-your-turn-ISSUE</figcaption></figure>
+      <blockquote>Error: expect(locator).toHaveCount(expected) failed<cite>Run error · step "Check &quot;You hold REVIEWER for this module, but it is not your turn yet.&quot; is shown"</cite></blockquote>
+    </div>
+    
+  </section>
+
+</div></body></html>

@@ -1,0 +1,20 @@
+{
+  "expected": "",
+  "id": "12406_E2E_TS7",
+  "kiv": "ON HOLD (decided 29.10 under Azfar's full permission, main session): MacroKiosk: BoldPay on /ia/ may be production, and the reminder cron cannot be triggered (Q7)",
+  "labels": [],
+  "order": 30,
+  "points": [],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "",
+  "reviewed": false,
+  "section": "Open scope (for the QA to decide)",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• Data: a Secarang customer record (individual-owner car renewal) whose policy expiry falls EXACTLY on a reminder point (30, 14 or 7 days ahead) for a run; the reminder cron cannot be triggered on demand: on staging it runs every 30 minutes from the hour. The link expires 24 hours after the message. Car only (team doc §11)\n• The reminder arrives on the QA's own WhatsApp (MacroKiosk sender)\n• BEFORE PAYING: check the BoldPay mode on /ia/ with Dev. On 20.05.2026 /ia/ was linked to PRODUCTION BoldPay and the QA lead said not to pay for MacroKiosk transactions (team doc §2). BoldPay is the MacroKiosk gateway (CIBO Payment Mode 'Bold Pay')",
+  "sheet": "E2E",
+  "situation": "[ON HOLD: MacroKiosk: BoldPay on /ia/ may be production, and the reminder cron cannot be triggered (Q7)] MacroKiosk renewal flow: WhatsApp reminder > [Renew Now] / [Pay Now] link > Secarang Step 4 Confirmation > BoldPay > CIBO (platform Secarang-MK): is Allianz offered? (the SA brief lists it in its tests)",
+  "source": "none: SRD v1.1 is silent on the MacroKiosk flow (Q7). The SA Impact Brief (SRD §1.5 #6, 29.09) lists 'BoldPay' and 'Quotation-link flow and MacroKiosk renewal Pay Now / Pay Later' in its tests: scope evidence, not an expected result. Flow, cron and BoldPay facts: team doc §2, §6, §11",
+  "steps": "1. Open the [Renew Now] (older notes: [Pay Now]) link from the WhatsApp reminder; pass the Identity Verification (last 6 digits of the IC); it lands on Secarang Step 4 Confirmation\n2. Record the insurer and premium on Step 4 (Q7)\n3. Only if Dev confirms BoldPay is not production: pay by BoldPay; screenshot the Success page\n4. CIBO > Transaction Management, Platform Secarang-MK: screenshot the row",
+  "updatedAt": "2026-10-29T10:40:12+00:00"
+}

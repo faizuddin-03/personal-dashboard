@@ -1,0 +1,5 @@
+12406_QT_TS7 — FAIL — the page does not match the expected result (a defect until triage says otherwise)
+run eaint-12406-run-sQT-20261029-1330-c2, staging /ia, 29/10/2026, 14:18:39 MYT
+
+- E2: expected "Product disclosure sheet opens: an Allianz document dated 2022", page shows "card Plan Details "Product Disclosure": new tab allianz-product-disclosure-en.pdf, names Allianz: yes; dates in it: 03/06/2020; other insurers named: none | Confirmation Plan Details "Product Disclosure": new tab allianz-product-disclosure-en.pdf, names Allianz: yes; dates in it: 03/06/2020; other insurers named: none | Confirmation declaration "Product Disclosure Sheet": new tab allianz-product-disclosure-en.pdf, names Allianz: yes; dates in it: 03/06/2020; other insurers named: none" (06-product-disclosure-sheet.png)
+- E3: expected "Privacy notice opens: an Allianz document dated 2022", page shows "Confirmation declaration "Privacy Notice": new tab allianz-privacy-notice.pdf, names Allianz: yes; dates in it: 3 March 2020; other insurers named: none" (07-privacy-notice.png)

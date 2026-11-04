@@ -1,0 +1,136 @@
+{
+  "ts": "12406_RC_TS1",
+  "run": "eaint-12406-retest-sretest-20261030-0040-C-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"",
+      "shows": "Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": true,
+      "shot": "02-e2e-ts1-receipt-insurer-name.png",
+      "at": "30/10/2026, 09:08:12",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "Insurer, next line: \"200601015674 (735426-V)\"",
+      "shows": "Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "03-e2e-ts1-receipt-company-number.png",
+      "at": "30/10/2026, 09:08:13",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "The old form \"Allianz General Insurance Company (Malaysia) Berhad (735426-V)\" on one line is not shown",
+      "shows": "Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"; old form \"Berhad (735426-V)\" not shown",
+      "match": true,
+      "shot": "04-e2e-ts1-receipt-old-form-gone.png",
+      "at": "30/10/2026, 09:08:14",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E4",
+      "expected": "Laid out like the Tokio Marine Insurer block of 12406_RG_TS1 (name, then company number with the old number in brackets on the next line)",
+      "shows": "Allianz: company number on the same line as (part of) the name (\"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"); Tokio Marine: name, then company number (\"Tokio Marine Insurans (Malaysia) Berhad\" / \"198601000381 (149520-U)\")",
+      "match": false,
+      "shot": "05-insurer-block-allianz-vs-tokio-marine.png",
+      "at": "30/10/2026, 09:08:18",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E5",
+      "expected": "Vehicle Plate No., For (owner name) and Total Premium match the purchase of E2E_TS1",
+      "shows": "receipt Vehicle Plate No. \"HXA0011A\" (purchase: HXA0011A); For \"QA SECARANG TEST\" (typed on Confirmation: \"QA SECARANG TEST\"); Total Premium \"RM 941.13\" (CIBO record BR60006370: \"RM941.13\")",
+      "match": true,
+      "shot": "06-e2e-ts1-receipt-plate-owner-total.png",
+      "at": "30/10/2026, 09:08:22",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E6",
+      "expected": "Receipt Summary ends with \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)",
+      "shows": "agent line \"Exclusively by agent Serba Sentral Sdn Bhd\"; after it in the Receipt Summary: \"PIAM ID: 195379-01\" (PIAM ID recorded: \"PIAM ID: 195379-01\")",
+      "match": true,
+      "shot": "07-e2e-ts1-receipt-agent-line.png",
+      "at": "30/10/2026, 09:08:26",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E7",
+      "expected": "12406_E2E_TS2: \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"",
+      "shows": "12406_E2E_TS2 (Credit or Debit Card) Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "08-12406_E2E_TS2-receipt-insurer.png",
+      "at": "30/10/2026, 09:08:30",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E7",
+      "expected": "12406_E2E_TS3: \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"",
+      "shows": "12406_E2E_TS3 (PayLater by Grab) Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "09-12406_E2E_TS3-receipt-insurer.png",
+      "at": "30/10/2026, 09:08:34",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E7",
+      "expected": "12406_E2E_TS4: \"Allianz General Insurance Company (Malaysia) Berhad\", next line \"200601015674 (735426-V)\"",
+      "shows": "12406_E2E_TS4 (SPayLater) Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "10-12406_E2E_TS4-receipt-insurer.png",
+      "at": "30/10/2026, 09:08:38",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E8",
+      "expected": "Every label on the Allianz receipt is the same as on the Tokio Marine receipt of E2E_TS10 (e.g. 'Vehicle Plate No.', not 'Car Plate No.')",
+      "shows": "Tokio Marine receipt used: Secarang receipt of 12406_E2E_TS10 (HXA0004A). Labels only on the Allianz receipt: none; only on the Tokio Marine receipt: none (20 vs 20 labels: Official Receipt, Thank you for your purchase!, Purchase Details, Receipt Summary, Receipt No., Purchase Date, Payment Method, For, Vehicle Plate No., Ownership Type, Insurer, Coverage Type, Coverage Period, Basic Premium, Premium after NCD, Add-ons, Gross Premium, Service Tax, Stamp Duty, Total Premium)",
+      "match": true,
+      "shot": "11-receipt-labels-allianz-vs-tokio-marine.png",
+      "at": "30/10/2026, 09:08:42",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E9",
+      "expected": "Recorded only: what the Success page [Print] view shows (no Insurer block on 29.10); the print view is not a 'Receipt' under SRD §2.2.3 #6 / REQ-010, which are the receipt PDF and the e-receipt (N1)",
+      "shows": "recorded: [Print] view (12406_E2E_TS1, run eaint-12406-retest-sretest-20261029-1950-B-c1): no Insurer block; headings Purchase Details, Car Owner Details, Car Details, Add-Ons, Total Premium, Exclusively by agent Serba Sentral Sdn Bhd",
+      "match": true,
+      "shot": "12-E9-print-view-from-e2e-ts1.png",
+      "at": "30/10/2026, 09:08:45",
+      "url": "",
+      "side": "CIBO"
+    },
+    {
+      "point": "E10",
+      "expected": "Receipt Summary: 'Premium After NCD' equals Basic Premium − NCD + the add-on lines listed above it on the same receipt, and equals Confirmation's 'Premium After NCD'",
+      "shows": "receipt: Basic Premium 1203.08 − NCD 360.92 + All Drivers 20.00 = 862.16; 'Premium After NCD' shown 882.16; Confirmation 'Premium After NCD' 862.16",
+      "match": false,
+      "shot": "13-e2e-ts1-receipt-premium-after-ncd.png",
+      "at": "30/10/2026, 09:08:49",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "hand-off \"allianzPurchase\": 12406_E2E_TS1 in run eaint-12406-retest-sretest-20261029-1950-B-c1 at 2026-10-29T11:51:57.193Z — ref BR60006370, plate HXA0011A, receipt no 26102921300046, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:card\": 12406_E2E_TS2 in run eaint-12406-retest-sretest-20261029-1835-A-c1 at 2026-10-29T10:45:22.853Z — ref BR60006358, plate HXA0012A, receipt no 26102921300037, receipt file secarang-receipt-HXA0012A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:grabpay\": 12406_E2E_TS3 in run eaint-12406-retest-sretest-20261029-1835-A-c1 at 2026-10-29T10:48:43.587Z — ref BR60006359, plate HXA0013A, receipt no 26102921300038, receipt file secarang-receipt-HXA0013A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzPurchase:shopeepay\": 12406_E2E_TS4 in run eaint-12406-rerun-sE2E-20261029-1545 at 2026-10-29T09:21:54.812Z — ref BR60006356, plate HXA0014A, receipt no 26102921300035, receipt file secarang-receipt-HXA0014A-PERSONAL-DATA.pdf",
+    "hand-off \"tokioMarinePurchase\": 12406_E2E_TS10 in run eaint-12406-run-sE2E-20261029-1545-c2 at 2026-10-29T08:56:05.766Z — ref BR60006354, plate HXA0004A, receipt no 26102921300034, receipt file secarang-receipt-HXA0004A-tokio-marine-PERSONAL-DATA.pdf",
+    "signed in: CIBO (cibo)"
+  ],
+  "opened": []
+}

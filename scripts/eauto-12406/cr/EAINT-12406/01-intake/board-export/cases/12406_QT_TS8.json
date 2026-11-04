@@ -1,0 +1,20 @@
+{
+  "expected": "",
+  "id": "12406_QT_TS8",
+  "kiv": "ON HOLD (decided 29.10 under Azfar's full permission, main session): /ia/motorcycle-insurance does not exist (Q19)",
+  "labels": [],
+  "order": 19,
+  "points": [],
+  "priority": "P3",
+  "qa": "",
+  "remarks": "",
+  "result": "",
+  "reviewed": false,
+  "section": "Open scope (for the QA to decide)",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• Owner (Private tab): on the simulator any IC will do (Azfar 28.10); the QA team's /ia/ IC, postcode 55000, is a safe choice. /ia/ is on the simulator now, so made-up plates quote. With Allianz's real UAT API (a SIT pass Azfar may add) the vehicle and owner IC must be real: Allianz checks the IC for a quotation (Azfar 28.10). Phone on Confirmation: type it without the leading 0 (the field keeps +60). Never the QA's own name, IC, phone or address in evidence names\n• Vehicle: a motorcycle, individual owner, renewal. Entry: https://staging.secarang.com/ia/motorcycle-insurance (team doc §2); car and motorcycle plates can go through either tab; 'All Riders' is a mandatory add-on for motorbikes (doc §3)",
+  "sheet": "QT",
+  "situation": "[ON HOLD: /ia/motorcycle-insurance does not exist (Q19)] Motorcycle tab: individual-owner renewal of a motorcycle; which insurers quote, does Allianz appear",
+  "source": "none: SRD v1.1 does not mention vehicle type (Q19)",
+  "steps": "1. https://staging.secarang.com/ia/motorcycle-insurance (or the Motorcycle tab) > Private > plate, IC, postcode 55000 > [Get quotation]\n2. Record the cards shown and their order",
+  "updatedAt": "2026-10-29T10:40:12+00:00"
+}

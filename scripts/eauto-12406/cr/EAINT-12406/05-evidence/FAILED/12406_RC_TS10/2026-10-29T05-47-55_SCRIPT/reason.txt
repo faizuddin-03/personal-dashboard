@@ -1,0 +1,4 @@
+12406_RC_TS10 — the script stopped before the end (spec problem — fix and re-run)
+run eaint-12406-run-sRC-20261029-1330-c2, staging /ia, 29/10/2026, 13:47:55 MYT
+
+- stopped before the end: Error: 12406_RC_TS10 needs the purchase that 12406_E2E_TS1 hands on as "allianzPurchase" (RC_TS10 searches for its transaction). Run 12406_E2E_TS1 first (sheet E2E); see 02-plan/coverage.md.

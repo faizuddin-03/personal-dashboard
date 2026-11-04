@@ -1,0 +1,12 @@
+{
+  "ts": "12406_CP_TS8",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E6: expected \"Home differs from BEFORE only by the Allianz logo (12406_CP_TS1)\", page shows \"Home text: no other difference; (Allianz changes seen: added 0, replaced 0); logos BEFORE Lonpac, Tokio Marine -> AFTER Tokio Marine, Allianz, Lonpac\" (08-after-home-compared.png)"
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_CP_TS8/2026-10-29T05-25-59_DEFECT",
+  "run": "eaint-12406-run-sCP-20261029-1330-c2",
+  "instance": "ia",
+  "at": "29/10/2026, 13:25:59",
+  "warnings": []
+}

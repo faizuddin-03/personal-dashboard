@@ -22,7 +22,7 @@ import {
   ChecklistItem, getKanbanState, saveKanbanState, isOverdue, checklistProgress,
   timeInColumn, getArchivedCards, saveArchivedCards,
   ColumnSort, ColumnSortState, SORT_META, nextColumnSort, sortCardsByMove,
-  getColumnSort, saveColumnSort,
+  getColumnSort, saveColumnSort, KANBAN_CHANGED,
 } from "@/lib/kanban";
 import { syncCrTickets, getChildBugs, ChildBugMap, bugStats, isRecentlyFixed } from "@/lib/crSync";
 
@@ -1354,6 +1354,13 @@ export default function KanbanPage() {
     setArchivedCards(getArchivedCards());
     setTsData(loadTSData());
     setChildBugs(getChildBugs());
+  }, []);
+
+  // A task added from the dock's quick-add window: reload, so the next save here does not drop it.
+  useEffect(() => {
+    const reload = () => setBoardState(getKanbanState());
+    window.addEventListener(KANBAN_CHANGED, reload);
+    return () => window.removeEventListener(KANBAN_CHANGED, reload);
   }, []);
 
   // Auto-sync CR tickets (QA field / assignee) on load + every 5 minutes

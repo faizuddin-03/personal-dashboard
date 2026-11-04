@@ -1,0 +1,146 @@
+{
+  "ts": "12406_RC_TS10",
+  "run": "eaint-12406-run-sRC-20261029-1545-c2",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "search by Ref. No. returns the E2E_TS1 transaction",
+      "shows": "search \"BR60006349\" (Ref. No., Allianz, created 29.10.2026 - today): 1 row(s); BR60006349 returned",
+      "match": true,
+      "shot": "01-search-by-Ref-No.png",
+      "at": "29/10/2026, 17:10:19",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E1",
+      "expected": "search by plate returns the E2E_TS1 transaction",
+      "shows": "search \"HXA0011A\" (plate, Allianz, created 29.10.2026 - today): 1 row(s); BR60006349 returned",
+      "match": true,
+      "shot": "02-search-by-plate.png",
+      "at": "29/10/2026, 17:10:25",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E1",
+      "expected": "search by owner name returns the E2E_TS1 transaction",
+      "shows": "search \"QA SECARANG TEST\" (owner name, Allianz, created 29.10.2026 - today): 20 row(s); BR60006349 returned",
+      "match": true,
+      "shot": "03-search-by-owner-name.png",
+      "at": "29/10/2026, 17:10:32",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E1",
+      "expected": "search by owner ID returns the E2E_TS1 transaction",
+      "shows": "search \"<owner ID as CIBO shows it, 999999-99-9999>\" (owner ID, Allianz, created 29.10.2026 - today): 20 row(s); BR60006349 returned",
+      "match": true,
+      "shot": "04-search-by-owner-ID.png",
+      "at": "29/10/2026, 17:10:38",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E1",
+      "expected": "search by owner ID digits returns the E2E_TS1 transaction",
+      "shows": "search \"<owner ID as plain digits, 999999999999>\" (owner ID digits, Allianz, created 29.10.2026 - today): 20 row(s); BR60006349 returned",
+      "match": true,
+      "shot": "05-search-by-owner-ID-digits.png",
+      "at": "29/10/2026, 17:10:44",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "Same as before the deploy (SRD v1.1 §2.2.3: the Transaction Management listing is not an affected page): a plate that does not exist gives \"Ops, no search result found\"",
+      "shows": "search \"ZQ44541Q\" (no such plate): 0 transaction row(s); message \"Ops, no search result found\"",
+      "match": true,
+      "shot": "06-search-no-result.png",
+      "at": "29/10/2026, 17:10:47",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "Platform offers Secarang, Secarang only, Secarang-MK, eAuto",
+      "shows": "Platform offers: Secarang, Secarang only, Secarang-MK, eAuto",
+      "match": true,
+      "shot": "07-platform-values.png",
+      "at": "29/10/2026, 17:10:50",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "Secarang lists the new Allianz transactions",
+      "shows": "Platform Secarang + Allianz (created 29.10.2026 - today): 1 row(s); BR60006349 NOT listed",
+      "match": false,
+      "shot": "08-platform-secarang-allianz.png",
+      "at": "29/10/2026, 17:10:56",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "Allianz + eAuto gives \"Ops, no search result found\" (same as before the deploy)",
+      "shows": "Platform eAuto + Allianz (created 23.10.2026 - today): 0 transaction row(s); message \"Ops, no search result found\"",
+      "match": true,
+      "shot": "10-platform-eauto-allianz-none.png",
+      "at": "29/10/2026, 17:11:08",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E4",
+      "expected": "Allianz + Transaction Status \"Insurance created\": only Allianz rows with that status, 12406_E2E_TS1 among them",
+      "shows": "Allianz + \"Insurance created\": 1 row(s); 12406_E2E_TS1 BR60006349 NOT listed; rows of another insurer or status:  \"\" \"\"",
+      "match": false,
+      "shot": "11-allianz-status-insurance-created.png",
+      "at": "29/10/2026, 17:11:14",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E4",
+      "expected": "Allianz + Transaction Status \"Pending payment\": only Allianz rows with that status, 12406_RC_TS9 among them",
+      "shows": "Allianz + \"Pending payment\": 1 row(s); 12406_RC_TS9 BR60006338 NOT listed; rows of another insurer or status:  \"\" \"\"",
+      "match": false,
+      "shot": "12-allianz-status-pending-payment.png",
+      "at": "29/10/2026, 17:11:20",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E5",
+      "expected": "Clear all sets every filter back to its default (Date Range Type 'Transaction Creation Date') and empties the search box (same as before the deploy)",
+      "shows": "after Clear all: platform = (empty); insuranceComp = (empty); dateRange = Transaction Creation Date; status = (empty); jpjStatus = (empty); roadTax = (empty); discountCode = (empty); fromDate = \"\"; toDate = \"\"; search = \"\". Date Range Type \"Transaction Creation Date\"; search box \"\"; controls not back to their first-load value: dateRange = Transaction Creation Date (on load: (empty))",
+      "match": false,
+      "shot": "13-clear-all.png",
+      "at": "29/10/2026, 17:11:28",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E5",
+      "expected": "Print opens a print view of the listing",
+      "shows": "Print: browser print called 0 time(s); page as printed (print CSS): listing table NOT shown, sidebar hidden",
+      "match": false,
+      "shot": "14-print-view.png",
+      "at": "29/10/2026, 17:11:32",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "hand-off \"allianzPurchase\": 12406_E2E_TS1 in run eaint-12406-run-sE2E-20261029-1545-c1 at 2026-10-29T08:31:20.401Z — ref BR60006349, plate HXA0011A, receipt no 26102921300027, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "hand-off \"allianzUnpaid\": 12406_RC_TS9 in run eaint-12406-rerun-sRC-20261029-1330 at 2026-10-29T06:51:34.609Z — ref BR60006338, plate HXA0019A, receipt no -, receipt file (none)",
+    "signed in: CIBO (cibo)",
+    "Transaction Management on first load (the default for E5): platform = (empty); insuranceComp = (empty); dateRange = (empty); status = (empty); jpjStatus = (empty); roadTax = (empty); discountCode = (empty); fromDate = \"\"; toDate = \"\"; search = \"\"",
+    "step 4, + Discount Code of E2E_TS2: not run (the Discount Code filter's values were not probed and E2E_TS2 hands on no code): recorded as not done",
+    "before Clear all: platform = Secarang, Secarang only, Secarang-MK; insuranceComp = Allianz; dateRange = Transaction Creation Date; status = Insurance created; jpjStatus = (empty); roadTax = (empty); discountCode = (empty); fromDate = \"Thu, 29-10-2026\"; toDate = \"Thu, 29-10-2026\"; search = \"BR60006349\""
+  ],
+  "opened": []
+}

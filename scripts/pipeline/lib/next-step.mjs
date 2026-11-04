@@ -102,8 +102,12 @@ export function nextStep(ticketOrKey, parts = {}) {
     return done(out("faizuddin", "faizuddin", `Review Elf's ${scen.length} scenario(s) and give the green light (or tell Elf what to change)`));
   }
   const automated = scen.filter(s => !s.manual).length;
+  if ((t.pendingWorkbookChanges ?? []).length && t.files?.workbook && !t.files?.suiteDir && t.automationOnHold) {
+    return done(out("faizuddin", "faizuddin", `${t.pendingWorkbookChanges.length} scenario change(s) are not in the TS workbook yet: press "Create new version now" in the Elf panel when you are done`));
+  }
   if (!t.files?.suiteDir) {
     if (!automated) return done(out("faizuddin", "faizuddin", "All scenarios are manual: test them by hand and record the results in the official sheet"));
+    if (t.automationOnHold) return done(out("faizuddin", "faizuddin", "Workbook only: automation is on hold. Press \"Start Dwarf\" whenever you want it built"));
     return done(stalled("dwarf", `Approved, but Dwarf has not built the automation for ${automated} TS and nothing is running: approve again or ask Dwarf`));
   }
   if ((t.pendingDwarfChanges ?? []).length) return done(stalled("dwarf", `${t.pendingDwarfChanges.length} scenario change(s) wait for Dwarf's sync and nothing is running: ask Dwarf to apply them`));

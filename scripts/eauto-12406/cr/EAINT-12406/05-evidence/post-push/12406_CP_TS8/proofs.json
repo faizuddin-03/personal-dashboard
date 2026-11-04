@@ -1,0 +1,105 @@
+{
+  "ts": "12406_CP_TS8",
+  "run": "eaint-12406-run-sCP-20261029-1545-c2",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "BEFORE: Home logos Lonpac, Tokio Marine (no Allianz)",
+      "shows": "BEFORE record: Home logos left to right lonpac-logo.png, tokiomarine.png",
+      "match": true,
+      "shot": "01-FROM-THE-BEFORE-CAPTURE-E1_home-insurer-logos.png",
+      "at": "29/10/2026, 15:53:54",
+      "url": "",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E2",
+      "expected": "BEFORE: not captured before the deploy (made-up IC got 'no instant quotation' on 28.10; old build gone): recorded as not available (Azfar 29.10)",
+      "shows": "FROM THE BEFORE CAPTURE: step 2 (HXA0001A, made-up IC, 55000) ended on a popup: \"Ops, there is no instant quotation available from our insurers for your car at the moment. Thank you for considering us \"; All Quotations screenshots in the record: none. Old build gone (deployed 29.10): All Quotations BEFORE recorded as not available",
+      "match": true,
+      "shot": "02-FROM-THE-BEFORE-CAPTURE-E2_02-popup-after-get-quotation.png",
+      "at": "29/10/2026, 15:53:57",
+      "url": "",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E3",
+      "expected": "BEFORE: About Us > Our partnership ends '...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.'",
+      "shows": "BEFORE record: Our partnership \"At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral Sdn Bhd collaborates with other partners for products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"",
+      "match": true,
+      "shot": "03-FROM-THE-BEFORE-CAPTURE-E3_about-us-our-partnership.png",
+      "at": "29/10/2026, 15:53:59",
+      "url": "",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E4",
+      "expected": "BEFORE: FAQ 'Which insurers can I get instant quotation from?' lists Lonpac Insurance Bhd, Tokio Marine Insurans (Malaysia) Berhad",
+      "shows": "BEFORE record: FAQ 'Which insurers…' lists Lonpac Insurance Bhd | Tokio Marine Insurans (Malaysia) Berhad",
+      "match": true,
+      "shot": "04-FROM-THE-BEFORE-CAPTURE-E4_faq-which-insurers-instant-quotation.png",
+      "at": "29/10/2026, 15:54:02",
+      "url": "",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E5",
+      "expected": "BEFORE: Support > Need to contact insurance company? has sections for Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad only",
+      "shows": "BEFORE record: Support > Need to contact insurance company? sections Lonpac Insurance Bhd | Tokio Marine Insurans (Malaysia) Berhad",
+      "match": true,
+      "shot": "05-FROM-THE-BEFORE-CAPTURE-E5_support-need-to-contact-insurance-company-a.png",
+      "at": "29/10/2026, 15:54:04",
+      "url": "",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E6",
+      "expected": "Home differs from BEFORE only by the Allianz logo (12406_CP_TS1)",
+      "shows": "Home text: no other difference; (Allianz changes seen: added 0, replaced 0); logos BEFORE Lonpac, Tokio Marine -> AFTER Lonpac, Allianz, Tokio Marine",
+      "match": true,
+      "shot": "08-after-home-compared.png",
+      "at": "29/10/2026, 15:55:34",
+      "url": "/ia/car-insurance",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E6",
+      "expected": "About Us differs from BEFORE only by the Our partnership wording (12406_CP_TS2)",
+      "shows": "About Us: no other difference; (Allianz changes seen: added 1, replaced 1)",
+      "match": true,
+      "shot": "09-after-about-us-compared.png",
+      "at": "29/10/2026, 15:55:40",
+      "url": "/ia/about-us",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E6",
+      "expected": "FAQs (all topics) differ from BEFORE only by the Allianz line in 'Which insurers can I get instant quotation from?' (12406_CP_TS3)",
+      "shows": "FAQs (20 questions open): no other difference; (Allianz changes seen: added 1, replaced 0)",
+      "match": true,
+      "shot": "10-after-faq-compared.png",
+      "at": "29/10/2026, 15:55:47",
+      "url": "/ia/faq",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E6",
+      "expected": "Support differs from BEFORE only by the Allianz section (12406_CP_TS4, CP_TS5)",
+      "shows": "Support (3 sections open): no other difference; (Allianz changes seen: added 4, replaced 0)",
+      "match": true,
+      "shot": "11-after-support-compared.png",
+      "at": "29/10/2026, 15:55:56",
+      "url": "/ia/support",
+      "side": "Secarang (public site, no login)"
+    }
+  ],
+  "notes": [
+    "off screen: BEFORE half: the record of 28.10.2026 — 05-evidence/pre-push/12406_CP_TS8 (old build, staging /ia/)",
+    "off screen: AFTER the deploy: steps 1-5 again — same staging /ia/, same data",
+    "step 2 (recorded): All Quotations for HXA0001A: Lonpac RM49,000/RM65,000/RM50,000/RM51,000/RM52,000/RM53,000/RM54,000/RM55,000/RM56,000/RM57,000/RM58,000/RM59,000/RM60,000/RM61,000/RM62,000/RM63,000/RM64,000/RM400/RM75/RM819.07; Allianz RM20,200/RM20/RM1,203.08/RM862.16; Tokio Marine RM123,900/RM200/RM250/RM15/RM2,977.96/RM1,355.08",
+    "FAQs: 20 questions opened (BEFORE: 20)",
+    "Support: 3 sections opened (BEFORE: 2)"
+  ],
+  "opened": []
+}

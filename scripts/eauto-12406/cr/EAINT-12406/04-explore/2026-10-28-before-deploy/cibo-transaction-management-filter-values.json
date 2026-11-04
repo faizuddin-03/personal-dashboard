@@ -1,0 +1,37 @@
+{
+ "platform": [
+  "Secarang",
+  "Secarang only",
+  "Secarang-MK",
+  "eAuto"
+ ],
+ "insuranceComp": [
+  "Chubb",
+  "RHB",
+  "Takaful Malaysia",
+  "Lonpac",
+  "TokioMarine",
+  "Zurich Takaful",
+  "Allianz",
+  "eTiqa"
+ ],
+ "dateRange": [
+  "Transaction Creation Date",
+  "Insurance Creation Date"
+ ],
+ "status": [
+  "Cancelled",
+  "Failed",
+  "Insurance created",
+  "Pending approval",
+  "Pending payment",
+  "Quotation",
+  "Quotation expired"
+ ],
+ "jpjStatus": [
+  "Not available",
+  "Pending",
+  "Rejected",
+  "Accepted"
+ ]
+}

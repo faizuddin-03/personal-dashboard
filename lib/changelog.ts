@@ -141,6 +141,10 @@ export const RELEASED_VERSIONS: ChangelogVersion[] = [
 // Reset to [] after every prod-local push.
 export const CURRENT_CHANGES: ChangelogEntry[] = [
   {
+    title: "12406 Runner Page and Study",
+    description: "New ticket page for EAINT-12406 (Secarang Allianz), listed on Tickets. It runs Azfar's own automation, copied in unchanged: tick TS, type the Secarang site password and the CIBO and Fiuu logins, then Run. His checker decides each TS and keeps the evidence, which opens from the TS row. Each row shows Azfar's result at hand-over next to the latest run on this PC. The run keeps going if you leave the page. EAINT-12406 is also in Ticket Studies, with the hand-over state, defects D1 and D2, and the open questions.",
+  },
+  {
     title: "Sage keeps the knowledge base learning",
     description: "A fifth pipeline character, the Sage, watches everything done in the pipeline: finished jobs, your chat messages, approvals, confirmed or dismissed findings and raised QA-Issues. About 2 minutes after a ticket goes quiet, it adds what was learned to the knowledge base and flow files, with the source on every line. Anything that would change an existing fact waits for your OK on the new Learnings page (Approve or Reject, old and new text side by side). The Sage also lists ideas to improve the pipeline and remembers your answers: when a character asks you something you already answered, the Sage answers it for you and the character carries on. You can mark such an answer wrong so it is asked again. You can also chat with the Sage, and the other characters can ask it what the knowledge base says.",
   },

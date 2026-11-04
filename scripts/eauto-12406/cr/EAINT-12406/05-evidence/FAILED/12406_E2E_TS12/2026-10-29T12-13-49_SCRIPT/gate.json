@@ -1,0 +1,12 @@
+{
+  "ts": "12406_E2E_TS12",
+  "verdict": "SCRIPT",
+  "reasons": [
+    "stopped before the end: TimeoutError: page.waitForURL: Timeout 90000ms exceeded."
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS12/2026-10-29T12-13-49_SCRIPT",
+  "run": "eaint-12406-retest-sretest-20261029-1950-B-c2",
+  "instance": "ia",
+  "at": "29/10/2026, 20:13:49",
+  "warnings": []
+}

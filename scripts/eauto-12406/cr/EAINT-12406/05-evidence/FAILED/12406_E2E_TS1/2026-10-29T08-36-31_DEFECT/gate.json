@@ -1,0 +1,15 @@
+{
+  "ts": "12406_E2E_TS1",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E5: expected \"Receipt Total Premium = the total on the Confirmation page\", page shows \"Receipt Total Premium (not found in the PDF); Confirmation Total Premium RM 941.13\" (07-receipt-total-premium.png)",
+    "E7: expected \"CIBO Transaction Details: Cover Note No and Policy No filled (not \"-\"); Payment Ref ID with 'SFX' like a Lonpac FPX payment (e.g. LON<yyyymmdd>SFX<nnnn>), with \", page shows \"Cover Note No \"-\", Policy No \"-\", Payment Ref ID \"ALZ20261029SFX0025\" (insurer code \"ALZ\")\" (09-cibo-details-cover-note-policy-ref.png)",
+    "E8: expected \"e-Certificate and Receipt buttons shown\", page shows \"document buttons: Receipt\" (10-cibo-document-buttons.png)",
+    "and the run then stopped: TimeoutError: locator.click: Timeout 90000ms exceeded."
+  ],
+  "folder": "cr/EAINT-12406/05-evidence/FAILED/12406_E2E_TS1/2026-10-29T08-36-31_DEFECT",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c1",
+  "instance": "ia",
+  "at": "29/10/2026, 16:36:31",
+  "warnings": []
+}

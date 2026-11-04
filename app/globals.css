@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   --background: #0f1117;
@@ -26,6 +26,18 @@ body {
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* One font everywhere: Geist Mono, the Scratchpad's font (Faizuddin,
+   2026-10-29). Titles, headings, sidebar and the pixel fonts included, on
+   every page (first pipeline, tickets, eAuto, Jira and TS Tracker were left
+   out; then "change all font in our system", on trial the same day).
+   !important because the medieval style sets fonts on many specific selectors. */
+*,
+*::before,
+*::after,
+::placeholder {
+  font-family: var(--font-geist-mono), ui-monospace, monospace !important;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #334155 transparent;
@@ -35,7 +47,7 @@ body {
   .group-hover\:opacity-100 { opacity: 1 !important; }
 }
 
-/* ── Tiptap / ProseMirror editor ──
+/* â”€â”€ Tiptap / ProseMirror editor â”€â”€
    Uses the same bg/border/text theme variables the rest of the app themes
    with (see lib/themes.ts) instead of hardcoded dark-theme hex, so the
    editor's tables, code blocks, and checkboxes don't stay dark under a
@@ -96,7 +108,7 @@ body {
 /* Placeholder */
 .ProseMirror p.is-empty::before { color: var(--text-faint, #475569); content: attr(data-placeholder); float: left; height: 0; pointer-events: none; }
 
-/* ── Theme overrides ──────────────────────────────────────────
+/* â”€â”€ Theme overrides â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    :root prefix raises specificity above Tailwind's single-class
    selectors so CSS variables win without !important.            */
 
@@ -110,7 +122,7 @@ body {
 :root .hover\:bg-slate-800:hover { background-color: var(--bg-elevated, #1e293b); }
 :root .hover\:bg-slate-700:hover { background-color: var(--bg-hover,    #334155); }
 
-/* Opacity variants (backdrop headers, toolbars, inactive cards) — every
+/* Opacity variants (backdrop headers, toolbars, inactive cards) â€” every
    /NN fraction actually used across app/ and components/, generated
    programmatically so a newly-added fraction can't silently reintroduce
    this same "dark card on a light page" bug. */
@@ -172,7 +184,7 @@ body {
 :root .border-slate-700\/60 { border-color: color-mix(in srgb, var(--border-main,   #334155) 60%, transparent); }
 :root .border-slate-600\/50 { border-color: color-mix(in srgb, var(--border-main,   #475569) 50%, transparent); }
 
-/* Kanban accent left-borders — !important overrides the border-color
+/* Kanban accent left-borders â€” !important overrides the border-color
    shorthand set by :root .border-slate-700 { border-color: ... } */
 :root .border-l-red-500    { border-left-color: #ef4444 !important; }
 :root .border-l-sky-400    { border-left-color: #38bdf8 !important; }
@@ -237,17 +249,17 @@ body {
 :root .ProseMirror blockquote { color: var(--text-label, #94a3b8); }
 :root .ProseMirror p.is-editor-empty:first-child::before { color: var(--text-faint, #475569); }
 
-/* ── Light theme accent overrides ─────────────────────────
+/* â”€â”€ Light theme accent overrides â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Selector specificity (0,2,0) matches the :root .class rules
    above; placing these later in the file ensures they win when
    the light theme is active.
-   Mapping: dark-xxx/opacity  →  light pastel equivalent        */
+   Mapping: dark-xxx/opacity  â†’  light pastel equivalent        */
 
 /* Generated from every red/green/emerald/teal/cyan/sky/indigo/violet/
    purple/fuchsia/pink/rose/orange/amber/yellow/lime class used in app/,
    components/, lib/ and hooks/ (plus every family's text-300/400). A
    newly-added dark tint class needs a matching line here. */
-/* ─ Backgrounds — dark 800/900/950 tints → pale tint of the same hue ─ */
+/* â”€ Backgrounds â€” dark 800/900/950 tints â†’ pale tint of the same hue â”€ */
 [data-theme-type="light"] .bg-amber-800\/40 { background-color: #fef3c7; }
 [data-theme-type="light"] .bg-amber-900\/30 { background-color: #fef3c7; }
 [data-theme-type="light"] .bg-amber-900\/40 { background-color: #fef3c7; }
@@ -344,7 +356,7 @@ body {
 [data-theme-type="light"] .hover\:bg-red-950\/40:hover { background-color: #fee2e2; }
 [data-theme-type="light"] .hover\:bg-violet-950\/30:hover { background-color: #ede9fe; }
 
-/* ─ Borders — dark 700/800/900 → light 200/300 of the same hue ─ */
+/* â”€ Borders â€” dark 700/800/900 â†’ light 200/300 of the same hue â”€ */
 [data-theme-type="light"] .border-amber-700 { border-color: #fcd34d; }
 [data-theme-type="light"] .border-amber-700\/50 { border-color: #fcd34d; }
 [data-theme-type="light"] .border-amber-700\/60 { border-color: #fcd34d; }
@@ -425,8 +437,8 @@ body {
 [data-theme-type="light"] .hover\:border-red-700:hover { border-color: #fca5a5; }
 [data-theme-type="light"] .hover\:border-violet-700:hover { border-color: #c4b5fd; }
 
-/* ─ Text — light 200–500 shades → the lightest of 700/800/900 that meets
-   4.5:1 on white and on the hue's own 50/100 tint (WCAG AA). ─ */
+/* â”€ Text â€” light 200â€“500 shades â†’ the lightest of 700/800/900 that meets
+   4.5:1 on white and on the hue's own 50/100 tint (WCAG AA). â”€ */
 [data-theme-type="light"] .group:hover .group-hover\:text-violet-300 { color: #5b21b6; }
 [data-theme-type="light"] .group:hover .group-hover\:text-violet-400 { color: #6d28d9; }
 [data-theme-type="light"] .hover\:text-amber-300:hover { color: #92400e; }
@@ -509,7 +521,7 @@ body {
 [data-theme-type="light"] .text-yellow-300 { color: #854d0e; }
 [data-theme-type="light"] .text-yellow-400 { color: #a16207; }
 
-/* ─ Kanban accent left-borders on light (keep vivid) ─ */
+/* â”€ Kanban accent left-borders on light (keep vivid) â”€ */
 [data-theme-type="light"] .border-l-red-500    { border-left-color: #dc2626 !important; }
 [data-theme-type="light"] .border-l-sky-400    { border-left-color: #0284c7 !important; }
 [data-theme-type="light"] .border-l-blue-500   { border-left-color: #2563eb !important; }
@@ -519,14 +531,14 @@ body {
 [data-theme-type="light"] .border-l-orange-500 { border-left-color: #ea580c !important; }
 [data-theme-type="light"] .border-l-pink-500   { border-left-color: #be185d !important; }
 
-/* ── Per-theme accent (buttons, links, focus rings) ──────────
+/* â”€â”€ Per-theme accent (buttons, links, focus rings) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Each theme in lib/themes.ts sets --accent/--accent-hover to a hue
-   chosen to complement (not fight) that theme's own page/panel colour —
+   chosen to complement (not fight) that theme's own page/panel colour â€”
    e.g. Crimson (red) gets a teal accent instead of the stock blue that
    used to render on every theme regardless of its base colour. Every
    "blue-*" utility class actually used in the app is remapped here so
    existing markup doesn't need touching. Kanban's own colour-tag classes
-   (border-l-blue-500 etc. above) are deliberately left alone — those are
+   (border-l-blue-500 etc. above) are deliberately left alone â€” those are
    a user's chosen label colour, not the app's interactive accent, so
    "blue" there should still look blue. */
 :root {
@@ -535,7 +547,7 @@ body {
 }
 /* Tints/shades of --accent, mixed toward white on dark themes (so text
    pops off a dark page) and toward black on light themes (so text stays
-   legible on a light page) — the same "invert the mix direction by
+   legible on a light page) â€” the same "invert the mix direction by
    theme type" trick the red/green/purple overrides above already use. */
 [data-theme-type="dark"] {
   --accent-200: color-mix(in srgb, var(--accent) 22%, white);
@@ -554,7 +566,7 @@ body {
   --accent-badge-border: color-mix(in srgb, var(--accent) 35%, white);
 }
 
-/* Solid tier — button fills, active borders/rings. Same value regardless
+/* Solid tier â€” button fills, active borders/rings. Same value regardless
    of theme type: these are opaque shapes with their own label text, so
    they don't need a light/dark-specific contrast adjustment. */
 :root .bg-blue-600  { background-color: var(--accent-600); }
@@ -574,7 +586,7 @@ body {
 :root .ring-blue-500\/30 { --tw-ring-color: color-mix(in srgb, var(--accent-500) 30%, transparent); }
 :root .ring-blue-600\/50 { --tw-ring-color: color-mix(in srgb, var(--accent-600) 50%, transparent); }
 
-/* Opacity tints of the solid tier — alpha-blended over whatever's behind,
+/* Opacity tints of the solid tier â€” alpha-blended over whatever's behind,
    so these read fine on either a light or dark page without inverting. */
 :root .bg-blue-500\/15 { background-color: color-mix(in srgb, var(--accent-500) 15%, transparent); }
 :root .bg-blue-600\/5  { background-color: color-mix(in srgb, var(--accent-600) 5%,  transparent); }
@@ -593,7 +605,7 @@ body {
 :root .border-blue-600\/50 { border-color: color-mix(in srgb, var(--accent-600) 50%, transparent); }
 :root .border-blue-600\/60 { border-color: color-mix(in srgb, var(--accent-600) 60%, transparent); }
 
-/* Badge tier — chip backgrounds/borders/text. Inverts direction by theme
+/* Badge tier â€” chip backgrounds/borders/text. Inverts direction by theme
    type (see --accent-badge-bg / --accent-2xx above): a dark tinted chip
    on dark themes, a pale tinted chip on light themes. */
 :root .bg-blue-900\/20 { background-color: color-mix(in srgb, var(--accent-badge-bg) 20%, transparent); }
@@ -608,7 +620,7 @@ body {
 :root .border-blue-800\/50 { border-color: color-mix(in srgb, var(--accent-badge-border) 50%, transparent); }
 :root .border-blue-900\/40 { border-color: color-mix(in srgb, var(--accent-badge-border) 40%, transparent); }
 
-/* Text tier — link/label text, and text sitting on a badge background.
+/* Text tier â€” link/label text, and text sitting on a badge background.
    Inverted by theme type: bright on dark themes, deep/saturated on
    light themes (mirrors the pre-existing red/green/purple text rules). */
 :root .text-blue-200    { color: var(--accent-200); }

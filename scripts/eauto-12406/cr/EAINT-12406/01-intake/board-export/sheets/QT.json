@@ -1,0 +1,74 @@
+{
+  "columns": [
+    {
+      "field": "owner_type",
+      "group": "Test Scenarios",
+      "kind": "short",
+      "label": "Owner",
+      "list": true,
+      "width": 12
+    },
+    {
+      "field": "policy",
+      "group": "Test Scenarios",
+      "kind": "short",
+      "label": "Policy",
+      "list": true,
+      "width": 12
+    },
+    {
+      "field": "quoting",
+      "group": "Test Scenarios",
+      "kind": "long",
+      "label": "Insurers quoting",
+      "list": true,
+      "width": 18
+    },
+    {
+      "field": "situation",
+      "group": "",
+      "kind": "long",
+      "label": "Test Scenario",
+      "list": true,
+      "width": 30
+    },
+    {
+      "field": "preconditions",
+      "group": "",
+      "kind": "long",
+      "label": "Pre-condition / Test data",
+      "list": true,
+      "width": 32
+    },
+    {
+      "field": "steps",
+      "group": "",
+      "kind": "long",
+      "label": "Test Steps",
+      "list": true,
+      "width": 44
+    },
+    {
+      "field": "expected",
+      "group": "",
+      "kind": "long",
+      "label": "Expected Result",
+      "list": true,
+      "width": 56
+    },
+    {
+      "field": "setup",
+      "group": "",
+      "kind": "long",
+      "label": "Set-up / pre-condition",
+      "list": false,
+      "width": 30
+    }
+  ],
+  "key": "QT",
+  "name": "2 Quotation",
+  "order": 2,
+  "prefix": "12406_QT_TS",
+  "title": "Quotation page (All Quotations): which insurers quote, their order, no other insurer, the Allianz unavailable card, the Allianz logo and product documents (REQ-002 to REQ-006)",
+  "type": "matrix"
+}

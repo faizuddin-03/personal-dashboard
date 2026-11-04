@@ -1,0 +1,23 @@
+MOTORBIKE								
+TS No	User Type	Category	Entry Point	Quotation Available	Expected Result	QA	Test Result	Remark
+TS_ISQ_BIKE_01	Main UCD	Individual	(Get a Free Quote) - With eSTM Approved	"Zurich Takaful (Comprehensive) ✅
+Zurich Takaful (TPFT) ✅
+Tokio Marine ✅"	"Quotation sequence show as follow
+Zurich Takaful (Comprehensive) 
+Zurich Takaful (TPFT) 
+Tokio Marine"	Azfar	PASS	"QRJ6589
+- Need to patch IC"
+TS_ISQ_BIKE_02			UCD land on insurance after Failed due to VEL000069E in eSTM Step 5 (Non-Xstar)	"Zurich Takaful (Comprehensive) ✅
+Zurich Takaful (TPFT) ✅
+Tokio Marine ❌"	"Quotation sequence show as follow
+Zurich Takaful (Comprehensive) 
+Zurich Takaful (TPFT)"	Azfar	PASS	"QAB7519D
+-Without patch IC"
+TS_ISQ_BIKE_03			(Get a Free Quote) - Without eSTM Approved	"Zurich Takaful (Comprehensive) ❌
+Zurich Takaful (TPFT) ❌
+Tokio Marine ✅"	"Quotation sequence show as follow
+Tokio Marine"	Azfar	PASS	CDY6816
+TS_ISQ_BIKE_04	Sub UCD	Company	UCD land on Insurance after Successful payment in eSTM Step 5	"Zurich Takaful (Comprehensive) ✅
+Zurich Takaful (TPFT) ✅"	"Quotation sequence show as follow 
+Zurich Takaful (Comprehensive) ✅
+Zurich Takaful (TPFT) ✅"	Azfar	PASS	QTN5213

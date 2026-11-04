@@ -1,0 +1,39 @@
+{
+  "ts": "12406_CP_TS2",
+  "run": "eaint-12406-run-sCP-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.",
+      "shows": "Our partnership: \"At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"",
+      "match": true,
+      "shot": "01-about-us-our-partnership-sentence.png",
+      "at": "29/10/2026, 15:50:18",
+      "url": "/ia/about-us",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E2",
+      "expected": "Our partnership reads as in the mockup: \"At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"",
+      "shows": "Our partnership paragraph reads: \"At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral offers Allianz and collaborates with other insurance partners to offer products from Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\"",
+      "match": true,
+      "shot": "02-about-us-our-partnership-paragraph.png",
+      "at": "29/10/2026, 15:50:20",
+      "url": "/ia/about-us",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E3",
+      "expected": "The old ending \"...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\" is no longer shown",
+      "shows": "the old ending \"...products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad.\" is not on About Us",
+      "match": true,
+      "shot": "03-about-us-old-ending-gone.png",
+      "at": "29/10/2026, 15:50:21",
+      "url": "/ia/about-us",
+      "side": "Secarang (public site, no login)"
+    }
+  ],
+  "notes": [],
+  "opened": []
+}

@@ -1,0 +1,72 @@
+{
+  "ts": "12406_E2E_TS2",
+  "run": "eaint-12406-run-sE2E-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Success page 'Thank you for your purchase!' with Receipt No., Purchase Date, Payment Method 'Credit' and a [Receipt] download",
+      "shows": "Success: \"Thank you for your purchase!\" shown; Receipt No. \"26102921300028\"; Purchase Date \"29 Oct 2026 - 4:37 PM\"; Payment Method \"Credit\"; [Receipt] shown",
+      "match": true,
+      "shot": "02-success-page.png",
+      "at": "29/10/2026, 16:38:54",
+      "url": "/ia/car-insurance/payment-success/b4cc7884-56ee-4cb6-b11a-327900d405b3",
+      "side": "Secarang"
+    },
+    {
+      "point": "E1",
+      "expected": "Receipt Total Premium = the total on the Confirmation page",
+      "shows": "Receipt Total Premium (not found in the PDF); Confirmation Total Premium RM 941.13",
+      "match": false,
+      "shot": "03-receipt-total-premium.png",
+      "at": "29/10/2026, 16:38:59",
+      "url": "/ia/car-insurance/payment-success/b4cc7884-56ee-4cb6-b11a-327900d405b3",
+      "side": "Secarang"
+    },
+    {
+      "point": "E4",
+      "expected": "Receipt discount line follows today's rule: shown only for codes MF / EAUTO / ER, not for other codes (observed)",
+      "shows": "code RJC7 (applied); receipt discount line: none",
+      "match": true,
+      "shot": "04-receipt-discount-line.png",
+      "at": "29/10/2026, 16:39:01",
+      "url": "/ia/car-insurance/payment-success/b4cc7884-56ee-4cb6-b11a-327900d405b3",
+      "side": "Secarang"
+    },
+    {
+      "point": "E2",
+      "expected": "CIBO > Transaction Management row: Ins. Co. Allianz, Payment Paid, Transaction Status \"Insurance created\"; Payment Mode bare \"Fiuu\" (observed for a Fiuu card payment)",
+      "shows": "Ref BR60006350: Ins. Co. \"Allianz Serba Sentral\", Payment \"RM…Paid 29-10-2026 16:38\", Payment Mode \"Fiuu\", Transaction Status \"Insurance created\"",
+      "match": true,
+      "shot": "05-cibo-listing-row.png",
+      "at": "29/10/2026, 16:39:12",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "CIBO Transaction Details: Cover Note No filled (not \"-\")",
+      "shows": "Cover Note No \"-\"",
+      "match": false,
+      "shot": "06-cibo-details-cover-note.png",
+      "at": "29/10/2026, 16:39:16",
+      "url": "/cibo/transaction-management/transaction-details/b4cc7884-56ee-4cb6-b11a-327900d405b3",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "on the site: Secarang (https://staging.secarang.com/ia/)",
+    "precondition: discount code RJC7 (team doc §9 live codes); whether it applies to Allianz is recorded (Q25)",
+    "payment window allowed: card success",
+    "window opened by the site and kept (payment window 1): https://staging.secarang.com/ia/payment/landing/b4cc7884-56ee-4cb6-b11a-327900d405b3/creditAN",
+    "downloaded: secarang-receipt-HXA0012A-PERSONAL-DATA.pdf",
+    "discount RJC7: applied (recorded, Q25)",
+    "signed in: CIBO (cibo)",
+    "handed on for later TS: allianzPurchase:card = {\"ref\":\"BR60006350\",\"plate\":\"HXA0012A\",\"receiptNo\":\"26102921300028\",\"since\":\"2026-10-29T08:36:59.365Z\",\"secarangReceipt\":\"C:\\\\Users\\\\Azfar\\\\Documents\\\\Github Pro\\\\eauto-qa-azfar\\\\cr\\\\EAINT-12406\\\\04-runs\\\\eaint-12406-run-sE2E-20261029-1545-c1\\\\ts\\\\12406_E2E_TS2\\\\downloadable (after)\\\\secarang-receipt-HXA0012A-PERSONAL-DATA.pdf\"}",
+    "payment window 1 on the TS video 00:56.5–01:10.0",
+    "payment window video laid into video_12406_E2E_TS2.webm (1 window(s), picture-in-picture, bottom right)"
+  ],
+  "opened": [
+    "about:blank"
+  ]
+}

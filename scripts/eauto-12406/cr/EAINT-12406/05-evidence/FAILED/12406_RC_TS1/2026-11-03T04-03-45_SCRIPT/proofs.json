@@ -1,0 +1,10 @@
+{
+  "ts": "12406_RC_TS1",
+  "run": "EAINT-12406-dash-20261103-120229",
+  "instance": "ia",
+  "proofs": [],
+  "notes": [
+    "hand-off \"allianzPurchase\": none in any run of EAINT-12406"
+  ],
+  "opened": []
+}

@@ -1,0 +1,46 @@
+{
+  "expected": "Ensure:\n• The four Allianz payments (E2E_TS1 to TS4) are listed under agency Serba Sentral\n• Same as before the deploy (SRD v1.1 §2.2.3: Payment Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the export holds the same rows as the screen\n• Same as before the deploy (SRD v1.1 §2.2.3: Payment Management is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): each Allianz payment is under its own channel in the Payment Channel tree (FPX, card, 'Fiuu - eWallet' > GrabPay / GrabPay - PayLater by Grab / ShopeePay, as listed on 28.10); which GrabPay option PayLater by Grab falls under is recorded",
+  "gate": {
+    "at": "29/10/2026, 17:53:10",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_RC_TS5",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-rerun-sRC-20261029-1545",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_RC_TS5",
+  "labels": [],
+  "order": 39,
+  "points": [
+    {
+      "id": "E1",
+      "text": "The four Allianz payments (E2E_TS1 to TS4) are listed under agency Serba Sentral"
+    },
+    {
+      "id": "E2",
+      "text": "Same as before the deploy (SRD v1.1 §2.2.3: Payment Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the export holds the same rows as the screen"
+    },
+    {
+      "id": "E3",
+      "text": "Same as before the deploy (SRD v1.1 §2.2.3: Payment Management is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): each Allianz payment is under its own channel in the Payment Channel tree (FPX, card, 'Fiuu - eWallet' > GrabPay / GrabPay - PayLater by Grab / ShopeePay, as listed on 28.10); which GrabPay option PayLater by Grab falls under is recorded"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "CIBO listing and reports",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• The Allianz transactions of 12406_E2E_TS1 to TS4 (amounts from their receipts)\n• Payment Report lists insured transactions only and is slow: always narrow 'Insurance Created From / Till' to one week (otherwise about 2 minutes per search). The date fields are read-only pickers; when moving the window later set 'Till' first (team doc §8)",
+  "sheet": "RC",
+  "situation": "CIBO Payment Report shows the Allianz sales under agency Serba Sentral; Payment Management shows them under their Fiuu channel",
+  "source": "Rule B (Azfar 29.10) for the 'Same as before the deploy' points: a page or behaviour 12406 does not change passes when it is the same after the deploy as before it, with a source saying it stays unchanged; a change is a defect. SRD v1.1 §2.1.3b ('Allianz sales and commission shown under agency Serba Sentral in CIBO payment and commission reports'); Payment Report window, export = screen, Payment Channel tree ('Fiuu - eWallet' > GrabPay, GrabPay - PayLater by Grab, ShopeePay): observed, current behaviour (team doc §8; [REQ] 12107 REQ-011..013, live 21.10.2026). Amount per row: recorded (Q16, coverage review U7). Which GrabPay filter covers PayLater: open in the team doc §15",
+  "steps": "1. CIBO > Payment Report: Platform Secarang; Insurance Company: tick Allianz under the Serba Sentral group (not the group header: it also ticks eTiqa); Insurance Created From / Till = a one-week window ending today; [Search]; screenshot\n2. Export; open the file; screenshot the Allianz rows; record each amount beside the Total Premium of its receipt (Q16)\n3. CIBO > Payment Management (no insurer filter): Payment Channel tree: FPX, then card, then group 'Fiuu - eWallet' > GrabPay - PayLater by Grab, then > ShopeePay, with the payment dates of E2E_TS1 to TS4; find each Allianz payment by its Payment Ref ID; screenshot each",
+  "updatedAt": "2026-10-29T05:00:44+00:00"
+}

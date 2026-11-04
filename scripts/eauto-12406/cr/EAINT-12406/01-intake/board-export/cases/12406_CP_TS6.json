@@ -1,0 +1,56 @@
+{
+  "expected": "Ensure:\n• Our partnership paragraph: same font, size and colour as the rest of About Us and as the mockup (centred)\n• FAQ answer list: Allianz line in the same style as the Lonpac and Tokio Marine lines; the question shows \"−\" when open and \"+\" when closed, as the other questions\n• Support > Allianz section: header, expand / collapse icon, bullet, label and number laid out as the Lonpac and Tokio Marine sections and the mockup (label \"24-Hours Helpline\", number below / beside it as in the mockup)\n• Towing sentence: full width under the contact line, plain text with no bullet, number written \"1800-22-5542\" with hyphens\n• No mockup review mark on the site: no \"Changed: ...\", \"New\", \"New section\", \"New sentence\" pills, no yellow text highlight, no orange dots in the menu; the Allianz Support section has the same background and no frame, like Lonpac / Tokio Marine",
+  "gate": {
+    "at": "29/10/2026, 15:57:08",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_CP_TS6",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sCP-20261029-1545-c2",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_CP_TS6",
+  "labels": [],
+  "order": 7,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Our partnership paragraph: same font, size and colour as the rest of About Us and as the mockup (centred)"
+    },
+    {
+      "id": "E2",
+      "text": "FAQ answer list: Allianz line in the same style as the Lonpac and Tokio Marine lines; the question shows \"−\" when open and \"+\" when closed, as the other questions"
+    },
+    {
+      "id": "E3",
+      "text": "Support > Allianz section: header, expand / collapse icon, bullet, label and number laid out as the Lonpac and Tokio Marine sections and the mockup (label \"24-Hours Helpline\", number below / beside it as in the mockup)"
+    },
+    {
+      "id": "E4",
+      "text": "Towing sentence: full width under the contact line, plain text with no bullet, number written \"1800-22-5542\" with hyphens"
+    },
+    {
+      "id": "E5",
+      "text": "No mockup review mark on the site: no \"Changed: ...\", \"New\", \"New section\", \"New sentence\" pills, no yellow text highlight, no orange dots in the menu; the Allianz Support section has the same background and no frame, like Lonpac / Tokio Marine"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "About Us, FAQs, Support",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/\n• Mockup: Mock Up_EAINT-12406_Secarang_20261015 (from the Jira ticket), opened beside the page",
+  "sheet": "CP",
+  "situation": "Look of the changed blocks against the Secarang mockup 20261015: font, colour, bullets, icons, spacing, alignment; no mockup review marks on the site",
+  "source": "Mockup Secarang 20261015 (SRD §1.5 #4), looked at in a browser (coverage review MD-1, MD-2, MD-5, MD-8, MD-9, MD-10); SRD v1.1 REQ-009b ('same format as existing insurers'), REQ-009d (sentence text with hyphens); REQ-008. Review marks read as review notes: Q26",
+  "steps": "1. Put About Us > Our partnership beside the mockup's Our partnership; screenshot both\n2. Same for FAQs > 'Which insurers can I get instant quotation from?' (expanded) and Support > Allianz section (expanded)\n3. Look at the top menu and the three pages for any mockup review mark (pill, yellow highlight, dashed frame, coloured dot)\n4. Home: compare the Allianz logo with the Lonpac and Tokio Marine logos (size, alignment): recorded (no Home mockup; earlier look: Q38)",
+  "updatedAt": "2026-10-28T04:49:41+00:00"
+}

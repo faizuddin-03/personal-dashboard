@@ -1,0 +1,54 @@
+{
+  "ts": "12406_RG_TS2",
+  "run": "eaint-12406-run-sRG-20261029-1330-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "BEFORE (28.10): BR60006309 Transaction Details \"Lonpac Insurance Berhad\" (no number); receipt \"Lonpac Insurance Berhad (307414-T)\"",
+      "shows": "FROM THE BEFORE CAPTURE (2026-10-28 15:15:16 MYT, old build, before Dev deployed EAINT-12406; not redone): BR60006309 Transaction Details Insurer \"Lonpac Insurance Berhad\" (no number) | screenshot 12406_RG_TS2_E1_03-insurer-box-BR60006309.png",
+      "match": true,
+      "shot": "01-E1-from-before-capture-12406_RG_TS2_E1_03-insurer-box-BR60006309.png",
+      "at": "29/10/2026, 13:34:05",
+      "url": "",
+      "side": ""
+    },
+    {
+      "point": "E1",
+      "expected": "BEFORE (28.10): BR60006309 Transaction Details \"Lonpac Insurance Berhad\" (no number); receipt \"Lonpac Insurance Berhad (307414-T)\"",
+      "shows": "FROM THE BEFORE CAPTURE (2026-10-28 15:15:16 MYT, old build, before Dev deployed EAINT-12406; not redone): BR60006309 receipt Insurer block \"Insurer\" / \"Lonpac Insurance Berhad (307414-T)\" | screenshot 12406_RG_TS2_E1_05-receipt-BR60006309-insurer-block.png",
+      "match": true,
+      "shot": "02-E1-from-before-capture-12406_RG_TS2_E1_05-receipt-BR60006309-insurer-b.png",
+      "at": "29/10/2026, 13:34:05",
+      "url": "",
+      "side": ""
+    },
+    {
+      "point": "E2",
+      "expected": "BR60006309 Transaction Details insurer identical to the 28.10 capture: \"Lonpac Insurance Berhad\", one line, no number (\"Bhd\" also accepted, EAINT-12422)",
+      "shows": "BR60006309 CIBO Transaction Details Insurer \"Lonpac Insurance Berhad\" on 1 line(s) | 28.10 capture \"Lonpac Insurance Berhad\" on 1 line",
+      "match": true,
+      "shot": "03-E2-BR60006309-transaction-details-insurer.png",
+      "at": "29/10/2026, 13:34:16",
+      "url": "/cibo/transaction-management/transaction-details/feddf9db-fc7a-4b0b-b1a0-892d38e309b5",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "BR60006309 receipt Insurer block identical to the 28.10 capture: \"Insurer\" / \"Lonpac Insurance Berhad (307414-T)\" (\"Bhd\" also accepted, EAINT-12422)",
+      "shows": "BR60006309 CIBO receipt Insurer block \"Insurer\" / \"Lonpac Insurance Berhad (307414-T)\" | 28.10 capture \"Insurer\" / \"Lonpac Insurance Berhad (307414-T)\"",
+      "match": true,
+      "shot": "04-E2-BR60006309-receipt-insurer-block.png",
+      "at": "29/10/2026, 13:34:22",
+      "url": "/cibo/transaction-management/transaction-details/feddf9db-fc7a-4b0b-b1a0-892d38e309b5",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "signed in: CIBO (cibo)",
+    "downloaded: BR60006309_receipt_PERSONAL-DATA.pdf",
+    "BR60006309: CIBO row Ins. Co. \"Lonpac Pemaju Eksklusif\", status \"Insurance created W24VP02455545KUL\"; Transaction Details Insurer \"Lonpac Insurance Berhad\" (1 line(s)); buttons [\"Certificate of Insurance\",\"Policy Schedule\",\"Receipt\"]",
+    "E3 not proved: no Lonpac purchase handed on by 12406_QT_TS4 (hand-off key lonpacPurchase, or env RG_TS2_LONPAC_REF). Run QT_TS4 first"
+  ],
+  "opened": []
+}

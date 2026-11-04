@@ -1,0 +1,10 @@
+# 12406_RC_TS9 — Allianz transaction not paid (left at Payment methods): CIBO shows it Pending payment / Unpaid, without Receipt or e-Certificate; later Quotation expired
+# run eaint-12406-run-sRC-20261029-1545-c2 on staging /ia (post-push), started 29/10/2026, 17:12:48 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+29/10/2026, 17:12:53 | note: on the site: Secarang (https://staging.secarang.com/ia/)
+29/10/2026, 17:13:28 | note: Secarang: home > car-details > quotations; payment tiles Credit or Debit Card, FPX Online banking, SPayLater, PayLater by Grab
+29/10/2026, 17:13:34 | note: signed in: CIBO (cibo)
+29/10/2026, 17:13:38 | note: handed on for later TS: allianzUnpaid = {"ref":"BR60006355","plate":"HXA0019A","since":"2026-10-29T09:12:51.227Z"}
+29/10/2026, 17:13:40 | E1 | expected: CIBO row (created at Step 4 / 5 without payment): Ins. Co. Allianz, Payment badge not 'Paid' (text recorded: 'Pending' on staging per team doc §8, 'Unpaid' in the mockup), Transaction Status "Pending payment" | page shows: CIBO row BR60006355: Ins. Co. "Allianz Serba Sentral", Payment cell "RM941.13", Payment badge "(none)" (recorded), Transaction Status "Pending payment" | matches | 02-cibo-row-pending-payment.png
+29/10/2026, 17:13:43 | E2 | expected: Transaction Details: status badge "Pending payment" (amber, no tick); no e-Certificate and no Receipt button; Cover Note No and Policy No "-" | page shows: status badge "Pending payment" (class badge fs-14 mr-2 px-2 py-1 pending-badge, background rgb(251, 255, 194), icon none); document buttons: none; Cover Note No "-", Policy No "-" | matches | 03-transaction-details-pending-payment.png
+29/10/2026, 17:13:43 | note: step 3 (recorded, Q39): open this row again once the quotation has expired; not run here

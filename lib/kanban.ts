@@ -96,6 +96,28 @@ export function saveKanbanState(state: KanbanState) {
   localStorage.setItem("kanban_state", JSON.stringify(state));
 }
 
+/** Fired on window after a change made outside the Kanban page, so open boards reload instead of overwriting it. */
+export const KANBAN_CHANGED = "kanban-state-changed";
+
+/**
+ * Adds a task card (never a CR) from outside the Kanban page — the dock's
+ * quick-add window (Faizuddin, 2026-10-29: "add function to add Kanban Tasks
+ * (not CR. tasks only)"). Reads the stored board fresh, so nothing is lost.
+ */
+export function addKanbanTask(input: { title: string; columnId: ColumnId; priority: Priority; dueDate?: string; description?: string }): KanbanCard {
+  // Same shape as the Kanban page's own "Add card" for a custom task.
+  const card: KanbanCard = {
+    id: crypto.randomUUID(), columnId: input.columnId, type: "custom", boardType: "task",
+    title: input.title.trim(), description: input.description?.trim() || undefined,
+    priority: input.priority, labels: [], dueDate: input.dueDate || undefined, checklist: [],
+    createdAt: new Date().toISOString(),
+  };
+  const state = getKanbanState();
+  saveKanbanState({ ...state, [card.columnId]: [...state[card.columnId], card] });
+  window.dispatchEvent(new Event(KANBAN_CHANGED));
+  return card;
+}
+
 function emptyState(): KanbanState {
   return { urgent: [], todo: [], ongoing: [], "on-hold": [], finished: [] };
 }

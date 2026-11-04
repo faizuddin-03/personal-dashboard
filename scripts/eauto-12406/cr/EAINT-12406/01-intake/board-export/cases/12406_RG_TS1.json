@@ -1,0 +1,56 @@
+{
+  "expected": "Ensure:\n• CIBO Transaction Details: \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\", the number on the same line as the name (wrapping)",
+  "gate": {
+    "at": "30/10/2026, 09:35:29",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_RG_TS1",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-rerun-sretest-20261030-0040-C",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_RG_TS1",
+  "labels": [],
+  "order": 43,
+  "points": [
+    {
+      "id": "E1",
+      "text": "BEFORE (28.10): BR69005852 Transaction Details \"Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)\", number on the same line as the name (wrapping)"
+    },
+    {
+      "id": "E2",
+      "text": "BEFORE (28.10): BR69005852 receipt Insurer on two lines: \"Tokio Marine Insurans (Malaysia) Berhad\" / \"198601000381 (149520-U)\""
+    },
+    {
+      "id": "E3",
+      "text": "AFTER: BR69005852 insurer box and receipt Insurer block identical to the 28.10 capture"
+    },
+    {
+      "id": "E4",
+      "text": "AFTER: E2E_TS10 Secarang and CIBO receipts: \"Tokio Marine Insurans (Malaysia) Berhad\", next line \"198601000381 (149520-U)\""
+    },
+    {
+      "id": "E5",
+      "text": "AFTER: E2E_TS10 Transaction Details laid out as captured on 28.10 (name and number on the same line)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "BEFORE 28.10: BR69005852",
+  "result": "RE-RUN",
+  "reviewed": false,
+  "section": "Other insurers unchanged",
+  "setup": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• BEFORE captured on 28.10.2026 (walk): BR69005852 (Tokio Marine, Secarang, Insurance created, 17-09-2026). After: the same one, plus the Tokio Marine purchase of 12406_E2E_TS10 (receipt downloaded there). BEFORE evidence: the 28.10 before-deploy capture, copied into this TS's evidence folder and labelled 'FROM THE BEFORE CAPTURE' (Azfar 29.10)",
+  "sheet": "RG",
+  "situation": "Tokio Marine receipt (Secarang and CIBO) and Transaction Details: same as captured on 28.10, before the deploy, and on a new purchase after it",
+  "source": "SRD v1.1 REQ-010 ('Tokio Marine (current)' receipt text; Example 2a 'No change'); REQ-011 Example 2a (other insurers: no change). 'Unchanged' = same as captured 28.10 (walk, BR69005852, cibo-11c / 11d); the receipt text matches the SRD, the Details layout differs from the SRD's picture (Q29 answered, layout question Q42)",
+  "steps": "1. (Done 28.10) CIBO > Transaction Management: TokioMarine ticked; open BR69005852; screenshot the Transaction Details insurer box; Receipt: screenshot the Insurer block",
+  "updatedAt": "2026-10-30T10:30:00+08:00"
+}

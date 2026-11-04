@@ -1,0 +1,10 @@
+# 12406_RG_TS1 — BEFORE half, 2026-10-28 15:14:25 MYT
+Staging: Secarang /ia/ (https://staging.secarang.com/ia) and CIBO (https://staging.secarang.com/cibo). EAINT-12406 not deployed (Azfar, 28.10.2026). Video: video_12406_RG_TS1.webm (one tab, one continuous recording).
+
+- BR69005852: found in the listing (one row); Transaction Details at https://staging.secarang.com/cibo/transaction-management/transaction-details/ac5d1f7b-4136-422e-b863-c9182516b1ca; status "Insurance created"; buttons ["e-Certificate","Receipt"]
+  - Transaction Details Insurer: "Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)"
+E1 BR69005852 Transaction Details Insurer: "Tokio Marine Insurans (Malaysia) Berhad 198601000381 (149520-U)"
+  - Receipt BR69005852_receipt_PERSONAL-DATA.pdf (downloaded, shown on screen in this tab). Insurer block lines (pdftotext): ["Insurer","Tokio Marine Insurans (Malaysia) Berhad","198601000381 (149520-U)"]
+E2 BR69005852 receipt Insurer block: ["Insurer","Tokio Marine Insurans (Malaysia) Berhad","198601000381 (149520-U)"]
+
+Screenshots: 12406_RG_TS1_E1_01-listing-BR69005852.png, 12406_RG_TS1_E1_02-transaction-details-BR69005852-blurred.png, 12406_RG_TS1_E1_03-insurer-box-BR69005852.png, 12406_RG_TS1_E2_04-receipt-BR69005852-full_PERSONAL-DATA.png, 12406_RG_TS1_E2_05-receipt-BR69005852-insurer-block.png

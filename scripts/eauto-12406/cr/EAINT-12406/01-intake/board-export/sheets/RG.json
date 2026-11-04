@@ -1,0 +1,66 @@
+{
+  "columns": [
+    {
+      "field": "area",
+      "group": "",
+      "kind": "long",
+      "label": "Module / page",
+      "list": true,
+      "width": 20
+    },
+    {
+      "field": "portal",
+      "group": "",
+      "kind": "short",
+      "label": "Portal",
+      "list": true,
+      "width": 10
+    },
+    {
+      "field": "situation",
+      "group": "",
+      "kind": "long",
+      "label": "Test Scenario",
+      "list": true,
+      "width": 30
+    },
+    {
+      "field": "preconditions",
+      "group": "",
+      "kind": "long",
+      "label": "Pre-condition / Test data",
+      "list": true,
+      "width": 32
+    },
+    {
+      "field": "steps",
+      "group": "",
+      "kind": "long",
+      "label": "Test Steps",
+      "list": true,
+      "width": 44
+    },
+    {
+      "field": "expected",
+      "group": "",
+      "kind": "long",
+      "label": "Expected Result",
+      "list": true,
+      "width": 56
+    },
+    {
+      "field": "setup",
+      "group": "",
+      "kind": "long",
+      "label": "Set-up / pre-condition",
+      "list": false,
+      "width": 30
+    }
+  ],
+  "key": "RG",
+  "name": "5 Regression",
+  "order": 5,
+  "prefix": "12406_RG_TS",
+  "title": "Lonpac, Tokio Marine and other insurers unchanged on the receipt and CIBO Transaction Details (REQ-010 Ex.2, REQ-011 Ex.2); eAuto UCD Insurance quotation order unchanged",
+  "type": "regression"
+}

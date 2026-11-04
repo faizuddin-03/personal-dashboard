@@ -231,3 +231,25 @@ window of 15 April 2025 for EAINT-8638; fixed 2026-10-13.
     The prod-sync card for a branch that holds a CR says the CR was kept: "eAuto staging/uat1
     Synced with prod/master 37c4c6577d via !4955 ... EAINT-12253 kept."
     `[from Teams DN, 2026-10-22 07:47, Workflows]`
+
+## Infrastructure: NAS and firewall (System Maintenance Plan, dropped 2026-11-02)
+
+Source: `_reference/tickets/Misc/System Maintenance Plan (eAuto).pdf` (2 pages, no date;
+"Date: Tonight", file dropped 2026-11-02 17:36). Tag `[from SMP p.<n>]`.
+
+1. **Two Synology NAS units:** `172.30.202.38` (DSM 7.2.2-72806) and `.40` (DSM 7.1.1-42962),
+   both being upgraded to DSM 7.3 LTS `[from SMP p.1]`.
+2. **An eAuto VM mounts NAS `.38` over NFS.** "Because an eAUTO VM utilizes an active NFS
+   link to this NAS, the eAUTO team must manually disable the dependent VM services and
+   safely unmount the NFS datastore/share before 22:00" `[from SMP p.1]`.
+3. **eAuto reads and writes both NAS units, and database backups target them.** Post-upgrade
+   check: "verify file read/write capabilities on both .38 and .40. Confirm database backup
+   targets are accessible." `[from SMP p.2]`
+4. **Firewall:** FortiGate HA active-passive pair, v7.4.12 → v7.4.13; failover causes a
+   "momentary session disruption (5–15 seconds), during which VPN tunnels and active TCP
+   sessions will automatically re-establish" `[from SMP p.2]`. VPN-only hosts such as eSIM
+   (`172.30.202.114`, [esim.md](esim.md)) can drop for that window.
+5. **Lead:** "Linus & eAUTO Team"; window 22:00 – 01:00; Go / No-Go cut-off 23:45 `[from SMP p.1-2]`.
+6. Which eAuto features use the NAS is not stated in the plan. Related lead: Finance uploads
+   the RHB file to Synology for auto-reconciliation ([business-rules-from-test-scenarios.md](business-rules-from-test-scenarios.md) §RHB)
+   `[unconfirmed: same NAS as .38/.40]`.

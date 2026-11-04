@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
 import { Session, MonthState, MONTH_STATE } from './session';
-import { monthInput } from '../data/config';
 import { AplDetailsPage, Role } from '../pages/AplDetailsPage';
 import { expectNoNewLogRow, expectStatusesUnchanged } from './workflow';
 
@@ -12,8 +11,6 @@ export const MONTH_KEY: Record<MonthState, string> = {
   Pending: 'E12028_M_PENDING', KIV: 'E12028_M_KIV', DRA: 'E12028_M_DRA', DA: 'E12028_M_DA', RRA: 'E12028_M_RRA', RA: 'E12028_M_RA', Full: 'E12028_M_FULL',
 };
 
-/** The month typed on the row for `state` (blank → the TS stops naming the field). */
-export const monthFor = (state: MonthState) => monthInput(MONTH_KEY[state], `${MONTH_STATE[state].label} month`);
 
 /**
  * Opens each listed month in turn (same login) and runs `check` on it after
@@ -21,9 +18,11 @@ export const monthFor = (state: MonthState) => monthInput(MONTH_KEY[state], `${M
  */
 export async function eachMonth(s: Session, states: MonthState[], check: (d: AplDetailsPage, state: MonthState, month: string) => Promise<void>): Promise<void> {
   for (const state of states) {
-    const month = monthFor(state);
+    // Typed on the row, or the first month in `state` on the Summary; none → the TS is skipped with a note.
+    const picked = await s.monthFor(MONTH_KEY[state], state);
+    const month = picked.month;
     await test.step(`— ${MONTH_STATE[state].label}: ${month} —`, async () => {
-      const { details } = await s.openMonth(month);
+      const { details } = await s.openMonth(month, picked.data);
       await s.requireState(details, month, state);
       await check(details, state, month);
     });
@@ -31,40 +30,33 @@ export async function eachMonth(s: Session, states: MonthState[], check: (d: Apl
 }
 
 /**
- * The "remarks are mandatory" part of a Reject TS: blank → Submit, spaces
- * only → Submit, remarks → Cancel. Statuses and the "<by> — Rejected" log
- * count must not change. Returns the messages the page showed for blank.
+ * The "remarks are mandatory" part of a Reject TS. On the live build there is NO remarks message:
+ * [Submit Reject] (#rmk-submit) starts disabled and only enables once non-blank remarks are typed
+ * (live Details capture line 328 `disabled=""`; script lines 386-387 `disabled = this.value.trim().length === 0`).
+ * So: blank → Submit disabled; spaces only → Submit still disabled; remarks → Submit enabled → Cancel.
+ * Statuses and the "<by> — Rejected" log count must not change.
  */
 export async function rejectNeedsRemarks(d: AplDetailsPage, ts: string, by: Role, remarks: string): Promise<void> {
   const status = await d.statuses();
   const before = await d.logCount(by, 'Rejected');
-  await test.step('Click [Reject], leave the remarks blank, click [Submit Reject]', async () => {
-    d.takeDialogs();
-    await d.openRejectAndType('');
-    await d.submitReject();
-  });
-  await test.step('Check a remarks-required message is shown and the reject is not submitted', async () => {
-    const msgs = d.takeDialogs();
-    const inPopup = (await d.rmkModal().isVisible()) ? (await d.rmkModal().innerText()).match(/[^\n]*required[^\n]*/i)?.[0] : undefined;
-    const message = msgs.join('; ') || inPopup || '';
-    console.log(`DETAIL:${JSON.stringify({ label: 'Blank remarks message', value: message || '(none)' })}`);
-    await d.captureEvidence(`${ts}-blank-remarks`);
-    // [unconfirmed] wording not in the SRD; the mock-up alerts "Remarks are required to reject." (line 538).
-    await d.verify(`${ts}-no-required-message`, d.rmkModal(), 'No remarks-required message', async () => expect(message).toMatch(/required/i));
-  });
-  await test.step('Type spaces only and click [Submit Reject]', async () => {
-    if (!(await d.rmkModal().isVisible())) await d.openRejectAndType('     ');
-    else await d.typeRemarks('     ');
-    await d.submitReject();
-    const msgs = d.takeDialogs();
-    console.log(`DETAIL:${JSON.stringify({ label: 'Spaces-only message', value: msgs.join('; ') || '(no browser message)' })}`);
-    await d.captureEvidence(`${ts}-spaces-remarks`);
-  });
-  await test.step(`Type "${remarks}" and click [Cancel]`, async () => {
-    if (!(await d.rmkModal().isVisible())) await d.openRejectAndType(remarks);
-    else await d.typeRemarks(remarks);
-    await d.cancelReject();
-  });
+  const expectSubmit = async (what: string, text: string, enabled: boolean) => {
+    await test.step(`Type ${what} in the Reject popup`, async () => {
+      if (!(await d.rmkModal().isVisible())) await d.openRejectAndType(text);
+      else await d.typeRemarks(text);
+    });
+    await test.step(`Check [Submit Reject] is ${enabled ? 'enabled' : 'disabled'}`, async () => {
+      await d.showValue(d.rmkSubmit());
+      await d.captureEvidence(`${ts}-${what.replace(/\W+/g, '-')}-remarks`);
+      await d.verify(`${ts}-${what.replace(/\W+/g, '-')}-submit`, d.rmkSubmit(), `[Submit Reject] should be ${enabled ? 'enabled' : 'disabled'} with ${what}`, async () => {
+        if (enabled) await expect(d.rmkSubmit()).toBeEnabled();
+        else await expect(d.rmkSubmit()).toBeDisabled();
+      });
+    });
+  };
+  await expectSubmit('blank remarks', '', false);
+  await expectSubmit('spaces only', '     ', false);
+  await expectSubmit(`"${remarks}"`, remarks, true);
+  await test.step('Click [Cancel] on the Reject popup', async () => { await d.cancelReject(); });
   await expectStatusesUnchanged(d, ts, status);
   await expectNoNewLogRow(d, ts, by, 'Rejected', before);
 }

@@ -1,0 +1,53 @@
+{
+  "ts": "12406_RC_TS2",
+  "run": "eaint-12406-retest-sretest-20261030-0040-C-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Insurer, first line: \"Allianz General Insurance Company (Malaysia) Berhad\"",
+      "shows": "Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": true,
+      "shot": "02-cibo-receipt-insurer-name.png",
+      "at": "30/10/2026, 09:09:17",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E2",
+      "expected": "Insurer, next line: \"200601015674 (735426-V)\"",
+      "shows": "Insurer block: \"Allianz General Insurance Company (Malaysia)\" / \"Berhad 200601015674 (735426-V)\"",
+      "match": false,
+      "shot": "03-cibo-receipt-company-number.png",
+      "at": "30/10/2026, 09:09:19",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E3",
+      "expected": "Receipt No., Vehicle Plate No. and Total Premium are the same as on the Secarang receipt of E2E_TS1",
+      "shows": "CIBO: Receipt No. \"26102921300046\", plate \"HXA0011A\", Total Premium \"RM 941.13\"; Secarang: \"26102921300046\", \"HXA0011A\", \"RM 941.13\"",
+      "match": true,
+      "shot": "04-cibo-vs-secarang-receipt.png",
+      "at": "30/10/2026, 09:09:23",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    },
+    {
+      "point": "E4",
+      "expected": "Agent line \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded)",
+      "shows": "agent line \"Exclusively by agent Serba Sentral Sdn Bhd\" (PIAM ID recorded: \"PIAM ID: 195379-01\")",
+      "match": true,
+      "shot": "05-cibo-receipt-agent-line.png",
+      "at": "30/10/2026, 09:09:26",
+      "url": "/cibo/transaction-management/transaction-details/c23b9c85-94d6-495c-b9a8-a412517a6fc8",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "hand-off \"allianzPurchase\": 12406_E2E_TS1 in run eaint-12406-retest-sretest-20261029-1950-B-c1 at 2026-10-29T11:51:57.193Z — ref BR60006370, plate HXA0011A, receipt no 26102921300046, receipt file secarang-receipt-HXA0011A-PERSONAL-DATA.pdf",
+    "signed in: CIBO (cibo)",
+    "downloaded: cibo-receipt-BR60006370-PERSONAL-DATA.pdf"
+  ],
+  "opened": []
+}

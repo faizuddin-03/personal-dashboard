@@ -1,0 +1,37 @@
+{
+  "expected": "Ensure:\n• The Allianz quotation can be selected; Add-ons and Confirmation are for Allianz\n• The payment page 'How would you like to pay?' opens with the Allianz premium (no payment made)\n• Production CIBO lists the record with Ins. Co. Allianz and Payment not 'Paid' (status recorded)\n• Its Transaction Details: Insurer \"Allianz General Insurance Company (Malaysia) Berhad\" with \"200601015674 (735426-V)\" below it (SRD wording; layout recorded, Q42)",
+  "id": "12406_E2E_TS8",
+  "kiv": "ON HOLD: production check after go-live (Azfar 29.10.2026: 'the production one put on hold first')",
+  "labels": [],
+  "order": 31,
+  "points": [
+    {
+      "id": "E1",
+      "text": "The Allianz quotation can be selected; Add-ons and Confirmation are for Allianz"
+    },
+    {
+      "id": "E2",
+      "text": "The payment page 'How would you like to pay?' opens with the Allianz premium (no payment made)"
+    },
+    {
+      "id": "E3",
+      "text": "Production CIBO lists the record with Ins. Co. Allianz and Payment not 'Paid' (status recorded)"
+    },
+    {
+      "id": "E4",
+      "text": "Its Transaction Details: Insurer \"Allianz General Insurance Company (Malaysia) Berhad\" with \"200601015674 (735426-V)\" below it (SRD wording; layout recorded, Q42)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "KIV",
+  "reviewed": false,
+  "section": "Production after go-live (no payment)",
+  "setup": "• When: after EAINT-12406 goes live on production (release 02.11.2026 or later). Run with the car of 12406_CP_TS7; needs a real car + owner IC and Azfar's OK on the day (29.10)\n• Production secarang.com and production CIBO (login: ask Azfar / the QA lead). QA cannot make a paid Secarang transaction in production: the team's production regression is quote only, stopping at the payment page (team doc §2, Deployment Checklist 20261020 AM R43)\n• Taking the quotation to Step 4 or 5 creates a CIBO record even without payment (team doc §6, Deployment Checklist 20250630 R53): note the Ref. No. in Remarks\n• Vehicle and owner: a real individual-owner renewal car whose owner agrees (agreed with Azfar); owner details covered in screenshots",
+  "sheet": "E2E",
+  "situation": "Production after go-live: Allianz quotation > Add-ons > Confirmation > payment page, STOP (no payment); the CIBO record this creates shows the Allianz company number",
+  "source": "SRD v1.1 §2.1.1 / §2.2.2 #2a (Allianz enabled in production), REQ-002 Example 1a-b, REQ-011 Example 1a. Stop point and CIBO record without payment: team doc §2, §6 (Deployment Checklists 20261020 AM R43, 20250630 R53)",
+  "steps": "1. secarang.com > Car tab > Private > the agreed car + owner > [Get quotation] > All Quotations > Allianz\n2. Add-ons (keep the default) > Confirmation (fill the owner details) > Confirm and Pay\n3. Screenshot the payment page 'How would you like to pay?'; STOP, do not pick a tile\n4. Production CIBO > Transaction Management: search the plate; screenshot the row; open Transaction Details; screenshot the insurer box",
+  "updatedAt": "2026-10-29T16:50:00+08:00"
+}

@@ -1,0 +1,816 @@
+{
+ "type": "doc",
+ "version": 1,
+ "content": [
+  {
+   "type": "panel",
+   "attrs": {
+    "panelType": "note"
+   },
+   "content": [
+    {
+     "type": "paragraph",
+     "content": [
+      {
+       "type": "text",
+       "text": "Testing Environment: ",
+       "marks": [
+        {
+         "type": "strong"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "text": "staging/ia (Secarang)"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "content": [
+      {
+       "type": "text",
+       "text": "Browser: ",
+       "marks": [
+        {
+         "type": "strong"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "text": "Google Chrome"
+      }
+     ]
+    },
+    {
+     "type": "paragraph",
+     "content": [
+      {
+       "type": "text",
+       "text": "Module: ",
+       "marks": [
+        {
+         "type": "strong"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "text": "Secarang > Success page > Receipt; Secarang > CIBO > Transaction Management > Transaction Details > Receipt"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Staging Test: ",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "(Ref. No = BR60006349, Vehicle No = HXA0011A, Receipt No = 26102921300027, bought 29-10-2026; same on HXA0006A, HXA0012A, HXA0013A, HXA0014A, HXA0015A) ",
+     "marks": [
+      {
+       "type": "textColor",
+       "attrs": {
+        "color": "#ff991f"
+       }
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Every Allianz receipt made on 29-10-2026 (13 receipts, 6 cars) shows the same wrong amount. Tokio Marine and RHB receipts add up."
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "attrs": {
+    "isNumberColumnEnabled": false,
+    "layout": "default"
+   },
+   "content": [
+    {
+     "type": "tableRow",
+     "content": [
+      {
+       "type": "tableHeader",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "Item / Step to Simulate",
+           "marks": [
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableHeader",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "Actual Result",
+           "marks": [
+            {
+             "type": "textColor",
+             "attrs": {
+              "color": "#bf2600"
+             }
+            },
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableHeader",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "Expected Result",
+           "marks": [
+            {
+             "type": "textColor",
+             "attrs": {
+              "color": "#006644"
+             }
+            },
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "tableRow",
+     "content": [
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "1. New purchase: Secarang receipt > Receipt Summary",
+           "marks": [
+            {
+             "type": "textColor",
+             "attrs": {
+              "color": "#0747A6"
+             }
+            },
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "orderedList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "On Secarang Home, get quotations for a car and choose Allianz."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "On Confirmation, note \"Premium After NCD\" (RM862.16)."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Pay (any method). On the Success page, click [Receipt]."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Look at \"Premium after NCD\" in the Receipt Summary."
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "bulletList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Basic Premium RM 1,203.08, NCD 30.0% - RM 360.92, All Drivers RM 20.00, then "
+              },
+              {
+               "type": "text",
+               "text": "Premium after NCD RM 882.16",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": "."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "That is "
+              },
+              {
+               "type": "text",
+               "text": "RM 20.00 too high",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": ": the lines above add up to RM 862.16. RM 20.00 is the All Drivers amount, added twice. Gross Premium (RM 862.16) and Total Premium (RM 941.13) are right."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Same on all 13 Allianz receipts of 29-10-2026 and in the e-receipt email. See screenshot 1 below.",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "bulletList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "\"Premium after NCD\" "
+              },
+              {
+               "type": "text",
+               "text": "RM 862.16",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#006644"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": " (Basic Premium - NCD + All Drivers), the same as on Confirmation for this purchase. See screenshot 3 below."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Tokio Marine and RHB receipts already add up this way. Per SRD v1.1, Section 2.1.3a (the full Allianz journey, including the receipt). See screenshots 4, 5 and 7 below.",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#006644"
+                 }
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "tableRow",
+     "content": [
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "2. Same purchase: CIBO receipt > Receipt Summary",
+           "marks": [
+            {
+             "type": "textColor",
+             "attrs": {
+              "color": "#0747A6"
+             }
+            },
+            {
+             "type": "strong"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "orderedList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "In CIBO, go to Transaction Management."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Search Ref. No BR60006349 and open Transaction Details."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Click [Receipt] and open the PDF."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Look at \"Premium after NCD\"."
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "bulletList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "Premium after NCD RM 882.16",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": " here too."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "See screenshot 2 below.",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#DE350B"
+                 }
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "tableCell",
+       "attrs": {},
+       "content": [
+        {
+         "type": "bulletList",
+         "content": [
+          {
+           "type": "listItem",
+           "content": [
+            {
+             "type": "paragraph",
+             "content": [
+              {
+               "type": "text",
+               "text": "\"Premium after NCD\" "
+              },
+              {
+               "type": "text",
+               "text": "RM 862.16",
+               "marks": [
+                {
+                 "type": "textColor",
+                 "attrs": {
+                  "color": "#006644"
+                 }
+                },
+                {
+                 "type": "strong"
+                }
+               ]
+              },
+              {
+               "type": "text",
+               "text": ", as in row 1."
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Notes for Dev",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "bulletList",
+   "content": [
+    {
+     "type": "listItem",
+     "content": [
+      {
+       "type": "paragraph",
+       "content": [
+        {
+         "type": "text",
+         "text": "Older Allianz transaction is fine: ",
+         "marks": [
+          {
+           "type": "strong"
+          }
+         ]
+        },
+        {
+         "type": "text",
+         "text": "BR55004010 (paid 04-05-2025) has the same figures and its receipt shows RM 862.16 on this build. Only purchases made after this change are wrong. See screenshot 6 below."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "listItem",
+     "content": [
+      {
+       "type": "paragraph",
+       "content": [
+        {
+         "type": "text",
+         "text": "Browser console: ",
+         "marks": [
+          {
+           "type": "strong"
+          }
+         ]
+        },
+        {
+         "type": "text",
+         "text": "during an Allianz purchase, before the Payment page, the console shows this error. It may be related:"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "TypeError: Cannot read properties of undefined (reading 'amount') at autoAddAddonIfAllianz",
+     "marks": [
+      {
+       "type": "code"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 1 - Secarang receipt HXA0011A: Premium after NCD RM 882.16",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 2 - CIBO receipt BR60006349 (same purchase): Premium after NCD RM 882.16",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 3 - Expected: Confirmation, same purchase: Premium After NCD RM862.16",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 4 - Tokio Marine receipt HXA0004A (29-10-2026): adds up",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 5 - RHB receipt BR55004008: adds up",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 6 - Older Allianz receipt BR55004010 (paid 04-05-2025): adds up",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "content": [
+    {
+     "type": "text",
+     "text": "Screenshot 7 - SRD v1.1, Section 2.1.3a",
+     "marks": [
+      {
+       "type": "strong"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

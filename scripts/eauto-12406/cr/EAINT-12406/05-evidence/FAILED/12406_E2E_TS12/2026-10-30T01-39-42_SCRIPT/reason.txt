@@ -1,0 +1,4 @@
+12406_E2E_TS12 — the script stopped before the end (spec problem — fix and re-run)
+run eaint-12406-retest-sretest-20261030-0945-E-c1, staging /ia, 30/10/2026, 09:39:42 MYT
+
+- stopped before the end: TimeoutError: locator.waitFor: Timeout 90000ms exceeded.

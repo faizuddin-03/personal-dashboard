@@ -1,0 +1,4 @@
+12406_RC_TS6 — FAIL — the page does not match the expected result (a defect until triage says otherwise)
+run eaint-12406-retest-sretest-20261030-0040-C-c1, staging /ia, 30/10/2026, 09:07:49 MYT
+
+- E2: expected "Same as before the deploy (SRD v1.1 §2.2.3: Commission Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payme", page shows "screen 2 row(s), export 3; screen rows (as "<plate>-ALLIANZ") not in the export's Recipient Reference: none" (02-commission-report-export.png)

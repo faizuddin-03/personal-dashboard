@@ -1,0 +1,40 @@
+Optional Coverage							
+TS No.	Vehicle Type	Field	Test Scenario	Expected Result	QA	Result	Remark
+TS_SOC_1	Car	All Drivers	"To Check the details for the optional coverage
+Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol
+Ensure the checkbox is ticked by default
+Proceed to the next step without unticked the tickbox"	"Display More Info description ""This will allow any driver with your consent to drive your vehicle and have the same takaful protection extended to them.  ""
+The checkbox for All Drivers is ticked by default
+After proceeding, a popup will appear with the message: ""Please be advised that if a customer does not wish to include All Drivers in their policy, it is essential to untick the All Drivers."""	Faiz	Pass	This functionality is not implemented yet
+			"To check the popup for All Drivers
+Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Ensure the checkbox is ticked by default
+Unticked the checkbox and procced to next step"	"The checkbox for All Drivers is ticked by default
+Ensure there are NO pop up when proceed with unticked All Drivers"	Faiz	Pass	This functionality is not implemented yet
+TS_SOC_2		Legal Liability to Passengers	"Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol"	"Display More Info description ""We'll protect you against any legal liability brought against you by your passengers.  """	Faiz	Pass	
+TS_SOC_3		Cart (Compensation for Assessed Repair Time)	"Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol"	"Display More Info description ""We'll compensate you based on the estimated time it takes for your vehicle to be repaired.  """	Faiz	Pass	
+TS_SOC_4		Inclusion of Special Perils	"Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol"	"Display More Info description ""We'll cover your vehicle in the event of floods, storms and other natural disasters.  """	Faiz	Pass	
+TS_SOC_5		Legal Liability of Passengers for Negligent Acts	"Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol"	"Display More Info description ""We'll protect you against any liability due to negligence that was caused by your passengers.  """	Azfar	Pass	
+TS_SOC_6		Breakage of Glass in Windscreen, Window, or Sunroof	"Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol"	"Display More Info description ""Covers the breakage of glass in windscreens, windows and sunroofs. Includes one free reinstatement for repairs of damaged glass. Your No Claim Discount (NCD) entitlement will not be affected if this additional coverage is extended.  """	Faiz	Pass	
+TS_SOC_7	Motorbike	All riders	"Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol"	"Display More Info description ""This will allow any rider with your consent to ride your motorcycle and have the same takaful protection extended to them.  """			
+TS_SOC_8		Inclusion of Special Perils	"Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol"	"Display More Info description ""We'll cover your motorcycle in the event of floods, storms and other natural disasters.  """	Faiz	Pass	
+TS_SOC_9		Legal Liability to Pillion	"Enter vehicle details and click [Get Quotation]
+Select Zurich (Comprehensive) and click [Buy]
+Click the [More Info] symbol"	"Display More Info description ""We'll protect you against any legal liability brought against you by your pillion.  """	Faiz	Pass	

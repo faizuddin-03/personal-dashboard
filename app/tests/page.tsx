@@ -454,7 +454,7 @@ export default function TestTrackerPage() {
                   </div>
                   <div className="mt-3 flex items-center gap-3">
                     <ProgressBar c={crStats} className="flex-1" />
-                    <span className="text-xs text-slate-400 shrink-0">{tested}/{crStats.total} tested · <span className="text-green-400 font-semibold">{crStats.total ? Math.round((crStats.pass / crStats.total) * 100) : 0}% pass</span></span>
+                    <span className="text-xs text-slate-400 shrink-0">{tested}/{crStats.total} tested · <span className="text-green-400 font-semibold">{(crStats.total ? (crStats.pass / crStats.total) * 100 : 0).toFixed(2)}% pass</span></span>
                   </div>
                   <div className="mt-2 flex items-center gap-3 flex-wrap">
                     <CountsLine c={crStats} />

@@ -9,8 +9,8 @@ import { savePdf, highlightPdf, SavedPdf } from '../utils/pdf';
 import { HighlightSpec } from '../utils/pdfHighlight';
 import { Checks } from '../utils/combined';
 
-// K. FMC Payment Request PDF (12028_TS55) and L. MMSDA Payment Request PDF
-// (12028_TS56). Steps (scenarios.json): Login to BO as Approver; [View] a
+// K. FMC Payment Request PDF (12028_TS56) and L. MMSDA Payment Request PDF
+// (12028_TS57). Steps (scenarios.json): Login to BO as Approver; [View] a
 // fully approved month; click the button; open the PDF. Every SRD v1.1 field
 // is checked in one TS: §2.2.10 (FMC) / §2.2.11 (MMSDA), quoted in
 // data/expected.ts. The PDF and a green / red boxed screenshot of every
@@ -150,8 +150,8 @@ function field(assoc: Assoc, key: Key): Field {
 }
 
 for (const t of [
-  { title: "12028_TS55: FMC Payment Request PDF shows the SRD fields and the month's car amount", assoc: 'FMC' as Assoc },
-  { title: "12028_TS56: MMSDA Payment Request PDF shows the SRD fields and the month's motorcycle amount", assoc: 'MMSDA' as Assoc },
+  { title: "12028_TS56: FMC Payment Request PDF shows the SRD fields and the month's car amount", assoc: 'FMC' as Assoc },
+  { title: "12028_TS57: MMSDA Payment Request PDF shows the SRD fields and the month's motorcycle amount", assoc: 'MMSDA' as Assoc },
 ]) {
   const ts = t.title.split(':')[0];
   test(t.title, tagOf(ts), async ({ page }) => {

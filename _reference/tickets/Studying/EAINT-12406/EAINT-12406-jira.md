@@ -1,14 +1,14 @@
-# EAINT-12406 — Jira capture (27/10/2026, 8:25:31 pm)
+# EAINT-12406 — Jira capture (02/11/2026, 9:47:42 am)
 
-Captured by the Jira Scout scheduled agent (scripts/agents/run-agent.mjs). Raw text of the Jira fields, description and comments.
+Captured by the pipeline toolbox (scripts/pipeline/tools/fetch.mjs issue). Raw text of the Jira fields, description and comments.
 
 1. **Summary:** ⚪[Secarang-Allianz] To Allow and Display Allianz in Secarang Including Logo and Wording
 2. **Type:** Task · **Status:** Ready For Development · **Priority:** Medium
 3. **Assignee:** Lim Yi Link · **Reporter:** Chee Mei Jia · **QA (cf 10041):** —
-4. **Fix versions:** [QA]Ready for Testing Tickets (2026-11-02)
+4. **Fix versions:** S35.X-20261106 🌞 (2026-11-06)
 5. **Labels:** 260921-260925, ProductBacklog, September2026
-6. **Created:** 2026-09-24T13:04:20.135+0800 · **Updated:** 2026-10-26T17:08:50.481+0800
-7. **Exp. Deploy Date (cf 10087):** — · **ETA for Testing (cf 10057):** 2026-10-28 · **[QA] Est Man-day (cf 10081):** —
+6. **Created:** 2026-09-24T13:04:20.135+0800 · **Updated:** 2026-10-28T15:29:25.295+0800
+7. **Exp. Deploy Date (cf 10087):** 2026-11-06 · **ETA for Testing (cf 10057):** 2026-10-28 · **[QA] Est Man-day (cf 10081):** 5
 8. **Links:** —
 9. **Sub-tasks:** —
 10. **Parent:** —

@@ -9,6 +9,7 @@ import ExcelJS from "exceljs";
 import clsx from "clsx";
 import { useApp } from "@/components/AppShell";
 import InsuranceE2ETab from "./InsuranceE2ETab";
+import VehicleSheetDrop from "@/components/VehicleSheetDrop";
 import { InsuranceRow, VehicleEntry, loadInsuranceSaved, clearInsuranceSaved } from "@/lib/insurance";
 import {
   SecarangRow, SecarangJob, SecarangVehicle, SecarangRunParams,
@@ -603,6 +604,7 @@ export default function InsurancePage() {
               Vehicle Numbers
               <span className="text-slate-600 font-normal ml-1">— one per line, optional {idLabel} after the plate (paste 2 columns from Excel)</span>
             </label>
+            <VehicleSheetDrop owner={vehicleCategory === "company" ? "company" : "private"} disabled={loading} onLines={setVehicleInput} />
             <textarea
               value={vehicleInput}
               onChange={e => setVehicleInput(e.target.value)}
@@ -1447,6 +1449,7 @@ function SecarangTab({ mode = "standard" }: { mode?: "standard" | "regression" }
               Vehicle Numbers
               <span className="text-slate-600 font-normal ml-1">— one per line, optional {idLabel} after plate (paste 2 columns from Excel)</span>
             </label>
+            <VehicleSheetDrop owner={ownerType} disabled={loading} onLines={setVehicleInput} />
             <textarea value={vehicleInput} onChange={e => setVehicleInput(e.target.value)}
               placeholder={"ALA2133\t980121066038\nCDJ7398\t910920126347\nPNA3787  (uses default IC)"}
               className="w-full flex-1 min-h-[260px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 font-mono placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none" />

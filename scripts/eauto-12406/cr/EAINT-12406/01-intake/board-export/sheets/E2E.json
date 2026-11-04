@@ -1,0 +1,74 @@
+{
+  "columns": [
+    {
+      "field": "insurer",
+      "group": "Test Scenarios",
+      "kind": "short",
+      "label": "Insurer",
+      "list": true,
+      "width": 10
+    },
+    {
+      "field": "channel",
+      "group": "Test Scenarios",
+      "kind": "short",
+      "label": "Payment channel",
+      "list": true,
+      "width": 16
+    },
+    {
+      "field": "platform",
+      "group": "Test Scenarios",
+      "kind": "short",
+      "label": "Platform",
+      "list": true,
+      "width": 12
+    },
+    {
+      "field": "situation",
+      "group": "",
+      "kind": "long",
+      "label": "Flow (A > B > C)",
+      "list": true,
+      "width": 30
+    },
+    {
+      "field": "preconditions",
+      "group": "",
+      "kind": "long",
+      "label": "Pre-condition / Test data",
+      "list": true,
+      "width": 32
+    },
+    {
+      "field": "steps",
+      "group": "",
+      "kind": "long",
+      "label": "Test Steps",
+      "list": true,
+      "width": 48
+    },
+    {
+      "field": "expected",
+      "group": "",
+      "kind": "long",
+      "label": "Expected Result (each checkpoint)",
+      "list": true,
+      "width": 58
+    },
+    {
+      "field": "setup",
+      "group": "",
+      "kind": "long",
+      "label": "Set-up / pre-condition",
+      "list": false,
+      "width": 30
+    }
+  ],
+  "key": "E2E",
+  "name": "3 Allianz Purchase",
+  "order": 3,
+  "prefix": "12406_E2E_TS",
+  "title": "Full Allianz purchase on Secarang: quote > add-ons > confirmation > Fiuu payment > Success > CIBO status, cover note, e-Certificate (REQ-002, SRD 2.1.3a), per payment channel; add-ons, switching insurer, failure paths and open-scope rows",
+  "type": "e2e"
+}

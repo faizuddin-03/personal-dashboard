@@ -9,7 +9,7 @@
 // Who does what comes from bigRoomEngine.ts (no React). Positions move every
 // frame through refs (setAttribute in a requestAnimationFrame loop); React only
 // re-renders when the engine's version or the depth order changes.
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CHARACTER_INFO, backView, rectsFor } from "@/components/pipeline/CharacterSprite";
@@ -516,6 +516,21 @@ export default function BigRoom({ tickets, jobs }: { tickets: PipelineTicket[]; 
     if (p) setTip({ x: p.x, y: p.y, text });
   }
   const open = (key: string) => router.push(`/pipeline/${key}`);
+  /**
+   * Real link props for a ticket card (Faizuddin, 2026-11-02: open a ticket in a
+   * new tab by middle-click or right-click). Middle-click, Ctrl/Shift/Cmd-click
+   * and the right-click menu are left to the browser; a plain click stays an
+   * in-app move. stopPropagation keeps a wrapping stack from opening it too.
+   */
+  const ticketLink = (key: string) => ({
+    href: `/pipeline/${key}`,
+    onClick: (e: ReactMouseEvent) => {
+      e.stopPropagation();
+      if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      open(key);
+    },
+  });
 
   /** One card: open it. A stack: list every card next to it. */
   function openStack(id: StationId, list: PipelineTicket[], at: { clientX: number; clientY: number } | null) {
@@ -573,9 +588,10 @@ export default function BigRoom({ tickets, jobs }: { tickets: PipelineTicket[]; 
           className={a.assign ? "br-hit br-link" : "br-hit"}
           onPointerEnter={e => showTip(e, actorTip(a))}
           onPointerLeave={() => setTip(null)}
-          onClick={() => { if (a.assign) router.push(`/pipeline/${a.assign.key}`); }}
         >
-          <ActorBody engine={engine} a={a} />
+          {a.assign
+            ? <a {...ticketLink(a.assign.key)} tabIndex={-1} aria-hidden><ActorBody engine={engine} a={a} /></a>
+            : <ActorBody engine={engine} a={a} />}
         </g>
       ),
     });
@@ -685,7 +701,11 @@ export default function BigRoom({ tickets, jobs }: { tickets: PipelineTicket[]; 
                 onPointerLeave={() => setTip(null)}
               >
                 {/* a small stack leaning right, away from whoever works at the station */}
-                {shown.map((t, i) => (
+                {list.length === 1 ? (
+                  <a {...ticketLink(top.key)} tabIndex={-1} aria-hidden>
+                    <Card x={st.tray.x} y={st.tray.y - TRAY_S * 8} label={cardLabel(top.key)} s={TRAY_S} />
+                  </a>
+                ) : shown.map((t, i) => (
                   <Card key={t.key} x={st.tray.x + i * 0.8} y={st.tray.y - TRAY_S * 8 - i * 1.4} label={cardLabel(t.key)} s={TRAY_S} />
                 ))}
                 {/* A card here needs Faizuddin and nobody is holding it up (a third
@@ -735,10 +755,10 @@ export default function BigRoom({ tickets, jobs }: { tickets: PipelineTicket[]; 
             const pin = STATIONS[a.at].pins[spotAt(a, a.at)];
             const key = a.carrying;
             return (
-              <g key={`pin-${a.id}`} className="br-hit br-link" onClick={() => open(key)}
+              <a key={`pin-${a.id}`} className="br-hit br-link" {...ticketLink(key)} tabIndex={-1}
                 onPointerEnter={e => showTip(e, actorTip(a))} onPointerLeave={() => setTip(null)}>
                 <Card x={pin.x} y={pin.y} label={cardLabel(key)} s={0.62} stopped={a.mode === "error"} />
-              </g>
+              </a>
             );
           })}
 
@@ -756,24 +776,25 @@ export default function BigRoom({ tickets, jobs }: { tickets: PipelineTicket[]; 
                 key={`over-${a.id}`}
                 ref={el => { if (el) overs.current.set(a.id, el); else overs.current.delete(a.id); }}
                 transform={transformOf(a)}
-                className={a.assign ? "br-hit br-link br-actor" : undefined}
-                onClick={() => { if (a.assign) open(a.assign.key); }}
                 onPointerEnter={e => showTip(e, actorTip(a))}
                 onPointerLeave={() => setTip(null)}
-                {...(a.assign ? {
-                  role: "link",
-                  tabIndex: 0,
-                  "aria-label": actorTip(a),
-                  onKeyDown: (e: ReactKeyboardEvent) => {
-                    if (a.assign && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(a.assign.key); }
-                  },
-                  onFocus: () => focusTip(a.x + 6, a.y - 8, actorTip(a)),
-                  onBlur: () => setTip(null),
-                } : {})}
               >
-                {/* focus ring around the body (hidden until keyboard focus) */}
-                {a.assign && <rect className="br-ring" x={-7.5} y={-17.5} width={15} height={18.5} fill="none" style={{ pointerEvents: "none" }} />}
-                <ActorOver a={a} showCard={!!a.carrying && cardBy.get(a.carrying) === a.id} />
+                {a.assign ? (
+                  <a
+                    {...ticketLink(a.assign.key)}
+                    className="br-hit br-link br-actor"
+                    aria-label={actorTip(a)}
+                    onKeyDown={(e: ReactKeyboardEvent) => {
+                      if (a.assign && e.key === " ") { e.preventDefault(); open(a.assign.key); }
+                    }}
+                    onFocus={() => focusTip(a.x + 6, a.y - 8, actorTip(a))}
+                    onBlur={() => setTip(null)}
+                  >
+                    {/* focus ring around the body (hidden until keyboard focus) */}
+                    <rect className="br-ring" x={-7.5} y={-17.5} width={15} height={18.5} fill="none" style={{ pointerEvents: "none" }} />
+                    <ActorOver a={a} showCard={!!a.carrying && cardBy.get(a.carrying) === a.id} />
+                  </a>
+                ) : <ActorOver a={a} showCard={!!a.carrying && cardBy.get(a.carrying) === a.id} />}
               </g>
             )
           ))}

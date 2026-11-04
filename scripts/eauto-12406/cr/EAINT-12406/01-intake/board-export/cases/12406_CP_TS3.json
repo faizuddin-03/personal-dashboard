@@ -1,0 +1,41 @@
+{
+  "expected": "Ensure:\n• The answer lists exactly three insurers, in this order:\n    Lonpac Insurance Bhd\n    Allianz General Insurance Company (Malaysia) Berhad\n    Tokio Marine Insurans (Malaysia) Berhad\n• The list has the same style as before the deploy (numbered or bulleted, as in 12406_CP_TS8 BEFORE; Q27)",
+  "gate": {
+    "at": "29/10/2026, 15:50:44",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_CP_TS3",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-run-sCP-20261029-1545-c1",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_CP_TS3",
+  "labels": [],
+  "order": 4,
+  "points": [
+    {
+      "id": "E1",
+      "text": "The answer lists exactly three insurers, in this order:\nLonpac Insurance Bhd\nAllianz General Insurance Company (Malaysia) Berhad\nTokio Marine Insurans (Malaysia) Berhad"
+    },
+    {
+      "id": "E2",
+      "text": "The list has the same style as before the deploy (numbered or bulleted, as in 12406_CP_TS8 BEFORE; Q27)"
+    }
+  ],
+  "priority": "P1",
+  "qa": "",
+  "remarks": "",
+  "result": "PASS",
+  "reviewed": false,
+  "section": "About Us, FAQs, Support",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• Secarang staging /ia/ (https://staging.secarang.com/ia/car-insurance), desktop browser, no user login. First the site password page (password from the QA team, not written here; the same on /ia/ and /preprod/). The password page can come back on the Fiuu popup and on the Success page: enter the site password again there. The Fiuu Bank Simulator has its own username + password: never type the site password there (doc §2, §13). Stay on /ia/: a visitor form on /ia/ can open a /preprod/ page in a new tab (seen in the code, walk 28.10); do not continue on /preprod/",
+  "sheet": "CP",
+  "situation": "FAQs > 'Which insurers can I get instant quotation from?' lists Lonpac, Allianz, Tokio Marine and no other insurer",
+  "source": "SRD v1.1 §2.2.7 REQ-008 (New Expected list; Example 1a); list style: SRD (numbered) and mockup Secarang 20261015 (bulleted) differ, Q27. 'Other FAQs unchanged' (Example 1b): 12406_CP_TS8",
+  "steps": "1. Open Secarang > FAQs (https://staging.secarang.com/ia/faq) > Topic 1: General Info\n2. Expand \"Which insurers can I get instant quotation from?\"; screenshot the answer\n(Other FAQs: compared once in 12406_CP_TS8. Do not judge other answers against the mockup: its Topic 2 payment answer is older than the e-wallets of EAINT-12107)",
+  "updatedAt": "2026-10-28T04:49:41+00:00"
+}

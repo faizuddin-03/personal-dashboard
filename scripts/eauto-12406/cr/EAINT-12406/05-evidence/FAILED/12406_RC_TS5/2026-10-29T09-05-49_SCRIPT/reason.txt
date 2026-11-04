@@ -1,0 +1,4 @@
+12406_RC_TS5 — the script stopped before the end (spec problem — fix and re-run)
+run eaint-12406-run-sRC-20261029-1545-c1, staging /ia, 29/10/2026, 17:05:49 MYT
+
+- stopped before the end: TimeoutError: locator.click: Timeout 90000ms exceeded.

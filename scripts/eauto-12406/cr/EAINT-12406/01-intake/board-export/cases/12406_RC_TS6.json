@@ -1,0 +1,41 @@
+{
+  "expected": "Ensure:\n• Same as before the deploy (SRD v1.1 §2.2.3: Commission Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the Allianz purchase with a discount code (E2E_TS2, RJC7) is listed under Serba Sentral with its commission; purchases without a code (E2E_TS1, TS3, TS4) are not listed (as for the old rows on 28.10). Commission % recorded (Q16)\n• Same as before the deploy (SRD v1.1 §2.2.3: Commission Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the export holds the same rows as the screen",
+  "gate": {
+    "at": "30/10/2026, 09:34:36",
+    "folder": "cr/EAINT-12406/05-evidence/post-push/12406_RC_TS6",
+    "mismatch": [],
+    "proved": [
+      "E1",
+      "E2"
+    ],
+    "reasons": [],
+    "run": "eaint-12406-rerun-sretest-20261030-0040-C",
+    "verdict": "VALID",
+    "warnings": []
+  },
+  "id": "12406_RC_TS6",
+  "labels": [],
+  "order": 40,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Same as before the deploy (SRD v1.1 §2.2.3: Commission Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the Allianz purchase with a discount code (E2E_TS2, RJC7) is listed under Serba Sentral with its commission; purchases without a code (E2E_TS1, TS3, TS4) are not listed (as for the old rows on 28.10). Commission % recorded (Q16)"
+    },
+    {
+      "id": "E2",
+      "text": "Same as before the deploy (SRD v1.1 §2.2.3: Commission Report is not an affected page; SA brief 29.09: 'CIBO already shows Allianz in transaction details, payment and commission reports; no code change'): the export holds the same rows as the screen"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "RE-RUN",
+  "reviewed": false,
+  "section": "CIBO listing and reports",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• CIBO staging https://staging.secarang.com/cibo (login page /cibo/auth/login; /ia/cibo is NOT CIBO), the QA team's admin login; it shares the back end with Secarang /ia/, so it records the /ia/ purchases (walk 28.10). Insurance Company filters (Transaction Management, Payment Report, Commission Report) are grouped by agency: Bintang Prospek (Chubb, RHB, Takaful Malaysia), Pemaju Eksklusif (Lonpac, TokioMarine, Zurich Takaful), Serba Sentral (Allianz, eTiqa); ticking a group header ticks all its insurers, so tick the insurer itself. There is no agency filter, and Payment Management has no insurer filter. Transaction Management shows no rows until [Search]; on other listings wait for the first load before [Search] (doc §10). Export narrow date ranges only\n• The Allianz transactions of 12406_E2E_TS1 to TS4; only E2E_TS2 used a discount code (RJC7). The Commission Report lists only transactions WITH a discount code: on 28.10 the old Allianz rows were 186 in Payment Report and 56 in Commission Report, all with codes (CIBO walk 28.10)\n• Report date: as in 12406_RC_TS5 (a one-week window at most)",
+  "sheet": "RC",
+  "situation": "CIBO Commission Report shows the Allianz purchase made with a discount code under agency Serba Sentral, with its commission; purchases without a code are not listed (as before the deploy)",
+  "source": "E1 reworded (decided 29.10 under Azfar's full permission, main session): the Commission Report lists only transactions with a discount code (CIBO walk 28.10: 186 old Allianz rows in Payment Report, 56 in Commission Report, all with codes). Rule B (Azfar 29.10) for the 'Same as before the deploy' points: a page or behaviour 12406 does not change passes when it is the same after the deploy as before it, with a source saying it stays unchanged; a change is a defect. SRD v1.1 §2.1.3b; export = screen: observed; commission follows Discount Code Management (team doc §6, §9: recorded); commission amount not in the SRD (Q16; SA brief open check 'active Allianz commission rate for Secarang at release'), recorded only",
+  "steps": "1. CIBO > Commission Report: Platform Secarang (this report offers only eAuto and Secarang); Insurance Company: tick Allianz under the Serba Sentral group; Insurance Created From / Till = a one-week window ending today; [Search]; screenshot\n2. Export; open the file; screenshot the Allianz rows; record the commission amount and % per row next to the discount code used (Secarang commission follows Discount Code Management, team doc §6; Q16)",
+  "updatedAt": "2026-10-30T10:30:00+08:00"
+}

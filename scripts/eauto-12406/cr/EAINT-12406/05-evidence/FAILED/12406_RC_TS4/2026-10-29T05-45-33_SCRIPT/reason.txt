@@ -1,0 +1,4 @@
+12406_RC_TS4 — the script stopped before the end (spec problem — fix and re-run)
+run eaint-12406-run-sRC-20261029-1330-c1, staging /ia, 29/10/2026, 13:45:33 MYT
+
+- stopped before the end: TimeoutError: page.waitForEvent: Timeout 120000ms exceeded while waiting for event "download"

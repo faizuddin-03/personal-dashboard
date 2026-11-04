@@ -1,0 +1,31 @@
+{
+  "ts": "12406_CP_TS4",
+  "run": "eaint-12406-run-sCP-20261029-1545-c1",
+  "instance": "ia",
+  "proofs": [
+    {
+      "point": "E1",
+      "expected": "Sections in this order: Lonpac Insurance Bhd, Allianz General Insurance Company (Malaysia) Berhad, Tokio Marine Insurans (Malaysia) Berhad, and no section for any other insurer (e.g. RHB)",
+      "shows": "sections, top to bottom: Lonpac Insurance Bhd | Allianz General Insurance Company (Malaysia) Berhad | Tokio Marine Insurans (Malaysia) Berhad",
+      "match": true,
+      "shot": "02-support-insurer-sections-order.png",
+      "at": "29/10/2026, 15:50:59",
+      "url": "/ia/support",
+      "side": "Secarang (public site, no login)"
+    },
+    {
+      "point": "E2",
+      "expected": "The Allianz section has an insurer name header with the same expand / collapse control as the Lonpac and Tokio Marine headers",
+      "shows": "Allianz header \"Allianz General Insurance Company (Malaysia) Berhad\" (Inter 20px w500 rgb(51, 51, 51); Lonpac Inter 20px w500 rgb(51, 51, 51); Tokio Marine Inter 20px w500 rgb(51, 51, 51)). Control closed: Allianz \"bi bi-plus-lg float-right\", Lonpac \"bi bi-plus-lg float-right\", Tokio Marine \"bi bi-plus-lg float-right\"; open: Allianz \"bi bi-dash float-right\", Lonpac \"bi bi-dash float-right\", Tokio Marine \"bi bi-dash float-right\"; Allianz opened by its header: true, closed again: true",
+      "match": true,
+      "shot": "06-support-allianz-header-control.png",
+      "at": "29/10/2026, 15:51:09",
+      "url": "/ia/support",
+      "side": "Secarang (public site, no login)"
+    }
+  ],
+  "notes": [
+    "Q28 (recorded, not judged): sections as the page loads: Lonpac Insurance Bhd: closed; Allianz General Insurance Company (Malaysia) Berhad: closed; Tokio Marine Insurans (Malaysia) Berhad: closed"
+  ],
+  "opened": []
+}

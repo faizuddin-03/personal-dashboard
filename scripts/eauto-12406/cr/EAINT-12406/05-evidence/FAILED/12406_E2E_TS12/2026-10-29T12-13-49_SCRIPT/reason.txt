@@ -1,0 +1,4 @@
+12406_E2E_TS12 — the script stopped before the end (spec problem — fix and re-run)
+run eaint-12406-retest-sretest-20261029-1950-B-c2, staging /ia, 29/10/2026, 20:13:49 MYT
+
+- stopped before the end: TimeoutError: page.waitForURL: Timeout 90000ms exceeded.

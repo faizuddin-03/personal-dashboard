@@ -110,6 +110,8 @@ export interface ChatEntry {
   jobId?: string;
   /** Tool activity lines shown collapsed under the message. */
   activity?: string[];
+  /** Pictures he pasted, repo-relative (_reference/tickets/<KEY>/chat-images/...). */
+  images?: string[];
   /** System note about another character (ask-each-other): "Asked Scout: ...", "Scout answered ...". */
   via?: Character;
 }
@@ -207,6 +209,8 @@ export interface PipelineTicket {
   approvedAt?: string;           // green light
   approvedScenarioHash?: string; // hash of scenarios.json at approval, to detect later changes
   pendingDwarfChanges?: string[];// Elf changes after approval not yet applied by Dwarf
+  pendingWorkbookChanges?: string[]; // scenario changes after approval not yet in a workbook; "Create new version now" builds one (2026-10-30)
+  automationOnHold?: boolean;    // green light given as "workbook only" (2026-10-30): Dwarf waits for "Start Dwarf"
   dwarfScenarioHash?: string;    // hash of the scenarios.json the automation last matched (build/sync)
   runKey?: string;               // useBackgroundRuns key of the runner page, e.g. "eauto/12345"
   statusSync: boolean;           // write In Progress / Pass / Fail to the official sheet

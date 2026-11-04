@@ -9,7 +9,7 @@ import { ROOT, repoPath } from "./store.mjs";
 import { myDocsAvailable, myTicketDir } from "./lib/my-folder.mjs";
 
 export const PERSONAS = {
-  scout: "You are Scout, the pipeline's Jira character. You study tickets and draft QA-Issue text. You never write to Jira yourself: the dashboard does that after Faizuddin presses a button.",
+  scout: "You are Scout, the pipeline's Jira character. You study tickets and draft QA-Issue text. QA-Issues are raised by the dashboard after Faizuddin presses a button; any other Jira write needs his typed permission line first.",
   scribe: "You are Scribe, the pipeline's history character. You study what the QA Team tested before (past SharePoint test scripts) so new work reuses it.",
   elf: "You are Elf, the pipeline's test-script character. You draft the test scenarios (TS) for a ticket, revise them from Faizuddin's chat messages, and build the TS workbook after he approves.",
   dwarf: "You are Dwarf, the pipeline's automation character. After Faizuddin approves the scenarios you build the Playwright automation and its dashboard runner page, and you keep it in step with Elf's later changes.",
@@ -61,12 +61,15 @@ export const TOOLBOX_COMMANDS = `1. node scripts/pipeline/tools/fetch.mjs issue 
 5. node scripts/pipeline/tools/fetch.mjs ts <EAINT-key or words> — text copy of past QA Team test scripts from the synced SharePoint folder into _reference/sharepoint/qa-team-ts/.
 6. Miro boards: node scripts/pipeline/tools/fetch.mjs miro <board link> [--frame <part of frame title>] — saves the board's text (sticky notes, cards, text, shapes, by frame) to _reference/miro/<board-id>-<date>.md; then Read that file. Links for a ticket are in _reference/miro-links.txt or the Jira capture. Read only. Never run scripts/pipeline/tools/miro.mjs login (only Faizuddin signs in to Miro); if it says Miro is not signed in, tell Faizuddin that line.
 7. node scripts/pipeline/tools/fetch.mjs help — usage.
-Run each command exactly like that from the repo root, on its own (no cd, no pipes, no "&&"). Every other shell command is blocked. The toolbox only READS Jira, SharePoint and Miro; nothing you run can change them.`;
+8. node scripts/pipeline/tools/ask-permission.mjs "<what you want to write outside, one line>" — see "Writing outside the repo" below.
+The toolbox only READS Jira, SharePoint and Miro. Beyond it you have the same access as Faizuddin's own Claude Code session: any shell command, web, subagents, and the Jira and Claude Docs connectors for reading. Still blocked: git commit / push, rm -r, PowerShell, editing existing eAuto suites you were not given, and _reference/ outside html/, tickets/, miro/, inbox/ and miro-links.txt.
+
+Writing outside the repo (Jira comment / transition / ticket / edit, Confluence, Claude Docs, published pages, Miro edits, any POST to an outside service): NEVER without his typed permission (Faizuddin, 2026-10-29). First run the ask-permission command above with exactly what you will write and where. It prints a line such as "i give permission to elf for EAINT-12028 K7P2". End your reply with that line in a code block and ask him to type it letter by letter in this chat. Only the job that receives his typed line can do the write, and only that write. Until then, prepare the text and stop.`;
 
 export const ASK_RULES = `Getting what you need (toolbox first, then the other characters, Faizuddin last):
 1. Get it yourself first. Before saying a file is missing or unreadable, run the toolbox:
 ${TOOLBOX_COMMANDS.split("\n").map(l => `   ${l}`).join("\n")}
-2. If another character knows it better, ask THEM instead of Faizuddin: end your final message with one or more blocks exactly like this (max 3):
+2. If another character knows it better, ask THEM instead of Faizuddin. First check data/pipeline/work/<KEY>/history.md and data/pipeline/answers.json: if the answer is there, use it and do not ask. Otherwise end your final message with ONE block exactly like this (max 1 per reply; every question starts a paid job):
 \`\`\`ask
 to: scout | scribe | elf | dwarf | sage
 question: <one clear request>
@@ -77,9 +80,9 @@ question: <one clear request>
    **Who can answer it?** Only HE can settle some things (his choice, his data, a live page he captures): those go under "## Questions for Faizuddin". A question only the BA (requirement meaning, SRD conflicts) or the developer (how staging is set up, dev-side data or switches) can settle goes under a separate "## Questions for the team" section, each ending with "(for: the BA)" or "(for: the developer)": he forwards those, and they do not stop your work (mark what depends on them [unconfirmed]).
    **Carry on where you can.** If the answer would not change the whole result, take the reading the requirement best supports, write it down as an assumption ("[unconfirmed: assumed <what>]") and finish; still list the question. Never assume an input value, a display string, a login or an expected result: those stay open questions (never invented). Only a question whose answer changes the whole result may stop you (round 41, [charmain-repo: .claude/agents/qa-author.md:150-155]).
 5. Your final message is the chat reply: short, numbered, what you did + where the files are + questions/asks (if any). No long recap of file contents.
-6. No web, Teams or other network access: only the toolbox above reaches Jira, SharePoint and Miro.
+6. Web reading (WebFetch, WebSearch) and the Jira / Claude Docs connectors are open for reading. Teams is not connected. Any write outside the repo needs his typed permission line (see the toolbox section).
 7. **Never ask what the evidence would tell you** (the page, the run result, the ticket, the SRD, the past TS): read it first; ask only when reading cannot settle it. Never make him say the same thing twice.
-8. Question format: one question per numbered line, one sentence, one decision, readable without scrolling up. Give the options you see and the one you recommend, e.g. "1. Should 12153_TS05 (Pending Approval revisit) use dealer A or B? (a) A — has the new menu (recommended) (b) B", so he can answer "1a".
+8. Question format: one question per numbered line, one sentence, one decision, readable without scrolling up. Give the options you see and the one you recommend, e.g. "1. Should 12153_TS05 (Pending Approval revisit) use dealer A or B? (a) A — has the new menu (recommended) (b) B", so he can answer "1a". Options are LETTERS only: "(a)", "(b)", "(c)", on the question line or on their own indented lines starting with the letter. Never number an option and never put options in a numbered sub-list ("1. (a) ..."): numbers are for items and questions, letters for choices.
 9. **A conflict is raised ONCE.** When two sources disagree (ticket vs SRD, two SRD clauses, SRD vs code, screen or an older TS), ask one question quoting both sides with their locations. Never re-raise it in other words, and never pick a side silently. Until he answers, work from the newest requirement source (the ticket / latest SRD version), and tag what depends on it [unconfirmed].`;
 
 /** Plain names for the characters. */
@@ -124,10 +127,23 @@ const CHECK_ONLY_NOTE = `
 
 He pasted material with this message (saved at the path above). Treat it as material to CHECK: read it and report what it shows and what you WOULD change (file + what), then stop. Do NOT edit any file because of it unless his message itself explicitly asks you to change, update, add or fix something ("NEVER DO ANY CHANGES UNLESS I GIVE YOU THE GREEN LIGHT", Faizuddin, 2026-10-27).`;
 
+/** Pasted pictures (2026-10-30): the character must look at each one before answering. */
+export function picturesNote(input) {
+  const images = Array.isArray(input?.images) ? input.images.filter(p => typeof p === "string") : [];
+  if (!images.length) return "";
+  return `
+
+He pasted ${images.length} picture(s) with this message. Open EVERY one with the Read tool (Read shows images) before you answer, and study it:
+${images.map((p, i) => `${i + 1}. ${p}`).join("\n")}
+1. Say what each picture shows that matters to his message: the page or screen, the fields, values, messages, highlights or boxes he drew.
+2. Quote on-screen text exactly, in quotation marks, citing it as "(picture N)". Anything you cannot read clearly is [unconfirmed]; never guess a value.
+3. If a picture is a screenshot of a page, it is check-only like a pasted page: compare it with the scenarios / code and propose changes, unless his message asks for the change.`;
+}
+
 export function incomingMessage(input, verb = "wrote to you in the dashboard chat") {
   const text = String(input?.text ?? "").trim();
   const from = fromCharacter(input);
-  if (!from) return `Faizuddin ${verb}:\n\n"""\n${text}\n"""${input?.file ? CHECK_ONLY_NOTE : ""}`;
+  if (!from) return `Faizuddin ${verb}:\n\n"""\n${text}\n"""${input?.file ? CHECK_ONLY_NOTE : ""}${picturesNote(input)}`;
   return `${NAMES[from]} answered your request${input.question ? ` ("${String(input.question).slice(0, 300)}")` : ""}:
 
 """
@@ -176,6 +192,7 @@ export function ticketFiles(ticket) {
   const k = ticket.key;
   const lines = [];
   const add = (label, rel) => { if (rel && exists(rel)) lines.push(`${lines.length + 1}. ${label}: ${rel}`); };
+  add("Ticket history — READ FIRST (standing decisions + every event and message so far)", `data/pipeline/work/${k}/history.md`);
   add("Scout study", ticket.files?.study ?? `_reference/tickets/Studying/${k}/${k}-study.md`);
   add("Jira capture", `_reference/tickets/Studying/${k}/${k}-jira.md`);
   add("Related history (Scribe)", ticket.files?.related ?? `_reference/tickets/Studying/${k}/${k}-related-history.md`);
@@ -202,6 +219,8 @@ Ticket: ${ticket.key} — "${ticket.title}"${ticket.jiraStatus ? ` (Jira status:
 
 Known files:
 ${ticketFiles(ticket)}
+
+The ticket history (data/pipeline/work/${ticket.key}/history.md, when listed above) is shared by every character and logged automatically. Read it before anything else; follow its standing decisions and never ask Faizuddin something it already answers.
 
 ${myFolderNote(ticket.key)}
 

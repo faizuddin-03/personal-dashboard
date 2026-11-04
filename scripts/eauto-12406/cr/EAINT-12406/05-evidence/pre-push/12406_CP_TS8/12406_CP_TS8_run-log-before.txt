@@ -1,0 +1,13 @@
+# 12406_CP_TS8 — BEFORE half, 2026-10-28 15:22:29 MYT
+Staging: Secarang /ia/ (https://staging.secarang.com/ia) and CIBO (https://staging.secarang.com/cibo). EAINT-12406 not deployed (Azfar, 28.10.2026). Video: video_12406_CP_TS8.webm (one tab, one continuous recording).
+
+E1 Home logos left to right: lonpac-logo.png, tokiomarine.png
+- Home form, tab "Private Car": typed ["HXA0001A","900101145671","55000"]; field values read back ["HXA0001A","900101145671","55000"]
+- Pop-up after Get quotation: "Ops, there is no instant quotation available from our insurers for your car at the moment. Thank you for considering us for your car insurance needs. We look forward to serve you in future. OK"
+E2 not reached: state popup
+E3 About Us > Our partnership: "At SeCarang, Serba Sentral Sdn Bhd proudly presents offerings from various leading insurance providers. Additionally, to cater to diverse consumer needs, Serba Sentral Sdn Bhd collaborates with other partners for products from several key insurers, including Lonpac Insurance Bhd and Tokio Marine Insurans (Malaysia) Berhad."
+E4 FAQ: 20 questions, 20 open. "Which insurers…": "Which insurers can I get instant quotation from? Lonpac Insurance Bhd Tokio Marine Insurans (Malaysia) Berhad"
+E5 Support sections: [{"insurer":"Lonpac Insurance Bhd","open":"true","body":"Road Assistance Hotline (24 Hours) 1300 88 1138 Customer Service 03 2262 8666 General Line 03 2262 8688 / 03 2723 7888"},{"insurer":"Tokio Marine Insurans (Malaysia) Berhad","open":"true","body":"Road Assist Hotline (24 Hours) 1800 88 1301 / 03 2053 5800 Customer Service Hotline 1800 88 0812"}]
+Insurer names per page: {"home":{},"aboutUs":{"Lonpac":1,"Tokio":1},"faq":{"Lonpac":1,"Tokio":1},"support":{"Lonpac":1,"Tokio":1}}
+
+Screenshots: 12406_CP_TS8_E1_00-site-password-page.png, 12406_CP_TS8_E1_home-insurer-logos.png, 12406_CP_TS8_E1_home-full-page.png, 12406_CP_TS8_E2_01-home-form-filled-private-car.png, 12406_CP_TS8_E2_02-popup-after-get-quotation.png, 12406_CP_TS8_E3_about-us-our-partnership.png, 12406_CP_TS8_E3_about-us-full-page.png, 12406_CP_TS8_E4_faq-which-insurers-instant-quotation.png, 12406_CP_TS8_E4_faq-all-questions-open-full-page.png, 12406_CP_TS8_E5_support-need-to-contact-insurance-company-all-open.png, 12406_CP_TS8_E5_support-full-page-all-open.png

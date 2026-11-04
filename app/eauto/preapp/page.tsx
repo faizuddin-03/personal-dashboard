@@ -153,6 +153,9 @@ export default function CreatePreApplicationPage() {
   function toggleSection(id: string) { setCollapsed(prev => ({ ...prev, [id]: !prev[id] })); }
 
   const [creds, setCreds] = useState<Creds>(typeof window !== "undefined" ? loadCreds() : DEFAULT_CREDS);
+  // Run configuration is saved as it is typed, not only on Run (Faizuddin, 2026-11-02:
+  // survive a refresh or restart). Run still saves its own changes (counters, companies).
+  useEffect(() => { try { localStorage.setItem(CREDS_KEY, JSON.stringify(creds)); } catch { /* full */ } }, [creds]);
   const set = <K extends keyof Creds>(k: K, v: Creds[K]) => setCreds(p => ({ ...p, [k]: v }));
   const [sdnCounter, setSdnCounter] = useState<number>(() => (typeof window !== "undefined" ? loadSdnCounter() : 2));
 

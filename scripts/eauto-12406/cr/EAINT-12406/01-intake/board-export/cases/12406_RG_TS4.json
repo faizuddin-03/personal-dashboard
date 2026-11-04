@@ -1,0 +1,29 @@
+{
+  "deprio": "Azfar 28.10.2026: eAuto and Secarang are different systems; the eAuto UCD insurer order is not touched by EAINT-12406 (matches the SA brief).",
+  "expected": "Ensure:\n• Insurer order on UCD > Insurance captured (today's order, recorded as the baseline)",
+  "id": "12406_RG_TS4",
+  "labels": [],
+  "order": 44,
+  "points": [
+    {
+      "id": "E1",
+      "text": "BEFORE: UCD > Insurance insurer order captured (baseline)"
+    },
+    {
+      "id": "E2",
+      "text": "AFTER: UCD > Insurance insurer order captured and compared with BEFORE (observed; a difference goes to Dev with Q23)"
+    }
+  ],
+  "priority": "P2",
+  "qa": "",
+  "remarks": "",
+  "result": "DEPRIORITIZED",
+  "reviewed": false,
+  "section": "eAuto unchanged",
+  "setup": "• When: BEFORE Dev deploys EAINT-12406 to the Secarang / CIBO staging (yellow TS No), then again after the deploy. Not deployed yet (Azfar, 28.10.2026, Q11): capture first, then tell Dev the BEFORE half is done\n• eAuto staging paired with the Secarang staging (Q1); a UCD user on the QA's own lane\n• Vehicle: an eSim car the eAuto insurers quote (QA's own prefix); the same vehicle before and after",
+  "sheet": "RG",
+  "situation": "eAuto UCD Insurance: the insurer order on the quotation step, captured before and after the Secarang deploy (observed)",
+  "source": "Observed / captured before the deploy (no SRD text). SRD v1.1 §2.2.1 scope is Portal Secarang only; SA brief 29.09 (Dev analysis, not SRD): 'eAuto (UCD) insurance unaffected: the Allianz switch is per tenant ... the insurer order table is in the Secarang DB'; EAINT-12150 (separate eAuto / Secarang control sequence) is To Do: Q23",
+  "steps": "1. UCD > Insurance: start a quotation for the vehicle; screenshot the insurer cards and their order (do not pay)",
+  "updatedAt": "2026-10-28T15:20:00+08:00"
+}

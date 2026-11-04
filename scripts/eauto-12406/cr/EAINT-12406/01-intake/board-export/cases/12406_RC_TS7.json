@@ -1,0 +1,28 @@
+{
+  "expected": "Ensure:\n• Receipt attached to the e-Receipt email / WhatsApp, Insurer first line: \"Allianz General Insurance Company (Malaysia) Berhad\"\n• Same receipt, next line: \"200601015674 (735426-V)\"",
+  "id": "12406_RC_TS7",
+  "labels": [],
+  "order": 41,
+  "points": [
+    {
+      "id": "E1",
+      "text": "Receipt attached to the e-Receipt email / WhatsApp, Insurer first line: \"Allianz General Insurance Company (Malaysia) Berhad\""
+    },
+    {
+      "id": "E2",
+      "text": "Same receipt, next line: \"200601015674 (735426-V)\""
+    }
+  ],
+  "priority": "P3",
+  "qa": "",
+  "remarks": "",
+  "result": "",
+  "reviewed": false,
+  "section": "Receipt",
+  "setup": "• When: after Dev deploys EAINT-12406 to Secarang staging /ia/ and CIBO staging (not deployed yet on 28.10.2026, Azfar)\n• The Allianz transaction of 12406_E2E_TS1, its owner email / phone on Confirmation set to an inbox / WhatsApp the QA can read. A WhatsApp and an email receipt follow every Secarang purchase today (team doc §3); where they arrive on /ia/ and whether MessageBird is on: Q21\n• Done by hand: Azfar checks the receipt email after the first Allianz purchase (29.10)",
+  "sheet": "RC",
+  "situation": "Every customer message after an Allianz purchase: payment-success / receipt WhatsApp, policy-created WhatsApp, e-Receipt email, insurer e-Certificate email; the attached receipt shows the new Allianz company number",
+  "source": "SRD v1.1 REQ-010 (receipt). The messages are current behaviour (team doc §3: 'A WhatsApp and an email receipt follow'; SA brief test scenario 6). Message texts: recorded. Where they arrive on /ia/: Q21",
+  "steps": "1. Screenshot every WhatsApp message received for E2E_TS1 (payment successful / receipt, policy created)\n2. Open the e-Receipt email; open the attached receipt; screenshot the Insurer block\n3. Open the insurer's e-Certificate email, if any; screenshot (recorded)",
+  "updatedAt": "2026-10-29T05:00:44+00:00"
+}

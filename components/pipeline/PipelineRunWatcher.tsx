@@ -10,6 +10,7 @@
 // at a time (Web Locks), so two open tabs never post the same status twice.
 import { useEffect } from "react";
 import type { PipelineTicket } from "@/lib/pipeline/types";
+import { readFinishedRuns } from "@/lib/finishedRuns";
 
 const RUNS_KEY = "dashboard_background_runs";
 const STATE_KEY = "pipeline_run_watcher";
@@ -174,47 +175,53 @@ function startWatching(): () => void {
     const state = loadState();
     let dirty = false;
 
+    // Queued TS start the next run on the same key at once, so the live run alone misses
+    // finished ones: also read the runs the runner page recorded (lib/finishedRuns.ts), oldest first.
+    const recorded = readFinishedRuns().slice().reverse();
     for (const t of watched) {
-      const run = runs[t.runKey!];
-      if (!run?.runId) continue;
-      const digits = digitsOf(t.key);
-      const h = state.handled[run.runId] ?? { at: new Date().toISOString() };
-      if (h.resolved) continue;
+      const live = runs[t.runKey!];
+      const candidates: StoredRun[] = [...recorded.filter(r => r.key === t.runKey), ...(live ? [live] : [])];
+      for (const run of candidates) {
+        if (!run?.runId) continue;
+        const digits = digitsOf(t.key);
+        const h = state.handled[run.runId] ?? { at: new Date().toISOString() };
+        if (h.resolved) continue;
 
-      if (run.running && !run.orphaned) {
-        if (!h.started) {
-          state.handled[run.runId] = { ...h, started: true };
-          dirty = true;
-          if (t.statusSync) postStatus(t.key, idsOfRun(run, digits), "In Progress", run.runId);
+        if (run.running && !run.orphaned) {
+          if (!h.started) {
+            state.handled[run.runId] = { ...h, started: true };
+            dirty = true;
+            if (t.statusSync) postStatus(t.key, idsOfRun(run, digits), "In Progress", run.runId);
+          }
+          continue;
         }
-        continue;
-      }
 
-      // Finished. Only runs seen running, or finished after the watcher was
-      // installed, so old results already in storage are never re-posted.
-      if (run.running || run.orphaned || (!run.result && !run.error)) continue;
-      const finished = run.finishedAt ?? run.startedAt;
-      if (!h.started && finished < state.installedAt) {
+        // Finished. Only runs seen running, or finished after the watcher was
+        // installed, so old results already in storage are never re-posted.
+        if (run.running || run.orphaned || (!run.result && !run.error)) continue;
+        const finished = run.finishedAt ?? run.startedAt;
+        if (!h.started && finished < state.installedAt) {
+          state.handled[run.runId] = { ...h, resolved: true };
+          dirty = true;
+          continue;
+        }
         state.handled[run.runId] = { ...h, resolved: true };
         dirty = true;
-        continue;
-      }
-      state.handled[run.runId] = { ...h, resolved: true };
-      dirty = true;
-      if (!run.result) continue; // the request failed; nothing says how the TS went
+        if (!run.result) continue; // the request failed; nothing says how the TS went
 
-      const { pass, fail } = outcomes(checksOf(run.result), digits);
-      if (t.statusSync) {
-        postStatus(t.key, pass, "Pass", run.runId);
-        postStatus(t.key, fail, "Fail", run.runId);
-      }
-      // Save the full result first, so Elf reads the error text from it.
-      const saved = post("/api/pipeline/runs", runRecord(t.key, t.runKey!, run))
-        .catch(e => console.warn(`[pipeline] run ${run.runId} of ${t.key} not saved:`, e instanceof Error ? e.message : e));
-      if (fail.length) {
-        const key = t.key, runKey = t.runKey, runId = run.runId, result = run.result;
-        void saved.then(() => post("/api/pipeline/jobs", { key, action: "elf:findings", input: { runKey, runId, result } }))
-          .catch(e => console.warn(`[pipeline] could not ask Elf about the failed run of ${key}:`, e instanceof Error ? e.message : e));
+        const { pass, fail } = outcomes(checksOf(run.result), digits);
+        if (t.statusSync) {
+          postStatus(t.key, pass, "Pass", run.runId);
+          postStatus(t.key, fail, "Fail", run.runId);
+        }
+        // Save the full result first, so Elf reads the error text from it.
+        const saved = post("/api/pipeline/runs", runRecord(t.key, t.runKey!, run))
+          .catch(e => console.warn(`[pipeline] run ${run.runId} of ${t.key} not saved:`, e instanceof Error ? e.message : e));
+        if (fail.length) {
+          const key = t.key, runKey = t.runKey, runId = run.runId, result = run.result;
+          void saved.then(() => post("/api/pipeline/jobs", { key, action: "elf:findings", input: { runKey, runId, result } }))
+            .catch(e => console.warn(`[pipeline] could not ask Elf about the failed run of ${key}:`, e instanceof Error ? e.message : e));
+        }
       }
     }
     if (dirty) saveState(state);

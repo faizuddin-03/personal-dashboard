@@ -8,13 +8,13 @@ import { RoleKey } from '../data/users';
 import { expectButtons } from '../utils/checks';
 import { savePdf } from '../utils/pdf';
 
-// J. Payment Request download — 12028_TS48 to TS51, TS54.
-// Manual only (never automated): 12028_TS52 (no-role user on the download
-// address) and 12028_TS53 (download address of a not-fully-approved month).
+// J. Payment Request download — 12028_TS49 to TS52, TS55.
+// Manual only (never automated): 12028_TS53 (no-role user on the download
+// address) and 12028_TS54 (download address of a not-fully-approved month).
 // [unconfirmed] the download bar is not captured live (mock-up #inv-bar).
 
-test('12028_TS48: Download buttons hidden with pending note until the month is fully approved', tagOf('12028_TS48'), async ({ page }) => {
-  const ts = '12028_TS48';
+test('12028_TS49: Download buttons hidden with pending note until the month is fully approved', tagOf('12028_TS49'), async ({ page }) => {
+  const ts = '12028_TS49';
   const s = new Session(page, ts);
   await s.as('approver');
   await eachMonth(s, ['Pending', 'KIV', 'DA', 'DRA', 'RA', 'RRA'], async (d, state) => {
@@ -26,8 +26,8 @@ test('12028_TS48: Download buttons hidden with pending note until the month is f
   });
 });
 
-test('12028_TS49: Approver sees both download buttons on a fully approved month', tagOf('12028_TS49'), async ({ page }) => {
-  const ts = '12028_TS49';
+test('12028_TS50: Approver sees both download buttons on a fully approved month', tagOf('12028_TS50'), async ({ page }) => {
+  const ts = '12028_TS50';
   const { d } = await openAs(page, ts, 'approver', 'Full', 'E12028_MONTH', 'Fully approved month');
   await expectButtons(d, ts, { visible: ['FMC Payment Request', 'MMSDA Payment Request'] });
   await test.step('Check the pending note is not shown', async () => {
@@ -36,8 +36,8 @@ test('12028_TS49: Approver sees both download buttons on a fully approved month'
 });
 
 for (const c of [
-  { title: '12028_TS50: Drafter can download both PDFs on a fully approved month', role: 'drafter' as RoleKey },
-  { title: '12028_TS51: Reviewer can download both PDFs on a fully approved month', role: 'reviewer' as RoleKey },
+  { title: '12028_TS51: Drafter can download both PDFs on a fully approved month', role: 'drafter' as RoleKey },
+  { title: '12028_TS52: Reviewer can download both PDFs on a fully approved month', role: 'reviewer' as RoleKey },
 ]) {
   const ts = c.title.split(':')[0];
   test(c.title, tagOf(ts), async ({ page }) => {
@@ -55,8 +55,8 @@ for (const c of [
   });
 }
 
-test('12028_TS54: Second download gives the same file', tagOf('12028_TS54'), async ({ page }) => {
-  const ts = '12028_TS54';
+test('12028_TS55: Second download gives the same file', tagOf('12028_TS55'), async ({ page }) => {
+  const ts = '12028_TS55';
   const { d } = await openAs(page, ts, 'approver', 'Full', 'E12028_MONTH', 'Fully approved month');
   const first = await test.step('Click [FMC Payment Request] (first download)', async () => savePdf(await d.download(d.fmcBtn(), 'FMC Payment Request'), `${ts}-FMC-first`));
   const second = await test.step('Click [FMC Payment Request] again (second download)', async () => savePdf(await d.download(d.fmcBtn(), 'FMC Payment Request'), `${ts}-FMC-second`));

@@ -220,3 +220,13 @@ Compared against the 2026-10-26 study and the 2026-10-28 11:17 Jira capture (`EA
 2. **Finance role removed after SRD v0.1** ("The Finance role (user ID: eautoaccount) can view the summary and details but has no workflow actions."). Source: SRD v0.1 §2.2.9 REQ-016; SRD v1.1 §1.3 row 0.2. → `flow-association-payment-listing.md`.
 3. **Sign-off real names** on the sample match the flow file: "Muhammad Fared", "Nurul Saadiah", "Chia Ket Ming". Source: sample FMC R38. → confirms `flow-association-payment-listing.md` role → name list.
 4. **Status / date fixes** for `flow-association-payment-listing.md` (In Development, 26 Nov) and `cr-ledger.md` § EAINT-12028 (SRD trail, sample downloaded, no longer on hold). Source: `EAINT-12028-jira.md` (2026-10-28 capture), SRD v1.1 §1.3.
+
+## QA-Issue draft — Audit Log (2026-11-02)
+
+1. **Fields settled:** Priority = Low; Developer = Shane. Source: [Faizuddin, dashboard chat, 2026-11-02] "1. low 2. shane".
+2. **Evidence:** [Faizuddin, dashboard chat, 2026-11-02] "whatever you recommend. i will review manually later once you posted the bug ticket". No original screenshot exists in his OneDrive EAINT-12028 folder or the repo (checked 2026-11-02), so the ticket is created without images; he adds them later.
+3. **Draft files:** EAINT-12028-qa-issue-draft-auditlog-20261102.md / .json (same folder). Parent EAINT-12028; no duplicate (only EAINT-12716, menu link).
+4. **Still open (for: the BA):** does the "Approved (signed)" wording also apply to Reviewer and Approver rows? Does not block the ticket.
+5. **Created 2026-11-02:** EAINT-12738 (https://mfservices.atlassian.net/browse/EAINT-12738), QA-Issue under EAINT-12028, Low, assignee and Developer = Shane, QA = Faizuddin, status To Do. Written after [Faizuddin, dashboard chat, 2026-11-02] "i give permission to scout for EAINT-12028 6256". No images attached.
+6. **Split requested:** [Faizuddin, dashboard chat, 2026-11-02] "i want you to seperate the 2 items into 2 different tickets. make sure to change the details also, so that one ticket = 1 issue". Plan: edit EAINT-12738 to Role/Action only; create one new QA-Issue for When (Low, Shane). Drafts: EAINT-12028-qa-issue-draft-auditlog-1-role-action-20261102.json and ...-2-when-20261102.json. Not written to Jira yet (waiting for his permission line).
+7. **Split done 2026-11-02:** EAINT-12738 edited to Role/Action only (title + description). EAINT-12739 created (https://mfservices.atlassian.net/browse/EAINT-12739): QA-Issue under EAINT-12028, When date format only, Low, assignee and Developer = Shane, QA = Faizuddin. Written after [Faizuddin, dashboard chat, 2026-11-02] "i give permission to scout for EAINT-12028 69A7". No images attached.

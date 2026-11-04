@@ -187,6 +187,9 @@ export default function MarkdownLite({ source }: { source: string }) {
           // An indented fence under a list item: end the list so the block
           // loop renders it as code, rather than folding ``` into the text.
           break;
+        } else if (items.length && /^\s+\([a-z]\)\s/i.test(lines[i])) {
+          items[items.length - 1] += "\n" + lines[i].trim(); // a lettered option keeps its own line
+          i++;
         } else if (items.length && /^\s+\S/.test(lines[i])) {
           items[items.length - 1] += " " + lines[i].trim(); // continuation
           i++;
@@ -198,7 +201,7 @@ export default function MarkdownLite({ source }: { source: string }) {
           {items.map((it, ii) => (
             <li key={ii} className="flex gap-2 text-xs text-slate-400 leading-relaxed">
               <span className="text-slate-600 shrink-0 select-none">{ordered ? `${ii + 1}.` : "•"}</span>
-              <span className="min-w-0">{renderInline(it, `li${key}-${ii}`)}</span>
+              <span className="min-w-0 whitespace-pre-line">{renderInline(it, `li${key}-${ii}`)}</span>
             </li>
           ))}
         </ListTag>

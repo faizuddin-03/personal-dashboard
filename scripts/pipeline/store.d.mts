@@ -33,7 +33,10 @@ export declare function ensureTicket(opts: {
   jiraStatus?: string;
 }): PipelineTicket;
 export declare function removeTicket(key: string): boolean;
+export declare function archiveTicket(key: string): string;
 export declare function addEvent(key: string, text: string): PipelineTicket | null;
+export declare function historyRel(key: string): string;
+export declare function appendHistory(key: string, text: string, max?: number): void;
 
 export declare function appendChat(
   key: string,

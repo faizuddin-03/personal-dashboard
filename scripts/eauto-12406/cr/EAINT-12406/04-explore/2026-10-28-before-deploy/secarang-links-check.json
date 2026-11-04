@@ -1,0 +1,19 @@
+{
+ "Privacy Policy": {
+  "href": "/ia/privacy-policy",
+  "newTab": true,
+  "landedOn": "https://staging.secarang.com/ia/auth/login?returnUrl=%2Fprivacy-policy"
+ },
+ "Terms of Use": {
+  "href": "/ia/terms-of-use",
+  "newTab": true,
+  "landedOn": "https://staging.secarang.com/ia/auth/login?returnUrl=%2Fterms-of-use"
+ },
+ "preprodLinkInCode": {
+  "mainScript": "https://staging.secarang.com/ia/main.8fb1d339c30fff2942a6.js",
+  "component": "app-two-month-rule-modal",
+  "navigateToTargets": [
+   "/privacy-policy"
+  ]
+ }
+}
