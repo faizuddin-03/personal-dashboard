@@ -349,6 +349,23 @@ also calls `askDate()` before finalising.
 
    `[verified: Claude run uat1 2026-11-04, TS64 / TS65 / TS67 / TS68]`
 
+## Wording rule: the mock-up is the expected wording (decided 2026-11-04)
+
+`[source: Faizuddin, Claude session 2026-11-04 evening: "for the wordings, follow the mockup. log this as fail, but dont raise ticket yet"]`
+
+- The SRD v1.1 sets the behaviour but rarely the exact words. Exceptions: the REQ-016 pending note
+  and the REQ-015 log entries.
+- The words in the TS workbook come from the SA mock-up
+  (`_reference/tickets/Studying/EAINT-12028/association-payment-listing-mockup_20260731.html`).
+- For any message, note or label, **the mock-up wording is expected**. A build that words it
+  differently is a **fail**, logged but not raised until Faizuddin says so.
+- The automation follows this rule (`scripts/eauto-12028/data/expected.ts`). The full
+  expected-vs-live table is in
+  `_reference/tickets/EAINT-12028/claude-run-2026-11-04/FAILS-AND-BLOCKS.md`.
+- **One conflict:** for the Reject log Action, the mock-up says "Rejected — returned to Drafter",
+  while the TS workbook, the SRD and the live build all say "Rejected (returned to Drafter)". It is
+  logged as a fail under this rule `[open]`.
+
 ## QA Test Guide (dev-authored, from MR !1's engineering review)
 
 `[source: dev/engineering-authored QA test guide, artifact shared 2026-09-04, saved verbatim at

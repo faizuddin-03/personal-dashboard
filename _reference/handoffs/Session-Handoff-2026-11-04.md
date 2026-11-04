@@ -409,7 +409,20 @@ TS36 (Faizuddin), then TS37, TS39–TS42, TS50–TS57 and TS66.
   Faizuddin is finishing 12028 first.
 - Step plan ready: `BRIEF-E2E_TS1-TS9.md` in the run folder.
 
-**Next:** once the browser is free, run E2E_TS1 (real API, FPX), then E2E_TS9 (gender re-pricing).
+**E2E_TS1 ran on the real API (14:20 MYT, row 5 JLX8382)**
+- E1–E5 pass. Receipt 26110421300001; CIBO BR6N006388.
+- CIBO shows **Transaction Status Failed, Remark "Invalid fullName"**. The real Allianz API checks the owner name
+  against the IC, and we typed Azfar's made-up name. So there was no cover note, policy or e-Cert, and E6–E8 fail
+  on test data.
+- Q30 answered: Payment Ref ID ALZ20261104SFX0001.
+- **D1 and D2 reproduce on the real API.**
+- Evidence: `_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_E2E_TS1/`.
+
+- Faizuddin is asking Dev. The page sent to Dev (two questions, screenshots):
+  https://claude.ai/artifact/EskjT37xJYtnDVRxBkbG7t
+
+**Next:** when Dev answers which owner data to use, make a new E2E_TS1 attempt. E2E_TS9 needs a car
+that Tokio Marine also quotes.
 
 ## 4h. Evening: automation (`scripts/eauto-12028`) cross-checked against the live run
 
@@ -438,3 +451,27 @@ each use different wording:
 
 **Correction to this run:** TS48 was first marked pass. It is now **fail (F14)** for the column
 names and the newest-first order. Totals are now 32 pass · 16 fail · 18 blocked.
+
+## 4i. Wording rule decided: follow the mock-up (2026-11-04 evening)
+
+- **Asked first:** where the TS wording comes from. Answer: almost all of the disputed wording comes from the
+  SA **mock-up**, not the SRD. The SRD sets rules ("disabled with a waiting note", "rejected with a validation
+  message") but rarely the words. Only the pending note ("will be available") and the log entries are in the
+  SRD.
+- **Faizuddin:** "for the wordings, follow the mockup. log this as fail, but dont raise ticket yet".
+- **Done:**
+  - **Automation** expects the mock-up wording:
+    - `data/expected.ts`: `waitNoteFor()`, MSG.noDate / pastDate / remarks, NO_ACTIVITY
+    - `utils/checks.ts`: `expectNotYourTurn(role, state)`
+    - `utils/combined.ts`: `rejectNeedsRemarks` now expects the message
+    - `AplDetailsPage`: log columns `# / Date / Time / Role / Action / Status / Remarks`; Reject action
+      "Rejected — returned to …", which reverses the 4h fix
+    - Note checks added on the Full parts of TS25 and TS33, and on TS39
+  - **Results:** TS30, TS32, TS38 and TS46 changed from pass to fail (F15, F16). Totals are now
+    **28 pass, 20 fail, 18 blocked**. The table of expected vs live wording is at the top of
+    `FAILS-AND-BLOCKS.md`.
+- **Open:**
+  - F16: the TS workbook and the SRD agree with the live build ("Rejected (returned to …)"), so
+    Faizuddin may overrule it.
+  - The buttons are hidden, while the mock-up shows them disabled. This is not wording, so the
+    automation was not changed.

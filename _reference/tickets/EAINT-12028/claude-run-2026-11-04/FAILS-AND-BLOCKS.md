@@ -4,6 +4,38 @@ Run: Claude-driven, staging **uat1**, 2026-11-04, after the morning deploy. Seco
 Faizuddin, 2026-11-04: "keep super detailed tracked of the fail and block. i will review and
 tell you which on to raise". **Nothing is raised in Jira until he picks.**
 
+> **WORDING RULE, decided 2026-11-04 evening (Faizuddin):** "for the wordings, follow the mockup. log
+> this as fail, but dont raise ticket yet".
+>
+> - The SRD sets the rules but almost never the exact words. The words come from the SA mock-up
+>   (`_reference/tickets/Studying/EAINT-12028/association-payment-listing-mockup_20260731.html`).
+> - Every message, note and label is now expected **as the mock-up words it**. Where the live build
+>   differs, that is a **fail**, logged here and **not raised yet**.
+> - Where an entry below quotes another expected wording (the 2 Nov capture "You hold … not your turn
+>   yet"), the mock-up wording in this table replaces it:
+>
+> | Entry | TS | Mock-up wording (expected) | Mock-up line | Live build |
+> |---|---|---|---|---|
+> | F3, F8 | TS28 | Reviewer on Pending / KIV / DRA: "Waiting for the Drafter to approve first." | 480 | "Waiting for the Drafter. You can act once the Drafter has approved." / KIV "On hold. …" |
+> | F4 | TS35 | Approver on Pending / KIV / DA / DRA / RRA: "Waiting for the Reviewer to approve first." | 487 | "Waiting for the Drafter." / "Waiting for the Reviewer. You can act once …" / KIV "On hold. …" |
+> | F5, F8 | TS25, TS26 | Drafter on DA / RRA / Full: "Drafter has already approved this month. Waiting for the Reviewer." | 474 | "Waiting for the Reviewer." (Full: "Fully approved on …") |
+> | F10 | TS33 | Reviewer on RA / Full: "Reviewer has already approved. Waiting for the Approver." | 481 | (RA not seen) / Full: "Fully approved on …" |
+> | F10 | TS39 | Approver on Full: "Fully approved." | 488 | "Fully approved on 04-11-2026. Finance pay date: … PDFs are ready below." |
+> | F6 | TS49 | "Payment Request documents will be available for download once …" (the SRD says the same) | 516 | "… become available …" |
+> | F7 | TS07 | "YEAR TO DATE (Jan–<last month>)" | 600 | "YEAR TO DATE TOTAL" |
+> | F12 | TS37 | Blank: "Please select a payment date." · past/today: "Payment date must be a future date." | 541 | "Please pick a future payment date." · server "payment date must be a future date (got …)." |
+> | F14 | TS48 | Columns "# · Date / Time · Role · Action / Status · Remarks"; rows oldest first | 546-548 | "When · Actor · Role · Action · Payment Date · Remarks"; newest first |
+> | F15 | TS30, TS38 | Blank / spaces remarks: "Remarks are required to reject." | 538 | No message; [Submit Reject] stays disabled |
+> | F16 | TS30, TS32, TS38, TS46 | Log Action "Rejected — returned to Drafter" / "… Reviewer" | 522, 524 | "Rejected (returned to Drafter)" / "… Reviewer)" |
+> | — | TS47 | Empty log: "No activity yet." | 547 | (not seen: no empty month) |
+>
+> - **Note on F16:** the TS workbook (TS30 / TS32 / TS38 / TS46) and SRD REQ-015 say "Rejected
+>   (returned to Drafter)", which matches the live build. Under the mock-up rule it is logged as a
+>   fail. Faizuddin can overrule this one.
+> - **Not wording, so not changed:** the mock-up and the TS show the buttons **disabled**, while the
+>   live build **hides** them. The automation still expects "not on the page" `[open]`.
+> - The automation (`scripts/eauto-12028`) expects the mock-up wording from 2026-11-04 evening.
+
 Every entry gives:
 - the TS
 - the step
@@ -45,6 +77,8 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
 | F10 | TS39, TS25 / TS33 Full parts | TS out of date | One "Fully approved on … Finance pay date … PDFs are ready below." note for every role | open |
 | F11 | TS54 (+ TS69 message) | Fail as written, low risk | PDF address ignores the month in the path (serves by id); TS69 refusal message names the Reviewer | open |
 | F12 | TS37 | Wording + observation | Blank alert "Please pick a future payment date."; the page posts past dates and only the server refuses | open |
+| F15 | TS30, TS38 | Fail (wording), not raised | No "Remarks are required to reject." message on blank / spaces remarks; [Submit Reject] is only disabled | log only |
+| F16 | TS30, TS32, TS38, TS46 | Fail (wording), not raised | Log Action "Rejected (returned to …)" vs mock-up "Rejected — returned to …" (TS workbook and SRD match the build) | log only |
 | F14 | TS48 | TS out of date / decision | Audit Log column names (When, Action vs Date/Time, Action/Status) and row order (newest first vs oldest first); first marked pass by mistake | open |
 | F13 | TS56 / TS57 PDFs | Check | Header ".Bhd." typo copied from the mock-up; FMC "(PPM-…)" printed on the Address row | open |
 | B15 | TS42 | Blocked | No unsigned Approver left except `kmcheah` (kept for TS36) | open |

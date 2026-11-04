@@ -337,7 +337,9 @@ export class AplDetailsPage extends AplBase {
   static readonly LOG_COLUMNS = ['When', 'Actor', 'Role', 'Action', 'Payment Date', 'Remarks'];
   /** Columns the TS expects (12028_TS48: "Date/Time, Role, Action/Status, Remarks"; Payment Date: SRD REQ-015 Example 5 puts the Approver's payment date on the log).
    *  Faizuddin, 2026-11-02: follow the expected results; only the Actor column is overlooked. */
-  static readonly LOG_COLUMNS_EXPECTED = ['Date/Time', 'Role', 'Action/Status', 'Payment Date', 'Remarks'];
+  // Wording rule 2026-11-04 (follow the mock-up): mock-up renderLog() line 546 `# | Date / Time | Role | Action / Status | Remarks`.
+  // The mock-up has no Payment Date column (SRD REQ-015 Example 5 only says the date is logged).
+  static readonly LOG_COLUMNS_EXPECTED = ['#', 'Date / Time', 'Role', 'Action / Status', 'Remarks'];
 
   private static readonly LOG_COL = {
     when: /^(when|date\s*\/?\s*time)$/i,
@@ -412,7 +414,7 @@ export class AplDetailsPage extends AplBase {
 
   /**
    * The words and shapes of one Audit Log row, against the expected results (SA mock-up lines 329 and 548; TS 12028_TS20/TS21: "Drafter — Approved", "Drafter — KIV"):
-   * Role "Drafter" (not "DRAFTER"), Action "Approved (signed)" / "KIV" / "Rejected (returned to <role>)" (not "APPROVE"),
+   * Role "Drafter" (not "DRAFTER"), Action "Approved (signed)" / "KIV" / "Rejected — returned to <role>" (not "APPROVE"),
    * When "DD-MM-YYYY HH:mm" (not "02 Nov 2026 15:36"). Empty Remarks / Payment Date are not checked (dropped 2026-11-03).
    * The Actor column and the Pending / Approved status words are NOT held to the mock-up (Faizuddin, 2026-11-02: the mock-up is wrong for those only). Every mismatch is named in plain words.
    */
@@ -426,10 +428,10 @@ export class AplDetailsPage extends AplBase {
     const key = `log-${role}-${action}`.toLowerCase();
     await this.logMismatch(`${key}-role`, cell(C.role), `${who}, Role`, e.role, role, `"${role}"`);
     // Approved: "Approved (signed)" (SA mock-up lines 519-523; Faizuddin, dashboard chat 2026-11-02).
-    // Rejected: "Rejected (returned to Drafter)" / "Rejected (returned to Reviewer)" — TS 12028_TS30 expected result 5,
-    // SRD v1.1 REQ-015 Examples 4 and 6. Was "Rejected — returned to …" (mock-up form), which failed a correct build:
-    // the live uat1 log shows the SRD form (Claude run 2026-11-04, 12028_TS30 / TS38 / TS48 evidence).
-    const wantAction = action === 'Rejected' ? `Rejected (returned to ${role === 'Reviewer' ? 'Drafter' : 'Reviewer'})` : action === 'Approved' ? 'Approved (signed)' : action;
+    // Rejected: "Rejected — returned to Drafter" / "… Reviewer" — mock-up lines 522 / 524 (wording rule 2026-11-04:
+    // follow the mock-up). NOTE: the TS workbook (TS30 / TS32 / TS38 / TS46) and SRD REQ-015 say
+    // "Rejected (returned to Drafter)", which is what the live build shows — flagged to Faizuddin.
+    const wantAction = action === 'Rejected' ? `Rejected — returned to ${role === 'Reviewer' ? 'Drafter' : 'Reviewer'}` : action === 'Approved' ? 'Approved (signed)' : action;
     await this.logMismatch(`${key}-action`, cell(C.action), `${who}, Action`, e.action, wantAction, `"${wantAction}"`);
     await this.logMismatch(`${key}-when`, cell(C.when), `${who}, When`, e.time, /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}$/, '"DD-MM-YYYY HH:mm" (e.g. "02-11-2026 15:36")');
     // Empty Payment Date / Remarks cells are not checked for "-" (Faizuddin, dashboard chat 2026-11-03: "drop those for now").

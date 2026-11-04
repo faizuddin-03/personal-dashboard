@@ -3,7 +3,8 @@ import { Session, remarksFor } from '../utils/session';
 import { openAs, expectNewLogRow, expectStatus, expectSummaryStatus } from '../utils/workflow';
 import { eachMonth, rejectNeedsRemarks } from '../utils/combined';
 import { tagOf } from '../data/priority';
-import { expectButtons, expectNoPad, expectNotYourTurn } from '../utils/checks';
+import { expectButtons, expectNoPad, expectNote, expectNotYourTurn } from '../utils/checks';
+import { waitNoteFor } from '../data/expected';
 
 // F. Reviewer actions — 12028_TS28 to TS34.
 // [unconfirmed] Details page not captured live.
@@ -13,7 +14,7 @@ test('12028_TS28: Reviewer buttons hidden with not-your-turn note until the Draf
   const s = new Session(page, ts);
   await s.as('reviewer');
   await eachMonth(s, ['Pending', 'KIV', 'DRA'], async (d, state) => {
-    await expectNotYourTurn(d, `${ts}-${state}`, 'Reviewer');
+    await expectNotYourTurn(d, `${ts}-${state}`, 'Reviewer', state);
   });
 });
 
@@ -79,9 +80,10 @@ test('12028_TS33: Reviewer buttons hidden once the Reviewer step is done', tagOf
   let fullMonth = '';
   await eachMonth(s, ['RA', 'Full'], async (d, state, month) => {
     if (state === 'RA') {
-      await expectNotYourTurn(d, `${ts}-RA`, 'Reviewer');
+      await expectNotYourTurn(d, `${ts}-RA`, 'Reviewer', 'RA');
     } else {
       await expectButtons(d, `${ts}-Full`, { absent: ['Approve', 'Reject'] });
+      await expectNote(d, `${ts}-Full`, waitNoteFor('Reviewer', 'Full')!);
       fullMonth = month;
     }
   });

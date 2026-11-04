@@ -1,7 +1,8 @@
 import { expect, Locator, test } from '@playwright/test';
 import { AplDetailsPage } from '../pages/AplDetailsPage';
 import { norm } from './table';
-import { NOT_YOUR_TURN_NOTE } from '../data/expected';
+import { waitNoteFor } from '../data/expected';
+import type { MonthState } from './session';
 
 // Assertions several TS share. Each one says exactly which state it means
 // (lesson 11): "absent" = count 0; "disabled" = in the page and greyed.
@@ -76,28 +77,16 @@ export async function expectNote(d: AplDetailsPage, ts: string, text: string): P
 }
 
 /**
- * Not this login's turn: the role's buttons are not rendered at all (count 0, not disabled), and the
- * page explains it — from _reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html
- * line 126 "You hold APPROVER for this module, but it is not your turn yet." and line 132
- * "Awaiting the next role in the approval sequence." The Drafter / Reviewer wording follows the
- * same pattern [unconfirmed: only the APPROVER line is captured].
- * 2026-11-04: the live build no longer has #wf-not-your-turn or this note; it shows a per-role note in
- * #ap-note instead (e.g. "Waiting for the Drafter. You can act once the Drafter has approved."). The TS
- * workbook says something else again ("Waiting for the Drafter to approve first.", buttons "disabled").
- * Which wording to expect is Faizuddin's call (FAILS-AND-BLOCKS F3/F4) — left unchanged until then.
+ * Not this login's turn: the role's buttons are not on the page (count 0 — the live build does not render them),
+ * and the note under them reads the MOCK-UP wording for this role and month state (waitNoteFor; wording rule
+ * 2026-11-04). The live build since 2026-11-03 words these notes differently (e.g. "Waiting for the Drafter. You
+ * can act once the Drafter has approved."), so these checks fail until the build or the decision changes.
+ * The TS says the buttons are "disabled"; the build hides them. Kept as "not on the page" [open with Faizuddin].
  */
-export async function expectNotYourTurn(d: AplDetailsPage, ts: string, role: 'Drafter' | 'Reviewer' | 'Approver'): Promise<void> {
+export async function expectNotYourTurn(d: AplDetailsPage, ts: string, role: 'Drafter' | 'Reviewer' | 'Approver', state: MonthState): Promise<void> {
   await expectButtons(d, ts, { absent: role === 'Drafter' ? ['Approve', 'KIV'] : ['Approve', 'Reject'] });
-  const want = `You hold ${role.toUpperCase()} for this module, but it is not your turn yet.`;
-  await test.step(`Check "${want}" is shown`, async () => {
-    const n = d.notYourTurn();
-    await d.verify(`${ts}-not-your-turn`, (await n.count()) ? n : d.wfBar(), `Should read "${want}"`, async () => {
-      await expect(n).toHaveCount(1);
-      expect(norm(await n.innerText())).toBe(want);
-    });
-    await d.showValue(n);
-  });
-  await expectNote(d, ts, NOT_YOUR_TURN_NOTE);
+  const want = waitNoteFor(role, state);
+  if (want) await expectNote(d, ts, want);
 }
 
 /** The signature popup is NOT shown (lesson 11: given a short time, then count of visible = 0). */

@@ -4,8 +4,8 @@ import { openAs, expectNewLogRow, expectNoNewLogRow, expectStatus, expectStatuse
 import { Checks, eachMonth, rejectNeedsRemarks } from '../utils/combined';
 import { tagOf } from '../data/priority';
 import { CONFIG, monthInput } from '../data/config';
-import { MSG } from '../data/expected';
-import { expectButtons, expectNoPad, expectNotYourTurn } from '../utils/checks';
+import { MSG, waitNoteFor } from '../data/expected';
+import { expectButtons, expectNoPad, expectNote, expectNotYourTurn } from '../utils/checks';
 import { addDays, ddmmyyyy, DATE_RE, today } from '../utils/format';
 import { AplDetailsPage } from '../pages/AplDetailsPage';
 
@@ -17,7 +17,7 @@ test('12028_TS35: Approver buttons hidden with not-your-turn note until the Revi
   const s = new Session(page, ts);
   await s.as('approver');
   await eachMonth(s, ['Pending', 'KIV', 'DA', 'DRA', 'RRA'], async (d, state) => {
-    await expectNotYourTurn(d, `${ts}-${state}`, 'Approver');
+    await expectNotYourTurn(d, `${ts}-${state}`, 'Approver', state);
   });
 });
 
@@ -84,7 +84,7 @@ test('12028_TS37: Payment date popup blocks cancel, blank, today, past, typed an
     const msgs = d.takeDialogs().map(m => m.trim());
     console.log(`DETAIL:${JSON.stringify({ label: 'Payment date blank', value: msgs.join('; ') || '(no browser message)' })}`);
     await d.captureEvidence(`${ts}-blank`);
-    // Live Details capture line 403: `alert('Please pick a future payment date.')`.
+    // Mock-up line 541 `alert('Please select a payment date.')` (wording rule 2026-11-04). Live says "Please pick a future payment date.".
     await c.run('blank date', d.dateModal(), async () => {
       expect(msgs, `"${MSG.noDate}" shown`).toContain(MSG.noDate);
       await expect(d.dateModal(), 'popup still open').toBeVisible();
@@ -163,6 +163,7 @@ test('12028_TS39: Approver buttons hidden on a fully approved month', tagOf('120
   });
   await s.requireState(d, month, 'Full');
   await expectButtons(d, ts, { absent: ['Approve', 'Reject'] });
+  await expectNote(d, ts, waitNoteFor('Approver', 'Full')!);
   await test.step('Check the Payment Date is a DD-MM-YYYY date', async () => expect(before).toMatch(DATE_RE));
   await expectSummaryStatus(s, ts, month, 'Payment Date', before);
 });

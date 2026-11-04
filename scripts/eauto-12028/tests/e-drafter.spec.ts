@@ -4,8 +4,8 @@ import { openAs, expectNewLogRow, expectNoNewLogRow, expectStatus, expectSummary
 import { eachMonth } from '../utils/combined';
 import { tagOf } from '../data/priority';
 import { required } from '../data/config';
-import { MSG } from '../data/expected';
-import { expectButtons, expectNoPad, expectNotYourTurn } from '../utils/checks';
+import { MSG, waitNoteFor } from '../data/expected';
+import { expectButtons, expectNoPad, expectNote, expectNotYourTurn } from '../utils/checks';
 
 // E. Drafter actions — 12028_TS20 to TS27.
 // Each TS acts on the month(s) typed on its row; each month must already be in
@@ -114,11 +114,12 @@ test('12028_TS25: Drafter buttons hidden once the Drafter step is done', tagOf('
   let fullMonth = '';
   await eachMonth(s, ['DA', 'RRA', 'Full'], async (d, state, month) => {
     if (state === 'DA') {
-      await expectNotYourTurn(d, `${ts}-DA`, 'Drafter');
+      await expectNotYourTurn(d, `${ts}-DA`, 'Drafter', 'DA');
     } else if (state === 'RRA') {
-      await expectNotYourTurn(d, `${ts}-RRA`, 'Drafter');
+      await expectNotYourTurn(d, `${ts}-RRA`, 'Drafter', 'RRA');
     } else {
       await expectButtons(d, `${ts}-Full`, { absent: ['Approve', 'KIV'] });
+      await expectNote(d, `${ts}-Full`, waitNoteFor('Drafter', 'Full')!);
       fullMonth = month;
     }
   });
@@ -136,7 +137,7 @@ test('12028_TS26: Second Drafter user approves a Pending month and is blocked af
       await expectStatus(d, ts, 'Drafter', 'Approved');
       await expectNewLogRow(d, ts, 'Drafter', 'Approved', before);
     } else {
-      await expectNotYourTurn(d, `${ts}-DA`, 'Drafter');
+      await expectNotYourTurn(d, `${ts}-DA`, 'Drafter', 'DA');
     }
   });
 });

@@ -5,7 +5,11 @@
 /** SRD v1.1 §2.2.6 REQ-016 Example 2 (verbatim). */
 export const PENDING_NOTE = 'Payment Request documents will be available for download once the Drafter, Reviewer and Approver have all approved.';
 
-/** Mock-up renderWorkflow() notes (lines 474-487) — [unconfirmed]: the SRD only says "disabled with a waiting note" (REQ-009). */
+// ── WORDING RULE (Faizuddin, 2026-11-04): "for the wordings, follow the mockup. log this as fail, but dont raise
+// ticket yet". The SRD gives the rules but not the words, so every on-screen message / note / label below is the
+// SA mock-up's (association-payment-listing-mockup_20260731.html). A live build that words it differently FAILS.
+
+/** Mock-up renderWorkflow() notes (lines 468-488). The SRD only says "disabled with a waiting note" (REQ-009). */
 export const WAIT_NOTE = {
   forDrafter: 'Waiting for the Drafter to approve first.',
   forReviewer: 'Waiting for the Reviewer to approve first.',
@@ -14,9 +18,15 @@ export const WAIT_NOTE = {
   fullyApproved: 'Fully approved.', // mock-up line 488 (Approver on a fully approved month)
 };
 
-/** Note under the workflow bar when it is not this login's turn —
- *  _reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html line 132. */
-export const NOT_YOUR_TURN_NOTE = 'Awaiting the next role in the approval sequence.';
+/** The mock-up's note for a login that cannot act on a month, by role and month state (renderWorkflow, lines 468-488):
+ *  Drafter: Drafter Status Approved (DA / RRA / RA / Full) → drafterDone.
+ *  Reviewer: Drafter not Approved (Pending / KIV / DRA) → forDrafter; Reviewer Approved (RA / Full) → reviewerDone.
+ *  Approver: Reviewer not Approved (Pending / KIV / DA / DRA / RRA) → forReviewer; fully approved → fullyApproved. */
+export function waitNoteFor(role: 'Drafter' | 'Reviewer' | 'Approver', state: 'Pending' | 'KIV' | 'DRA' | 'DA' | 'RRA' | 'RA' | 'Full'): string | undefined {
+  if (role === 'Drafter') return ['DA', 'RRA', 'RA', 'Full'].includes(state) ? WAIT_NOTE.drafterDone : undefined;
+  if (role === 'Reviewer') return ['Pending', 'KIV', 'DRA'].includes(state) ? WAIT_NOTE.forDrafter : ['RA', 'Full'].includes(state) ? WAIT_NOTE.reviewerDone : undefined;
+  return state === 'Full' ? WAIT_NOTE.fullyApproved : state === 'RA' ? undefined : WAIT_NOTE.forReviewer;
+}
 
 /** Validation messages, from the live Details capture's script
  *  (_reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html).
@@ -26,12 +36,14 @@ export const NOT_YOUR_TURN_NOTE = 'Awaiting the next role in the approval sequen
  *  [verified: Claude run uat1 2026-11-04, 12028_TS37-part2-dates]. TS37's own wording differs for both
  *  messages ("Please select a payment date.", "Payment date must be a future date.") — see FAILS-AND-BLOCKS F12. */
 export const MSG = {
-  signature: 'Please provide your signature.', // DETAILS line 421
-  noDate: 'Please pick a future payment date.', // DETAILS line 403 (Confirm with no date)
+  signature: 'Please provide your signature.', // mock-up line 355; live DETAILS line 421 says the same
+  noDate: 'Please select a payment date.', // mock-up line 541 (live says "Please pick a future payment date.")
+  pastDate: 'Payment date must be a future date.', // mock-up line 541 (live server: "payment date must be a future date (got …).")
+  remarks: 'Remarks are required to reject.', // mock-up line 538 (live: no message, [Submit Reject] stays disabled)
 };
 
-/** Audit Log empty state — DETAILS line 306. */
-export const NO_ACTIVITY = 'No workflow actions recorded yet.';
+/** Audit Log empty state — mock-up line 547 (live DETAILS line 306 says "No workflow actions recorded yet."). */
+export const NO_ACTIVITY = 'No activity yet.';
 
 /** SRD v1.1 REQ-008: 16 states, code → names (SRD short form; mock-up long form, line 271). */
 /** label = the live cell text, from _reference/html/eauto/bo-association-payment-listing-details-sep-2026-approver-not-turn.html lines 156-276 (upper case + code). */
