@@ -37,6 +37,18 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
 | F6 | 12028_TS49 | TS out of date / SA question | PDF pending note "become available" vs SRD "will be available"; RRA part not run | open |
 | F7 | 12028_TS07 | TS out of date / BA question | Total row label "YEAR TO DATE TOTAL" vs mock-up "YEAR TO DATE (Jan – Oct)" | open |
 | F8 | 12028_TS26 | TS out of date (same as F3) | All actions pass; only the June not-your-turn wording fails ("Waiting for the Reviewer.") | open |
+| F1 also covers | 12028_TS59, TS63 (c) | Possible defect (same cause) | Used hand-off / logged-out expiry address → bare "Unauthorized" page instead of "Token already used" / BO login; the security part passes | open |
+| B12 | 12028_TS21 | Blocked | No all-Pending month left (Undo KIV restores the earlier state) | open |
+| B13 | 12028_TS62 | Blocked by EAINT-12752 item 2 (header) | The module header has no Logout; Shane says it is "expected", Faizuddin says the header is incorrect | open |
+| Retest | EAINT-12752 item 1 | Pass | Favicon now the same eAuto icon (identical file) | ready to comment DONE on item 1 if Faizuddin wants |
+| B14 | 12028_TS53, TS54, TS69 | Blocked | Need a fully approved month (after TS36) | open |
+| F10 | TS39, TS25 / TS33 Full parts | TS out of date | One "Fully approved on … Finance pay date … PDFs are ready below." note for every role | open |
+| F11 | TS54 (+ TS69 message) | Fail as written, low risk | PDF address ignores the month in the path (serves by id); TS69 refusal message names the Reviewer | open |
+| F12 | TS37 | Wording + observation | Blank alert "Please pick a future payment date."; the page posts past dates and only the server refuses | open |
+| F13 | TS56 / TS57 PDFs | Check | Header ".Bhd." typo copied from the mock-up; FMC "(PPM-…)" printed on the Address row | open |
+| B15 | TS42 | Blocked | No unsigned Approver left except `kmcheah` (kept for TS36) | open |
+| F9 | 12028_TS61 | Possible defect | Warning shows at 13 min, but still signed in after 16 min idle (page says 15 min) | open |
+| Note | 12028_TS67, TS68 | Pass with deviation | TS67 on a DRA month (no Pending month); TS68 as `mfizni`, not `kmcheah` | for info |
 | B1 | 12028_TS09 | Blocked | No closed month with zero transactions | open |
 | B2 | 12028_TS47 | Blocked | No month without workflow actions | open |
 | B3 | TS11–TS13 | Blocked | Month-close cron: wait time and a closable month needed | open |
@@ -77,10 +89,18 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
   - `12028_TS60/02-tab1-logged-out.png`
   - `12028_TS60/01-tab2-summary.png`
   - Videos: `12028_TS60/12028_TS60.webm` (tab 1) and `12028_TS60-tab2.webm` (tab 2)
-- **Related:**
-  - TS61 (session expiry should return to BO login "without an error page") is likely to show
-    the same thing.
-  - TS63 (session-expiry redirect) is manual.
+- **Same "Unauthorized" page seen in two more TS (one cause, three symptoms):**
+  - **TS59:** a used hand-off address, opened after logout, does not open the Summary ✔. But
+    instead of "Token already used" the user gets this "Unauthorized" page, at
+    `/uat1/api/admin/backoffice/auth-redirect.do?module=association&target=LISTING`
+    (`12028_TS59/`).
+  - **TS63 (c):** the expiry address, logged out, with `target=https://example.com/` →
+    outside site not opened ✔, but the "Unauthorized" page instead of the BO login
+    (`12028_TS63/`).
+  - **Likely cause:** whenever the BO session is gone, `auth-redirect.do` answers with a bare
+    401 page instead of sending the user to `/uat1/public/login/`.
+  - TS61 (session expiry should return to the BO login "without an error page") will very
+    likely show the same thing.
 - **To decide:** raise as a QA-Issue (suggested Medium, under EAINT-12028, developer Shane), or
   not.
 
@@ -103,10 +123,21 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
   - The steps can't be done.
 - **Evidence:** `12028_TS58/` (`03-…no-module-logout` red, `02-summary-no-second-login`), video
   `12028_TS58.webm`.
-- **To decide:**
-  - Is EAINT-12752 enough (it asks for the full BO header, which includes Logout), or should
-    "no Logout on the module" be raised on its own?
-  - Re-run TS58 after 12752 is fixed.
+- **Jira check (2026-11-04).** EAINT-12752 (Low, Shane, "Ready in 1st Env") item 2 asks for
+  the header to match other BO pages (Home, Menu, user's name, My Account, Logout).
+  - **Shane's only comment** (2026-11-03 17:39), quoted in full for the header part:
+    > "header: this is expected, not a bug. backoffice pages only show "back to backoffice", the name / my account / logout are removed on purpose. user go back to eauto using back to backoffice, and logout from eauto also end the backoffice session"
+  - **No reason is given:** no SRD or mock-up reference, and no word on who decided or why.
+    He only says how to get back and log out.
+  - **Faizuddin, 2026-11-04:** "its not about logout, but its about the header, because the
+    header itself is incorrect". So TS58's module-logout steps and TS62 stay blocked by
+    12752 item 2 until he and the developer / BA settle the header.
+  - **Gap in the workaround:** after "logout from eAuto", the module tab shows the bare
+    "Unauthorized" page (F1), not the login.
+- **Item 1 (favicon) retested 2026-11-04: pass.** Both pages serve the same eAuto icon file
+  (evidence `EAINT-12752-retest-favicon/`).
+- **To decide:** reply to Shane on item 2 with the source for the expected header, or accept
+  it and update TS58 / TS62.
 
 ## F3 · 12028_TS28: Reviewer not-your-turn: wording changed
 
@@ -227,6 +258,104 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
 
 ---
 
+## F9 · 12028_TS61: the session does not expire at the 15 minutes the page warns about
+
+- **Classification:** Possible defect, or a TS / config question.
+- **User / env:** `mfared`, uat1. Month: March Details (view only).
+- **Config on the page:** `#session-cfg` `data-idle="900"`, `data-warn="120"`,
+  `data-ping="30"`.
+- **The keep-alive** (`GET /backoffice/admin/association/keepalive`) is sent only after a
+  click, keydown or scroll; none happened.
+- **Steps:**
+  1. Log in.
+  2. Reports → Association Payment Listing → View March.
+  3. No mouse, keys or scroll for 16 minutes (2026-11-04 12:08–12:24 MYT).
+  4. Refresh.
+- **Expected** (TS61, spec `m-session.spec.ts`): after the timeout the user returns to the BO
+  login, without an error page.
+- **Actual:**
+  - At **13 min 30 s** `#idle-modal` shows "Still there? Your session is about to expire
+    from inactivity. Stay signed in to keep your work. [Stay signed in]" ✔.
+  - At **16 min**, refresh → **still signed in**: "Association Payment Listing — March
+    2026", the state table, no login, no error page ✘.
+- **Possible reasons, for the developer:**
+  - The server session timeout is longer than the 900 s the page shows.
+  - Or only the page's warning uses 900 s.
+- **Not tried:** waiting longer to find the real server timeout.
+- **Evidence:**
+  - `12028_TS61/` (`NN-idle-warning`, `NN-after-16-min-before-refresh`, `NN-after-refresh`
+    red)
+  - ~17-minute video
+- **To decide:** raise it, or ask the developer what the server timeout is first.
+
+## F10 · 12028_TS39 (+ the Full parts of TS25 and TS33): the note on a fully approved month
+
+- **Classification:** TS out of date / wording.
+- **The page shows one note to every role** on a fully approved month:
+  > "Fully approved on 04-11-2026. Finance pay date: 05-11-2026. The FMC and MMSDA Payment Request PDFs are ready below."
+- **The TS / workbook expects:**
+
+  | TS | Role | Expected note |
+  |---|---|---|
+  | TS39 | Approver | "Fully approved." |
+  | TS25 | Drafter | "Drafter has already approved this month. Waiting for the Reviewer." |
+  | TS33 | Reviewer | "Reviewer has already approved. Waiting for the Approver." |
+
+- **The buttons are correctly hidden** in all three.
+- **Evidence:** `12028_TS39/`, `12028_TS25-part3-Full/`, `12028_TS33-part2-Full/`.
+- **To decide:** update the TS or ask the SA.
+
+## F11 · 12028_TS54: the PDF address ignores the month in its path (+ TS69's message)
+
+- **Classification:** fail as written, low risk.
+- **User:** `kmcheah`.
+- **What happened:**
+  - May's FMC address with only the month changed (`/backoffice/admin/association/2026/1/7f66cb31-…/pdf?type=FMC`, May's id) → **200, application/pdf, "Payment Requisition_FMC_May 2026.pdf"**.
+  - The server serves by id and ignores the month and year in the path.
+  - January's own id (`/2026/1/1387d32e-…/pdf?type=FMC`) → 302 to `auth-redirect.do`, no PDF ✔.
+  - So a not-approved month's PDF is not served, but the TS's "Access blocked; no PDF downloaded" is not met for the edited address.
+- **Also (TS69):** a forced Approver Reject on fully approved May was refused correctly. The
+  message, however, said "… cannot act until the **Reviewer** has approved.", which is wrong on
+  a month where the Reviewer approved. Minor.
+- **Evidence:** `12028_TS54/`, `12028_TS69/`.
+- **To decide:** raise "path month not checked" (Low), or accept it.
+
+## F12 · 12028_TS37: blank-date message wording; the page does not check the date itself
+
+- **Classification:** wording (fail) + an observation.
+- **Blank date:** alert "Please pick a future payment date."; the TS expects "Please select a
+  payment date.". This was already known from the 2026-11-02 capture (flow file "Live build
+  captures" #9).
+- **Observation:**
+  - The picker cannot select today or the past (`min` = tomorrow).
+  - If such a value gets in anyway, the page **still submits the form**; there is no
+    client-side check.
+  - The **server refuses**: "payment date must be a future date (got 2026-11-04)." It is lower
+    case and includes "(got …)"; the TS wording is "Payment date must be a future date.".
+  - Typed and pasted dates are blocked (the field stays empty).
+- **Evidence:** `12028_TS37/` (the first run stopped after the forced-today step),
+  `12028_TS37-part2-dates/` (today / yesterday / typed / pasted, with the POST bodies),
+  `12028_TS37-check-after/` (February untouched).
+
+## F13 · Payment Request PDFs: things to check (TS56 / TS57 still need the names)
+
+- **Header** reads "eAuto Sdn **.Bhd.** 200401038456 (676967-T)".
+  `scripts/eauto-12028/data/expected.ts` lists exactly this as the mock-up's typo
+  (`PDF_WRONG.headerTypo`, mock-up line 409). The build copied the typo.
+- **FMC "Pay to":** "(PPM-001-14-11041979)" prints on the **Address** row.
+  `expected.ts` has it as part of the Account Holder Name ("FED OF MOTOR & CREDIT COMPANIES ASSO
+  MSI (PPM-001-14-11041979)"), and the FMC PDF has no Address value.
+- **Correct, per expected.ts:**
+  - Attn "Marie Ann"
+  - reasons "eAUTO PAYMENT TO FMCCAM" / "eAUTO PAYMENT TO MMSDA", "MAY 2026"
+  - bank details
+  - amounts MYR 238.00 / 38.00 with words
+  - Prepared / Checked / Approved names, dates and signature images
+- **Evidence:** `12028_TS51/01-fmc.pdf`, `02-mmsda.pdf`, `fmc-page-1.png`,
+  `mmsda-page-1.png`.
+
+---
+
 ## B1 · 12028_TS09: blocked: no zero-transaction month
 
 - **Needs:** a closed 2026 month with 0 car and 0 motorcycle transactions.
@@ -276,9 +405,11 @@ Status column: **open** = waiting for Faizuddin · raise / don't raise / update 
     MMSDA Payment Request PDFs
   - a fully approved month (after TS36)
 
-## B9 · 12028_TS61: blocked: session timeout
+## B9 · 12028_TS61: session timeout: **unblocked 2026-11-04**
 
-- **Needs:** the module's session timeout in minutes, from the developer.
+- **Found without the developer:** the Details page's `#session-cfg` on uat1 sets idle 900 s
+  (15 min), a warning from 13 min, and a ping every 30 s.
+- TS61 was then run with a real 16-minute idle. See `RESULTS.md` for the outcome.
 
 ## B10 · 12028_TS29: cannot be a "first" signature with `eautonurul`
 

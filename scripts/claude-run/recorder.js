@@ -244,6 +244,39 @@ async (page) => {
     await R.page.locator('#rmk-modal').waitFor({ state: 'hidden', timeout: 20000 }).catch(() => {});
     await R.page.waitForTimeout(2500);
   };
+  // Approver [Approve]: sign if the pad appears, then the payment-date popup.
+  // The date field blocks typing and pasting (onkeydown / onpaste return false), so the value
+  // is SET directly (Playwright fill on a native date input), the only scriptable way; a
+  // person uses the browser's date picker. Use it for setup steps; say so when a TS uses it.
+  // `dateISO` = 'YYYY-MM-DD'. Returns { padShown, dateModal, dialogs }.
+  R.approverApprove = async (dateISO, label = 'Click [Approve]') => {
+    R.watchDialogs();
+    await R.click(R.btn('Approve'), label);
+    const sig = R.page.locator('#sig-modal'), dm = R.page.locator('#date-modal');
+    const first = await Promise.race([
+      sig.waitFor({ state: 'visible', timeout: 8000 }).then(() => 'sig', () => null),
+      dm.waitFor({ state: 'visible', timeout: 8000 }).then(() => 'date', () => null),
+    ]);
+    let padShown = false;
+    if (first === 'sig') {
+      padShown = true;
+      await R.caption('Signature pad shown: sign and click [Save & Approve]');
+      await R.drawSignature();
+      await R.click(sig.getByRole('button', { name: 'Save & Approve', exact: true }), 'Click [Save & Approve]');
+      await dm.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+    }
+    const dateModal = await dm.isVisible().catch(() => false);
+    if (dateModal) {
+      const pd = R.page.locator('#pay-date');
+      await R.caption(`Payment date popup: set ${dateISO} (date picker value set directly)`);
+      await R.hl(pd, 'amber', 800); await pd.fill(dateISO); await R.unhl();
+      await R.click(dm.getByRole('button', { name: 'Confirm Approve', exact: true }), 'Click [Confirm Approve]');
+      await dm.waitFor({ state: 'hidden', timeout: 20000 }).catch(() => {});
+    }
+    await R.page.waitForTimeout(2500);
+    return { padShown, dateModal, dialogs: R.dialogs.splice(0) };
+  };
+  R.isoDate = (addDays = 0) => { const d = new Date(); d.setDate(d.getDate() + addDays); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
   R.today = () => { const d = new Date(); return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`; };
   // Rows in the Audit Log for role+action (case-insensitive, e.g. 'Drafter','Approved').
   R.logCount = (st, role, action) => st.log.filter(r => (r[2] || '').toLowerCase() === role.toLowerCase() && (r[3] || '').toLowerCase().startsWith(action.toLowerCase())).length;

@@ -241,7 +241,12 @@
       "section": "E. Drafter actions",
       "ts": "12028_TS21",
       "objective": "Drafter KIV on a Pending month sets Drafter Status KIV",
-      "cells": []
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Blocked"
+        }
+      ]
     },
     {
       "sheet": "Claude run 2026-11-04",
@@ -260,7 +265,12 @@
       "section": "E. Drafter actions",
       "ts": "12028_TS23",
       "objective": "Drafter KIV on a Review Again month sets Drafter Status KIV",
-      "cells": []
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Pass"
+        }
+      ]
     },
     {
       "sheet": "Claude run 2026-11-04",
@@ -375,7 +385,12 @@
       "section": "F. Reviewer actions",
       "ts": "12028_TS33",
       "objective": "Reviewer buttons hidden once the Reviewer step is done",
-      "cells": []
+      "cells": [
+        {
+          "column": "Claude uat1 04-11",
+          "status": "Fail"
+        }
+      ]
     },
     {
       "sheet": "Claude run 2026-11-04",
@@ -421,7 +436,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Fail"
         }
       ]
     },
@@ -445,7 +460,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Fail"
         }
       ]
     },
@@ -457,7 +472,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -469,7 +484,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -481,7 +496,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Blocked"
         }
       ]
     },
@@ -553,7 +568,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -577,7 +592,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -589,7 +604,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -601,7 +616,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -613,7 +628,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -625,7 +640,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Fail"
         }
       ]
     },
@@ -637,7 +652,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -685,7 +700,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Fail"
         }
       ]
     },
@@ -709,7 +724,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Blocked"
+          "status": "Fail"
         }
       ]
     },
@@ -721,7 +736,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Blocked"
         }
       ]
     },
@@ -733,7 +748,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Fail"
         }
       ]
     },
@@ -769,7 +784,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -781,7 +796,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -793,7 +808,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     },
@@ -805,7 +820,7 @@
       "cells": [
         {
           "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "status": "Pass"
         }
       ]
     }

@@ -97,6 +97,35 @@ already gone):
 TS37, TS39, TS40, TS41, TS42, TS50–TS57, TS66, and the Full parts of TS25 / TS33.
 TS43 (Multi-role completes a month alone) also waits for the BA's signature rule (`expectSig`).
 
+## Batch 3: full approval through `mfizni` (Faizuddin: "yes, do that", 2026-11-04)
+
+- **Why:** `kmcheah` stays untouched for Faizuddin's TS36 on 2026-11-05. The multi-role
+  `mfizni` (holds Approver, has never approved) makes the fully approved months instead, so the
+  Full-month TS can run today.
+- **Cost, accepted:** `mfizni`'s first Approver signature is used up, which TS43 (signature
+  rule) may need later.
+- **SETUP-05:** `mfizni` approves May (Reviewer Approved) with tomorrow's payment date →
+  fully approved.
+  - The payment-date field blocks typing and pasting, so its value is set directly (setup
+    only).
+- **Then, on Full months:**
+  - TS39 (Approver buttons hidden; viewed as `kmcheah`)
+  - TS50 (Approver sees both downloads; `kmcheah` views and downloads, no signing)
+  - TS51 / TS52 (Drafter / Reviewer download)
+  - TS55 (second download is the same file)
+  - TS53 / TS54 (download address as the no-role user / for a non-Full month)
+  - TS69 (forced Reject on a Full month)
+  - TS25 / TS33 Full parts
+  - TS48 (Audit Log after a reject loop: Sep or Jan history)
+- **Approver-action TS run as `mfizni` (deviation, logged per TS):**
+  - TS66 (two tabs) on Aug
+  - TS37 (date popup checks) on Feb
+  - TS41 (approve after the Reviewer re-approved) on Sep
+  - TS40 (second approval reuses the signature)
+  - TS42 is not meaningful: `mfizni`'s first signature is gone after SETUP-05.
+- **Still blocked:** TS56 / TS57 (need the full names for the PDFs; the PDFs are downloaded
+  and saved for Faizuddin to check).
+
 ## Step 0: survey (read-only, first thing after the deploy)
 
 1. Log in as Drafter and open the Summary for 2026.

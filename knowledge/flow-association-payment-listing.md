@@ -304,8 +304,50 @@ also calls `askDate()` before finalising.
 4. **Effect on the tests:** the TS expected results for TS25, TS28, TS33 (Reviewer),
    TS35 and TS49 use the pre-2026-11-03 wording. Whether to update the TS or raise the build is
    Faizuddin's call `[open]`.
-5. **Undo KIV returns a month to Pending,** and a different Drafter can undo another's KIV
-   (October 2026 Audit Log: Fared KIV → ZARA Undo KIV) `[verified: survey 2026-11-04]`.
+5. **Undo KIV restores the state the month had before the KIV.** Pending → KIV → Undo returns
+   Pending (October, February, April); Drafter Review Again → KIV → Undo returns Review Again
+   (January; the KIV note already says "Undo KIV to bring it back to Review Again"). Any Drafter
+   can undo another Drafter's KIV. So the only source of a fresh Pending month is a
+   newly closed month or a developer reset.
+   `[verified: Claude run uat1 2026-11-04, TS23 + SETUP-01..04]`
+6. **BO → module hand-off (SSO):**
+   - `GET /uat1/api/admin/backoffice/auth-redirect.do?module=association&target=LISTING` →
+     302 → `/backoffice/public/auth/token?r=%2Fadmin%2Fassociation&t=<JWT>` → 302 →
+     `/backoffice/admin/association`.
+   - The JWT (HS256) carries `sub` (`99000/<login>`), `mod`=ASSOCIATION, `name`, `ourl`
+     (the BO base), `jti`, and `iat` / `exp` about 45 s apart.
+   - A used token does not open the module again.
+   - `r=` pointing at an outside site gets the page "Invalid redirect target".
+   - `target=` set to an outside URL is ignored when logged in.
+   - **When the BO session is gone, `auth-redirect.do` shows a bare "Unauthorized" (401) page
+     instead of the BO login** (TS59, TS60, TS63).
+
+   `[verified: Claude run uat1 2026-11-04, 12028_TS59 / TS60 / TS63]`
+8. **Session idle timeout (Details page).**
+   - The server config is in `#session-cfg`: on uat1 `data-idle="900"`, `data-warn="120"` and
+     `data-ping="30"`, i.e. a 15-minute idle timeout, a warning popup `#idle-modal` from 13
+     minutes, and a keep-alive every 30 s.
+   - The keep-alive is `GET /backoffice/admin/association/keepalive`, sent only after real
+     activity (click / keydown / scroll; "AC7").
+   - The popup's "Stay signed in" (`staySignedIn()`, "AC8") pings at once.
+   - The script has no redirect of its own when the timeout passes; what the user sees comes
+     from the next request.
+   - The Summary page has no `#session-cfg`.
+
+   `[verified: page script on uat1, 2026-11-04]`
+7. **Action form:** every Details page, even one with no buttons for the user, has `#wf-form`
+   POST `/backoffice/admin/association/<year>/<month>/<uuid>/action`. Its fields are
+   `_csrf`, `role`, `action` (APPROVE / REJECT / KIV / UNDO_KIV), `version` (optimistic
+   lock), `remarks`, `paymentDate` (YYYY-MM-DD) and `signatureDataUrl` (PNG data URL, sent
+   only the first time).
+   - The server enforces the order: a forced Reviewer approval before the Drafter's gives
+     "… cannot act until the Drafter has approved."
+   - A forced Approver approval before the Reviewer's gives "… cannot act until the Reviewer
+     has approved."
+   - A stale second submit gives "Someone else already actioned this month. Please refresh and
+     try again."
+
+   `[verified: Claude run uat1 2026-11-04, TS64 / TS65 / TS67 / TS68]`
 
 ## QA Test Guide (dev-authored, from MR !1's engineering review)
 
@@ -507,6 +549,14 @@ fact.
 1. Association Payment Listing (`/backoffice/admin/association`) shows a globe tab icon, not the eAuto logo shown on the BO home (`/uat1/home/`).
 2. Its header shows only "Back to Backoffice". Other BO pages (e.g. `/uat1/view/stms/enquiry/`) show Home, Menu, user's name, My Account, Logout.
 3. Expected: same logo and header as other BO pages `[Faizuddin, session chat, 2026-11-03]`. Raised as EAINT-12752 (Low, dev Shane). Evidence: `_reference/tickets/EAINT-12028/Bug - EAINT-12752/`.
+4. **Developer reply, 2026-11-03** `[Jira EAINT-12752 comment, Shane]`:
+   - **Favicon:** fixed and deployed to uat1. Retested 2026-11-04: **pass**. Both pages
+     serve the same 34,494-byte icon `[verified: Claude run uat1, EAINT-12752-retest-favicon/]`.
+   - **Header:** "expected, not a bug … the name / my account / logout are removed on purpose.
+     user go back to eauto using back to backoffice, and logout from eauto also end the
+     backoffice session". **No reason or source was given.**
+   - Faizuddin still holds that the header itself is incorrect `[Faizuddin, session chat,
+     2026-11-04]`. This blocks 12028_TS62 and the module-logout steps of TS58 `[open]`.
 
 ## Summary page rebuilt (staging uat1, 2026-11-03)
 

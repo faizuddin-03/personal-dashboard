@@ -12,18 +12,18 @@ const scenarios = [...runner.matchAll(/id: "(12028_TS\d+)", section: "([A-M])", 
   .map(m => ({ ts: m[1], section: m[2], title: m[3].replace(/^12028_TS\d+:\s*/, "") }));
 
 const COLUMN = "Claude uat1 04-11";
-// Status per TS for the 2026-11-04 run. Missing = not part of this run (ran on the main laptop 2-3 Nov).
+// Status per TS for the 2026-11-04 run. Missing = not part of this run (ran on the main laptop 2-3 Nov: TS06, TS20).
 const P = "Pass", F = "Fail", B = "Blocked", N = "Not Started";
 const OUTCOME = {
   "01": P, "02": P, "03": P, "04": P, "05": P, "07": F, "08": P, "09": B, "10": P,
   "11": B, "12": B, "13": B, "14": P, "15": B, "16": B, "17": B, "18": B, "19": B,
-  "22": P, "24": B, "25": F, "26": F, "27": P,
+  "21": B, "22": P, "23": P, "24": B, "25": F, "26": F, "27": P,
   "28": F, "29": B, "30": P, "31": P, "32": P, "34": P,
-  "35": F, "36": N, "37": N, "38": P, "39": N, "40": N, "41": N, "42": N,
-  "43": B, "44": P, "45": P, "46": P, "47": B, "48": N,
-  "49": F, "50": N, "51": N, "52": N, "53": N, "54": N, "55": N, "56": B, "57": B,
-  "58": F, "59": N, "60": F, "61": B, "62": N, "63": N,
-  "64": P, "65": P, "66": N, "67": N, "68": N, "69": N,
+  "33": F, "35": F, "36": N, "37": F, "38": P, "39": F, "40": P, "41": P, "42": B,
+  "43": B, "44": P, "45": P, "46": P, "47": B, "48": P,
+  "49": F, "50": P, "51": P, "52": P, "53": P, "54": F, "55": P, "56": B, "57": B,
+  "58": F, "59": F, "60": F, "61": F, "62": B, "63": F,
+  "64": P, "65": P, "66": P, "67": P, "68": P, "69": P,
 };
 
 const cases = scenarios.map(s => {

@@ -269,7 +269,65 @@ TS36 (Faizuddin), then TS37, TS39–TS42, TS50–TS57 and TS66.
      or in Excel Online by hand.
 4. **Committed only, not pushed** (Faizuddin: "commit only").
 
-### 5. Repo changes today (committed 2026-11-04, not pushed)
+### 4g. Afternoon: TS62 check, TS61 timeout, Batch 3 (full approval through `mfizni`)
+
+1. **TS62 and EAINT-12752.**
+   - Faizuddin had raised the header in EAINT-12752 item 2.
+   - Shane replied 2026-11-03 that it is "expected, not a bug … removed on purpose", with
+     **no reason given**.
+   - Faizuddin, 2026-11-04: "its not about logout, but its about the header, because the header
+     itself is incorrect".
+   - So TS62 is blocked by 12752 item 2.
+   - **Item 1 (favicon) retested: pass** (same icon file).
+2. **TS61 run for real.** `#session-cfg` on uat1 sets idle 900 s / warn 120 s. The warning shows
+   at 13.5 min, but **after 16 min idle the user is still signed in** (F9, possible bug).
+3. **Batch 3** (Faizuddin: "yes, do that"): `mfizni` (Approver role, never approved) made the
+   fully approved months, so `kmcheah` stays unsigned for TS36.
+   - SETUP-05: May, by `mfizni`, no pad, so signatures look per person.
+   - **Pass:** TS40, 41, 48, 50, 51, 52, 53, 55, 66, 69.
+   - **Fail:** TS37 (blank-date wording; the page posts past dates and only the server
+     refuses, F12), TS39 and the Full parts of TS25 / TS33 (note wording, F10), TS54 (PDF address
+     ignores the month in the path, F11).
+   - TS42 blocked (no unsigned Approver besides `kmcheah`).
+   - TS56 / 57 PDFs saved, with things to check in F13 (".Bhd." typo from the mock-up; FMC
+     "(PPM-…)" on the Address row).
+4. **SETUP-06:** `eautonurul` approved **March as Reviewer**, so Faizuddin has a Reviewer Approved
+   month for **TS36 tomorrow** (log in as `kmcheah`, View March, Approve, sign, tomorrow's date).
+5. **Totals:** 33 pass · 15 fail · 18 blocked · 1 (TS36) for Faizuddin · 2 not in this run. The
+   TS Tracker has been rebuilt.
+6. **Not committed yet** (since `c8b435c`): all of 4f / 4g, the recorder `approverApprove`
+   helper and the knowledge updates.
+
+### 4f. Pushed, then more TS ("continue with other TS that you can do")
+
+1. **Pushed** `c8b435c` to `origin/claude/qa-dashboard-jira-OUEhf`.
+   - The first push was refused as a credential leak, because `scripts/claude-run/recorder.js`
+     held the staging password.
+   - The unpushed commit was amended so the password never reached GitHub. The recorder now
+     needs `page.__PASS` set before loading.
+   - The same password was already on GitHub before today, in `app/eauto/12028/Runner.tsx`,
+     `12153`, `12257` and `12412`. Faizuddin was told; moving it to `.env.local` was offered.
+2. **New results** (details in `RESULTS.md` / `FAILS-AND-BLOCKS.md`):
+
+   | Result | TS |
+   |---|---|
+   | Pass | **TS23**, **TS67** (forced Reviewer approval refused), **TS68** (forced Approver approval refused, run as `mfizni`) |
+   | Fail | **TS59**, **TS63** (security parts pass; both show the bare "Unauthorized" page, same cause as F1 / TS60) |
+   | Blocked | **TS21** (no Pending month), **TS62** (no module Logout), **TS53 / TS54 / TS69** (need a fully approved month) |
+
+3. **Learned:**
+   - Undo KIV restores the state before the KIV, so there is no new Pending month without a
+     developer reset.
+   - The SSO hand-off chain, the `r=` validation, and the action form plus server-side order
+     checks are written in `knowledge/flow-association-payment-listing.md` items 5–7.
+4. **Totals now (tracker rebuilt):** 23 pass · 10 fail · 21 blocked · 12 waiting for TS36 · 3
+   not in this run.
+5. **Month states changed since 4d:** Jan is DRA again (TS23 KIV, then SETUP-04 Undo KIV). Every
+   other month is as in the 4d table plus the Reviewer batch.
+6. **Everything that can run without an Approver approval or a missing input has now been
+   run.**
+
+### 5. Repo changes today (pushed `c8b435c`; later changes committed after it)
 
 - **`.gitignore`:** added `.playwright-mcp/` and `_reference/tickets/*/claude-run-*/**/*.webm`.
 - **New files:**
@@ -296,9 +354,9 @@ TS36 (Faizuddin), then TS37, TS39–TS42, TS50–TS57 and TS66.
 
 1. **Done on 2026-11-04:** the survey, Batch 1 (read-only), and Batch 2 (Drafter, Reviewer,
    Multi-role and Approver-reject TS). See sections 4b–4d.
-2. **Faizuddin reviews `FAILS-AND-BLOCKS.md` (F1–F8, B1–B11) and says which to raise.** Raise
+2. **Faizuddin reviews `FAILS-AND-BLOCKS.md` (F1–F8, B1–B14) and says which to raise.** Raise
    only what he picks, using the `eauto-qa-issue-ticket` skill. Candidates:
-   - F1 / TS60 "Unauthorized" page: a possible new bug
+   - F1: the "Unauthorized" page instead of the BO login (TS59, TS60, TS63), a possible new bug
    - EAINT-12716 retest: TS05 passed
    - the wording decisions F3–F8
 3. **2026-11-05:** Faizuddin runs **TS36** (Approver `kmcheah` first signature) on one of the RA
@@ -307,14 +365,48 @@ TS36 (Faizuddin), then TS37, TS39–TS42, TS50–TS57 and TS66.
    - then, on the resulting fully approved months: TS39, TS50, TS51, TS52, TS55, and TS56 / TS57
      (these need the PDF full names), plus the Full parts of TS25 and TS33.
    - TS29: `eautonurul` has already signed, so Faizuddin decides how to cover it (B10).
-4. **Not yet attempted, manual TS:** TS53, TS54 (PDF addresses; these need a fully approved
-   month to learn the download URL), TS59 (reuse a used hand-off address, e.g.
-   `/uat1/api/admin/backoffice/auth-redirect.do?module=association&target=LISTING`), TS62 /
-   TS63 (outside-address redirect), TS67–TS69 (forced out-of-turn actions). Ask Faizuddin before
-   trying the forced-request ones.
-5. **Can be re-run now if Faizuddin wants** (they were in the "already ran" list on the main
-   laptop): TS23 (Drafter KIV on a Review Again month; Jan and Jun are DRA now) and TS21.
-3. Ask Faizuddin for the blocked inputs (section 4).
-4. **Commit and push** today's changes so the main laptop gets them; ask first.
-5. **Second-laptop leftovers** (item 1.9): long paths (admin), the Chrome extension and logins,
+4. **After TS36, also:**
+   - **TS53 / TS54:** read the FMC Payment Request address on a fully approved month; open it
+     as `onghongkee`, and with the month changed to an Approver-Pending one.
+   - **TS69:** a forced Reject on a fully approved month, using `#wf-form` as in
+     TS67 / TS68.
+5. Ask Faizuddin for the blocked inputs (FAILS-AND-BLOCKS B3–B9).
+6. **Commit and push** the later changes when he says so.
+7. **Second-laptop leftovers** (item 1.9): long paths (admin), the Chrome extension and logins,
    and a full VS Code restart.
+
+---
+
+## Session: EAINT-12406 Claude-driven run (Secarang /ia/ + CIBO, second laptop)
+
+**Full detail is in `_reference/tickets/EAINT-12406/claude-run-2026-11-04/`. Read these, in order:**
+1. `SESSION-LOG.md`: decisions, answers, what ran, what comes next.
+2. `RUN-PLAN.md`: method, sources and Azfar's 30.10 state.
+3. `RESULTS.md`: one line per TS.
+
+**How the session works**
+- Faizuddin guides. Claude runs 12406 in the browser through the Playwright plugin, using
+  `scripts/claude-run/recorder.js` with `page.__ROOT` set to the folder above.
+- Steps and expected points come from Azfar's `scripts/eauto-12406/cr/EAINT-12406/`
+  (`scenarios.yaml`, `03-spec/`, `automation/src/flows/`).
+- Azfar's 04.11 defect list (D1, D2, Q44, …) is already in his STATUS file. His artifact board was not re-opened.
+
+**Decided so far**
+- /ia/ is on Allianz's real UAT API now.
+- First TS: a real-API Allianz purchase, plus E2E_TS9 gender re-pricing.
+- Faizuddin supplies the real IC, plate and postcode.
+
+- Recording follows **Azfar's style**, not the 12028 amber/green style. Tools:
+  - `scripts/claude-run/recorder-azfar.js`
+  - `scripts/claude-run/finish-ts.mjs`
+  - method in the run folder's `RUN-PLAN.md`
+
+- Test data:
+  - Real plates and ICs from `_reference/tickets/EAINT-12406/secarang-insurance-checker_2026-11-02 (1).xlsx`
+    (PROCEED rows).
+  - Postcode 55000.
+- Blocked: the Playwright browser profile is shared with the 12028 session ("Browser is already in use").
+  Faizuddin is finishing 12028 first.
+- Step plan ready: `BRIEF-E2E_TS1-TS9.md` in the run folder.
+
+**Next:** once the browser is free, run E2E_TS1 (real API, FPX), then E2E_TS9 (gender re-pricing).

@@ -78,6 +78,41 @@ buttons/items clicked/observed is highlighted" `[Faizuddin, session chat, 2026-1
   stay on the laptop that recorded them; copy them by hand if needed. Screenshots, PDFs and
   results are tracked.
 
+### Second style: Azfar's (chosen per ticket)
+
+"for the recording on this one, i want you to follow Azfar's style of recording"
+`[Faizuddin, session chat, 2026-11-04, for EAINT-12406]`
+
+When a ticket uses Azfar's style:
+- Use `scripts/claude-run/recorder-azfar.js` with `scripts/claude-run/finish-ts.mjs`, not `recorder.js`.
+- They copy Azfar's `ts` fixture: `scripts/eauto-12406/automation/src/fixtures/ts-run.ts`,
+  `highlight.ts` and `window-video.ts`.
+
+**What it records**
+- **Cards:** a navy (#172B4D) full-screen title card at the start, a "Now: <site>" card at
+  every switch between sites, and an "End of <TS>" card at the end.
+- **Clock:** a live "● REC hh:mm:ss" clock at the top of every page.
+- **Clicks and typing:** a short red-outline, yellow-wash mark with a label.
+- **Proofs:** `R.prove('E1', { shows, match, hl })` draws a red (#DE350B) box round the element
+  and a navy banner at the bottom: `time MYT · staging/<inst> · side · path · TS · E1: what it shows`.
+  The view is held for 1.2 s, then a screenshot is taken.
+- **Payment window:** a window the site opens (the Fiuu payment window) is kept open. It gets
+  its own video, which `finish-ts.mjs` lays into `video_<TS>.webm` with ffmpeg: bottom right,
+  orange frame, from the second the window opened. Azfar rule: one video per TS, the payment
+  window included.
+
+**Files**
+- In the TS folder: `NN-<name>.png`, `video_<TS>.webm`, `checks.txt`
+  (`when | point | expected | page shows | matches | screenshot`), `proofs.json`, and `gate.json`.
+- Verdicts in `gate.json`: VALID, DEFECT, or EVIDENCE.
+- Downloads go to `downloadable/`.
+
+**Why there are two steps**
+- `run_code` runs in a sandbox with no `node:fs`, so the recorder writes files only through
+  Playwright: screenshots, `video.saveAs` and `download.saveAs`.
+- After `R.finish()`, Claude saves the object it returns as `<TS>/_raw/finish.json`.
+- Claude then runs `node scripts/claude-run/finish-ts.mjs <TS folder> <TS>/_raw/finish.json`.
+
 ## Showing progress on the dashboard TS Tracker
 
 "update this repo and the dashboard TS tracker with the progress, so i have a visual sign on
