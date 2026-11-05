@@ -82,6 +82,7 @@ Source note (2026-10-23): a read-only copy of colleague Azfar's QA repo is at `_
 |---|---|
 | [flows.md](flows.md) | **How to write a flow document** — required sections, provenance rules, and which modules still have none |
 | [flow-stms.md](flow-stms.md) | **STMS (temporary ownership transfer), bulk, SSM permission, BO support actions, Transfer History** - built 2026-10-23 for /eauto/flows from Azfar repo, Ask eAuto, Jira, Miro, TS; data mirror lib/eautoFlows/modules/ |
+| [flow-c2c.md](flow-c2c.md) | **C2C motorcycle ownership transfer (EAINT-12745)** - planned 4-step design from the 2026-11-05 Nurul meeting notes + recording; not built yet, MOT/JPJ demo 17.11 |
 | [flow-ucd-to-ucd.md](flow-ucd-to-ucd.md) | **UCD to UCD transfers (Standard, Interstate)** - built 2026-10-23 for /eauto/flows from Azfar repo, Ask eAuto, Jira, Miro, TS; data mirror lib/eautoFlows/modules/ |
 | [flow-apt.md](flow-apt.md) | **APT (Automatic Permanent Transfer)** - built 2026-10-23 for /eauto/flows from Azfar repo, Ask eAuto, Jira, Miro, TS; data mirror lib/eautoFlows/modules/ |
 | [flow-stms-addons.md](flow-stms-addons.md) | **STMS Step 5 add-ons: LKM Refund and Insurance Cancellation** - built 2026-10-23 for /eauto/flows from Azfar repo, Ask eAuto, Jira, Miro, TS; data mirror lib/eautoFlows/modules/ |
