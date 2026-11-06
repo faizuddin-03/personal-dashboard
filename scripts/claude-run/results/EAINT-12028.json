@@ -1,10 +1,10 @@
 {
   "key": "EAINT-12028",
   "title": "[eAuto-BackOffice] New Module – Association Payment Listing",
-  "column": "Claude uat1 04-11",
+  "column": "Claude uat1 04-05.11",
   "environment": "staging uat1",
-  "ranAt": "2026-11-04",
-  "details": "_reference/tickets/EAINT-12028/claude-run-2026-11-04/RESULTS.md and FAILS-AND-BLOCKS.md",
+  "ranAt": "2026-11-05",
+  "details": "_reference/tickets/EAINT-12028/claude-run-2026-11-04/RESULTS.md, FAILS-AND-BLOCKS.md and claude-run-2026-11-05-reset/RESULTS.md",
   "cases": [
     {
       "sheet": "Claude run 2026-11-04",
@@ -13,7 +13,7 @@
       "objective": "Drafter sees Association Payment Listing under Reports and opens Summary",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -25,7 +25,7 @@
       "objective": "Reviewer sees Association Payment Listing under Reports and opens Summary",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -37,7 +37,7 @@
       "objective": "Approver sees Association Payment Listing under Reports and opens Summary",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -49,7 +49,7 @@
       "objective": "Multi-role user sees Association Payment Listing under Reports and opens Summary",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -61,7 +61,7 @@
       "objective": "No-role BO user does not see Association Payment Listing under Reports",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -71,7 +71,12 @@
       "section": "A. Reports menu and module access",
       "ts": "12028_TS06",
       "objective": "No-role BO user blocked on the Summary and Details page addresses",
-      "cells": []
+      "cells": [
+        {
+          "column": "Claude uat1 04-05.11",
+          "status": "Pass"
+        }
+      ]
     },
     {
       "sheet": "Claude run 2026-11-04",
@@ -80,7 +85,7 @@
       "objective": "Summary for Year 2026 shows the year filter, 12 months, columns, total label and Payment Date",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -92,7 +97,7 @@
       "objective": "Summary figures use the FMC and MMSDA rates and the total row sums the months",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -104,8 +109,8 @@
       "objective": "Closed month with zero transactions shows 0.00 and can be opened",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
-          "status": "Blocked"
+          "column": "Claude uat1 04-05.11",
+          "status": "N/A"
         }
       ]
     },
@@ -116,7 +121,7 @@
       "objective": "View opens the month's Details matching the Summary row and Back to Summary returns",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -128,8 +133,8 @@
       "objective": "Month-close on a past month shows its figures with all statuses Pending",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
-          "status": "Blocked"
+          "column": "Claude uat1 04-05.11",
+          "status": "N/A"
         }
       ]
     },
@@ -140,7 +145,7 @@
       "objective": "Running month-close twice keeps the same figures",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -152,7 +157,7 @@
       "objective": "Running month-close on an approved month keeps statuses and Payment Date",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -164,7 +169,7 @@
       "objective": "Details shows 16 states, TOTAL and amounts at the FMC and MMSDA rates",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -176,7 +181,7 @@
       "objective": "State counts match Transaction Summary Report (State)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -188,7 +193,7 @@
       "objective": "Private and company vehicles both counted under Car and Motorcycle",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -200,7 +205,7 @@
       "objective": "Transaction counted in the month of its JPJ Approved Date",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -212,7 +217,7 @@
       "objective": "Approved transaction not yet paid is not counted",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -224,7 +229,7 @@
       "objective": "Transaction counted under the dealer's registered state",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -234,7 +239,12 @@
       "section": "E. Drafter actions",
       "ts": "12028_TS20",
       "objective": "Drafter first Approve with the signature pad sets Drafter Status Approved",
-      "cells": []
+      "cells": [
+        {
+          "column": "Claude uat1 04-05.11",
+          "status": "Pass"
+        }
+      ]
     },
     {
       "sheet": "Claude run 2026-11-04",
@@ -243,8 +253,8 @@
       "objective": "Drafter KIV on a Pending month sets Drafter Status KIV",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
-          "status": "Blocked"
+          "column": "Claude uat1 04-05.11",
+          "status": "Pass"
         }
       ]
     },
@@ -255,7 +265,7 @@
       "objective": "Drafter Approve on a Review Again month sets Drafter Status Approved",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -267,7 +277,7 @@
       "objective": "Drafter KIV on a Review Again month sets Drafter Status KIV",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -279,7 +289,7 @@
       "objective": "Drafter action on a KIV month follows the final KIV rule",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -291,7 +301,7 @@
       "objective": "Drafter buttons hidden once the Drafter step is done",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -303,7 +313,7 @@
       "objective": "Second Drafter user approves a Pending month and is blocked after another Drafter approved",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -315,7 +325,7 @@
       "objective": "Drafter second approval reuses the signature without the pad",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -327,7 +337,7 @@
       "objective": "Reviewer buttons hidden with not-your-turn note until the Drafter approves",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -339,8 +349,8 @@
       "objective": "Reviewer first Approve with the signature pad sets Reviewer Status Approved",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
-          "status": "Blocked"
+          "column": "Claude uat1 04-05.11",
+          "status": "Pass"
         }
       ]
     },
@@ -351,7 +361,7 @@
       "objective": "Reviewer Reject needs remarks and returns the month to Drafter Review Again",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -363,7 +373,7 @@
       "objective": "Reviewer re-approves a Reviewer Review Again month",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -375,7 +385,7 @@
       "objective": "Reviewer Reject on a Review Again month sets Drafter Status Review Again",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -387,7 +397,7 @@
       "objective": "Reviewer buttons hidden once the Reviewer step is done",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -399,7 +409,7 @@
       "objective": "Reviewer second approval reuses the signature without the pad",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -411,7 +421,7 @@
       "objective": "Approver buttons hidden with not-your-turn note until the Reviewer approves",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -423,8 +433,8 @@
       "objective": "Approver first Approve with signature and tomorrow's date completes the month",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
-          "status": "Not Started"
+          "column": "Claude uat1 04-05.11",
+          "status": "Blocked"
         }
       ]
     },
@@ -435,7 +445,7 @@
       "objective": "Payment date popup blocks cancel, blank, today, past, typed and pasted dates",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -447,7 +457,7 @@
       "objective": "Approver Reject needs remarks and returns the month to Reviewer Review Again",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -459,7 +469,7 @@
       "objective": "Approver buttons hidden on a fully approved month",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -471,7 +481,7 @@
       "objective": "Approver second approval reuses the signature and still asks payment date",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -483,7 +493,7 @@
       "objective": "Approver approves a month after the Reviewer re-approves it",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -495,7 +505,7 @@
       "objective": "Approver signature kept after the payment date popup is cancelled",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -507,7 +517,7 @@
       "objective": "Multi-role user completes a month alone",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -519,7 +529,7 @@
       "objective": "Multi-role user KIV sets Drafter Status KIV",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -531,7 +541,7 @@
       "objective": "Multi-role user Reviewer Reject then re-approves as Drafter",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -543,7 +553,7 @@
       "objective": "Multi-role user Approver Reject sets Reviewer Status Review Again",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -555,8 +565,8 @@
       "objective": "New month Audit Log shows No workflow actions recorded yet",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
-          "status": "Blocked"
+          "column": "Claude uat1 04-05.11",
+          "status": "Fail"
         }
       ]
     },
@@ -567,7 +577,7 @@
       "objective": "Audit Log shows its columns, keeps every row after a reject loop and shows no signature image",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -579,7 +589,7 @@
       "objective": "Download buttons hidden with pending note until the month is fully approved",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -591,7 +601,7 @@
       "objective": "Approver sees both download buttons on a fully approved month",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -603,7 +613,7 @@
       "objective": "Drafter can download both PDFs on a fully approved month",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -615,7 +625,7 @@
       "objective": "Reviewer can download both PDFs on a fully approved month",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -627,7 +637,7 @@
       "objective": "No-role BO user blocked on the PDF download address (manual)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -639,7 +649,7 @@
       "objective": "Download address of a month not fully approved is blocked (manual)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -651,7 +661,7 @@
       "objective": "Second download gives the same file",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -663,8 +673,8 @@
       "objective": "FMC Payment Request PDF shows the SRD fields and the month's car amount",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
-          "status": "Blocked"
+          "column": "Claude uat1 04-05.11",
+          "status": "Fail"
         }
       ]
     },
@@ -675,8 +685,8 @@
       "objective": "MMSDA Payment Request PDF shows the SRD fields and the month's motorcycle amount",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
-          "status": "Blocked"
+          "column": "Claude uat1 04-05.11",
+          "status": "Fail"
         }
       ]
     },
@@ -687,7 +697,7 @@
       "objective": "BO login hand-off opens Association Payment Listing and module logout needs a fresh login",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -699,7 +709,7 @@
       "objective": "Used SSO hand-off address cannot log in again (manual)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -711,7 +721,7 @@
       "objective": "Core logout logs out the open Association Payment Listing tab",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -723,7 +733,7 @@
       "objective": "Session expiry returns to BO login without an error page",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Fail"
         }
       ]
@@ -735,7 +745,7 @@
       "objective": "Logout redirect to an outside address stays on eAuto (manual)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Blocked"
         }
       ]
@@ -747,7 +757,7 @@
       "objective": "Session-expiry redirect to an outside address stays on eAuto (manual)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -759,7 +769,7 @@
       "objective": "Drafter Approve from two tabs makes one audit row",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -771,7 +781,7 @@
       "objective": "Reviewer Approve from two tabs makes one audit row",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -783,7 +793,7 @@
       "objective": "Approver Approve from two tabs makes one audit row and one payment date",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -795,7 +805,7 @@
       "objective": "Forced Reviewer approval on a Pending month is rejected (manual)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -807,7 +817,7 @@
       "objective": "Forced Approver approval before the Reviewer approves is rejected (manual)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]
@@ -819,7 +829,7 @@
       "objective": "Forced action on a fully approved month is rejected (manual)",
       "cells": [
         {
-          "column": "Claude uat1 04-11",
+          "column": "Claude uat1 04-05.11",
           "status": "Pass"
         }
       ]

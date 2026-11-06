@@ -290,6 +290,10 @@
         {
           "column": "Azfar sim 30-10",
           "status": "Pass"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
         }
       ]
     },
@@ -425,8 +429,8 @@
       "objective": "CIBO Transaction Management: Allianz picked in the Insurance Company filter (Serba Sentral group); Allianz rows show Ins. Co. Allianz over the agency badge Serba Sentral, styled like other rows; the CSV export matches the screen",
       "cells": [
         {
-          "column": "Azfar sim 30-10",
-          "status": "In Progress"
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
         }
       ]
     },
@@ -510,6 +514,10 @@
         {
           "column": "Azfar sim 30-10",
           "status": "Blocked"
+        },
+        {
+          "column": "Claude real-API 04-11",
+          "status": "Pass"
         }
       ]
     },

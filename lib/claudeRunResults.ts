@@ -53,15 +53,22 @@ export function readClaudeRunResults(): { results: ClaudeRunResult[]; errors: { 
 /**
  * Adds a Claude run's column to an official ticket's cases (matched by TS id, case-insensitive);
  * TS only in the run file are appended. The official sheet's own cells come first.
+ * When the run is newer than the sheet (`runIsNewer`), the run's result decides the TS's overall
+ * status (`overall`), so an older sheet "Not Started" no longer turns a run Pass into In Progress
+ * (Faizuddin, 2026-11-05: "the TS tracker here is not up to date with yesterday's progress").
  */
-export function mergeRunIntoCases(official: OfficialCase[], run: ClaudeRunResult): OfficialCase[] {
+export function mergeRunIntoCases(official: OfficialCase[], run: ClaudeRunResult, runIsNewer = false): OfficialCase[] {
   // "12028_TS01" matches "TS01"; the ticket-number prefix is dropped, the rest must be equal
   // (a last-segment match would pair 12406_QT_TS10 with 12406_TS10 or RC_TS10).
   const norm = (ts: string) => ts.replace(/\s+/g, "").toUpperCase().replace(/^\d+_/, "");
   const out = official.map(c => ({ ...c, cells: [...c.cells] }));
   for (const rc of run.cases) {
     const hit = out.find(c => norm(c.ts) === norm(rc.ts));
-    if (hit) hit.cells.push(...rc.cells.filter(x => !hit.cells.some(y => y.column === x.column)));
+    if (hit) {
+      hit.cells.push(...rc.cells.filter(x => !hit.cells.some(y => y.column === x.column)));
+      const decided = rc.cells.find(x => x.status !== "Not Started");
+      if (runIsNewer && decided) hit.overall = decided.status;
+    }
     else out.push({ ...rc, cells: [...rc.cells] });
   }
   return out;

@@ -1,0 +1,41 @@
+{
+  "ts": "12406_RC_TS4_rerun-20261105",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E5",
+      "expected": "Same as before the deploy (REQ-010 Ex.2 / REQ-011: other insurers remain unchanged; SRD v1.1 §2.2.3): Lonpac and Tokio Marine rows show the agency Pemaju Eksklusif, and ticking Lonpac / TokioMarine returns their transactions (QT_TS4 / E2E_TS10)",
+      "shows": "Lonpac: page 1 20 row(s), other insurer/agency 0; BR6N006399 (QT_TS4 Lonpac BQX1858) Ins. Co. \"Lonpac Pemaju Eksklusif\" | TokioMarine: page 1 20 row(s), other insurer/agency 0; BR6N006404 (E2E_TS10 Tokio Marine WXQ3008) Ins. Co. \"TokioMarine Pemaju Eksklusif\"",
+      "match": true,
+      "at": "05/11/2026, 10:17:40",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: ",
+    "click: Search",
+    "click: Open Insurance Company",
+    "click: Tick Lonpac",
+    "typed: Search box empty",
+    "click: Search",
+    "typed: Search: BR6N006399",
+    "click: Search",
+    "click: remove ticked insurer",
+    "click: Open Insurance Company",
+    "click: Tick TokioMarine",
+    "typed: Search box empty",
+    "click: Search",
+    "typed: Search: BR6N006404",
+    "click: Search"
+  ],
+  "dialogs": [],
+  "windows": []
+}

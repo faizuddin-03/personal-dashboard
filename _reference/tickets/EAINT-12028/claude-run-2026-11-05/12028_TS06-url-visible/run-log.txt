@@ -1,0 +1,35 @@
+02:35:38 chrome pid 10700
+02:35:43 Log in to BackOffice uat1 as mfared
+02:35:48 Logged in: Muhammad Fared (top right)
+02:35:51 BO Home → Reports → click Association Payment Listing
+02:35:56 Copy the Summary page address from the address bar (Ctrl+L, Ctrl+C)
+02:36:02 Copied Summary address: https://staging.eauto.my/backoffice/admin/association
+02:36:06 Click [View] on February 2026
+02:36:10 Copy the February Details page address from the address bar
+02:36:15 Copied Details address: https://staging.eauto.my/backoffice/admin/association/2026/2
+02:36:19 Click "Back to Backoffice", then Logout
+02:36:26 Logged out of BackOffice
+02:36:28 Log in to BackOffice uat1 as onghongkee
+02:36:33 Logged in: Ong Hong Kee (top right)
+02:36:36 No-role user: Reports has no "Association Payment Listing" link
+02:36:38 Paste the copied Summary address into the address bar and press Enter
+02:36:50 ✘ Summary listing is shown to the no-role user (expected: access blocked)
+02:36:55 Paste the copied February Details address into the address bar and press Enter
+02:37:05 ✘ February Details page is shown to the no-role user (expected: access blocked)
+02:37:14 New browser window with no earlier session
+02:37:14 Log in to BackOffice uat1 as onghongkee
+02:37:20 Logged in: Ong Hong Kee (top right)
+02:37:23 Paste the same Summary address into the address bar and press Enter
+02:37:31 ✔ "No access to this module"
+02:37:35 Paste the same Details address into the address bar and press Enter
+02:37:44 ✔ "No access to this module"
+
+{
+  "summaryUrl": "https://staging.eauto.my/backoffice/admin/association",
+  "detailsUrl": "https://staging.eauto.my/backoffice/admin/association/2026/2",
+  "noRoleName": "Ong Hong Kee",
+  "sameSummary": "Back to Backoffice Association Payment Listing Monthly summary for the year. Click View on any month to drill into the state-level breakdown (Cars & Motorcycles counted separately). Year 2026 Search Association Payment Listing — 2026 Monthly Summary 12 record(s) in total # Month Car Transactions",
+  "sameDetails": "Back to Backoffice Association Payment Listing — February 2026 Review the amounts and act according to your role. Approval sequence: Drafter → Reviewer → Approver. Summary Drafter Approved Reviewer Approved Approver Approved Fully approved on 04-11-2026. Finance pay date: 05-11-2026. The FMC",
+  "freshSummary": "No access to this module",
+  "freshDetails": "No access to this module"
+}

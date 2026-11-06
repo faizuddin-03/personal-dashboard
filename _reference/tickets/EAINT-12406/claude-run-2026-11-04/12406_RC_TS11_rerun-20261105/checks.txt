@@ -1,0 +1,20 @@
+# 12406_RC_TS11_rerun-20261105 — Rerun E2: CIBO CRM record and vehicle card of the Lonpac buyer of QT_TS4 (BQX1858), recorded for comparison
+# Claude-driven run (Playwright MCP) on staging /ia, started 05/11/2026, 10:17:51 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+05/11/2026, 10:17:53 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+05/11/2026, 10:17:55 | note: portal: CIBO (testadmin)
+05/11/2026, 10:17:58 | note: typed: Login ID
+05/11/2026, 10:17:59 | note: typed: Password
+05/11/2026, 10:18:00 | note: click: Login
+05/11/2026, 10:18:03 | note: click: Transaction Management
+05/11/2026, 10:18:07 | note: typed: Search: BR6N006399
+05/11/2026, 10:18:07 | note: click: Search
+05/11/2026, 10:18:17 | note: typed: Search: BR6N006399
+05/11/2026, 10:18:17 | note: click: Search
+05/11/2026, 10:18:24 | note: Transaction listing BR6N006399: ["1","BR6N006399 Secarang","04-11-2026 17:18","04-11-2026 17:20","-","-","BQX1858","Car","FAIZUDDIN TEST ALLIANZ 900303-14-6116","RM808.16Paid 04-11-2026 17:20","Fiuu | Online Banking – FPX-RHB Bank","","","Lonpac Pemaju Eksklusif","Insurance created W26VP02125851KUL","Pending",""]
+05/11/2026, 10:18:29 | note: click: Open Ownership Type
+05/11/2026, 10:18:30 | note: click: Private
+05/11/2026, 10:18:31 | note: typed: Search: BQX1858
+05/11/2026, 10:18:32 | note: click: Search
+05/11/2026, 10:18:38 | note: click: Open Customer Details
+05/11/2026, 10:18:44 | E2 | expected: Recorded only (Q43): the same for the Lonpac buyer of QT_TS4, for comparison | page shows: CRM listing (Private, search "BQX1858"): 1 row(s); Vehicle "BQX1858", Ownership Type "Private", Latest Coverage Period "31-12-2026 - 30-12-2027", Last Update "- 05-11-2026 10:18" | Customer Details: 1 vehicle card(s); card BQX1858: Latest Policy Purchase "04-11-2026 17:18", Latest Policy Coverage Period "31-12-2026 - 30-12-2027", Last Updated By "-" (recorded, Q43) | matches | 03-E2-crm-vehicle-card-BQX1858.png

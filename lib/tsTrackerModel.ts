@@ -59,6 +59,8 @@ export interface TestCase {
   sheetCells?: { column: string; status: string }[];
   /** ISO time the official sheet was last read for this case. */
   sheetSyncedAt?: string;
+  /** Last read of the official sheet's DEPRIORITIZED mark for this TS (lib/officialTsResults.ts rule 5). */
+  sheetDeprio?: boolean;
 }
 
 export interface TestSuite {

@@ -16,6 +16,11 @@
 //      every open column Pass → pass; any Pass / In Progress → in progress;
 //      otherwise not started.
 //   5. Nothing is deleted. A TS removed from the sheet stays in the tracker.
+//   6. Deprioritized on the sheet (status cells merged into "DEPRIORITIZED",
+//      reason in Remarks; Faizuddin 2026-11-05) → the tracker case is
+//      deprioritized (disabled) with the reason in its log. Like rule 3, it
+//      follows the sheet only when the sheet's mark changes, so a manual
+//      Deprioritize / Restore in the tracker stays until the sheet changes.
 import type { OfficialCase } from "@/lib/officialTsResults";
 import {
   type CREntry, type TestCase, type TsStatus,
@@ -34,7 +39,10 @@ export function overallStatus(cells: { status: string }[]): TsStatus {
   return null;
 }
 const statusKey = (s: TsStatus) => s ?? "none";
-const cellsNote = (cells: { column: string; status: string }[]) => cells.map(c => `${c.column}: ${c.status}`).join(" · ");
+const cellsNote = (oc: OfficialCase) => oc.deprioritized
+  ? `Deprioritized on the official TS${oc.deprioReason ? `: ${oc.deprioReason}` : ""}`
+  : oc.cells.map(c => `${c.column}: ${c.status}`).join(" · ");
+const deprioText = (oc: OfficialCase) => `Deprioritized on the official TS${oc.deprioReason ? ` — ${oc.deprioReason}` : ""}`;
 
 /** Mutates `data`. Returns how many cases were added or changed. */
 export function applyOfficial(data: CREntry[], tickets: OfficialTicket[], now = new Date()): number {
@@ -49,7 +57,7 @@ export function applyOfficial(data: CREntry[], tickets: OfficialTicket[], now = 
     }
     const target = cr;
     for (const oc of t.cases) {
-      const overall = overallStatus(oc.cells);
+      const overall = oc.overall ? overallStatus([{ status: oc.overall }]) : overallStatus(oc.cells);
       const key = statusKey(overall);
       let found: TestCase | undefined;
       for (const s of target.suites) {
@@ -66,7 +74,12 @@ export function applyOfficial(data: CREntry[], tickets: OfficialTicket[], now = 
         tc.sheetStatus = key;
         tc.sheetCells = oc.cells;
         tc.sheetSyncedAt = at;
-        tc.autoNote = cellsNote(oc.cells);
+        tc.sheetDeprio = !!oc.deprioritized;
+        if (oc.deprioritized) {
+          tc.disabled = true;
+          tc.log!.push(logEntry("deprioritized", "import", { text: deprioText(oc) }));
+        }
+        tc.autoNote = cellsNote(oc);
         suite.cases.push(tc);
         changed++;
         continue;
@@ -92,9 +105,23 @@ export function applyOfficial(data: CREntry[], tickets: OfficialTicket[], now = 
         found.sheetStatus = key;
         touched = true;
       }
-      if (JSON.stringify(found.sheetCells ?? []) !== JSON.stringify(oc.cells)) {
+      const deprio = !!oc.deprioritized;
+      const deprioChanged = (found.sheetDeprio ?? false) !== deprio;
+      if (deprioChanged) {
+        // The sheet's mark changed (rule 6). On the first read an unmarked TS changes nothing.
+        if (deprio && !found.disabled) {
+          found.disabled = true;
+          found.log = [...(found.log ?? []), logEntry("deprioritized", "import", { text: deprioText(oc) })];
+        } else if (!deprio && found.disabled) {
+          found.disabled = false;
+          found.log = [...(found.log ?? []), logEntry("restored", "import", { text: "Deprioritized mark removed from the official TS" })];
+        }
+        touched = true;
+      }
+      if (found.sheetDeprio !== deprio) { found.sheetDeprio = deprio; touched = true; }
+      if (JSON.stringify(found.sheetCells ?? []) !== JSON.stringify(oc.cells) || deprioChanged) {
         found.sheetCells = oc.cells;
-        found.autoNote = cellsNote(oc.cells);
+        found.autoNote = cellsNote(oc);
         touched = true;
       }
       if (touched) { found.sheetSyncedAt = at; changed++; }

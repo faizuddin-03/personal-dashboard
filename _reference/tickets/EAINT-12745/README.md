@@ -18,6 +18,15 @@ Source ticket: EAUTO-1120 · Created 2026-11-03 · Reporter: Lim Yi Link
 1. `EAINT-12745-meeting-notes-2026-11-05.md` — verbatim Teams notes from the Nurul discussion, 2026-11-05. **Supersedes the ticket's 6-step layout with a 4-step flow.**
 2. `EAINT-12745-meeting-transcript-2026-11-05-raw.txt` — full AI transcript of the same meeting (1h42m), scraped from the Stream recording.
 3. `EAINT-12745-transcript-findings-2026-11-05.md` — 11 points the recording adds beyond the written notes.
+4. `EAINT-12745-eauto_C2C_Module_Mockup-20261105.html` — Jira attachment `eauto_C2C_Module_Mockup.html` (id 162079, Chee Mei Jia, 2026-11-05 17:53, 336,076 bytes), unmodified. Self-contained interactive mockup; open in a browser. **Pre-meeting design: 6 steps, Car / Motorcycle, seller add-ons LKM Refund + Insurance Cancellation** — conflicts with the 05.11 notes (see `knowledge/flow-c2c.md` → Conflicts).
+   **Rule (Faizuddin, 2026-11-06): the mockup is a guideline for the flow. For the UI part, every single thing must follow existing behaviour/results.**
+5. `EAINT-12745-test-scope-2026-11-06.md` — compiled test scope: 15 affected areas, 21 TS groups (~296 TS), insurance trigger matrix, IDD method, open questions.
+6. `EAINT-12745-ask-eauto-2026-11-06.md` — live Ask eAuto answers: no C2C code yet; eSTM JPJ field sources (dealer vs buyer); jobs that pick rows by status only (auto-submit / APT risk).
+
+## Jira re-check 2026-11-06
+
+1. Description unchanged since creation. Only change: the mockup attachment above.
+2. Still To Do, no assignee, QA field empty, no comments.
 
 ## Expected files here
 

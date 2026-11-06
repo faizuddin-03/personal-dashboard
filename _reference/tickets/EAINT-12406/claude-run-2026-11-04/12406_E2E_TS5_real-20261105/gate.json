@@ -1,0 +1,10 @@
+{
+  "ts": "12406_E2E_TS5_real-20261105",
+  "verdict": "DEFECT",
+  "reasons": [
+    "E1: expected \"After the failed FPX payment: back on the payment page with \"Unsuccessful payment You may try again.\", no receipt, and the other payment tiles can still be pick\", page shows \"After FPX 51 (failed): \"Unsuccessful payment \"; receipt shown false; tiles still offered: Credit or Debit Card | FPX Online banking | SPayLater | PayLater by Grab\" (08-E1-after-fpx-51.png)"
+  ],
+  "instance": "ia",
+  "at": "05/11/2026, 10:26:09",
+  "driver": "Claude (Playwright)"
+}

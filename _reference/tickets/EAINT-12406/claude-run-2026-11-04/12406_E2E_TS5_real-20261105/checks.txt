@@ -1,0 +1,77 @@
+# 12406_E2E_TS5_real-20261105 — Real API: Allianz payment fails (FPX 51), SPayLater cancelled, then paid by FPX; payment page messages, CIBO rows
+# Claude-driven run (Playwright MCP) on staging /ia, started 05/11/2026, 10:20:55 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+05/11/2026, 10:20:57 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+05/11/2026, 10:20:57 | note: Data: checker xlsx row 34 VBX2423 (real plate/IC, never bought), postcode 55000
+05/11/2026, 10:21:00 | note: typed: Site password
+05/11/2026, 10:21:01 | note: click: Login (site password page)
+05/11/2026, 10:21:10 | note: click: Close the promo pop-up
+05/11/2026, 10:21:11 | note: click: Private Car tab
+05/11/2026, 10:21:12 | note: typed: Car Plate No.
+05/11/2026, 10:21:13 | note: typed: Owner IC No.
+05/11/2026, 10:21:13 | note: typed: Postal Code
+05/11/2026, 10:21:15 | note: click: Get quotation
+05/11/2026, 10:21:49 | note: click: Get quotation
+05/11/2026, 10:22:02 | note: click: Buy (Allianz)
+05/11/2026, 10:22:16 | note: click: Continue
+05/11/2026, 10:22:25 | note: typed: Full Name (made up)
+05/11/2026, 10:22:25 | note: typed: Email (QA own)
+05/11/2026, 10:22:26 | note: typed: Mobile, no leading 0
+05/11/2026, 10:22:27 | note: typed: Address 1 (made up)
+05/11/2026, 10:22:28 | note: typed: Address 2
+05/11/2026, 10:22:28 | note: typed: Address 3
+05/11/2026, 10:22:32 | note: click: Confirm and Pay
+05/11/2026, 10:22:38 | note: click: FPX Online banking
+05/11/2026, 10:22:41 | note: click: RHB bank
+05/11/2026, 10:22:43 | note: window opened by the site and kept (payment window 1)
+05/11/2026, 10:22:46 | note: Fiuu window: Username
+05/11/2026, 10:22:47 | note: Fiuu window: Password
+05/11/2026, 10:22:47 | note: Fiuu window: Login
+05/11/2026, 10:22:48 | note: Fiuu window: Status 51
+05/11/2026, 10:22:49 | note: Fiuu window: Request TAC
+05/11/2026, 10:22:50 | note: Fiuu window: Enter TAC 101588
+05/11/2026, 10:22:52 | note: Fiuu window: Pay now
+05/11/2026, 10:22:55 | note: window opened by the site and kept (payment window 2)
+05/11/2026, 10:22:57 | note: FPX 51: {"where":"failed","amount":"MYR 928.95"}
+05/11/2026, 10:23:01 | E1 | expected: After the failed FPX payment: back on the payment page with "Unsuccessful payment You may try again.", no receipt, and the other payment tiles can still be picked | page shows: After FPX 51 (failed): "Unsuccessful payment "; receipt shown false; tiles still offered: Credit or Debit Card | FPX Online banking | SPayLater | PayLater by Grab | DOES NOT MATCH | 08-E1-after-fpx-51.png
+05/11/2026, 10:23:02 | note: click: SPayLater
+05/11/2026, 10:23:04 | note: window opened by the site and kept (payment window 3)
+05/11/2026, 10:23:09 | note: ShopeePay window: Cancel the transaction
+05/11/2026, 10:23:12 | note: ShopeePay window: OK
+05/11/2026, 10:23:14 | note: window opened by the site and kept (payment window 4)
+05/11/2026, 10:23:19 | E3 | expected: After cancelling SPayLater with [OK]: back on 'How would you like to pay?' with the same vehicle and premium | page shows: After SPayLater cancel (page OK pressed): "How would you like to pay?" true; plate VBX2423 true; amounts RM928.95 (before RM928.95); message "Unsuccessful payment " | matches | 11-E3-after-spaylater-cancel.png
+05/11/2026, 10:23:20 | note: click: FPX Online banking
+05/11/2026, 10:23:23 | note: click: RHB bank
+05/11/2026, 10:23:25 | note: window opened by the site and kept (payment window 5)
+05/11/2026, 10:23:28 | note: Fiuu window: Username
+05/11/2026, 10:23:29 | note: Fiuu window: Password
+05/11/2026, 10:23:30 | note: Fiuu window: Login
+05/11/2026, 10:23:31 | note: Fiuu window: Status 00
+05/11/2026, 10:23:31 | note: Fiuu window: Request TAC
+05/11/2026, 10:23:32 | note: Fiuu window: Enter TAC 403431
+05/11/2026, 10:23:34 | note: Fiuu window: Pay now
+05/11/2026, 10:24:18 | note: window opened by the site and kept (payment window 6)
+05/11/2026, 10:24:22 | note: FPX 00: {"where":"success","amount":"MYR 928.95"}
+05/11/2026, 10:24:23 | note: click: Download [Receipt]
+05/11/2026, 10:24:24 | note: downloaded: receipt-26110521300003.pdf (server name R26110521300003VBX2423.pdf)
+05/11/2026, 10:24:27 | note: portal: CIBO (testadmin)
+05/11/2026, 10:24:30 | note: typed: Login ID
+05/11/2026, 10:24:31 | note: typed: Password
+05/11/2026, 10:24:32 | note: click: Login
+05/11/2026, 10:24:35 | note: click: Transaction Management
+05/11/2026, 10:24:39 | note: typed: Search: VBX2423
+05/11/2026, 10:24:39 | note: click: Search
+05/11/2026, 10:24:49 | note: typed: Search: VBX2423
+05/11/2026, 10:24:50 | note: click: Search
+05/11/2026, 10:25:02 | note: typed: Search: BR6N006406
+05/11/2026, 10:25:03 | note: click: Search
+05/11/2026, 10:25:09 | E2 | expected: CIBO Payment Management and Transaction Management each show one row for the transaction, final status Paid / Insurance created; the failed FPX attempt is not listed separately (recorded) | page shows: Transaction Management plate VBX2423: 1 row(s), Allianz rows 1: BR6N006406 Secarang | RM928.95Paid 05-11-2026 10:23 | Insurance created || Payment Management "BR6N006406": 0 row(s):  | matches
+05/11/2026, 10:25:09 | E4 | expected: The final FPX payment completes: Success page with a [Receipt] download, and CIBO shows the transaction with Payment Paid, Ins. Co. Allianz | page shows: FPX 00: success; Receipt No 26110521300003 [Receipt] downloaded; CIBO BR6N006406 Ins. Co. "Allianz Serba Sentral", Payment "RM928.95Paid 05-11-2026 10:23", Status "Insurance created" | matches
+05/11/2026, 10:25:09 | note: Data used: row 34 VBX2423 (now bought: shows the 2-month renewal form from now on)
+05/11/2026, 10:26:09 | note: payment window 1 on the TS video 01:48.9–02:00.0 (https://staging.secarang.com/ia/payment/landing/b36a6399-94cb-4a45-99a2-580fc1668653/fpx_rhb)
+05/11/2026, 10:26:09 | note: payment window 2 on the TS video 02:01.1–02:01.3 (about:blank)
+05/11/2026, 10:26:09 | note: payment window 3 on the TS video 02:10.4–02:19.2 (https://staging.secarang.com/ia/payment/landing/b36a6399-94cb-4a45-99a2-580fc1668653/ShopeePay)
+05/11/2026, 10:26:09 | note: payment window 4 on the TS video 02:20.4–02:20.5 (about:blank)
+05/11/2026, 10:26:09 | note: payment window 5 on the TS video 02:31.3–02:41.4 (https://staging.secarang.com/ia/payment/landing/b36a6399-94cb-4a45-99a2-580fc1668653/fpx_rhb)
+05/11/2026, 10:26:09 | note: payment window 6 on the TS video 03:24.6–03:24.7 (about:blank)
+05/11/2026, 10:26:09 | note: payment window video laid into video_12406_E2E_TS5_real-20261105.webm (3 window(s), picture-in-picture, bottom right)

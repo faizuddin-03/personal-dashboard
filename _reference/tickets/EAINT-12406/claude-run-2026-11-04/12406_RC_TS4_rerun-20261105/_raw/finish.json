@@ -1,0 +1,78 @@
+{
+  "ts": "12406_RC_TS4_rerun-20261105",
+  "inst": "ia",
+  "points": [
+    {
+      "id": "E5",
+      "text": "Same as before the deploy (REQ-010 Ex.2 / REQ-011: other insurers remain unchanged; SRD v1.1 §2.2.3): Lonpac and Tokio Marine rows show the agency Pemaju Eksklusif, and ticking Lonpac / TokioMarine returns their transactions (QT_TS4 / E2E_TS10)"
+    }
+  ],
+  "log": [
+    "# 12406_RC_TS4_rerun-20261105 — Rerun E5: CIBO Transaction Management, Insurance Company filter Lonpac, then TokioMarine; rows show agency Pemaju Eksklusif",
+    "# Claude-driven run (Playwright MCP) on staging /ia, started 05/11/2026, 10:16:38 MYT",
+    "# lines: when | point | expected | page shows | matches | screenshot",
+    "05/11/2026, 10:16:40 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "05/11/2026, 10:16:42 | note: portal: CIBO (testadmin)",
+    "05/11/2026, 10:16:45 | note: typed: Login ID",
+    "05/11/2026, 10:16:46 | note: typed: Password",
+    "05/11/2026, 10:16:47 | note: click: Login",
+    "05/11/2026, 10:16:51 | note: click: Transaction Management",
+    "05/11/2026, 10:16:54 | note: typed: Search: ",
+    "05/11/2026, 10:16:55 | note: click: Search",
+    "05/11/2026, 10:17:01 | note: click: Open Insurance Company",
+    "05/11/2026, 10:17:02 | note: click: Tick Lonpac",
+    "05/11/2026, 10:17:03 | note: typed: Search box empty",
+    "05/11/2026, 10:17:04 | note: click: Search",
+    "05/11/2026, 10:17:12 | note: typed: Search: BR6N006399",
+    "05/11/2026, 10:17:13 | note: click: Search",
+    "05/11/2026, 10:17:21 | note: click: remove ticked insurer",
+    "05/11/2026, 10:17:22 | note: click: Open Insurance Company",
+    "05/11/2026, 10:17:22 | note: click: Tick TokioMarine",
+    "05/11/2026, 10:17:23 | note: typed: Search box empty",
+    "05/11/2026, 10:17:24 | note: click: Search",
+    "05/11/2026, 10:17:32 | note: typed: Search: BR6N006404",
+    "05/11/2026, 10:17:33 | note: click: Search",
+    "05/11/2026, 10:17:40 | E5 | expected: Same as before the deploy (REQ-010 Ex.2 / REQ-011: other insurers remain unchanged; SRD v1.1 §2.2.3): Lonpac and Tokio Marine rows show the agency Pemaju Eksklusif, and ticking Lonpac / TokioMarine returns their transactions (QT_TS4 / E2E_TS10) | page shows: Lonpac: page 1 20 row(s), other insurer/agency 0; BR6N006399 (QT_TS4 Lonpac BQX1858) Ins. Co. \"Lonpac Pemaju Eksklusif\" | TokioMarine: page 1 20 row(s), other insurer/agency 0; BR6N006404 (E2E_TS10 Tokio Marine WXQ3008) Ins. Co. \"TokioMarine Pemaju Eksklusif\" | matches"
+  ],
+  "proofs": [
+    {
+      "point": "E5",
+      "expected": "Same as before the deploy (REQ-010 Ex.2 / REQ-011: other insurers remain unchanged; SRD v1.1 §2.2.3): Lonpac and Tokio Marine rows show the agency Pemaju Eksklusif, and ticking Lonpac / TokioMarine returns their transactions (QT_TS4 / E2E_TS10)",
+      "shows": "Lonpac: page 1 20 row(s), other insurer/agency 0; BR6N006399 (QT_TS4 Lonpac BQX1858) Ins. Co. \"Lonpac Pemaju Eksklusif\" | TokioMarine: page 1 20 row(s), other insurer/agency 0; BR6N006404 (E2E_TS10 Tokio Marine WXQ3008) Ins. Co. \"TokioMarine Pemaju Eksklusif\"",
+      "match": true,
+      "at": "05/11/2026, 10:17:40",
+      "url": "/cibo/transaction-management",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: ",
+    "click: Search",
+    "click: Open Insurance Company",
+    "click: Tick Lonpac",
+    "typed: Search box empty",
+    "click: Search",
+    "typed: Search: BR6N006399",
+    "click: Search",
+    "click: remove ticked insurer",
+    "click: Open Insurance Company",
+    "click: Tick TokioMarine",
+    "typed: Search box empty",
+    "click: Search",
+    "typed: Search: BR6N006404",
+    "click: Search"
+  ],
+  "dialogs": [],
+  "windows": [],
+  "videos": {
+    "main": "video_12406_RC_TS4_rerun-20261105.webm",
+    "windows": []
+  },
+  "saved": "C:/Users/Faizuddin/Documents/Github/personal-dashboard/_reference/tickets/EAINT-12406/claude-run-2026-11-04/12406_RC_TS4_rerun-20261105/_raw/finish.json"
+}

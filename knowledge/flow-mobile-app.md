@@ -45,6 +45,23 @@ Raw captures: `_reference/tickets/EAINT-9805/EAINT-9805-mobile-app-sources-2026-
 6. **App Dermalog-missing prompt (Phase 1 SRD)**: title "Fingerprint Verification", content "Please plugin the dermalog to continue fingerprint verification". STMS Step 1 buttons "Read MyKad" / "Verify" / "Next" (not the web [Scan IC] / [Reconnect]). `[from ticket EAINT-5566, SRD STMS V1.0, Tables 2.5.2.1 and 2.5.3.1]` [source: pipeline EAINT-9805, Scribe related history, 2026-10-29] Whether Phase 6 keeps these texts: [unconfirmed]
 7. **App no-card prompt (seen on the app, 2026-11-03)**: pop-up title "Read MyKad", text "Please insert your MyKad to the dermalog.", button [OK]. Not the web text "No card is detected. Please insert IC and click [Scan IC] to try again." `[Faizuddin, app screenshot 2026-11-03: _reference/tickets/EAINT-9805/EAINT-9805-app-MK_TS02-no-card-popup-2026-11-03.png]` Which reader was connected for the screenshot (Iris or Dermalog): [unconfirmed].
 
+8. **App wrong-card prompts (Faizuddin, 2026-11-05):** non-IC card with a contact chip (e.g. bank card): pop-up title "MyKad Verification", text "MyKad verification failed. Do you want to try again?", buttons [No] / [Yes]. No card, a card without a chip, or an NFC/RFID card (e.g. access card): "Read MyKad" / "Please insert your MyKad to the dermalog." / [OK]. The 9805 SRD V0.1 has no message texts; the web texts ("No card is detected...", "...chip surface is cleaned") do not apply to the app. Official TS updated: MyKad TS E5:E10. `[Faizuddin, app screenshots in chat, 2026-11-05]`
+   **Wording rule (Faizuddin, 2026-11-05):** "the specific wordings will follow the web version (for cases that is also present in web), so can ask eAuto for the specific wordings, if its not confirmed". Clarified: "the wording in web is the same as mobile actually. because the mobile has extra ui, which is the popup. but when i do it, the same message from web also appears on the mobile version". So the app shows **the pop-up AND the web message**. Expected results now list both; the web line is "No card is detected. Please insert IC and click [Scan IC] to try again." `[Faizuddin, chat 2026-11-05]`
+   1. Applied live 2026-11-05 to MyKad TS E5, E6, E8–E12 (Dermalog) and E22, E23, E25–E29 (Iris). Statuses unchanged.
+   2. **Non-MyKad without chip (TS05/TS07, Iris TS21/TS23):** web text has typos ("No card is detecetd ... [Read IC]"). The TS uses the corrected text. **Faizuddin will check this manually** on the app.
+   3. **NFC/RFID card (TS04, Iris TS20):** no web case; E7/E24 left as the app pop-up only. Wording to confirm with eAuto.
+9. **MyKad TS08/TS09 — rewritten by Faizuddin (2026-11-05), current official wording.** Do not change without his say. `[Faizuddin, pasted from the official sheet, 2026-11-05]`
+   1. **9805_MK_TS08** (P2). Objective: "Verify a valid MyKad reads after one failed read." Steps: "1. Tap [Scan IC] with no card / 2. Insert a valid MyKad, tap [Scan IC]". Expected: "Ensure: 1. STMS Step 1 -> After tap [Scan IC] with no card: "Please insert your MyKad to the dermalog." 2. After insert valid MyKad and tap [Scan IC]: MyKad read on rescan".
+   2. **9805_MK_TS09** (P2). Objective: "Verify a valid MyKad reads after several failed reads." Steps: "1. Fail the read 5 times (no card / invalid card) / 2. Insert a valid MyKad, tap [Scan IC]". Expected: same two lines as TS08.
+   3. Old expected for both was "1. STMS Step 1 -> "Place thumb on reader."" (web text); replaced.
+   4. 2026-11-05 (wording rule, item 8): web line added as point 2 — "2. STMS Step 1 -> "No card is detected. Please insert IC and click [Scan IC] to try again."" — old point 2 is now point 3. Double trailing newline kept.
+10. **MyKad TS split by reader (2026-11-05, Faizuddin).** Results first recorded were from **Dermalog on Android 16**. Dermalog is on top so the tested IDs keep their meaning. `[Faizuddin, chat 2026-11-05]`
+   1. **DERMALOG** (rows 3–19): 9805_MK_TS01–TS16, Android columns only (Android 13 / 15 / 16), iOS / iPadOS grey. Holds the results recorded so far: TS01–TS06 and TS08 Pass, TS09 In Progress, TS07 deprioritized.
+   2. **IRIS** (rows 20–36): 9805_MK_TS17–TS32 = same scenarios, every platform column, all Not Started, TS23 deprioritized.
+
+11. **The app has no Auto Scan IC (Faizuddin, 2026-11-06):** "the actual system does not have auto scan". The MyKad read starts only when [Scan IC] is tapped. The Android 16 Pass on 9805_MK_TS06 was recorded after tapping [Scan IC], so it does not test Auto Scan. Affected: MK_TS06, MK_TS07 (Dermalog), MK_TS22, MK_TS23 (Iris). `[Faizuddin, chat 2026-11-06]` Workbook change for these four: **KIV** until Faizuddin confirms with the dev (2026-11-06). No edits made.
+12. **Card pulled out during the Dermalog read (Faizuddin, 2026-11-06):** pop-up "MyKad Verification", text "MyKad verification failed. Do you want to try again?", buttons [No] / [Yes]. Same pop-up as a non-MyKad card with a chip. `[Faizuddin, app screenshot 2026-11-06: _reference/tickets/EAINT-9805/EAINT-9805-app-card-pulled-during-dermalog-read-popup-2026-11-06.png]` Official MyKad TS E13 (9805_MK_TS10) updated live; old expected "Unable to read photo. Please try again." replaced. Iris copy 9805_MK_TS26 (E30) not changed: Iris behaviour not confirmed.
+
 ## 5. Interruption rules already tested (Phase 2)
 
 Source: `[gsheet EAINT-6014, Functional & Interruption Test R78; P2 - Compatibility Test]`.
@@ -123,6 +140,73 @@ Source: sub-task EAINT-12592 "[iOS] Biometric login (Face ID / Touch ID) with sa
 15. **Android sub-task:** EAINT-12688 "(eAuto-App) [Android] Biometric and Home Page Revamp", In Development, created 2026-10-30, description empty at capture. Whether it ports the iOS saved-accounts flow is [unconfirmed]. `[jira: EAINT-12688, captured 2026-10-30]`
 16. **Android coverage until 12688 is written:** the iOS biometric login TS also run on Android 15, tagged [unconfirmed]; Faizuddin chose this ("1. a)"). `[Faizuddin, dashboard chat to Elf, 2026-10-30]`
 
+17. **Passcode / Maybe Later answers (checked 2026-11-06).** `[jira: EAINT-12592 (Done, updated 2026-11-03); EAINT-12688 (Done, updated 2026-11-05)]`
+   1. Maybe Later = asked **once per account per phone**: "after Maybe Later that account is not asked again (not the next day either). A new account is asked. (Changed 28 Oct: was once per calendar day.)" Android: "Shown once per account". Back routes: Account tab switch; reinstall; Edit > Remove / DENIED / Face ID change re-offer it; Turn Off = declined, never offered.
+   2. Phone with Face ID / passcode: typed login > iOS Face ID permission alert > turn-on page. Android: turn-on page "only when biometrics are available".
+   3. Phone without passcode: iOS Account tab "no Face ID / passcode on the phone (section hidden)"; login-screen behaviour not written; "Not yet tested on a real phone: passcode turned off". Android: no turn-on page (biometrics unavailable); "Fingerprint changed / screen lock removed: all saved logins are wiped with a \"Fingerprint Changed\" dialog". Official TS 9805_BL_TS29 expected = "Result open". Ask eAuto (iOS dev) for the exact iOS display.
+   4. Official TS updated live 2026-11-06 (Biometric Login TS): 9805_BL_TS03 gains a next-day check; 9805_BL_TS29 now expects "Fingerprint Changed" (Android) / "Face ID Changed" (iOS) dialog + saved accounts removed + no crash (iOS line to confirm with eAuto, in Remarks); new 9805_BL_TS32 (no passcode: turn-on page not shown) and 9805_BL_TS33 (no passcode: Account tab switch not shown), Android 15 + iOS 27 columns, P2.
+
+## 9. Enhancements from Boss feedback (5 Nov 2026) `[Faizuddin, chat 2026-11-06]`
+
+1. LKM Refund and Insurance Cancellation: support **take photo from Camera**, not just upload.
+2. OCR (LKM Refund and Insurance Cancellation): read **only the first page**, to reduce latency.
+3. **Iris reader on iOS** must behave like Android for Bluetooth pairing (Iris to resolve the pairing problem).
+4. Testing: **multiple iOS apps with single / multiple Iris readers** for the pairing issue.
+5. **Update 2026-11-06 — item 3 not feasible from Iris** `[pasted by Faizuddin in chat, 2026-11-06; sender not named]`:
+   1. "iris most probably cant fix it for us. android and iphone connect to the reader differently."
+   2. Android: "android uses normal bluetooth, so user can pair the reader in bluetooth settings."
+   3. iOS: "iphone only allows apps to use the low energy kind (BLE) for devices like this" — a card reader cannot be paired from iPhone Settings; changing that "needs apple certification and new hardware".
+   4. New iOS design: "ios app will show a list of nearby readers, user picks theirs, and the app remembers it next time." "iris sdk can already connect to a specific reader, we build the list ourselves, no change needed from them".
+   5. TS impact: iOS Iris pairing = in-app reader list (pick, remembered next time), not iPhone Bluetooth settings.
+   6. Answers (Faizuddin, chat 2026-11-06): changing to a different reader after one is remembered = **KIV** ("will check. KIV first"); remembered reader off / out of range = **no-device message** ("no device message").
+   7. Official TS updated live 2026-11-06 (Iris Pairing TS): IP_TS07/TS08 iOS columns greyed (unpair in phone Bluetooth settings is Android only); IP_TS01 step 4 adds "(iOS: pick it from the in-app reader list)"; new iOS-only IP_TS09 (reader list, pick, connect, read), IP_TS10 (remembered next time), IP_TS11 (two readers, only picked connects), IP_TS12 (multiple iPhones, single / multiple readers), IP_TS13 (remembered reader off = no-device message, [Reconnect]). Change-reader TS on KIV.
+
+## 8. Teams: eAuto Mobile chats (read 2026-11-05)
+
+Faizuddin was added on 2026-11-05 to two group chats. Tag `[teams: <chat>, <date>, <sender>]`. Times are MYT.
+
+**Chats.** "eAuto Mobile App - Android & iOS" (CR group, created 2026-09-28 by the BA: "we will use this CR group for eAuto Mobile App - Android iOS arrangement"). "eAuto-Mobile Issues" (created 2026-10-21 by Hui Xin Lee: "this group for test issue review and update"). Roles: Way Hou Wong = mobile lead; Kasheng Liew = iOS dev; Zhen Hao Choo = Android dev; Sheng Yuen He = iOS / Xcode Cloud; Goh Kai Jiaeh, Jin Siang Boo = backend; Mei Jia Chee = BA; Hui Xin Lee = QA (automation); Tan Yi Fung = security / architecture.
+
+### 8a. Environment and builds
+
+1. **Phase 6 backend = staging sit1.** API paths `/sit1/mb/ucd/...`; release cards "Mobile release to sit1". Answers open question 1. `[teams: eAuto Mobile App, 2026-10-20 to 2026-10-27, Workflows / Goh Kai Jiaeh]`
+2. **iOS builds are named `eauto-ios-staging-v1.0.0-N`.** Build 4 (2026-10-29): "lkm refund, EAINT-12683" + "tab bar with help and account pages, EAINT-12666". Build 5 (2026-11-03): LKM refund updates, "llp business type (EAINT-12747)", "profile card + my profile in account tab, staging shows a festive test theme (EAINT-12710)", "insurance cancellation not in yet, coming in a later build". Build 6 (2026-11-03): fix for issue 18. `[teams: eAuto Mobile App, 2026-10-29 / 2026-11-03, Kasheng Liew; eAuto-Mobile Issues, 2026-11-03]`
+3. **iOS install route = TestFlight** (Hui Xin "got" TestFlight); iOS CI "using xcode cloud", "the ci just do unit testing only". Simulator needs a .app file. `[teams: eAuto Mobile App, 2026-10-01, Sheng Yuen He / Hui Xin Lee]` Answers open question 2 (route only).
+4. **Android staging builds are numbered.** Build 66 (2026-11-04): "Biometric Authentication (EAINT-12688)", "Home page design revamp (match ios)", "App Security fixes (EAINT-12746)". Build 67 (2026-11-04): "My Profile card on home page (EAINT-12762)", "Updated staging developer account list (new automation test MyKad names and card numbers)". `[teams: eAuto-Mobile Issues, 2026-11-04, Zhen Hao Choo]`
+5. **Tickets split by platform from 2026-10-28**: "the tickets will be separated for android and ios from now on isit" / "yess". New mobile tickets are still linked from EAINT-9805. `[teams: eAuto Mobile App, 2026-10-28 / 2026-11-03, Hui Xin Lee / Zhen Hao Choo / Way Hou Wong]`
+6. **Web-to-app mapping tickets**: EAINT-9204 → EAINT-12559; EAINT-11057 → EAINT-12560; LKM Refund (web EAINT-104) → EAINT-12567; Android e-Invoice = EAINT-12667. `[teams: eAuto Mobile App, 2026-10-20 / 2026-10-28, Mei Jia Chee / Way Hou Wong / Zhen Hao Choo]` A tracker ticket links web items deployed to prod since Oct 2026 that the app must follow. `[same, 2026-11-02, Mei Jia Chee]` (ticket key not captured)
+7. **Insurance cancellation on sit1 uses a simulator**: "only staging/sit1 is connect to Simulator for insurance cancellation". `[teams: eAuto Mobile App, 2026-10-30, Jin Siang Boo]`
+8. **Test accounts and bypass accounts** are in the "eAuto-Mobile Issues" chat **Notes** tab ("I updated the full bypass account list in this group's Notes"). Not copied here. `[teams: eAuto-Mobile Issues, 2026-11-04, Hui Xin Lee]`
+9. **Old bypass**: "the old bypass mechanism will be retired" — "this is for web"; "so app remained ya" / "yes". The app keeps its developer-mode MyKad bypass. `[teams: eAuto Mobile App, 2026-10-16, Hui Xin Lee / Way Hou Wong]`
+
+### 8b. Iris reader (affects the Iris TS)
+
+1. **Iris does not return a live fingerprint image.** "Unlike Dermalog, the Iris SDK dont return fingerprint image. It only return match or no match. The only fingerprint data it returns is the minutiae template stored on the MyKad chip, not the live sensor scan." The devs can render an image from the minutiae, "but it will be approximated and fixed only". `[teams: eAuto Mobile App, 2026-10-14, Zhen Hao Choo]` **Impact:** the planned check "perakuan [check the thumbprint picture]" (§6 item 9) will not show the live scan under Iris. Final decision on what image is stored: [unconfirmed].
+2. **Card removed after read** → "follow the existing dermalog behaviour" (page resets, empty state). `[teams: eAuto Mobile App, 2026-10-15, Way Hou Wong / Mei Jia Chee]`
+3. **Supported OS**: Iris "iOS/iPadOS 14 and above, Android 13 and above"; Dermalog "Lowest OS: Android 8.0 / Highest OS: Android 15". `[teams: eAuto Mobile App, 2026-10-26, Way Hou Wong]` Proposed app minimum iPadOS 17; "android need support lower version". `[same, 2026-10-19, Kasheng Liew / Sheng Yuen He]`
+4. **Iris SDKs**: "[5000-3022] IRIS BT MyKad Android SDK V1.0" and "[5000-3023] IRIS BT MyKad iOS SDK V1.0" (2026-10-13); new Android SDK version shared 2026-11-03. `[teams: eAuto Mobile App, Mei Jia Chee]`
+5. **Iris test units** "have to pulang back to Iris on 03.11.2026"; QA "if u required testing after dev done can pinjam from them". `[teams: eAuto Mobile App, 2026-10-13, Mei Jia Chee]` Iris WebSocket (web) documentation "eta Iris will send on 05.11". `[same, 2026-10-26]`
+6. **Security**: the reader handshake uses HMAC "only when connecting dermalog reader"; "the hmac key is fixed" → lead asked to "strengthen the security part of the mobile app to prevent unauthorised transaction". App Security fixes shipped in Android build 66 (EAINT-12746). `[teams: eAuto Mobile App, 2026-10-13, Tan Yi Fung / Way Hou Wong]`
+7. A MyKad Reader Emulator for Mac (Apple Silicon / Intel zips) was shared 2026-10-16 with steps "Connect → INIT, then in the eAuto page click INSERT CARD"; "The card ejects after every read". Web-side tool. `[teams: eAuto Mobile App, 2026-10-16, Jin Siang Boo via Way Hou Wong]`
+
+### 8c. Scope decisions
+
+1. **Tablet**: "we will rebuild the screens for tablet version. it will be a different design." / "same build" / element ids "should be reuse back the existing one" / "one build for both mobile view and tablet view." `[teams: eAuto Mobile App, 2026-10-26, Way Hou Wong]` Orientation "support both" was discussed 2026-10-19; later f2f says portrait only for now (§6 item 38).
+2. **Language**: app is English only for now; management wants English, Malay and Chinese for web and mobile (planning pending). `[teams: eAuto Mobile App, 2026-10-12 / 2026-10-28, Zhen Hao Choo / Mei Jia Chee]`
+3. **Biometric login**: management wants face / thumbprint login; iOS done (EAINT-12592); Android in build 66 (EAINT-12688). `[teams: eAuto Mobile App, 2026-10-21 / 2026-10-23, Mei Jia Chee / Kasheng Liew; eAuto-Mobile Issues, 2026-11-04]` Answers §7 item 12.
+4. **Company insurance (Chubb) needs TIN**; app had no TIN field — "the app should make the UI changes for it", follow web. `[teams: eAuto Mobile App, 2026-10-18, Goh Kai Jiaeh]`
+5. **e-Invoice / invoice on the app**: "STMS, eSTM, JomCheck, SSM got einvoice, invoice / Insurance got invoice only for now". `[teams: eAuto-Mobile Issues, 2026-10-22, Zhen Hao Choo]`
+6. **Mobile planning 04.11.2026**: JomCheck (BE, Mobile – in progress), eSTM Module Permission, Insurance, BMK, SSM Document, Service Hub, APT. Progress demo to management 2026-11-05 4pm. `[teams: eAuto Mobile App, 2026-11-04, Way Hou Wong / Mei Jia Chee]`
+7. **Merged to sit1 2026-11-02**: LKM Refund owner email / WhatsApp; STMS seller attachments; eSTM buyer attachments; JomCheck share report with credit companies. `[teams: eAuto Mobile App, 2026-11-02, Jin Siang Boo]`
+
+### 8d. Issue process ("eAuto-Mobile Issues")
+
+1. Issues are posted by a **Workflows bot** from the **QA Testing Board** (Hui Xin's), states New Issue 🐞 → Resolved 🔧 → Done ✅ / Reopened 🔁, per platform ("eAuto Android" / "eAuto iOS"), with TS id, ticket and build to retest on. `[teams: eAuto-Mobile Issues, 2026-10-21 onward]`
+2. Logged so far (Phase 2 EAINT-6014 automation runs): 1 Listing "New" vs "Pending" — removed unused continue-later API, Done; 2 "status" → "Status", Done; 4 Help sheet hotline; 5 Purchase SSM spinner; 6 dev-mode Read MyKad crash, Done; 7 Listing "New" after Continue Later — works as intended, Done; 11 hotline "03–27798899" vs "1700816186" — see item 4; 14 iOS listing status, fixed build 3; 15 JPJ Official Receipt delay — "around 2 - 3 mins in staging", Done; 16 JomCheck price app vs web — new CR EAINT-10089 (RM 18 → RM 20) not in app yet; 18 iOS crash after listing search, fixed build 6. `[teams: eAuto-Mobile Issues, 2026-10-22 to 2026-11-03]`
+3. Devs want the **vehicle no.** (and transaction id if possible) in every issue to find logs faster. `[teams: eAuto-Mobile Issues, 2026-10-22, Way Hou Wong]`
+4. **Support hotline — conflicting.** Dev: "1700 this is old number, the new number now using 03-27798..." / "the app changed all the old number from 1700 to 03-27798 already." `[teams: eAuto-Mobile Issues, 2026-10-27 13:15, Way Hou Wong]` Resolved card same day: "1700816186 is the new number". `[same, 14:24, Workflows / Hui Xin]` [unconfirmed] which is correct.
+5. Open: "mobile app supposed to hv announcement popup or not ya" — no answer yet. `[teams: eAuto-Mobile Issues, 2026-11-03, Hui Xin Lee]`
+
 ## Open questions
 
-1. Phase 6 staging instance for the UAT app. 2. iOS install route (TestFlight?) and iOS devices ("TBC"). 3. Exact app error texts for reader unplug / Bluetooth off / unpair. 4. Whether the Iris unit due back 2026-11-03 (inventory testing) is the same unit used for app testing. 5. Who holds the Dermalog runtime licence for test phones.
+1. ~~Phase 6 staging instance~~ sit1 (§8a.1). 2. ~~iOS install route~~ TestFlight (§8a.3); iOS devices still "TBC". 3. Exact app error texts for reader unplug / Bluetooth off / unpair. 4. Iris units returned to Iris 2026-11-03 (§8b.5) — Iris testing needs a loan. 5. Who holds the Dermalog runtime licence for test phones. 6. What thumbprint image the perakuan shows under Iris (§8b.1). 7. Announcement popup on the app (§8d.5).

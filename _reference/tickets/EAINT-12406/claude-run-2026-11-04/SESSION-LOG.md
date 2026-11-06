@@ -1,4 +1,4 @@
-# EAINT-12406: Claude-driven run, session log (read this first to pick up)
+﻿# EAINT-12406: Claude-driven run, session log (read this first to pick up)
 
 Faizuddin's rule (2026-11-04): save every important detail of the session here, so the next
 session can pick up from this file alone. Newest entry at the bottom. Each entry gives what was
@@ -412,3 +412,21 @@ Each new purchase uses a new PROCEED row from the checker xlsx. Rows used so far
   1. The price jump from the All Quotations card to Add-ons (2 of 4 cars).
   2. Grab blank above ~RM2,000 (part of Q46).
   3. Row 32 Tokio Marine quoting RM0.00 / RM50.00.
+
+## 2026-11-05 (main laptop, user Faizuddin)
+
+- Videos restored: 56 `.webm` copied from `Documents\eAuto Test Evidences\12406\...` into this folder (folder then 439 files, handoff said 444; the 5-file gap is not videos). Gyan.FFmpeg 9.0.2 installed.
+- Jira (checked at session start): EAINT-12764 / 12765 / 12766 still To Do with Mong Guo Hao, no update since 04.11 15:35.
+- Faizuddin: "okay, can run the TS now".
+- **RC_TS4 E5: PASS** (`scripts/claude-run/12406/rc-ts4-e5.mjs`). **RC_TS11 E2: PASS, recorded** (`rc-ts11-e2.mjs`). Details in RESULTS.md.
+- Observation (not raised): CRM listing "Last Update" shows the time the record was viewed (10:18 at the 10:18 run).
+- Dashboard: `CLAUDE_12406` gained RC_TS4 / RC_TS11; tracker rebuilt (26 pass).
+- **Next:** E2E_TS5 (new real-API purchase, fresh checker row) and RC_TS7 (e-receipt email in the inbox).
+- **E2E_TS5 (real API): PASS**, row 34 VBX2423, BR6N006406, receipt 26110521300003 (`e2e-ts5.mjs`, `e2e-ts5-pm.mjs`). E1 gate DEFECT was a script read fault (CORRECTION.txt). Row 34 is now bought: don't reuse. Next free rows: 37 WC4253X, 38 PMX9034, 39 NDX523, 42 VDX5765 …
+- Left: RC_TS7 (e-receipt email in faizuddin@modefair.com inbox / Spam, sender noreplyiatest@bintangprospek.com): needs the inbox; not run.
+
+### EAINT-12406 ON HOLD (2026-11-05, Teams message pasted by Faizuddin; sender and time not given)
+Verbatim: "Just to update that we can put this ticket on hold first ya. Will update here latest by 6PM whether to proceed or not ya.
+Reason: Based on the BNM PITA & Non-Direct Digital Platform Guidelines, service providers are only allowed to offer up to 2
+Conventional and 2 Takaful operators to public users. Our system already has 2 Conventional insurers: Tokio Marine and Lonpac."
+- No more TS runs, purchases or raising until the 6 PM decision. State frozen at 26/46 pass.

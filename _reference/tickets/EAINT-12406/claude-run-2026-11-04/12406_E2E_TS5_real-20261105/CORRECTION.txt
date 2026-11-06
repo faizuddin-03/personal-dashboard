@@ -1,0 +1,13 @@
+﻿CORRECTION (05.11.2026, Claude, after the run)
+
+E1 gate says DEFECT. That is a script reading fault, not a page fault.
+- Screenshot 08-E1-after-fpx-51.png shows the red box "Unsuccessful payment" with "You may try again." on the next line,
+  no receipt, and all 4 payment tiles still offered.
+- The script's text regex read only the first line ("Unsuccessful payment "), so the "try again" check failed.
+- E1 is PASS on the evidence.
+
+E2 Payment Management: the purchase run read the table while its spinner was still showing (15-cibo-payment-management.png,
+0 rows). Re-read in ../12406_E2E_TS5_real-20261105_E2-payment-management/: 1 row for BR6N006406
+(Online Banking RHB Bank, RM928.95 Paid 05-11-2026 10:23). The failed FPX 51 attempt is not listed separately. E2 PASS.
+
+Final: E1 pass, E2 pass, E3 pass, E4 pass -> 12406_E2E_TS5 PASS on the real API.

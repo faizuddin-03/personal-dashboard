@@ -1,0 +1,37 @@
+{
+  "ts": "12406_RC_TS11_rerun-20261105",
+  "instance": "ia",
+  "driver": "Claude (Playwright)",
+  "proofs": [
+    {
+      "point": "E2",
+      "expected": "Recorded only (Q43): the same for the Lonpac buyer of QT_TS4, for comparison",
+      "shows": "CRM listing (Private, search \"BQX1858\"): 1 row(s); Vehicle \"BQX1858\", Ownership Type \"Private\", Latest Coverage Period \"31-12-2026 - 30-12-2027\", Last Update \"- 05-11-2026 10:18\" | Customer Details: 1 vehicle card(s); card BQX1858: Latest Policy Purchase \"04-11-2026 17:18\", Latest Policy Coverage Period \"31-12-2026 - 30-12-2027\", Last Updated By \"-\" (recorded, Q43)",
+      "match": true,
+      "shot": "03-E2-crm-vehicle-card-BQX1858.png",
+      "at": "05/11/2026, 10:18:44",
+      "url": "/cibo/crm/customer-details/i/900303146116",
+      "side": "CIBO"
+    }
+  ],
+  "notes": [
+    "Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.",
+    "portal: CIBO (testadmin)",
+    "typed: Login ID",
+    "typed: Password",
+    "click: Login",
+    "click: Transaction Management",
+    "typed: Search: BR6N006399",
+    "click: Search",
+    "typed: Search: BR6N006399",
+    "click: Search",
+    "Transaction listing BR6N006399: [\"1\",\"BR6N006399 Secarang\",\"04-11-2026 17:18\",\"04-11-2026 17:20\",\"-\",\"-\",\"BQX1858\",\"Car\",\"FAIZUDDIN TEST ALLIANZ 900303-14-6116\",\"RM808.16Paid 04-11-2026 17:20\",\"Fiuu | Online Banking – FPX-RHB Bank\",\"\",\"\",\"Lonpac Pemaju Eksklusif\",\"Insurance created W26VP02125851KUL\",\"Pending\",\"\"]",
+    "click: Open Ownership Type",
+    "click: Private",
+    "typed: Search: BQX1858",
+    "click: Search",
+    "click: Open Customer Details"
+  ],
+  "dialogs": [],
+  "windows": []
+}

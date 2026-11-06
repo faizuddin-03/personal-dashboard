@@ -40,3 +40,17 @@ Latest result per TS (today's run where it ran, else Azfar's hand-over result), 
 
 Dashboard: `/eauto/12406` (Azfar + Claude chips, overall line), TS Tracker via `scripts/claude-run/results/EAINT-12406.json`
 (built by `node scripts/claude-run/build-results-12406.mjs` from `lib/eauto12406.ts`), `/jira/studies`.
+
+## 2026-11-05 (main laptop, `run-ts.mjs`, read-only CIBO)
+
+| TS | API (sim / real) | Status | What was checked / what happened | Evidence |
+|---|---|---|---|---|
+| 12406_RC_TS4 (rerun E5) | CIBO, read-only | **PASS** (was RE-RUN; E1–E4 pass Azfar 29.10) | Insurance Company **Lonpac** ticked, empty search: 20 rows on page 1, all "Lonpac / Pemaju Eksklusif"; BR6N006399 (QT_TS4, BQX1858) "Lonpac Pemaju Eksklusif". **TokioMarine** ticked: 20 rows, all "TokioMarine / Pemaju Eksklusif"; BR6N006404 (E2E_TS10, WXQ3008) "TokioMarine Pemaju Eksklusif". | `12406_RC_TS4_rerun-20261105/` |
+| 12406_RC_TS11 (rerun E2) | CIBO, read-only | **PASS** (was KIV; both points are "recorded only", E1 Azfar 30.10) | CRM (Private, search BQX1858): 1 row, Lonpac buyer, Latest Coverage Period 31-12-2026 – 30-12-2027. Customer Details: 1 vehicle card; Latest Policy Purchase 04-11-2026 17:18, Last Updated By "-". Observed: the listing's **Last Update showed "- 05-11-2026 10:18", the time of this run**, not the purchase time (Azfar's 30.10 E1 row was also odd: "- 29-10-2026 16:30"). Recorded only (Q43). Nothing was edited. | `12406_RC_TS11_rerun-20261105/` |
+
+**Progress after 05.11 (latest per TS), out of 46: 26 pass · 3 fail · 6 KIV · 1 blocked · 9 not run · 1 deprioritised = 26/46 (56.52%) pass only.**
+| 12406_E2E_TS5 (real API) | **real**, row 34 VBX2423 (Perodua Myvi), FPX RHB | **PASS** (Azfar 30.10 pass on the simulator) | E1: FPX status 51 → back on "How would you like to pay?" with "Unsuccessful payment / You may try again.", no receipt, 4 tiles offered (gate said DEFECT: script read one line only, see `CORRECTION.txt`). E3: SPayLater → [Cancel the transaction] → page "Are you sure?" [OK] → back on the payment page, VBX2423, RM928.95 unchanged. E4: FPX 00 → Success, receipt **26110521300003** downloaded; CIBO **BR6N006406** Allianz / Serba Sentral, Paid, Insurance created. E2: Transaction Management 1 row; Payment Management 1 row (Online Banking RHB Bank, RM928.95 Paid), failed attempt not listed (re-read, first read caught the spinner). | `12406_E2E_TS5_real-20261105/`, `…_E2-payment-management/` |
+
+**Progress after E2E_TS5 (unchanged count, E2E_TS5 was already pass): 26/46 (56.52%) pass only.**
+
+**2026-11-05: ticket ON HOLD** (Teams: BNM PITA & Non-Direct Digital Platform Guidelines allow up to 2 Conventional + 2 Takaful operators; Tokio Marine and Lonpac already fill the 2 Conventional). Decision due by 6 PM. See SESSION-LOG.md.

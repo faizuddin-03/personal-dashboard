@@ -283,6 +283,18 @@ Excel as a formula**, so `- item` breaks. ` - item` does not.
 3. **Trap — copied colour rules keep their old cell reference**: on the EAINT-9805 workbook the per-OS result columns reused the colour rules of the builder's Test Result column, so each cell read the value of the cell to its left and changing one status recoloured its neighbour. Priority colours on combined tabs also stopped at the first section. Fix: write each colour rule against the cell's own range. Cost: a workbook sent to Faizuddin with wrong colours. [source: pipeline EAINT-9805, Elf scenarios (job 20261030-151124-EAINT-9805-elf-chat-603e), 2026-10-30]
 4. **No hand edits after the build**: "Never add result columns, dropdowns or colour rules by hand after the build". Per-platform result columns come from the spec: `resultColumns` at top level and `platforms` on each row; they replace `Test Result`, sit right of `Remarks`, and unused platforms are grey with no dropdown. `[.claude/skills/draft-TS-excel/SKILL.md lines 42–43]`
 
+### Deprioritized TS — universal style (2026-11-05)
+
+Faizuddin's rule for every ticket, current and future: "take note of how i deprioritize a TS. this should be a universal style, applied across all Tickets". Worked example: EAINT-9805, MyKad TS row 10, **9805_MK_TS07**. `[Faizuddin, chat 2026-11-05; read from the live sheet with an Office Script]`
+
+1. **The row stays, greyed.** TS No., Priority, Objective, Steps, Expected Result, QA and Remarks keep their text, with no strikethrough. **The whole row, A to the last status column, gets fill `#F2F2F2`.** This was updated by Faizuddin on 2026-11-05 on 9805_MK_TS07; the first version greyed only the status cell. The Priority colour still shows, because it comes from conditional formatting.
+2. **Status cells are merged**: every result/status column of the row (on 9805: Android 13 … iPadOS, H:N) becomes one merged cell.
+3. **Text**: `DEPRIORITIZED`, upper case, **bold italic**, black `#000000`, Calibri 11, centred horizontally and vertically, fill grey `#F2F2F2`. No dropdown.
+4. **Reason goes in Remarks**, in plain words. For 9805_MK_TS07 the Remarks say "Similar to other cards. No need to test multiple times".
+5. **QA column** is left empty.
+6. **Counting**: a deprioritized TS is not counted in pass rate, executed % or Not Started. The dashboard reads this mark (`lib/officialTsResults.ts` rule 5) and marks the TS Deprioritized in the TS Tracker (`lib/tsTrackerOfficialSync.ts` rule 6).
+7. **When Claude deprioritizes a TS** in any workbook it writes, it uses exactly this style. It never deletes the row, never writes "N/A" and never strikes through the text.
+
 ### Names keep their own spelling after "->" (2026-10-30)
 
 1. A line after "->" normally starts with a capital letter, but a product or feature name keeps its own spelling: **e-Signature** stays lower-case "e" (EAINT-9805 documents TS DC_TS03 / DC_TS04). Faizuddin, asked "Keep e-Signature, the name as written" or "Change it to E-Signature": "keep name as written". `[Faizuddin, dashboard chat to Elf, 2026-10-30]` Whether this covers every product name is [unconfirmed].

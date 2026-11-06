@@ -35,7 +35,11 @@ export async function GET() {
     const t = tickets.find(x => x.key.toUpperCase() === run.key.toUpperCase());
     if (t) {
       // The tracker re-applies a ticket only when mtimeMs changes, so a newer run file must move it.
-      t.cases = mergeRunIntoCases(t.cases, run);
+      // The run file's mtime is the git checkout time on another laptop, so compare the run DATE
+      // (ranAt, local) with the sheet's last-saved date instead.
+      const sheetDay = new Date(t.mtimeMs).toLocaleDateString("en-CA");
+      const runIsNewer = !!run.ranAt && run.ranAt >= sheetDay;
+      t.cases = mergeRunIntoCases(t.cases, run, runIsNewer);
       if (run.mtimeMs > t.mtimeMs) { t.mtimeMs = run.mtimeMs; t.modifiedAt = run.modifiedAt; }
     } else {
       tickets.push({ key: run.key, title: run.title, mtimeMs: run.mtimeMs, modifiedAt: run.modifiedAt, cases: run.cases });

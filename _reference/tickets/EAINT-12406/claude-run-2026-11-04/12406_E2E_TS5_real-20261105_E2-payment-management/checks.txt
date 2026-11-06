@@ -1,0 +1,15 @@
+# 12406_E2E_TS5_real-20261105_E2-payment-management — E2 re-read: CIBO Payment Management rows for BR6N006406 (failed FPX 51, cancelled SPayLater, paid FPX)
+# Claude-driven run (Playwright MCP) on staging /ia, started 05/11/2026, 10:26:37 MYT
+# lines: when | point | expected | page shows | matches | screenshot
+05/11/2026, 10:26:40 | note: Driver: Claude via scripts/claude-run/run-ts.mjs (local Playwright, own browser), guided by Faizuddin.
+05/11/2026, 10:26:41 | note: portal: CIBO (testadmin)
+05/11/2026, 10:26:45 | note: typed: Login ID
+05/11/2026, 10:26:46 | note: typed: Password
+05/11/2026, 10:26:46 | note: click: Login
+05/11/2026, 10:26:50 | note: click: Transaction Management
+05/11/2026, 10:26:53 | note: typed: Search: BR6N006406
+05/11/2026, 10:26:54 | note: click: Search
+05/11/2026, 10:27:02 | note: click: Payment Management
+05/11/2026, 10:27:05 | note: typed: Search: BR6N006406
+05/11/2026, 10:27:06 | note: click: Search
+05/11/2026, 10:27:34 | E2 | expected: CIBO Payment Management and Transaction Management each show one row for the transaction, final status Paid / Insurance created; the failed FPX attempt is not listed separately (recorded) | page shows: Transaction Management BR6N006406: 1 row(s) | Payment Management "BR6N006406": 1 row(s): Payee=-, Transaction Ref. No.=BR6N006406 Secarang, Vehicle No=VBX2423, Payment Channel=Online Banking RHB Bank, Payment=RM928.95 Paid 05-11-2026 10:23, Payment Ref ID=ALZ20261105SFX0004, RHB Ref ID=-, Response=- | matches | 02-E2-payment-management-BR6N006406.png

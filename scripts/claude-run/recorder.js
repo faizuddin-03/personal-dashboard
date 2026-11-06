@@ -101,6 +101,21 @@ async (page) => {
     return { url: p.url(), name: name && name.trim() };
   };
 
+  // BO Logout from BO Home. The link asks "Sure to logout?" (browser confirm); an unanswered confirm is
+  // dismissed = Cancel and the user stays logged in, so accept it like a person clicking OK.
+  // Returns the URL after logout (expected .../public/login/).
+  R.logout = async () => {
+    const p = R.page;
+    if (!/\/uat1\/home\//.test(p.url())) { await p.goto(`${R.BASE}/home/`, { waitUntil: 'load' }); }
+    const once = async (d) => { R.lastLogoutDialog = d.message(); await p.waitForTimeout(700); await d.accept().catch(() => {}); };
+    p.once('dialog', once);
+    await R.click(p.getByRole('link', { name: 'Logout', exact: true }), 'Click Logout, then OK on "Sure to logout?"');
+    await p.waitForURL(/public\/login/, { timeout: 15000 }).catch(() => {});
+    await p.waitForTimeout(1500);
+    if (!/public\/login/.test(p.url())) throw new Error('Logout did not reach the login page: ' + p.url());
+    return p.url();
+  };
+
   R.reportsBlock = () => R.page.locator('span.category', { hasText: /^\s*Reports\s*$/ }).locator('xpath=..');
   R.listingLink = () => R.reportsBlock().getByRole('link', { name: 'Association Payment Listing', exact: true });
 

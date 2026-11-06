@@ -84,6 +84,7 @@ export default function TsResultsPanel({ ticketKey }: { ticketKey: string }) {
         <Bar c={c} />
         <p className="text-[11px] text-slate-500">
           {data.executed}% of {counted(c)} result cells tested. Grey (blank) cells are not counted.
+          {(data.deprioritized?.length ?? 0) > 0 && ` ${data.deprioritized.length} deprioritized TS not counted.`}
         </p>
       </div>
 
@@ -112,7 +113,10 @@ export default function TsResultsPanel({ ticketKey }: { ticketKey: string }) {
                     </ul>
                   </details>
                 </td>
-                <td className="py-1.5 pr-3 text-slate-300">{s.tsCount}</td>
+                <td className="py-1.5 pr-3 text-slate-300">
+                  {s.tsCount}
+                  {s.deprioCount > 0 && <span className="block text-[10px] text-slate-500 italic">{s.deprioCount} deprioritized</span>}
+                </td>
                 {SHOWN.map(k => <td key={k} className={clsx("py-1.5 pr-3", s.counts[k] ? TONE[k] : "text-slate-600")}>{s.counts[k]}</td>)}
                 <td className="py-1.5"><Bar c={s.counts} /></td>
               </tr>
@@ -137,6 +141,19 @@ export default function TsResultsPanel({ ticketKey }: { ticketKey: string }) {
           <ul className="space-y-0.5 text-xs text-slate-300">
             {data.inProgress.map((f, i) => (
               <li key={`${f.sheet}-${f.ts}-${f.column}-${i}`}><b>{f.ts}</b> on {f.column} — {f.objective || f.sheet}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {(data.deprioritized?.length ?? 0) > 0 && (
+        <div>
+          <h4 className="text-xs font-semibold text-slate-400 italic mb-1">Deprioritized ({data.deprioritized.length})</h4>
+          <ul className="space-y-0.5 text-xs text-slate-400">
+            {data.deprioritized.map((d, i) => (
+              <li key={`${d.sheet}-${d.ts}-${i}`}>
+                <b className="text-slate-300 line-through">{d.ts}</b> ({d.sheet}) — {d.reason || "no reason in Remarks"}
+              </li>
             ))}
           </ul>
         </div>

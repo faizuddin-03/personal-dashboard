@@ -449,6 +449,9 @@ export const CLAUDE_12406: Record<string, { r: AzfarResult; note: string }> = {
   "12406_E2E_TS9": { r: "pass", note: "Real API BR6N006401: all 7 points; gender does not re-price on the real API (recorded)" },
   "12406_E2E_TS10": { r: "pass", note: "Real API BR6N006404: Allianz > plan Edit > Change > Tokio Marine; receipt and CIBO Tokio Marine only" },
   "12406_E2E_TS4": { r: "pass", note: "Real API BR6N006405: SPayLater (ShopeePay simulator) Success, CIBO 'eWallet - ShopeePay'" },
+  "12406_RC_TS4": { r: "pass", note: "05.11 rerun E5: Lonpac / TokioMarine filters list only their rows, BR6N006399 + BR6N006404 show Pemaju Eksklusif (E1-E4 Azfar 29.10)" },
+  "12406_E2E_TS5": { r: "pass", note: "05.11 real API BR6N006406: FPX 51 'Unsuccessful payment', SPayLater cancel OK, FPX 00 paid; CIBO 1 row each in TM and Payment Management" },
+  "12406_RC_TS11": { r: "pass", note: "05.11 rerun E2: CRM record + vehicle card of Lonpac buyer BQX1858 recorded (E1 Azfar 30.10)" },
 };
 
 /** Latest result per TS: today's Claude run where it ran, else Azfar's at hand-over. */

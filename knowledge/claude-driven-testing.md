@@ -205,6 +205,11 @@ whats happening" `[Faizuddin, session chat, 2026-11-04]`
    - Otherwise the run creates the ticket.
    - The tracker (`hooks/useOfficialTsSync.ts`, every 10 s on any page) creates the CR and
      colours each TS.
+   - **Newer run wins.** When the run's `ranAt` is on or after the sheet's last-saved date, the
+     run's result is the TS's overall status (`OfficialCase.overall`). Before this, an old sheet
+     "Not Started" + run "Pass" showed In Progress, so the main laptop (which has the official
+     sheet, saved 3 Nov) showed 7 pass instead of 32. `[verified: /api/ts-tracker/official on the
+     main laptop, 2026-11-05: 33 pass · 16 fail · 1 in progress · 19 not started]`
 3. **Blocked and Not Started** count as "not started" in the tracker. The TS's note shows
    "<column>: Blocked".
 4. **Git:** the file is tracked, so the main laptop shows the same progress after a `git pull`.
@@ -278,6 +283,10 @@ with the Playwright plugin, with recordings". Claude then:
   the `ms-playwright-mcp` Chrome processes (PowerShell: the `chrome` processes whose command
   line contains `ms-playwright-mcp`), then retry. If it stays locked, the 12406 session's
   fallback works: a local script (`scripts/claude-run/run-ts.mjs`) with its own Chrome.
+- **BO Logout asks "Sure to logout?" (a browser confirm).** Playwright dismisses an unanswered confirm, which
+  means **Cancel**: the user stays logged in. Always log out with `R.logout()` (accepts it, like clicking OK)
+  and check the page lands on `/uat1/public/login/`. Missing this produced a false F17 on TS06,
+  2026-11-05. `[verified: Faizuddin's manual video 12028_TS06_Manual Test.mp4 + check-C rerun, 2026-11-05]`
 - **BO login field:** `input[name=username]` does not match; use the `placeholder="Username"`
   input.
 - **Never put the password in a tracked file.** The push was refused as a credential leak.
@@ -297,6 +306,17 @@ with the Playwright plugin, with recordings". Claude then:
   `.pdf`; render that to PNG to compare). Month index: `months.indexOf('May')` = 4.
 
 ### Post-processing evidence (Bash, after the run)
+
+- **Faizuddin's evidence folder** (main laptop): `C:\Users\Faizuddin\Documents\Modefair\eAuto Test Evidences\<ticket number>\`,
+  one zip per TS named `12028_TS01.zip`, holding `12028_TS01.webm` and `12028_TS01-<step>.png`
+  (no "NN-" prefix). Build them with
+  `python -I scripts/claude-run/export_evidence.py <run folder> "<evidence folder>" <TS> … [--suffix S] [--dry]`.
+  It never overwrites an existing zip. `[Faizuddin, session chat, 2026-11-05: "i want the files to be saved here, with this the naming the follows the existing folders"]`
+- **Failed TS zips start with `[FAILED] - `** (e.g. `[FAILED] - 12028_TS47.zip`): pass `--prefix "[FAILED] - "`. `[Faizuddin, session chat, 2026-11-05: "for failed scenarios, i want you to put in the front of the naming, this: \"[FAILED] - ....\""]`
+- **Address-bar recording is a one-off, not the default.** For TS06 on 2026-11-05 only, Faizuddin asked
+  for a whole-screen video so the address bar shows each address being pasted by hand
+  (`scripts/claude-run/one-off/ts06-url-visible.mjs`). Every other run stays on `recorder.js` (page-only
+  video) unless he asks again. `[Faizuddin, session chat, 2026-11-05: "only for this TS for this one particular time. after that, make sure to change back the recording style"]`
 
 - Python packages on the second laptop: `openpyxl`, `pymupdf` (render PDF pages to PNG),
   `imageio-ffmpeg` (a full ffmpeg binary), `pillow` (stack or crop images). Install with

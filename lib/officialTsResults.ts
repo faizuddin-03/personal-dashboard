@@ -15,6 +15,11 @@
 //      at least one TS row.
 //   3. TS rows = rows whose "TS No." cell is a TS id (9805_DM_TS01, TS01 ...).
 //   4. An empty result cell (grey: the TS does not run there) is not counted.
+//   5. Deprioritized TS (Faizuddin's universal style, 2026-11-05, seen on
+//      9805_MK_TS07): the status cells of the row are merged into one cell
+//      reading "DEPRIORITIZED" (bold italic, grey fill #F2F2F2, centred) and
+//      the reason is written in Remarks. Those cells are not counted; the TS
+//      is flagged `deprioritized` with the Remarks text as the reason.
 import fs from "node:fs";
 import type ExcelJS from "exceljs";
 import { readXlsx } from "@/lib/excelSheets";
@@ -28,12 +33,24 @@ export interface ColumnResult { header: string; counts: Counts }
 export interface SheetResult {
   name: string;
   tsCount: number;
+  /** TS rows marked DEPRIORITIZED (rule 5). */
+  deprioCount: number;
   columns: ColumnResult[];
   counts: Counts;
 }
 export interface ResultCell { sheet: string; ts: string; column: string; objective: string; status: ResultStatus }
 /** One TS row: its result per open column (grey columns left out). */
-export interface OfficialCase { sheet: string; section: string; ts: string; objective: string; cells: { column: string; status: ResultStatus }[] }
+export interface OfficialCase {
+  sheet: string; section: string; ts: string; objective: string; cells: { column: string; status: ResultStatus }[];
+  /** Set when a Claude run newer than the sheet has a result for this TS: that result is the TS's
+   *  overall status in the tracker (lib/claudeRunResults.ts mergeRunIntoCases). */
+  overall?: ResultStatus;
+  /** The row's status cells read "DEPRIORITIZED" (rule 5). */
+  deprioritized?: boolean;
+  /** Remarks text of a deprioritized row. */
+  deprioReason?: string;
+}
+export interface DeprioritizedCase { sheet: string; ts: string; objective: string; reason: string }
 export interface TsResults {
   file: string;
   mtimeMs: number;
@@ -47,8 +64,14 @@ export interface TsResults {
   executed: number;
   failed: ResultCell[];
   inProgress: ResultCell[];
+  /** TS rows marked DEPRIORITIZED on the sheet (rule 5), with the Remarks reason. */
+  deprioritized: DeprioritizedCase[];
   cases: OfficialCase[];
 }
+
+const DEPRIO = /^de-?prioriti[sz]ed\.?$/i;
+const REMARKS_HEADER = /^remarks?$/i;
+const isDeprio = (t: string) => DEPRIO.test(t.trim());
 
 const TS_HEADER = /^TS\s*No\.?$/i;
 const TS_ID = /^[A-Za-z0-9]*[_-]?(?:[A-Za-z]+_)?TS\s*_?\d+[A-Za-z]?$/i;
@@ -70,7 +93,7 @@ function statusOf(text: string): ResultStatus | null {
 
 const text = (ws: ExcelJS.Worksheet, r: number, c: number) => cellText(ws.getCell(r, c).value).trim();
 
-function readSheet(ws: ExcelJS.Worksheet, failed: ResultCell[], inProgress: ResultCell[], cases: OfficialCase[]): SheetResult | null {
+function readSheet(ws: ExcelJS.Worksheet, failed: ResultCell[], inProgress: ResultCell[], deprioritized: DeprioritizedCase[], cases: OfficialCase[]): SheetResult | null {
   // Header row: first row with a "TS No." cell.
   let headRow = 0, tsCol = 0;
   for (let r = 1; r <= Math.min(ws.rowCount, 30) && !headRow; r++) {
@@ -83,6 +106,8 @@ function readSheet(ws: ExcelJS.Worksheet, failed: ResultCell[], inProgress: Resu
   const lastCol = ws.columnCount;
   let objCol = 0;
   for (let c = tsCol + 1; c <= lastCol; c++) if (OBJECTIVE_HEADER.test(text(ws, headRow, c))) { objCol = c; break; }
+  let remarksCol = 0;
+  for (let c = tsCol + 1; c <= lastCol; c++) if (REMARKS_HEADER.test(text(ws, headRow, c))) { remarksCol = c; break; }
 
   const tsRows: number[] = [];
   for (let r = headRow + 1; r <= ws.rowCount; r++) if (TS_ID.test(text(ws, r, tsCol).replace(/\s+/g, ""))) tsRows.push(r);
@@ -92,11 +117,13 @@ function readSheet(ws: ExcelJS.Worksheet, failed: ResultCell[], inProgress: Resu
   const resultCols: number[] = [];
   for (let c = tsCol + 1; c <= lastCol; c++) {
     if (c === objCol) continue;
-    const known = tsRows.some(r => { const s = statusOf(text(ws, r, c)); return s !== null && s !== "Other"; });
+    const known = tsRows.some(r => { const t = text(ws, r, c); const s = statusOf(t); return (s !== null && s !== "Other") || isDeprio(t); });
     if (known) resultCols.push(c);
   }
+  // A merged DEPRIORITIZED cell reads the same text in every column it covers (exceljs gives the master's value).
+  const deprioRows = new Set(tsRows.filter(r => resultCols.some(c => isDeprio(text(ws, r, c)))));
 
-  const sheet: SheetResult = { name: ws.name, tsCount: tsRows.length, columns: [], counts: emptyCounts() };
+  const sheet: SheetResult = { name: ws.name, tsCount: tsRows.length, deprioCount: 0, columns: [], counts: emptyCounts() };
   const byRow = new Map<number, OfficialCase>();
   // Section = the nearest banner row above (a row with text in "TS No." that is not a TS id).
   const sectionOf = (row: number) => {
@@ -110,6 +137,12 @@ function readSheet(ws: ExcelJS.Worksheet, failed: ResultCell[], inProgress: Resu
     const ts = text(ws, r, tsCol).replace(/\s+/g, "");
     if (cases.some(c => c.ts === ts)) continue; // a TS split over two rows: first row wins
     const oc: OfficialCase = { sheet: ws.name, section: sectionOf(r), ts, objective: objCol ? text(ws, r, objCol) : "", cells: [] };
+    if (deprioRows.has(r)) {
+      oc.deprioritized = true;
+      oc.deprioReason = remarksCol ? text(ws, r, remarksCol).replace(/\s+/g, " ") : "";
+      deprioritized.push({ sheet: ws.name, ts, objective: oc.objective, reason: oc.deprioReason });
+      sheet.deprioCount++;
+    }
     byRow.set(r, oc);
     cases.push(oc);
   }
@@ -117,7 +150,9 @@ function readSheet(ws: ExcelJS.Worksheet, failed: ResultCell[], inProgress: Resu
     const header = text(ws, headRow, c) || `Column ${c}`;
     const col: ColumnResult = { header, counts: emptyCounts() };
     for (const r of tsRows) {
-      const s = statusOf(text(ws, r, c));
+      const t = text(ws, r, c);
+      if (isDeprio(t)) continue; // deprioritized: not counted (rule 5)
+      const s = statusOf(t);
       if (!s) continue; // grey / not applicable: not counted
       col.counts[s]++;
       sheet.counts[s]++;
@@ -150,10 +185,11 @@ export async function readOfficialTsResults(file: string): Promise<TsResults> {
 
   const wb = await readXlsx(await fs.promises.readFile(file));
   const failed: ResultCell[] = [], inProgress: ResultCell[] = [], cases: OfficialCase[] = [];
+  const deprioritized: DeprioritizedCase[] = [];
   const sheets: SheetResult[] = [];
   const counts = emptyCounts();
   wb.eachSheet(ws => {
-    const s = readSheet(ws, failed, inProgress, cases);
+    const s = readSheet(ws, failed, inProgress, deprioritized, cases);
     if (!s) return;
     sheets.push(s);
     for (const k of Object.keys(counts) as ResultStatus[]) counts[k] += s.counts[k];
@@ -171,6 +207,7 @@ export async function readOfficialTsResults(file: string): Promise<TsResults> {
     executed: total ? Math.round((tested / total) * 1000) / 10 : 0,
     failed,
     inProgress,
+    deprioritized,
     cases,
   };
   cache.set(file, { ...stamp, result });
