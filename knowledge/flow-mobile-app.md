@@ -207,6 +207,23 @@ Faizuddin was added on 2026-11-05 to two group chats. Tag `[teams: <chat>, <date
 4. **Support hotline — conflicting.** Dev: "1700 this is old number, the new number now using 03-27798..." / "the app changed all the old number from 1700 to 03-27798 already." `[teams: eAuto-Mobile Issues, 2026-10-27 13:15, Way Hou Wong]` Resolved card same day: "1700816186 is the new number". `[same, 14:24, Workflows / Hui Xin]` [unconfirmed] which is correct.
 5. Open: "mobile app supposed to hv announcement popup or not ya" — no answer yet. `[teams: eAuto-Mobile Issues, 2026-11-03, Hui Xin Lee]`
 
+## 10. Raising QA-Issues for the app `[Faizuddin, chat 2026-11-06; Jira EAINT-6014 children]`
+
+1. 9805 bugs use the EAINT-6014 (Mobile App Phase 2) format, not the web QA-Issue format. Skill: `.claude/skills/eaint-9805-mobile-qa-issue`.
+2. Panel: "Testing Environment: eAuto Mobile App" / "Version: v1.0.0-build-NN" / "Android Phone: <model>" (75 of 92 QA-Issues under 6014; refs EAINT-7196, EAINT-7292).
+3. Table: Item / Step to Simulate | Actual Result (#bf2600) | Expected Result (#006644); Expected cites "Current Web Behavior:" (#0747A6) + web screenshot.
+4. 6014 grouped issues per build with empty Sub-tasks "=======  v1.0.0-build-NN eAuto Mobile App Issues ======= " (e.g. EAINT-7291).
+
+5. First ticket raised in this format: **EAINT-12778** (2026-11-06, Highest, assignee "Zhen" = Zhen Hao Choo, Android dev). STMS (Malaysian seller, Dermalog), after thumbprint "Verification Passed" + [Next]: (a) Step 1 loops back to New STMS Transaction; (b) app crash at Step 1 (Build 67 and Build 68, Android 15; also Android 13; Android 16 fine); (c) Step 3 [Next] reopens PERAKUAN STMS / TH – PENJUAL with [Next] disabled, transaction not in listing. Videos in `_reference/tickets/EAINT-9805/issue-videos/`. Android 13 / 16 / Build 68 notes are in comment 58208 (description was hand-edited with inline videos, so not overwritten). `[Faizuddin, chat 2026-11-06]`
+6. Build dividers are not a fixed rule: only 14 exist in EAINT (EAINT-5824 under 5566; builds 30–35, 38–44 under 6014); none from build 45 on. None made for 9805. `[Jira search 2026-11-06]`
+
+## 11. Result dropdown "Blocker" `[Faizuddin, chat 2026-11-06/07; live workbook]`
+
+1. Every TS tab's status dropdown is now "Pass,Fail,In Progress,Not Started,Blocker" (was the first four).
+2. Blocker colour = black fill #000000, white bold text #FFFFFF, added as a copy of every "Not Started" custom rule (formula `="Blocker"`).
+3. Done by Office Scripts 35 (list + colour) and 36 (bold) in OneDrive; both can be deleted.
+4. MyKad TS H4/I4 (9805_MK_TS01 Android 13/15) showed "Blocker" afterwards; previously "In Progress" / "Fail". Not set by Claude; Faizuddin to confirm.
+
 ## Open questions
 
 1. ~~Phase 6 staging instance~~ sit1 (§8a.1). 2. ~~iOS install route~~ TestFlight (§8a.3); iOS devices still "TBC". 3. Exact app error texts for reader unplug / Bluetooth off / unpair. 4. Iris units returned to Iris 2026-11-03 (§8b.5) — Iris testing needs a loan. 5. Who holds the Dermalog runtime licence for test phones. 6. What thumbprint image the perakuan shows under Iris (§8b.1). 7. Announcement popup on the app (§8d.5).

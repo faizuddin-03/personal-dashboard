@@ -1,0 +1,89 @@
+{
+  "_comment": "EAINT-9805 mobile QA-Issue ADF, modelled on EAINT-6014 tickets (EAINT-7196 / 7292). Replace every <PLACEHOLDER>. For iOS change 'Android Phone: ' to 'iOS Phone: '. Duplicate the body tableRow for more symptoms. Remove _comment before sending.",
+  "type": "doc",
+  "version": 1,
+  "content": [
+    {
+      "type": "panel",
+      "attrs": { "panelType": "note" },
+      "content": [
+        { "type": "paragraph", "content": [
+          { "type": "text", "text": "Testing Environment:", "marks": [{ "type": "strong" }] },
+          { "type": "text", "text": " eAuto Mobile App" }
+        ] },
+        { "type": "paragraph", "content": [
+          { "type": "text", "text": "Version:", "marks": [{ "type": "strong" }] },
+          { "type": "text", "text": " <BUILD e.g. v1.0.0-build-41>" }
+        ] },
+        { "type": "paragraph", "content": [
+          { "type": "text", "text": "Android Phone:", "marks": [{ "type": "strong" }] },
+          { "type": "text", "text": " <PHONE MODEL>" }
+        ] }
+      ]
+    },
+    {
+      "type": "table",
+      "attrs": { "isNumberColumnEnabled": false, "layout": "default" },
+      "content": [
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableHeader", "attrs": {}, "content": [ { "type": "paragraph", "content": [
+              { "type": "text", "text": "Item / Step to Simulate", "marks": [{ "type": "strong" }] }
+            ] } ] },
+            { "type": "tableHeader", "attrs": {}, "content": [ { "type": "paragraph", "content": [
+              { "type": "text", "text": "Actual Result", "marks": [{ "type": "textColor", "attrs": { "color": "#bf2600" } }, { "type": "strong" }] }
+            ] } ] },
+            { "type": "tableHeader", "attrs": {}, "content": [ { "type": "paragraph", "content": [
+              { "type": "text", "text": "Expected Result", "marks": [{ "type": "textColor", "attrs": { "color": "#006644" } }, { "type": "strong" }] }
+            ] } ] }
+          ]
+        },
+        {
+          "type": "tableRow",
+          "content": [
+            { "type": "tableCell", "attrs": {}, "content": [
+              { "type": "paragraph", "content": [ { "type": "text", "text": "Scenarios", "marks": [{ "type": "strong" }] } ] },
+              { "type": "orderedList", "attrs": { "order": 1 }, "content": [
+                { "type": "listItem", "content": [ { "type": "paragraph", "content": [ { "type": "text", "text": "<step 1>" } ] } ] },
+                { "type": "listItem", "content": [ { "type": "paragraph", "content": [
+                  { "type": "text", "text": "<step with failing state, e.g. " },
+                  { "type": "text", "text": "JPJ Enquiry = Failed", "marks": [{ "type": "textColor", "attrs": { "color": "#ff5630" } }, { "type": "strong" }] },
+                  { "type": "text", "text": ">" }
+                ] } ] },
+                { "type": "listItem", "content": [ { "type": "paragraph", "content": [
+                  { "type": "text", "text": "<step with success state, e.g. " },
+                  { "type": "text", "text": "JPJ Enquiry = Success", "marks": [{ "type": "textColor", "attrs": { "color": "#36b37e" } }, { "type": "strong" }] },
+                  { "type": "text", "text": ">" }
+                ] } ] }
+              ] }
+            ] },
+            { "type": "tableCell", "attrs": {}, "content": [
+              { "type": "paragraph", "content": [ { "type": "text", "text": "<AREA LABEL e.g. \"View Details\" button:>", "marks": [{ "type": "strong" }] } ] },
+              { "type": "bulletList", "content": [
+                { "type": "listItem", "content": [ { "type": "paragraph", "content": [
+                  { "type": "text", "text": "<what happened on the app, key words " },
+                  { "type": "text", "text": "bold", "marks": [{ "type": "strong" }] },
+                  { "type": "text", "text": "> (app screenshot / recording below)" }
+                ] } ] }
+              ] }
+            ] },
+            { "type": "tableCell", "attrs": {}, "content": [
+              { "type": "paragraph", "content": [ { "type": "text", "text": "<SAME AREA LABEL>", "marks": [{ "type": "strong" }] } ] },
+              { "type": "bulletList", "content": [
+                { "type": "listItem", "content": [ { "type": "paragraph", "content": [
+                  { "type": "text", "text": "<what should happen, web wording verbatim, key words " },
+                  { "type": "text", "text": "bold", "marks": [{ "type": "strong" }] },
+                  { "type": "text", "text": ">" }
+                ] } ] }
+              ] },
+              { "type": "paragraph", "content": [
+                { "type": "text", "text": "Current Web Behavior:", "marks": [{ "type": "textColor", "attrs": { "color": "#0747A6" } }, { "type": "strong" }] }
+              ] }
+            ] }
+          ]
+        }
+      ]
+    }
+  ]
+}
