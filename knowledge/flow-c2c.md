@@ -53,6 +53,25 @@ Tags: `[jira]` = EAINT-12745 description · `[notes]` = Teams meeting notes 2026
 4. Open (2026-11-06): C2C **region code source** and **JPJ receipt email (Email1) recipient** — to confirm.
 3. eSTM JPJ requests take seller company ID, category "4", BRN, region code (UCD company state/city), Email1 and eVOC fallback from the **UCD** — all must be customer-sourced for C2C.
 
+## 17.11 MOT demo scope (Teams, relayed from Nurul, 2026-11-06) [demo: _reference/tickets/EAINT-12745/EAINT-12745-demo-scope-17-11-from-nurul-2026-11-06.md]
+
+1. "Staging focus on UCD portal first, backoffice portal later" [demo].
+2. Happy flow: "one shot till approved"; resubmit from listing: "Need to cover the flow tapi wont show during MOT & JPJ session" [demo update] (earlier "TBC").
+3. Negative flow: "hit eLKM 69E then drop the eLKM during payment", "hit JPJ Enquiry Failed", "hit payment failed" [demo].
+4. Insurance: "Can exclude insurance flow first, since showing to MOT, need to hide it" [demo].
+5. "hide the \"Save and Continue\" button" [demo].
+6. UCD verification: "click on C2C button from homepage", "click on create trx", "show the popup to verify" [demo].
+7. Permission: "company control by backoffice portal, user level control by main user" — "no need to include in 17.11" [demo]. Settles Open (2026-11-05) item 1 "company-level permission" for the full CR.
+8. Pricing: "eAuto Fee RM7+8% SST", "JPJ Fee RM3" [demo update] → C2C total RM3.00 + RM7.00 + RM0.56 = RM10.56 (SST on eAuto fee only, as existing STMS/eSTM).
+9. Transaction number: "prefix = C2C" [demo].
+10. Perakuan: "Nurul to confirm with Nik whether can use existing one" [demo].
+
+## JPJ enquiry points — main flow update (Faizuddin, 2026-11-06, details to follow)
+
+1. Simple happy flow (no eLKM or other add-on) = **5 JPJ calls**: (a) Step 1 enquiry, (b) Step 2 enquiry, (c) Step 2 → 3 enquiry (hidden), (d) Step 3 before payment enquiry (hidden), (e) final submission after payment completed [Faizuddin 2026-11-06].
+2. eLKM and other add-ons have **their own enquiries** on top of these [Faizuddin 2026-11-06]. Exact points TBC.
+3. Compare: STMS = Step 4 enquiry + 2nd enquiry around payment + Step 6 final submission (flow-stms.md). eSTM failure points = Step 4 1st enquiry, Step 4→5 enquiry (eSTM | eLKM), Step 5 [Hidden] enquiry (eSTM | eLKM | eVOC), Step 5 2nd enquiry, final submission eSTM / eLKM (flow-estm.md "failure-point taxonomy").
+
 ## Open (2026-11-05)
 
 1. eAuto fee, Perakuan text (legal), company-level permission, 7-day rule [notes].
