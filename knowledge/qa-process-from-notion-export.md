@@ -143,7 +143,8 @@ creates accounts, picks test emails, runs regression or handles SIT.
    4. Deployment checklist: "Use existing regression checklist for Production for now".
 4. Regression runs are named by environment and date, e.g. "Regression Checklist |
    Staging/Plus | 20240909 (eVOC Deployment)", "Staging/Jupiter | 202409xx (Java 8 Server
-   Upgrade)". `[same page]`
+   Upgrade)". `[same page]` A 2025 run of the Master Regression Checklist (Staging/SIT2,
+   Web Socket) is studied in [regression-checklist-staging.md](regression-checklist-staging.md).
 5. Other QA documents listed: eAuto Core System Validation, AATF System Validation, "JPJ
    Enquiry & RHB Payment Steps" (detailed expected results per step, listing and details
    page after JPJ enquiry / RHB payment / JPJ submission), Housekeeping Support Checklist
